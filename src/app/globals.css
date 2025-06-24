@@ -1,0 +1,202 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary: #274494;
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+/* 
+@media (prefers-color-scheme: dark) {s
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+} */
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(to bottom,
+      transparent,
+      rgb(var(--background-start-rgb))) rgb(var(--background-end-rgb))
+}
+
+/* Estilos para ocultar la barra de desplazamiento */
+
+
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  /* IE y Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+  /* Chrome, Safari y Opera */
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@-webkit-keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+.fade-in {
+  -webkit-animation-duration: 0.5s;
+  animation-duration: 0.5s;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+
+  -webkit-animation-name: fadeIn;
+  animation-name: fadeIn;
+}
+
+
+.btn-primary {
+  @apply bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded transition-all;
+}
+
+.btn-secondary {
+  @apply bg-gray-200 hover:bg-gray-300 text-black py-2 px-4 rounded transition-all;
+}
+
+.btn-danger {
+  @apply bg-red-500 hover:bg-red-700 text-white py-2 px-4 transition-all;
+}
+
+.btn-dark {
+  @apply bg-gray-800 hover:bg-gray-500 text-white py-2 px-4 transition-all;
+}
+
+
+
+/* Para ocultar las barras de desplazamiento en Webkit (Chrome, Safari) */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Para ocultar las barras de desplazamiento en Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+
+/* Colores */
+.color-principal {
+  @apply text-[#428f99]
+}
+
+.color-principal:hover {
+  @apply text-[#52bdc5]
+}
+
+.color-secundario {
+  @apply text-[#d44b7c]
+}
+
+.color-titulos-principales {
+  @apply text-[#d44b7c]
+}
+
+.color-logos {
+  @apply text-[#1c283c]
+}
+
+/* Color de fondo de la barra de navegación principal */
+.color-fondo-principal {
+  @apply bg-[#fff]
+}
+
+.color-iconos {
+  @apply text-[#1c283c]
+}
+
+.color-iconos:hover {
+  @apply text-[#d44b7c]
+}
+
+.numeros-iconos {
+  @apply bg-white text-[#d44b7c]
+}
+
+.numeros-iconos-inferior {
+  @apply bg-[#d44b7c] text-[#f2f2f2]
+}
+
+.links {
+  @apply text-[#d44b7c]
+}
+
+.links:hover {
+  @apply text-[#755047]
+}
+
+.color-titulos {
+  @apply text-[#d44b7c]
+}
+
+/* Tarjeta de productos - ProductCard */
+.color-titulos-ProductCard {
+  @apply text-[#428f99]
+}
+
+.fondo-tarjeta {
+  @apply text-white
+}
+
+.color-titulo-tarjeta {
+  @apply text-[#428f99]
+}
+
+.color-descripcion-tarjeta {
+  @apply text-[#1c283c]
+}
+
+.color-boton-agregar {
+  @apply bg-[#d44b7c]
+}
+
+.color-boton-agregar:hover {
+  @apply bg-[#52bdc5]
+}
+
+.texto-boton {
+  @apply text-white
+}
+
+.color-titulo-carrusel {
+  @apply text-[#d44b7c] group-hover:text-[#FFD700]
+}
+
+.color-titulo-carrusel:hover {
+  @apply group-hover:text-[#FFD700]
+}
+
+.color-texto-carrusel {
+  @apply text-[#FBFBFB]
+}
+
+.color-texto-carrusel:hover {
+  @apply group-hover:text-[#FFFACD]
+}

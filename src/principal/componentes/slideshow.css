@@ -1,0 +1,6 @@
+/* slideshow.css */
+.mySwiper {
+    --swiper-navigation-color: #e3d2cc; /* Color gris para la navegación */
+    --swiper-pagination-color: #ccd4e3; /* Color gris para la paginación */
+  }
+  

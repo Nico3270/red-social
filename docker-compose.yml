@@ -1,0 +1,21 @@
+version: '3.8'
+services:
+  postgres-db-base:
+    image: postgres:15.3
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER}  # Usuario definido en variables de entorno
+      POSTGRES_DB: ${DB_NAME}   # Nombre de la base de datos definido en variables de entorno
+      POSTGRES_PASSWORD: ${DB_PASSWORD}  # Contraseña definida en variables de entorno
+    volumes:
+      - postgres_data_base:/var/lib/postgresql/data  # Monta el volumen
+    ports:
+      - 5435:5432  # Puerto del host a 5435 para evitar conflictos
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+volumes:
+  postgres_data_base: {}  # Volumen vacío correctamente definido

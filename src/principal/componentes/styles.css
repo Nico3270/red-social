@@ -1,0 +1,33 @@
+.parallax-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+  }
+  
+  .title {
+    font-size: 24px;
+    color: white;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .subtitle {
+    font-size: 18px;
+    color: #ccc;
+    margin-bottom: 10px;
+  }
+  
+  .text {
+    font-size: 16px;
+    color: #aaa;
+  }
+  
+  .mySwiper {
+    width: 100%;
+    height: 500px; /* Ajusta la altura según sea necesario */
+  }
+  
