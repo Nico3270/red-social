@@ -1,10 +1,12 @@
+// src/auth.config.ts
 import NextAuth, { NextAuthConfig } from "next-auth";
-import Credentials from "next-auth/providers/credentials";
+import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import { z } from "zod";
 import prisma from "./lib/prisma";
 import bcryptjs from "bcryptjs";
 import { randomBytes } from "crypto";
+import { Role } from "@prisma/client";
 
 export const authConfig: NextAuthConfig = {
   pages: {
@@ -12,13 +14,12 @@ export const authConfig: NextAuthConfig = {
     newUser: "/auth/new-account",
   },
 
-  // Añadir trustHost aquí
-  trustHost: true, // Confía en localhost y otros hosts durante desarrollo
+  trustHost: true,
 
   callbacks: {
     async signIn({ user, account, profile }) {
       if (account?.provider === "google") {
-        const existingUser = await prisma.user.findUnique({
+        const existingUser = await prisma.usuario.findUnique({
           where: { email: user.email as string },
         });
 
@@ -26,12 +27,19 @@ export const authConfig: NextAuthConfig = {
           const randomPassword = randomBytes(16).toString("hex");
           const hashedPassword = bcryptjs.hashSync(randomPassword, 10);
 
-          await prisma.user.create({
+          await prisma.usuario.create({
             data: {
-              name: user.name || profile?.name || "Usuario sin nombre",
-              email: user.email as string,
-              password: hashedPassword,
+              nombre: user.name || profile?.name || "Usuario sin nombre",
+              apellido: "Google",
+              username: (user.email?.split("@")[0] ?? "usuario") + Date.now(),
+              email: user.email!,
+              contraseña: hashedPassword,
               role: "user",
+              ciudad: "Desconocida",
+              departamento: "Desconocido",
+              pais: "Colombia",
+              genero: "otro",
+              fechaNacimiento: new Date("1990-01-01"),
             },
           });
         }
@@ -40,24 +48,35 @@ export const authConfig: NextAuthConfig = {
       return true;
     },
 
-    jwt({ token, user }) {
-      if (user) {
+    async jwt({ token, user, trigger, session }) {
+      // Al iniciar sesión
+      if (user && "id" in user) {
         token.id = user.id;
+        token.name = user.name;
+        token.apellido = user.apellido ?? "";
         token.email = user.email!;
-        token.name = user.name!;
-        token.role = user.role;
-        token.emailVerified = user.emailVerified || null; // Garantiza que sea Date | null
+        token.role = (user as any).role;
+        token.emailVerified = (user as any).emailVerified ?? null;
+        token.ciudad = (user as any).ciudad ?? null;
       }
+
+      // Si se llama desde `update()`
+      if (trigger === "update" && session?.role) {
+        token.role = session.role;
+      }
+
       return token;
     },
 
-    session({ session, token }) {
+    async session({ session, token }) {
       session.user = {
         id: token.id as string,
-        email: token.email as string,
         name: token.name as string,
-        role: token.role as string,
+        apellido: token.apellido as string,
+        email: token.email as string,
+        role: token.role as Role,
         emailVerified: token.emailVerified instanceof Date ? token.emailVerified : null,
+        ciudad: token.ciudad as string,
       };
       return session;
     },
@@ -69,37 +88,39 @@ export const authConfig: NextAuthConfig = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
     }),
 
-    Credentials({
+    CredentialsProvider({
       async authorize(credentials) {
         const parsedCredentials = z
-          .object({ email: z.string().email(), password: z.string().min(6) })
+          .object({
+            email: z.string().email(),
+            password: z.string().min(6),
+          })
           .safeParse(credentials);
 
         if (!parsedCredentials.success) return null;
 
         const { email, password } = parsedCredentials.data;
 
-        const user = await prisma.user.findUnique({
+        const user = await prisma.usuario.findUnique({
           where: { email: email.toLowerCase() },
         });
+
         if (!user) return null;
 
-        if (!bcryptjs.compareSync(password, user.password)) return null;
-
-        // Retorna el usuario sin incluir la contraseña
-
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { password: _, ...userWithoutPassword } = user;
-
+        const isValidPassword = bcryptjs.compareSync(password, user.contraseña);
+        if (!isValidPassword) return null;
 
         return {
-          ...userWithoutPassword,
-          emailVerified: user.emailVerified || null,
+          id: user.id,
+          name: user.nombre,
+          apellido: user.apellido,
+          email: user.email!,
+          role: user.role,
+          ciudad: user.ciudad ?? "",
         };
       },
     }),
   ],
 };
 
-// Export NextAuth setup
 export const { signIn, signOut, auth, handlers } = NextAuth(authConfig);

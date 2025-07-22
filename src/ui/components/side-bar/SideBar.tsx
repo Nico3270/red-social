@@ -11,16 +11,10 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
-import AutoAwesomeMotionRoundedIcon from "@mui/icons-material/AutoAwesomeMotionRounded";
-import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
-import FavoriteRoundedIcon from "@mui/icons-material/FavoriteRounded";
-import LocalGroceryStoreRoundedIcon from "@mui/icons-material/LocalGroceryStoreRounded";
 import { FaMoneyBillTransfer } from "react-icons/fa6";
-import {  FaBookOpen } from "react-icons/fa";
-import { AiFillProduct } from "react-icons/ai";
 import LoginRoundedIcon from "@mui/icons-material/LoginRounded";
 import { useSession, signIn, signOut } from "next-auth/react";
-import { MdAddBusiness, MdDashboardCustomize } from "react-icons/md";
+
 
 interface SideBarProps {
   open: boolean;
@@ -30,7 +24,7 @@ interface SideBarProps {
 
 // Configuración del menú para cada rol
 const menuConfig: Record<
-  "admin" | "user",
+  "admin" | "user" | "negocio", 
   {
     name: string;
     link?: string;
@@ -38,16 +32,19 @@ const menuConfig: Record<
     icon: React.JSX.Element;
   }[]
 > = {
-  admin: [
+  user: [
     // { name: "Perfil", link: "/profile", icon: <PeopleIcon /> },
     { name: "Dashboard", link: "/dashboard", icon: <DashboardIcon /> },
-    { name: "Nuevo producto", link: "/dashboard/productos/newProduct", icon: <MdAddBusiness /> },
-    { name: "Gestionar productos", link: "/dashboard/productos", icon: <MdDashboardCustomize /> },
-    { name: "Orden de los productos", link: "/dashboard/sections/order", icon: <MdDashboardCustomize /> },
-    { name: "Secciones", link: "/dashboard/sections", icon: <FaBookOpen /> },
-    { name: "Pedidos", link: "/dashboard/orders", icon: <AutoAwesomeMotionRoundedIcon /> },
-    { name: "Transacciones", link: "/dashboard/transacciones", icon: <FaMoneyBillTransfer /> },
-    { name: "Productos", link: "/dashboard/productos", icon: <MenuBookRoundedIcon /> },
+    { name: "Perfil", link: "/dashboard/perfil", icon: <FaMoneyBillTransfer /> },
+    { name: "Perfil 2", link: "/perfil", icon: <FaMoneyBillTransfer /> },
+
+    // { name: "Nuevo producto", link: "/dashboard/productos/newProduct", icon: <MdAddBusiness /> },
+    // { name: "Gestionar productos", link: "/dashboard/productos", icon: <MdDashboardCustomize /> },
+    // { name: "Orden de los productos", link: "/dashboard/sections/order", icon: <MdDashboardCustomize /> },
+    // { name: "Secciones", link: "/dashboard/sections", icon: <FaBookOpen /> },
+    // { name: "Pedidos", link: "/dashboard/orders", icon: <AutoAwesomeMotionRoundedIcon /> },
+    // { name: "Transacciones", link: "/dashboard/transacciones", icon: <FaMoneyBillTransfer /> },
+    // { name: "Productos", link: "/dashboard/productos", icon: <MenuBookRoundedIcon /> },
     // { name: "Blogs", link: "/dashboard/blog", icon: <SiReadthedocs /> },
     // { name: "Nuevo Blog", link: "/dashboard/blog/newBlog", icon: <IoDocument /> },
     // { name: "Nueva sección", link: "/dashboard/newSection", icon: <FaBookmark /> },
@@ -57,12 +54,15 @@ const menuConfig: Record<
     // { name: "Usuarios", link: "/dashboard/users", icon: <FaUserEdit /> },
 
   ],
-  user: [
+  admin: [
     // { name: "Perfil", link: "/profile", icon: <PeopleIcon /> },
-    { name: "Productos", link: "/productos", icon: <AiFillProduct /> },
-    { name: "Órdenes", link: "/orders", icon: <AutoAwesomeMotionRoundedIcon /> },
-    { name: "Carro de compras", link: "/carro", icon: <LocalGroceryStoreRoundedIcon /> },
-    { name: "Favoritos", link: "/favoritos", icon: <FavoriteRoundedIcon /> },
+    { name: "Perfil", link: "/dashboard/perfil", icon: <FaMoneyBillTransfer /> },
+    { name: "Perfil 2", link: "/perfil", icon: <FaMoneyBillTransfer /> },
+  ],
+  negocio: [
+    // { name: "Perfil", link: "/profile", icon: <PeopleIcon /> },
+    { name: "Perfil", link: "/dashboard/perfil", icon: <FaMoneyBillTransfer /> },
+    { name: "Perfil 2", link: "/perfil", icon: <FaMoneyBillTransfer /> },
   ],
 };
 

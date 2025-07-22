@@ -1,0 +1,126 @@
+/* socialMediaCarousel.css */
+
+/* Estilos generales del carrusel */
+.mySwiper {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+/* Centrar contenido de los slides */
+.mySwiper .swiper-slide {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Estilos para videos */
+.mySwiper video {
+  background: #000; /* Fondo oscuro para videos con object-contain */
+  object-fit: contain;
+}
+
+/* Estilos para imágenes */
+.mySwiper img {
+  object-fit: cover;
+}
+
+/* Contenedor de medios */
+.mySwiper .relative {
+  border-radius: 0.75rem; /* rounded-xl */
+  overflow: hidden;
+  max-height: 500px;
+  width: 100%;
+}
+
+/* Botones de navegación */
+.mySwiper .swiper-button-next,
+.mySwiper .swiper-button-prev {
+  color: #3b82f6; /* Azul vibrante */
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.mySwiper .swiper-button-next:hover,
+.mySwiper .swiper-button-prev:hover {
+  background: rgba(255, 255, 255, 1);
+  transform: scale(1.1);
+}
+
+/* Paginación */
+.mySwiper .swiper-pagination {
+  padding-bottom: 8px;
+}
+
+.mySwiper .swiper-pagination-bullet {
+  background-color: #a1a1aa; /* Gris claro */
+  opacity: 0.5;
+  width: 8px;
+  height: 8px;
+  margin: 0 4px;
+  transition: background-color 0.2s ease;
+}
+
+.mySwiper .swiper-pagination-bullet-active {
+  background-color: #3b82f6; /* Azul vibrante */
+  opacity: 1;
+}
+
+/* Placeholder para medios vacíos */
+.mySwiper .bg-gray-200 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 0.75rem; /* rounded-xl */
+  background-color: #e5e7eb; /* bg-gray-200 */
+  color: #6b7280; /* text-gray-500 */
+  font-size: 1rem;
+  text-align: center;
+}
+
+/* Estilo para descripción con línea de corte */
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Enlaces de hashtags y menciones */
+.text-blue-500 {
+  color: #3b82f6;
+}
+
+.text-blue-500:hover {
+  text-decoration: underline;
+}
+
+/* Estilos para botones de interacción */
+.text-gray-600 {
+  color: #4b5563;
+}
+
+.text-red-500 {
+  color: #ef4444;
+}
+
+.text-blue-500 {
+  color: #3b82f6;
+}
+
+.text-green-500 {
+  color: #10b981;
+}
+
+.text-gray-600:hover,
+.text-red-500:hover,
+.text-blue-500:hover,
+.text-green-500:hover {
+  transition: color 0.2s ease;
+}

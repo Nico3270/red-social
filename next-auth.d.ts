@@ -3,11 +3,17 @@ import NextAuth, { DefaultSession, DefaultUser } from "next-auth";
 
 // Extender el módulo NextAuth
 declare module "next-auth" {
+
+
   // Extender el tipo User
   interface User extends DefaultUser {
     id: string;
+    name: string;               // Mapeado desde 'nombre'
+    apellido?: string;
+    email: string;
     role: string;
-    emailVerified: Date | null; // No puede ser undefined
+    ciudad?: string;            // <-- Nuevo campo agregado
+    emailVerified?: Date | null;
   }
 
   interface Session extends DefaultSession {
@@ -16,10 +22,12 @@ declare module "next-auth" {
 
   interface JWT {
     id: string;
-    email: string;
     name: string;
+    apellido?: string;
+    email: string;
     role: string;
-    emailVerified: Date | null;
+    ciudad?: string;
+    emailVerified?: Date | null;
   }
 
   interface CustomUser {
@@ -27,6 +35,8 @@ declare module "next-auth" {
     email: string;
     name: string;
     role: string;
+    ciudad?: string;
     emailVerified?: Date | null;
+ 
   }
 }

@@ -35,7 +35,7 @@ export const InfoEmpresa = {
     imagenCarroVacio: "/imgs/empty_cart.webp",
     imagenTiendaContacto: "/imgs/tienda_contacto.webp",
   },
-  linkWebProduccion: "https://magisurprise.com"
+  linkWebProduccion: "http://localhost:3000/"
 }
 
 // Barra de navegación principal e inferior

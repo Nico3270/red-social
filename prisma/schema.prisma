@@ -1,3 +1,9 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -7,32 +13,195 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model IndexLog {
-  id        String   @id @default(uuid())
-  url       String   @unique
-  status    String
-  response  Json
-  createdAt DateTime @default(now())
+model Negocio {
+  id               String            @id @default(uuid())
+  usuarioId        String            @unique
+  usuario          Usuario           @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  nombre           String
+  slug             String            @unique
+  categorias       NegocioCategory[]
+  secciones        NegocioSection[]
+  descripcion      String?
+  ciudad           String
+  departamento     String
+  direccion        String? // Nuevo: Dirección legible
+  urlGoogleMaps    String?
+  latitud          Float?
+  longitud         Float?
+  horarios         Json?
+  imagenes         String[]
+  fotoPerfil       String?
+  fotoPortada      String?
+  sitioWeb         String?
+  telefonoContacto String?
+  Product          Product[]
+  estado           EstadoNegocio     @default(activo)
+
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  publicaciones Publicacion[] // Relación para reseñas y anuncios
+
+  @@index([ciudad])
+  @@index([departamento])
+  @@index([estado])
+  @@index([usuarioId])
+}
+
+enum EstadoNegocio {
+  activo
+  suspendido
+  eliminado
+}
+
+model NegocioCategory {
+  negocioId  String
+  categoryId String
+  negocio    Negocio  @relation(fields: [negocioId], references: [id], onDelete: Cascade)
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  @@unique([negocioId, categoryId])
+  @@index([categoryId])
+}
+
+model NegocioSection {
+  negocioId String
+  sectionId String
+  negocio   Negocio @relation(fields: [negocioId], references: [id], onDelete: Cascade)
+  section   Section @relation("NegocioSection", fields: [sectionId], references: [id]) // ✅ se agregó el nombre
+  prioridad Int     @default(0)
+
+  @@unique([negocioId, sectionId])
+  @@index([sectionId])
+}
+
+model Usuario {
+  id              String        @id @default(uuid())
+  nombre          String
+  apellido        String
+  username        String        @unique
+  contraseña     String
+  email           String        @unique
+  ciudad          String
+  departamento    String
+  pais            String?       @default("Colombia")
+  genero          Genero
+  fechaNacimiento DateTime
+  fotoPerfil      String?
+  biografia       String?
+  role            Role          @default(user)
+  facebook        String?
+  instagram       String?
+  tiktok          String?
+  youtube         String?
+  twitter         String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  ultimaActividad DateTime      @default(now())
+  estado          EstadoUsuario @default(activo)
+  emailVerified   DateTime?
+  negocio         Negocio?      @relation // Relación uno-a-uno
+  preferencias    String[]
+  publicaciones   Publicacion[]
+  interacciones   Interaccion[] @relation("UsuarioInteracciones")
+
+  @@index([username])
+  @@index([email])
+  @@index([role])
+}
+
+enum EstadoUsuario {
+  activo
+  suspendido
+  eliminado
+}
+
+enum Role {
+  admin
+  user
+  navegante
+  creador
+  negocio
+}
+
+enum Genero {
+  masculino
+  femenino
+  otro
 }
 
 model Product {
-  id               String           @id @default(uuid())
+  id               String                   @id @default(uuid())
   nombre           String
-  precio           Float
-  componentes    String[]
+  slug             String                   @unique
   descripcion      String
   descripcionCorta String?
-  slug             String           @unique
+  precio           Float
+  currency         Currency                 @default(COP)
   prioridad        Int?
-  status           String           @default("available") // Campo para manejar el estado
+  status           ProductStatus            @default(disponible)
+  etiquetaEspecial ProductEtiquetaEspecial? @default(ninguna)
   tags             String[]
-  imagenes         Image[]          @relation("ProductImages")
+  componentes      String[] // opcional: puede pasar a atributos
+  imagenes         Image[]                  @relation("ProductImages")
   secciones        ProductSection[]
-  createdAt        DateTime         @default(now())
-  updatedAt        DateTime         @updatedAt
-  orderItems       OrderItem[]      @relation("OrderItemToProduct") // Relación inversa con OrderItem
+  disponibleDesde  DateTime?
+  disponibleHasta  DateTime?
+  createdAt        DateTime                 @default(now())
+  updatedAt        DateTime                 @updatedAt
+  negocioId        String
+  categoryId       String
 
-  articulos ArticuloProduct[] // Relación con artículos (tabla intermedia)
+  negocio                   Negocio               @relation(fields: [negocioId], references: [id], onDelete: Cascade)
+  category                  Category              @relation(fields: [categoryId], references: [id])
+  publicacionesRelacionadas PublicacionProducto[] // Sin @relation("ProductosEnPublicacion")
+
+  @@index([negocioId]) // Para filtrar productos por usuario rápidamente
+  @@index([categoryId]) // Mejora las consultas filtradas por categoría
+  @@index([nombre])
+  @@index([status])
+  @@index([categoryId, status])
+  @@index([etiquetaEspecial])
+  @@index([negocioId, status])
+}
+
+enum ProductEtiquetaEspecial {
+  mas_buscado
+  mas_vendido
+  novedad
+  reciente
+  promocion
+  ultimos_dias
+  ninguna
+}
+
+enum Currency {
+  COP // Pesos colombianos
+  USD // Dólar estadounidense
+  EUR // Euro
+  MXN // Peso mexicano
+  ARS // Peso argentino
+  BRL // Real brasileño
+}
+
+enum ProductStatus {
+  disponible
+  agotado
+  oculto
+  descontinuado
+}
+
+model Category {
+  id        String    @id @default(uuid())
+  nombre    String
+  slug      String    @unique
+  iconName  String? // Ícono opcional para UI
+  secciones Section[]
+  productos Product[] // Productos relacionados
+  isActive  Boolean   @default(true) // ✅ AGREGAR ESTA LÍNEA
+
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  negocios  NegocioCategory[] // sin @relation (usa nombre implícito o explícito si lo necesitas)
 }
 
 model Image {
@@ -46,11 +215,16 @@ model Section {
   id       String           @id @default(uuid())
   nombre   String
   slug     String           @unique
-  iconName String?          // Nuevo campo opcional para el nombre del ícono
-  order    Int              // Orden o prioridad
-  isActive Boolean          // Estado activo/inactivo
+  iconName String? // Nuevo campo opcional para el nombre del ícono
+  order    Int // Orden o prioridad
+  isActive Boolean // Estado activo/inactivo
   products ProductSection[]
-  articulos ArticuloSection[] // Relación con los artículos
+  negocios NegocioSection[] @relation("NegocioSection")
+
+  Category   Category? @relation(fields: [categoryId], references: [id])
+  categoryId String?
+
+  @@index([categoryId])
 }
 
 model ProductSection {
@@ -64,235 +238,96 @@ model ProductSection {
   @@unique([productId, sectionId]) // Añade esta línea si no está presente
 }
 
-model Articulo {
-  id               String            @id @default(cuid())
-  slug             String            @unique
-  titulo           String
-  descripcion      String
-  imagen           String
-  imagenes         String[]
-  fechaPublicacion DateTime          @default(now())
-  autor            String
-  orden            Int // Nuevo campo
-  secciones        ArticuloSection[] // Relación con las secciones
-  products         ArticuloProduct[] // Relación con productos (tabla intermedia)
-  temas            TemaBlog[]        @relation("ArticuloTemas")
+// Apartado de publicaciones
+
+model Publicacion {
+  id                     String                @id @default(cuid())
+  usuarioId              String
+  usuario                Usuario               @relation(fields: [usuarioId], references: [id])
+  negocioId              String? // Nuevo campo para asociar con Negocio
+  negocio                Negocio?              @relation(fields: [negocioId], references: [id], onDelete: Cascade)
+  tipo                   PublicacionTipo
+  titulo                 String?
+  descripcion            String?
+  multimedia             Media[] // Cambiado a Media
+  visibilidad            Visibilidad           @default(PUBLICA)
+  createdAt              DateTime              @default(now())
+  updatedAt              DateTime              @updatedAt
+  productosEnPublicacion PublicacionProducto[]
+  numLikes               Int                   @default(0)
+  numComentarios         Int                   @default(0)
+  numCompartidos         Int                   @default(0)
+  interacciones          Interaccion[]         @relation("PublicacionInteracciones")
+
+  @@index([tipo, visibilidad, createdAt])
+  @@index([usuarioId, createdAt])
+  @@index([negocioId, createdAt])
 }
 
-model ArticuloSection {
-  id         String   @id @default(cuid())
-  articuloId String
-  articulo   Articulo @relation(fields: [articuloId], references: [id], onDelete: Cascade)
-  sectionId  String
-  section    Section  @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+enum Visibilidad {
+  PUBLICA
+  PRIVADA
+  AMIGOS // O cualquier otra opción relevante
 }
 
-model TemaBlog {
-  id         String   @id @default(cuid())
-  articuloId String
-  articulo   Articulo @relation("ArticuloTemas", fields: [articuloId], references: [id], onDelete: Cascade) // 🔥 Relación inversa
-  titulo     String
-  imagen     String?
-  parrafos   String[] @default([])
+model PublicacionProducto {
+  id            String      @id @default(cuid())
+  publicacionId String
+  productoId    String
+  publicacion   Publicacion @relation(fields: [publicacionId], references: [id], onDelete: Cascade)
+  producto      Product     @relation(fields: [productoId], references: [id], onDelete: Cascade)
+  orden         Int         @default(0)
 
-  @@unique([articuloId, titulo])
+  @@unique([publicacionId, productoId])
 }
 
-
-model ArticuloProduct {
-  id         String   @id @default(cuid())
-  articuloId String
-  productId  String
-  articulo   Articulo @relation(fields: [articuloId], references: [id], onDelete: Cascade)
-  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-
-  @@unique([articuloId, productId])
+enum PublicacionTipo {
+  VIDEO_HORIZONTAL
+  VIDEO_VERTICAL
+  CARRUSEL_IMAGENES
+  PRODUCTO_DESTACADO
+  MINI_GRID
+  TESTIMONIO
 }
 
-
-
-model Order {
-  id             String               @id @default(uuid())
-  estado         OrderState           @default(RECIBIDA) // Enum para los estados
-  createdAt      DateTime             @default(now())
-  updatedAt      DateTime             @updatedAt
-  items          OrderItem[] // Relación con los productos de la orden
-  datosDeEntrega DeliveryData?        @relation(fields: [deliveryDataId], references: [id], onDelete: Cascade)
-  deliveryDataId String?              @unique // Debe ser único en una relación 1:1
-  statusHistory  OrderStatusHistory[] // Relación con el historial de estados
+model Media {
+  id            String         @id @default(uuid())
+  url           String         @db.VarChar(2048)
+  tipo          MultimediaTipo
+  formato       String?
+  orden         Int            @default(0)
+  publicacionId String
+  publicacion   Publicacion?   @relation(fields: [publicacionId], references: [id], onDelete: Cascade)
 }
 
-enum OrderState {
-  RECIBIDA  
-  ENTREGADA
-  PAGADA
-  CANCELADA
-  PREPARACION
+enum MultimediaTipo {
+  IMAGEN
+  VIDEO
 }
 
+model Interaccion {
+  id            String          @id @default(cuid())
+  tipo          InteraccionTipo
+  contenido     String?
+  reaccionTipo  ReaccionTipo?
+  usuarioId     String
+  publicacionId String
+  createdAt     DateTime        @default(now())
 
-
-model OrderItem {
-  id         String   @id @default(uuid())
-  cantidad   Int
-  orderId    String
-  order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  productId  String?  // Producto opcional
-  producto   Product? @relation("OrderItemToProduct", fields: [productId], references: [id])
-  precio     Float
-  comentario String?
+  usuario     Usuario     @relation("UsuarioInteracciones", fields: [usuarioId], references: [id])
+  publicacion Publicacion @relation("PublicacionInteracciones", fields: [publicacionId], references: [id], onDelete: Cascade)
 }
 
-
-model OrderStatusHistory {
-  id            String   @id @default(uuid())
-  orderId       String
-  order         Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  previousState String? // Cambiado a nullable
-  newState      String
-  comment       String?
-  createdAt     DateTime @default(now())
+enum InteraccionTipo {
+  COMENTARIO
+  REACCION
+  COMPARTIDO
 }
 
-model DeliveryData {
-  id                 String    @id @default(uuid())
-  senderName         String
-  senderPhone        String
-  recipientName      String?
-  recipientPhone     String
-  deliveryAddress    String
-  occasion           String?
-  dedicationMessage  String?
-  deliveryDate       DateTime?
-  deliveryTime       String?
-  additionalComments String?
-  order              Order?    @relation // Sin `fields` ni `references`
-}
-
-
-model Video {
-  id        String   @id @default(uuid())
-  url       String   @unique
-  title     String
-  description String
-  order     Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Imagegallery {
-  id        String   @id @default(uuid())
-  url       String   @unique
-  title     String
-  description String
-  order     Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Transaction {
-  id           String           @id @default(uuid())
-  date         DateTime
-  type         TransactionType
-  description  String
-  category     String
-  amount       Decimal
-  paymentMethod PaymentMethod
-  createdAt    DateTime         @default(now())
-  updatedAt    DateTime         @updatedAt
-}
-
-enum TransactionType {
-  ingreso
-  gasto
-}
-
-enum IncomeCategory {
-  ventas
-  ahorro
-  otros
-  propinas
-  prestamos
-}
-
-enum ExpenseCategory {
-  implementos
-  materiales
-  arriendo
-  empleados
-  servicios_publicos
-  envios
-  deudas
-  mantenimiento
-  impuestos
-  otros
-}
-
-enum PaymentMethod {
-  efectivo
-  nequi
-  daviplata
-  cuenta_principal
-  transferencias
-}
-
-model User {
-  id                 String               @id @default(uuid())
-  name               String
-  email              String               @unique
-  password           String
-  role               Role                 @default(user)
-  image              String?
-  emailVerified DateTime? // Campo opcional para la verificación del correo
-  createdAt          DateTime             @default(now())
-  updatedAt          DateTime             @updatedAt
-}
-
-
-enum Role {
-  admin
-  user
-}
-
-// prisma/schema.prisma
-model Service {
-  id          String   @id @default(uuid())       // ID único
-  titulo      String                              // Título del servicio
-  descripcion String                              // Descripción del servicio
-  imagen      String                              // URL de la imagen
-  slug        String   @unique                    // Slug único
-  isActive    Boolean  @default(true)             // Estado (activo/inactivo)
-  createdAt   DateTime @default(now())            // Fecha de creación
-  updatedAt   DateTime @updatedAt                 // Fecha de actualización
-}
-
-
-model Testimonial {
-  id          String   @id @default(uuid())
-  imagen      String   // URL de la imagen
-  titulo      String   // Título del testimonio (ej: nombre)
-  descripcion String   // Descripción o frase motivadora
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-
-
-model Tarjeta {
-  id          String   @id @default(uuid())
-  titulo      String
-  descripcion String
-  imagen      String  // URL de la imagen
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-
-
-model CarruselSection {
-  id          String   @id @default(uuid())
-  titulo      String
-  descripcion String
-  imagen      String
-  url         String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+enum ReaccionTipo {
+  LIKE
+  LOVE
+  WOW
+  SAD
+  ANGRY
 }

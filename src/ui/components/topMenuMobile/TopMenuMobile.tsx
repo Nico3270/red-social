@@ -1,163 +1,101 @@
 "use client";
 
 import Link from "next/link";
-import React, { useState } from "react";
-import {
-  FaShoppingCart,
-  FaHeart,
-  FaUser,
-  FaBars,
-  FaGifts,
-  FaBookOpen,
-} from "react-icons/fa";
 import Image from "next/image";
-import { MenuSectionsBar } from "../menu-section-bar/MenuSectionBar";
+import { useState } from "react";
+import {
+  FaHome,
+  FaCompass,
+  FaPlusSquare,
+  FaBell,
+  FaUserCircle,
+  FaSearch,
+} from "react-icons/fa";
 import { SideBar } from "../side-bar/SideBar";
-import { LogoFont } from "@/config/fonts";
-import { useCartCatalogoStore } from "@/store/carro/carro-store";
-import { useFavoritesCatalogoStore } from "@/store/favoritos/favoritos-store";
-import { TopMenuConfig as tp } from "@/config/config";
-import { InfoEmpresa as empresa } from "@/config/config";
+import { MenuSectionsBar } from "../menu-section-bar/MenuSectionBar";
 
 export const TopMenuMobile = () => {
-  const [menuOpen, setMenuOpen] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-
-  // Extraer cantidades desde los stores
-  const totalItemsInCart = useCartCatalogoStore((state) => state.getTotalItems());
-  const totalFavorites = useFavoritesCatalogoStore((state) => state.getTotalItems());
-
-  const toggleDrawer = (open: boolean) => {
-    setIsDrawerOpen(open);
-  };
+  const [searchTerm, setSearchTerm] = useState("");
+  const filteredProducts: { id: number; slug: string; nombre: string }[] = []; // Placeholder
 
   return (
-    <div>
-      {/* Barra superior fija para pantallas pequeñas */}
-      <header
-        className={`color-fondo-principal color-logos ${LogoFont.className} py-2 shadow-lg fixed top-0 w-full z-50`}
-      >
-        <div className="container mx-auto flex justify-between items-center px-4">
-          {/* Logo y nombre del restaurante a la izquierda */}
-          <div className="flex items-center">
-            <Link href="/">
-              <Image
-                src={empresa.imagenesPlaceholder.logoEmpresa}
-                alt={`Logo ${empresa.titulo}`}
-                width={tp.width_height_logo_topMenuMobile}
-                height={tp.height_height_logo_topMenuMobile}
+    <div className="sm:pb-16 shadow-lg"> {/* padding inferior para no tapar el contenido con el nav */}
+      {/* Barra superior fija */}
+      <header className="fixed top-0 w-full z-50 bg-white shadow-md border-b">
+        <div className="flex items-center justify-between px-4 h-16">
+          {/* Logo a la izquierda */}
+          <Link href="/" className="flex items-center">
+            <Image
+              src="/imgs/logo final-1.png"
+              alt="Logo MagiSurprise"
+              width={50}
+              height={50}
+              className="rounded-full"
+            />
+          </Link>
+
+          {/* Barra de búsqueda en el centro */}
+          <div className="flex-1 mx-4">
+            <div className="flex items-center bg-white rounded-full shadow-md border border-green-600 px-3 py-1">
+              <FaSearch className="text-green-600" />
+              <input
+                type="text"
+                placeholder="Buscar..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full bg-transparent outline-none ml-2 text-sm"
               />
-            </Link>
-            <div className="ml-2 text-left">
-              <Link href="/">
-                <span className={`block text-md font-bold leading-tight`}>
-                  {empresa.nombreCorto.parte1}
-                </span>
-                <span className={`block text-md font-bold leading-tight`}>
-                  {empresa.nombreCorto.parte2}
-                </span>
-              </Link>
             </div>
+            {filteredProducts.length > 0 && (
+              <div className="absolute z-10 bg-white shadow-lg rounded-lg w-full mt-2 max-h-60 overflow-auto border border-gray-200">
+                {filteredProducts.map((product) => (
+                  <Link key={`${product.id}-${product.slug}`} href={`/producto/${product.slug}`}>
+                    <div className="p-3 hover:bg-gray-100 cursor-pointer">{product.nombre}</div>
+                  </Link>
+                ))}
+              </div>
+            )}
           </div>
-
-          {/* Menú hamburguesa a la derecha */}
-          <button onClick={() => setMenuOpen(!menuOpen)}>
-            <FaBars className="text-2xl" />
-          </button>
         </div>
-
-        {/* Menú desplegable */}
-        {menuOpen && (
-          <div className="absolute top-12 left-0 w-full bg-white shadow-lg z-20 py-4">
-            <nav className="space-y-4 flex flex-col items-center">
-              {tp.EnlacesNavegacionTopMenu.map((item) => (
-                <Link
-                  href={`${item.ruta}`}
-                  key={item.section}
-                  className="links"
-                >
-                  {item.section}
-                </Link>
-              ))}
-            </nav>
-          </div>
-        )}
       </header>
 
-      {/* Barra de secciones fija */}
-      <div className="fixed top-[4rem] w-full bg-white z-40 border-b shadow-md">
+      {/* Espaciado para evitar que el contenido quede oculto */}
+      <div className="mt-16">
         <MenuSectionsBar />
       </div>
 
-      {/* Espaciado para evitar que el contenido quede oculto */}
-      <div className="mt-[8rem]">
-        {/* Aquí va el contenido principal de la página */}
-      </div>
-
       {/* Barra inferior de navegación fija */}
-      <nav className="bg-white fixed bottom-0 w-full z-50 border-t shadow-lg">
+      <nav className="bg-white fixed bottom-0 w-full z-50 border-t shadow-md">
         <div className="flex justify-around items-center py-2">
-          <Link
-            href={tp.enlacePrincipalInferior.ruta}
-            className="flex flex-col items-center"
-          >
-            <FaGifts className="text-xl" />
-            <span className="text-xs">{tp.enlacePrincipalInferior.nombre}</span>
+          <Link href="/" className="flex flex-col items-center">
+            <FaHome className="text-xl" />
+            <span className="text-xs">Inicio</span>
           </Link>
-
-          {/* Botón de Blogs*/}
-          <Link
-            href="/blog"
-            className="relative flex flex-col items-center hover:text-gray-400"
-          >
-            <FaBookOpen className="text-xl" />
-           
-            <span className="text-xs">Blog</span>
+          <Link href="/explorar" className="flex flex-col items-center">
+            <FaCompass className="text-xl" />
+            <span className="text-xs">Explorar</span>
           </Link>
-
-          {/* Botón de favoritos */}
-          <Link
-            href="/favoritos"
-            className="relative flex flex-col items-center hover:text-gray-400"
-          >
-            <FaHeart className="text-xl" />
-            {totalFavorites > 0 && (
-              <span
-                className={`absolute top-0 right-0 ${tp.Color_Circulo_Numero_Iconos_Mobile} rounded-full text-xs w-4 h-4 flex items-center justify-center transform translate-x-1/4 -translate-y-1/2`}
-              >
-                {totalFavorites}
-              </span>
-            )}
-            <span className="text-xs">Favoritos</span>
+          <Link href="/crear" className="flex flex-col items-center">
+            <FaPlusSquare className="text-xl" />
+            <span className="text-xs">Crear</span>
           </Link>
-
-          {/* Botón de carrito */}
-          <Link
-            href="/carro"
-            className="relative flex flex-col items-center hover:text-gray-400"
-          >
-            <FaShoppingCart className="text-xl" />
-            {totalItemsInCart > 0 && (
-              <span
-                className={`absolute top-0 right-0 ${tp.Color_Circulo_Numero_Iconos_Mobile} rounded-full text-xs w-4 h-4 flex items-center justify-center transform translate-x-1/4 -translate-y-1/2`}
-              >
-                {totalItemsInCart}
-              </span>
-            )}
-            <span className="text-xs">Carrito</span>
+          <Link href="/notificaciones" className="flex flex-col items-center relative">
+            <FaBell className="text-xl" />
+            <span className="text-xs">Alertas</span>
+            <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full text-xs w-4 h-4 flex items-center justify-center">
+              3
+            </span>
           </Link>
-
-          {/* Botón de perfil */}
-          <button
-            onClick={() => toggleDrawer(true)}
-            className="flex flex-col items-center"
-          >
-            <FaUser className="text-xl" />
+          <button onClick={() => setIsDrawerOpen(true)} className="flex flex-col items-center">
+            <FaUserCircle className="text-xl" />
             <span className="text-xs">Perfil</span>
           </button>
         </div>
       </nav>
-      <SideBar role="admin" open={isDrawerOpen} toggleDrawer={toggleDrawer} />
+
+      {/* Drawer lateral */}
+      <SideBar open={isDrawerOpen} toggleDrawer={setIsDrawerOpen} />
     </div>
   );
 };

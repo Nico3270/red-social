@@ -1,49 +1,42 @@
 "use client";
 
-import { TopMenu, TopMenuMobile } from "@/ui";
+import LayoutDashboardComponent from "@/ui/components/dashboard/perfil/LayoutDashboardComponent";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
 
-export default function RestaurantLayout({
+
+export default function DashboardtLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [isMobile, setIsMobile] = useState(false);
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-
-    handleResize();
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
-
+  // Protección de ruta
   useEffect(() => {
     if (status === "loading") return;
-    if (status === "unauthenticated") {
-      router.push("/auth/login");
-    } else if (session && session.user.role !== "admin") {
-      router.push("/not_authorized");
-    }
+
+    if (status === "unauthenticated" || !session?.user) {
+      router.push("/"); // Redirige a la página principal
+    } else if (session.user.role !== "admin" && session.user.role !== "negocio") {
+  router.push("/not_authorized");
+}
   }, [session, status, router]);
 
+  // Loader
   if (status === "loading") {
-    return <p className="text-center mt-10">Cargando...</p>;
+    return (
+      <div className="min-h-screen flex justify-center items-center">
+        <span className="text-gray-600 animate-pulse text-lg">Cargando...</span>
+      </div>
+    );
   }
 
   return (
     <main className="bg-white min-h-screen">
-      {isMobile ? <TopMenuMobile /> : <TopMenu />}
-      <div className="mt-0">{children}</div>
+      <LayoutDashboardComponent>{children}</LayoutDashboardComponent>
     </main>
   );
 }

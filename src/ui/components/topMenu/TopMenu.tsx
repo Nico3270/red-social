@@ -1,126 +1,75 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import Link from "next/link";
-import { FaShoppingCart, FaHeart, FaUser } from "react-icons/fa";
 import Image from "next/image";
+import { useState } from "react";
+import { FaHome, FaCompass, FaPlusSquare, FaBell, FaUserCircle, FaSearch } from "react-icons/fa";
 import { SideBar } from "../side-bar/SideBar";
 import { MenuSectionsBar } from "../menu-section-bar/MenuSectionBar";
-import { SeccionesFont} from "@/config/fonts";
-import { useCartCatalogoStore } from "@/store/carro/carro-store";
-import { useFavoritesCatalogoStore } from "@/store/favoritos/favoritos-store";
-import { TopMenuConfig as tp } from "@/config/config";
-import { InfoEmpresa as empresa } from "@/config/config";
 
 export const TopMenu = () => {
-  const [hydrated, setHydrated] = useState(false);
-
-  useEffect(() => {
-    setHydrated(true);
-  }, []);
-
-  const totalItemsInCart = useCartCatalogoStore((state) => state.getTotalItems());
-  const totalFavorites = useFavoritesCatalogoStore((state) => state.getTotalItems());
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-
-  const toggleDrawer = (open: boolean) => {
-    setIsDrawerOpen(open);
-  };
-
-  // Renderizar un fallback si no está hidratado
-  if (!hydrated) {
-    return null;
-  }
+  const [searchTerm, setSearchTerm] = useState("");
+  const filteredProducts = []; // Placeholder para los resultados de búsqueda
 
   return (
-    <header
-    
-      className="py-2 shadow-lg sticky top-0 z-50 color-principal color-fondo-principal"
-    >
-      <div className="container mx-auto flex justify-between items-center px-4">
-        {/* Logo de la empresa */}
-        <div className="flex items-center">
-          <Link href="/">
-            <Image
-              src={empresa.imagenesPlaceholder.logoEmpresa}
-              alt={empresa.descripcion}
-              width={tp.widthLogo}
-              height={tp.heightLogo}
+    <header className="fixed top-0 w-full z-50 bg-white shadow-md border-b">
+      <div className="max-w-7xl mx-auto px-4 flex justify-between items-center h-20">
+        {/* Logo a la izquierda */}
+        <Link href="/" className="flex items-center">
+          <Image
+            src="/imgs/logo final-1.png"
+            alt="Logo MagiSurprise"
+            width={80}
+            height={80}
+            className="rounded-full"
+          />
+        </Link>
+
+        {/* Barra de búsqueda centrada */}
+        <div className="relative w-full max-w-lg mx-4 p-1">
+          <div className="flex items-center bg-white rounded-full shadow-md border border-gray-300 px-4 py-2">
+            <FaSearch className="text-gray-500" />
+            <input
+              type="text"
+              placeholder="Buscar productos..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full bg-transparent outline-none ml-3 text-gray-800"
             />
-          </Link>
-          <div className="ml-4 text-left">
-            <Link href="/">
-              <span
-                
-                className={`block text-xl font-bold leading-tight color-logos ${SeccionesFont.className}`}
-              >
-                {empresa.nombreCorto.parte1}
-              </span>
-              <span
-                
-                className={`block text-xl font-bold color-logos leading-tight ${SeccionesFont.className}`}
-              >
-                {empresa.nombreCorto.parte2}
-              </span>
-            </Link>
           </div>
+          
         </div>
 
-        {/* Enlaces de navegación */}
-        <nav className="space-x-8 hidden md:flex">
-          {tp.EnlacesNavegacionTopMenu.map((item) => (
-            <Link
-              key={item.section}
-              href={item.ruta}
-              className={` ${SeccionesFont.className} color-principal font-bold text-xl`}
-            >
-              {item.section} 
-            </Link>
-          ))}
-        </nav>
-
-        {/* Iconos */}
-        <div className="flex space-x-6 items-center">
-          <Link
-            href={totalItemsInCart === 0 ? "/empty" : "/carro"}
-            className="relative links"
-          >
-            <FaShoppingCart
-              
-              className="text-2xl color-iconos"
-            />
-            {totalItemsInCart > 0 && (
-              <span
-                className=
-                {`absolute top-0 right-0 numeros-iconos  font-bold rounded-full text-xs w-5 h-5 flex items-center justify-center transform translate-x-1/2 -translate-y-1/2`}
-              >
-                {totalItemsInCart}
-              </span>
-            )}
+        {/* Iconos de navegación alineados a la derecha */}
+        <nav className="flex items-center space-x-6 text-gray-700">
+          <Link href="/" className="flex flex-col items-center">
+            <FaHome className="text-2xl md:text-3xl hover:text-[#ff6b6b]" />
+            <span className="text-xs mt-1">Inicio</span>
           </Link>
-          <Link href="/favoritos" className="relative links">
-            <FaHeart
-              
-              className="text-2xl color-iconos"
-            />
-            {totalFavorites > 0 && (
-              <span
-                className={`absolute top-0 right-0 numeros-iconos  font-bold rounded-full text-xs w-5 h-5 flex items-center justify-center transform translate-x-1/2 -translate-y-1/2`}
-              >
-                {totalFavorites}
-              </span>
-            )}
+          <Link href="/explorar" className="flex flex-col items-center">
+            <FaCompass className="text-2xl md:text-3xl hover:text-[#ff6b6b]" />
+            <span className="text-xs mt-1">Explorar</span>
           </Link>
-          <button onClick={() => toggleDrawer(true)}>
-            <FaUser
-              
-              className="text-2xl color-iconos"
-            />
+          <Link href="/crear" className="flex flex-col items-center">
+            <FaPlusSquare className="text-2xl md:text-3xl hover:text-[#ff6b6b]" />
+            <span className="text-xs mt-1">Crear</span>
+          </Link>
+          <Link href="/notificaciones" className="flex flex-col items-center relative">
+            <FaBell className="text-2xl md:text-3xl hover:text-[#ff6b6b]" />
+            <span className="text-xs mt-1">Alertas</span>
+            <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full text-xs w-4 h-4 flex items-center justify-center">3</span>
+          </Link>
+          <button onClick={() => setIsDrawerOpen(true)} className="flex flex-col items-center">
+            <FaUserCircle className="text-2xl md:text-3xl hover:text-[#ff6b6b]" />
+            <span className="text-xs mt-1">Perfil</span>
           </button>
-        </div>
+        </nav>
       </div>
-      <SideBar open={isDrawerOpen} toggleDrawer={toggleDrawer}  />
-      <MenuSectionsBar />
+
+      {/* Drawer lateral */}
+      <SideBar open={isDrawerOpen} toggleDrawer={setIsDrawerOpen} />
+       <MenuSectionsBar />
     </header>
   );
 };

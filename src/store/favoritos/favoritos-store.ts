@@ -29,7 +29,7 @@ export const useFavoritesCatalogoStore = create<State>()(
       // Nueva función para calcular el precio total del carrito
     }),
     {
-      name: "favorites",
+      name: "favoritesSocial",
     } as PersistOptions<State>
   )
 );

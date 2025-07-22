@@ -64,7 +64,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${inter.className} bg-[#f8edeb]`}>
+      <body className={` bg-[#f8edeb]`}>
         <Provider>{children}</Provider>
       </body>
     </html>
