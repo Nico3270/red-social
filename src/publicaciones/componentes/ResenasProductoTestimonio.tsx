@@ -19,10 +19,12 @@ interface ResenasProductoProps {
     resenas: ResenaProductoTestimonio[];
 }
 
+
 export const ResenasProducto: React.FC<ResenasProductoProps> = ({ resenas }) => {
     const [selectedResena, setSelectedResena] = useState<ResenaProductoTestimonio | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
+    
 
     // Inicializar videoRefs con null para cada reseña al montar
     useEffect(() => {

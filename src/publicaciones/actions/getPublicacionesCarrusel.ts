@@ -102,10 +102,12 @@ export const getPublicacionesCarrusel = async (currentUserId?: string): Promise<
           },
         },
         interacciones: {
-          where: {
-            tipo: { in: ["REACCION", "COMENTARIO"] },
-            ...(currentUserId ? { usuarioId: currentUserId, tipo: "REACCION" } : {}),
-          },
+  where: {
+    OR: [
+      { tipo: "COMENTARIO" },
+      { tipo: "REACCION" }, // todas las reacciones
+    ],
+  },
           select: {
             id: true,
             tipo: true,

@@ -19,6 +19,7 @@ import "./socialMediaCarousel.css";
 import Interactions from "@/interacciones/componentes/Interactions";
 import Link from "next/link";
 import { EnhancedPublicacion } from "../interfaces/enhancedPublicacion.interface";
+import { titulo1 } from "@/config/fonts";
 
 
 interface Props {
@@ -30,7 +31,10 @@ const useMediaDimensions = (url: string, tipo: "IMAGEN" | "VIDEO") => {
   const [aspectRatio, setAspectRatio] = useState<number | null>(null);
 
   useEffect(() => {
-    if (!url) return;
+    if (!url) {
+      setAspectRatio(1); // Fallback si no hay URL
+      return;
+    }
 
     const loadDimensions = async () => {
       try {
@@ -39,7 +43,7 @@ const useMediaDimensions = (url: string, tipo: "IMAGEN" | "VIDEO") => {
           img.src = url;
           await new Promise((resolve, reject) => {
             img.onload = () => {
-              setAspectRatio(img.naturalWidth / img.naturalHeight);
+              setAspectRatio(img.naturalWidth / img.naturalHeight || 1);
               resolve(null);
             };
             img.onerror = () => {
@@ -49,11 +53,11 @@ const useMediaDimensions = (url: string, tipo: "IMAGEN" | "VIDEO") => {
           });
         } else if (tipo === "VIDEO") {
           const video = document.createElement("video");
-          video.src = url + "#t=0.1"; // Añadir fragmento para evitar conflictos con el video principal
-          video.muted = true; // Evitar problemas de políticas de autoplay
+          video.src = url + "#t=0.1";
+          video.muted = true;
           await new Promise((resolve, reject) => {
             video.onloadedmetadata = () => {
-              setAspectRatio(video.videoWidth / video.videoHeight);
+              setAspectRatio(video.videoWidth / video.videoHeight || 9 / 16);
               resolve(null);
             };
             video.onerror = () => {
@@ -61,17 +65,18 @@ const useMediaDimensions = (url: string, tipo: "IMAGEN" | "VIDEO") => {
               reject(new Error("Error cargando video"));
             };
           });
-          video.remove(); // Limpiar explícitamente
+          video.remove();
         }
       } catch (error) {
-        console.error("Error cargando dimensiones:", error);
-        setAspectRatio(1); // Fallback
+        if (process.env.NODE_ENV === "development") {
+          console.error("Error cargando dimensiones:", error);
+        }
+        setAspectRatio(tipo === "VIDEO" ? 9 / 16 : 1); // Fallback según tipo
       }
     };
 
     loadDimensions();
     return () => {
-      // Limpieza para evitar referencias persistentes
       setAspectRatio(null);
     };
   }, [url, tipo]);
@@ -145,7 +150,7 @@ export const SocialMediaCarousel: React.FC<Props> = ({ publicacion }) => {
         <div className="flex-1">
           <Link
             href={`/perfil/${publicacion.negocio?.slug || publicacion.usuario.id}`}
-            className="text-gray-900 font-medium hover:underline"
+            className={`font-semibold text-red-800 hover:text-blue-600 transition-colors duration-200 cursor-pointer ${titulo1.className}`}
           >
             {publicacion.negocio?.nombre || `${publicacion.usuario.nombre} ${publicacion.usuario.apellido}`}
           </Link>
@@ -156,7 +161,7 @@ export const SocialMediaCarousel: React.FC<Props> = ({ publicacion }) => {
         </div>
       </div>
 
-       {/* Descripción */}
+      {/* Descripción */}
       {publicacion.descripcion && (
         <div className="px-4 pt-2 pb-4 text-[18px] text-gray-800 leading-snug">
           <div
@@ -250,9 +255,33 @@ export const SocialMediaCarousel: React.FC<Props> = ({ publicacion }) => {
             </div>
           )}
         </Swiper>
+        {/* Botones personalizados */}
+        {multimedia.length > 1 && (
+          <>
+            <button
+              onClick={() => swiperRef.current?.slidePrev()}
+              className="absolute top-1/2 left-3 z-10 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 shadow-md transition"
+              aria-label="Anterior"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-gray-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <button
+              onClick={() => swiperRef.current?.slideNext()}
+              className="absolute top-1/2 right-3 z-10 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 shadow-md transition"
+              aria-label="Siguiente"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-gray-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </>
+        )}
+
       </div>
 
-     
+
 
       {/* Interacciones */}
       <Interactions

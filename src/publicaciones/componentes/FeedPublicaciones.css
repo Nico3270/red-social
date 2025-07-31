@@ -1,0 +1,23 @@
+.masonry-container {
+    column-count: 3; /* 3 columnas por defecto */
+    column-gap: 16px; /* Espacio entre columnas */
+    margin-bottom: 16px;
+  }
+  
+  .masonry-container > * {
+    break-inside: avoid; /* Evita que un elemento se divida entre columnas */
+    margin-bottom: 16px; /* Espacio entre elementos */
+  }
+  
+  /* Media queries para responsividad */
+  @media (max-width: 1100px) {
+    .masonry-container {
+      column-count: 2;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .masonry-container {
+      column-count: 1;
+    }
+  }

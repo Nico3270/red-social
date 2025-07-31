@@ -8,6 +8,9 @@ import { es } from "date-fns/locale";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { postInteraccionPublicacion } from "@/publicaciones/actions/postInteraccionPublicacion";
+import Link from "next/link";
+import { usePublicacionModalStore } from "@/store/publicacionModal/publicacionModalStore";
+
 
 interface InteractionsProps {
   publicacionId: string;
@@ -46,9 +49,9 @@ const reactionIcons: Record<"LIKE" | "LOVE" | "WOW" | "SAD" | "ANGRY", JSX.Eleme
 const reactionLabels: Record<"LIKE" | "LOVE" | "WOW" | "SAD" | "ANGRY", string> = {
   LIKE: "Me gusta",
   LOVE: "Me encanta",
-  WOW: "Wow",
-  SAD: "Triste",
-  ANGRY: "Enojado",
+  WOW: "Me sorprende",
+  SAD: "Me entristece",
+  ANGRY: "Me enoja",
 };
 
 const Interactions: React.FC<InteractionsProps> = ({
@@ -59,10 +62,10 @@ const Interactions: React.FC<InteractionsProps> = ({
   numCompartidos,
   userReaction,
   comments,
-  isAuthenticated = true,
   onInteraction,
 }) => {
   const { data: session } = useSession();
+  const isAuthenticated = !!session?.user;
   const [likes, setLikes] = useState(numLikes);
   const [currentReaction, setCurrentReaction] = useState(userReaction?.tipo || null);
   const [showReactionMenu, setShowReactionMenu] = useState(false);
@@ -71,6 +74,9 @@ const Interactions: React.FC<InteractionsProps> = ({
   const [isLongPressing, setIsLongPressing] = useState(false);
   const reactionTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const reactionMenuRef = useRef<HTMLDivElement>(null);
+
+  // Obtener la función openModal del store
+  const { openModal } = usePublicacionModalStore();
 
   // Manejar clics fuera del menú de reacciones
   useEffect(() => {
@@ -317,17 +323,31 @@ const Interactions: React.FC<InteractionsProps> = ({
               className="flex items-center gap-1 bg-gray-100 rounded-full px-2 py-1 text-sm text-gray-700"
             >
               {/* Mostrar hasta 3 iconos de reacciones comunes */}
-              <div className="flex -space-x-1">
-                <motion.span initial={{ scale: 0.8 }} animate={{ scale: 1 }} className="inline-block">
-                  {reactionIcons.LIKE}
-                </motion.span>
+              <div className="flex items-center gap-1">
+                {likes > 0 && (
+                  <motion.span
+                    initial={{ scale: 0.8 }}
+                    animate={{ scale: 1 }}
+                    className="inline-flex items-center justify-center bg-white rounded-full w-6 h-6"
+                  >
+                    {reactionIcons.LIKE}
+                  </motion.span>
+                )}
                 {likes > 1 && (
-                  <motion.span initial={{ scale: 0.8 }} animate={{ scale: 1 }} className="inline-block">
+                  <motion.span
+                    initial={{ scale: 0.8 }}
+                    animate={{ scale: 1 }}
+                    className="inline-flex items-center justify-center bg-white rounded-full w-6 h-6"
+                  >
                     {reactionIcons.LOVE}
                   </motion.span>
                 )}
                 {likes > 2 && (
-                  <motion.span initial={{ scale: 0.8 }} animate={{ scale: 1 }} className="inline-block">
+                  <motion.span
+                    initial={{ scale: 0.8 }}
+                    animate={{ scale: 1 }}
+                    className="inline-flex items-center justify-center bg-white rounded-full w-6 h-6"
+                  >
                     {reactionIcons.WOW}
                   </motion.span>
                 )}
@@ -432,9 +452,9 @@ const Interactions: React.FC<InteractionsProps> = ({
 
       {/* Lista de comentarios */}
       {localComments.length > 0 && (
-        <div className="mb-4">
+        <div className="mb-2">
           {localComments.slice(0, 3).map((comment) => (
-            <div key={comment.id} className="flex gap-3 mb-3">
+            <div key={comment.id} className="flex gap-3 mb-1">
               <div className="relative w-8 h-8 rounded-full overflow-hidden">
                 <Image
                   src={comment.usuario.fotoPerfil || "/default-profile.png"}
@@ -445,12 +465,12 @@ const Interactions: React.FC<InteractionsProps> = ({
               </div>
               <div className="flex-1">
                 <div className="bg-gray-100 rounded-lg p-2">
-                  <a
+                  <Link
                     href={`/perfil/${comment.usuario.id}`}
                     className="text-sm font-medium text-gray-900 hover:underline"
                   >
                     {comment.usuario.nombre} {comment.usuario.apellido}
-                  </a>
+                  </Link>
                   <p className="text-sm text-gray-700">{comment.contenido}</p>
                 </div>
                 <span className="text-xs text-gray-500">
@@ -461,6 +481,7 @@ const Interactions: React.FC<InteractionsProps> = ({
           ))}
           {localComments.length > 3 && (
             <button
+              onClick={() => openModal(publicacionId)}
               className="text-sm text-blue-500 hover:underline"
               aria-label="Ver más comentarios"
             >
@@ -486,6 +507,7 @@ const Interactions: React.FC<InteractionsProps> = ({
             type="text"
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
+            onFocus={() => openModal(publicacionId)}
             placeholder="Escribe un comentario..."
             className="flex-1 p-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
             aria-label="Escribe un comentario"

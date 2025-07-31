@@ -2,20 +2,20 @@
 
 import prisma from "@/lib/prisma";
 import { PublicacionTipo } from "@prisma/client";
-import { Publicaciones } from "../interfaces/publicaciones.interface";
-
+import { EnhancedPublicacion } from "../interfaces/enhancedPublicacion.interface";
 
 interface Props {
   slug: string;
   tipo?: PublicacionTipo;
   skip?: number;
   take?: number;
+  userId?: string; // ID del usuario autenticado para verificar reacciones
 }
 
 interface PublicacionesResult {
   ok: boolean;
   message: string;
-  publicaciones: Publicaciones[];
+  publicaciones: EnhancedPublicacion[];
 }
 
 export const getPublicacionesNegocio = async ({
@@ -23,6 +23,7 @@ export const getPublicacionesNegocio = async ({
   tipo,
   skip = 0,
   take = 10,
+  userId,
 }: Props): Promise<PublicacionesResult> => {
   // Validate slug
   if (!slug || !/^[a-z0-9-]+$/i.test(slug)) {
@@ -46,6 +47,8 @@ export const getPublicacionesNegocio = async ({
           select: {
             id: true,
             nombre: true,
+            apellido: true, // Requerido por User
+            username: true, // Requerido por User
             fotoPerfil: true,
           },
         },
@@ -67,21 +70,13 @@ export const getPublicacionesNegocio = async ({
         tipo: tipo,
       },
       include: {
-        multimedia: true,
-        productosEnPublicacion: {
+        multimedia: {
           select: {
-            producto: {
-              select: {
-                id: true,
-                nombre: true,
-                precio: true,
-                slug: true,
-                imagenes: {
-                  take: 1,
-                  select: { url: true },
-                },
-              },
-            },
+            id: true,
+            url: true,
+            tipo: true,
+            formato: true,
+            orden: true,
           },
         },
         interacciones: {
@@ -91,7 +86,10 @@ export const getPublicacionesNegocio = async ({
           include: {
             usuario: {
               select: {
+                id: true,
                 nombre: true,
+                apellido: true, // Requerido por User
+                username: true, // Requerido por User
                 fotoPerfil: true,
               },
             },
@@ -101,6 +99,8 @@ export const getPublicacionesNegocio = async ({
           select: {
             id: true,
             nombre: true,
+            apellido: true, // Requerido por User
+            username: true, // Requerido por User
             fotoPerfil: true,
           },
         },
@@ -109,43 +109,78 @@ export const getPublicacionesNegocio = async ({
       take,
     });
 
-    // Transform the data to match the Publicaciones interface
-    const formattedPublicaciones: Publicaciones[] = publicaciones.map((pub) => ({
-      id: pub.id,
-      usuarioId: pub.usuarioId, // String, requerido por el esquema
-      negocioId: pub.negocioId,
-      tipo: pub.tipo,
-      titulo: pub.titulo,
-      descripcion: pub.descripcion,
-      createdAt: pub.createdAt,
-      updatedAt: pub.updatedAt,
-      multimedia: pub.multimedia,
-      productos: pub.productosEnPublicacion.map((pp) => ({
-        id: pp.producto.id,
-        nombre: pp.producto.nombre,
-        precio: pp.producto.precio,
-        imagen: pp.producto.imagenes[0]?.url ?? null,
-        slug: pp.producto.slug,
-      })),
-      numLikes: pub.numLikes,
-      numComentarios: pub.numComentarios,
-      numCompartidos: pub.numCompartidos,
-      negocio: {
-        id: negocio.id,
-        nombre: negocio.nombre,
-        slug: negocio.slug,
-        imagenPerfil: negocio.fotoPerfil,
-      },
-      comentarios: pub.interacciones.map((interaccion) => ({
-        id: interaccion.id,
-        contenido: interaccion.contenido ?? "",
-        usuarioId: interaccion.usuarioId, // String, requerido por el esquema
-        usuarioNombre: interaccion.usuario.nombre,
-        createdAt: interaccion.createdAt,
-        usuarioFotoPerfil: interaccion.usuario.fotoPerfil ?? undefined, // Convertir null a undefined
-      })),
-      isLiked: false, // Default to false, as interactions are handled client-side
-    }));
+    // Fetch user reactions if userId is provided
+    const userReactions = userId
+      ? await prisma.interaccion.findMany({
+          where: {
+            usuarioId: userId,
+            publicacionId: { in: publicaciones.map((pub) => pub.id) },
+            
+          },
+          select: {
+            publicacionId: true,
+            tipo: true,
+            id: true,
+          },
+        })
+      : [];
+
+    // Transform the data to match the EnhancedPublicacion interface
+    const formattedPublicaciones: EnhancedPublicacion[] = publicaciones.map((pub) => {
+      const userReaction = userReactions.find((reaction) => reaction.publicacionId === pub.id) || null;
+
+      return {
+        id: pub.id,
+        usuario: {
+          id: pub.usuario.id,
+          nombre: pub.usuario.nombre,
+          apellido: pub.usuario.apellido ?? "", // Fallback si apellido es null
+          username: pub.usuario.username ?? "", // Fallback si username es null
+          fotoPerfil: pub.usuario.fotoPerfil ?? undefined,
+        },
+        negocio: {
+          id: negocio.id,
+          nombre: negocio.nombre,
+          slug: negocio.slug,
+          fotoPerfil: negocio.fotoPerfil ?? undefined,
+        },
+        tipo: pub.tipo,
+        titulo: pub.titulo ?? undefined,
+        descripcion: pub.descripcion ?? undefined,
+        multimedia: pub.multimedia.map((media) => ({
+          id: media.id,
+          url: media.url,
+          tipo: media.tipo,
+          formato: media.formato ?? undefined,
+          orden: media.orden,
+        })),
+        visibilidad: pub.visibilidad ?? "PUBLICA", // Fallback si visibilidad es null
+        createdAt: pub.createdAt.toISOString(),
+        numLikes: pub.numLikes,
+        numComentarios: pub.numComentarios,
+        numCompartidos: pub.numCompartidos,
+        userReaction: userReaction
+          ? {
+              id: userReaction.id,
+              tipo: userReaction.tipo as "LIKE" | "LOVE" | "WOW" | "SAD" | "ANGRY",
+            }
+          : null,
+        comments: pub.interacciones.map((interaccion) => ({
+          id: interaccion.id,
+          contenido: interaccion.contenido ?? "",
+          createdAt: interaccion.createdAt.toISOString(),
+          usuario: {
+            id: interaccion.usuario.id,
+            nombre: interaccion.usuario.nombre,
+            apellido: interaccion.usuario.apellido ?? "", // Fallback si apellido es null
+            username: interaccion.usuario.username ?? "", // Fallback si username es null
+            fotoPerfil: interaccion.usuario.fotoPerfil ?? undefined,
+          },
+        })),
+        // isAuthenticated: !!userId, // true si userId está presente
+        // onInteraction se deja como undefined ya que es una función y no se puede serializar
+      };
+    });
 
     return {
       ok: true,

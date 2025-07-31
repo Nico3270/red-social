@@ -151,7 +151,7 @@ export const CompletePerfil = ({ informacionNegocio }: Props) => {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { data: session, update } = useSession();
-  const id = session?.user?.id;
+
 
   const allCities = useMemo(
     () => colombia.flatMap((d) => d.ciudades.map((ciudad) => `${ciudad} - ${d.departamento}`)),
@@ -385,7 +385,7 @@ imagenPortada: imagenPortadaNormalizada || undefined,
         await update({ role: "negocio" });
       }
 
-      const NewSlug = response.negocio?.slugNegocio || data.slugNegocio;
+      const NewSlug =  data.slugNegocio;
 
 
       // Mostrar mensaje de éxito y redirigir

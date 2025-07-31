@@ -22,7 +22,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { SiGooglemaps } from "react-icons/si";
 import { ShowTestimonioPublicacion } from "@/publicaciones/componentes/ShowTestimonioPublicacion";
-import { Publicaciones } from "@/publicaciones/interfaces/publicaciones.interface";
+import { EnhancedPublicacion } from "@/publicaciones/interfaces/enhancedPublicacion.interface";
+import FeedPublicaciones from "@/publicaciones/componentes/FeedPublicaciones";
 
 
 interface InformacionInicialNegocio {
@@ -70,7 +71,7 @@ export interface Product {
 interface Props {
   activeTabComponent: "Publicaciones" | "Productos" | "Negocio";
   productos?: ProductRedSocial[];
-  publicaciones?: Publicaciones[];
+  publicaciones?: EnhancedPublicacion[];
   informacionNegocio?: InformacionInicialNegocio;
   seccionesProductos?: { id: string; nombre: string; slug: string };
 }
@@ -296,13 +297,27 @@ export default function PerfilUsuarioHeader({
           {activeTab === "Publicaciones" && (
             <div className="flex flex-col items-center gap-3 text-gray-700 text-base sm:text-lg">
               <FaRegNewspaper className="text-blue-600 text-xl" />
-              {publicaciones?.length ? (
+              {/* {publicaciones?.length ? (
                 publicaciones.map((pub) => (
                   <ShowTestimonioPublicacion key={pub.id} publicacion={pub} />
                 ))
               ) : (
                 <p>No hay publicaciones.</p>
-              )}
+              )} */}
+              {publicaciones && publicaciones.length > 0 ? (
+      <FeedPublicaciones
+        publicaciones={publicaciones}
+        
+        widgets={[
+          { id: "widget-1", titulo: "Oferta Especial", contenido: "¡Descubre nuestras promociones!" },
+          { id: "widget-2", titulo: "Publicidad", contenido: "Espacio para anuncios." },
+        ]}
+      />
+    ) : (
+      <p className="text-gray-600 text-sm sm:text-base">
+        No hay publicaciones disponibles.
+      </p>
+    )}
             </div>
           )}
           {activeTab === "Productos" && (
