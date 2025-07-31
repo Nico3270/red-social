@@ -4,8 +4,6 @@ import { ProductRedSocial } from "@/interfaces/productRedSocial.interface";
 import prisma from "@/lib/prisma";
 
 
-
-
 interface ProductosNegocioBySlug {
     ok: boolean;
     products?: ProductRedSocial[];

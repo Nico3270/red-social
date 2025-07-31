@@ -68,7 +68,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         <div>
           <Link href={`/${categorySlug}/${sectionSlug}/${product.slug}`} className="block">
             <h3
-              className={`text-xl font-extrabold text-gray-900 ${tituloCard.className} transition duration-300 hover:text-blue-700`}
+              className={`text-xl font-extrabold text-red-900 ${tituloCard.className} transition duration-300 hover:text-blue-700`}
               style={{ textShadow: "0.5px 0.5px 1px rgba(0, 0, 0, 0.1)" }}
             >
               {product.nombre}

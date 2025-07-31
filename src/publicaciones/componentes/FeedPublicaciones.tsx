@@ -1,18 +1,20 @@
 "use client";
 
-import React, { useState, useCallback, memo, useMemo } from "react";
+import React, { useState, useCallback, useMemo, useRef, useEffect, memo } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { FaFilter, FaStar } from "react-icons/fa";
-import { useStore } from "zustand"; // Elimina { shallow }
+import useSWRInfinite from "swr/infinite";
 import { ShowTestimonioPublicacion } from "@/publicaciones/componentes/ShowTestimonioPublicacion";
 import { SocialMediaCarousel } from "@/publicaciones/componentes/SocialMediaPublicacion";
-import { EnhancedPublicacion } from "@/publicaciones/interfaces/enhancedPublicacion.interface";
+import { EnhancedPublicacion, Media } from "@/publicaciones/interfaces/enhancedPublicacion.interface";
+
 import clsx from "clsx";
-import "./FeedPublicaciones.css"; // Asegúrate de que la ruta sea correcta
-import { State, usePublicacionModalStore } from "@/store/publicacionModal/publicacionModalStore";
+import "./FeedPublicaciones.css";
+import { usePublicacionModalStore } from "@/store/publicacionModal/publicacionModalStore";
 import PublicationModal from "./PublicationModal";
+import { PublicacionesResult } from "@/app/api/publicaciones/[slug]/route";
 
 interface ProductDestacado {
   id: string;
@@ -85,30 +87,60 @@ const ProductosDestacados: React.FC<{ productos: ProductDestacado[] }> = ({ prod
 );
 
 const FeedPublicaciones: React.FC<FeedPublicacionesProps> = ({
-  publicaciones,
+  publicaciones: initialPublicaciones,
   productosDestacados = [],
   widgets = [],
 }) => {
   const [filtro, setFiltro] = useState<"Recientes" | "Populares" | "Videos" | "Carruseles">("Recientes");
+  const observerRef = useRef<HTMLDivElement>(null);
+  const [hasReachedEnd, setHasReachedEnd] = useState(false); // Nueva bandera para el final
 
-  // Suscripción al store usando selectores individuales
-  const isModalOpen = usePublicacionModalStore((state) => state.isModalOpen);
-  const publicacionId = usePublicacionModalStore((state) => state.publicacionId);
-
-  // Obtener la publicación seleccionada
+  const { isModalOpen, publicacionId } = usePublicacionModalStore();
   const selectedPublication = useMemo(() => {
-    return publicaciones.find((pub) => pub.id === publicacionId) || null;
-  }, [publicaciones, publicacionId]);
+    return initialPublicaciones.find((pub) => pub.id === publicacionId) || null;
+  }, [initialPublicaciones, publicacionId]);
 
-  const publicacionesFiltradas = useCallback(() => {
+  const handleCloseModal = useCallback(() => {
+    const { closeModal } = usePublicacionModalStore.getState();
+    closeModal();
+  }, []);
+
+  const getKey = (pageIndex: number, previousPageData: PublicacionesResult | null) => {
+    if (previousPageData && !previousPageData.publicaciones.length) {
+      setHasReachedEnd(true); // Marca el final cuando no hay más publicaciones
+      return null;
+    }
+    const slug = initialPublicaciones[0]?.negocio?.slug;
+    if (!slug) return null;
+    return `/api/publicaciones/${slug}?skip=${pageIndex * 10}&take=10`;
+  };
+
+  const fetcher = (url: string) => fetch(url).then((res) => res.json());
+
+  const { data, size, setSize, isLoading, isValidating } = useSWRInfinite<PublicacionesResult>(
+    getKey,
+    fetcher,
+    {
+      initialSize: 1,
+      revalidateOnFocus: false,
+    }
+  );
+
+  const publicaciones = useMemo(() => {
+    return data
+      ? data.flatMap((page) => page.publicaciones)
+      : initialPublicaciones;
+  }, [data, initialPublicaciones]);
+
+  const publicacionesFiltradas = useMemo(() => {
     let filtered = [...publicaciones];
     switch (filtro) {
       case "Populares":
-        filtered.sort((a, b) => b.numLikes + b.numComentarios - (a.numLikes + a.numComentarios));
+        filtered.sort((a, b) => (b.numLikes || 0) + (b.numComentarios || 0) - ((a.numLikes || 0) + (a.numComentarios || 0)));
         break;
       case "Videos":
         filtered = filtered.filter((pub) =>
-          pub.multimedia.some((media) => media.tipo === "VIDEO")
+          pub.multimedia.some((media: Media) => media.tipo === "VIDEO")
         );
         break;
       case "Carruseles":
@@ -120,16 +152,31 @@ const FeedPublicaciones: React.FC<FeedPublicacionesProps> = ({
     return filtered;
   }, [filtro, publicaciones]);
 
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !isLoading && !isValidating && !hasReachedEnd) {
+          setSize((prev) => prev + 1);
+        }
+      },
+      { threshold: 1.0 }
+    );
+
+    if (observerRef.current) {
+      observer.observe(observerRef.current);
+    }
+
+    return () => {
+      if (observerRef.current) {
+        observer.unobserve(observerRef.current);
+      }
+    };
+  }, [isLoading, isValidating, setSize, hasReachedEnd]);
+
   const renderPublicacion = (publicacion: EnhancedPublicacion) => {
     const Component = componentMap[publicacion.tipo] || ShowTestimonioPublicacion;
     return <Component key={publicacion.id} publicacion={publicacion} />;
   };
-
-  // Función para cerrar el modal y actualizar el store
-  const handleCloseModal = useCallback(() => {
-    const { closeModal } = usePublicacionModalStore.getState();
-    closeModal();
-  }, []);
 
   return (
     <div className="w-full px-4 sm:px-6 lg:px-8 py-6">
@@ -155,7 +202,7 @@ const FeedPublicaciones: React.FC<FeedPublicacionesProps> = ({
       </div>
 
       <div className="flex-1 masonry-container">
-        {publicacionesFiltradas()
+        {publicacionesFiltradas
           .filter((pub) => pub.id === "fijada")
           .map((pub) => (
             <motion.div
@@ -172,7 +219,7 @@ const FeedPublicaciones: React.FC<FeedPublicacionesProps> = ({
             </motion.div>
           ))}
 
-        {publicacionesFiltradas()
+        {publicacionesFiltradas
           .filter((pub) => pub.id !== "fijada")
           .map((pub) => renderPublicacion(pub))}
 
@@ -184,40 +231,20 @@ const FeedPublicaciones: React.FC<FeedPublicacionesProps> = ({
             contenido={widget.contenido}
           />
         ))}
+
+        {productosDestacados.length > 0 && (
+          <ProductosDestacados productos={productosDestacados} />
+        )}
+
+        <div ref={observerRef}>
+          {isLoading || isValidating ? (
+            <p className="text-center text-gray-600">Cargando más publicaciones...</p>
+          ) : hasReachedEnd ? (
+            <p className="text-center text-gray-600">No hay más publicaciones que mostrar.</p>
+          ) : null}
+        </div>
       </div>
 
-      {productosDestacados.length > 0 && (
-        <div className="lg:hidden mt-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-            <FaStar className="text-yellow-500" />
-            Productos Destacados
-          </h3>
-          <div className="flex overflow-x-auto gap-4 pb-4">
-            {productosDestacados.map((producto) => (
-              <Link
-                key={producto.id}
-                href={`/producto/${producto.slug}`}
-                className="w-40 shrink-0 bg-white rounded-xl shadow-md p-3 hover:shadow-lg transition-shadow"
-              >
-                <div className="relative w-full h-24 mb-2">
-                  <Image
-                    src={producto.imagen || "/placeholder-image.jpg"}
-                    alt={producto.nombre}
-                    fill
-                    className="object-cover rounded-md"
-                    sizes="160px"
-                    loading="lazy"
-                  />
-                </div>
-                <p className="text-sm font-medium text-gray-900 truncate">{producto.nombre}</p>
-                <p className="text-sm text-gray-600">${producto.precio.toFixed(2)}</p>
-              </Link>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Renderizado del modal */}
       <PublicationModal
         isOpen={isModalOpen}
         publication={selectedPublication}

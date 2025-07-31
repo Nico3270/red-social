@@ -7,7 +7,7 @@ interface User {
   username: string;
 }
 
-interface Media {
+export interface Media {
   id: string;
   url: string;
   tipo: "IMAGEN" | "VIDEO";

@@ -1,9 +1,31 @@
-
-
-import prisma from "@/lib/prisma";
+// src/types/api.ts
+import { ProductRedSocial } from "@/interfaces/productRedSocial.interface";
+import { EnhancedPublicacion } from "@/publicaciones/interfaces/enhancedPublicacion.interface";
+import { PublicacionTipo } from "@prisma/client";
 import { EstadoNegocio } from "@prisma/client";
+import prisma from "@/lib/prisma";
 
-interface InformacionInicialNegocio {
+export interface ProductosNegocioBySlug {
+  ok: boolean;
+  products?: ProductRedSocial[];
+  message?: string;
+}
+
+export interface PublicacionesResult {
+  ok: boolean;
+  message: string;
+  publicaciones: EnhancedPublicacion[];
+}
+
+export interface PublicacionesNegocioProps {
+  slug: string;
+  tipo?: PublicacionTipo;
+  skip?: number;
+  take?: number;
+  userId?: string; // ID del usuario autenticado para verificar reacciones
+}
+
+export interface InformacionInicialNegocio {
   nombreNegocio: string;
   slugNegocio: string;
   descripcionNegocio: string;
@@ -28,14 +50,14 @@ interface InformacionInicialNegocio {
   estadoNegocio: EstadoNegocio;
 }
 
-interface DatosPerfilNegocio {
+export interface DatosPerfilNegocio {
   ok: boolean;
   message: string;
   negocio?: InformacionInicialNegocio;
 }
 
-export const getInfoPerfilBySlugNegocio = async (slugNegocio: string):Promise<DatosPerfilNegocio> => {
-  console.log("Datos de negocio");
+
+export const getInfoPerfilBySlugNegocio = async (slugNegocio: string): Promise<DatosPerfilNegocio> => {
   try {
     const usuarioId = await prisma.negocio.findUnique({
       where: {
@@ -50,10 +72,9 @@ export const getInfoPerfilBySlugNegocio = async (slugNegocio: string):Promise<Da
       return {
         ok: false,
         message: "Negocio no encontrado",
-      } as DatosPerfilNegocio;
+      };
     }
-    
-    console.log("Se encontro negocio");
+
     const result = await prisma.usuario.findUnique({
       where: {
         id: usuarioId.usuarioId,
@@ -92,21 +113,18 @@ export const getInfoPerfilBySlugNegocio = async (slugNegocio: string):Promise<Da
               },
             },
             estado: true,
-          }, // 👈 Cierre correcto del select de negocio
+          },
         },
-      }, // 👈 Cierre correcto del select general
-    }); // 👈 Cierre correcto de findUnique
+      },
+    });
 
-    // Verificar si se encontró el negocio
     if (!result || !result.negocio) {
       return {
         ok: false,
         message: "Negocio no encontrado",
-      } as DatosPerfilNegocio;
+      };
     }
 
-
-    // Transformar los datos del negocio para que cumplan con la interface InformacionInicialNegocio
     const negocioFormateado: InformacionInicialNegocio = {
       nombreNegocio: result.negocio.nombre || "",
       slugNegocio: result.negocio.slug || "",
@@ -130,19 +148,18 @@ export const getInfoPerfilBySlugNegocio = async (slugNegocio: string):Promise<Da
       categoriaIds: result.negocio.categorias.map((categoria) => categoria.categoryId) || [],
       seccionesIds: result.negocio.secciones.map((seccion) => seccion.sectionId) || [],
       estadoNegocio: result.negocio.estado || EstadoNegocio.activo,
-    }
+    };
+
     return {
       ok: true,
-      message: "Perfil del negocio editado correctamente",
+      message: "Perfil del negocio obtenido correctamente",
       negocio: negocioFormateado,
-    } as DatosPerfilNegocio;
-
+    };
   } catch (error) {
-    console.error("Error al editar el perfil del negocio:", error);
+    console.error("Error al obtener el perfil del negocio:", error);
     return {
       ok: false,
-      message: "Error al editar el perfil del negocio",
-    } as DatosPerfilNegocio;
+      message: "Error al obtener el perfil del negocio",
+    };
   }
 };
-

@@ -21,12 +21,11 @@ import { ProductGridWithSectionFilter } from "../sectonFilterBar/SectionFilterBa
 import Image from "next/image";
 import Link from "next/link";
 import { SiGooglemaps } from "react-icons/si";
-import { ShowTestimonioPublicacion } from "@/publicaciones/componentes/ShowTestimonioPublicacion";
 import { EnhancedPublicacion } from "@/publicaciones/interfaces/enhancedPublicacion.interface";
 import FeedPublicaciones from "@/publicaciones/componentes/FeedPublicaciones";
 
 
-interface InformacionInicialNegocio {
+export interface InformacionInicialNegocio {
   nombreNegocio: string;
   slugNegocio: string;
   descripcionNegocio: string;
