@@ -3,11 +3,15 @@ import { ProductRedSocial } from "@/interfaces/productRedSocial.interface";
 import prisma from "@/lib/prisma";
 
 
+
 export async function GET(
   req: NextRequest,
-  { params }: { params: { slug: string } }
+  context: { params: Promise<{ slug: string }> } // Ajuste en el tipo de params
 ) {
+  // Espera la resolución de params
+  const params = await context.params;
   const { slug } = params;
+
   const url = req.nextUrl;
   const skip = parseInt(url.searchParams.get("skip") || "0");
   const take = parseInt(url.searchParams.get("take") || "10");
@@ -71,8 +75,8 @@ export async function GET(
 
     if (!products || products.length === 0) {
       return NextResponse.json(
-        { ok: false, message: "No se encontraron productos para este negocio." },
-        { status: 404 }
+        { ok: true, products: [], message: "No hay más productos." },
+        { status: 200 }
       );
     }
 

@@ -1,37 +1,36 @@
-// src/types/api.ts
-import { ProductRedSocial } from "@/interfaces/productRedSocial.interface";
+import { NextRequest, NextResponse } from "next/server";
 import { EnhancedPublicacion } from "@/publicaciones/interfaces/enhancedPublicacion.interface";
-import { PublicacionTipo } from "@prisma/client";
+import { PublicacionTipo, InteraccionTipo } from "@prisma/client";
+import prisma from "@/lib/prisma";
 
-export interface ProductosNegocioBySlug {
-  ok: boolean;
-  products?: ProductRedSocial[];
-  message?: string;
+// Tipos existentes
+interface UserReaction {
+  publicacionId: string;
+  tipo: "LIKE" | "LOVE" | "WOW" | "SAD" | "ANGRY";
+  id: string;
 }
 
-export interface PublicacionesResult {
+interface PublicacionesNegocioProps {
+  slug: string;
+  tipo?: PublicacionTipo;
+  skip?: number;
+  take?: number;
+  userId?: string;
+}
+
+interface PublicacionesResult {
   ok: boolean;
   message: string;
   publicaciones: EnhancedPublicacion[];
 }
 
-export interface PublicacionesNegocioProps {
-  slug: string;
-  tipo?: PublicacionTipo;
-  skip?: number;
-  take?: number;
-  userId?: string; // ID del usuario autenticado para verificar reacciones
-}
-import { NextRequest, NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
-
-
-
 export async function GET(
   req: NextRequest,
-  { params }: { params: { slug: string } }
+  context: { params: Promise<{ slug: string }> }
 ) {
+  const params = await context.params;
   const { slug } = params;
+
   const url = req.nextUrl;
   const skip = parseInt(url.searchParams.get("skip") || "0");
   const take = parseInt(url.searchParams.get("take") || "10");
@@ -39,8 +38,8 @@ export async function GET(
   const userId = url.searchParams.get("userId") || undefined;
 
   const props: PublicacionesNegocioProps = { slug, tipo, skip, take, userId };
+  console.log("API: Request params:", props);
 
-  // Validate slug
   if (!slug || !/^[a-z0-9-]+$/i.test(slug)) {
     return NextResponse.json<PublicacionesResult>(
       {
@@ -53,7 +52,6 @@ export async function GET(
   }
 
   try {
-    // Find the business by slug
     const negocio = await prisma.negocio.findUnique({
       where: { slug },
       select: {
@@ -84,11 +82,11 @@ export async function GET(
       );
     }
 
-    // Fetch publications
     const publicaciones = await prisma.publicacion.findMany({
       where: {
         negocioId: negocio.id,
         tipo: tipo,
+        visibilidad: "PUBLICA", // Añadido para consistencia
       },
       include: {
         multimedia: {
@@ -126,28 +124,48 @@ export async function GET(
           },
         },
       },
+      orderBy: { createdAt: "desc" },
       skip,
       take,
     });
 
-    // Fetch user reactions if userId is provided
-    const userReactions = userId
-      ? await prisma.interaccion.findMany({
-          where: {
-            usuarioId: userId,
-            publicacionId: { in: publicaciones.map((pub) => pub.id) },
-          },
-          select: {
-            publicacionId: true,
-            tipo: true,
-            id: true,
-          },
-        })
-      : [];
+    console.log("API: Fetched publicaciones:", publicaciones.length);
+    console.log(
+      "API: Publicaciones details:",
+      publicaciones.map((pub) => ({
+        id: pub.id,
+        tipo: pub.tipo,
+        createdAt: pub.createdAt.toISOString(),
+      }))
+    );
 
-    // Transform the data
+    let userReactions: UserReaction[] = [];
+    if (userId) {
+      const rawReactions = await prisma.interaccion.findMany({
+        where: {
+          usuarioId: userId,
+          publicacionId: { in: publicaciones.map((pub) => pub.id) },
+          tipo: { in: ["LIKE", "LOVE", "WOW", "SAD", "ANGRY"] as unknown as InteraccionTipo[] },
+        },
+        select: {
+          publicacionId: true,
+          tipo: true,
+          id: true,
+        },
+      });
+      userReactions = rawReactions.map((reaction): UserReaction => {
+        const { publicacionId, tipo, id } = reaction;
+        if (!["LIKE", "LOVE", "WOW", "SAD", "ANGRY"].includes(tipo)) {
+          throw new Error(`Tipo de reacción inválido: ${tipo}`);
+        }
+        return { publicacionId, tipo: tipo as "LIKE" | "LOVE" | "WOW" | "SAD" | "ANGRY", id };
+      });
+    }
+
     const formattedPublicaciones: EnhancedPublicacion[] = publicaciones.map((pub) => {
-      const userReaction = userReactions.find((reaction) => reaction.publicacionId === pub.id) || null;
+      const userReaction = userId
+        ? userReactions.find((reaction) => reaction.publicacionId === pub.id) || null
+        : null;
 
       return {
         id: pub.id,
@@ -182,7 +200,7 @@ export async function GET(
         userReaction: userReaction
           ? {
               id: userReaction.id,
-              tipo: userReaction.tipo as "LIKE" | "LOVE" | "WOW" | "SAD" | "ANGRY",
+              tipo: userReaction.tipo,
             }
           : null,
         comments: pub.interacciones.map((interaccion) => ({
@@ -200,6 +218,7 @@ export async function GET(
       };
     });
 
+    console.log("API: Returning publicaciones:", formattedPublicaciones.length);
     return NextResponse.json<PublicacionesResult>(
       {
         ok: true,
@@ -209,7 +228,7 @@ export async function GET(
       { status: 200, headers: { "Cache-Control": "s-maxage=600, stale-while-revalidate" } }
     );
   } catch (error) {
-    console.error("Error fetching publicaciones:", error);
+    console.error("API: Error fetching publicaciones:", error);
     let message = "Error al obtener las publicaciones";
     if (error instanceof Error) {
       message = `Error al obtener las publicaciones: ${error.message}`;

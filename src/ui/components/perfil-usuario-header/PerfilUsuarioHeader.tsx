@@ -24,7 +24,6 @@ import { SiGooglemaps } from "react-icons/si";
 import { EnhancedPublicacion } from "@/publicaciones/interfaces/enhancedPublicacion.interface";
 import FeedPublicaciones from "@/publicaciones/componentes/FeedPublicaciones";
 
-
 export interface InformacionInicialNegocio {
   nombreNegocio: string;
   slugNegocio: string;
@@ -69,7 +68,7 @@ export interface Product {
 
 interface Props {
   activeTabComponent: "Publicaciones" | "Productos" | "Negocio";
-  productos?: ProductRedSocial[];
+  productos?: ProductRedSocial[]; // Mantendremos como entrada inicial
   publicaciones?: EnhancedPublicacion[];
   informacionNegocio?: InformacionInicialNegocio;
   seccionesProductos?: { id: string; nombre: string; slug: string };
@@ -131,7 +130,7 @@ export default function PerfilUsuarioHeader({
   ];
 
   return (
-    <div className="w-full bg-white rounded-b-3xl shadow-lg overflow-hidden">
+    <div className="w-full bg-white rounded-b-3xl shadow-lg overflow-auto">
       {/* Cover Image */}
       <div className="relative w-full h-48 sm:h-64 md:h-80 lg:h-96 bg-gray-200">
         <Image
@@ -296,27 +295,19 @@ export default function PerfilUsuarioHeader({
           {activeTab === "Publicaciones" && (
             <div className="flex flex-col items-center gap-3 text-gray-700 text-base sm:text-lg">
               <FaRegNewspaper className="text-blue-600 text-xl" />
-              {/* {publicaciones?.length ? (
-                publicaciones.map((pub) => (
-                  <ShowTestimonioPublicacion key={pub.id} publicacion={pub} />
-                ))
-              ) : (
-                <p>No hay publicaciones.</p>
-              )} */}
               {publicaciones && publicaciones.length > 0 ? (
-      <FeedPublicaciones
-        publicaciones={publicaciones}
-        
-        widgets={[
-          { id: "widget-1", titulo: "Oferta Especial", contenido: "¡Descubre nuestras promociones!" },
-          { id: "widget-2", titulo: "Publicidad", contenido: "Espacio para anuncios." },
-        ]}
-      />
-    ) : (
-      <p className="text-gray-600 text-sm sm:text-base">
-        No hay publicaciones disponibles.
-      </p>
-    )}
+                <FeedPublicaciones
+                  publicaciones={publicaciones}
+                  widgets={[
+                    { id: "widget-1", titulo: "Oferta Especial", contenido: "¡Descubre nuestras promociones!" },
+                    { id: "widget-2", titulo: "Publicidad", contenido: "Espacio para anuncios." },
+                  ]}
+                />
+              ) : (
+                <p className="text-gray-600 text-sm sm:text-base">
+                  No hay publicaciones disponibles.
+                </p>
+              )}
             </div>
           )}
           {activeTab === "Productos" && (
@@ -326,7 +317,7 @@ export default function PerfilUsuarioHeader({
                   No hay productos disponibles.
                 </p>
               ) : (
-                <ProductGridWithSectionFilter products={productos} />
+                <ProductGridWithSectionFilter initialProducts={productos} slug={informacionNegocio?.slugNegocio || ""} />
               )}
             </div>
           )}
