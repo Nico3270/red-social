@@ -13,7 +13,8 @@ import clsx from "clsx";
 import "./FeedPublicaciones.css";
 import { usePublicacionModalStore } from "@/store/publicacionModal/publicacionModalStore";
 import PublicationModal from "./PublicationModal";
-import { PublicacionesResult } from "@/app/api/publicaciones/[slug]/route";
+import { PublicacionesResult } from "@/actions/perfil/getInfoPerfilSlugNegocio";
+
 
 interface ProductDestacado {
   id: string;
@@ -97,7 +98,7 @@ const FeedPublicaciones: React.FC<FeedPublicacionesProps> = ({
   const [hasReachedEndLocal, setHasReachedEndLocal] = useState(false);
   const observer = useRef<IntersectionObserver | null>(null);
 
-  const { isModalOpen, publicacionId } = usePublicacionModalStore();
+  const { isModalOpen, publicacionId, updatedComments } = usePublicacionModalStore();
 
   // Log inicial para verificar initialPublicaciones
   useEffect(() => {
@@ -180,26 +181,44 @@ const FeedPublicaciones: React.FC<FeedPublicacionesProps> = ({
   }, [data]);
 
   const publicaciones = useMemo(() => {
-    const publicationMap = new Map<string, EnhancedPublicacion>();
+  const publicationMap = new Map<string, EnhancedPublicacion>();
+  
+  initialPublicaciones.forEach((pub) => {
+    const commentsFromStore = updatedComments[pub.id] || [];
+    const initialComments = pub.comments || [];
+    // Combinar comentarios y eliminar duplicados por id
+    const combinedComments = [...commentsFromStore, ...initialComments];
+    const uniqueComments = Array.from(new Map(combinedComments.map((c) => [c.id, c])).values());
+    // Ordenar por fecha descendente y tomar los últimos 3
+    const sortedComments = uniqueComments
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .slice(0, 3);
     
-    // console.log("Adding initial publicaciones:", initialPublicaciones.length);
-    initialPublicaciones.forEach((pub) => {
-      publicationMap.set(pub.id, pub);
+    publicationMap.set(pub.id, {
+      ...pub,
+      comments: sortedComments,
+      numComentarios: uniqueComments.length,
     });
+  });
 
-    // console.log("Adding dynamic publicaciones:", dynamicPublicaciones.length);
-    dynamicPublicaciones.forEach((pub) => {
-      publicationMap.set(pub.id, pub);
+  dynamicPublicaciones.forEach((pub) => {
+    const commentsFromStore = updatedComments[pub.id] || [];
+    const initialComments = pub.comments || [];
+    const combinedComments = [...commentsFromStore, ...initialComments];
+    const uniqueComments = Array.from(new Map(combinedComments.map((c) => [c.id, c])).values());
+    const sortedComments = uniqueComments
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .slice(0, 3);
+    
+    publicationMap.set(pub.id, {
+      ...pub,
+      comments: sortedComments,
+      numComentarios: uniqueComments.length,
     });
+  });
 
-    const allPublicaciones = Array.from(publicationMap.values());
-    // console.log(
-    //   "All publicaciones:",
-    //   allPublicaciones.map((pub) => ({ id: pub.id, tipo: pub.tipo, createdAt: pub.createdAt }))
-    // );
-    // console.log("Total publicaciones:", allPublicaciones.length);
-    return allPublicaciones;
-  }, [initialPublicaciones, dynamicPublicaciones]);
+  return Array.from(publicationMap.values());
+}, [initialPublicaciones, dynamicPublicaciones, updatedComments]);
 
   const selectedPublication = useMemo(() => {
     const found = publicaciones.find((pub) => pub.id === publicacionId);

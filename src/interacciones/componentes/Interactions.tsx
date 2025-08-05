@@ -12,6 +12,8 @@ import Link from "next/link";
 import { usePublicacionModalStore } from "@/store/publicacionModal/publicacionModalStore";
 
 
+
+
 interface InteractionsProps {
   publicacionId: string;
   slug?: string;
@@ -69,6 +71,7 @@ const Interactions: React.FC<InteractionsProps> = ({
   const [likes, setLikes] = useState(numLikes);
   const [currentReaction, setCurrentReaction] = useState(userReaction?.tipo || null);
   const [showReactionMenu, setShowReactionMenu] = useState(false);
+  const { updatedComments } = usePublicacionModalStore();
   const [localComments, setLocalComments] = useState(comments ?? []);
   const [newComment, setNewComment] = useState("");
   const [isLongPressing, setIsLongPressing] = useState(false);
@@ -76,7 +79,7 @@ const Interactions: React.FC<InteractionsProps> = ({
   const reactionMenuRef = useRef<HTMLDivElement>(null);
 
   // Obtener la función openModal del store
-  const { openModal } = usePublicacionModalStore();
+  const { openModal, addComment, updateComment } = usePublicacionModalStore();
 
   // Manejar clics fuera del menú de reacciones
   useEffect(() => {
@@ -98,6 +101,17 @@ const Interactions: React.FC<InteractionsProps> = ({
       document.removeEventListener("touchstart", handleClickOutside);
     };
   }, []);
+
+  // Sincronizar localComments con comments iniciales y updatedComments
+  useEffect(() => {
+    const commentsFromStore = updatedComments[publicacionId] || [];
+    const initialComments = comments || [];
+    const combined = [...commentsFromStore, ...initialComments];
+    const uniqueComments = Array.from(new Map(combined.map((c) => [c.id, c])).values());
+    setLocalComments(
+      uniqueComments.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    );
+  }, [comments, updatedComments, publicacionId]);
 
   // Manejar el clic en "Me gusta" o reacción
   const handleReaction = useCallback(
@@ -123,7 +137,7 @@ const Interactions: React.FC<InteractionsProps> = ({
           tipo: "REACCION",
           reaccionTipo: reaction,
         });
-
+1
         if (!result.ok) {
           throw new Error(result.message);
         }
@@ -148,6 +162,7 @@ const Interactions: React.FC<InteractionsProps> = ({
     },
     [isAuthenticated, session?.user?.id, publicacionId, slug, currentReaction, likes, onInteraction]
   );
+
 
   // Manejar quitar reacción
   const handleRemoveReaction = useCallback(async () => {
@@ -243,6 +258,7 @@ const Interactions: React.FC<InteractionsProps> = ({
 
       // Actualización optimista
       setLocalComments([optimisticComment, ...localComments]);
+      addComment(publicacionId, optimisticComment);
       setNewComment("");
 
       try {
@@ -258,29 +274,30 @@ const Interactions: React.FC<InteractionsProps> = ({
         }
 
         // Actualizar comentario con datos reales
+        const realComment = {
+          id: result.id!,
+          contenido: newComment,
+          createdAt: result.createdAt!.toISOString(),
+          usuario: {
+            id: session.user.id,
+            nombre: result.usuarioNombre || "Usuario",
+            apellido: result.usuarioApellido || "",
+            username: result.usuarioUsername || `${(result.usuarioNombre || "usuario").toLowerCase()}${result.usuarioApellido?.toLowerCase() || ""}`,
+            fotoPerfil: result.usuarioFotoPerfil,
+          },
+        };
+
         setLocalComments((prev) =>
           prev.map((c) =>
-            c.id === optimisticComment.id
-              ? {
-                  id: result.id!,
-                  contenido: newComment,
-                  createdAt: result.createdAt!.toISOString(),
-                  usuario: {
-                    id: session.user.id,
-                    nombre: result.usuarioNombre || "Usuario",
-                    apellido: result.usuarioApellido || "",
-                    username: result.usuarioUsername || `${(result.usuarioNombre || "usuario").toLowerCase()}${result.usuarioApellido?.toLowerCase() || ""}`,
-                    fotoPerfil: result.usuarioFotoPerfil,
-                  },
-                }
-              : c
-          )
+            c.id === optimisticComment.id ? realComment : c
+          ).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
         );
-
+        updateComment(publicacionId, optimisticComment.id, realComment);
         onInteraction?.("COMENTARIO", { comment: newComment });
       } catch (error) {
         // Revertir en caso de error
         setLocalComments(localComments.filter((c) => c.id !== optimisticComment.id));
+        addComment(publicacionId, optimisticComment); // Revertir también en el store
         console.warn("Error al guardar comentario:", error);
       }
     },
@@ -310,6 +327,8 @@ const Interactions: React.FC<InteractionsProps> = ({
       console.warn("Error al compartir:", error);
     }
   }, [isAuthenticated, session?.user?.id, publicacionId, slug, onInteraction]);
+
+
 
   return (
     <div className="w-full p-4 pt-6 border-t border-gray-100">

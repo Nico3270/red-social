@@ -3,6 +3,7 @@
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth.config";
 import { ReaccionTipo } from "@prisma/client";
+import { revalidatePath } from "next/cache"; // Importar revalidatePath
 
 interface PostInteraccionProps {
   publicacionId: string;
@@ -196,6 +197,11 @@ export const postInteraccionPublicacion = async ({
           data: { numComentarios: { increment: 1 } },
         }),
       ]);
+
+      // Invalidar el caché de la página del perfil del negocio
+      if (publicacion.negocio?.slug) {
+        revalidatePath(`/perfil/${publicacion.negocio.slug}`);
+      }
 
       return {
         ok: true,
