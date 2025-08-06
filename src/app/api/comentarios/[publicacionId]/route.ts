@@ -29,8 +29,24 @@ export async function GET(
   const { publicacionId } = params;
 
   const url = req.nextUrl;
-  const skip = parseInt(url.searchParams.get("skip") || "0");
-  const take = parseInt(url.searchParams.get("take") || "10");
+  const skipParam = url.searchParams.get("skip");
+  const takeParam = url.searchParams.get("take");
+
+  // Validar skip y take
+  const skip = skipParam ? parseInt(skipParam, 10) : 0;
+  const take = takeParam ? parseInt(takeParam, 10) : 10;
+
+  if (isNaN(skip) || skip < 0 || isNaN(take) || take < 1 || take > 100) {
+    return NextResponse.json<ComentariosResult>(
+      {
+        ok: false,
+        message: "Parámetros de paginación inválidos",
+        comentarios: [],
+        total: 0,
+      },
+      { status: 400 }
+    );
+  }
 
   console.log(
     "API: Request params - publicacionId:",
@@ -54,9 +70,10 @@ export async function GET(
   }
 
   try {
+    // Verificar que la publicación existe y es pública
     const publicacion = await prisma.publicacion.findUnique({
       where: { id: publicacionId },
-      select: { id: true },
+      select: { id: true, visibilidad: true },
     });
 
     if (!publicacion) {
@@ -71,9 +88,25 @@ export async function GET(
       );
     }
 
+    if (publicacion.visibilidad !== "PUBLICA") {
+      return NextResponse.json<ComentariosResult>(
+        {
+          ok: false,
+          message: "No tienes permiso para ver los comentarios de esta publicación",
+          comentarios: [],
+          total: 0,
+        },
+        { status: 403 }
+      );
+    }
+
+    // Obtener los comentarios paginados
     const comentarios = await prisma.interaccion.findMany({
       where: { publicacionId, tipo: "COMENTARIO" },
-      include: {
+      select: {
+        id: true,
+        contenido: true,
+        createdAt: true,
         usuario: {
           select: {
             id: true,
@@ -89,10 +122,12 @@ export async function GET(
       take,
     });
 
+    // Contar el total de comentarios
     const total = await prisma.interaccion.count({
       where: { publicacionId, tipo: "COMENTARIO" },
     });
 
+    // Formatear los comentarios para la respuesta
     const formattedComentarios: Comment[] = comentarios.map((interaccion) => ({
       id: interaccion.id,
       contenido: interaccion.contenido ?? "",
@@ -107,6 +142,7 @@ export async function GET(
     }));
 
     console.log("API: Fetched comentarios:", formattedComentarios.length, "total:", total);
+
     return NextResponse.json<ComentariosResult>(
       {
         ok: true,
@@ -117,7 +153,7 @@ export async function GET(
       {
         status: 200,
         headers: {
-          "Cache-Control": total > 0 ? "s-maxage=300, stale-while-revalidate" : "no-store", // No cachear si no hay comentarios
+          "Cache-Control": total > 0 ? "s-maxage=60, stale-while-revalidate" : "no-store",
         },
       }
     );

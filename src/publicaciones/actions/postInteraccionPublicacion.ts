@@ -164,6 +164,10 @@ export const postInteraccionPublicacion = async ({
           }),
         ]);
 
+        if (publicacion.negocio?.slug) {
+        revalidatePath(`/perfil/${publicacion.negocio.slug}`);
+      }
+
         return {
           ok: true,
           message: "Reacción eliminada exitosamente",
@@ -200,6 +204,7 @@ export const postInteraccionPublicacion = async ({
 
       // Invalidar el caché de la página del perfil del negocio
       if (publicacion.negocio?.slug) {
+        console.log(`Revalidating path: /perfil/${publicacion.negocio.slug}`); // Log para depurar
         revalidatePath(`/perfil/${publicacion.negocio.slug}`);
       }
 

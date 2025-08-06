@@ -98,7 +98,7 @@ const FeedPublicaciones: React.FC<FeedPublicacionesProps> = ({
   const [hasReachedEndLocal, setHasReachedEndLocal] = useState(false);
   const observer = useRef<IntersectionObserver | null>(null);
 
-  const { isModalOpen, publicacionId, updatedComments } = usePublicacionModalStore();
+  const { isModalOpen, modalPublicacionId, updatedComments } = usePublicacionModalStore();
 
   // Log inicial para verificar initialPublicaciones
   useEffect(() => {
@@ -181,50 +181,50 @@ const FeedPublicaciones: React.FC<FeedPublicacionesProps> = ({
   }, [data]);
 
   const publicaciones = useMemo(() => {
-  const publicationMap = new Map<string, EnhancedPublicacion>();
-  
-  initialPublicaciones.forEach((pub) => {
-    const commentsFromStore = updatedComments[pub.id] || [];
-    const initialComments = pub.comments || [];
-    // Combinar comentarios y eliminar duplicados por id
-    const combinedComments = [...commentsFromStore, ...initialComments];
-    const uniqueComments = Array.from(new Map(combinedComments.map((c) => [c.id, c])).values());
-    // Ordenar por fecha descendente y tomar los últimos 3
-    const sortedComments = uniqueComments
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-      .slice(0, 3);
+    const publicationMap = new Map<string, EnhancedPublicacion>();
     
-    publicationMap.set(pub.id, {
-      ...pub,
-      comments: sortedComments,
-      numComentarios: uniqueComments.length,
+    initialPublicaciones.forEach((pub) => {
+      const commentsFromStore = updatedComments[pub.id] || [];
+      const initialComments = pub.comments || [];
+      // Combinar comentarios y eliminar duplicados por id
+      const combinedComments = [...commentsFromStore, ...initialComments];
+      const uniqueComments = Array.from(new Map(combinedComments.map((c) => [c.id, c])).values());
+      // Ordenar por fecha descendente y tomar los últimos 3
+      const sortedComments = uniqueComments
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+        .slice(0, 3);
+      
+      publicationMap.set(pub.id, {
+        ...pub,
+        comments: sortedComments,
+        numComentarios: uniqueComments.length,
+      });
     });
-  });
 
-  dynamicPublicaciones.forEach((pub) => {
-    const commentsFromStore = updatedComments[pub.id] || [];
-    const initialComments = pub.comments || [];
-    const combinedComments = [...commentsFromStore, ...initialComments];
-    const uniqueComments = Array.from(new Map(combinedComments.map((c) => [c.id, c])).values());
-    const sortedComments = uniqueComments
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-      .slice(0, 3);
-    
-    publicationMap.set(pub.id, {
-      ...pub,
-      comments: sortedComments,
-      numComentarios: uniqueComments.length,
+    dynamicPublicaciones.forEach((pub) => {
+      const commentsFromStore = updatedComments[pub.id] || [];
+      const initialComments = pub.comments || [];
+      const combinedComments = [...commentsFromStore, ...initialComments];
+      const uniqueComments = Array.from(new Map(combinedComments.map((c) => [c.id, c])).values());
+      const sortedComments = uniqueComments
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+        .slice(0, 3);
+      
+      publicationMap.set(pub.id, {
+        ...pub,
+        comments: sortedComments,
+        numComentarios: uniqueComments.length,
+      });
     });
-  });
 
-  return Array.from(publicationMap.values());
-}, [initialPublicaciones, dynamicPublicaciones, updatedComments]);
+    return Array.from(publicationMap.values());
+  }, [initialPublicaciones, dynamicPublicaciones, updatedComments]);
 
   const selectedPublication = useMemo(() => {
-    const found = publicaciones.find((pub) => pub.id === publicacionId);
-    // console.log("Selected publication:", found, "for ID:", publicacionId);
+    const found = publicaciones.find((pub) => pub.id === modalPublicacionId);
+    console.log("Selected publication:", found, "for ID:", modalPublicacionId);
     return found || null;
-  }, [publicaciones, publicacionId]);
+  }, [publicaciones, modalPublicacionId]);
 
   const handleCloseModal = useCallback(() => {
     const { closeModal } = usePublicacionModalStore.getState();
@@ -256,11 +256,11 @@ const FeedPublicaciones: React.FC<FeedPublicacionesProps> = ({
   }, [filtro, publicaciones]);
 
   useEffect(() => {
-    // console.log("Modal state:", { isModalOpen, publicacionId, selectedPublication });
+    // console.log("Modal state:", { isModalOpen, modalPublicacionId, selectedPublication });
     // if (error) {
     //   console.error("SWR error:", error);
     // }
-  }, [isModalOpen, publicacionId, selectedPublication, error]);
+  }, [isModalOpen, modalPublicacionId, selectedPublication, error]);
 
   useEffect(() => {
     if (hasReachedEndRef.current) {
