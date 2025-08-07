@@ -2,7 +2,7 @@
 
 import React, { useState, useCallback, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaHeart, FaComment, FaShare, FaSmile, FaSadTear, FaAngry, FaThumbsUp } from "react-icons/fa";
+import { FaHeart, FaComment, FaShare } from "react-icons/fa";
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
 import Image from "next/image";
@@ -12,29 +12,33 @@ import Link from "next/link";
 import { usePublicacionModalStore } from "@/store/publicacionModal/publicacionModalStore";
 import useSWR from "swr";
 import useSWRInfinite from "swr/infinite";
+import { ReaccionTipo } from "@prisma/client";
+
+interface SummaryData {
+  numLikes: number;
+  numComentarios: number;
+  numCompartidos: number;
+  userReaction: ReaccionTipo | null; // Solo LIKE o null
+}
 
 interface InteractionsProps {
   publicacionId: string;
   slug?: string;
 }
 
-const reactionIcons: Record<"LIKE" | "LOVE" | "WOW" | "SAD" | "ANGRY", JSX.Element> = {
-  LIKE: <FaThumbsUp className="text-blue-500" />,
-  LOVE: <FaHeart className="text-red-500" />,
-  WOW: <FaSmile className="text-yellow-500" />,
-  SAD: <FaSadTear className="text-blue-300" />,
-  ANGRY: <FaAngry className="text-orange-500" />,
-};
+interface Comment {
+  id: string;
+  contenido: string;
+  createdAt: string;
+  usuario: {
+    id: string;
+    nombre: string;
+    apellido: string;
+    username: string;
+    fotoPerfil?: string;
+  };
+}
 
-const reactionLabels: Record<"LIKE" | "LOVE" | "WOW" | "SAD" | "ANGRY", string> = {
-  LIKE: "Me gusta",
-  LOVE: "Me encanta",
-  WOW: "Me sorprende",
-  SAD: "Me entristece",
-  ANGRY: "Me enoja",
-};
-
-// Fetcher para SWR
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 const Interactions: React.FC<InteractionsProps> = ({ publicacionId, slug }) => {
@@ -44,34 +48,24 @@ const Interactions: React.FC<InteractionsProps> = ({ publicacionId, slug }) => {
 
   const { isModalOpen, modalPublicacionId, openModal, updatedComments, updatedNumComentarios, addComment, updateComment, incrementNumComentarios } = usePublicacionModalStore();
 
-  const [currentReaction, setCurrentReaction] = useState<"LIKE" | "LOVE" | "WOW" | "SAD" | "ANGRY" | null>(null);
-  const [showReactionMenu, setShowReactionMenu] = useState(false);
-  const [isLongPressing, setIsLongPressing] = useState(false);
   const [newComment, setNewComment] = useState("");
-  const [localComments, setLocalComments] = useState<any[]>([]);
+  const [localComments, setLocalComments] = useState<Comment[]>([]);
   const [hasMore, setHasMore] = useState(true);
-  const reactionTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const reactionMenuRef = useRef<HTMLDivElement>(null);
   const observerRef = useRef<HTMLDivElement>(null);
 
-  // Fetch summary con SWR
   const summaryKey = `/api/summary/${publicacionId}${userId ? `?userId=${userId}` : ''}`;
-  const { data: summaryData, mutate: mutateSummary, isLoading: isLoadingSummary } = useSWR(summaryKey, fetcher);
+  const { data: summaryData, mutate: mutateSummary, isLoading: isLoadingSummary } = useSWR<SummaryData>(summaryKey, fetcher, {
+    keepPreviousData: true,
+    errorRetryCount: 3,
+  });
 
   const numLikes = summaryData?.numLikes ?? 0;
   const numComentarios = (summaryData?.numComentarios ?? 0) + (updatedNumComentarios[publicacionId] || 0);
   const numCompartidos = summaryData?.numCompartidos ?? 0;
-  const reactionsByType = summaryData?.reactionsByType ?? { LIKE: 0, LOVE: 0, WOW: 0, SAD: 0, ANGRY: 0 };
-  const userReactionTipo = summaryData?.userReaction ?? null;
+  const hasLiked = summaryData?.userReaction === "LIKE";
 
-  useEffect(() => {
-    setCurrentReaction(userReactionTipo);
-  }, [userReactionTipo]);
-
-  // Modo modal check
   const isInModal = isModalOpen && modalPublicacionId === publicacionId;
 
-  // Fetch comentarios en modal con SWRInfinite
   const getCommentsKey = (pageIndex: number, previousPageData: any) => {
     if (!isInModal || previousPageData && !previousPageData.comentarios.length) return null;
     return `/api/comentarios/${publicacionId}?skip=${pageIndex * 5}&take=5`;
@@ -95,7 +89,6 @@ const Interactions: React.FC<InteractionsProps> = ({ publicacionId, slug }) => {
     }
   }, [commentsPages, updatedComments, publicacionId, isInModal]);
 
-  // Observer para load more en modal
   useEffect(() => {
     if (!observerRef.current || !hasMore || !isInModal) return;
 
@@ -115,76 +108,47 @@ const Interactions: React.FC<InteractionsProps> = ({ publicacionId, slug }) => {
     };
   }, [hasMore, isLoadingComments, setSize, isInModal]);
 
-  // Manejar clics fuera menú reacciones
-  useEffect(() => {
-    const handleClickOutside = (event: Event) => {
-      if (reactionMenuRef.current && !reactionMenuRef.current.contains(event.target as Node)) {
-        setShowReactionMenu(false);
-        setIsLongPressing(false);
-      }
-    };
+  const handleLike = useCallback(async () => {
+  if (!isAuthenticated) return;
+  const previousLiked = hasLiked;
+  const optimisticNumLikes = hasLiked ? numLikes - 1 : numLikes + 1;
+  const optimisticReaction = hasLiked ? null : ReaccionTipo.LIKE;  // Usa ReaccionTipo.LIKE para consistencia (equivalente a "LIKE")
+  mutateSummary(
+    {
+      numLikes: optimisticNumLikes,
+      numComentarios: summaryData?.numComentarios ?? 0,
+      numCompartidos: summaryData?.numCompartidos ?? 0,
+      userReaction: optimisticReaction,
+    },
+    { revalidate: false }
+  );
 
-    document.addEventListener("mousedown", handleClickOutside);
-    document.addEventListener("touchstart", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("touchstart", handleClickOutside);
-    };
-  }, []);
+  try {
+    const result = await postInteraccionPublicacion({ publicacionId, slug, tipo: "REACCION", reaccionTipo: hasLiked ? null : ReaccionTipo.LIKE });  // Usa ReaccionTipo.LIKE aquí también
+    if (!result.ok) throw new Error(result.message);
+    mutateSummary(
+      (current: SummaryData | undefined) => ({
+        numLikes: result.newNumLikes ?? current?.numLikes ?? 0,
+        numComentarios: current?.numComentarios ?? 0,
+        numCompartidos: current?.numCompartidos ?? 0,
+        userReaction: result.newUserReaction ?? null,  // Agrega ?? null para manejar undefined
+      }),
+      { revalidate: false }
+    );
+  } catch (error) {
+    mutateSummary(
+      (current: SummaryData | undefined) => ({
+        numLikes: previousLiked ? (current?.numLikes ?? 0) + 1 : (current?.numLikes ?? 0) - 1,
+        numComentarios: current?.numComentarios ?? 0,
+        numCompartidos: current?.numCompartidos ?? 0,
+        userReaction: previousLiked ? ReaccionTipo.LIKE : null,  // Usa ReaccionTipo.LIKE para consistencia
+      }),
+      { revalidate: false }
+    );
+    console.warn("Error en like:", error);
+  }
+}, [isAuthenticated, publicacionId, slug, hasLiked, numLikes, summaryData, mutateSummary]);
 
-  // Handle reaction
-  const handleReaction = useCallback(async (reaction: "LIKE" | "LOVE" | "WOW" | "SAD" | "ANGRY") => {
-    if (!isAuthenticated) return;
-    const previous = currentReaction;
-    setCurrentReaction(reaction);
-    setShowReactionMenu(false);
-    setIsLongPressing(false);
-
-    try {
-      const result = await postInteraccionPublicacion({ publicacionId, slug, tipo: "REACCION", reaccionTipo: reaction });
-      if (!result.ok) throw new Error(result.message);
-      mutateSummary(); // Refresca conteos
-    } catch (error) {
-      setCurrentReaction(previous);
-      console.warn("Error al guardar reacción:", error);
-    }
-  }, [isAuthenticated, publicacionId, slug, currentReaction, mutateSummary]);
-
-  // Handle remove reaction
-  const handleRemoveReaction = useCallback(async () => {
-    if (!isAuthenticated) return;
-    const previous = currentReaction;
-    setCurrentReaction(null);
-    setShowReactionMenu(false);
-    setIsLongPressing(false);
-
-    try {
-      const result = await postInteraccionPublicacion({ publicacionId, slug, tipo: "REACCION", reaccionTipo: null });
-      if (!result.ok) throw new Error(result.message);
-      mutateSummary();
-    } catch (error) {
-      setCurrentReaction(previous);
-      console.warn("Error al eliminar reacción:", error);
-    }
-  }, [isAuthenticated, publicacionId, slug, currentReaction, mutateSummary]);
-
-  // Long-press
-  const handleLongPressStart = useCallback(() => {
-    if (!isAuthenticated) return;
-    setIsLongPressing(true);
-    reactionTimeoutRef.current = setTimeout(() => setShowReactionMenu(true), 400);
-  }, [isAuthenticated]);
-
-  const handleLongPressEnd = useCallback(() => {
-    if (reactionTimeoutRef.current) clearTimeout(reactionTimeoutRef.current);
-    if (!isLongPressing && !showReactionMenu) {
-      if (currentReaction) handleRemoveReaction();
-      else handleReaction("LIKE");
-    }
-    setIsLongPressing(false);
-  }, [isLongPressing, showReactionMenu, currentReaction, handleRemoveReaction, handleReaction]);
-
-  // Handle nuevo comentario (solo modal)
   const handleCommentSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isAuthenticated || !newComment.trim()) return;
@@ -228,28 +192,45 @@ const Interactions: React.FC<InteractionsProps> = ({ publicacionId, slug }) => {
         prev.map((c) => (c.id === optimisticComment.id ? realComment : c)).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
       );
       updateComment(publicacionId, optimisticComment.id, realComment);
-      mutateSummary(); // Refresca conteos
-      mutateComments(); // Refresca paginados
+      mutateSummary();
+      mutateComments();
     } catch (error) {
       setLocalComments((prev) => prev.filter((c) => c.id !== optimisticComment.id));
-      console.warn("Error al guardar comentario:", error);
+      console.warn("Error en comentario:", error);
     }
   }, [isAuthenticated, newComment, publicacionId, slug, userId, session, addComment, incrementNumComentarios, updateComment, mutateSummary, mutateComments]);
 
-  // Handle compartir
   const handleShare = useCallback(async () => {
     if (!isAuthenticated) return;
+
+    mutateSummary(
+      {
+        numLikes: summaryData?.numLikes ?? 0,
+        numComentarios: summaryData?.numComentarios ?? 0,
+        numCompartidos: numCompartidos + 1,
+        userReaction: summaryData?.userReaction ?? null,
+      },
+      { revalidate: false }
+    );
 
     try {
       const result = await postInteraccionPublicacion({ publicacionId, slug, tipo: "COMPARTIDO" });
       if (!result.ok) throw new Error(result.message);
       mutateSummary();
     } catch (error) {
-      console.warn("Error al compartir:", error);
+      mutateSummary(
+        {
+          numLikes: summaryData?.numLikes ?? 0,
+          numComentarios: summaryData?.numComentarios ?? 0,
+          numCompartidos: numCompartidos - 1,
+          userReaction: summaryData?.userReaction ?? null,
+        },
+        { revalidate: false }
+      );
+      console.warn("Error en compartir:", error);
     }
-  }, [isAuthenticated, publicacionId, slug, mutateSummary]);
+  }, [isAuthenticated, publicacionId, slug, numCompartidos, summaryData, mutateSummary]);
 
-  // Skeletons
   const SummarySkeleton = () => (
     <div className="flex items-center gap-2 animate-pulse">
       <div className="h-6 w-16 bg-gray-200 rounded-full" />
@@ -266,7 +247,6 @@ const Interactions: React.FC<InteractionsProps> = ({ publicacionId, slug }) => {
 
   return (
     <div className="w-full p-4 pt-6 border-t border-gray-100">
-      {/* Resumen (conteos) */}
       <div className="flex items-center justify-between mb-4">
         {isLoadingSummary ? (
           <SummarySkeleton />
@@ -274,15 +254,7 @@ const Interactions: React.FC<InteractionsProps> = ({ publicacionId, slug }) => {
           <div className="flex items-center gap-2">
             {numLikes > 0 && (
               <motion.div className="flex items-center gap-1 bg-gray-100 rounded-full px-2 py-1 text-sm text-gray-700">
-                <div className="flex items-center gap-1">
-                  {Object.entries(reactionsByType).map(([type, count]) => (
-                    (count as number) > 0 && (
-                      <span key={type}>
-                        {reactionIcons[type as keyof typeof reactionIcons]}
-                      </span>
-                    )
-                  ))}
-                </div>
+                <FaHeart className="text-red-500" />
                 <span>{numLikes}</span>
               </motion.div>
             )}
@@ -306,44 +278,22 @@ const Interactions: React.FC<InteractionsProps> = ({ publicacionId, slug }) => {
         )}
       </div>
 
-      {/* Botones */}
       <div className="flex justify-between items-center mb-4">
         <div className="flex gap-4">
-          <motion.div className="relative" ref={reactionMenuRef}>
-            <motion.button
-              onMouseDown={handleLongPressStart}
-              onMouseUp={handleLongPressEnd}
-              onMouseLeave={handleLongPressEnd}
-              onTouchStart={handleLongPressStart}
-              onTouchEnd={handleLongPressEnd}
-              className={`flex items-center gap-2 text-gray-600 hover:text-red-500 ${currentReaction ? "text-red-500 font-semibold" : ""}`}
-              aria-label={currentReaction ? `Quitar ${reactionLabels[currentReaction]}` : "Reaccionar"}
-            >
-              {currentReaction ? reactionIcons[currentReaction] : <FaHeart />}
-              <span>{currentReaction ? reactionLabels[currentReaction] : "Me gusta"}</span>
-            </motion.button>
-
-            <AnimatePresence>
-              {showReactionMenu && (
-                <motion.div
-                  className="absolute -top-16 left-0 flex gap-2 bg-white rounded-full shadow-xl p-3 z-50 border border-gray-200"
-                >
-                  {(["LIKE", "LOVE", "WOW", "SAD", "ANGRY"] as const).map((reaction) => (
-                    <motion.button
-                      key={reaction}
-                      onClick={() => handleReaction(reaction)}
-                      className="text-2xl"
-                      aria-label={`Reaccionar con ${reactionLabels[reaction]}`}
-                    >
-                      {reactionIcons[reaction]}
-                    </motion.button>
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </motion.div>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={handleLike}
+            className={`flex items-center gap-2 ${hasLiked ? "text-red-500 font-semibold" : "text-gray-600 hover:text-red-500"}`}
+            aria-label={hasLiked ? "Quitar me gusta" : "Me gusta"}
+          >
+            <FaHeart />
+            <span>{hasLiked ? "Me gusta" : "Me gusta"}</span>
+          </motion.button>
 
           <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => openModal(publicacionId)}
             className="flex items-center gap-2 text-gray-600 hover:text-blue-500"
             aria-label="Comentar"
@@ -353,6 +303,8 @@ const Interactions: React.FC<InteractionsProps> = ({ publicacionId, slug }) => {
           </motion.button>
 
           <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={handleShare}
             className="flex items-center gap-2 text-gray-600 hover:text-green-500"
             aria-label="Compartir"
@@ -363,7 +315,6 @@ const Interactions: React.FC<InteractionsProps> = ({ publicacionId, slug }) => {
         </div>
       </div>
 
-      {/* Input comentario (teaser en feed, activo en modal) */}
       {isAuthenticated && (
         <form onSubmit={handleCommentSubmit} className="flex gap-2 mb-4">
           <div className="relative w-8 h-8 rounded-full overflow-hidden">
@@ -387,7 +338,6 @@ const Interactions: React.FC<InteractionsProps> = ({ publicacionId, slug }) => {
         </form>
       )}
 
-      {/* Comentarios (solo modal) */}
       {isInModal && (
         <div className="mb-2">
           {isLoadingComments ? (
@@ -423,7 +373,6 @@ const Interactions: React.FC<InteractionsProps> = ({ publicacionId, slug }) => {
           )}
         </div>
       )}
-
     </div>
   );
 };

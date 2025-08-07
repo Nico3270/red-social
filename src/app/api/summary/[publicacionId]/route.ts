@@ -1,6 +1,7 @@
 import { NextResponse, NextRequest } from 'next/server';
 import prisma from '@/lib/prisma'; // Ajusta la ruta a tu Prisma client
 import { ReaccionTipo } from '@prisma/client'; // Importa el enum para tipado
+export const dynamic = "force-dynamic"; // Asegura que la acción no use caché
 
 export async function GET(request: NextRequest, context: { params: Promise<{ publicacionId: string }> }) {
 const params = await context.params;

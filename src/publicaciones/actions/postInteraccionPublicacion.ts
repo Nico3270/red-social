@@ -3,13 +3,13 @@
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth.config";
 import { ReaccionTipo } from "@prisma/client";
-import { revalidatePath } from "next/cache"; // Importar revalidatePath
+import { revalidateTag } from "next/cache";  // Cambia de revalidatePath a esto
 
 interface PostInteraccionProps {
   publicacionId: string;
-  slug?: string; // Hacer slug opcional
+  slug?: string;
   tipo: "REACCION" | "COMENTARIO" | "COMPARTIDO";
-  reaccionTipo?: ReaccionTipo | null;
+  reaccionTipo?: ReaccionTipo | null; // Solo LIKE o null
   contenido?: string;
 }
 
@@ -23,6 +23,8 @@ interface PostInteraccionResult {
   usuarioApellido?: string;
   usuarioUsername?: string;
   usuarioFotoPerfil?: string;
+  newNumLikes?: number; // Agregado: Conteo actualizado de likes para optimismo en cliente
+  newUserReaction?: ReaccionTipo | null; // Agregado: Reacción del usuario actualizada para consistencia
 }
 
 export const postInteraccionPublicacion = async ({
@@ -32,7 +34,6 @@ export const postInteraccionPublicacion = async ({
   reaccionTipo,
   contenido,
 }: PostInteraccionProps): Promise<PostInteraccionResult> => {
-  // Validate inputs
   if (!publicacionId || !/^c[0-9a-z]{24}$/.test(publicacionId)) {
     return { ok: false, message: "ID de publicación inválido o no tiene formato CUID" };
   }
@@ -42,14 +43,13 @@ export const postInteraccionPublicacion = async ({
   if (!["REACCION", "COMENTARIO", "COMPARTIDO"].includes(tipo)) {
     return { ok: false, message: "Tipo de interacción inválido" };
   }
-  if (tipo === "REACCION" && reaccionTipo && !["LIKE", "LOVE", "WOW", "SAD", "ANGRY"].includes(reaccionTipo)) {
-    return { ok: false, message: "Tipo de reacción inválido" };
+  if (tipo === "REACCION" && reaccionTipo && reaccionTipo !== "LIKE") {
+    return { ok: false, message: "Solo se permite reacción LIKE" };
   }
   if (tipo === "COMENTARIO" && (!contenido || !contenido.trim())) {
     return { ok: false, message: "El contenido del comentario es requerido" };
   }
 
-  // Get authenticated user
   const session = await auth();
   if (!session || !session.user?.id) {
     return { ok: false, message: "Usuario no autenticado" };
@@ -57,7 +57,6 @@ export const postInteraccionPublicacion = async ({
   const usuarioId = session.user.id;
 
   try {
-    // Verify publication and business
     const publicacion = await prisma.publicacion.findUnique({
       where: { id: publicacionId },
       select: {
@@ -65,9 +64,7 @@ export const postInteraccionPublicacion = async ({
         numLikes: true,
         numComentarios: true,
         numCompartidos: true,
-        negocio: {
-          select: { slug: true },
-        },
+        negocio: { select: { slug: true } },
       },
     });
     if (!publicacion) {
@@ -77,123 +74,75 @@ export const postInteraccionPublicacion = async ({
       return { ok: false, message: "La publicación no pertenece al negocio especificado" };
     }
 
+    const negocioSlug = publicacion.negocio?.slug;
+    const revalidatePublications = (negocioSlug?: string | null) => {
+  if (negocioSlug) {
+    console.log(`Revalidating tag for publications: negocio-publications-${negocioSlug}`);
+    revalidateTag(`negocio-publications-${negocioSlug}`);  // Ahora per-slug
+  }
+};
+
     if (tipo === "REACCION") {
-      if (reaccionTipo) {
-        // Check for existing reaction
-        const existingReaction = await prisma.interaccion.findFirst({
-          where: {
-            publicacionId,
-            usuarioId,
-            tipo: "REACCION",
-          },
-          select: { id: true, reaccionTipo: true },
-        });
+      const existingReaction = await prisma.interaccion.findFirst({
+        where: { publicacionId, usuarioId, tipo: "REACCION" },
+        select: { id: true, reaccionTipo: true },
+      });
 
+      if (reaccionTipo === "LIKE") {
         if (existingReaction) {
-          if (existingReaction.reaccionTipo === reaccionTipo) {
-            return { ok: false, message: `El usuario ya dio ${reaccionTipo} a esta publicación` };
-          }
-          // Update existing reaction
-          const [interaccion] = await prisma.$transaction([
-            prisma.interaccion.update({
-              where: { id: existingReaction.id },
-              data: { reaccionTipo },
-              select: { id: true, createdAt: true, reaccionTipo: true },
-            }),
-            prisma.publicacion.update({
-              where: { id: publicacionId },
-              data: { numLikes: publicacion.numLikes }, // No change in numLikes since reaction is updated
-            }),
-          ]);
-
-          return {
-            ok: true,
-            message: "Reacción actualizada exitosamente",
-            id: interaccion.id,
-            createdAt: interaccion.createdAt,
-            reaccionTipo: interaccion.reaccionTipo,
-          };
+          return { ok: false, message: "Ya diste like a esta publicación" };
         }
-
-        // Create new reaction
-        const [interaccion] = await prisma.$transaction([
+        const [interaccion, updatedPublicacion] = await prisma.$transaction([
           prisma.interaccion.create({
-            data: {
-              publicacionId,
-              usuarioId,
-              tipo: "REACCION",
-              reaccionTipo,
-            },
+            data: { publicacionId, usuarioId, tipo: "REACCION", reaccionTipo: "LIKE" },
             select: { id: true, createdAt: true, reaccionTipo: true },
           }),
           prisma.publicacion.update({
             where: { id: publicacionId },
             data: { numLikes: { increment: 1 } },
+            select: { numLikes: true },
           }),
         ]);
-
+        revalidatePublications(publicacion.negocio?.slug);  // Reemplaza revalidateIfSlug()
         return {
           ok: true,
-          message: "Reacción registrada exitosamente",
+          message: "Like registrado exitosamente",
           id: interaccion.id,
           createdAt: interaccion.createdAt,
           reaccionTipo: interaccion.reaccionTipo,
+          newNumLikes: updatedPublicacion.numLikes,
+          newUserReaction: "LIKE",
         };
       } else {
-        // Remove reaction
-        const existingReaction = await prisma.interaccion.findFirst({
-          where: {
-            publicacionId,
-            usuarioId,
-            tipo: "REACCION",
-          },
-          select: { id: true, reaccionTipo: true },
-        });
-
+        // Remove like
         if (!existingReaction) {
-          return { ok: false, message: "No se encontró una reacción para eliminar" };
+          return { ok: false, message: "No hay like para eliminar" };
         }
-
-        await prisma.$transaction([
-          prisma.interaccion.delete({
-            where: { id: existingReaction.id },
-          }),
+        const [_, updatedPublicacion] = await prisma.$transaction([
+          prisma.interaccion.delete({ where: { id: existingReaction.id } }),
           prisma.publicacion.update({
             where: { id: publicacionId },
             data: { numLikes: { decrement: 1 } },
+            select: { numLikes: true },
           }),
         ]);
-
-        if (publicacion.negocio?.slug) {
-        revalidatePath(`/perfil/${publicacion.negocio.slug}`);
-      }
-
+        revalidatePublications(publicacion.negocio?.slug);  // Reemplaza revalidateIfSlug()
         return {
           ok: true,
-          message: "Reacción eliminada exitosamente",
+          message: "Like eliminado exitosamente",
           reaccionTipo: null,
+          newNumLikes: updatedPublicacion.numLikes,
+          newUserReaction: null,
         };
       }
     } else if (tipo === "COMENTARIO") {
       const [interaccion] = await prisma.$transaction([
         prisma.interaccion.create({
-          data: {
-            publicacionId,
-            usuarioId,
-            tipo: "COMENTARIO",
-            contenido,
-          },
+          data: { publicacionId, usuarioId, tipo: "COMENTARIO", contenido },
           select: {
             id: true,
             createdAt: true,
-            usuario: {
-              select: {
-                nombre: true,
-                apellido: true,
-                username: true,
-                fotoPerfil: true,
-              },
-            },
+            usuario: { select: { nombre: true, apellido: true, username: true, fotoPerfil: true } },
           },
         }),
         prisma.publicacion.update({
@@ -201,13 +150,7 @@ export const postInteraccionPublicacion = async ({
           data: { numComentarios: { increment: 1 } },
         }),
       ]);
-
-      // Invalidar el caché de la página del perfil del negocio
-      if (publicacion.negocio?.slug) {
-        console.log(`Revalidating path: /perfil/${publicacion.negocio.slug}`); // Log para depurar
-        revalidatePath(`/perfil/${publicacion.negocio.slug}`);
-      }
-
+      revalidatePublications(publicacion.negocio?.slug);  // Reemplaza revalidateIfSlug()
       return {
         ok: true,
         message: "Comentario registrado exitosamente",
@@ -221,22 +164,15 @@ export const postInteraccionPublicacion = async ({
     } else if (tipo === "COMPARTIDO") {
       const [interaccion] = await prisma.$transaction([
         prisma.interaccion.create({
-          data: {
-            publicacionId,
-            usuarioId,
-            tipo: "COMPARTIDO",
-          },
-          select: {
-            id: true,
-            createdAt: true,
-          },
+          data: { publicacionId, usuarioId, tipo: "COMPARTIDO" },
+          select: { id: true, createdAt: true },
         }),
         prisma.publicacion.update({
           where: { id: publicacionId },
           data: { numCompartidos: { increment: 1 } },
         }),
       ]);
-
+      revalidatePublications(publicacion.negocio?.slug);  // Reemplaza revalidateIfSlug()
       return {
         ok: true,
         message: "Publicación compartida exitosamente",
@@ -247,10 +183,7 @@ export const postInteraccionPublicacion = async ({
 
     return { ok: false, message: "Tipo de interacción no manejado" };
   } catch (error) {
-    console.error("Error creating interaction:", error);
-    return {
-      ok: false,
-      message: `Error al procesar la interacción: ${error instanceof Error ? error.message : "Error desconocido"}`,
-    };
+    console.error("Error en interacción:", error);
+    return { ok: false, message: `Error: ${error instanceof Error ? error.message : "Desconocido"}` };
   }
 };

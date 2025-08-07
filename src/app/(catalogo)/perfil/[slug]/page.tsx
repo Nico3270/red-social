@@ -33,18 +33,19 @@ const getCachedProfile = unstable_cache(
   { revalidate: 3600 }
 );
 
-const getCachedPublications = unstable_cache(
-  async (props: { slug: string; take: number }) => getPublicacionesNegocio(props),
-  ["negocio-publications"],
-  { revalidate: 60 }
-);
-
 export default async function NegocioPage({ params }: Props) {
   const { slug } = await params;
 
+  // Mueve esta definición aquí para acceso a 'slug'
+  const getCachedPublications = unstable_cache(
+    async (props: { take: number }) => getPublicacionesNegocio({ slug, ...props }), // Inyecta slug fijo, props solo tiene take
+    ["negocio-publications"], // Quita props.slug; args se hashean automáticamente
+    { revalidate: 60, tags: [`negocio-publications-${slug}`] } // Agrega tag dinámico per-slug
+  );
+
   const result = await getCachedProducts(slug, 20);
   const { negocio } = await getCachedProfile(slug);
-  const publicacionesIniciales = await getCachedPublications({ slug, take: 20});
+  const publicacionesIniciales = await getCachedPublications({ take: 20 }); // Llama con { take: 20 }
 
   if (!result.ok) {
     return <div>Error al cargar productos: {result.message}</div>;
