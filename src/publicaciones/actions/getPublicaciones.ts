@@ -2,7 +2,8 @@
 
 import prisma from "@/lib/prisma";
 import { PublicacionTipo, InteraccionTipo } from "@prisma/client";
-import { EnhancedPublicacion } from "../interfaces/enhancedPublicacion.interface";
+import { PublicacionSencilla } from "../interfaces/publicacionSencilla.interface";
+
 
 
 // Tipos existentes
@@ -42,7 +43,7 @@ interface Props {
 interface PublicacionesResult {
   ok: boolean;
   message: string;
-  publicaciones: EnhancedPublicacion[];
+  publicaciones: PublicacionSencilla[];
 }
 
 // Definición de ReaccionTipo como tipo literal para validación
@@ -110,22 +111,7 @@ export const getPublicacionesNegocio = async ({
             orden: true,
           },
         },
-        interacciones: {
-          where: { tipo: "COMENTARIO" },
-          take: 5,
-          orderBy: { createdAt: "desc" },
-          include: {
-            usuario: {
-              select: {
-                id: true,
-                nombre: true,
-                apellido: true,
-                username: true,
-                fotoPerfil: true,
-              },
-            },
-          },
-        },
+        
         usuario: {
           select: {
             id: true,
@@ -141,36 +127,11 @@ export const getPublicacionesNegocio = async ({
       take,
     });
 
-    // Fetch user reactions if userId is provided
-    let userReactions: UserReaction[] = [];
-    if (userId) {
-      const rawReactions = await prisma.interaccion.findMany({
-        where: {
-          usuarioId: userId,
-          publicacionId: { in: publicaciones.map((pub) => pub.id) },
-          tipo: { in: ["LIKE", "LOVE", "WOW", "SAD", "ANGRY"] as unknown as InteraccionTipo[] }, // Conversión segura a unknown
-        },
-        select: {
-          publicacionId: true,
-          tipo: true,
-          id: true,
-        },
-      });
-      // Mapeo seguro a UserReaction con validación
-      userReactions = rawReactions.map((reaction): UserReaction => {
-        const { publicacionId, tipo, id } = reaction;
-        if (!["LIKE", "LOVE", "WOW", "SAD", "ANGRY"].includes(tipo)) {
-          throw new Error(`Tipo de reacción inválido: ${tipo}`);
-        }
-        return { publicacionId, tipo: tipo as ReaccionTipo, id };
-      });
-    }
+   
 
     // Transform the data to match the EnhancedPublicacion interface
-    const formattedPublicaciones: EnhancedPublicacion[] = publicaciones.map((pub) => {
-      const userReaction = userId
-        ? userReactions.find((reaction) => reaction.publicacionId === pub.id) || null
-        : null;
+    const formattedPublicaciones: PublicacionSencilla[] = publicaciones.map((pub) => {
+      
 
       return {
         id: pub.id,
@@ -199,27 +160,6 @@ export const getPublicacionesNegocio = async ({
         })),
         visibilidad: pub.visibilidad ?? "PUBLICA",
         createdAt: pub.createdAt.toISOString(),
-        numLikes: pub.numLikes,
-        numComentarios: pub.numComentarios,
-        numCompartidos: pub.numCompartidos,
-        userReaction: userReaction
-          ? {
-              id: userReaction.id,
-              tipo: userReaction.tipo,
-            }
-          : null,
-        comments: pub.interacciones.map((interaccion) => ({
-          id: interaccion.id,
-          contenido: interaccion.contenido ?? "",
-          createdAt: interaccion.createdAt.toISOString(),
-          usuario: {
-            id: interaccion.usuario.id,
-            nombre: interaccion.usuario.nombre,
-            apellido: interaccion.usuario.apellido ?? "",
-            username: interaccion.usuario.username ?? "",
-            fotoPerfil: interaccion.usuario.fotoPerfil ?? undefined,
-          },
-        })),
       };
     });
 

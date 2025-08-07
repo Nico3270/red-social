@@ -21,8 +21,8 @@ import { ProductGridWithSectionFilter } from "../sectonFilterBar/SectionFilterBa
 import Image from "next/image";
 import Link from "next/link";
 import { SiGooglemaps } from "react-icons/si";
-import { EnhancedPublicacion } from "@/publicaciones/interfaces/enhancedPublicacion.interface";
 import FeedPublicaciones from "@/publicaciones/componentes/FeedPublicaciones";
+import { PublicacionSencilla } from "@/publicaciones/interfaces/publicacionSencilla.interface";
 
 export interface InformacionInicialNegocio {
   nombreNegocio: string;
@@ -69,7 +69,7 @@ export interface Product {
 interface Props {
   activeTabComponent: "Publicaciones" | "Productos" | "Negocio";
   productos?: ProductRedSocial[]; // Mantendremos como entrada inicial
-  publicaciones?: EnhancedPublicacion[];
+  publicaciones?: PublicacionSencilla[];
   informacionNegocio?: InformacionInicialNegocio;
   seccionesProductos?: { id: string; nombre: string; slug: string };
 }

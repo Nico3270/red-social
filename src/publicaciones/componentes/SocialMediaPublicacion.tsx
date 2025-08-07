@@ -18,12 +18,12 @@ import "swiper/css/pagination";
 import "./socialMediaCarousel.css";
 import Interactions from "@/interacciones/componentes/Interactions";
 import Link from "next/link";
-import { EnhancedPublicacion } from "../interfaces/enhancedPublicacion.interface";
 import { titulo1 } from "@/config/fonts";
+import { PublicacionSencilla } from "../interfaces/publicacionSencilla.interface";
 
 
 interface Props {
-  publicacion: EnhancedPublicacion;
+  publicacion: PublicacionSencilla;
 }
 
 // Hook personalizado para obtener dimensiones de medios
@@ -286,13 +286,6 @@ export const SocialMediaCarousel: React.FC<Props> = ({ publicacion }) => {
       {/* Interacciones */}
       <Interactions
         publicacionId={publicacion.id}
-        numLikes={publicacion.numLikes}
-        numComentarios={publicacion.numComentarios}
-        numCompartidos={publicacion.numCompartidos}
-        userReaction={publicacion.userReaction}
-        comments={publicacion.comments}
-        isAuthenticated={publicacion.isAuthenticated ?? true} // Usar valor por defecto si no se proporciona
-        onInteraction={handleInteraction}
       />
 
 

@@ -8,12 +8,12 @@ import { FaFilter, FaStar } from "react-icons/fa";
 import useSWRInfinite from "swr/infinite";
 import { ShowTestimonioPublicacion } from "@/publicaciones/componentes/ShowTestimonioPublicacion";
 import { SocialMediaCarousel } from "@/publicaciones/componentes/SocialMediaPublicacion";
-import { EnhancedPublicacion, Media } from "@/publicaciones/interfaces/enhancedPublicacion.interface";
 import clsx from "clsx";
 import "./FeedPublicaciones.css";
 import { usePublicacionModalStore } from "@/store/publicacionModal/publicacionModalStore";
 import PublicationModal from "./PublicationModal";
 import { PublicacionesResult } from "@/actions/perfil/getInfoPerfilSlugNegocio";
+import { PublicacionSencilla, Media } from "../interfaces/publicacionSencilla.interface";
 
 
 interface ProductDestacado {
@@ -25,12 +25,12 @@ interface ProductDestacado {
 }
 
 interface FeedPublicacionesProps {
-  publicaciones: EnhancedPublicacion[];
+  publicaciones: PublicacionSencilla[];
   productosDestacados?: ProductDestacado[];
   widgets?: { id: string; titulo: string; contenido?: string }[];
 }
 
-const componentMap: Record<string, React.FC<{ publicacion: EnhancedPublicacion }>> = {
+const componentMap: Record<string, React.FC<{ publicacion: PublicacionSencilla }>> = {
   TESTIMONIO: ShowTestimonioPublicacion,
   CARRUSEL_IMAGENES: SocialMediaCarousel,
 };
@@ -91,8 +91,8 @@ const FeedPublicaciones: React.FC<FeedPublicacionesProps> = ({
   productosDestacados = [],
   widgets = [],
 }) => {
-  const [filtro, setFiltro] = useState<"Recientes" | "Populares" | "Videos" | "Carruseles">("Recientes");
-  const [dynamicPublicaciones, setDynamicPublicaciones] = useState<EnhancedPublicacion[]>([]);
+  const [filtro, setFiltro] = useState<"Recientes" | "Videos" | "Carruseles">("Recientes");
+  const [dynamicPublicaciones, setDynamicPublicaciones] = useState<PublicacionSencilla[]>([]);
   const observerRef = useRef<HTMLDivElement>(null);
   const hasReachedEndRef = useRef(false);
   const [hasReachedEndLocal, setHasReachedEndLocal] = useState(false);
@@ -167,7 +167,7 @@ const FeedPublicaciones: React.FC<FeedPublicacionesProps> = ({
         newDynamicPublicaciones.map((pub) => ({ id: pub.id, tipo: pub.tipo, createdAt: pub.createdAt }))
       );
       setDynamicPublicaciones((prev) => {
-        const publicationMap = new Map<string, EnhancedPublicacion>();
+        const publicationMap = new Map<string, PublicacionSencilla>();
         prev.forEach((pub) => publicationMap.set(pub.id, pub));
         newDynamicPublicaciones.forEach((pub) => publicationMap.set(pub.id, pub));
         const updated = Array.from(publicationMap.values());
@@ -181,31 +181,31 @@ const FeedPublicaciones: React.FC<FeedPublicacionesProps> = ({
   }, [data]);
 
   const publicaciones = useMemo(() => {
-    const publicationMap = new Map<string, EnhancedPublicacion>();
+    const publicationMap = new Map<string, PublicacionSencilla>();
     
     initialPublicaciones.forEach((pub) => {
       const commentsFromStore = updatedComments[pub.id] || [];
-      const initialComments = pub.comments || [];
-      // Combinar comentarios y eliminar duplicados por id
-      const combinedComments = [...commentsFromStore, ...initialComments];
-      const uniqueComments = Array.from(new Map(combinedComments.map((c) => [c.id, c])).values());
-      // Ordenar por fecha descendente y tomar los últimos 3
+      // No hay initialComments desde servidor, solo del store
+      const uniqueComments = Array.from(new Map(commentsFromStore.map((c) => [c.id, c])).values());
+      // Ordenar por fecha descendente y tomar los últimos 3 para feed
       const sortedComments = uniqueComments
         .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
         .slice(0, 3);
       
       publicationMap.set(pub.id, {
         ...pub,
+        // Agregamos fields necesarios para compatibilidad con componentes
         comments: sortedComments,
         numComentarios: uniqueComments.length,
-      });
+        numLikes: 0, // No cargado desde servidor
+        numCompartidos: 0, // No cargado desde servidor
+        userReaction: null, // No cargado desde servidor
+      } as any); // Usamos any para extender temporalmente el tipo
     });
 
     dynamicPublicaciones.forEach((pub) => {
       const commentsFromStore = updatedComments[pub.id] || [];
-      const initialComments = pub.comments || [];
-      const combinedComments = [...commentsFromStore, ...initialComments];
-      const uniqueComments = Array.from(new Map(combinedComments.map((c) => [c.id, c])).values());
+      const uniqueComments = Array.from(new Map(commentsFromStore.map((c) => [c.id, c])).values());
       const sortedComments = uniqueComments
         .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
         .slice(0, 3);
@@ -214,7 +214,10 @@ const FeedPublicaciones: React.FC<FeedPublicacionesProps> = ({
         ...pub,
         comments: sortedComments,
         numComentarios: uniqueComments.length,
-      });
+        numLikes: 0,
+        numCompartidos: 0,
+        userReaction: null,
+      } as any);
     });
 
     return Array.from(publicationMap.values());
@@ -234,9 +237,6 @@ const FeedPublicaciones: React.FC<FeedPublicacionesProps> = ({
   const publicacionesFiltradas = useMemo(() => {
     let filtered = [...publicaciones];
     switch (filtro) {
-      case "Populares":
-        filtered.sort((a, b) => (b.numLikes || 0) + (b.numComentarios || 0) - ((a.numLikes || 0) + (a.numComentarios || 0)));
-        break;
       case "Videos":
         filtered = filtered.filter((pub) =>
           pub.multimedia.some((media: Media) => media.tipo === "VIDEO")
@@ -248,10 +248,6 @@ const FeedPublicaciones: React.FC<FeedPublicacionesProps> = ({
       default:
         filtered.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     }
-    // console.log(
-    //   "Publicaciones filtradas:",
-    //   filtered.map((pub) => ({ id: pub.id, tipo: pub.tipo, createdAt: pub.createdAt }))
-    // );
     return filtered;
   }, [filtro, publicaciones]);
 
@@ -292,7 +288,7 @@ const FeedPublicaciones: React.FC<FeedPublicacionesProps> = ({
     };
   }, [isLoading, isValidating, setSize, size]);
 
-  const renderPublicacion = (publicacion: EnhancedPublicacion) => {
+  const renderPublicacion = (publicacion: PublicacionSencilla) => {
     const Component = componentMap[publicacion.tipo] || ShowTestimonioPublicacion;
     return <Component key={publicacion.id} publicacion={publicacion} />;
   };
@@ -324,7 +320,7 @@ const FeedPublicaciones: React.FC<FeedPublicacionesProps> = ({
       <style>{styles}</style>
       <div className="flex justify-between items-center mb-6">
         <div className="flex gap-2 flex-wrap">
-          {["Recientes", "Populares", "Videos", "Carruseles"].map((f) => (
+          {["Recientes", "Videos", "Carruseles"].map((f) => (
             <button
               key={f}
               onClick={() => setFiltro(f as typeof filtro)}

@@ -9,6 +9,7 @@ import { Typography } from "@mui/material";
 import { titulo1 } from "@/config/fonts";
 import { EnhancedPublicacion } from "../interfaces/enhancedPublicacion.interface";
 import Interactions from "@/interacciones/componentes/Interactions";
+import { PublicacionSencilla } from "../interfaces/publicacionSencilla.interface";
 
 interface Productos {
   id: string;
@@ -19,7 +20,7 @@ interface Productos {
 }
 
 interface ShowTestimonioPublicacionProps {
-  publicacion: EnhancedPublicacion;
+  publicacion: PublicacionSencilla;
   productos?: Productos[];
 }
 
@@ -161,13 +162,6 @@ export const ShowTestimonioPublicacion = ({ publicacion, productos }: ShowTestim
       {/* Interacciones */}
       <Interactions
         publicacionId={publicacion.id}
-        numLikes={publicacion.numLikes}
-        numComentarios={publicacion.numComentarios}
-        numCompartidos={publicacion.numCompartidos}
-        userReaction={publicacion.userReaction}
-        comments={publicacion.comments || []}
-        isAuthenticated={publicacion.isAuthenticated ?? true}
-        onInteraction={handleInteraction}
       />
     </div>
   );

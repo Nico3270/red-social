@@ -10,31 +10,12 @@ import { useSession } from "next-auth/react";
 import { postInteraccionPublicacion } from "@/publicaciones/actions/postInteraccionPublicacion";
 import Link from "next/link";
 import { usePublicacionModalStore } from "@/store/publicacionModal/publicacionModalStore";
+import useSWR from "swr";
+import useSWRInfinite from "swr/infinite";
 
 interface InteractionsProps {
   publicacionId: string;
   slug?: string;
-  numLikes: number;
-  numComentarios: number;
-  numCompartidos: number;
-  userReaction: { id: string; tipo: "LIKE" | "LOVE" | "WOW" | "SAD" | "ANGRY" } | null;
-  comments: Array<{
-    id: string;
-    contenido: string;
-    createdAt: string;
-    usuario: {
-      id: string;
-      nombre: string;
-      apellido: string;
-      fotoPerfil?: string;
-      username?: string;
-    };
-  }>;
-  isAuthenticated?: boolean;
-  onInteraction?: (
-    type: "COMENTARIO" | "REACCION" | "COMPARTIDO",
-    data: { reaction?: "LIKE" | "LOVE" | "WOW" | "SAD" | "ANGRY"; comment?: string }
-  ) => void;
 }
 
 const reactionIcons: Record<"LIKE" | "LOVE" | "WOW" | "SAD" | "ANGRY", JSX.Element> = {
@@ -53,43 +34,91 @@ const reactionLabels: Record<"LIKE" | "LOVE" | "WOW" | "SAD" | "ANGRY", string> 
   ANGRY: "Me enoja",
 };
 
-const Interactions: React.FC<InteractionsProps> = ({
-  publicacionId,
-  slug,
-  numLikes,
-  numComentarios,
-  numCompartidos,
-  userReaction,
-  comments,
-  
-  onInteraction,
-}) => {
+// Fetcher para SWR
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
+
+const Interactions: React.FC<InteractionsProps> = ({ publicacionId, slug }) => {
   const { data: session } = useSession();
   const isAuthenticated = !!session?.user;
-  const [likes, setLikes] = useState(numLikes);
-  const [currentReaction, setCurrentReaction] = useState(userReaction?.tipo || null);
+  const userId = session?.user?.id;
+
+  const { isModalOpen, modalPublicacionId, openModal, updatedComments, updatedNumComentarios, addComment, updateComment, incrementNumComentarios } = usePublicacionModalStore();
+
+  const [currentReaction, setCurrentReaction] = useState<"LIKE" | "LOVE" | "WOW" | "SAD" | "ANGRY" | null>(null);
   const [showReactionMenu, setShowReactionMenu] = useState(false);
-  const { isModalOpen, updatedComments, updatedNumComentarios, openModal, addComment, updateComment, incrementNumComentarios } = usePublicacionModalStore();
-  const [numComentariosLocal, setNumComentariosLocal] = useState(numComentarios); // Estado local para contador
-  const [loadedComments, setLoadedComments] = useState(comments ?? []);
-  const [localComments, setLocalComments] = useState(comments ?? []);
-  const [newComment, setNewComment] = useState("");
   const [isLongPressing, setIsLongPressing] = useState(false);
-  const [skip, setSkip] = useState(comments?.length || 0);
+  const [newComment, setNewComment] = useState("");
+  const [localComments, setLocalComments] = useState<any[]>([]);
   const [hasMore, setHasMore] = useState(true);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const reactionTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const reactionMenuRef = useRef<HTMLDivElement>(null);
   const observerRef = useRef<HTMLDivElement>(null);
 
-  // Manejar clics fuera del menú de reacciones
+  // Fetch summary con SWR
+  const summaryKey = `/api/summary/${publicacionId}${userId ? `?userId=${userId}` : ''}`;
+  const { data: summaryData, mutate: mutateSummary, isLoading: isLoadingSummary } = useSWR(summaryKey, fetcher);
+
+  const numLikes = summaryData?.numLikes ?? 0;
+  const numComentarios = (summaryData?.numComentarios ?? 0) + (updatedNumComentarios[publicacionId] || 0);
+  const numCompartidos = summaryData?.numCompartidos ?? 0;
+  const reactionsByType = summaryData?.reactionsByType ?? { LIKE: 0, LOVE: 0, WOW: 0, SAD: 0, ANGRY: 0 };
+  const userReactionTipo = summaryData?.userReaction ?? null;
+
+  useEffect(() => {
+    setCurrentReaction(userReactionTipo);
+  }, [userReactionTipo]);
+
+  // Modo modal check
+  const isInModal = isModalOpen && modalPublicacionId === publicacionId;
+
+  // Fetch comentarios en modal con SWRInfinite
+  const getCommentsKey = (pageIndex: number, previousPageData: any) => {
+    if (!isInModal || previousPageData && !previousPageData.comentarios.length) return null;
+    return `/api/comentarios/${publicacionId}?skip=${pageIndex * 5}&take=5`;
+  };
+
+  const { data: commentsPages, size, setSize, isLoading: isLoadingComments, mutate: mutateComments } = useSWRInfinite(getCommentsKey, fetcher, {
+    initialSize: 1,
+    revalidateOnFocus: false,
+  });
+
+  useEffect(() => {
+    if (isInModal && commentsPages) {
+      const fetchedComments = commentsPages.flatMap((page) => page.comentarios || []);
+      const commentsFromStore = updatedComments[publicacionId] || [];
+      const combined = [...commentsFromStore, ...fetchedComments];
+      const unique = Array.from(new Map(combined.map((c) => [c.id, c])).values()).sort(
+        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+      setLocalComments(unique);
+      setHasMore(commentsPages[commentsPages.length - 1]?.comentarios?.length === 5);
+    }
+  }, [commentsPages, updatedComments, publicacionId, isInModal]);
+
+  // Observer para load more en modal
+  useEffect(() => {
+    if (!observerRef.current || !hasMore || !isInModal) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !isLoadingComments) {
+          setSize((prev) => prev + 1);
+        }
+      },
+      { threshold: 1.0 }
+    );
+
+    observer.observe(observerRef.current);
+
+    return () => {
+      if (observerRef.current) observer.unobserve(observerRef.current);
+    };
+  }, [hasMore, isLoadingComments, setSize, isInModal]);
+
+  // Manejar clics fuera menú reacciones
   useEffect(() => {
     const handleClickOutside = (event: Event) => {
-      if (
-        reactionMenuRef.current &&
-        event.target instanceof Node &&
-        !reactionMenuRef.current.contains(event.target)
-      ) {
+      if (reactionMenuRef.current && !reactionMenuRef.current.contains(event.target as Node)) {
         setShowReactionMenu(false);
         setIsLongPressing(false);
       }
@@ -103,322 +132,185 @@ const Interactions: React.FC<InteractionsProps> = ({
     };
   }, []);
 
-  // Sincronizar localComments con loadedComments y updatedComments
-  useEffect(() => {
-    const commentsFromStore = updatedComments[publicacionId] || [];
-    const combined = [...commentsFromStore, ...loadedComments];
-    const uniqueComments = Array.from(new Map(combined.map((c) => [c.id, c])).values());
-    setLocalComments(
-      uniqueComments.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-    );
-  }, [loadedComments, updatedComments, publicacionId]);
-
-  // Sincronizar numComentariosLocal con updatedNumComentarios
-  useEffect(() => {
-    const storeNum = updatedNumComentarios[publicacionId];
-    if (storeNum !== undefined) {
-      setNumComentariosLocal(storeNum);
-    }
-  }, [updatedNumComentarios, publicacionId]);
-
-  // Función para cargar más comentarios desde la API
-  const loadMoreComments = useCallback(async () => {
-    if (!hasMore || isLoadingMore) return;
-    setIsLoadingMore(true);
-    try {
-      const response = await fetch(`/api/comentarios/${publicacionId}?skip=${skip}&take=5`);
-      const data = await response.json();
-      if (data.ok) {
-        const newComments = data.comentarios;
-        setLoadedComments((prev) => [...prev, ...newComments]);
-        setSkip((prev) => prev + newComments.length);
-        setHasMore(newComments.length === 5); // Si devuelve menos de 5, no hay más
-      } else {
-        console.error(data.message);
-        setHasMore(false);
-      }
-    } catch (error) {
-      console.error("Error al cargar más comentarios:", error);
-      setHasMore(false);
-    } finally {
-      setIsLoadingMore(false);
-    }
-  }, [publicacionId, skip, hasMore, isLoadingMore]);
-
-  // Configurar IntersectionObserver para detectar el final del scroll
-  useEffect(() => {
-    if (!observerRef.current || !hasMore) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          loadMoreComments();
-        }
-      },
-      { threshold: 1.0 }
-    );
-
-    observer.observe(observerRef.current);
-
-    return () => {
-      if (observerRef.current) {
-        observer.unobserve(observerRef.current);
-      }
-    };
-  }, [loadMoreComments, hasMore]);
-
-  // Manejar el clic en "Me gusta" o reacción
-  const handleReaction = useCallback(
-    async (reaction: "LIKE" | "LOVE" | "WOW" | "SAD" | "ANGRY") => {
-      if (!isAuthenticated || !session?.user?.id) {
-        console.warn("Debes iniciar sesión para reaccionar");
-        return;
-      }
-
-      const previousReaction = currentReaction;
-      const previousLikes = likes;
-
-      setCurrentReaction(reaction);
-      setLikes(previousReaction ? likes : likes + 1);
-      setShowReactionMenu(false);
-      setIsLongPressing(false);
-
-      try {
-        const result = await postInteraccionPublicacion({
-          publicacionId,
-          slug,
-          tipo: "REACCION",
-          reaccionTipo: reaction,
-        });
-
-        if (!result.ok) {
-          throw new Error(result.message);
-        }
-        onInteraction?.("REACCION", { reaction });
-      } catch (error) {
-        if (
-          error instanceof Error &&
-          error.message.includes("El usuario ya dio LIKE a esta publicación")
-        ) {
-          await handleRemoveReaction();
-        } else {
-          setCurrentReaction(previousReaction);
-          setLikes(previousLikes);
-          setShowReactionMenu(false);
-          setIsLongPressing(false);
-          console.warn("Error al guardar reacción:", error);
-        }
-      }
-    },
-    [isAuthenticated, session?.user?.id, publicacionId, slug, currentReaction, likes, onInteraction]
-  );
-
-  // Manejar quitar reacción
-  const handleRemoveReaction = useCallback(async () => {
-    if (!isAuthenticated || !session?.user?.id) {
-      console.warn("Debes iniciar sesión para quitar la reacción");
-      return;
-    }
-
-    const previousReaction = currentReaction;
-    const previousLikes = likes;
-
-    setCurrentReaction(null);
-    setLikes(likes - 1);
+  // Handle reaction
+  const handleReaction = useCallback(async (reaction: "LIKE" | "LOVE" | "WOW" | "SAD" | "ANGRY") => {
+    if (!isAuthenticated) return;
+    const previous = currentReaction;
+    setCurrentReaction(reaction);
     setShowReactionMenu(false);
     setIsLongPressing(false);
 
     try {
-      const result = await postInteraccionPublicacion({
-        publicacionId,
-        slug,
-        tipo: "REACCION",
-        reaccionTipo: null,
-      });
-
-      if (!result.ok) {
-        throw new Error(result.message);
-      }
-      onInteraction?.("REACCION", { reaction: undefined });
+      const result = await postInteraccionPublicacion({ publicacionId, slug, tipo: "REACCION", reaccionTipo: reaction });
+      if (!result.ok) throw new Error(result.message);
+      mutateSummary(); // Refresca conteos
     } catch (error) {
-      setCurrentReaction(previousReaction);
-      setLikes(previousLikes);
-      setShowReactionMenu(false);
-      setIsLongPressing(false);
+      setCurrentReaction(previous);
+      console.warn("Error al guardar reacción:", error);
+    }
+  }, [isAuthenticated, publicacionId, slug, currentReaction, mutateSummary]);
+
+  // Handle remove reaction
+  const handleRemoveReaction = useCallback(async () => {
+    if (!isAuthenticated) return;
+    const previous = currentReaction;
+    setCurrentReaction(null);
+    setShowReactionMenu(false);
+    setIsLongPressing(false);
+
+    try {
+      const result = await postInteraccionPublicacion({ publicacionId, slug, tipo: "REACCION", reaccionTipo: null });
+      if (!result.ok) throw new Error(result.message);
+      mutateSummary();
+    } catch (error) {
+      setCurrentReaction(previous);
       console.warn("Error al eliminar reacción:", error);
     }
-  }, [isAuthenticated, session?.user?.id, publicacionId, slug, currentReaction, likes, onInteraction]);
+  }, [isAuthenticated, publicacionId, slug, currentReaction, mutateSummary]);
 
-  // Mostrar menú de reacciones al mantener presionado
+  // Long-press
   const handleLongPressStart = useCallback(() => {
-    if (!isAuthenticated || !session?.user?.id) {
-      console.warn("Debes iniciar sesión para reaccionar");
-      return;
-    }
-
+    if (!isAuthenticated) return;
     setIsLongPressing(true);
-    reactionTimeoutRef.current = setTimeout(() => {
-      setShowReactionMenu(true);
-    }, 400);
-  }, [isAuthenticated, session?.user?.id]);
+    reactionTimeoutRef.current = setTimeout(() => setShowReactionMenu(true), 400);
+  }, [isAuthenticated]);
 
-  // Cancelar el temporizador y manejar LIKE
   const handleLongPressEnd = useCallback(() => {
-    if (reactionTimeoutRef.current) {
-      clearTimeout(reactionTimeoutRef.current);
-    }
+    if (reactionTimeoutRef.current) clearTimeout(reactionTimeoutRef.current);
     if (!isLongPressing && !showReactionMenu) {
-      if (currentReaction) {
-        handleRemoveReaction();
-      } else {
-        handleReaction("LIKE");
-      }
+      if (currentReaction) handleRemoveReaction();
+      else handleReaction("LIKE");
     }
     setIsLongPressing(false);
-  }, [isLongPressing, showReactionMenu, currentReaction, handleReaction, handleRemoveReaction]);
+  }, [isLongPressing, showReactionMenu, currentReaction, handleRemoveReaction, handleReaction]);
 
-  // Manejar nuevo comentario
-  const handleCommentSubmit = useCallback(
-    async (e: React.FormEvent) => {
-      e.preventDefault();
-      if (!isAuthenticated || !session?.user?.id || !newComment.trim()) return;
+  // Handle nuevo comentario (solo modal)
+  const handleCommentSubmit = useCallback(async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isAuthenticated || !newComment.trim()) return;
 
-      const nameParts = session.user.name?.split(" ") || ["Usuario"];
-      const optimisticComment = {
-        id: `temp-${Date.now()}`,
+    const optimisticComment = {
+      id: `temp-${Date.now()}`,
+      contenido: newComment,
+      createdAt: new Date().toISOString(),
+      usuario: {
+        id: userId!,
+        nombre: session?.user.name?.split(" ")?.[0] || "Usuario",
+        apellido: session?.user.name?.split(" ")?.[1] || "",
+        username: session?.user.name?.toLowerCase() || "user",
+        fotoPerfil: session?.user.image || "/default-profile.png",
+      },
+    };
+
+    setLocalComments((prev) => [optimisticComment, ...prev]);
+    addComment(publicacionId, optimisticComment);
+    incrementNumComentarios(publicacionId);
+    setNewComment("");
+
+    try {
+      const result = await postInteraccionPublicacion({ publicacionId, slug, tipo: "COMENTARIO", contenido: newComment });
+      if (!result.ok) throw new Error(result.message);
+
+      const realComment = {
+        id: result.id!,
         contenido: newComment,
-        createdAt: new Date().toISOString(),
+        createdAt: result.createdAt!.toISOString(),
         usuario: {
-          id: session.user.id,
-          nombre: nameParts[0],
-          apellido: nameParts[1] || "",
-          username: `${nameParts[0].toLowerCase()}${nameParts[1]?.toLowerCase() || ""}` || "user",
-          fotoPerfil: session.user.image || "/default-profile.png",
+          id: userId!,
+          nombre: result.usuarioNombre || "Usuario",
+          apellido: result.usuarioApellido || "",
+          username: result.usuarioUsername || "user",
+          fotoPerfil: result.usuarioFotoPerfil,
         },
       };
 
-      // Actualización optimista
-      setLocalComments([optimisticComment, ...localComments]);
-      addComment(publicacionId, optimisticComment);
-      incrementNumComentarios(publicacionId); // Incrementar contador en store
-      setNumComentariosLocal((prev) => prev + 1); // Incrementar local
-      setNewComment("");
-
-      try {
-        const result = await postInteraccionPublicacion({
-          publicacionId,
-          slug,
-          tipo: "COMENTARIO",
-          contenido: newComment,
-        });
-
-        if (!result.ok) {
-          throw new Error(result.message);
-        }
-
-        // Actualizar comentario con datos reales
-        const realComment = {
-          id: result.id!,
-          contenido: newComment,
-          createdAt: result.createdAt!.toISOString(),
-          usuario: {
-            id: session.user.id,
-            nombre: result.usuarioNombre || "Usuario",
-            apellido: result.usuarioApellido || "",
-            username: result.usuarioUsername || `${(result.usuarioNombre || "usuario").toLowerCase()}${result.usuarioApellido?.toLowerCase() || ""}`,
-            fotoPerfil: result.usuarioFotoPerfil,
-          },
-        };
-
-        setLocalComments((prev) =>
-          prev.map((c) => (c.id === optimisticComment.id ? realComment : c)).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-        );
-        updateComment(publicacionId, optimisticComment.id, realComment);
-        onInteraction?.("COMENTARIO", { comment: newComment });
-      } catch (error) {
-        // Revertir en caso de error
-        setLocalComments(localComments.filter((c) => c.id !== optimisticComment.id));
-        addComment(publicacionId, optimisticComment); // Revertir también en el store
-        incrementNumComentarios(publicacionId); // Revertir incremento (decrementar)
-        setNumComentariosLocal((prev) => prev - 1);
-        console.warn("Error al guardar comentario:", error);
-      }
-    },
-    [isAuthenticated, session?.user, publicacionId, slug, localComments, newComment, onInteraction]
-  );
-
-  // Manejar compartir
-  const handleShare = useCallback(async () => {
-    if (!isAuthenticated || !session?.user?.id) {
-      console.warn("Debes iniciar sesión para compartir");
-      return;
+      setLocalComments((prev) =>
+        prev.map((c) => (c.id === optimisticComment.id ? realComment : c)).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      );
+      updateComment(publicacionId, optimisticComment.id, realComment);
+      mutateSummary(); // Refresca conteos
+      mutateComments(); // Refresca paginados
+    } catch (error) {
+      setLocalComments((prev) => prev.filter((c) => c.id !== optimisticComment.id));
+      console.warn("Error al guardar comentario:", error);
     }
+  }, [isAuthenticated, newComment, publicacionId, slug, userId, session, addComment, incrementNumComentarios, updateComment, mutateSummary, mutateComments]);
+
+  // Handle compartir
+  const handleShare = useCallback(async () => {
+    if (!isAuthenticated) return;
 
     try {
-      const result = await postInteraccionPublicacion({
-        publicacionId,
-        slug,
-        tipo: "COMPARTIDO",
-      });
-
-      if (!result.ok) {
-        throw new Error(result.message);
-      }
-      onInteraction?.("COMPARTIDO", {});
+      const result = await postInteraccionPublicacion({ publicacionId, slug, tipo: "COMPARTIDO" });
+      if (!result.ok) throw new Error(result.message);
+      mutateSummary();
     } catch (error) {
       console.warn("Error al compartir:", error);
     }
-  }, [isAuthenticated, session?.user?.id, publicacionId, slug, onInteraction]);
+  }, [isAuthenticated, publicacionId, slug, mutateSummary]);
+
+  // Skeletons
+  const SummarySkeleton = () => (
+    <div className="flex items-center gap-2 animate-pulse">
+      <div className="h-6 w-16 bg-gray-200 rounded-full" />
+      <div className="h-6 w-16 bg-gray-200 rounded-full" />
+    </div>
+  );
+
+  const CommentSkeleton = () => (
+    <div className="flex gap-3 mb-1 animate-pulse">
+      <div className="w-8 h-8 bg-gray-200 rounded-full" />
+      <div className="flex-1 bg-gray-200 rounded-lg p-2 h-16" />
+    </div>
+  );
 
   return (
     <div className="w-full p-4 pt-6 border-t border-gray-100">
-      {/* Resumen de interacciones */}
+      {/* Resumen (conteos) */}
       <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          {likes > 0 && (
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              className="flex items-center gap-1 bg-gray-100 rounded-full px-2 py-1 text-sm text-gray-700"
-            >
-              <div className="flex items-center gap-1">
-                {likes > 0 && <motion.span>{reactionIcons.LIKE}</motion.span>}
-                {likes > 1 && <motion.span>{reactionIcons.LOVE}</motion.span>}
-                {likes > 2 && <motion.span>{reactionIcons.WOW}</motion.span>}
-              </div>
-              <span>{likes}</span>
-            </motion.div>
-          )}
-          {numComentariosLocal > 0 && (
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              className="flex items-center gap-1 bg-gray-100 rounded-full px-2 py-1 text-sm text-gray-700"
-            >
-              <FaComment className="text-blue-500" />
-              <span>{numComentariosLocal}</span> // Usar el estado local actualizado
-            </motion.div>
-          )}
-        </div>
-        {numCompartidos > 0 && (
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            className="flex items-center gap-1 bg-gray-100 rounded-full px-2 py-1 text-sm text-gray-700"
-          >
-            <FaShare className="text-green-500" />
-            <span>{numCompartidos}</span>
-          </motion.div>
+        {isLoadingSummary ? (
+          <SummarySkeleton />
+        ) : (
+          <div className="flex items-center gap-2">
+            {numLikes > 0 && (
+              <motion.div className="flex items-center gap-1 bg-gray-100 rounded-full px-2 py-1 text-sm text-gray-700">
+                <div className="flex items-center gap-1">
+                  {Object.entries(reactionsByType).map(([type, count]) => (
+                    (count as number) > 0 && (
+                      <span key={type}>
+                        {reactionIcons[type as keyof typeof reactionIcons]}
+                      </span>
+                    )
+                  ))}
+                </div>
+                <span>{numLikes}</span>
+              </motion.div>
+            )}
+            {numComentarios > 0 && (
+              <motion.button
+                onClick={() => openModal(publicacionId)}
+                className="flex items-center gap-1 bg-gray-100 rounded-full px-2 py-1 text-sm text-gray-700 hover:bg-gray-200 transition-colors"
+                aria-label="Ver comentarios"
+              >
+                <FaComment className="text-blue-500" />
+                <span>{numComentarios}</span>
+              </motion.button>
+            )}
+            {numCompartidos > 0 && (
+              <motion.div className="flex items-center gap-1 bg-gray-100 rounded-full px-2 py-1 text-sm text-gray-700">
+                <FaShare className="text-green-500" />
+                <span>{numCompartidos}</span>
+              </motion.div>
+            )}
+          </div>
         )}
       </div>
 
-      {/* Botones de interacción */}
+      {/* Botones */}
       <div className="flex justify-between items-center mb-4">
         <div className="flex gap-4">
           <motion.div className="relative" ref={reactionMenuRef}>
             <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
               onMouseDown={handleLongPressStart}
               onMouseUp={handleLongPressEnd}
               onMouseLeave={handleLongPressEnd}
@@ -434,17 +326,11 @@ const Interactions: React.FC<InteractionsProps> = ({
             <AnimatePresence>
               {showReactionMenu && (
                 <motion.div
-                  initial={{ opacity: 0, scale: 0.8, y: 10 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.8, y: 10 }}
-                  transition={{ duration: 0.2 }}
-                  className="absolute -top-16 left-0 mt-2 flex gap-2 bg-white rounded-full shadow-xl p-3 z-50 border border-gray-200"
+                  className="absolute -top-16 left-0 flex gap-2 bg-white rounded-full shadow-xl p-3 z-50 border border-gray-200"
                 >
                   {(["LIKE", "LOVE", "WOW", "SAD", "ANGRY"] as const).map((reaction) => (
                     <motion.button
                       key={reaction}
-                      whileHover={{ scale: 1.3, rotate: 10 }}
-                      whileTap={{ scale: 0.9 }}
                       onClick={() => handleReaction(reaction)}
                       className="text-2xl"
                       aria-label={`Reaccionar con ${reactionLabels[reaction]}`}
@@ -458,9 +344,7 @@ const Interactions: React.FC<InteractionsProps> = ({
           </motion.div>
 
           <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={() => document.getElementById(`comment-input-${publicacionId}`)?.focus()}
+            onClick={() => openModal(publicacionId)}
             className="flex items-center gap-2 text-gray-600 hover:text-blue-500"
             aria-label="Comentar"
           >
@@ -469,8 +353,6 @@ const Interactions: React.FC<InteractionsProps> = ({
           </motion.button>
 
           <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
             onClick={handleShare}
             className="flex items-center gap-2 text-gray-600 hover:text-green-500"
             aria-label="Compartir"
@@ -481,55 +363,48 @@ const Interactions: React.FC<InteractionsProps> = ({
         </div>
       </div>
 
-      {/* Lista de comentarios */}
-      {localComments.length > 0 && (
+      {/* Input comentario (teaser en feed, activo en modal) */}
+      {isAuthenticated && (
+        <form onSubmit={handleCommentSubmit} className="flex gap-2 mb-4">
+          <div className="relative w-8 h-8 rounded-full overflow-hidden">
+            <Image src={session?.user?.image || "/default-profile.png"} alt="Perfil" fill className="object-cover" />
+          </div>
+          <input
+            type="text"
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+            onFocus={() => {
+              if (!isInModal) openModal(publicacionId);
+            }}
+            placeholder="Escribe un comentario..."
+            className="flex-1 p-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            aria-label="Comentario"
+            readOnly={!isInModal}
+          />
+          <motion.button type="submit" className="text-blue-500" disabled={!isInModal || !newComment.trim()} aria-label="Enviar">
+            Enviar
+          </motion.button>
+        </form>
+      )}
+
+      {/* Comentarios (solo modal) */}
+      {isInModal && (
         <div className="mb-2">
-          {isModalOpen ? (
-            // En modal: Mostrar todos
+          {isLoadingComments ? (
+            <>
+              <CommentSkeleton />
+              <CommentSkeleton />
+              <CommentSkeleton />
+            </>
+          ) : (
             localComments.map((comment) => (
               <div key={comment.id} className="flex gap-3 mb-1">
                 <div className="relative w-8 h-8 rounded-full overflow-hidden">
-                  <Image
-                    src={comment.usuario.fotoPerfil || "/default-profile.png"}
-                    alt={`Foto de perfil de ${comment.usuario.username || comment.usuario.nombre}`}
-                    fill
-                    className="object-cover"
-                  />
+                  <Image src={comment.usuario.fotoPerfil || "/default-profile.png"} alt={comment.usuario.nombre} fill className="object-cover" />
                 </div>
                 <div className="flex-1">
                   <div className="bg-gray-100 rounded-lg p-2">
-                    <Link
-                      href={`/perfil/${comment.usuario.id}`}
-                      className="text-sm font-medium text-gray-900 hover:underline"
-                    >
-                      {comment.usuario.nombre} {comment.usuario.apellido}
-                    </Link>
-                    <p className="text-sm text-gray-700">{comment.contenido}</p>
-                  </div>
-                  <span className="text-xs text-gray-500">
-                    {formatDistanceToNow(new Date(comment.createdAt), { locale: es, addSuffix: true })}
-                  </span>
-                </div>
-              </div>
-            ))
-          ) : (
-            // En feed: Mostrar máximo 3
-            localComments.slice(0, 3).map((comment) => (
-              <div key={comment.id} className="flex gap-3 mb-1">
-                <div className="relative w-8 h-8 rounded-full overflow-hidden">
-                  <Image
-                    src={comment.usuario.fotoPerfil || "/default-profile.png"}
-                    alt={`Foto de perfil de ${comment.usuario.username || comment.usuario.nombre}`}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-                <div className="flex-1">
-                  <div className="bg-gray-100 rounded-lg p-2">
-                    <Link
-                      href={`/perfil/${comment.usuario.id}`}
-                      className="text-sm font-medium text-gray-900 hover:underline"
-                    >
+                    <Link href={`/perfil/${comment.usuario.id}`} className="text-sm font-medium text-gray-900 hover:underline">
                       {comment.usuario.nombre} {comment.usuario.apellido}
                     </Link>
                     <p className="text-sm text-gray-700">{comment.contenido}</p>
@@ -541,56 +416,14 @@ const Interactions: React.FC<InteractionsProps> = ({
               </div>
             ))
           )}
-          {!isModalOpen && localComments.length > 3 && (
-            <button
-              onClick={() => openModal(publicacionId)}
-              className="text-sm text-blue-500 hover:underline"
-              aria-label="Ver más comentarios"
-            >
-              Ver más comentarios
-            </button>
-          )}
-          {/* Indicador de carga y referencia para IntersectionObserver */}
           {hasMore && (
             <div ref={observerRef} className="mt-4">
-              {isLoadingMore && <p className="text-sm text-gray-500">Cargando más comentarios...</p>}
+              {isLoadingComments && <p className="text-sm text-gray-500">Cargando más...</p>}
             </div>
           )}
         </div>
       )}
 
-      {/* Campo para nuevo comentario */}
-      {isAuthenticated && (
-        <form onSubmit={handleCommentSubmit} className="flex gap-2">
-          <div className="relative w-8 h-8 rounded-full overflow-hidden">
-            <Image
-              src={session?.user?.image || "/default-profile.png"}
-              alt="Foto de perfil del usuario"
-              fill
-              className="object-cover"
-            />
-          </div>
-          <input
-            id={`comment-input-${publicacionId}`}
-            type="text"
-            value={newComment}
-            onChange={(e) => setNewComment(e.target.value)}
-            onFocus={() => openModal(publicacionId)}
-            placeholder="Escribe un comentario..."
-            className="flex-1 p-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            aria-label="Escribe un comentario"
-          />
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            type="submit"
-            className="text-blue-500"
-            aria-label="Enviar comentario"
-          >
-            Enviar
-          </motion.button>
-        </form>
-      )}
     </div>
   );
 };

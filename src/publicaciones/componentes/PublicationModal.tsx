@@ -8,14 +8,15 @@ import { ShowTestimonioPublicacion } from "@/publicaciones/componentes/ShowTesti
 import { SocialMediaCarousel } from "@/publicaciones/componentes/SocialMediaPublicacion";
 import { EnhancedPublicacion } from "@/publicaciones/interfaces/enhancedPublicacion.interface";
 import { usePublicacionModalStore } from "@/store/publicacionModal/publicacionModalStore";
+import { PublicacionSencilla } from "../interfaces/publicacionSencilla.interface";
 
 interface PublicationModalProps {
   isOpen: boolean;
-  publication: EnhancedPublicacion | null;
+  publication: PublicacionSencilla | null;
   onClose: () => void;
 }
 
-const componentMap: Record<string, React.FC<{ publicacion: EnhancedPublicacion }>> = {
+const componentMap: Record<string, React.FC<{ publicacion: PublicacionSencilla }>> = {
   TESTIMONIO: ShowTestimonioPublicacion,
   CARRUSEL_IMAGENES: SocialMediaCarousel,
 };
@@ -28,17 +29,7 @@ const PublicationModal: React.FC<PublicationModalProps> = ({ isOpen, publication
     closeModal();
   }, [onClose, closeModal]);
 
-  // Combinar comentarios de la publicación con los actualizados del store
-  const allComments = useMemo(() => {
-    if (!publication) return [];
-    const commentsFromStore = updatedComments[publication.id] || [];
-    const initialComments = publication.comments || [];
-    // Combinar y eliminar duplicados por id
-    const combined = [...commentsFromStore, ...initialComments];
-    const uniqueComments = Array.from(new Map(combined.map((c) => [c.id, c])).values());
-    // Ordenar por createdAt descendente
-    return uniqueComments.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-  }, [publication, updatedComments]);
+  
 
   useEffect(() => {
     if (isOpen) {
@@ -90,7 +81,7 @@ const PublicationModal: React.FC<PublicationModalProps> = ({ isOpen, publication
             </button>
             <div className="p-6 max-h-[80vh] overflow-y-auto modal-content">
               <h2 className="text-xl font-bold mb-4">{publication.titulo || "Publicación"}</h2>
-              <Component publicacion={{ ...publication, comments: allComments }} />
+              <Component publicacion={{ ...publication, }} />
             </div>
           </motion.div>
         </motion.div>

@@ -15,7 +15,9 @@ export interface Media {
   orden: number;
 }
 
-export interface EnhancedPublicacion {
+
+
+export interface PublicacionSencilla {
   id: string;
   usuario: User;
   negocio?: { id: string; nombre: string; fotoPerfil?: string; slug?: string };
@@ -25,22 +27,6 @@ export interface EnhancedPublicacion {
   multimedia: Media[];
   visibilidad: "PUBLICA" | "PRIVADA" | "AMIGOS";
   createdAt: string;
-  numLikes: number;
-  numComentarios: number;
-  numCompartidos: number;
-  userReaction: { id: string; tipo: "LIKE" | "LOVE" | "WOW" | "SAD" | "ANGRY" } | null;
-  comments: Array<{
-    id: string;
-    contenido: string;
-    createdAt: string;
-    usuario: {
-      id: string;
-      nombre: string;
-      apellido: string;
-      fotoPerfil?: string;
-      username: string;
-    };
-  }>;
   isAuthenticated?: boolean;
   onInteraction?: (
     type: "COMENTARIO" | "REACCION" | "COMPARTIDO",
