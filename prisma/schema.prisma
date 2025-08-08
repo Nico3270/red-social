@@ -103,6 +103,7 @@ model Usuario {
   preferencias    String[]
   publicaciones   Publicacion[]
   interacciones   Interaccion[] @relation("UsuarioInteracciones")
+  Transaction     Transaction[]
 
   @@index([username])
   @@index([email])
@@ -127,6 +128,58 @@ enum Genero {
   masculino
   femenino
   otro
+}
+
+model Transaction {
+  id            String          @id @default(uuid())
+  date          DateTime
+  type          TransactionType
+  description   String
+  category      String // Almacena el valor del enum correspondiente (IncomeCategory o ExpenseCategory) como string
+  amount        Decimal
+  paymentMethod PaymentMethod
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  usuarioId     String
+  usuario       Usuario         @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@index([usuarioId]) // Índice para consultas rápidas por usuario
+  @@index([type]) // Índice para filtrar por tipo (ingreso/gasto)
+  @@index([date]) // Índice para ordenar por fecha
+}
+
+enum TransactionType {
+  ingreso
+  gasto
+}
+
+enum IncomeCategory {
+  ventas
+  ahorro
+  otros
+  propinas
+  prestamos
+}
+
+enum ExpenseCategory {
+  implementos
+  materiales
+  arriendo
+  empleados
+  servicios_publicos
+  envios
+  deudas
+  mantenimiento
+  impuestos
+  otros
+}
+
+enum PaymentMethod {
+  efectivo
+  nequi
+  daviplata
+  cuenta_principal
+  transferencias
 }
 
 model Product {
@@ -316,6 +369,7 @@ model Interaccion {
 
   usuario     Usuario     @relation("UsuarioInteracciones", fields: [usuarioId], references: [id])
   publicacion Publicacion @relation("PublicacionInteracciones", fields: [publicacionId], references: [id], onDelete: Cascade)
+
   @@index([publicacionId, createdAt]) // Índice compuesto para paginación y ordenamiento
   @@index([publicacionId, tipo]) // Índice para filtrar por tipo (ej. solo comentarios)
   @@index([usuarioId, createdAt]) // Índice para actividad del usuario
