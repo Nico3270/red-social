@@ -5,7 +5,7 @@ import { useSidebarStore } from "@/store/sideBar/sideBar-store";
 import React, { useState, useEffect } from "react";
 import SideBarDashboard from "./SideBarDashboard";
 import { TopBarDashBoard } from "./TopBarDashBoard";
-import clsx from "clsx";
+import { Box } from "@mui/material";
 
 interface LayoutDashboardComponentProps {
   children: React.ReactNode;
@@ -31,53 +31,67 @@ const LayoutDashboardComponent: React.FC<LayoutDashboardComponentProps> = ({ chi
 
   if (!isMounted) {
     return (
-      <div className="flex min-h-screen relative">
-        <main className="mt-16 min-h-[calc(100vh-4rem)] bg-gray-100 p-4 flex-1">
+      <Box sx={{ display: "flex", minHeight: "100vh", overflowX: "hidden" }}>
+        <Box component="main" sx={{ mt: "4rem", flex: 1, bgcolor: "grey.100", p: { xs: 2, sm: 3, md: 4 }, overflowX: "hidden" }}>
           {children}
-        </main>
-      </div>
+        </Box>
+      </Box>
     );
   }
 
   return (
-    <div className="flex min-h-screen relative">
-      <div
-        className={clsx(
-          "fixed top-0 left-0 h-full transition-all duration-300 ease-in-out bg-gray-800 z-10",
-          isSidebarOpen ? "w-1/6 min-w-[200px]" : "w-16",
-          isMobile && !isSidebarOpen && "hidden"
-        )}
+    <Box sx={{ display: "flex", minHeight: "100vh", overflowX: "hidden" }}>
+      <Box
+        sx={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          height: "100%",
+          transition: "width 0.3s ease-in-out",
+          bgcolor: "grey.800",
+          zIndex: 10,
+          width: isSidebarOpen ? { xs: "80%", sm: "200px" } : "4rem",
+          display: isMobile && !isSidebarOpen ? "none" : "block",
+        }}
       >
         <SideBarDashboard />
-      </div>
+      </Box>
 
       {isMobile && isSidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-40 z-10"
+        <Box
+          sx={{ position: "fixed", inset: 0, bgcolor: "rgba(0,0,0,0.4)", zIndex: 10 }}
           onClick={() => setSidebarOpen(false)}
-        ></div>
+        />
       )}
 
-      <div
-        className={clsx(
-          "flex-1 transition-all duration-300 ease-in-out z-0",
-          isMobile ? "ml-0" : isSidebarOpen ? "ml-[16.666%]" : "ml-16"
-        )}
+      <Box
+        sx={{
+          flex: 1,
+          transition: "margin-left 0.3s ease-in-out",
+          ml: isMobile ? 0 : isSidebarOpen ? { xs: 0, sm: "200px" } : "4rem",
+          overflowX: "hidden", // Evita overflow horizontal global
+        }}
       >
-        <div
-          className={clsx(
-            "fixed top-0 h-16 bg-white z-20 shadow-md",
-            isMobile ? "left-0 right-0" : isSidebarOpen ? "left-[16.666%] right-0" : "left-16 right-0"
-          )}
+        <Box
+          sx={{
+            position: "fixed",
+            top: 0,
+            height: "4rem",
+            bgcolor: "white",
+            zIndex: 20,
+            boxShadow: "md",
+            left: isMobile ? 0 : isSidebarOpen ? "200px" : "4rem",
+            right: 0,
+          }}
         >
           <TopBarDashBoard />
-        </div>
+        </Box>
 
-        <main className="mt-16 min-h-[calc(100vh-4rem)] bg-gray-100 p-4">
+        <Box component="main" sx={{ mt: "4rem", minHeight: "calc(100vh - 4rem)", bgcolor: "grey.100", p: { xs: 2, sm: 3, md: 4 }, overflowX: "hidden" }}>
           {children}
-        </main>
-      </div>
-    </div>
+        </Box>
+      </Box>
+    </Box>
   );
 };
 

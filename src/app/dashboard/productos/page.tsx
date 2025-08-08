@@ -39,7 +39,7 @@ export default async function ProductosDashboard() {
   }
 
   return (
-    <Box p={4}>
+    <Box p={2}>
       <ShowProductsByUser products={result.products} />
     </Box>
   );
