@@ -22,11 +22,12 @@ import {
   BottomNavigation,
   BottomNavigationAction,
 } from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu"; // Agregado para el botón de menú en desktop
+
 import AddIcon from "@mui/icons-material/Add";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import ListAltIcon from "@mui/icons-material/ListAlt";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import { Tabs, Tab } from "@mui/material";
 import { getTransactions } from "@/transacciones/actions/getTransactions";
 import { Transaction, TransactionType } from "@/transacciones/interfaces/types";
 
@@ -38,7 +39,6 @@ const ShowTransactions = lazy(() => import("@/transacciones/componentes/ShowTran
 const Page = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [showScrollTop, setShowScrollTop] = useState(false);
-  const [drawerOpen, setDrawerOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("add"); // Sección activa
 
   const theme = useTheme();
@@ -99,23 +99,85 @@ const Page = () => {
     <Box sx={{ overflowX: "hidden", width: "100%" }}>
       {/* AppBar para desktop con botón de menú */}
       {!isMobile && (
-        <AppBar position="static" color="default" sx={{ boxShadow: 3 }}>
-          <Toolbar>
-            <IconButton
-              edge="start"
-              color="inherit"
-              aria-label="menu"
-              onClick={() => setDrawerOpen(true)}
-              sx={{ mr: 2 }}
-            >
-              <MenuIcon />
-            </IconButton>
-            <Typography variant="h6" sx={{ flexGrow: 1 }}>
-              Dashboard de Transacciones
-            </Typography>
-          </Toolbar>
-        </AppBar>
+        <Box
+          sx={{
+            bgcolor: "white",
+            borderRadius: 3,
+            boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
+            mb: 1,
+            px: 3,
+            pt: 1,
+            pb: 1, // espacio extra inferior en toda la caja
+          }}
+        >
+          {/* Título centrado */}
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: "bold",
+              color: "#021526", // azul oscuro elegante
+              textAlign: "center",
+              mb: 2,
+              fontSize: "1.4rem",
+            }}
+          >
+            Dashboard de Transacciones
+          </Typography>
+
+          {/* Barra de pestañas */}
+          <Tabs
+            value={activeSection}
+            onChange={(e, newValue) => setActiveSection(newValue)}
+            textColor="inherit"
+            TabIndicatorProps={{
+              style: { backgroundColor: "#021526", height: "3px", borderRadius: "2px" },
+            }}
+            sx={{
+              "& .MuiTabs-flexContainer": {
+                justifyContent: "space-around", // distribución uniforme
+                gap: 1.5,
+              },
+              "& .MuiTab-root": {
+                flex: 1,
+                minHeight: "48px",
+                py: 1.5, // más padding vertical
+                border: "1px solid #1D1616",
+                borderRadius: 4,
+                textTransform: "none",
+                fontWeight: 500,
+                color: "#1D1616",
+                transition: "all 0.2s ease",
+                backgroundColor: "#fafafa",
+              },
+              "& .MuiTab-root:hover": {
+                backgroundColor: "#000B58",
+                boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+                color: "#EEEEEE",
+
+              },
+              "& .Mui-selected": {
+                backgroundColor: "#021526", // gris claro
+                color: "#E2DFD0", // azul oscuro
+                fontWeight: "bold",
+                boxShadow: "0 2px 8px rgba(30, 58, 138, 0.15)",
+              },
+            }}
+          >
+            {navItems.map((item) => (
+              <Tab
+                key={item.value}
+                icon={item.icon}
+                iconPosition="start"
+                label={item.label}
+                value={item.value}
+              />
+            ))}
+          </Tabs>
+        </Box>
       )}
+
+
+
 
       {/* Nav: BottomNavigation en móvil */}
       {isMobile ? (
@@ -145,7 +207,7 @@ const Page = () => {
       ) : null}
 
       {/* Drawer para desktop (temporal, se abre con el botón del AppBar) */}
-      {!isMobile && (
+      {/* {!isMobile && (
         <Drawer
           variant="temporary"
           open={drawerOpen}
@@ -174,7 +236,7 @@ const Page = () => {
             ))}
           </List>
         </Drawer>
-      )}
+      )} */}
 
       {/* Header con KPIs modestos/elegantes: smaller, outlined, reduced spacing */}
       <Fade in timeout={500}>
@@ -210,7 +272,7 @@ const Page = () => {
               </Card>
             </Grid>
             <Grid item xs={4}>
-              <Card variant="outlined" sx={{ borderRadius: 1, borderColor: "grey.300" }}>
+              <Card variant="outlined" sx={{ borderRadius: 3, borderColor: "grey.300" }}>
                 <CardContent sx={{ p: 1.5, textAlign: "center" }}>
                   <Typography variant="body2" color="grey.600" sx={{ mb: 0.5 }}>
                     Balance

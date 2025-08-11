@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 import { FaUser, FaBox, FaShoppingCart, FaHome, FaUserEdit } from "react-icons/fa"; // Ejemplo de íconos
 import { useSidebarStore } from "@/store/sideBar/sideBar-store";
 import { IoMdAddCircle } from "react-icons/io";
-import { FaFilePen } from "react-icons/fa6";
+import { FaFilePen, FaMoneyBillTransfer } from "react-icons/fa6";
 
 interface NavItem {
   name: string;
@@ -21,6 +21,7 @@ const navItems: NavItem[] = [
   { name: "Nuevo producto", path: "/dashboard/productos/nuevo_producto", icon: <IoMdAddCircle /> },
   { name: "Productos", path: "/dashboard/productos", icon: <FaBox /> },
   { name: "Nueva Publicación", path: "/dashboard/crear-publicacion", icon: <FaFilePen /> },
+  { name: "Transacciones", path: "/dashboard/transacciones", icon: <FaMoneyBillTransfer /> },
   { name: "Editar Perfil", path: "/dashboard/editar-perfil", icon: <FaUserEdit /> },
 ];
 

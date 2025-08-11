@@ -12,6 +12,7 @@
     "lint": "next lint",
     "seed": "ts-node src/seed/seed-database.ts",
     "seed2": "ts-node src/seed/seed-database copy.ts",
+    "transaction": "ts-node src/seed/transactions-database.ts",
     "index": "ts-node src/seed/index.ts"
   },
   "dependencies": {
@@ -24,6 +25,7 @@
     "@mui/icons-material": "^6.1.7",
     "@mui/material": "^6.1.7",
     "@mui/system": "^6.4.6",
+    "@mui/x-date-pickers": "^8.10.0",
     "@neondatabase/serverless": "^0.10.4",
     "@next/bundle-analyzer": "^15.2.0",
     "@prisma/client": "^6.4.0",
@@ -31,6 +33,7 @@
     "@radix-ui/react-slot": "^1.1.1",
     "@studio-freight/lenis": "^1.0.42",
     "@tailwindcss/line-clamp": "^0.4.4",
+    "@tanstack/react-query": "^5.84.2",
     "axios": "^1.7.9",
     "bcryptjs": "^2.4.3",
     "browser-image-compression": "^2.0.2",

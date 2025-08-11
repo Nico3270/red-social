@@ -146,6 +146,7 @@ model Transaction {
   @@index([usuarioId]) // Índice para consultas rápidas por usuario
   @@index([type]) // Índice para filtrar por tipo (ingreso/gasto)
   @@index([date]) // Índice para ordenar por fecha
+  @@index([usuarioId, date, type])
 }
 
 enum TransactionType {
