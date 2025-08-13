@@ -10,64 +10,114 @@ import {
   Transaction,
 } from "@/transacciones/interfaces/types";
 
-export const addTransaction = async ({
-  date,
-  type,
-  description,
-  category,
-  amount,
-  paymentMethod,
-}: Omit<Transaction, "id" | "createdAt" | "updatedAt">): Promise<{
+interface ItemInput {
+  description: string;
+  quantity: number;
+  price: number;
+  subtotal: number;
+  productId?: string | null;
+}
+
+interface TransactionInput {
+  date: string;
+  type: TransactionType;
+  category: string;
+  amount: number;
+  paymentMethod: PaymentMethod;
+  description?: string;
+  items?: ItemInput[];
+}
+
+export const addTransaction = async (input: TransactionInput): Promise<{
   success: boolean;
   transaction?: Transaction;
   error?: string;
 }> => {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { success: false, error: "Usuario no autenticado." };
+  }
+  const usuarioId = session.user.id;
+
   try {
-    const session = await auth();
-    if (!session || !session.user?.id) {  // Agrego ? en user para seguridad extra
+    return await prisma.$transaction(async (tx) => {
+      
+      const negocioId = session.user.negocioId || null;
+
+      let orderId: string | undefined;
+      let generatedDescription = input.description || "";
+
+      const transactionDate = new Date(input.date); // Ahora input.date es ISO full, ya combinado en frontend
+
+      if (input.items && input.items.length > 0) {
+        if (!generatedDescription) {
+          generatedDescription = input.items
+            .map((item) => `${item.description} x${item.quantity}`)
+            .join(", ");
+        }
+
+        const newOrder = await tx.order.create({
+          data: {
+            date: transactionDate,
+            type: input.type,
+            description: generatedDescription,
+            totalAmount: input.amount,
+            paymentMethod: input.paymentMethod,
+            category: input.category,
+            status: "completada",
+            usuarioId,
+            negocioId,
+          },
+        });
+        orderId = newOrder.id;
+
+        await tx.orderItem.createMany({
+          data: input.items.map((item) => ({
+            description: item.description,
+            quantity: item.quantity,
+            price: item.price,
+            subtotal: item.subtotal,
+            orderId: newOrder.id,
+            productId: item.productId || null,
+          })),
+        });
+      }
+
+      const transaction = await tx.transaction.create({
+        data: {
+          date: transactionDate,
+          type: input.type,
+          description: generatedDescription,
+          category: input.category,
+          amount: input.amount,
+          paymentMethod: input.paymentMethod,
+          usuarioId,
+          orderId,
+        },
+      });
+
+      if (orderId) {
+        await tx.order.update({
+          where: { id: orderId },
+          data: { transactionId: transaction.id },
+        });
+      }
+
       return {
-        success: false,
-        error: "Usuario no autenticado. Debes iniciar sesión para agregar una transacción.",
+        success: true,
+        transaction: {
+          id: transaction.id,
+          date: transaction.date.toISOString(),
+          type: transaction.type as TransactionType,
+          description: transaction.description,
+          category: transaction.category as IncomeCategory | ExpenseCategory,
+          amount: Number(transaction.amount),
+          paymentMethod: transaction.paymentMethod as PaymentMethod,
+        },
       };
-    }
-    const usuarioId = session.user.id;  // Sin ?, ya que el if lo asegura
-
-    // Validaciones básicas para evitar errores comunes
-    if (amount <= 0) {
-      return { success: false, error: "El monto debe ser mayor a cero." };
-    }
-    if (!date || isNaN(new Date(date).getTime())) {
-      return { success: false, error: "Fecha inválida." };
-    }
-
-    const transaction = await prisma.transaction.create({
-      data: {
-        date: new Date(date),
-        type,
-        description,
-        category,
-        amount,
-        paymentMethod,
-        usuarioId,
-      },
     });
-
-    return {
-      success: true,
-      transaction: {
-        id: transaction.id,
-        date: transaction.date.toISOString(),
-        type: transaction.type as TransactionType,
-        description: transaction.description,
-        category: transaction.category as IncomeCategory | ExpenseCategory,
-        amount: transaction.amount.toNumber(),
-        paymentMethod: transaction.paymentMethod as PaymentMethod,
-        
-      },
-    };
   } catch (error) {
-    const errorMessage = (error as Error).message || "Error desconocido";
-    console.error("Error al agregar la transacción:", errorMessage);
-    return { success: false, error: `No se pudo agregar la transacción: ${errorMessage}` };
+    console.error("Error al agregar la transacción:", error);
+    return { success: false, error: "Error al agregar la transacción." };
   }
 };

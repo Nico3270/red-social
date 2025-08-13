@@ -40,6 +40,7 @@ model Negocio {
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
   publicaciones Publicacion[] // Relación para reseñas y anuncios
+  orders        Order[] // 🔹 Campo inverso para relación con Order
 
   @@index([ciudad])
   @@index([departamento])
@@ -104,6 +105,7 @@ model Usuario {
   publicaciones   Publicacion[]
   interacciones   Interaccion[] @relation("UsuarioInteracciones")
   Transaction     Transaction[]
+  orders          Order[] // 🔹 Campo inverso para relación con Order
 
   @@index([username])
   @@index([email])
@@ -142,6 +144,8 @@ model Transaction {
   updatedAt     DateTime        @updatedAt
   usuarioId     String
   usuario       Usuario         @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  orderId       String?         @unique
+  order         Order? // 🔹 Campo inverso para relación con Order
 
   @@index([usuarioId]) // Índice para consultas rápidas por usuario
   @@index([type]) // Índice para filtrar por tipo (ingreso/gasto)
@@ -183,6 +187,50 @@ enum PaymentMethod {
   transferencias
 }
 
+model Order {
+  id            String          @id @default(uuid())
+  date          DateTime        @default(now())
+  type          TransactionType // Herencia de TransactionType (solo ingreso por ahora?)
+  description   String?
+  totalAmount   Decimal
+  paymentMethod PaymentMethod
+  category      String // e.g., "ventas"
+  status        OrderStatus     @default(pendiente) // e.g., completada, cancelada
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  usuarioId     String
+  negocioId     String? // Directo a Negocio para reportes
+  transactionId String?         @unique // Opcional: Liga a Transaction generada
+  usuario       Usuario         @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  negocio       Negocio?        @relation(fields: [negocioId], references: [id], onDelete: SetNull)
+  transaction   Transaction?    @relation(fields: [transactionId], references: [id], onDelete: SetNull)
+  items         OrderItem[]
+
+  @@index([usuarioId, date])
+  @@index([negocioId, date])
+}
+
+enum OrderStatus {
+  pendiente
+  completada
+  cancelada
+}
+
+model OrderItem {
+  id          String   @id @default(uuid())
+  description String
+  quantity    Int      @default(1)
+  price       Decimal // Precio unitario al momento de venta (snapshot)
+  subtotal    Decimal // price * quantity
+  orderId     String
+  productId   String? // Opcional: Si es producto
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product     Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+
+  @@index([orderId])
+  @@index([productId]) // Para métricas rápidas
+}
+
 model Product {
   id               String                   @id @default(uuid())
   nombre           String
@@ -208,6 +256,7 @@ model Product {
   negocio                   Negocio               @relation(fields: [negocioId], references: [id], onDelete: Cascade)
   category                  Category              @relation(fields: [categoryId], references: [id])
   publicacionesRelacionadas PublicacionProducto[] // Sin @relation("ProductosEnPublicacion")
+  orderItems                OrderItem[] // 🔹 Campo inverso para relación con OrderItem
 
   @@index([negocioId]) // Para filtrar productos por usuario rápidamente
   @@index([categoryId]) // Mejora las consultas filtradas por categoría

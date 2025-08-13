@@ -43,7 +43,7 @@ interface InformacionInicialNegocio {
   direccionNegocio?: string;
   telefonoContacto?: string;
   imagenPerfil?: string;
-imagenPortada?: string;
+  imagenPortada?: string;
   sitioWeb?: string;
   urlGoogleMaps?: string;
   facebook?: string;
@@ -330,13 +330,13 @@ export const CompletePerfil = ({ informacionNegocio }: Props) => {
       }
 
       // Normalizar imagenPerfil e imagenPortada si vienen como array
-const imagenPerfilNormalizada: string | undefined = Array.isArray(data.imagenPerfil)
-  ? data.imagenPerfil[0]
-  : data.imagenPerfil;
+      const imagenPerfilNormalizada: string | undefined = Array.isArray(data.imagenPerfil)
+        ? data.imagenPerfil[0]
+        : data.imagenPerfil;
 
-const imagenPortadaNormalizada: string | undefined = Array.isArray(data.imagenPortada)
-  ? data.imagenPortada[0]
-  : data.imagenPortada;
+      const imagenPortadaNormalizada: string | undefined = Array.isArray(data.imagenPortada)
+        ? data.imagenPortada[0]
+        : data.imagenPortada;
 
 
       // Preparar datos para enviar
@@ -350,7 +350,7 @@ const imagenPortadaNormalizada: string | undefined = Array.isArray(data.imagenPo
         direccionNegocio: data.direccionNegocio || undefined,
         telefonoContacto: normalizedTelefono || undefined,
         imagenPerfil: imagenPerfilNormalizada || undefined,
-imagenPortada: imagenPortadaNormalizada || undefined,
+        imagenPortada: imagenPortadaNormalizada || undefined,
         sitioWeb: data.sitioWeb || undefined,
         urlGoogleMaps: data.urlGoogleMaps || undefined,
         facebook: data.facebook || undefined,
@@ -385,7 +385,18 @@ imagenPortada: imagenPortadaNormalizada || undefined,
         await update({ role: "negocio" });
       }
 
-      const NewSlug =  data.slugNegocio;
+
+      if (!informacionNegocio) {
+        console.log("Actualizando rol y datos de negocio en sesión");
+        await update({
+          role: "negocio",
+          negocioId: response.negocio?.idNegocio,
+          negocioSlug: response.negocio?.slugNegocio,
+          negocioNombre: response.negocio?.nombreNegocio,
+        });
+      }
+
+      const NewSlug = data.slugNegocio;
 
 
       // Mostrar mensaje de éxito y redirigir

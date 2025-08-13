@@ -27,6 +27,7 @@ interface InformacionInicialNegocio {
   categoriaIds: string[];
   seccionesIds: string[];
   estadoNegocio: EstadoNegocio;
+  idNegocio?: string; // Opcional, si se necesita el ID del negocio
 }
 
 interface DatosPerfilNegocio {
@@ -247,6 +248,7 @@ export const actualizarPerfilNegocio = async (
       categoriaIds: updatedNegocio.categorias.map((cat) => cat.categoryId),
       seccionesIds: updatedNegocio.secciones.map((sec) => sec.sectionId),
       estadoNegocio: updatedNegocio.estado,
+      idNegocio: updatedNegocio.id, // Incluimos el ID del negocio actualizado  
     };
 
     return {

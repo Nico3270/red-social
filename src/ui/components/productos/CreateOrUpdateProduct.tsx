@@ -20,9 +20,6 @@ import {
 } from "@mui/material";
 import { AiOutlineCloudUpload } from "react-icons/ai";
 import { FaTrashAlt } from "react-icons/fa";
-import Image from "next/image";
-import { MdAddAPhoto } from "react-icons/md";
-import imageCompression from "browser-image-compression";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { createProduct, generateDescriptionFromText } from "@/ui/actions/productos/createNewProduct";
@@ -35,6 +32,7 @@ import { ProductStatus } from "@prisma/client";
 import { updateProduct } from "@/ui/actions/productos/updateProduct";
 import { ProductRedSocial } from "@/interfaces/productRedSocial.interface";
 import AutoUploadMedia from "../autoUpload/AutoUploadMedia";
+import { useProductosTransaccionesStore } from "@/store/productosTransacciones/productosTransaccionesStore";
 
 interface ProductFormData {
   nombre: string;
@@ -102,6 +100,8 @@ export default function CreateOrUpdateProduct({ product }: Props) {
   const { data: session } = useSession();
   // Obtenemos el id del dueño del negocio que actualizará su producto
   const id = session?.user.id;
+
+  const updateProductoStore = useProductosTransaccionesStore((state) => state.updateProducto);
 
   useEffect(() => {
     // Si viene el producto con el método rerset de useForm, insertamos estos valores del producto en el formulario
@@ -230,6 +230,13 @@ export default function CreateOrUpdateProduct({ product }: Props) {
           setAlert({ type: "error", message: "La sección seleccionada no existe." });
           return;
         }
+        if (product && product.id) {
+          updateProductoStore(product.id, {
+            nombre: data.nombre ,
+            precio: data.precio ,
+          })
+        }
+        
         // enlace creado para redirigir al usuario a la página del producto creado o actualizado
         const redirectUrl = `/${selectedCategorySlug}/${section.slug}/${result.product?.slug}`;
         setAlert({

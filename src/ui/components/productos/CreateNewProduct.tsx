@@ -35,6 +35,7 @@ import { IconType } from "react-icons";
 import Divider from "../divider/Divider";
 import { ProductStatus } from "@prisma/client";
 import AutoUploadMedia from "../autoUpload/AutoUploadMedia";
+import { useProductosTransaccionesStore } from "@/store/productosTransacciones/productosTransaccionesStore";
 
 
 
@@ -92,6 +93,7 @@ export default function CreateNewProduct() {
     const router = useRouter();
     const { data: session } = useSession();
     const id = session?.user.id;
+    const addProducto = useProductosTransaccionesStore((state) => state.addProducto);
 
 
     const filteredSections = initialData.secciones.filter(
@@ -175,6 +177,14 @@ export default function CreateNewProduct() {
                     setAlert({ type: "error", message: "La sección seleccionada no existe." });
                     return;
                 }
+                if (result.product) {
+                    addProducto({
+                        id: result.product.id,
+                        nombre: result.product.nombre,
+                        precio: result.product.precio,
+                    });
+                }
+
                 const redirectUrl = `/${selectedCategorySlug}/${section.slug}/${result.product?.slug}`;
                 setAlert({ type: "success", message: "Producto creado exitosamente." });
                 router.push(redirectUrl);
@@ -370,7 +380,7 @@ export default function CreateNewProduct() {
             <FormControl>
                 <FormLabel sx={{ mb: 1, color: 'info.main', fontWeight: "bold", }}>Imagenes del producto</FormLabel>
                 <AutoUploadMedia
-                   
+
                     multiple={multiple}
                     onChange={(urls) => setUploadedImages(
                         Array.isArray(urls) ? urls : urls ? [urls] : []

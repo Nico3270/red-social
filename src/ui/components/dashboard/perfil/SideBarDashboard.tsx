@@ -8,6 +8,7 @@ import { FaUser, FaBox, FaShoppingCart, FaHome, FaUserEdit } from "react-icons/f
 import { useSidebarStore } from "@/store/sideBar/sideBar-store";
 import { IoMdAddCircle } from "react-icons/io";
 import { FaFilePen, FaMoneyBillTransfer } from "react-icons/fa6";
+import { useSession } from "next-auth/react";
 
 interface NavItem {
   name: string;
@@ -15,19 +16,24 @@ interface NavItem {
   icon: React.ReactNode;
 }
 
-const navItems: NavItem[] = [
+
+
+const SideBarDashboard: React.FC = () => {
+  const { isSidebarOpen } = useSidebarStore();
+  const pathname = usePathname();
+  const { data: session } = useSession();
+  const slug = session?.user?.negocioSlug || null;
+
+  const navItems: NavItem[] = [
   { name: "Inicio", path: "/dashboard", icon: <FaHome /> },
   { name: "Perfil", path: "/dashboard/perfil", icon: <FaUser /> },
+  { name: "Perfil 2", path: `/perfil/${slug}`, icon: <FaUser /> },
   { name: "Nuevo producto", path: "/dashboard/productos/nuevo_producto", icon: <IoMdAddCircle /> },
   { name: "Productos", path: "/dashboard/productos", icon: <FaBox /> },
   { name: "Nueva Publicación", path: "/dashboard/crear-publicacion", icon: <FaFilePen /> },
   { name: "Transacciones", path: "/dashboard/transacciones", icon: <FaMoneyBillTransfer /> },
   { name: "Editar Perfil", path: "/dashboard/editar-perfil", icon: <FaUserEdit /> },
 ];
-
-const SideBarDashboard: React.FC = () => {
-  const { isSidebarOpen } = useSidebarStore();
-  const pathname = usePathname();
 
   return (
     <div className="flex flex-col h-full bg-gray-800 text-white">
@@ -51,11 +57,10 @@ const SideBarDashboard: React.FC = () => {
             <li key={item.path}>
               <Link
                 href={item.path}
-                className={`flex items-center p-2 rounded-lg transition-colors duration-200 ${
-                  pathname === item.path
+                className={`flex items-center p-2 rounded-lg transition-colors duration-200 ${pathname === item.path
                     ? "bg-gray-700 text-white"
                     : "text-gray-300 hover:bg-gray-700 hover:text-white"
-                }`}
+                  }`}
                 aria-label={item.name}
               >
                 <span className="text-xl">{item.icon}</span>

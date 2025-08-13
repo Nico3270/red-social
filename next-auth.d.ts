@@ -14,6 +14,9 @@ declare module "next-auth" {
     role: string;
     ciudad?: string;            // <-- Nuevo campo agregado
     emailVerified?: Date | null;
+    negocioId?: string | null;  // Nuevo campo
+    negocioSlug?: string | null; // Nuevo campo
+    negocioNombre?: string | null; // Nuevo campo
   }
 
   interface Session extends DefaultSession {
@@ -28,6 +31,9 @@ declare module "next-auth" {
     role: string;
     ciudad?: string;
     emailVerified?: Date | null;
+    negocioId?: string | null;   // Nuevo campo
+    negocioSlug?: string | null; // Nuevo campo
+    negocioNombre?: string | null; // Nuevo campo
   }
 
   interface CustomUser {
@@ -37,6 +43,8 @@ declare module "next-auth" {
     role: string;
     ciudad?: string;
     emailVerified?: Date | null;
- 
+    negocioId?: string | null;   // Nuevo campo
+    negocioSlug?: string | null; // Nuevo campo
+    negocioNombre?: string | null; // Nuevo campo
   }
 }

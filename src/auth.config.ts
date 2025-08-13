@@ -51,6 +51,17 @@ export const authConfig: NextAuthConfig = {
     async jwt({ token, user, trigger, session }) {
       // Al iniciar sesión
       if (user && "id" in user) {
+
+        const usuarioConNegocio = await prisma.usuario.findUnique({
+          where: { id: user.id },
+          include: {
+            negocio: {
+              select: { id: true, slug: true, nombre: true },
+            },
+          },
+        });
+
+
         token.id = user.id;
         token.name = user.name;
         token.apellido = user.apellido ?? "";
@@ -58,11 +69,19 @@ export const authConfig: NextAuthConfig = {
         token.role = (user as any).role;
         token.emailVerified = (user as any).emailVerified ?? null;
         token.ciudad = (user as any).ciudad ?? null;
+
+        // Nuevos campos
+        token.negocioId = usuarioConNegocio?.negocio?.id ?? null;
+        token.negocioSlug = usuarioConNegocio?.negocio?.slug ?? null;
+        token.negocioNombre = usuarioConNegocio?.negocio?.nombre ?? null;
       }
 
       // Si se llama desde `update()`
-      if (trigger === "update" && session?.role) {
-        token.role = session.role;
+      if (trigger === "update") {
+        if (session?.role) token.role = session.role;
+        if (session?.negocioId) token.negocioId = session.negocioId;
+        if (session?.negocioSlug) token.negocioSlug = session.negocioSlug;
+        if (session?.negocioNombre) token.negocioNombre = session.negocioNombre;
       }
 
       return token;
@@ -77,6 +96,9 @@ export const authConfig: NextAuthConfig = {
         role: token.role as Role,
         emailVerified: token.emailVerified instanceof Date ? token.emailVerified : null,
         ciudad: token.ciudad as string,
+        negocioId: token.negocioId as string | null,
+        negocioSlug: token.negocioSlug as string | null,
+        negocioNombre: token.negocioNombre as string | null,
       };
       return session;
     },

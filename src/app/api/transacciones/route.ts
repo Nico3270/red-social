@@ -36,8 +36,10 @@ export async function GET(req: NextRequest) {
   // Default a último mes si no hay fechas (evita históricos masivos, elegante para UX inicial)
   if (!startDate && !endDate) {
     const now = new Date();
-    endDate = now.toISOString().split('T')[0]; // Hoy
-    startDate = new Date(now.setMonth(now.getMonth() - 1)).toISOString().split('T')[0]; // Hace 1 mes
+    endDate = now.toISOString(); // Hoy full ISO
+    const lastMonth = new Date(now);
+    lastMonth.setMonth(lastMonth.getMonth() - 1);
+    startDate = lastMonth.toISOString(); // Hace 1 mes full ISO
   }
 
   const where: Prisma.TransactionWhereInput = {
@@ -47,7 +49,7 @@ export async function GET(req: NextRequest) {
     ...(startDate || endDate ? {
       date: {
         ...(startDate ? { gte: new Date(startDate) } : {}),
-        ...(endDate ? { lte: new Date(`${endDate}T23:59:59.999Z`) } : {}),
+        ...(endDate ? { lte: new Date(endDate) } : {}),
       },
     } : {}),
   };
