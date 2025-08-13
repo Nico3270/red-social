@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react"; // Removido useRef, ya no se usa
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import {
   TransactionType,
@@ -9,7 +9,7 @@ import {
   PaymentMethod,
   Transaction,
 } from "@/transacciones/interfaces/types";
-import { addTransaction } from "@/transacciones/actions/addTransaction"; // Asumimos editTransaction existe similar a add
+import { addTransaction } from "@/transacciones/actions/addTransaction";
 import {
   Box,
   Grid,
@@ -110,34 +110,30 @@ const AddTransactionComponent: React.FC<AddTransactionProps> = ({ onTransactionA
     if (isEditMode && initialData) {
       reset({
         ...initialData,
+        amount: Number(initialData.amount),
         items: initialData.items.map(item => ({
           ...item,
-          id: crypto.randomUUID(), // Generar ID temporal para field array
-          isLocked: !!item.productId, // Bloquear si es producto
+          quantity: Number(item.quantity),
+          price: Number(item.price),
+          subtotal: Number(item.subtotal),
+          id: crypto.randomUUID(),
+          isLocked: !!item.productId,
         })),
       });
     }
   }, [initialData, isEditMode, reset]);
 
-  // Resetear category al cambiar type y manejar items solo para ingresos
-  useEffect(() => {
-    if (transactionType === TransactionType.Ingreso) {
-      setValue("category", IncomeCategory.Ventas);
-    } else {
-      setValue("category", ExpenseCategory.Materiales);
-      setValue("items", []); // Limpiar items para gastos
-    }
-  }, [transactionType, setValue]);
-
   // Función para calcular subtotal en una línea y actualizar total global
   const calculateSubtotal = (index: number) => {
     const item = watch(`items.${index}`);
-    const subtotal = (item.quantity || 0) * (item.price || 0);
+    const quantity = Number(item.quantity) || 0;
+    const price = Number(item.price) || 0;
+    const subtotal = quantity * price;
     setValue(`items.${index}.subtotal`, subtotal);
 
     // Calcular y actualizar total global inmediatamente
     const updatedItems = watch("items");
-    const total = updatedItems.reduce((sum, it) => sum + (it.subtotal || 0), 0);
+    const total = updatedItems.reduce((sum, it) => sum + (Number(it.subtotal) || 0), 0);
     setValue("amount", total);
   };
 
@@ -165,17 +161,17 @@ const AddTransactionComponent: React.FC<AddTransactionProps> = ({ onTransactionA
       const generatedDesc = data.items.map(item => `${item.description} x${item.quantity}`).join(", ");
 
       // Parsear data.date como local midnight explícitamente
-    const [year, month, day] = data.date.split('-').map(Number);
-    const selectedDateLocal = new Date(year, month - 1, day); // Crea 00:00 local
+      const [year, month, day] = data.date.split('-').map(Number);
+      const selectedDateLocal = new Date(year, month - 1, day); // Crea 00:00 local
 
-    // Agregar hora actual local
-    // Crear cadena de fecha/hora LOCAL explícita (YYYY-MM-DDTHH:mm:ss)
-    const now = new Date(); // Hora actual local
-    const localTimeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
-    const localDateStr = `${data.date}T${localTimeStr}`; // e.g., '2025-08-13T11:07:00'
+      // Agregar hora actual local
+      // Crear cadena de fecha/hora LOCAL explícita (YYYY-MM-DDTHH:mm:ss)
+      const now = new Date(); // Hora actual local
+      const localTimeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+      const localDateStr = `${data.date}T${localTimeStr}`; // e.g., '2025-08-13T11:07:00'
 
-    // Parsear como LOCAL (sin 'Z' para forzar timezone del navegador)
-    const fullDate = new Date(localDateStr);
+      // Parsear como LOCAL (sin 'Z' para forzar timezone del navegador)
+      const fullDate = new Date(localDateStr);
 
       const submitData = {
         ...data,
@@ -273,7 +269,23 @@ const AddTransactionComponent: React.FC<AddTransactionProps> = ({ onTransactionA
                     exclusive
                     fullWidth
                     sx={{ mb: 2, height: 48 }}
-                    onChange={(e, value) => value && field.onChange(value)}
+                    onChange={(e, value) => {
+                      if (value !== null) {
+                        const oldType = field.value; // Tipo actual antes del cambio
+                        field.onChange(value);
+                        if (oldType !== value) {
+                          if (value === TransactionType.Ingreso) {
+                            setValue("category", IncomeCategory.Ventas);
+                            // Opcional: Si quieres limpiar description: setValue("description", "");
+                          } else if (value === TransactionType.Gasto) {
+                            setValue("category", ExpenseCategory.Materiales);
+                            setValue("items", []);
+                            setValue("amount", 0);
+                            // Opcional: Si quieres limpiar otros campos
+                          }
+                        }
+                      }
+                    }}
                   >
                     <ToggleButton
                       value={TransactionType.Ingreso}
@@ -422,7 +434,11 @@ const AddTransactionComponent: React.FC<AddTransactionProps> = ({ onTransactionA
                                 <Controller
                                   name={`items.${index}.quantity`}
                                   control={control}
-                                  rules={{ required: true, min: 1 }}
+                                  rules={{ 
+                                    required: "Cantidad requerida", 
+                                    min: { value: 1, message: "Mínimo 1" },
+                                    validate: value => !isNaN(Number(value)) || "Debe ser un número válido"
+                                  }}
                                   render={({ field }) => (
                                     <TextField
                                       {...field}
@@ -431,7 +447,7 @@ const AddTransactionComponent: React.FC<AddTransactionProps> = ({ onTransactionA
                                       variant="outlined"
                                       fullWidth
                                       onChange={(e) => {
-                                        field.onChange(e);
+                                        field.onChange(e.target.value === '' ? '' : Number(e.target.value));
                                         calculateSubtotal(index);
                                       }}
                                       error={!!errors.items?.[index]?.quantity}
@@ -446,7 +462,11 @@ const AddTransactionComponent: React.FC<AddTransactionProps> = ({ onTransactionA
                                 <Controller
                                   name={`items.${index}.price`}
                                   control={control}
-                                  rules={{ required: true, min: 0.01 }}
+                                  rules={{ 
+                                    required: "Precio requerido", 
+                                    min: { value: 0.01, message: "Mínimo 0.01" },
+                                    validate: value => !isNaN(Number(value)) || "Debe ser un número válido"
+                                  }}
                                   render={({ field }) => (
                                     <TextField
                                       {...field}
@@ -455,7 +475,7 @@ const AddTransactionComponent: React.FC<AddTransactionProps> = ({ onTransactionA
                                       variant="outlined"
                                       fullWidth
                                       onChange={(e) => {
-                                        field.onChange(Number(e.target.value));
+                                        field.onChange(e.target.value === '' ? '' : Number(e.target.value));
                                         calculateSubtotal(index);
                                       }}
                                       error={!!errors.items?.[index]?.price}
@@ -468,7 +488,7 @@ const AddTransactionComponent: React.FC<AddTransactionProps> = ({ onTransactionA
                               </Grid>
                               <Grid item xs={4}>
                                 <TextField
-                                  value={watch(`items.${index}.subtotal`).toFixed(2)}
+                                  value={(Number(watch(`items.${index}.subtotal`)) || 0).toFixed(2)}
                                   label="Total"
                                   variant="outlined"
                                   fullWidth
@@ -508,9 +528,24 @@ const AddTransactionComponent: React.FC<AddTransactionProps> = ({ onTransactionA
                   <Controller
                     name="amount"
                     control={control}
-                    rules={{ required: "El valor es requerido", min: { value: 0.01, message: "El valor debe ser mayor a 0" } }}
+                    rules={{ 
+                      required: "El valor es requerido", 
+                      min: { value: 0.01, message: "El valor debe ser mayor a 0" },
+                      validate: value => !isNaN(Number(value)) || "Debe ser un número válido"
+                    }}
                     render={({ field }) => (
-                      <TextField {...field} type="number" label="Valor" fullWidth variant="outlined" error={!!errors.amount} helperText={errors.amount?.message} inputProps={{ step: "0.01", min: "0" }} sx={{ borderRadius: 2 }} />
+                      <TextField
+                        {...field}
+                        type="number"
+                        label="Valor"
+                        fullWidth
+                        variant="outlined"
+                        error={!!errors.amount}
+                        helperText={errors.amount?.message}
+                        inputProps={{ step: "0.01", min: "0" }}
+                        sx={{ borderRadius: 2 }}
+                        onChange={(e) => field.onChange(e.target.value === '' ? '' : Number(e.target.value))}
+                      />
                     )}
                   />
                 </Grid>
@@ -530,7 +565,7 @@ const AddTransactionComponent: React.FC<AddTransactionProps> = ({ onTransactionA
             {/* Botón agregar con total al lado */}
             <Grid item xs={12} sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center", gap: 2 }}>
               <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-                Total: ${watch("amount").toFixed(2)}
+                Total: ${(Number(watch("amount")) || 0).toFixed(2)}
               </Typography>
               <Tooltip title={isSubmitting ? "Procesando..." : ""}>
                 <span>

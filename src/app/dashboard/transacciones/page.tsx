@@ -246,7 +246,7 @@ const Page = () => {
               Dashboard de Transacciones
             </Typography>
           )}
-          <Grid container spacing={1} justifyContent="center">
+          {/* <Grid container spacing={1} justifyContent="center">
             <Grid item xs={4}>
               <Card variant="outlined" sx={{ borderRadius: 3, borderColor: "grey.300" }}>
                 <CardContent sx={{ p: 1.5, textAlign: "center" }}>
@@ -283,7 +283,7 @@ const Page = () => {
                 </CardContent>
               </Card>
             </Grid>
-          </Grid>
+          </Grid> */}
         </Box>
       </Fade>
 
@@ -311,7 +311,7 @@ const Page = () => {
           <Suspense fallback={<Typography>Cargando transacciones...</Typography>}>
             <Fade in timeout={700}>
               <Box sx={{ maxWidth: "100%", overflowX: "auto" }}>
-                <ShowTransactions transactions={transactions} />
+                <ShowTransactions initialTransactions={transactions}  />
               </Box>
             </Fade>
           </Suspense>

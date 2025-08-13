@@ -1,13 +1,13 @@
-// app/api/resumenTransaccion/[id]/route.ts
+// app/api/eliminarTransaccion/[id]/route.ts
 
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma'; // Asegúrate de que esta sea la ruta correcta a tu cliente Prisma
 import { auth } from '@/auth.config'; // Asegúrate de que esta sea la ruta correcta a tu config de auth
 
-export async function GET(request: Request, context: { params: Promise<{ id: string }> }) {
+export async function DELETE(request: Request, context: { params: Promise<{ id: string }> }) {
   const params = await context.params;
   const { id } = params;
-  console.log(`[API] Recibiendo request para ID: ${id}`); // Log inicial
+  console.log(`[API] Recibiendo request DELETE para ID: ${id}`); // Log inicial
 
   // Validar ID
   if (!id || typeof id !== 'string') {
@@ -28,19 +28,6 @@ export async function GET(request: Request, context: { params: Promise<{ id: str
     console.log(`[API] Buscando transacción con ID: ${id}`);
     const transaction = await prisma.transaction.findUnique({
       where: { id },
-      include: {
-        order: {
-          include: {
-            items: {
-              include: {
-                product: {
-                  select: { id: true, nombre: true, slug: true },
-                },
-              },
-            },
-          },
-        },
-      },
     });
 
     if (!transaction) {
@@ -52,31 +39,16 @@ export async function GET(request: Request, context: { params: Promise<{ id: str
     // Verificar permiso
     if (transaction.usuarioId !== usuarioId) {
       console.log(`[API] Error: Permiso denegado - Usuario: ${usuarioId}, Owner: ${transaction.usuarioId}`);
-      return NextResponse.json({ ok: false, message: 'No tienes permiso para acceder a esta transacción' }, { status: 403 });
+      return NextResponse.json({ ok: false, message: 'No tienes permiso para eliminar esta transacción' }, { status: 403 });
     }
 
-    // Preparar respuesta
-    const responseData = {
-      date: transaction.date,
-      amount: transaction.amount,
-      description: transaction.description,
-      category: transaction.category,
-      paymentMethod: transaction.paymentMethod,
-      type: transaction.type,  // ¡Agrega esto!
-      orderItems: transaction.order?.items.map(item => ({
-        id: item.id,
-        description: item.description,
-        quantity: Number(item.quantity),
-        price: Number(item.price),
-        subtotal: Number(item.subtotal),
-        product: item.product
-          ? { id: item.product.id, nombre: item.product.nombre, slug: item.product.slug }
-          : null,
-      })) || null,
-    };
-    console.log(`[API] Respuesta preparada exitosamente para ID: ${id}`);
+    // Eliminar la transacción
+    await prisma.transaction.delete({
+      where: { id },
+    });
+    console.log(`[API] Transacción eliminada exitosamente para ID: ${id}`);
 
-    return NextResponse.json({ ok: true, message: 'Transacción encontrada', data: responseData }, { status: 200 });
+    return NextResponse.json({ ok: true, message: 'Transacción eliminada' }, { status: 200 });
   } catch (error) {
     console.error(`[API] Error interno al procesar ID: ${id} - Detalles:`, error);
     return NextResponse.json({ ok: false, message: 'Error interno del servidor' }, { status: 500 });

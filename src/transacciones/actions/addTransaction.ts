@@ -72,29 +72,29 @@ export const addTransaction = async (input: TransactionInput): Promise<{
         orderId = newOrder.id;
 
         await tx.orderItem.createMany({
-          data: input.items.map((item) => ({
-            description: item.description,
-            quantity: item.quantity,
-            price: item.price,
-            subtotal: item.subtotal,
-            orderId: newOrder.id,
-            productId: item.productId || null,
-          })),
-        });
+  data: input.items.map((item) => ({
+    description: item.description,
+    quantity: Number(item.quantity),
+    price: Number(item.price),
+    subtotal: Number(item.subtotal),
+    orderId: newOrder.id,
+    productId: item.productId || null,
+  })),
+});
       }
 
       const transaction = await tx.transaction.create({
-        data: {
-          date: transactionDate,
-          type: input.type,
-          description: generatedDescription,
-          category: input.category,
-          amount: input.amount,
-          paymentMethod: input.paymentMethod,
-          usuarioId,
-          orderId,
-        },
-      });
+  data: {
+    date: transactionDate,
+    type: input.type,
+    description: generatedDescription,
+    category: input.category,
+    amount: Number(input.amount),
+    paymentMethod: input.paymentMethod,
+    usuarioId,
+    orderId,
+  },
+});
 
       if (orderId) {
         await tx.order.update({

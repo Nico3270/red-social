@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useMemo } from "react";
-import { Box, Card, CardContent, Chip, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, Fade, FormControl, Grid, IconButton, InputLabel, MenuItem, Paper, Select, Skeleton, Snackbar, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tabs, Tab, TextField, Tooltip, Typography, useMediaQuery, useTheme, Button } from "@mui/material";
+import { Box, Card, CardContent, Chip, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, Fade, FormControl, Grid, IconButton, InputLabel, InputAdornment, MenuItem, Paper, Select, Skeleton, Snackbar, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tabs, Tab, TextField, Tooltip, Typography, useMediaQuery, useTheme, Button } from "@mui/material";
 import { Alert } from "@mui/material"; // Para Snackbar errors
 import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear, subDays, subWeeks, subMonths, subYears } from "date-fns";
 import { es } from "date-fns/locale";
@@ -14,6 +14,8 @@ import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query"; // Par
 import { useSession } from "next-auth/react"; // Para auth en client
 import Divider from "@/ui/components/divider/Divider";
 import TransactionDetailModal from "./TransactionDetailModal"; // Ajusta la ruta si es necesario
+import EditTransactionModal from "./EditTransactionModal"; // Ajusta la ruta si es necesario
+import DeleteTransactionModal from "./DeleteTransactionModal"; // Ajusta la ruta si es necesario
 
 interface ShowTransactionsProps {
   initialTransactions?: Transaction[]; // Opcional fallback
@@ -151,7 +153,7 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ initialTransactions
         newStart = startOfMonth(new Date(currentDate.getFullYear(), monthIndex, 1));
         newEnd = endOfMonth(newStart);
       }
-    } else if (activeTab === 'year') {
+    } else if (tab === 'year') {
       const year = parseInt(box);
       if (!isNaN(year)) {
         newStart = startOfYear(new Date(year, 0, 1));
@@ -239,6 +241,18 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ initialTransactions
     setDetailId(null);
   };
 
+  const handleTransactionUpdated = (updatedTransaction: Transaction) => {
+    queryClient.invalidateQueries({ queryKey: ['transacciones'] });
+    setOpenEdit(false);
+    setSelectedTransaction(null);
+  };
+
+  const handleTransactionDeleted = (deletedId: string) => {
+    queryClient.invalidateQueries({ queryKey: ['transacciones'] });
+    setOpenDelete(false);
+    setSelectedTransaction(null);
+  };
+
   const canGoOlder = true; // siempre se puede ir hacia atrás
   const canGoNewer = numPeriods > 6;
 
@@ -296,25 +310,24 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ initialTransactions
         </Fade>
         {/* Tabs para periodos (responsive) */}
         <Tabs value={activeTab} onChange={handleTabChange} variant={isMobile ? "scrollable" : "fullWidth"} scrollButtons="auto" sx={{ mb: 2 }}>
-          <Tab label="Día" value="day" icon={<BsCalendarEvent />} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, mx: 0.5, '&.Mui-selected': { bgcolor: 'primary.main', color: 'white', borderColor: 'primary.main' } }} />
-          <Tab label="Semana" value="week" icon={<BsCalendarWeek />} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, mx: 0.5, '&.Mui-selected': { bgcolor: 'primary.main', color: 'white', borderColor: 'primary.main' } }} />
-          <Tab label="Mes" value="month" icon={<BsCalendarMonth />} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, mx: 0.5, '&.Mui-selected': { bgcolor: 'primary.main', color: 'white', borderColor: 'primary.main' } }} />
-          <Tab label="Año" value="year" icon={<BsCalendar3 />} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, mx: 0.5, '&.Mui-selected': { bgcolor: 'primary.main', color: 'white', borderColor: 'primary.main' } }} />
-          <Tab label="Personalizado" value="custom" sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, mx: 0.5, '&.Mui-selected': { bgcolor: 'primary.main', color: 'white', borderColor: 'primary.main' } }} />
+          <Tab label="Día" value="day" icon={<BsCalendarEvent />} sx={{ border: '1px solid', textTransform: 'none', borderColor: 'divider', borderRadius: 1, mx: 0.5, '&.Mui-selected': { bgcolor: 'primary.main', color: 'white', borderColor: 'primary.main' } }} />
+          <Tab label="Semana" value="week" icon={<BsCalendarWeek />} sx={{ border: '1px solid', textTransform: 'none', borderColor: 'divider', borderRadius: 1, mx: 0.5, '&.Mui-selected': { bgcolor: 'primary.main', color: 'white', borderColor: 'primary.main' } }} />
+          <Tab label="Mes" value="month" icon={<BsCalendarMonth />} sx={{ border: '1px solid', textTransform: 'none',  borderColor: 'divider', borderRadius: 1, mx: 0.5, '&.Mui-selected': { bgcolor: 'primary.main', color: 'white', borderColor: 'primary.main' } }} />
+          <Tab label="Año" value="year" icon={<BsCalendar3 />} sx={{ border: '1px solid', textTransform: 'none',  borderColor: 'divider', borderRadius: 1, mx: 0.5, '&.Mui-selected': { bgcolor: 'primary.main', color: 'white', borderColor: 'primary.main' } }} />
+          <Tab label="Personalizado" value="custom" sx={{ border: '1px solid', textTransform: 'none',  borderColor: 'divider', borderRadius: 1, mx: 0.5, '&.Mui-selected': { bgcolor: 'primary.main', color: 'white', borderColor: 'primary.main' } }} />
         </Tabs>
         {/* Cajas para selección (chips con scroll horizontal, < > navegación) */}
         {activeTab !== 'custom' && (
           <Box sx={{
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: 1,
             mb: 2,
           }}>
             <IconButton
               onClick={() => setNumPeriods(n => n + 6)}
               disabled={!canGoOlder}
               sx={{
+                flexShrink: 0,
                 backgroundColor: 'white',
                 borderRadius: '50%',
                 boxShadow: 2,
@@ -336,27 +349,54 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ initialTransactions
               <BsArrowLeft />
             </IconButton>
 
-            {generateDateBoxes(activeTab).map((box, idx) => (
-              <Chip
-                key={idx}
-                label={box}
-                variant={box === selectedPeriod ? "filled" : "outlined"}
-                color="primary"
-                onClick={() => handleDateBoxClick(box)}
-                sx={{
-                  cursor: 'pointer',
-                  flexShrink: 0,
-                  maxWidth: '120px',
-                  '&:hover': {
-                    bgcolor: box === selectedPeriod ? 'primary.dark' : 'primary.light'
-                  }
-                }}
-              />
-            ))}
+            <Box
+              sx={{
+                flex: 1,
+                overflowX: 'auto',
+                display: 'flex',
+                gap: 1,
+                mx: 1,
+                flexWrap: 'nowrap',
+                justifyContent: 'space-between',
+                '&::-webkit-scrollbar': {
+                  height: '6px',
+                },
+                '&::-webkit-scrollbar-track': {
+                  background: 'transparent',
+                },
+                '&::-webkit-scrollbar-thumb': {
+                  background: 'rgba(0, 0, 0, 0.2)',
+                  borderRadius: '3px',
+                },
+                '&::-webkit-scrollbar-thumb:hover': {
+                  background: 'rgba(0, 0, 0, 0.4)',
+                },
+              }}
+            >
+              {generateDateBoxes(activeTab).map((box, idx) => (
+                <Chip
+                  key={idx}
+                  label={box}
+                  variant={box === selectedPeriod ? "filled" : "outlined"}
+                  color="primary"
+                  onClick={() => handleDateBoxClick(box)}
+                  sx={{
+                    cursor: 'pointer',
+                    flexShrink: 0,
+                    maxWidth: '120px',
+                    '&:hover': {
+                      bgcolor: box === selectedPeriod ? 'primary.dark' : 'primary.light'
+                    }
+                  }}
+                />
+              ))}
+            </Box>
+
             <IconButton
               onClick={() => setNumPeriods(n => Math.max(6, n - 6))}
               disabled={!canGoNewer}
               sx={{
+                flexShrink: 0,
                 backgroundColor: 'white',
                 borderRadius: '50%',
                 border: '1px solid #e0e0e0', // borde gris suave
@@ -441,11 +481,11 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ initialTransactions
             <TextField label="Buscar por descripción" value={search} onChange={(e) => setSearch(e.target.value)} fullWidth size="small" />
           </Grid>
         </Grid>
-         <Divider />
+        <Divider />
         {/* Tabla/Lista (responsive: tabla desktop, cards mobile) */}
         <Typography
           variant="subtitle1"
-          sx={{ mt: 3, mb: 2, fontWeight: 600, color: "grey.700" }}
+          sx={{ mt: 3, mb: 2, fontWeight: 600, color: "grey.900", align: "center",  textAlign: "center"  }}
         >
           Lista de transacciones
         </Typography>
@@ -463,7 +503,25 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ initialTransactions
               <Fade in key={`fade-mobile-${t.id}-${activeTab}`}>
                 <Card key={t.id} sx={{ bgcolor: t.type === TransactionType.Ingreso ? "green.50" : "red.50", p: 2, borderBottom: `4px solid ${theme.palette[t.type === TransactionType.Ingreso ? 'success' : 'error'].light}`, borderRadius: 2 }}>
                   <Typography><strong>Fecha:</strong> {formatISODate(t.date)}</Typography>
-                  <Typography sx={{ color: 'primary.main', cursor: 'pointer', textDecoration: 'underline' }} onClick={() => handleOpenDetail(t.id)} aria-label="Ver detalles"><strong>Descripción:</strong> {t.description}</Typography>
+                  <Typography
+                    sx={{
+                      cursor: 'pointer',
+                      color: 'text.primary',
+                      fontWeight: 500,
+                      padding: '4px 8px',
+                      borderRadius: '6px',
+                      transition: 'all 0.2s ease-in-out',
+                      '&:hover': {
+                        backgroundColor: 'primary.light',
+                        color: 'primary.contrastText',
+                        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                      }
+                    }}
+                    onClick={() => handleOpenDetail(t.id)}
+                    aria-label="Ver detalles"
+                  >
+                    {t.description}
+                  </Typography>
                   <Typography><strong>Categoría:</strong> {capitalize(t.category)}</Typography>
                   <Typography><strong>Monto:</strong> {t.type === TransactionType.Ingreso ? <ArrowUpward color="success" fontSize="small" sx={{ verticalAlign: 'middle' }} /> : <ArrowDownward color="error" fontSize="small" sx={{ verticalAlign: 'middle' }} />} ${t.amount.toLocaleString("es-CO")}</Typography>
                   <Typography><strong>Medio:</strong> {capitalize(t.paymentMethod)}</Typography>
@@ -483,12 +541,73 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ initialTransactions
             <Table stickyHeader>
               <TableHead>
                 <TableRow>
-                  <TableCell sx={{ borderRight: '1px solid rgba(224, 224, 224, 1)' }}>Fecha</TableCell>
-                  <TableCell sx={{ borderRight: '1px solid rgba(224, 224, 224, 1)', maxWidth: '200px' }}>Descripción</TableCell>
-                  <TableCell sx={{ borderRight: '1px solid rgba(224, 224, 224, 1)' }}>Categoría</TableCell>
-                  <TableCell sx={{ borderRight: '1px solid rgba(224, 224, 224, 1)' }}>Monto</TableCell>
-                  <TableCell sx={{ borderRight: '1px solid rgba(224, 224, 224, 1)' }}>Medio</TableCell>
-                  <TableCell sx={{ width: '150px' }}>Acciones</TableCell>
+                  <TableCell 
+                    sx={{ 
+                      borderRight: '1px solid rgba(224, 224, 224, 1)',
+                      backgroundColor: '#424242',
+                      color: 'white',
+                      fontWeight: 600,
+                      textAlign: "center" 
+                    }}
+                  >
+                    Fecha
+                  </TableCell>
+                  <TableCell 
+                    sx={{ 
+                      borderRight: '1px solid rgba(224, 224, 224, 1)', 
+                      maxWidth: '200px',
+                      backgroundColor: '#424242',
+                      color: 'white',
+                      fontWeight: 600,
+                      textAlign: "center" 
+                    }}
+                  >
+                    Descripción
+                  </TableCell>
+                  <TableCell 
+                    sx={{ 
+                      borderRight: '1px solid rgba(224, 224, 224, 1)',
+                      backgroundColor: '#424242',
+                      color: 'white',
+                      fontWeight: 600,
+                      textAlign: "center" 
+                    }}
+                  >
+                    Categoría
+                  </TableCell>
+                  <TableCell 
+                    sx={{ 
+                      borderRight: '1px solid rgba(224, 224, 224, 1)',
+                      backgroundColor: '#424242',
+                      color: 'white',
+                      fontWeight: 600,
+                      textAlign: "center" 
+                    }}
+                  >
+                    Monto
+                  </TableCell>
+                  <TableCell 
+                    sx={{ 
+                      borderRight: '1px solid rgba(224, 224, 224, 1)',
+                      backgroundColor: '#424242',
+                      color: 'white',
+                      fontWeight: 600,
+                      textAlign: "center" 
+                    }}
+                  >
+                    Medio
+                  </TableCell>
+                  <TableCell 
+                    sx={{ 
+                      width: '150px',
+                      backgroundColor: '#424242',
+                      color: 'white',
+                      fontWeight: 600,
+                      textAlign: "center" 
+                    }}
+                  >
+                    Acciones
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -505,7 +624,38 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ initialTransactions
                     >
                       <TableCell sx={{ borderRight: '1px solid rgba(224, 224, 224, 1)' }}>{formatISODate(t.date)}</TableCell>
                       <TableCell sx={{ borderRight: '1px solid rgba(224, 224, 224, 1)', maxWidth: '200px' }}>
-                        <Typography sx={{ color: 'primary.main', cursor: 'pointer', textDecoration: 'underline' }} onClick={() => handleOpenDetail(t.id)} aria-label="Ver detalles">{t.description}</Typography>
+
+                        <Typography
+                          sx={{
+                            cursor: 'pointer',
+                            color: 'text.primary',
+                            fontWeight: 500,
+                            position: 'relative',
+                            transition: 'color 0.2s ease-in-out',
+                            '&:hover': {
+                              color: 'primary.main',
+                            },
+                            '&::after': {
+                              content: '""',
+                              position: 'absolute',
+                              width: '0',
+                              height: '2px',
+                              bottom: '-2px',
+                              left: '0',
+                              backgroundColor: 'primary.main',
+                              transition: 'width 0.3s ease-in-out',
+                            },
+                            '&:hover::after': {
+                              width: '100%',
+                            }
+                          }}
+                          onClick={() => handleOpenDetail(t.id)}
+                          aria-label="Ver detalles"
+                        >
+                          {t.description}
+                        </Typography>
+
+
                       </TableCell>
                       <TableCell sx={{ borderRight: '1px solid rgba(224, 224, 224, 1)' }}>{capitalize(t.category)}</TableCell>
                       <TableCell sx={{ borderRight: '1px solid rgba(224, 224, 224, 1)' }}>
@@ -534,7 +684,7 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ initialTransactions
           {hasNextPage ? (
             <Button
               variant="contained"
-              color="primary"
+              color="info"
               onClick={() => fetchNextPage()}
               disabled={isFetchingNextPage}
               sx={{
@@ -578,6 +728,20 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ initialTransactions
             onClose={handleCloseDetail}
           />
         )}
+        {/* Modal de edición */}
+        <EditTransactionModal
+          open={openEdit}
+          onClose={() => { setOpenEdit(false); setSelectedTransaction(null); }}
+          transactionId={selectedTransaction?.id || null}
+          onTransactionUpdated={handleTransactionUpdated}
+        />
+        {/* Modal de eliminación */}
+        <DeleteTransactionModal
+          open={openDelete}
+          onClose={() => { setOpenDelete(false); setSelectedTransaction(null); }}
+          transactionId={selectedTransaction?.id || null}
+          onTransactionDeleted={handleTransactionDeleted}
+        />
       </Paper>
     </LocalizationProvider>
   );

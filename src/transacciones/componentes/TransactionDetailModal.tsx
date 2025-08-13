@@ -9,7 +9,7 @@ import { BsArrowUp, BsArrowDown } from "react-icons/bs";
 interface TransactionDetail {
     date: string;
     amount: number;
-    descripcion: string;
+    description: string;
     category: string; // Agregado desde la API
     paymentMethod: string; // Agregado desde la API
     type: string; // Agregado para indicar si es ingreso o gasto
@@ -134,7 +134,7 @@ const TransactionDetailModal: React.FC<TransactionDetailModalProps> = ({
                                     <p><strong>Fecha:</strong> {new Date(data.date).toLocaleDateString("es-ES", { year: "numeric", month: "long", day: "numeric" })} a las {new Date(data.date).toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })}</p>
                                     <p><strong>Medio de Pago:</strong> {data.paymentMethod}</p>
                                     <p><strong>Categoría:</strong> {data.category}</p>
-                                    <p><strong>Descripción:</strong> {data.descripcion}</p>
+                                    <p><strong>Descripción:</strong> {data.description}</p>
                                 </div>
 
                                 {/* Tabla de items si existen */}
