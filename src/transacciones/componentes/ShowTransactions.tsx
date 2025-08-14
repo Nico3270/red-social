@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useMemo } from "react";
-import { Box, Card, CardContent, Chip, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, Fade, FormControl, Grid, IconButton, InputLabel, InputAdornment, MenuItem, Paper, Select, Skeleton, Snackbar, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tabs, Tab, TextField, Tooltip, Typography, useMediaQuery, useTheme, Button } from "@mui/material";
+import { Box, Card, CardContent, Chip, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, Fade, FormControl, Grid, IconButton, InputLabel, MenuItem, Paper, Select, Skeleton, Snackbar, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tabs, Tab, TextField, Tooltip, Typography, useMediaQuery, useTheme, Button } from "@mui/material";
 import { Alert } from "@mui/material"; // Para Snackbar errors
 import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear, subDays, subWeeks, subMonths, subYears } from "date-fns";
 import { es } from "date-fns/locale";
@@ -16,6 +16,7 @@ import Divider from "@/ui/components/divider/Divider";
 import TransactionDetailModal from "./TransactionDetailModal"; // Ajusta la ruta si es necesario
 import EditTransactionModal from "./EditTransactionModal"; // Ajusta la ruta si es necesario
 import DeleteTransactionModal from "./DeleteTransactionModal"; // Ajusta la ruta si es necesario
+import * as XLSX from 'xlsx';
 
 interface ShowTransactionsProps {
   initialTransactions?: Transaction[]; // Opcional fallback
@@ -76,6 +77,7 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ initialTransactions
   const [numPeriods, setNumPeriods] = useState(6);
   const [openDetail, setOpenDetail] = useState(false);
   const [detailId, setDetailId] = useState<string | null>(null);
+  const [isExporting, setIsExporting] = useState(false);
 
   // Fecha actual calculada automáticamente
   const currentDate = new Date();
@@ -153,7 +155,7 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ initialTransactions
         newStart = startOfMonth(new Date(currentDate.getFullYear(), monthIndex, 1));
         newEnd = endOfMonth(newStart);
       }
-    } else if (tab === 'year') {
+    } else if (activeTab === 'year') {
       const year = parseInt(box);
       if (!isNaN(year)) {
         newStart = startOfYear(new Date(year, 0, 1));
@@ -187,18 +189,38 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ initialTransactions
     queryClient.invalidateQueries({ queryKey: ['transacciones'] });
   };
 
-  // Export CSV (de todas las cargadas)
-  const exportToCSV = () => {
-    const csvContent = "data:text/csv;charset=utf-8," +
-      "Fecha,Descripción,Categoría,Monto,Medio de Pago\n" +
-      allTransactions.map((t) => `${formatISODate(t.date)},${t.description},${capitalize(t.category)},${t.amount},${capitalize(t.paymentMethod)}`).join("\n");
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "transacciones.csv");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  // Export Excel (de todas las cargadas)
+  const exportToExcel = async () => {
+    setIsExporting(true);
+    try {
+      const startDateStr = selectedStartDate?.toISOString().split('T')[0];
+      const endDateStr = selectedEndDate?.toISOString().split('T')[0];
+      const params = new URLSearchParams({
+        ...(startDateStr && { startDate: startDateStr }),
+        ...(endDateStr && { endDate: endDateStr }),
+        ...(filterType !== 'all' && { type: filterType }),
+        ...(filterPayment !== 'all' && { paymentMethod: filterPayment }),
+      });
+      const res = await fetch(`/api/transaccionesExcel?${params.toString()}`);
+      if (!res.ok) throw new Error('Error en fetch');
+      const { data } = await res.json();
+      const excelData = data.map((t: Transaction) => ({
+        Fecha: formatISODate(t.date),
+        Descripción: t.description,
+        Categoría: capitalize(t.category),
+        Monto: t.amount,
+        'Medio de Pago': capitalize(t.paymentMethod),
+      }));
+      const worksheet = XLSX.utils.json_to_sheet(excelData);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Transacciones");
+      XLSX.writeFile(workbook, "transacciones.xlsx");
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Error al exportar');
+      setOpenError(true);
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   // Sort local (post-fetch, para elegancia sin refetch)
@@ -707,7 +729,7 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ initialTransactions
         </Box>
         {/* Footer export */}
         <Box sx={{ mt: 2, display: "flex", justifyContent: "flex-end" }}>
-          <Button variant="outlined" startIcon={<GetAppOutlined />} onClick={exportToCSV}>Exportar CSV</Button>
+          <Button variant="outlined" startIcon={isExporting ? <CircularProgress size={20} /> : <GetAppOutlined />} onClick={exportToExcel} disabled={isExporting}>Exportar Excel</Button>
         </Box>
         {/* Modals edit/delete como antes */}
         {/* Error Modal */}

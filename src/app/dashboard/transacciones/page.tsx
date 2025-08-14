@@ -91,8 +91,8 @@ const Page = () => {
   // Navegación items
   const navItems = [
     { label: "Agregar", icon: <AddIcon />, value: "add" },
-    { label: "Gráficos", icon: <BarChartIcon />, value: "charts" },
     { label: "Transacciones", icon: <ListAltIcon />, value: "transactions" },
+    { label: "Gráficos", icon: <BarChartIcon />, value: "charts" },
   ];
 
   return (
