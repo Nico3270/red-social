@@ -41,6 +41,9 @@ model Negocio {
   updatedAt     DateTime      @updatedAt
   publicaciones Publicacion[] // Relación para reseñas y anuncios
   orders        Order[] // 🔹 Campo inverso para relación con Order
+  // 🔹 Campos inversos agregados
+  availability     BusinessAvailability? // relación 1:1
+  reservations     Reservation[] // relación 1:N
 
   @@index([ciudad])
   @@index([departamento])
@@ -106,7 +109,8 @@ model Usuario {
   interacciones   Interaccion[] @relation("UsuarioInteracciones")
   Transaction     Transaction[]
   orders          Order[] // 🔹 Campo inverso para relación con Order
-
+  reservations    Reservation[] // relación 1:N
+  
   @@index([username])
   @@index([email])
   @@index([role])
@@ -156,6 +160,55 @@ model Transaction {
 enum TransactionType {
   ingreso
   gasto
+}
+
+model BusinessAvailability {
+  id                           String    @id @default(cuid())
+  negocioId                    String    @unique // FK a Negocio, asegura 1:1
+  diasAtencion                 String[]  // Array de strings, e.g., ["Lunes", "Martes"]
+  franjaMananaInicio           String?   // Formato HH:mm, e.g., "08:00"
+  franjaMananaFin              String?   // Formato HH:mm, e.g., "12:00"
+  franjaTardeInicio            String?   // Formato HH:mm, e.g., "14:00"
+  franjaTardeFin               String?   // Formato HH:mm, e.g., "18:00"
+  intervaloMinutos             Int       // e.g., 15, 30
+  capacidadPorIntervalo        Int       // e.g., 1 para únicos, 10 para múltiples
+  duracionMinimaIntervalos     Int?      // Opcional, e.g., 2 si ocupa múltiples slots
+  camposCustom                 Boolean   @default(false) // Activa fields extra en reservas
+  createdAt                    DateTime  @default(now())
+  updatedAt                    DateTime  @updatedAt
+
+  // Relación
+  negocio                      Negocio   @relation(fields: [negocioId], references: [id], onDelete: Cascade)
+
+  @@index([negocioId]) // Para queries rápidas por negocio
+}
+
+model Reservation {
+  id                           String    @id @default(cuid())
+  negocioId                    String    // FK a Negocio
+  usuarioId                    String?   // FK a User, opcional si guest
+  nombre                       String    // Nombre del cliente
+  telefono                    String    // Teléfono del cliente
+  fechaHoraInicio              DateTime  // e.g., "2025-08-20T09:00:00Z"
+  fechaHoraFin                 DateTime? // Calculado, opcional si fijo por intervalo
+  notas                        String?   // Opcional, e.g., "Motivo: consulta"
+  estado                       ReservationStatus @default(PENDIENTE) // Enum definido abajo
+  createdAt                    DateTime  @default(now())
+  updatedAt                    DateTime  @updatedAt
+
+  // Relaciones
+  negocio                      Negocio   @relation(fields: [negocioId], references: [id], onDelete: Cascade)
+  usuario                      Usuario?     @relation(fields: [usuarioId], references: [id], onDelete: SetNull)
+
+  @@index([negocioId, fechaHoraInicio]) // Para chequeos de overbooking por slot
+  @@index([estado]) // Para filtros por estado en dashboards
+}
+
+enum ReservationStatus {
+  PENDIENTE
+  CONFIRMADA
+  CANCELADA
+  COMPLETADA
 }
 
 enum IncomeCategory {
