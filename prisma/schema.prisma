@@ -209,6 +209,7 @@ enum ReservationStatus {
   CONFIRMADA
   CANCELADA
   COMPLETADA
+  BLOQUEADA 
 }
 
 enum IncomeCategory {

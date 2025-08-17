@@ -61,6 +61,15 @@ export const authConfig: NextAuthConfig = {
           },
         });
 
+        // Verificar si el negocio tiene módulo de reservas activo
+        let configReservation = false;
+        if (usuarioConNegocio?.negocio?.id) {
+          const availabilityCount = await prisma.businessAvailability.count({
+            where: { negocioId: usuarioConNegocio.negocio.id },
+          });
+          configReservation = availabilityCount > 0;
+        }
+
 
         token.id = user.id;
         token.name = user.name;
@@ -69,11 +78,13 @@ export const authConfig: NextAuthConfig = {
         token.role = (user as any).role;
         token.emailVerified = (user as any).emailVerified ?? null;
         token.ciudad = (user as any).ciudad ?? null;
-
+        
         // Nuevos campos
         token.negocioId = usuarioConNegocio?.negocio?.id ?? null;
         token.negocioSlug = usuarioConNegocio?.negocio?.slug ?? null;
         token.negocioNombre = usuarioConNegocio?.negocio?.nombre ?? null;
+        token.configReservation = configReservation; // Nuevo campo agregado
+
       }
 
       // Si se llama desde `update()`
@@ -82,6 +93,7 @@ export const authConfig: NextAuthConfig = {
         if (session?.negocioId) token.negocioId = session.negocioId;
         if (session?.negocioSlug) token.negocioSlug = session.negocioSlug;
         if (session?.negocioNombre) token.negocioNombre = session.negocioNombre;
+        if (session?.configReservation !== undefined) token.configReservation = session.configReservation; // Permitir actualización
       }
 
       return token;
@@ -99,6 +111,7 @@ export const authConfig: NextAuthConfig = {
         negocioId: token.negocioId as string | null,
         negocioSlug: token.negocioSlug as string | null,
         negocioNombre: token.negocioNombre as string | null,
+        configReservation: token.configReservation as boolean, // Nuevo campo agregado
       };
       return session;
     },

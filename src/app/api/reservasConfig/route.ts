@@ -11,7 +11,7 @@ export interface ReservationDayData {
     fechaHoraInicio: string;
     fechaHoraFin?: string | null; // Permite null de DB
     notas?: string | null; // Ajuste clave: permite null, que Prisma devuelve para campos ?
-    estado: 'PENDIENTE' | 'CONFIRMADA' | 'CANCELADA' | 'COMPLETADA';
+    estado: 'PENDIENTE' | 'CONFIRMADA' | 'CANCELADA' | 'COMPLETADA' | "BLOQUEADA";
     usuarioId?: string | null;
   }
   

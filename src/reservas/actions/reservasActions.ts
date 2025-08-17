@@ -3,6 +3,8 @@
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth.config";
 import * as z from "zod";
+import { ReservationFormData } from "../componentes/AddReservationModal";
+import { ReservationStatus } from "@prisma/client";
 
 // Interface compartida para respuestas estandarizadas (elegante y reusable)
 interface ActionResponse {
@@ -16,12 +18,17 @@ const deleteSchema = z.object({
   reservaId: z.string().min(1, "ID de la reserva requerido"), // Corregí "id de la transaccion" a "reservaId" para claridad
 });
 
+
+
+
 // Schema para validación de changeStatusReservations
 const changeStatusSchema = z.object({
   negocioId: z.string().min(1, "ID del negocio requerido"),
   reservaId: z.string().min(1, "ID de la reserva requerido"),
   nuevoStatus: z.enum(["PENDIENTE", "CONFIRMADA", "CANCELADA", "COMPLETADA"]),
 });
+
+
 
 // Server Action: Eliminar una reserva (con verificación de ownership)
 export async function deleteReserva(data: unknown): Promise<ActionResponse> {
@@ -103,5 +110,72 @@ export async function changeStatusReservations(data: unknown): Promise<ActionRes
   } catch (error) {
     console.error("Error al cambiar status de reserva:", error);
     return { ok: false, message: "Error interno al cambiar el status de la reserva" };
+  }
+}
+
+
+
+// Schema para bloquear
+const blockSchema = z.object({
+  negocioId: z.string().min(1),
+  fechaHoraInicio: z.string(), // ISO
+  fechaHoraFin: z.string(),
+});
+
+
+// Opcional: Schema para validar reservaData (para más seguridad)
+const reservaSchema = z.object({
+  nombre: z.string(),
+  telefono: z.string(),
+  fechaHoraInicio: z.date(),
+  fechaHoraFin: z.date(),
+  notas: z.string(),
+  estado: z.literal('BLOQUEADA'),  // Fuerza solo 'BLOQUEADA' para este caso
+  negocioId: z.string(),
+  usuarioId: z.string().nullable(),
+});
+
+export async function blockSlot(data: unknown): Promise<ActionResponse> {
+  const session = await auth();
+  if (!session || !session.user?.id) return { ok: false, message: "No autenticado" };
+
+  const parsed = blockSchema.safeParse(data);
+  if (!parsed.success) return { ok: false, message: "Datos inválidos" };
+
+  const { negocioId, fechaHoraInicio, fechaHoraFin } = parsed.data;
+  console.log({ negocioId, fechaHoraInicio, fechaHoraFin });
+
+  try {
+    // Verificación de ownership
+    const negocio = await prisma.negocio.findUnique({ where: { id: negocioId } });
+    console.log("Negocio encontrado:", negocio);
+    if (!negocio || negocio.id !== session.user.negocioId) {
+      return { ok: false, message: "No tienes permiso para bloquear en este negocio" };
+    }
+
+    // Prepara y valida reservaData
+    const reservaData = {
+      nombre: "Bloqueado",
+      telefono: "N/A",
+      fechaHoraInicio: new Date(fechaHoraInicio),
+      fechaHoraFin: new Date(fechaHoraFin),
+      notas: "Bloqueo manual",
+      estado: ReservationStatus.BLOQUEADA,
+      negocioId,
+      usuarioId: session.user.id || null,
+    };
+    reservaSchema.parse(reservaData);  // Validación opcional con Zod
+    console.log("Intentando crear reserva con data:", reservaData);
+
+    // Crea reserva
+    const createdReserva = await prisma.reservation.create({
+      data: reservaData,
+    });
+    console.log("Reserva creada exitosamente:", createdReserva);
+
+    return { ok: true, message: "Slots bloqueados exitosamente" };
+  } catch (error) {
+    console.error("Error detallado en blockSlot:", error);
+    return { ok: false, message: "Error al bloquear: " + (error instanceof Error ? error.message : "Desconocido") };
   }
 }

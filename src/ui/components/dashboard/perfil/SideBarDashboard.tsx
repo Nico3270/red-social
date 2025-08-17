@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { FaUser, FaBox, FaShoppingCart, FaHome, FaUserEdit } from "react-icons/fa"; // Ejemplo de íconos
+import { FaUser, FaBox, FaHome, FaUserEdit, FaBook } from "react-icons/fa"; // Ejemplo de íconos
 import { useSidebarStore } from "@/store/sideBar/sideBar-store";
 import { IoMdAddCircle } from "react-icons/io";
 import { FaFilePen, FaMoneyBillTransfer } from "react-icons/fa6";
@@ -32,6 +32,7 @@ const SideBarDashboard: React.FC = () => {
   { name: "Productos", path: "/dashboard/productos", icon: <FaBox /> },
   { name: "Nueva Publicación", path: "/dashboard/crear-publicacion", icon: <FaFilePen /> },
   { name: "Transacciones", path: "/dashboard/transacciones", icon: <FaMoneyBillTransfer /> },
+  { name: "Reservas", path: "/dashboard/reservas", icon: <FaBook /> },
   { name: "Editar Perfil", path: "/dashboard/editar-perfil", icon: <FaUserEdit /> },
 ];
 

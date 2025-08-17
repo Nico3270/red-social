@@ -4,7 +4,7 @@
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth.config";
 import * as z from "zod";
-import { ReservationFormData } from "../componentes/AddReservationModal";
+
 
 
 // Schema para validación
@@ -18,6 +18,17 @@ const schema = z.object({
   notas: z.string().optional(),
   negocioId: z.string().optional(), // Solo si dueño
 });
+
+export interface ReservationFormData {
+  id?: string; // idReserva para edit
+  nombre: string;
+  telefono: string;
+  estado: 'PENDIENTE' | 'CONFIRMADA' | 'CANCELADA' | 'COMPLETADA' | 'BLOQUEADA';
+  fechaHoraInicio: string; // ISO string para consistencia
+  fechaHoraFin?: string;
+  notas?: string; // Opcional
+}
+
 
 interface Response {
   ok: boolean;

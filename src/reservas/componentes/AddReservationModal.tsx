@@ -16,7 +16,7 @@ export interface ReservationFormData {
   id?: string; // idReserva para edit
   nombre: string;
   telefono: string;
-  estado: 'PENDIENTE' | 'CONFIRMADA' | 'CANCELADA' | 'COMPLETADA';
+  estado: 'PENDIENTE' | 'CONFIRMADA' | 'CANCELADA' | 'COMPLETADA' | 'BLOQUEADA';
   fechaHoraInicio: string; // ISO string para consistencia
   fechaHoraFin?: string;
   notas?: string; // Opcional
@@ -33,9 +33,10 @@ interface AddReservationModalProps {
 
 // Schema Zod para validaciones (expandido para match full ReservationFormData)
 const formSchema = z.object({
+  id: z.string().optional(), // Agregamos id al schema para validación (optional)
   nombre: z.string().min(3, "Nombre requerido (mínimo 3 caracteres)"),
   telefono: z.string().min(7, "Teléfono requerido (mínimo 7 dígitos)"),
-  estado: z.enum(['PENDIENTE', 'CONFIRMADA', 'CANCELADA', 'COMPLETADA']),
+  estado: z.enum(['PENDIENTE', 'CONFIRMADA', 'CANCELADA', 'COMPLETADA', 'BLOQUEADA']),
   fechaHoraInicio: z.string().min(1, "Hora de inicio requerida"), // Ahora incluido y requerido
   fechaHoraFin: z.string().optional(),
   notas: z.string().optional(),
@@ -45,6 +46,7 @@ export default function AddReservationModal({ negocioId, horaInicio, horaFin, da
   const { register, handleSubmit, formState: { errors }, reset } = useForm<ReservationFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      id: '', // Default empty for create
       nombre: '',
       telefono: '',
       estado: 'PENDIENTE',
@@ -73,10 +75,14 @@ export default function AddReservationModal({ negocioId, horaInicio, horaFin, da
     setResponseMessage(result.message);
     setIsError(!result.ok);
     if (result.ok) {
+      console.log("Éxito en submit de AddReservationModal, llamando onSuccess y cerrando con delay");
       reset(); // Limpia form inmediatamente
-      setSubmitted(true); // Bloquea botón permanentemente post-éxito
-      if (onSuccess) onSuccess();
-      setTimeout(onClose, 2000); // Cierra modal
+      setSubmitted(true); // Bloqueo botón permanentemente post-éxito
+      if (onSuccess) onSuccess(); // Propaga refresh a padres inmediatamente
+      // Cierre local con delay para ver mensaje de éxito
+      setTimeout(() => {
+        onClose();
+      }, 1500); // 1.5s para feedback visual, asimilando a modales elegantes como en LinkedIn
     }
   };
 
@@ -108,6 +114,13 @@ export default function AddReservationModal({ negocioId, horaInicio, horaFin, da
         </h2>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          {/* Input hidden para id (persistente para update) */}
+          <input type="hidden" {...register("id")} />
+
+          {/* Inputs hidden para fechas (no editables, pero enviadas en submit) */}
+          <input type="hidden" {...register("fechaHoraInicio")} />
+          <input type="hidden" {...register("fechaHoraFin")} />
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
             <input
@@ -136,6 +149,7 @@ export default function AddReservationModal({ negocioId, horaInicio, horaFin, da
               <option value="CONFIRMADA">Confirmada</option>
               <option value="CANCELADA">Cancelada</option>
               <option value="COMPLETADA">Completada</option>
+              <option value="BLOQUEADA">Bloqueada</option>
             </select>
             {errors.estado && <p className="text-red-500 text-xs mt-1">{errors.estado.message}</p>}
           </div>

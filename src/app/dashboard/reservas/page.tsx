@@ -3,6 +3,7 @@
 
 import { auth } from "@/auth.config";
 import { ReservasDashboard } from "@/reservas/componentes/ReservasDashboard";
+import { redirect } from "next/navigation";
 
 
 export default async function ReservasPage() {
@@ -13,6 +14,12 @@ export default async function ReservasPage() {
     return <div>Unauthorized</div>;
   }
   const negocioId = session?.user?.negocioId;
+
+  // Si es false (o undefined por seguridad), redirigir a la ruta de creación
+  if (!session.user.configReservation) {
+    redirect("/dashboard/reservas/crear");
+  }
+
   return (
     <div>
       

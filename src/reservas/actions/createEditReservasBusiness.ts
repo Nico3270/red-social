@@ -20,6 +20,8 @@ const schema = z.object({
   negocioId: z.string().min(1, "ID de negocio requerido"), // Requerido siempre
 });
 
+
+
 // Tipo de retorno (con informacionReserva opcional)
 interface Response {
   ok: boolean;

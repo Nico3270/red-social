@@ -1,12 +1,14 @@
 // /components/dashboard/reservas/CrearReservasForm.tsx
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react"; // Agrego useState para loading/error
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { createEditReservasBusiness } from "../actions/createEditReservasBusiness";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation"; // Importa useRouter para redirecciones client-side
+import { useSession } from "next-auth/react";
+
 
 const diasSemana = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
 
@@ -53,6 +55,11 @@ export default function CrearReservasForm({ data, negocioId }: CrearReservasForm
     },
   });
 
+  const router = useRouter(); // Hook para redirecciones client-side
+  const [loading, setLoading] = useState(false); // Estado para loading (mejora UX)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null); // Estado para errores visibles
+  const { update } = useSession();
+
   const diasAtencion = watch("diasAtencion", []); // Monitorea el valor actual del form para checks
 
   // Pre-llenar form si data existe (modo edición)
@@ -76,17 +83,33 @@ export default function CrearReservasForm({ data, negocioId }: CrearReservasForm
 
   // Submit: Llama a action y maneja respuesta
   const onSubmit = async (formData: BusinessAvailabilityData) => {
+    setLoading(true); // Activa loading para UX responsive
+    setErrorMessage(null); // Limpia errores previos
     const result = await createEditReservasBusiness({ ...formData, negocioId });
+    setLoading(false); // Desactiva loading
+
     if (result.ok) {
-      console.log("Éxito:", result.message, result.informacionReserva); // Maneja UI success (e.g., toast)
-      redirect("/dashboard/reservas"); // Redirige a lista de reservas
+      console.log("Éxito:", result.message, result.informacionReserva); // Maneja UI success (e.g., toast futuro)
+      reset(); // Resetea form para limpieza
+      await update({ configReservation: true }); // Actualiza solo el campo necesario
+      router.push("/dashboard/reservas"); // Redirige con useRouter (suave y client-side)
+     
+
     } else {
-      console.error("Error:", result.message); // Maneja UI error
+      console.error("Error:", result.message);
+      setErrorMessage(result.message || "Ocurrió un error al procesar la configuración."); // Muestra error en UI
     }
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-2xl mx-auto">
+      {/* Muestra error si existe (elegante y no intrusivo) */}
+      {errorMessage && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+          <span className="block sm:inline">{errorMessage}</span>
+        </div>
+      )}
+
       {/* Días de Atención */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">Días de Atención</label>
@@ -98,6 +121,7 @@ export default function CrearReservasForm({ data, negocioId }: CrearReservasForm
             checked={diasAtencion.length === diasSemana.length}
             onChange={(e) => handleSelectAll(e.target.checked)}
             className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+            disabled={loading} // Deshabilita durante loading
           />
           <label htmlFor="selectAll" className="ml-2 text-sm text-gray-600">Seleccionar todos</label>
         </div>
@@ -110,6 +134,7 @@ export default function CrearReservasForm({ data, negocioId }: CrearReservasForm
                 checked={diasAtencion.includes(dia)}
                 onChange={(e) => handleDiasChange(dia, e.target.checked)}
                 className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                disabled={loading}
               />
               <label htmlFor={dia} className="ml-2 text-sm text-gray-600">{dia}</label>
             </div>
@@ -128,6 +153,7 @@ export default function CrearReservasForm({ data, negocioId }: CrearReservasForm
               type="time"
               {...register("franjaMananaInicio")}
               className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              disabled={loading}
             />
           </div>
           <div>
@@ -136,6 +162,7 @@ export default function CrearReservasForm({ data, negocioId }: CrearReservasForm
               type="time"
               {...register("franjaMananaFin")}
               className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              disabled={loading}
             />
           </div>
         </div>
@@ -147,6 +174,7 @@ export default function CrearReservasForm({ data, negocioId }: CrearReservasForm
             type="time"
             {...register("franjaTardeInicio")}
             className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            disabled={loading}
           />
         </div>
         <div>
@@ -155,6 +183,7 @@ export default function CrearReservasForm({ data, negocioId }: CrearReservasForm
             type="time"
             {...register("franjaTardeFin")}
             className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            disabled={loading}
           />
         </div>
       </div>
@@ -167,6 +196,7 @@ export default function CrearReservasForm({ data, negocioId }: CrearReservasForm
           <select
             {...register("intervaloMinutos", { valueAsNumber: true })}
             className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            disabled={loading}
           >
             <option value={15}>15</option>
             <option value={20}>20</option>
@@ -185,6 +215,7 @@ export default function CrearReservasForm({ data, negocioId }: CrearReservasForm
             min={1}
             max={50}
             className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            disabled={loading}
           />
           {errors.capacidadPorIntervalo && <p className="text-red-500 text-xs mt-1">{errors.capacidadPorIntervalo.message}</p>}
         </div>
@@ -201,6 +232,7 @@ export default function CrearReservasForm({ data, negocioId }: CrearReservasForm
             min={1}
             placeholder="Ej: 1"
             className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            disabled={loading}
           />
         </div>
         <div className="flex items-center mt-4 sm:mt-0">
@@ -209,6 +241,7 @@ export default function CrearReservasForm({ data, negocioId }: CrearReservasForm
             {...register("camposCustom")}
             id="camposCustom"
             className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+            disabled={loading}
           />
           <label htmlFor="camposCustom" className="ml-2 text-sm text-gray-600">Activar campos personalizados (ej: motivo)</label>
         </div>
@@ -217,9 +250,10 @@ export default function CrearReservasForm({ data, negocioId }: CrearReservasForm
       {/* Botón Submit */}
       <button
         type="submit"
-        className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+        disabled={loading} // Deshabilita durante submit para UX
+        className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {data?.id ? "Actualizar Configuración" : "Crear Configuración"}
+        {loading ? "Procesando..." : (data?.id ? "Actualizar Configuración" : "Crear Configuración")}
       </button>
     </form>
   );

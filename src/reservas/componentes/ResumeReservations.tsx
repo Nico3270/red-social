@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FaEdit, FaTrash, FaChevronDown, FaTimes, FaSpinner } from "react-icons/fa";
 import { ReservationDayData } from "@/app/api/reservasConfig/route"; // Ajusta la ruta según tu estructura
 import { changeStatusReservations, deleteReserva } from "../actions/reservasActions";
+import { EditReservationSlotSelector } from "./EditReservationSlotSelector"; // Importa el nuevo componente (ajusta ruta si es necesario)
 
 interface ResumeReservationsProps {
   slotTime: string;
@@ -12,7 +13,6 @@ interface ResumeReservationsProps {
   negocioId: string; // Requerida para server actions
   onClose: () => void;
   onSuccess?: () => void; // Nueva prop para refrescar padre después de éxito (similar a AddReservationModal)
-  onEdit?: (reservaId: string) => void;
 }
 
 const statusOptions: ReservationDayData["estado"][] = ["PENDIENTE", "CONFIRMADA", "CANCELADA", "COMPLETADA"];
@@ -22,6 +22,7 @@ const statusDisplayMap: Record<ReservationDayData["estado"], string> = {
   CONFIRMADA: "Confirmada",
   CANCELADA: "Cancelada",
   COMPLETADA: "Completada",
+  BLOQUEADA: "Bloqueada",
 };
 
 const ResumeReservations: React.FC<ResumeReservationsProps> = ({
@@ -30,7 +31,6 @@ const ResumeReservations: React.FC<ResumeReservationsProps> = ({
   negocioId,
   onClose,
   onSuccess = () => {},
-  onEdit = () => {},
 }) => {
   const [localReservas, setLocalReservas] = useState<ReservationDayData[]>(initialReservas); // State local para optimistic updates
   const [openStatusMenus, setOpenStatusMenus] = useState<Record<string, boolean>>({});
@@ -39,6 +39,10 @@ const ResumeReservations: React.FC<ResumeReservationsProps> = ({
   const [loading, setLoading] = useState(false);
   const [responseMessage, setResponseMessage] = useState<{ message: string; isError: boolean } | null>(null);
   const menuRefs = useRef<Record<string, HTMLDivElement | null>>({});
+
+  // Estados nuevos para manejar el modal de edición de slot
+  const [showEditSlotModal, setShowEditSlotModal] = useState(false);
+  const [selectedReserva, setSelectedReserva] = useState<ReservationDayData | null>(null);
 
   // Sync local con props iniciales si cambian (e.g., refresco externo)
   useEffect(() => {
@@ -79,8 +83,13 @@ const ResumeReservations: React.FC<ResumeReservationsProps> = ({
     setResponseMessage({ message: res.message, isError: !res.ok });
 
     if (res.ok) {
+      console.log("Eliminación exitosa, llamando onSuccess y cerrando modal en 1.5s");
       onSuccess(); // Notifica al padre para refrescar global (sync DB)
       setConfirmDeleteId(null);
+      // Cierre automático con delay para ver mensaje
+      setTimeout(() => {
+        onClose();
+      }, 1500); // 1.5 segundos para leer el mensaje de éxito
     } else {
       // Revertir optimistic si falla
       setLocalReservas(initialReservas); // O usa prev state si guardas
@@ -107,8 +116,13 @@ const ResumeReservations: React.FC<ResumeReservationsProps> = ({
     setResponseMessage({ message: res.message, isError: !res.ok });
 
     if (res.ok) {
+      console.log("Cambio de estado exitoso, llamando onSuccess y cerrando modal en 1.5s");
       onSuccess(); // Notifica al padre para refrescar global
       setConfirmChange(null);
+      // Cierre automático con delay
+      setTimeout(() => {
+        onClose();
+      }, 1500);
     } else {
       // Revertir optimistic si falla
       setLocalReservas(initialReservas);
@@ -119,6 +133,12 @@ const ResumeReservations: React.FC<ResumeReservationsProps> = ({
   const getCurrentStatus = (reservaId: string): ReservationDayData["estado"] => {
     const reserva = localReservas.find((r) => r.id === reservaId); // Usa local para optimistic
     return reserva?.estado || "PENDIENTE";
+  };
+
+  // Función para abrir el modal de selección de slot al editar
+  const handleEdit = (reserva: ReservationDayData) => {
+    setSelectedReserva(reserva);
+    setShowEditSlotModal(true);
   };
 
   return (
@@ -172,7 +192,7 @@ const ResumeReservations: React.FC<ResumeReservationsProps> = ({
                       </div>
                       <div className="flex items-center gap-2 mt-2 md:mt-0">
                         <button
-                          onClick={() => onEdit(reserva.id)}
+                          onClick={() => handleEdit(reserva)} // Abre el modal de selección de slot
                           className="p-2 text-blue-600 hover:bg-blue-100 rounded-full transition-colors"
                           aria-label="Editar reserva"
                         >
@@ -306,6 +326,23 @@ const ResumeReservations: React.FC<ResumeReservationsProps> = ({
                 )}
               </div>
             </div>
+          )}
+
+          {/* Integración del modal EditReservationSlotSelector */}
+          {showEditSlotModal && selectedReserva && (
+            <EditReservationSlotSelector
+              reservaData={selectedReserva as ReservationDayData} // Cast para compatibilidad de tipos
+              negocioId={negocioId}
+              onClose={() => setShowEditSlotModal(false)}
+              onSuccess={() => {
+                console.log("Edición exitosa desde EditReservationSlotSelector, llamando onSuccess y cerrando ResumeReservations en 1.5s");
+                onSuccess(); // Refresca dashboard
+                // Cierre automático con delay
+                setTimeout(() => {
+                  onClose(); // Cierra ResumeReservations
+                }, 1500);
+              }}
+            />
           )}
         </motion.div>
       </motion.div>
