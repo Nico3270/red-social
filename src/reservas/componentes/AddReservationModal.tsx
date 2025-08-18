@@ -72,6 +72,18 @@ export default function AddReservationModal({ negocioId, horaInicio, horaFin, da
     }
   }, [data, reset]);
 
+  // Pre-llenar nombre si usuario autenticado y no es edición (evita sobrescribir)
+  useEffect(() => {
+    if (status === "authenticated" && session?.user && !data?.id) { // Solo en creación
+      const fullName = `${session.user.name || ''} ${session.user.apellido || ''}`.trim();
+      if (fullName) {
+        setValue('nombre', fullName); // Pre-llenar nombre completo
+      }
+      // Si teléfono está disponible en sesión, pre-llenar (asume que podría agregarse en futuro)
+      // if (session.user.telefono) setValue('telefono', session.user.telefono);
+    }
+  }, [session, status, setValue, data]);
+
   const onSubmit: SubmitHandler<ReservationFormData> = async (formData) => {
     setLoading(true);
     // Si no es negocio, forzar estado a 'PENDIENTE' (seguridad adicional)

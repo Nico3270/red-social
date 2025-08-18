@@ -11,8 +11,9 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { login } from "@/actions/auth/login";
 import { registerUser } from "@/actions/auth/registerUser";
-import { signIn } from "next-auth/react";
+import { signIn, SignInResponse } from "next-auth/react";
 import { Alert } from "@mui/material";
+import { useSearchParams } from "next/navigation";
 
 const allCities = colombia.flatMap((d) =>
   d.ciudades.map((ciudad) => `${ciudad} - ${d.departamento}`)
@@ -44,6 +45,8 @@ export const RegisterForm = ({ negocio }: TipoUsuario) => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const suggestionsRef = useRef<HTMLUListElement>(null);
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/";
 
 
   const {
@@ -87,7 +90,7 @@ export const RegisterForm = ({ negocio }: TipoUsuario) => {
     if (negocio) {
       window.location.replace(`/crear_negocio/${response.user.id}`);
     } else {
-      window.location.replace("/perfil");
+      window.location.replace(callbackUrl);
     }
   };
 
@@ -95,12 +98,17 @@ export const RegisterForm = ({ negocio }: TipoUsuario) => {
     try {
       setIsPending(true); // Iniciar estado de carga
       // Autenticación con Google usando NextAuth
-      const response = await signIn("google", { redirect: false });
+
+      //TODO: Se debe redirigir a una ruta donde inserte información faltante como ciudad, género, fecha de nacimiento, etc.
+
+      const response: SignInResponse | undefined = await signIn("google", {
+        callbackUrl: callbackUrl,
+        redirect: false, // 👈 IMPORTANTE
+      });
 
       if (response?.error) {
-        // Si hay un error, mostrar mensaje
         setErrorMessage("No se pudo completar el inicio de sesión con Google");
-        setIsPending(false); // Terminar estado de carga si hay error
+        setIsPending(false);
       }
     } catch {
       setErrorMessage("No se pudo completar el inicio de sesión con Google");
@@ -133,7 +141,7 @@ export const RegisterForm = ({ negocio }: TipoUsuario) => {
     <div className="md:w-1/2 bg-white flex flex-col justify-center p-8">
       <div className="max-w-md w-full mx-auto">
         <h1 className="text-4xl font-bold mb-4 text-center">Crear una cuenta</h1>
-        <form  onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
             <label htmlFor="nombre" className="block font-bold">Nombre</label>
             <input
@@ -230,7 +238,7 @@ export const RegisterForm = ({ negocio }: TipoUsuario) => {
               )}
               placeholder="Ej. Medellín - Antioquia"
               autoComplete="off" // <- más confiable
-              onFocus={(e) => e.currentTarget.removeAttribute('readOnly')} 
+              onFocus={(e) => e.currentTarget.removeAttribute('readOnly')}
               name="fake_ciudad" // <- cambiar el "name" es clave
               id="ciudad-autocomplete-fix" // <- opcional para identificar
               spellCheck="false"

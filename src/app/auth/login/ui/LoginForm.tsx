@@ -7,21 +7,23 @@ import { IoInformationOutline } from "react-icons/io5";
 import clsx from "clsx";
 import { signIn } from "next-auth/react";
 import { authenticate } from "@/actions/auth/login";
-
+import { useSearchParams } from "next/navigation";
 
 export const LoginForm = () => {
   const [state, setState] = useState<
     "Idle" | "Loading" | "Success" | "Error" | "CredentialsSignin" | "UnknownError"
   >("Idle");
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/";
 
   // En esta parte se comprueba el estado de la autenticación y en caso de ser Success se redirige al usuario a la ruta principal, todo esto mediante
   // el useEffect
 
   useEffect(() => {
-    if (state === "Success") {
-      window.location.replace("/");
-    }
-  }, [state]);
+  if (state === "Success") {
+    window.location.replace(callbackUrl);
+  }
+}, [state, callbackUrl]);
 
 
 // Función para autenticación con Credentials
@@ -45,7 +47,7 @@ export const LoginForm = () => {
   // Función para hacer el Login mediante google
   const handleGoogleLogin = async () => {
     try {
-      await signIn("google", { callbackUrl: "/auth/completeRegister" });
+      await signIn("google", { callbackUrl });
 
     } catch {
       setState("Error");

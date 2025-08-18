@@ -1,8 +1,11 @@
 import { getConfigUserReservation, BusinessAvailabilityData } from "@/reservas/actions/getCongifUserReservation"; // Corrige 'getCongif' a 'getConfig' si es typo
 import ReservasUserDashboard from "@/reservas/componentes/ReservasUserDashboard";
 import { Metadata } from "next";
+import { FaExclamationTriangle } from "react-icons/fa";
+import { auth } from "@/auth.config"; // 👈 importa tu helper de NextAuth
+import Link from "next/link";
 
-import { FaExclamationTriangle } from "react-icons/fa"; // Icono para error, premium y temático
+
 
 // Configuración de cache: ISR para optimizar rendimiento (revalida cada 1 hora)
 export const revalidate = 3600;
@@ -30,9 +33,12 @@ interface Props {
 }
 
 export default async function ReservasPage({ params }: Props) {
+  // ✅ obtener sesión en servidor
+  const session = await auth();
   const { slug } = await params;
   let configReservation: { ok: boolean; config?: BusinessAvailabilityData } | null = null;
   let errorOccurred = false;
+   
 
   try {
     configReservation = await getConfigUserReservation(slug);
@@ -61,6 +67,28 @@ export default async function ReservasPage({ params }: Props) {
           >
             Reintentar
           </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!session) {
+    return (
+      <div className="sm:mt-40 flex min-h-screen items-center justify-center bg-gray-50 px-4">
+        <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-6 text-center space-y-4">
+          <FaExclamationTriangle className="mx-auto text-red-500 text-5xl mb-2" />
+          <h2 className="text-xl font-semibold text-gray-800">
+            Debes iniciar sesión
+          </h2>
+          <p className="text-gray-600 text-sm leading-relaxed">
+            Para solicitar una reserva en este negocio necesitas estar autenticado.
+          </p>
+          <Link
+            href={`/auth/login?callbackUrl=/reservas/${slug}`}
+            className="mt-4 inline-block px-4 py-2 bg-red-600 text-white rounded-md shadow-sm hover:bg-red-700 text-sm font-medium"
+          >
+            Iniciar sesión
+          </Link>
         </div>
       </div>
     );

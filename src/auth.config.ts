@@ -8,6 +8,15 @@ import bcryptjs from "bcryptjs";
 import { randomBytes } from "crypto";
 import { Role } from "@prisma/client";
 
+interface ExtendedUser {
+  id: string;
+  name: string;
+  apellido?: string;
+  email: string;
+  role: Role;
+  ciudad?: string;
+}
+
 export const authConfig: NextAuthConfig = {
   pages: {
     signIn: "/auth/login",

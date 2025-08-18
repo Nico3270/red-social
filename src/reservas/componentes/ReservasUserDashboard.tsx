@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { format, addDays, subDays, parse, startOfDay, addMinutes, isBefore } from "date-fns";
+import React, { useState, useEffect, useMemo } from "react";
+import { format, addDays, subDays, parse, startOfDay, addMinutes, isBefore, isSameDay } from "date-fns";
 import { es } from "date-fns/locale"; // Locale para español/Colombia
 import { FaArrowLeft, FaArrowRight, FaCalendarAlt } from "react-icons/fa";
 import { ReservationsResponse, ReservationDayData } from "@/app/api/reservasConfig/route"; // Asume paths correctos
@@ -150,6 +150,18 @@ const ReservasUserDashboard = ({ config, slug }: ReservasUserDashboardProps) => 
   const capitalizedDay = dayName.charAt(0).toUpperCase() + dayName.slice(1);
   const isAttendingDay = config.diasAtencion.includes(capitalizedDay);
 
+  // Filtrar slots: si es hoy, excluir slots pasados (basado en hora local actual)
+  const filteredSlots = useMemo(() => {
+    if (!isSameDay(currentDate, new Date())) {
+      return slots; // Para fechas futuras, mostrar todos
+    }
+    const now = new Date();
+    return slots.filter(slot => {
+      const slotDate = parse(slot, "HH:mm", currentDate);
+      return slotDate > now; // Solo slots futuros
+    });
+  }, [slots, currentDate]);
+
   return (
     <div className="p-4 max-w-4xl mx-auto bg-white rounded-xl shadow-md">
       {/* Navegación de Fecha (responsive: flex wrap en small) */}
@@ -198,7 +210,7 @@ const ReservasUserDashboard = ({ config, slug }: ReservasUserDashboardProps) => 
             Seleccione un horario disponible para realizar su reserva.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {slots.map((slot) => {
+            {filteredSlots.map((slot) => {
               const slotReservas = getReservasForSlot(slot);
               const maxCapacidad = config.capacidadPorIntervalo;
               const isBlocked = slotReservas.some((res) => res.estado === "BLOQUEADA");
