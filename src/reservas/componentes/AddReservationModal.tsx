@@ -1,25 +1,26 @@
 // /components/dashboard/reservas/AddReservationModal.tsx
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { FaTimes } from "react-icons/fa"; // Para close icon
-import { motion } from "framer-motion"; // Import corregido para motion (resuelve el error)
+import { motion } from "framer-motion"; // Import corregido para motion (corrige el error)
 import { createEditarReserva } from "../actions/createEditarReserva";
 import { format, parseISO } from "date-fns";
 import { es } from "date-fns/locale"; // Para idioma español
+import { useSession } from "next-auth/react";
 
-// Interface para datos de reserva (id opcional para edit)
+// Interface para datos de reserva (corrige el error de tipos)
 export interface ReservationFormData {
   id?: string; // idReserva para edit
   nombre: string;
   telefono: string;
-  estado: 'PENDIENTE' | 'CONFIRMADA' | 'CANCELADA' | 'COMPLETADA' | 'BLOQUEADA';
   fechaHoraInicio: string; // ISO string para consistencia
   fechaHoraFin?: string;
   notas?: string; // Opcional
+  estado: 'PENDIENTE' | 'CONFIRMADA' | 'CANCELADA' | 'COMPLETADA' | 'BLOQUEADA';
 }
 
 interface AddReservationModalProps {
@@ -43,7 +44,7 @@ const formSchema = z.object({
 });
 
 export default function AddReservationModal({ negocioId, horaInicio, horaFin, data, onClose, onSuccess }: AddReservationModalProps) {
-  const { register, handleSubmit, formState: { errors }, reset } = useForm<ReservationFormData>({
+  const { register, handleSubmit, formState: { errors }, reset, setValue } = useForm<ReservationFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       id: '', // Default empty for create
@@ -55,11 +56,14 @@ export default function AddReservationModal({ negocioId, horaInicio, horaFin, da
       notas: '',
     },
   });
-
   const [loading, setLoading] = useState(false);
   const [responseMessage, setResponseMessage] = useState<string | null>(null);
   const [isError, setIsError] = useState(false);
   const [submitted, setSubmitted] = useState(false); // Bloqueo post-submit
+  const { data: session, status } = useSession(); // Agrego status para chequeo explícito de autenticación
+  const roleUser = status === "authenticated" && session?.user?.role === "negocio" && session.user.negocioId === negocioId; // Chequeo robusto: solo true si autenticado y role negocio
+
+  
 
   // Pre-llenar si data para edit
   React.useEffect(() => {
@@ -70,6 +74,10 @@ export default function AddReservationModal({ negocioId, horaInicio, horaFin, da
 
   const onSubmit: SubmitHandler<ReservationFormData> = async (formData) => {
     setLoading(true);
+    // Si no es negocio, forzar estado a 'PENDIENTE' (seguridad adicional)
+    if (!roleUser) {
+      formData.estado = 'PENDIENTE';
+    }
     const result = await createEditarReserva({ ...formData, negocioId: negocioId || undefined });
     setLoading(false);
     setResponseMessage(result.message);
@@ -139,20 +147,25 @@ export default function AddReservationModal({ negocioId, horaInicio, horaFin, da
             />
             {errors.telefono && <p className="text-red-500 text-xs mt-1">{errors.telefono.message}</p>}
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Estado</label>
-            <select
-              {...register("estado")}
-              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="PENDIENTE">Pendiente</option>
-              <option value="CONFIRMADA">Confirmada</option>
-              <option value="CANCELADA">Cancelada</option>
-              <option value="COMPLETADA">Completada</option>
-              <option value="BLOQUEADA">Bloqueada</option>
-            </select>
-            {errors.estado && <p className="text-red-500 text-xs mt-1">{errors.estado.message}</p>}
-          </div>
+          {/* Campo de Estado: Condicional basado en roleUser */}
+          {roleUser && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Estado</label>
+              <select
+                {...register("estado")}
+                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500" // Ring verde para estados positivos
+              >
+                <option value="PENDIENTE">Pendiente</option>
+                <option value="CONFIRMADA">Confirmada</option>
+                <option value="CANCELADA">Cancelada</option>
+                <option value="COMPLETADA">Completada</option>
+                <option value="BLOQUEADA">Bloqueada</option>
+              </select>
+              {errors.estado && <p className="text-red-500 text-xs mt-1">{errors.estado.message}</p>}
+            </div>
+          )}
+          {/* Input hidden para estado si no es negocio (forzado a PENDIENTE) */}
+          {!roleUser && <input type="hidden" {...register("estado")} value="PENDIENTE" />}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Notas (opcional)</label>
             <textarea

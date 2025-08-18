@@ -37,10 +37,7 @@ interface Response {
 }
 
 export async function createEditarReserva(data: unknown): Promise<Response> {
-  const session = await auth();
-  if (!session) {
-    return { ok: false, message: "Usuario no autenticado" };
-  }
+  
 
   const parsed = schema.safeParse(data);
   if (!parsed.success) {
@@ -53,6 +50,11 @@ export async function createEditarReserva(data: unknown): Promise<Response> {
     let result;
     if (id) {
       // Modo edit: Verificar ownership
+
+      const session = await auth();
+  if (!session) {
+    return { ok: false, message: "Usuario no autenticado" };
+  }
       const existing = await prisma.reservation.findUnique({ where: { id } });
       if (!existing || (negocioId && existing.negocioId !== negocioId)) {
         return { ok: false, message: "No tienes permiso para editar esta reserva" };
@@ -63,7 +65,8 @@ export async function createEditarReserva(data: unknown): Promise<Response> {
       });
     } else {
       // Modo create: Asignar negocioId si dueño, o inferir si usuario
-      const finalNegocioId = negocioId || session.user.negocioId;
+      const finalNegocioId = negocioId ;
+      // const finalNegocioId = negocioId || session.user.negocioId;
       if (!finalNegocioId) {
         return { ok: false, message: "Negocio no especificado" };
       }
@@ -71,7 +74,7 @@ export async function createEditarReserva(data: unknown): Promise<Response> {
         data: {
           ...resData,
           negocioId: finalNegocioId,
-          usuarioId: session.user.id || null, // Si guest, null
+          // usuarioId: session.user.id || null, // Si guest, null
         },
       });
     }

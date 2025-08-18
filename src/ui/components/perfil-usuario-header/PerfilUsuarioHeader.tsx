@@ -12,6 +12,7 @@ import {
   FaRegNewspaper,
   FaStore,
   FaBriefcase,
+  FaCalendarCheck, // Nuevo icono para el botón de reserva (premium y temático)
 } from "react-icons/fa";
 import { Button } from "../button/Button";
 import clsx from "clsx";
@@ -47,6 +48,7 @@ export interface InformacionInicialNegocio {
   categoriaIds: string[];
   seccionesIds: string[];
   estadoNegocio: EstadoNegocio;
+  configReservation: boolean; // Indica si el negocio tiene reservas configuradas
 }
 
 export interface Product {
@@ -181,7 +183,7 @@ export default function PerfilUsuarioHeader({
                 <FaMapMarkerAlt className="text-gray-500" />
                 <span>
                   {`${informacionNegocio?.ciudadNegocio}, ${informacionNegocio?.departamentoNegocio}`}
-                  {informacionNegocio?.direccionNegocio && ` - ${informacionNegocio.direccionNegocio}`}
+                  {informacionNegocio?.direccionNegocio && ` - - ${informacionNegocio.direccionNegocio}`}
                 </span>
               </div>
               {informacionNegocio?.sitioWeb && (
@@ -201,7 +203,7 @@ export default function PerfilUsuarioHeader({
           {/* Right Column: Stats, Follow Button, and Social Links */}
           <div className="flex sm:mt-8 flex-col items-center gap-6">
             {/* Statistics */}
-            <div className="flex justify-around gap-6 sm:gap-8 text-center">
+            {/* <div className="flex justify-around gap-6 sm:gap-8 text-center">
               <div>
                 <p className="font-semibold text-lg text-gray-900">235</p>
                 <p className="text-gray-600 text-sm">Publicaciones</p>
@@ -223,7 +225,24 @@ export default function PerfilUsuarioHeader({
                   Seguir
                 </Button>
               </div>
-            </div>
+            </div> */}
+
+            {/* Botón de Solicitar Reserva (condicional, premium y responsive) */}
+            {informacionNegocio?.configReservation && (
+              <Link
+                href={`/reservas/${informacionNegocio.slugNegocio}`}
+                className="w-full sm:w-auto flex justify-center"
+              >
+                <Button
+                  variant="outline"
+                  className="text-sm sm:text-base px-4 py-2 bg-green-600 text-white hover:bg-green-700 transition-colors duration-200 shadow-sm font-semibold rounded-md flex items-center gap-2 focus:ring-2 focus:ring-green-500 focus:outline-none"
+                  aria-label="Solicitar reserva"
+                >
+                  <FaCalendarCheck className="text-xl" />
+                  Solicitar Reserva
+                </Button>
+              </Link>
+            )}
 
             {/* Social Media Links */}
             <div className="flex justify-around px-2 sm:gap-8 gap-6 pt-2">

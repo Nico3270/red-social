@@ -48,6 +48,7 @@ export interface InformacionInicialNegocio {
   categoriaIds: string[];
   seccionesIds: string[];
   estadoNegocio: EstadoNegocio;
+  configReservation: boolean; // Indica si el negocio tiene reservas configuradas
 }
 
 export interface DatosPerfilNegocio {
@@ -125,6 +126,14 @@ export const getInfoPerfilBySlugNegocio = async (slugNegocio: string): Promise<D
       };
     }
 
+    const negocioId = result.negocio.id;
+    let configReservation = false;
+    const availabilityCount = await prisma.businessAvailability.count({
+      where: { negocioId },
+    });
+    configReservation = availabilityCount > 0;
+
+
     const negocioFormateado: InformacionInicialNegocio = {
       nombreNegocio: result.negocio.nombre || "",
       slugNegocio: result.negocio.slug || "",
@@ -148,6 +157,7 @@ export const getInfoPerfilBySlugNegocio = async (slugNegocio: string): Promise<D
       categoriaIds: result.negocio.categorias.map((categoria) => categoria.categoryId) || [],
       seccionesIds: result.negocio.secciones.map((seccion) => seccion.sectionId) || [],
       estadoNegocio: result.negocio.estado || EstadoNegocio.activo,
+      configReservation
     };
 
     return {
