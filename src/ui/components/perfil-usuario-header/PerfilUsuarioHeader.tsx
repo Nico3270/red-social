@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   FaMapMarkerAlt,
   FaLink,
@@ -24,6 +24,8 @@ import Link from "next/link";
 import { SiGooglemaps } from "react-icons/si";
 import FeedPublicaciones from "@/publicaciones/componentes/FeedPublicaciones";
 import { PublicacionSencilla } from "@/publicaciones/interfaces/publicacionSencilla.interface";
+import ServicioViewer from "@/servicios/componentes/ServicioViewer";
+import { ServicioData } from "@/servicios/interfaces/servicios.interface";
 
 export interface InformacionInicialNegocio {
   nombreNegocio: string;
@@ -85,6 +87,32 @@ export default function PerfilUsuarioHeader({
   const [activeTab, setActiveTab] = useState<"Publicaciones" | "Productos" | "Negocio">(
     activeTabComponent || "Publicaciones"
   );
+  const [servicios, setServicios] = useState<ServicioData[]>([]);
+  const [loadingServicios, setLoadingServicios] = useState(false);
+
+  useEffect(() => {
+  const fetchServicios = async () => {
+    if (activeTab === "Negocio" && informacionNegocio?.slugNegocio) {
+      try {
+        setLoadingServicios(true);
+        const res = await fetch(`/api/getServiciosBySlug?slug=${informacionNegocio.slugNegocio}`);
+        if (!res.ok) throw new Error("Error al obtener servicios");
+        const data = await res.json();
+        
+        // Corrección clave: Extrae 'servicios' del objeto data
+        setServicios(data.servicios || []);  // Si no hay 'servicios', usa array vacío
+        
+      } catch (err) {
+        console.error(err);
+        setServicios([]);
+      } finally {
+        setLoadingServicios(false);
+      }
+    }
+  };
+
+  fetchServicios();
+}, [activeTab, informacionNegocio?.slugNegocio]);
 
   const redes = [
     {
@@ -340,33 +368,32 @@ export default function PerfilUsuarioHeader({
               )}
             </div>
           )}
+
+          {/* Información del Negocio */}
           {activeTab === "Negocio" && (
             <div className="flex flex-col gap-4 text-gray-700">
-              <div className="flex items-center gap-3 text-base sm:text-lg">
-                <FaBriefcase className="text-yellow-600 text-xl" />
-                <h2 className="font-semibold text-gray-900">Sobre el Negocio</h2>
-              </div>
-              <p className="text-gray-700 text-sm sm:text-base leading-relaxed">
-                {informacionNegocio?.descripcionNegocio ||
-                  "No hay descripción disponible para este negocio."}
-              </p>
-              {informacionNegocio?.telefonoNegocio && (
-                <p className="text-gray-600 text-sm sm:text-base">
-                  <strong>Teléfono:</strong> {informacionNegocio.telefonoNegocio}
-                </p>
-              )}
-              {informacionNegocio?.urlGoogleMaps && (
-                <Link
-                  href={informacionNegocio.urlGoogleMaps}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-blue-600 hover:text-blue-700 transition-colors"
-                >
-                  <SiGooglemaps className="text-xl" />
-                  <span>Ver en Google Maps</span>
-                </Link>
-              )}
-            </div>
+  <h2 className="flex items-center justify-center gap-2 font-semibold text-gray-900 text-lg sm:text-xl">
+    <FaBriefcase className="text-yellow-600 text-xl" />
+    Servicios del Negocio
+  </h2>
+
+  {loadingServicios ? (
+    <p className="text-gray-600 text-sm sm:text-base animate-pulse">
+      Cargando servicios, por favor espera...
+    </p>
+  ) : servicios.length > 0 ? (
+    <div className="flex flex-col gap-6">
+      {servicios.map((servicio, idx) => (
+        <ServicioViewer key={servicio.id || idx} servicio={servicio} />
+      ))}
+    </div>
+  ) : (
+    <p className="text-gray-600 text-sm sm:text-base">
+      No hay servicios disponibles para este negocio.
+    </p>
+  )}
+</div>
+
           )}
         </div>
       </div>

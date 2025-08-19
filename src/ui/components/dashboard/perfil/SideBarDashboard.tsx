@@ -9,6 +9,7 @@ import { useSidebarStore } from "@/store/sideBar/sideBar-store";
 import { IoMdAddCircle } from "react-icons/io";
 import { FaFilePen, FaMoneyBillTransfer } from "react-icons/fa6";
 import { useSession } from "next-auth/react";
+import { MdHomeRepairService } from "react-icons/md";
 
 interface NavItem {
   name: string;
@@ -33,6 +34,7 @@ const SideBarDashboard: React.FC = () => {
   { name: "Nueva Publicación", path: "/dashboard/crear-publicacion", icon: <FaFilePen /> },
   { name: "Transacciones", path: "/dashboard/transacciones", icon: <FaMoneyBillTransfer /> },
   { name: "Reservas", path: "/dashboard/reservas", icon: <FaBook /> },
+  { name: "Servicios", path: "/dashboard/servicios", icon: <MdHomeRepairService/> },
   { name: "Editar Perfil", path: "/dashboard/editar-perfil", icon: <FaUserEdit /> },
 ];
 

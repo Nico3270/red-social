@@ -195,12 +195,9 @@ const AutoUploadMedia: React.FC<AutoUploadMediaProps> = ({
         }
         if (data.secure_url) {
           const newUploadedMedia = { url: data.secure_url, publicId: data.public_id };
-          setUploadedMedia((prev) => {
-            const updated = multiple ? [...prev, newUploadedMedia] : [newUploadedMedia];
-            onChange(multiple ? updated.map((m) => m.url) : updated[0]?.url || undefined);
-            return updated;
-          });
-        } else {
+          setUploadedMedia((prev) => (multiple ? [...prev, newUploadedMedia] : [newUploadedMedia]));
+        }
+        else {
           throw new Error("No se subió el archivo.");
         }
       } catch (error) {
@@ -299,16 +296,16 @@ const AutoUploadMedia: React.FC<AutoUploadMediaProps> = ({
   return (
     <div className="mb-6">
       {titulo && (
-  <h1 className={`text-xl font-semibold shadow-md border border-gray-400 py-1 rounded-lg text-center text-gray-600 mb-4 ${titulo1.className}`}>
-    {titulo}
-  </h1>
-)}
+        <h1 className={`text-xl font-semibold shadow-md border border-gray-400 py-1 rounded-lg text-center text-gray-600 mb-4 ${titulo1.className}`}>
+          {titulo}
+        </h1>
+      )}
 
       <h3 className={`text-xl font-semibold text-center text-indigo-600 mb-4 ${titulo1.className}`}>
         {getTitleText()}
       </h3>
 
-      <div className="flex flex-wrap gap-4 mb-4">
+      <div className="flex flex-wrap gap-4 mb-4 justify-center">
         {renderMedia.map((img) => (
           <div key={img.id} className="relative w-64 h-64 mb-4 shadow-md rounded-lg overflow-hidden">
             {img.url.includes("video") ? (
