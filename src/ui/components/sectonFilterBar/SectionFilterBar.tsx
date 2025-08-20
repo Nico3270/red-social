@@ -2,10 +2,6 @@
 
 import React, { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import { ProductRedSocial } from "@/interfaces/productRedSocial.interface";
-import { IconType } from "react-icons";
-import * as FaIcons from "react-icons/fa";
-import * as RiIcons from "react-icons/ri";
-import * as GiIcons from "react-icons/gi";
 import clsx from "clsx";
 import { initialData } from "@/seed/seed";
 import { ProductGridProduct } from "../productos/ProductGridProduct";
@@ -73,10 +69,6 @@ export const ProductGridWithSectionFilter = ({ initialProducts, slug, take = 10 
       .sort((a, b) => a.order - b.order);
   }, [products]);
 
-  const getIconComponent = (iconName: string): IconType | null => {
-    return (FaIcons as any)[iconName] || (RiIcons as any)[iconName] || (GiIcons as any)[iconName] || null;
-  };
-
   const productosFiltrados = useMemo(() => {
     if (!selectedSectionId) return products;
     return products.filter((p) => p.sections.includes(selectedSectionId));
@@ -128,9 +120,9 @@ export const ProductGridWithSectionFilter = ({ initialProducts, slug, take = 10 
   const Loader = () => (
     <div className="flex justify-center items-center h-24">
       <div className="flex space-x-2">
-        <div className="w-3 h-3 bg-blue-600 rounded-full animate-bounce"></div>
-        <div className="w-3 h-3 bg-blue-600 rounded-full animate-bounce delay-100"></div>
-        <div className="w-3 h-3 bg-blue-600 rounded-full animate-bounce delay-200"></div>
+        <div className="w-3 h-3 bg-gray-600 rounded-full animate-bounce"></div>
+        <div className="w-3 h-3 bg-gray-600 rounded-full animate-bounce delay-100"></div>
+        <div className="w-3 h-3 bg-gray-600 rounded-full animate-bounce delay-200"></div>
       </div>
     </div>
   );
@@ -153,7 +145,6 @@ export const ProductGridWithSectionFilter = ({ initialProducts, slug, take = 10 
       <style>{styles}</style>
       <div className="flex overflow-x-auto justify-around gap-4 p-2 bg-white shadow rounded-xl mb-2">
         {seccionesConProductos.map((sec) => {
-          const Icon = getIconComponent(sec.iconName);
           const isSelected = selectedSectionId === sec.id;
           return (
             <button
@@ -161,16 +152,22 @@ export const ProductGridWithSectionFilter = ({ initialProducts, slug, take = 10 
               onClick={() => setSelectedSectionId(isSelected ? null : sec.id)}
               className={clsx(
                 "flex flex-col items-center justify-center px-3 py-0 rounded-xl transition-colors",
-                isSelected ? "bg-blue-100 text-blue-600" : "hover:bg-gray-100 text-gray-600"
+                isSelected ? "bg-gray-700 text-gray-100" : "hover:bg-gray-100 text-gray-600"
               )}
             >
               <div
                 className={clsx(
-                  "w-8 h-8 rounded-full flex items-center justify-center text-xl mb-1",
-                  isSelected ? "bg-blue-600 text-white" : "bg-gray-200"
+                  "w-8 h-8 rounded-full flex items-center justify-center mb-1 overflow-hidden",
+                  isSelected ? "bg-gray-600 text-white" : "bg-gray-100"
                 )}
               >
-                {Icon && <Icon />}
+                <img
+                  src={`/imgs/iconos/${sec.iconName}`}
+                  alt={sec.nombre}
+                  className="w-full h-full object-contain"
+                  loading="lazy" // Optimización para performance
+                  onError={(e) => { e.currentTarget.src = "/imgs/iconos/placeholder.png"; }} // Fallback elegante si la imagen falla
+                />
               </div>
               <span className="text-xs font-medium text-center">{sec.nombre}</span>
             </button>

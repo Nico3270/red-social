@@ -1,102 +1,128 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import Link from "next/link";
-import { MdDevicesOther, MdOutlinePhoneIphone } from "react-icons/md";
-import { FaTabletAlt, FaLaptop, FaHome, FaHeadphonesAlt, FaBirthdayCake } from "react-icons/fa";
-import { BsSmartwatch } from "react-icons/bs";
-import { IoBookSharp, IoTvSharp } from "react-icons/io5";
-import { GiClothes } from "react-icons/gi";
-import { FaSprayCanSparkles, FaPlateWheat, FaBasketShopping } from "react-icons/fa6";
-import { LuSandwich } from "react-icons/lu";
-import { GiTwirlyFlower } from "react-icons/gi";
-import { FaChildren} from "react-icons/fa6";
-import { MdFastfood } from "react-icons/md";
-import { textmenuSections } from "@/config/fonts";
-import { useState, useEffect } from 'react'
-
-
-
-
-// Mapeamos los íconos a un objeto para fácil acceso
-const IconSets: { [key: string]: React.ElementType } = {
-  MdDevicesOther,
-  FaSprayCanSparkles,
-  BsSmartwatch,
-  MdOutlinePhoneIphone,
-  IoBookSharp,
-  FaTabletAlt,
-  FaLaptop,
-  IoTvSharp,
-  GiClothes,
-  FaHome,
-  FaHeadphonesAlt,
-  LuSandwich,
-  GiTwirlyFlower,
-  FaChildren,
-  FaBirthdayCake,
-  FaPlateWheat,
-  FaBasketShopping,
-  MdFastfood,
-};
-
-// Secciones por defecto para la red social
-const defaultSections = [
-  { id: "1", name: "Carpintería", href: "carpinteria", iconName: "FaHome" },
-  { id: "2", name: "Mecánica", href: "mecanica", iconName: "MdDevicesOther" },
-  { id: "3", name: "Restaurantes", href: "restaurantes", iconName: "LuSandwich" },
-  { id: "4", name: "Decoración", href: "decoracion", iconName: "GiTwirlyFlower" },
-  { id: "5", name: "Moda", href: "moda", iconName: "GiClothes" },
-  { id: "6", name: "Eventos", href: "eventos", iconName: "FaBirthdayCake" },
-  { id: "7", name: "Eventos", href: "eventos", iconName: "FaBirthdayCake" },
-  { id: "8", name: "Eventos", href: "eventos", iconName: "FaBirthdayCake" },
-];
+import { motion } from "framer-motion"; // 🔥 Para animaciones
+import { initialData } from "@/seed/seed";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa"; // Icons elegantes para botones
 
 export const MenuSectionsBar = () => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [isClient, setIsClient] = useState(false)
- 
+  const [isClient, setIsClient] = useState(false);
+  const [showLeftButton, setShowLeftButton] = useState(false);
+  const [showRightButton, setShowRightButton] = useState(false);
+
   useEffect(() => {
-    setIsClient(true)
-  }, [])
+    setIsClient(true);
+  }, []);
+
+  // Detectar overflow y actualizar visibilidad de botones
+  useEffect(() => {
+    const checkOverflow = () => {
+      const container = scrollContainerRef.current;
+      if (!container) return;
+
+      const hasOverflow = container.scrollWidth > container.clientWidth;
+      setShowRightButton(hasOverflow); // Inicialmente, right si hay overflow
+      setShowLeftButton(false); // Left oculto al inicio
+
+      // Listener para actualizar basado en scroll position
+      const handleScroll = () => {
+        const scrollLeft = container.scrollLeft;
+        setShowLeftButton(scrollLeft > 0);
+        setShowRightButton(scrollLeft + container.clientWidth < container.scrollWidth);
+      };
+
+      container.addEventListener("scroll", handleScroll);
+      return () => container.removeEventListener("scroll", handleScroll);
+    };
+
+    checkOverflow();
+    window.addEventListener("resize", checkOverflow);
+    return () => window.removeEventListener("resize", checkOverflow);
+  }, [initialData.categorias.length]); // Re-chequear si cambian las categorías
+
+  const scrollLeft = () => {
+    scrollContainerRef.current?.scrollBy({ left: -200, behavior: "smooth" });
+  };
+
+  const scrollRight = () => {
+    scrollContainerRef.current?.scrollBy({ left: 200, behavior: "smooth" });
+  };
 
   return (
     <div className="relative w-full color-fondo-principal">
-  <div
-    ref={scrollContainerRef}
-    className="flex overflow-x-auto space-x-6 p-2 w-full rounded-lg no-scrollbar justify-around md:justify-around color-principal"
-    style={{ scrollBehavior: "smooth" }}
-  >
-    {defaultSections.length === 0
-      ? Array.from({ length: 5 }).map((_, index) => (
-          <div key={index} className="animate-pulse flex flex-col items-center text-center min-w-[80px] max-w-[100px] md:min-w-0">
-            <div className="w-6 h-6 bg-gray-300 rounded-full"></div>
-            <div className="mt-2 h-3 w-16 bg-gray-300 rounded"></div>
-          </div>
-        ))
-      : defaultSections.map((section) => {
-          const IconComponent = IconSets[section.iconName] || MdDevicesOther;
-
-          return (
-            <Link key={section.id} href={`/seccion/${section.href}`}>
-              <div className="flex flex-col items-center text-center w-[70px] sm:w-[80px] md:w-auto">
-                <IconComponent className="text-3xl md:text-xl color-iconos" /> {/* 🔥 Más grande en móvil, normal en desktop */}
-                <span
-                  className={`text-xs md:text-sm mt-1 text-center leading-tight  color-iconos`}
-                  style={{
-                    wordBreak: "break-word",
-                    whiteSpace: "normal",
-                    textWrap: "balance",
-                    minHeight: "32px", // 🔥 Mantiene espacio suficiente para dos líneas si es necesario
-                  }}
-                >
-                  {section.name}
-                </span>
+      <div
+        ref={scrollContainerRef}
+        className="flex flex-nowrap overflow-x-auto gap-6 p-2 rounded-lg color-principal scrollbar-hide"
+        style={{ scrollBehavior: "smooth" }}
+      >
+        {initialData.categorias.length === 0
+          ? Array.from({ length: 5 }).map((_, index) => (
+              <div
+                key={index}
+                className="animate-pulse flex flex-col items-center text-center min-w-[80px] sm:min-w-[100px] flex-shrink-0"
+              >
+                <div className="w-6 h-6 bg-gray-300 rounded-full"></div>
+                <div className="mt-2 h-3 w-16 bg-gray-300 rounded"></div>
               </div>
-            </Link>
-          );
-        })}
-  </div>
-</div>
+            ))
+          : initialData.categorias.map((section) => (
+              <Link key={section.id} href={`/seccion/${section.slug}`}>
+                <div className="flex flex-col items-center text-center min-w-[80px] sm:min-w-[100px] flex-shrink-0 cursor-pointer">
+                  <motion.img
+                    src={`/imgs/iconos/${section.iconName}`}
+                    alt={section.nombre}
+                    className="w-10 h-10 md:w-12 md:h-12 object-contain"
+                    whileHover={{ scale: 1.15, rotate: 5 }}
+                    whileTap={{ scale: 0.9 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 15 }}
+                  />
+                  <span
+                    className="text-xs md:text-sm mt-1 text-center leading-tight color-iconos"
+                    style={{
+                      wordBreak: "break-word",
+                      whiteSpace: "normal",
+                      textWrap: "balance",
+                      minHeight: "32px",
+                    }}
+                  >
+                    {section.nombre}
+                  </span>
+                </div>
+              </Link>
+            ))}
+      </div>
+
+      {/* Botones de navegación: Visibles solo en md+ y si hay overflow */}
+      {isClient && (
+        <>
+          {showLeftButton && (
+            <motion.button
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              
+              onClick={scrollLeft}
+              className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-900 bg-opacity-80 rounded-full p-2 shadow-md hidden md:block"
+              aria-label="Scroll izquierdo"
+            >
+              <FaChevronLeft className="text-gray-100" />
+            </motion.button>
+          )}
+          {showRightButton && (
+            <motion.button
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+            
+              onClick={scrollRight}
+              className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-900 bg-opacity-80 rounded-full p-2 shadow-md hidden md:block"
+              aria-label="Scroll derecho"
+            >
+              <FaChevronRight className="text-gray-100" />
+            </motion.button>
+          )}
+        </>
+      )}
+    </div>
   );
 };

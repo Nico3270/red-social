@@ -4,9 +4,11 @@ import React, { useState, useMemo, useTransition, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaTrash } from "react-icons/fa";
 import { createEncuestaNegocio } from "../actions/createEncuestaNegocio";
+
 import { TipoPregunta } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { editarEncuestaNegocio } from "../actions/editarEncuestaNegocio";
 
 // Interfaz actualizada para incluir id (necesario para relaciones)
 export interface Pregunta {
@@ -20,19 +22,19 @@ export interface Pregunta {
 
 interface CrearEncuestaNegocioProps {
   preguntas: Pregunta[];
+  preguntasSeleccionadas?: Pregunta[]; // Opcional para modo edición (inicializa seleccionadas)
 }
 
-const CrearEncuestaNegocio: React.FC<CrearEncuestaNegocioProps> = ({ preguntas }) => {
-  const [seleccionadas, setSeleccionadas] = useState<Pregunta[]>([]);
+const CrearEncuestaNegocio: React.FC<CrearEncuestaNegocioProps> = ({ preguntas, preguntasSeleccionadas }) => {
+  const [seleccionadas, setSeleccionadas] = useState<Pregunta[]>(preguntasSeleccionadas || []); // Inicializa con seleccionadas si edición
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [responseMessage, setResponseMessage] = useState<{ ok: boolean; message: string } | null>(null);
   const [isPending, startTransition] = useTransition();
   const { data: session } = useSession();
-  const { update } = useSession();
-
   const router = useRouter();
 
+  const isEditMode = !!preguntasSeleccionadas && preguntasSeleccionadas.length > 0; // Modo edición si recibe seleccionadas
   const slugNegocio = session?.user.negocioSlug || "dashboard/encuestas"; // Fallback si no hay slug
 
   // Dividir preguntas por tipo con memoización para performance
@@ -69,9 +71,14 @@ const CrearEncuestaNegocio: React.FC<CrearEncuestaNegocioProps> = ({ preguntas }
     setSeleccionadas(seleccionadas.filter((p) => p.texto !== pregunta.texto));
   };
 
-  const handleCrearEncuesta = () => {
+  const handleSubmit = () => {
     startTransition(async () => {
-      const result = await createEncuestaNegocio(seleccionadas);
+      let result;
+      if (isEditMode) {
+        result = await editarEncuestaNegocio(seleccionadas); // Llama a edit si modo edición
+      } else {
+        result = await createEncuestaNegocio(seleccionadas); // Llama a create si nuevo
+      }
       setResponseMessage(result);
     });
   };
@@ -79,25 +86,22 @@ const CrearEncuestaNegocio: React.FC<CrearEncuestaNegocioProps> = ({ preguntas }
   // Efecto para redirección después de éxito (con delay para ver toast)
   useEffect(() => {
     if (responseMessage?.ok) {
-      (async () => {
-        await update({ configEncuestas: true });
-        setTimeout(() => {
-          router.push(`/perfil/${slugNegocio}`);
-        }, 2000);
-      })();
+      const timer = setTimeout(() => {
+        router.push(`/perfil/${slugNegocio}`);
+      }, 2000); // 2 segundos para ver toast
+      return () => clearTimeout(timer);
     }
-  }, [responseMessage, router, slugNegocio, update]);
-
+  }, [responseMessage, router, slugNegocio]);
 
   return (
     <div className="min-h-screen bg-gray-50 p-6 md:p-12 flex flex-col items-center">
-      {/* Banner Explicativo: Elegante y centrado */}
+      {/* Banner Explicativo: Condicional para modo crear/editar */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         className="max-w-4xl text-center bg-white rounded-xl shadow-lg p-6 mb-8"
       >
-        <h1 className="text-2xl font-semibold text-gray-800 mb-4">Crea tu Encuesta Personalizada</h1>
+        <h1 className="text-2xl font-semibold text-gray-800 mb-4">{isEditMode ? "Edita tu Encuesta Personalizada" : "Crea tu Encuesta Personalizada"}</h1>
         <p className="text-gray-600 mb-4">
           Selecciona hasta 10 preguntas calificables (1-5 estrellas) y 5 abiertas (texto libre) para que tus clientes evalúen tus productos o servicios. Usa preguntas útiles y necesarias — encuestas cortas son más atractivas y aumentan las respuestas. Máximo total recomendado: 10-15 para evitar tedio.
         </p>
@@ -111,14 +115,15 @@ const CrearEncuestaNegocio: React.FC<CrearEncuestaNegocioProps> = ({ preguntas }
           <div className="space-y-4 max-h-[60vh] overflow-y-auto">
             {calificables.map((pregunta) => (
               <motion.div
-                key={pregunta.texto}
+                key={pregunta.id} // Cambia a id para unicidad (mejor que texto si duplicados posibles)
                 whileHover={{ scale: 1.02 }}
                 onClick={() => handleSeleccionar(pregunta)}
-                className={`cursor-pointer p-4 border rounded-lg shadow-sm transition-colors ${seleccionadas.includes(pregunta) ? "bg-green-100 border-green-500" : "bg-white hover:bg-gray-50"
-                  }`}
+                className={`cursor-pointer p-4 border rounded-lg shadow-sm transition-colors ${
+                  seleccionadas.some((s) => s.id === pregunta.id) ? "bg-green-100 border-green-500" : "bg-white hover:bg-gray-50"
+                }`}
               >
                 <p className="text-gray-700">{pregunta.texto}</p>
-                <p className="text-sm text-blue-600 font-medium">{pregunta.categoria}</p> {/* Color azul para destacar categoría */}
+                <p className="text-sm text-blue-600 font-medium">{pregunta.categoria}</p>
               </motion.div>
             ))}
           </div>
@@ -130,14 +135,15 @@ const CrearEncuestaNegocio: React.FC<CrearEncuestaNegocioProps> = ({ preguntas }
           <div className="space-y-4 max-h-[60vh] overflow-y-auto">
             {texto.map((pregunta) => (
               <motion.div
-                key={pregunta.texto}
+                key={pregunta.id}
                 whileHover={{ scale: 1.02 }}
                 onClick={() => handleSeleccionar(pregunta)}
-                className={`cursor-pointer p-4 border rounded-lg shadow-sm transition-colors ${seleccionadas.includes(pregunta) ? "bg-green-100 border-green-500" : "bg-white hover:bg-gray-50"
-                  }`}
+                className={`cursor-pointer p-4 border rounded-lg shadow-sm transition-colors ${
+                  seleccionadas.some((s) => s.id === pregunta.id) ? "bg-green-100 border-green-500" : "bg-white hover:bg-gray-50"
+                }`}
               >
                 <p className="text-gray-700">{pregunta.texto}</p>
-                <p className="text-sm text-blue-600 font-medium">{pregunta.categoria}</p> {/* Color azul para destacar categoría */}
+                <p className="text-sm text-blue-600 font-medium">{pregunta.categoria}</p>
               </motion.div>
             ))}
           </div>
@@ -149,7 +155,7 @@ const CrearEncuestaNegocio: React.FC<CrearEncuestaNegocioProps> = ({ preguntas }
           <div className="space-y-4 max-h-[60vh] overflow-y-auto">
             {seleccionadas.map((pregunta) => (
               <motion.div
-                key={pregunta.texto}
+                key={pregunta.id}
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 className="p-4 bg-green-50 border border-green-300 rounded-lg flex justify-between items-center"
@@ -170,13 +176,13 @@ const CrearEncuestaNegocio: React.FC<CrearEncuestaNegocioProps> = ({ preguntas }
               <p className="text-gray-500 text-center">Selecciona preguntas para armar tu encuesta.</p>
             )}
           </div>
-          {/* Botón Finalizar */}
+          {/* Botón Finalizar: Condicional para crear/editar */}
           <button
-            onClick={handleCrearEncuesta}
+            onClick={handleSubmit}
             disabled={seleccionadas.length === 0 || isPending}
             className="mt-4 w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition-colors disabled:bg-gray-300"
           >
-            {isPending ? "Creando..." : "Crear Encuesta"}
+            {isPending ? "Procesando..." : isEditMode ? "Editar Encuesta" : "Crear Encuesta"}
           </button>
         </div>
       </div>
@@ -211,15 +217,16 @@ const CrearEncuestaNegocio: React.FC<CrearEncuestaNegocioProps> = ({ preguntas }
         )}
       </AnimatePresence>
 
-      {/* Toast de Respuesta con AnimatePresence (positivo/negativo) */}
+      {/* Toast de Respuesta con AnimatePresence (positivo/negativo, adaptado para crear/editar) */}
       <AnimatePresence>
         {responseMessage && (
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 50 }}
-            className={`fixed bottom-4 right-4 p-4 rounded-lg shadow-lg text-white ${responseMessage.ok ? "bg-green-600" : "bg-red-600"
-              }`}
+            className={`fixed bottom-4 right-4 p-4 rounded-lg shadow-lg text-white ${
+              responseMessage.ok ? "bg-green-600" : "bg-red-600"
+            }`}
           >
             <p>{responseMessage.message}</p>
             <button

@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "npm run prisma:deploy && next build && npm run generate-sitemap",
+    "build": "npm run prisma:deploy && next build ",
     "generate-sitemap": "node generate-sitemap.js",
     "postbuild": "next-sitemap",
     "start": "next start",
