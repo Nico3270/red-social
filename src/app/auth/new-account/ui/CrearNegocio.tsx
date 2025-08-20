@@ -59,7 +59,7 @@ export const CreateNegocioForm = ({ id }: IdUsuario) => {
     const [selectedCategorySlugs, setSelectedCategorySlugs] = useState<Set<string>>(new Set());
     const [selectedSections, setSelectedSections] = useState<Set<string>>(new Set());
     const [alert, setAlert] = useState<{ type: "success" | "error" | "info"; message: string } | null>(null);
-    const { update, data: session } = useSession();
+    const { update,} = useSession();
 
     const {
         register,

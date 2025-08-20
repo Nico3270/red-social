@@ -45,6 +45,8 @@ model Negocio {
   availability  BusinessAvailability? // relación 1:1
   reservations  Reservation[] // relación 1:N
   Servicio      Servicio[]
+  encuestas Encuesta[] @relation("NegocioEncuestas")
+  preguntas Pregunta[]  @relation("NegocioPreguntas")
 
   @@index([ciudad])
   @@index([departamento])
@@ -111,6 +113,12 @@ model Usuario {
   Transaction     Transaction[]
   orders          Order[] // 🔹 Campo inverso para relación con Order
   reservations    Reservation[] // relación 1:N
+
+  // Relaciones inversas
+  respuestas Respuesta[]  @relation("UsuarioRespuestas")
+  resenas    Resena[]
+  encuestas  Encuesta[]   @relation("UsuarioEncuestas")
+
 
   @@index([username])
   @@index([email])
@@ -491,6 +499,97 @@ enum ServicioStatus {
   oculto
   descontinuado
 }
+
+
+model Pregunta {
+  id         String       @id @default(cuid())
+  texto      String
+  tipo       TipoPregunta // Enum: CALIFICABLE | TEXTO
+  creador    Creador      // Enum: ADMIN | NEGOCIO
+  negocioId  String?
+  requerida  Boolean      @default(false)
+  orden      Int?
+  categoria  String?
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+
+  negocio    Negocio? @relation("NegocioPreguntas", fields: [negocioId], references: [id])
+  encuestas  EncuestaPregunta[] // Relación pivot
+  respuestas Respuesta[]       // Respuestas a esta pregunta
+
+  @@index([creador, negocioId])
+}
+
+enum TipoPregunta {
+  CALIFICABLE
+  TEXTO
+}
+
+enum Creador {
+  ADMIN
+  NEGOCIO
+}
+
+model Encuesta {
+  id          String             @id @default(cuid())
+  negocioId   String
+  titulo      String
+  descripcion String?
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  preguntas   EncuestaPregunta[] // Preguntas seleccionadas
+  resenas     Resena[]           // Reseñas basadas en esta encuesta
+  negocio    Negocio    @relation("NegocioEncuestas", fields: [negocioId], references: [id])
+
+  @@index([negocioId, createdAt])
+  usuarioId String?
+  usuario   Usuario? @relation("UsuarioEncuestas", fields: [usuarioId], references: [id])
+}
+
+
+
+model EncuestaPregunta {
+  encuestaId String
+  preguntaId String
+  orden      Int?
+
+  encuesta   Encuesta @relation(fields: [encuestaId], references: [id])
+  pregunta   Pregunta @relation(fields: [preguntaId], references: [id])
+
+  @@id([encuestaId, preguntaId]) // ID compuesto para unicidad
+}
+
+model Resena {
+  id                 String      @id @default(cuid())
+  encuestaId         String
+  usuarioId          String?
+  nombre             String?
+  telefono          String?
+  descripcionGeneral String?
+  multimedia         String[]    @default([])
+  createdAt          DateTime    @default(now())
+
+  encuesta           Encuesta    @relation(fields: [encuestaId], references: [id])
+  usuario Usuario?    @relation(fields: [usuarioId], references: [id])
+  respuestas         Respuesta[]
+
+  @@index([encuestaId, createdAt])
+  @@index([usuarioId])
+}
+
+model Respuesta {
+  id         String  @id @default(cuid())
+  resenaId   String
+  preguntaId String
+  valor      String?
+  calificacion Int?
+  resena     Resena  @relation(fields: [resenaId], references: [id])
+  pregunta   Pregunta @relation(fields: [preguntaId], references: [id])
+
+usuarioId String?
+usuario   Usuario? @relation("UsuarioRespuestas", fields: [usuarioId], references: [id])
+}
+
 
 model Interaccion {
   id            String          @id @default(cuid())

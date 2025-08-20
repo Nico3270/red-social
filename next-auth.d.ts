@@ -18,6 +18,7 @@ declare module "next-auth" {
     negocioSlug?: string | null; // Nuevo campo
     negocioNombre?: string | null; // Nuevo campo
     configReservation?: boolean; // Nuevo campo para indicar si hay módulo de reservas activo
+    configEncuestas?: boolean; // Nuevo campo para indicar si hay módulo de reservas activo
   }
 
   interface Session extends DefaultSession {
@@ -36,6 +37,7 @@ declare module "next-auth" {
     negocioSlug?: string | null; // Nuevo campo
     negocioNombre?: string | null; // Nuevo campo
     configReservation?: boolean; // Nuevo campo para indicar si hay módulo de reservas activo
+    configEncuestas?: boolean; // Nuevo campo para indicar si hay módulo de reservas activo
   }
 
   interface CustomUser {
@@ -49,5 +51,6 @@ declare module "next-auth" {
     negocioSlug?: string | null; // Nuevo campo
     negocioNombre?: string | null; // Nuevo campo
     configReservation?: boolean; // Nuevo campo para indicar si hay módulo de reservas activo
+    configEncuestas?: boolean; // Nuevo campo para indicar si hay módulo de reservas activo
   }
 }

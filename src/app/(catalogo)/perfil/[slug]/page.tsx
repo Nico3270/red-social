@@ -27,11 +27,8 @@ const getCachedProducts = unstable_cache(
   { revalidate: 3600 } // Reducir a 60 segundos para pruebas
 );
 
-const getCachedProfile = unstable_cache(
-  async (slug: string) => getInfoPerfilBySlugNegocio(slug),
-  ["negocio-profile"],
-  { revalidate: 3600 }
-);
+
+
 
 export default async function NegocioPage({ params }: Props) {
   const { slug } = await params;
@@ -43,8 +40,16 @@ export default async function NegocioPage({ params }: Props) {
     { revalidate: 60, tags: [`negocio-publications-${slug}`] } // Agrega tag dinámico per-slug
   );
 
+  const getCachedProfile = unstable_cache(
+    async () => getInfoPerfilBySlugNegocio(slug),
+    ["negocio-profile"],
+    { revalidate: 3600, tags: [`negocio-profile-${slug}`] }
+  );
+
   const result = await getCachedProducts(slug, 20);
-  const { negocio } = await getCachedProfile(slug);
+  const { negocio } = await getCachedProfile();
+
+
   const publicacionesIniciales = await getCachedPublications({ take: 20 }); // Llama con { take: 20 }
 
   if (!result.ok) {
@@ -72,7 +77,12 @@ export const revalidate = 60; // Reducir a 60 segundos para pruebas
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const { negocio } = await getCachedProfile(slug);
+  const getCachedProfile = unstable_cache(
+    async () => getInfoPerfilBySlugNegocio(slug),
+    ["negocio-profile"],
+    { revalidate: 3600, tags: [`negocio-profile-${slug}`] }
+  );
+  const { negocio } = await getCachedProfile();
 
   return {
     title: negocio ? `${negocio.nombreNegocio} - Perfil` : "Perfil de Negocio",

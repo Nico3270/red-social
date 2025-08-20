@@ -12,7 +12,8 @@ import {
   FaRegNewspaper,
   FaStore,
   FaBriefcase,
-  FaCalendarCheck, // Nuevo icono para el botón de reserva (premium y temático)
+  FaCalendarCheck,
+  FaRegCommentDots, // Nuevo icono para el botón de reserva (premium y temático)
 } from "react-icons/fa";
 import { Button } from "../button/Button";
 import clsx from "clsx";
@@ -26,6 +27,7 @@ import FeedPublicaciones from "@/publicaciones/componentes/FeedPublicaciones";
 import { PublicacionSencilla } from "@/publicaciones/interfaces/publicacionSencilla.interface";
 import ServicioViewer from "@/servicios/componentes/ServicioViewer";
 import { ServicioData } from "@/servicios/interfaces/servicios.interface";
+
 
 export interface InformacionInicialNegocio {
   nombreNegocio: string;
@@ -51,6 +53,7 @@ export interface InformacionInicialNegocio {
   seccionesIds: string[];
   estadoNegocio: EstadoNegocio;
   configReservation: boolean; // Indica si el negocio tiene reservas configuradas
+  configEncuestas: boolean; // Indica si el negocio tiene encuestas configuradas
 }
 
 export interface Product {
@@ -91,28 +94,30 @@ export default function PerfilUsuarioHeader({
   const [loadingServicios, setLoadingServicios] = useState(false);
 
   useEffect(() => {
-  const fetchServicios = async () => {
-    if (activeTab === "Negocio" && informacionNegocio?.slugNegocio) {
-      try {
-        setLoadingServicios(true);
-        const res = await fetch(`/api/getServiciosBySlug?slug=${informacionNegocio.slugNegocio}`);
-        if (!res.ok) throw new Error("Error al obtener servicios");
-        const data = await res.json();
-        
-        // Corrección clave: Extrae 'servicios' del objeto data
-        setServicios(data.servicios || []);  // Si no hay 'servicios', usa array vacío
-        
-      } catch (err) {
-        console.error(err);
-        setServicios([]);
-      } finally {
-        setLoadingServicios(false);
-      }
-    }
-  };
+    const fetchServicios = async () => {
+      if (activeTab === "Negocio" && informacionNegocio?.slugNegocio) {
+        try {
+          setLoadingServicios(true);
+          const res = await fetch(`/api/getServiciosBySlug?slug=${informacionNegocio.slugNegocio}`);
+          if (!res.ok) throw new Error("Error al obtener servicios");
+          const data = await res.json();
 
-  fetchServicios();
-}, [activeTab, informacionNegocio?.slugNegocio]);
+          // Corrección clave: Extrae 'servicios' del objeto data
+          setServicios(data.servicios || []);  // Si no hay 'servicios', usa array vacío
+
+        } catch (err) {
+          console.error(err);
+          setServicios([]);
+        } finally {
+          setLoadingServicios(false);
+        }
+      }
+    };
+
+    fetchServicios();
+  }, [activeTab, informacionNegocio?.slugNegocio]);
+
+
 
   const redes = [
     {
@@ -255,22 +260,45 @@ export default function PerfilUsuarioHeader({
               </div>
             </div> */}
 
-            {/* Botón de Solicitar Reserva (condicional, premium y responsive) */}
-            {informacionNegocio?.configReservation && (
-              <Link
-                href={`/reservas/${informacionNegocio.slugNegocio}`}
-                className="w-full sm:w-auto flex justify-center"
-              >
-                <Button
-                  variant="outline"
-                  className="text-sm sm:text-base px-4 py-2 bg-green-600 text-white hover:bg-green-700 transition-colors duration-200 shadow-sm font-semibold rounded-md flex items-center gap-2 focus:ring-2 focus:ring-green-500 focus:outline-none"
-                  aria-label="Solicitar reserva"
+            <div className="flex  items-center gap-4">
+              {/* Botón de Solicitar Reserva (condicional, premium y responsive) */}
+              {informacionNegocio?.configReservation && (
+                <Link
+                  href={`/reservas/${informacionNegocio.slugNegocio}`}
+                  className="w-full sm:w-auto flex justify-center"
                 >
-                  <FaCalendarCheck className="text-xl" />
-                  Solicitar Reserva
-                </Button>
-              </Link>
-            )}
+                  <Button
+                    variant="outline"
+                    className="text-sm sm:text-base px-4 py-2 bg-green-600 text-white hover:bg-green-700 transition-colors duration-200 shadow-sm font-semibold rounded-md flex items-center gap-2 focus:ring-2 focus:ring-green-500 focus:outline-none"
+                    aria-label="Solicitar reserva"
+                  >
+                    <FaCalendarCheck className="text-xl" />
+                    Solicitar Reserva
+                  </Button>
+                </Link>
+              )}
+
+              {/* Botón de Encuesta (condicional, premium y responsive) */}
+              {informacionNegocio?.configEncuestas && (
+                <Link
+                  href={`/encuestas/${informacionNegocio.slugNegocio}`}
+                  className="w-full sm:w-auto flex justify-center"
+                >
+                  <Button
+                    variant="outline"
+                    className="text-sm sm:text-base px-4 py-2 bg-gray-900 text-white hover:bg-black transition-colors duration-200 shadow-sm font-semibold rounded-md flex items-center gap-2 focus:ring-2 focus:ring-gray-700 focus:outline-none"
+                    aria-label="Deja tu opinión"
+                  >
+                    <FaRegCommentDots className="text-lg" />
+                    Evalúanos
+                  </Button>
+                </Link>
+              )}
+            </div>
+
+
+
+
 
             {/* Social Media Links */}
             <div className="flex justify-around px-2 sm:gap-8 gap-6 pt-2">
@@ -372,27 +400,27 @@ export default function PerfilUsuarioHeader({
           {/* Información del Negocio */}
           {activeTab === "Negocio" && (
             <div className="flex flex-col gap-4 text-gray-700">
-  <h2 className="flex items-center justify-center gap-2 font-semibold text-gray-900 text-lg sm:text-xl">
-    <FaBriefcase className="text-yellow-600 text-xl" />
-    Servicios del Negocio
-  </h2>
+              <h2 className="flex items-center justify-center gap-2 font-semibold text-gray-900 text-lg sm:text-xl">
+                <FaBriefcase className="text-yellow-600 text-xl" />
+                Servicios del Negocio
+              </h2>
 
-  {loadingServicios ? (
-    <p className="text-gray-600 text-sm sm:text-base animate-pulse">
-      Cargando servicios, por favor espera...
-    </p>
-  ) : servicios.length > 0 ? (
-    <div className="flex flex-col gap-6">
-      {servicios.map((servicio, idx) => (
-        <ServicioViewer key={servicio.id || idx} servicio={servicio} />
-      ))}
-    </div>
-  ) : (
-    <p className="text-gray-600 text-sm sm:text-base">
-      No hay servicios disponibles para este negocio.
-    </p>
-  )}
-</div>
+              {loadingServicios ? (
+                <p className="text-gray-600 text-sm sm:text-base animate-pulse">
+                  Cargando servicios, por favor espera...
+                </p>
+              ) : servicios.length > 0 ? (
+                <div className="flex flex-col gap-6">
+                  {servicios.map((servicio, idx) => (
+                    <ServicioViewer key={servicio.id || idx} servicio={servicio} />
+                  ))}
+                </div>
+              ) : (
+                <p className="text-gray-600 text-sm sm:text-base">
+                  No hay servicios disponibles para este negocio.
+                </p>
+              )}
+            </div>
 
           )}
         </div>

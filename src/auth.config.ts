@@ -8,14 +8,7 @@ import bcryptjs from "bcryptjs";
 import { randomBytes } from "crypto";
 import { Role } from "@prisma/client";
 
-interface ExtendedUser {
-  id: string;
-  name: string;
-  apellido?: string;
-  email: string;
-  role: Role;
-  ciudad?: string;
-}
+
 
 export const authConfig: NextAuthConfig = {
   pages: {
@@ -79,6 +72,14 @@ export const authConfig: NextAuthConfig = {
           configReservation = availabilityCount > 0;
         }
 
+        let configEncuestas = false;
+        if (usuarioConNegocio?.negocio?.id) {
+          const availabilityCount = await prisma.encuesta.count({
+            where: { negocioId: usuarioConNegocio.negocio.id },
+          });
+          configEncuestas = availabilityCount > 0;
+        }
+
 
         token.id = user.id;
         token.name = user.name;
@@ -93,6 +94,7 @@ export const authConfig: NextAuthConfig = {
         token.negocioSlug = usuarioConNegocio?.negocio?.slug ?? null;
         token.negocioNombre = usuarioConNegocio?.negocio?.nombre ?? null;
         token.configReservation = configReservation; // Nuevo campo agregado
+        token.configEncuestas = configEncuestas; // Nuevo campo agregado
 
       }
 
@@ -103,6 +105,7 @@ export const authConfig: NextAuthConfig = {
         if (session?.negocioSlug) token.negocioSlug = session.negocioSlug;
         if (session?.negocioNombre) token.negocioNombre = session.negocioNombre;
         if (session?.configReservation !== undefined) token.configReservation = session.configReservation; // Permitir actualización
+        if (session?.configEncuestas !== undefined) token.configEncuestas = session.configEncuestas; // Permitir actualización
       }
 
       return token;
@@ -121,6 +124,7 @@ export const authConfig: NextAuthConfig = {
         negocioSlug: token.negocioSlug as string | null,
         negocioNombre: token.negocioNombre as string | null,
         configReservation: token.configReservation as boolean, // Nuevo campo agregado
+        configEncuestas: token.configEncuestas as boolean, // Nuevo campo agregado
       };
       return session;
     },

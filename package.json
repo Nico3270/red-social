@@ -13,6 +13,7 @@
     "seed": "ts-node src/seed/seed-database.ts",
     "seed2": "ts-node src/seed/seed-database copy.ts",
     "transaction": "ts-node src/seed/transactions-database.ts",
+    "preguntas": "ts-node src/seed/preguntas-database.ts",
     "index": "ts-node src/seed/index.ts"
   },
   "dependencies": {
