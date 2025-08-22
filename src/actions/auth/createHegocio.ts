@@ -2,7 +2,7 @@
 "use server";
 
 import prisma from "@/lib/prisma";
-import { EstadoNegocio, ProductStatus, Role } from "@prisma/client";
+import { EstadoNegocio,  Role } from "@prisma/client";
 
 
 interface CreacionNegocio {

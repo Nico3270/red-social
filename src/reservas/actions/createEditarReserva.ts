@@ -2,9 +2,31 @@
 "use server";
 
 import prisma from "@/lib/prisma";
-import { auth } from "@/auth.config";
+import { auth, authConfig } from "@/auth.config";
 import * as z from "zod";
+import { notifyReservaConfirmadaCliente } from "../helpers/notifyReserva";
+import { PlantillaWhatsApp } from "../interfaces/interfaces.whatsapp";
 
+function formatearFecha(fechaInput?: string | Date): string {
+  if (!fechaInput){
+    return "La fecha no esta disponible"
+  }
+  const fechaObj = new Date(fechaInput);
+
+  const fechaStr = fechaObj.toLocaleDateString("es-ES", {
+    day: "numeric",
+    month: "long",
+    year: "numeric"
+  });
+
+  const horaStr = fechaObj.toLocaleTimeString("es-ES", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true
+  });
+
+  return `${fechaStr} a las ${horaStr}`;
+}
 
 
 // Schema para validación
@@ -37,8 +59,7 @@ interface Response {
 }
 
 export async function createEditarReserva(data: unknown): Promise<Response> {
-  
-
+  const session = await auth();
   const parsed = schema.safeParse(data);
   if (!parsed.success) {
     return { ok: false, message: `Datos inválidos: ${parsed.error.errors[0].message}` };
@@ -51,10 +72,6 @@ export async function createEditarReserva(data: unknown): Promise<Response> {
     if (id) {
       // Modo edit: Verificar ownership
 
-      const session = await auth();
-  if (!session) {
-    return { ok: false, message: "Usuario no autenticado" };
-  }
       const existing = await prisma.reservation.findUnique({ where: { id } });
       if (!existing || (negocioId && existing.negocioId !== negocioId)) {
         return { ok: false, message: "No tienes permiso para editar esta reserva" };
@@ -63,9 +80,13 @@ export async function createEditarReserva(data: unknown): Promise<Response> {
         where: { id },
         data: resData,
       });
-    } else {
+    }
+
+    // Modo crear reserva
+
+    else {
       // Modo create: Asignar negocioId si dueño, o inferir si usuario
-      const finalNegocioId = negocioId ;
+      const finalNegocioId = negocioId;
       // const finalNegocioId = negocioId || session.user.negocioId;
       if (!finalNegocioId) {
         return { ok: false, message: "Negocio no especificado" };
@@ -77,6 +98,100 @@ export async function createEditarReserva(data: unknown): Promise<Response> {
           // usuarioId: session.user.id || null, // Si guest, null
         },
       });
+    }
+
+
+    // Notificaciones por whatsapp
+
+    // Unir en un string
+    const fecha = formatearFecha(resData.fechaHoraInicio);
+    const fecha_nueva = formatearFecha(resData.fechaHoraFin);
+    const fecha_anterior = fecha
+    
+
+
+    // Reserva creada por el negocio
+    // todo: Reserca creada por el negocio - Aviso al cliente
+
+    if (session?.user.role === "negocio" && session.user.negocioId === negocioId && !id) {
+      const notificacion = await notifyReservaConfirmadaCliente(
+        {
+          to: "+573182293083",
+          nombre_cliente: resData.nombre,
+          fechaHora: fecha || "Error en fecha",
+          template: PlantillaWhatsApp.CONFIRMACION_RESERVA_CLIENTE,
+          enlace_cancelar: `http://localhost:3000/reservas/eliminar/${result.id}`, // Ajusta según tu dominio real
+          descripcion: resData.notas || '',
+          negocioId: negocioId || "", // Incluye negocioId para contexto
+        }
+      )
+      if (!notificacion.ok) {
+        console.warn('Notificación WhatsApp fallida, pero reserva creada:', notificacion.message);
+        // Opcional: Envía fallback por email o log a un servicio como Sentry para monitoreo pro
+      }
+    }
+
+    // todo: Reserva creada por el usuario - Aviso al negocio y cliente
+
+    if (!session || session.user.role !== "negocio") {
+      const notificacion = await notifyReservaConfirmadaCliente(
+        {
+          to: "+573132390868",
+          nombre_cliente: resData.nombre,
+          telefono_cliente: resData.telefono,
+          fechaHora: fecha || "Error en fecha",
+          template: PlantillaWhatsApp.CONFIRMAR_NEGOCIO_RESERVA,
+          negocioId: negocioId || "", // Incluye negocioId para contexto
+        })
+
+      if (!notificacion.ok) {
+        console.warn('Notificación WhatsApp fallida, pero reserva creada:', notificacion.message);
+        // Opcional: Envía fallback por email o log a un servicio como Sentry para monitoreo pro
+      }
+      console.log("Notificación enviada al negocio");
+
+      // Reserva creada por el usuario - Aviso al usuario
+      const notificacionUsuario = await notifyReservaConfirmadaCliente(
+        {
+          to: "+573182293083",
+          nombre_cliente: resData.nombre,
+          fechaHora: fecha || "Error en fecha",
+          template: PlantillaWhatsApp.CONFIRMACION_RESERVA_CLIENTE,
+          enlace_cancelar: `http://localhost:3000/reservas/eliminar/${result.id}`, // Ajusta según tu dominio real
+          descripcion: resData.notas || '',
+          negocioId: negocioId || "", // Incluye negocioId para contexto
+        }
+      )
+      if (!notificacionUsuario.ok) {
+        console.warn('Notificación WhatsApp fallida, pero reserva creada:', notificacion.message);
+        // Opcional: Envía fallback por email o log a un servicio como Sentry para monitoreo pro
+      }
+      console.log("Notificación enviada al cliente");
+    }
+
+    //todo: Reserca editada - Aviso al cliente 
+
+    if (id) {
+      const notificacionCambio = await notifyReservaConfirmadaCliente(
+        {
+          to: "+573182293083",
+          fecha_anterior,
+          fecha_nueva, 
+          nombre_cliente: resData.nombre,
+          template: PlantillaWhatsApp.RESERVA_REPROGRAMADA_USUARIO,
+          enlace_cancelar: `http://localhost:3000/reservas/eliminar/${result.id}`, // Ajusta según tu dominio real
+          negocioId: negocioId || "", // Incluye negocioId para contexto
+        }
+      )
+
+      if (!notificacionCambio.ok) {
+        console.warn('Notificación WhatsApp fallida, pero reserva creada:', );
+        // Opcional: Envía fallback por email o log a un servicio como Sentry para monitoreo pro
+      }
+      if (notificacionCambio.ok) {
+        console.log('Notificación enviada exitosamente, pero reserva creada:', );
+        // Opcional: Envía fallback por email o log a un servicio como Sentry para monitoreo pro
+      }
     }
 
     return {

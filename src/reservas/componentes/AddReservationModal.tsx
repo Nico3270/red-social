@@ -6,7 +6,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { FaTimes } from "react-icons/fa"; // Para close icon
-import { motion } from "framer-motion"; // Import corregido para motion (corrige el error)
+import { motion, AnimatePresence } from "framer-motion"; // Agregado AnimatePresence para mejores animaciones de entrada/salida
 import { createEditarReserva } from "../actions/createEditarReserva";
 import { format, parseISO } from "date-fns";
 import { es } from "date-fns/locale"; // Para idioma español
@@ -102,7 +102,13 @@ export default function AddReservationModal({ negocioId, horaInicio, horaFin, da
       // Cierre local con delay para ver mensaje de éxito
       setTimeout(() => {
         onClose();
+        setResponseMessage(null); // Limpia mensaje al cerrar
       }, 1500); // 1.5s para feedback visual, asimilando a modales elegantes como en LinkedIn
+    } else {
+      // Para errores, permite reintentar, así que no setSubmitted(true)
+      setTimeout(() => {
+        setResponseMessage(null); // Opcional: limpia mensaje de error después de 3s para no bloquear UI
+      }, 3000);
     }
   };
 
@@ -200,16 +206,20 @@ export default function AddReservationModal({ negocioId, horaInicio, horaFin, da
             )}
           </button>
         </form>
-        {responseMessage && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.3 }}
-            className={`mt-4 p-2 rounded-md ${isError ? "bg-red-100 text-red-700" : "bg-green-100 text-green-700"}`}
-          >
-            {responseMessage}
-          </motion.div>
-        )}
+        <AnimatePresence>
+          {responseMessage && (
+            <motion.div
+              key="response-message" // Key para AnimatePresence
+              initial={{ opacity: 0, y: 20, scale: 0.95 }} // Animación de entrada: fade-in con slide-up y leve scale
+              animate={{ opacity: 1, y: 0, scale: 1 }} // Estado animado
+              exit={{ opacity: 0, y: -20, scale: 0.95 }} // Animación de salida: fade-out con slide-down
+              transition={{ duration: 0.3, ease: "easeInOut" }} // Transición suave
+              className={`mt-4 p-4 rounded-md border ${isError ? "bg-red-100 text-red-700 border-red-300" : "bg-green-100 text-green-700 border-green-300"} shadow-md`} // Mejores estilos: padding, border y shadow para que se vea como un "mini-modal" dentro del form
+            >
+              {responseMessage}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

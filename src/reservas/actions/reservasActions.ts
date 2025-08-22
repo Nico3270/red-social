@@ -3,8 +3,11 @@
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth.config";
 import * as z from "zod";
-import { ReservationFormData } from "../componentes/AddReservationModal";
 import { ReservationStatus } from "@prisma/client";
+import { getInformacionReserva } from "./getInfoNegocioWhatsapp";
+import { notifyReservaConfirmadaCliente } from "../helpers/notifyReserva";
+import { PlantillaWhatsApp } from "../interfaces/interfaces.whatsapp";
+
 
 // Interface compartida para respuestas estandarizadas (elegante y reusable)
 interface ActionResponse {
@@ -18,6 +21,26 @@ const deleteSchema = z.object({
   reservaId: z.string().min(1, "ID de la reserva requerido"), // Corregí "id de la transaccion" a "reservaId" para claridad
 });
 
+function formatearFecha(fechaInput?: string | Date): string {
+  if (!fechaInput){
+    return "La fecha no esta disponible"
+  }
+  const fechaObj = new Date(fechaInput);
+
+  const fechaStr = fechaObj.toLocaleDateString("es-ES", {
+    day: "numeric",
+    month: "long",
+    year: "numeric"
+  });
+
+  const horaStr = fechaObj.toLocaleTimeString("es-ES", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true
+  });
+
+  return `${fechaStr} a las ${horaStr}`;
+}
 
 
 
@@ -33,7 +56,7 @@ const changeStatusSchema = z.object({
 // Server Action: Eliminar una reserva (con verificación de ownership)
 export async function deleteReserva(data: unknown): Promise<ActionResponse> {
   const session = await auth();
-  if (!session || !session.user?.id) {
+  if (!session || !session.user?.id && !session.user.negocioId) {
     return { ok: false, message: "Usuario no autenticado" };
   }
 
@@ -59,12 +82,40 @@ export async function deleteReserva(data: unknown): Promise<ActionResponse> {
       return { ok: false, message: "No tienes permiso para eliminar esta reserva (no pertenece al negocio)" };
     }
 
+    
+
+    const info = await getInformacionReserva(reservaId);
+    const nombre_cliente = info.nombre_cliente || "Cliente desconocido"
+    const fecha_hora = formatearFecha(info.fecha_hora)
+ 
+
     // Eliminar la reserva (transacción atómica)
     await prisma.reservation.delete({
       where: { id: reservaId },
     });
+    
+
+    const notificacionUsuario = await notifyReservaConfirmadaCliente(
+      {
+        to: "+573182293083",
+        nombre_cliente,
+        fechaHora: fecha_hora,
+        template: PlantillaWhatsApp.RESERVA_CANCELADA_USUARIO,
+        negocioId: negocioId || "", // Incluye negocioId para contexto
+
+      }
+    )
+    if (!notificacionUsuario.ok) {
+      console.warn('Notificación WhatsApp fallida, pero reserva creada:', notificacionUsuario.message);
+      // Opcional: Envía fallback por email o log a un servicio como Sentry para monitoreo pro
+    }
 
     return { ok: true, message: "Reserva eliminada exitosamente" };
+    // Notificación al usuario de reserva cancelada
+
+
+
+
   } catch (error) {
     console.error("Error al eliminar reserva:", error);
     return { ok: false, message: "Error interno al eliminar la reserva" };
@@ -89,7 +140,7 @@ export async function changeStatusReservations(data: unknown): Promise<ActionRes
     // Verificar si la reserva existe y pertenece al negocio
     const reserva = await prisma.reservation.findUnique({
       where: { id: reservaId },
-      select: { id: true, negocioId: true },
+      select: { id: true, negocioId: true, nombre:true, telefono:true, fechaHoraInicio:true },
     });
 
     if (!reserva) {
@@ -106,7 +157,27 @@ export async function changeStatusReservations(data: unknown): Promise<ActionRes
       data: { estado: nuevoStatus },
     });
 
-    return { ok: true, message: `Status cambiado a ${nuevoStatus} exitosamente` };
+    // Notificación a whatsapp cliente de reserva cancelada
+    if(nuevoStatus === "CANCELADA"){
+      const fechaHora = formatearFecha(reserva.fechaHoraInicio)
+      const notificacionUsuario = await notifyReservaConfirmadaCliente(
+      {
+        to: "+573182293083",
+        nombre_cliente: reserva.nombre,
+        fechaHora ,
+        template: PlantillaWhatsApp.RESERVA_CANCELADA_USUARIO,
+        negocioId: negocioId || "", // Incluye negocioId para contexto
+
+      }
+    )
+    if (!notificacionUsuario.ok) {
+      console.warn('Notificación WhatsApp fallida, pero reserva creada:', notificacionUsuario.message);
+      // Opcional: Envía fallback por email o log a un servicio como Sentry para monitoreo pro
+    }
+
+    }
+
+    return { ok: true, message: `Status cambiado a ${nuevoStatus} exitosamente, se enviará una notificación al usuario` };
   } catch (error) {
     console.error("Error al cambiar status de reserva:", error);
     return { ok: false, message: "Error interno al cambiar el status de la reserva" };

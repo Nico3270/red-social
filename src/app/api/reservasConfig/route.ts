@@ -83,7 +83,7 @@ export async function GET(request: Request) {
         usuarioId: res.usuarioId ?? undefined,
       }));
 
-    console.log( "reservas encontradas para el día:", dateStr, formattedReservas);
+    // console.log( "reservas encontradas para el día:", dateStr, formattedReservas);
 
     return NextResponse.json<ReservationsResponse>({
       ok: true,

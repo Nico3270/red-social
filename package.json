@@ -33,6 +33,7 @@
     "@prisma/client": "^6.4.0",
     "@radix-ui/react-alert-dialog": "^1.1.5",
     "@radix-ui/react-slot": "^1.1.1",
+    "@react-google-maps/api": "^2.20.7",
     "@studio-freight/lenis": "^1.0.42",
     "@tailwindcss/line-clamp": "^0.4.4",
     "@tanstack/react-query": "^5.84.2",
