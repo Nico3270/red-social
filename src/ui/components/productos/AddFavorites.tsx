@@ -31,14 +31,21 @@ export const AddFavorites = (product: Props) => {
   return (
     <button
       onClick={toggleFavorite}
-      className={`p-2 rounded-full hover:bg-red-200 transition duration-300 ease-in-out z-20 ${
-        isFavorite ? "bg-red-400" : "bg-gray-100"
-      }`}
+      className={`p-2 rounded-full shadow-md transition duration-300 ease-in-out relative group
+        ${isFavorite 
+          ? "bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700" 
+          : "bg-white hover:bg-gray-100 border border-gray-200"
+        }`}
     >
       {isFavorite ? (
-        <AiFillHeart className="text-red-600 text-2xl transition duration-300 ease-in-out transform scale-110" />
+        <AiFillHeart className="text-white text-xl transition-transform duration-300 ease-in-out transform group-hover:scale-125 group-hover:rotate-6 drop-shadow" />
       ) : (
-        <AiOutlineHeart className="text-red-500 text-2xl transition duration-300 ease-in-out" />
+        <AiOutlineHeart className="text-red-500 text-xl transition-transform duration-300 ease-in-out transform group-hover:scale-110" />
+      )}
+
+      {/* Glow cuando está en favoritos */}
+      {isFavorite && (
+        <span className="absolute inset-0 rounded-full bg-red-400 opacity-40 blur-xl animate-pulse"></span>
       )}
     </button>
   );

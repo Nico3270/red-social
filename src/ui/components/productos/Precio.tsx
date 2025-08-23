@@ -1,4 +1,4 @@
-import {  PacificoFont, titulo2 } from '@/config/fonts'
+import {   titulo2 } from '@/config/fonts'
 import { CurrencyFormat } from '@/config/utils'
 
 
