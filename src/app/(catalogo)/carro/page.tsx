@@ -19,7 +19,7 @@ export default function CatroPage() {
 
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Columna principal para los productos */}
-        <div className="w-full sm:mt-40 mb-20">
+        <div className="w-full sm:mt-40 mb-20 sm:mb-0">
           <ProductsInCart />
         </div>
       </div>
