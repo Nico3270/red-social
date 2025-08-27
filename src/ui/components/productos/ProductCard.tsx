@@ -13,8 +13,6 @@ import { ProductRedSocial } from "@/interfaces/productRedSocial.interface";
 import { initialData, Section } from "@/seed/seed";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCartCatalogoStore } from "@/store/carro/carro-store";
-import Divider from "../divider/Divider";
-
 
 interface ProductCardProps {
   product: ProductRedSocial;
@@ -93,8 +91,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             price={product.precio}
             description={product.descripcion}
             slug={product.slug}
-            images={[product.imagenes[0]]}
-
+            images={product.imagenes} // Actualizado: pasa todo el array de imágenes
+            descripcionCorta={product.descripcionCorta} // Nueva prop
+            sections={product.sections} // Nueva prop
+            slugNegocio={product.slugNegocio || ""} // Nueva prop (con fallback si es undefined)
           />
         </div>
       </div>

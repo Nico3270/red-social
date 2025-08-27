@@ -13,7 +13,8 @@ import {
   FaStore,
   FaBriefcase,
   FaCalendarCheck,
-  FaRegCommentDots, // Nuevo icono para el botón de reserva (premium y temático)
+  FaRegCommentDots,
+  FaPencilAlt, // Nuevo icono para el botón de editar perfil
 } from "react-icons/fa";
 import { Button } from "../button/Button";
 import clsx from "clsx";
@@ -27,6 +28,7 @@ import FeedPublicaciones from "@/publicaciones/componentes/FeedPublicaciones";
 import { PublicacionSencilla } from "@/publicaciones/interfaces/publicacionSencilla.interface";
 import ServicioViewer from "@/servicios/componentes/ServicioViewer";
 import { ServicioData } from "@/servicios/interfaces/servicios.interface";
+import { useSession } from "next-auth/react";
 
 
 export interface InformacionInicialNegocio {
@@ -92,6 +94,8 @@ export default function PerfilUsuarioHeader({
   );
   const [servicios, setServicios] = useState<ServicioData[]>([]);
   const [loadingServicios, setLoadingServicios] = useState(false);
+  const { data: session } = useSession();
+  const isNegocio = session?.user.negocioSlug === informacionNegocio?.slugNegocio
 
   useEffect(() => {
     const fetchServicios = async () => {
@@ -199,9 +203,38 @@ export default function PerfilUsuarioHeader({
         <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-6 lg:gap-10">
           {/* Left Column: Business Info */}
           <div className="flex flex-col space-y-4 max-w-2xl">
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 tracking-tight">
-              {informacionNegocio?.nombreNegocio}
-            </h1>
+            <div className="flex items-center gap-3">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 tracking-tight">
+                {informacionNegocio?.nombreNegocio}
+              </h1>
+              {isNegocio && (
+                <Link href={`/dashboard/editar-perfil`}>
+                  <Button
+                    className="
+      px-4 py-2 mx-4
+      rounded-full 
+      bg-yellow-400 
+      text-gray-900 
+      font-semibold 
+      text-sm
+      shadow-md 
+      hover:shadow-lg 
+      hover:bg-yellow-500 
+      hover:scale-105 
+      transition-all duration-300 ease-out
+      flex items-center gap-2
+      focus:outline-none focus:ring-2 focus:ring-yellow-300
+    "
+                    aria-label="Editar Perfil"
+                  >
+                    <FaPencilAlt className="text-gray-800 text-base" />
+                    Editar Perfil
+                  </Button>
+                </Link>
+
+
+              )}
+            </div>
             <p className="text-gray-600 text-sm sm:text-base">@{informacionNegocio?.slugNegocio}</p>
 
             {/* Business Description */}

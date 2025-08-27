@@ -64,7 +64,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={` bg-[#f8edeb]`}>
+      <body className={` bg-white`}>
         <Provider>{children}</Provider>
       </body>
     </html>

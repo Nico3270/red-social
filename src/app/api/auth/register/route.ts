@@ -4,37 +4,76 @@ import bcryptjs from "bcryptjs";
 
 export async function POST(request: Request) {
   try {
-    const { name, email, password } = await request.json();
+    // Recibimos todos los campos requeridos según el schema
+    const {
+      nombre,
+      apellido,
+      username,
+      email,
+      password,
+      ciudad,
+      departamento,
+      genero,
+      fechaNacimiento,
+    } = await request.json();
 
-    if (!name || !email || !password) {
+    // Validamos que vengan
+    if (
+      !nombre ||
+      !apellido ||
+      !username ||
+      !email ||
+      !password ||
+      !ciudad ||
+      !departamento ||
+      !genero ||
+      !fechaNacimiento
+    ) {
       return NextResponse.json(
-        { message: "Todos los campos son obligatorios" },
+        { error: "Todos los campos son obligatorios" },
         { status: 400 }
       );
     }
 
-    const existingUser = await prisma.user.findUnique({ where: { email } });
-    if (existingUser) {
-      return NextResponse.json(
-        { message: "El correo ya está registrado" },
-        { status: 400 }
-      );
-    }
-
-    const hashedPassword = bcryptjs.hashSync(password, 10);
-
-    const newUser = await prisma.user.create({
-      data: { name, email, password: hashedPassword, role: "user" },
+    // Validamos si el email ya existe
+    const existingUser = await prisma.usuario.findUnique({
+      where: { email },
     });
 
-    return NextResponse.json(
-      { message: "Usuario creado exitosamente", user: newUser },
-      { status: 201 }
-    );
+    if (existingUser) {
+      return NextResponse.json(
+        { error: "El usuario ya existe con ese correo" },
+        { status: 400 }
+      );
+    }
+
+    // Encriptamos contraseña
+    const hashedPassword = bcryptjs.hashSync(password, 10);
+
+    // Creamos usuario
+    const newUser = await prisma.usuario.create({
+      data: {
+        nombre,
+        apellido,
+        username,
+        email,
+        ciudad,
+        departamento,
+        genero,
+        fechaNacimiento: new Date(fechaNacimiento), // convertir a Date
+        contraseña: hashedPassword,
+        role: "user",
+      },
+    });
+
+    // No devolver la contraseña al cliente
+    const { contraseña, ...userWithoutPassword } = newUser;
+
+    return NextResponse.json(userWithoutPassword, { status: 201 });
   } catch (error) {
-    console.error("Error al registrar usuario:", error);
+    console.error("Error al crear usuario:", error);
     return NextResponse.json(
-      { message: "Ocurrió un error al registrar el usuario" },
+      { error: "Error al crear usuario" },
       { status: 500 }
     );
   }

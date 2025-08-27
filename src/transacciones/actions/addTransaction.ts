@@ -9,6 +9,7 @@ import {
   PaymentMethod,
   Transaction,
 } from "@/transacciones/interfaces/types";
+import { OrderState } from "@prisma/client";
 
 interface ItemInput {
   description: string;
@@ -64,8 +65,8 @@ export const addTransaction = async (input: TransactionInput): Promise<{
             totalAmount: input.amount,
             paymentMethod: input.paymentMethod,
             category: input.category,
-            status: "completada",
-            usuarioId,
+            status: OrderState.Recibida,
+            userId: usuarioId,
             negocioId,
           },
         });

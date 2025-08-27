@@ -14,17 +14,12 @@ import {
     Radio,
     Chip,
     FormControlLabel,
-    IconButton,
     CircularProgress,
     Typography,
-
     Box,
 } from "@mui/material";
 import { AiOutlineCloudUpload } from "react-icons/ai";
 import { FaTrashAlt } from "react-icons/fa";
-import Image from "next/image";
-import { MdAddAPhoto } from "react-icons/md";
-import imageCompression from "browser-image-compression"; // Importar la librería
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { createProduct, generateDescriptionFromText } from "@/ui/actions/productos/createNewProduct";
@@ -36,8 +31,6 @@ import Divider from "../divider/Divider";
 import { ProductStatus } from "@prisma/client";
 import AutoUploadMedia from "../autoUpload/AutoUploadMedia";
 import { useProductosTransaccionesStore } from "@/store/productosTransacciones/productosTransaccionesStore";
-
-
 
 
 interface ProductFormData {
@@ -91,8 +84,6 @@ export default function CreateNewProduct() {
     const [componentesInput, setComponentesInput] = useState("");
     const [componentes, setComponentes] = useState<string[]>([]);
     const router = useRouter();
-    const { data: session } = useSession();
-    const id = session?.user.id;
     const addProducto = useProductosTransaccionesStore((state) => state.addProducto);
 
 
@@ -267,7 +258,6 @@ export default function CreateNewProduct() {
     };
 
     const multiple = true;
-    const dataEntrada = ""
 
 
     return (

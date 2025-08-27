@@ -50,7 +50,7 @@ export async function sendWhatsAppMessage({
     type: 'template',
     template: {
       name: templateName,
-      language: { code: languageCode || "es_CO"},
+      language: { code: languageCode || "es"},
       components: [
         {
           type: 'body',

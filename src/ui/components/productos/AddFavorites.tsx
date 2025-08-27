@@ -1,52 +1,99 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { FaHeart } from "react-icons/fa"; // Asumimos que usas este ícono para favoritos
+import { FavoriteProduct } from "@/interfaces/product.interface";
+import { motion, AnimatePresence } from "framer-motion"; // Opcional para toast
 import { useFavoritesCatalogoStore } from "@/store/favoritos/favoritos-store";
-import React from "react";
-import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 
-interface Props {
+interface AddFavoritesProps {
   id: string;
-  slug: string;
   title: string;
   price: number;
   description: string;
+  slug: string;
   images: string[];
+  descripcionCorta: string; // Nueva
+  sections: string[]; // Nueva
+  slugNegocio: string; // Nueva
 }
 
-export const AddFavorites = (product: Props) => {
-  const favorites = useFavoritesCatalogoStore((state) => state.favorites);
-  const addProductFavorites = useFavoritesCatalogoStore((state) => state.addProductFavorites);
-  const removeProductFavorites = useFavoritesCatalogoStore((state) => state.removeProductFavorites);
+export const AddFavorites: React.FC<AddFavoritesProps> = ({
+  id,
+  title,
+  price,
+  description,
+  slug,
+  images,
+  descripcionCorta,
+  sections,
+  slugNegocio,
+}) => {
+  const { favorites, addProductFavorites, removeProductFavorites } = useFavoritesCatalogoStore();
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [showToast, setShowToast] = useState(false);
 
-  const isFavorite = favorites.some((fav) => fav.id === product.id);
+  // Verificar si ya está en favoritos
+  useEffect(() => {
+    const exists = favorites.some((item) => item.id === id);
+    setIsFavorite(exists);
+  }, [favorites, id]);
 
-  const toggleFavorite = () => {
+  const handleToggleFavorite = () => {
+    const favoriteProduct: FavoriteProduct = {
+      id,
+      slug,
+      nombre: title, // Mapeo de title a nombre
+      precio: price, // Mapeo de price a precio
+      descripcion: description, // Mapeo de description a descripcion
+      descripcionCorta,
+      images,
+      sections,
+      slugNegocio,
+    };
+
     if (isFavorite) {
-      removeProductFavorites(product.id);
+      removeProductFavorites(id);
+      setShowToast(true); // Muestra toast de removido
     } else {
-      addProductFavorites(product);
+      addProductFavorites(favoriteProduct);
+      setShowToast(true); // Muestra toast de agregado
     }
+    setIsFavorite(!isFavorite);
+    setTimeout(() => setShowToast(false), 2000); // Oculta toast después de 2s
   };
 
   return (
-    <button
-      onClick={toggleFavorite}
-      className={`p-2 rounded-full shadow-md transition duration-300 ease-in-out relative group
-        ${isFavorite 
-          ? "bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700" 
-          : "bg-white hover:bg-gray-100 border border-gray-200"
-        }`}
-    >
-      {isFavorite ? (
-        <AiFillHeart className="text-white text-xl transition-transform duration-300 ease-in-out transform group-hover:scale-125 group-hover:rotate-6 drop-shadow" />
-      ) : (
-        <AiOutlineHeart className="text-red-500 text-xl transition-transform duration-300 ease-in-out transform group-hover:scale-110" />
-      )}
+    <>
+      <button
+  onClick={handleToggleFavorite}
+  className={`p-2 rounded-full transition-colors duration-300 ease-in-out shadow-sm z-20
+    ${
+      isFavorite
+        ? "bg-red-100 text-red-500 hover:bg-red-200"
+        : "bg-white text-gray-500 hover:bg-gray-100"
+    }`}
+>
+  <FaHeart
+    className={`text-xl ${
+      isFavorite ? "text-red-500" : "text-gray-400"
+    }`}
+  />
+</button>
 
-      {/* Glow cuando está en favoritos */}
-      {isFavorite && (
-        <span className="absolute inset-0 rounded-full bg-red-400 opacity-40 blur-xl animate-pulse"></span>
-      )}
-    </button>
+      {/* Toast simple para feedback */}
+      <AnimatePresence>
+        {showToast && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            className="fixed bottom-4 right-4 bg-white p-4 rounded-lg shadow-lg border border-gray-200 text-sm"
+          >
+            {isFavorite ? "❤️ Agregado a favoritos" : "💔 Removido de favoritos"}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 };

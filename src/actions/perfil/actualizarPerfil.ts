@@ -1,6 +1,6 @@
 "use server";
 
-import { auth } from "@/auth.config";
+
 import prisma from "@/lib/prisma";
 import { EstadoNegocio } from "@prisma/client";
 

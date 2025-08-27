@@ -88,6 +88,7 @@
     "@types/shortid": "^2.2.0",
     "eslint": "^8",
     "eslint-config-next": "15.0.3",
+    "prettier": "^3.6.2",
     "prisma": "^6.5.0",
     "tailwindcss": "^3.4.15",
     "ts-node": "^10.9.2",

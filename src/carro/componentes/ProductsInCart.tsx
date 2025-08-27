@@ -8,7 +8,7 @@ import { useEffect, useMemo, useState } from "react";
 import { FaTrash } from "react-icons/fa"; // Para el ícono de eliminar
 
 // Función para fetch real del nombre del negocio
-const fetchNegocioName = async (slug: string): Promise<string> => {
+export const fetchNegocioName = async (slug: string): Promise<string> => {
   try {
     const res = await fetch(`/api/negocios/${slug}`);
     if (!res.ok) {
@@ -158,7 +158,7 @@ export const ProductsInCart = () => {
             <span>${new Intl.NumberFormat("es-CO").format(total)}</span>
           </div>
           <Link
-            href="/addresstotal"
+            href="/address"
             className="block mt-4 bg-blue-600 text-white px-4 py-3 rounded-full font-medium 
                  hover:bg-blue-700 transition-all duration-300 text-center shadow-sm"
           >

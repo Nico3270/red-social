@@ -5,7 +5,7 @@ import { titulosPrincipales } from "@/config/fonts";
 
 
 
-export default function CatroPage() {
+export default function CarroPage() {
   return (
     <div className="container mx-auto p-4">
       <h1

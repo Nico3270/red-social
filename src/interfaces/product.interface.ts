@@ -29,10 +29,15 @@ export interface Product {
 export interface FavoriteProduct {
   id: string; // Identificador único del producto
   slug: string; // Slug para redirigir al detalle del producto
-  title: string; // Nombre del producto
-  price: number; // Precio del producto
-  description: string; // Descripción breve del producto
+  nombre: string; // Renombrado de 'title' para consistencia
+  precio: number; // Renombrado de 'price' para consistencia
+  descripcion: string; // Renombrado de 'description' para consistencia (puede ser la descripción completa)
+  descripcionCorta: string; // Nueva: Descripción corta para el carrito
   images: string[]; // Lista de URLs de imágenes del producto
+  sections: string[]; // Nueva: IDs de secciones para seccionIds en el carrito
+  slugNegocio: string; // Nueva: Slug del negocio para el store
+  // Opcional: Añade telefonoContacto si lo necesitas para WhatsApp u otros features
+  // telefonoContacto?: string;
 }
 
 export interface CartProduct {

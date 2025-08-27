@@ -2,7 +2,6 @@ import { FavoriteProduct } from "@/interfaces/product.interface";
 import { create } from "zustand";
 import { persist, PersistOptions } from "zustand/middleware";
 
-
 interface State {
   favorites: FavoriteProduct[];
   addProductFavorites: (product: FavoriteProduct) => void;

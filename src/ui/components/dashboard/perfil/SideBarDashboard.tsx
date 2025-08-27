@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { FaUser, FaBox, FaHome, FaUserEdit, FaBook, FaListUl } from "react-icons/fa"; // Ejemplo de íconos
+import { FaUser, FaBox, FaHome, FaUserEdit, FaBook, FaListUl, FaShoppingCart } from "react-icons/fa"; // Ejemplo de íconos
 import { useSidebarStore } from "@/store/sideBar/sideBar-store";
 import { IoMdAddCircle } from "react-icons/io";
 import { FaFilePen, FaMoneyBillTransfer } from "react-icons/fa6";
@@ -23,15 +23,17 @@ const SideBarDashboard: React.FC = () => {
   const { isSidebarOpen } = useSidebarStore();
   const pathname = usePathname();
   const { data: session } = useSession();
+  const nombreNegocio = session?.user.negocioNombre || ""
   const slug = session?.user?.negocioSlug || null;
 
   const navItems: NavItem[] = [
   { name: "Inicio", path: "/dashboard", icon: <FaHome /> },
   { name: "Perfil", path: "/dashboard/perfil", icon: <FaUser /> },
-  { name: "Perfil 2", path: `/perfil/${slug}`, icon: <FaUser /> },
+  { name: `${nombreNegocio}`, path: `/perfil/${slug}`, icon: <FaUser /> },
   { name: "Nuevo producto", path: "/dashboard/productos/nuevo_producto", icon: <IoMdAddCircle /> },
   { name: "Productos", path: "/dashboard/productos", icon: <FaBox /> },
   { name: "Nueva Publicación", path: "/dashboard/crear-publicacion", icon: <FaFilePen /> },
+  { name: "Pedidos", path: "/dashboard/orders", icon: <FaShoppingCart /> },
   { name: "Transacciones", path: "/dashboard/transacciones", icon: <FaMoneyBillTransfer /> },
   { name: "Reservas", path: "/dashboard/reservas", icon: <FaBook /> },
   { name: "Servicios", path: "/dashboard/servicios", icon: <MdHomeRepairService/> },

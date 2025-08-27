@@ -1,270 +1,490 @@
 "use client";
 
-
-import { useAddressStore } from "@/store/address/address-store";
-import clsx from "clsx";
+import React, { useEffect, useState } from "react";
+import { useForm, Controller } from "react-hook-form";
+import {
+  Box,
+  Grid,
+  TextField,
+  Button,
+  Typography,
+  Paper,
+  List,
+  ListItem,
+  ListItemText,
+  Divider,
+  Fade,
+  CircularProgress,
+  IconButton,
+  Container,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  FormHelperText,
+} from "@mui/material";
+import { ArrowBack, Delete } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useCartCatalogoStore } from "@/store/carro/carro-store";
+import { useAddressStore } from "@/store/address/address-store";
+import { fetchNegocioName } from "@/carro/componentes/ProductsInCart";
+import colombiaData from "@/config/colombia.json";
 
-type FormInputs = {
-  senderName: string;
-  senderPhone: string;
-  recipientName?: string;
-  recipientPhone: string;
+interface Address {
+  country: string;
+  departamento: string;
+  ciudad: string;
+  clientName: string;
+  clientPhone: string;
   deliveryAddress: string;
-  occasion?: string;
-  dedicationMessage?: string;
-  deliveryDate?: string;
-  deliveryTime?: string;
+  deliveryDate: string;
   additionalComments?: string;
-};
+}
 
-export const AddressForm = () => {
-  const setAddress = useAddressStore((state) => state.setAddress);
-  const address = useAddressStore((state) => state.address);
+interface AddressNegocioProps {
+  slug: string;
+}
+
+interface ColombiaDepartment {
+  id: number;
+  departamento: string;
+  ciudades: string[];
+}
+
+const AddressNegocio: React.FC<AddressNegocioProps> = ({ slug }) => {
   const router = useRouter();
+  const { removeProduct, getCartForNegocio } = useCartCatalogoStore();
+  const { address, setAddress } = useAddressStore();
 
-  const {
-    handleSubmit,
-    register,
-    formState: { isValid, errors },
-    reset,
-  } = useForm<FormInputs>({
-    mode: "onChange",
+  const { control, handleSubmit, reset, watch, formState: { errors } } = useForm<Address>({
+    defaultValues: {
+      country: "Colombia", // Default fijo para Colombia
+      departamento: "",
+      ciudad: "",
+      clientName: "",
+      clientPhone: "",
+      deliveryAddress: "",
+      deliveryDate: new Date().toISOString().substring(0, 10), // Fecha actual por default
+      additionalComments: "",
+    },
   });
 
+  const [negocioName, setNegocioName] = React.useState<string>("Cargando...");
+  const [isLoading, setIsLoading] = React.useState(true);
+
+  // Estado para las ciudades basadas en el departamento seleccionado
+  const [cities, setCities] = useState<string[]>([]);
+
+  // Observar el valor del departamento
+  const selectedDepartamento = watch("departamento");
+
+  // Fetch nombre del negocio y prellenar form si hay datos en store
   useEffect(() => {
-    if (address && address.senderName) {
+    const loadData = async () => {
+      const name = await fetchNegocioName(slug);
+      setNegocioName(name);
+      setIsLoading(false);
+    };
+    loadData();
+
+    // Prellenar form con datos del store si existen
+    if (address && address.country) {
       reset(address);
     }
-  }, [address, reset]);
+  }, [slug, reset, address]);
 
-  const onSubmit = (data: FormInputs) => {
-    setAddress(data);
-    router.push("/checkout");
+  // Actualizar las ciudades cuando cambie el departamento
+  useEffect(() => {
+    if (selectedDepartamento) {
+      const departmentData = (colombiaData as ColombiaDepartment[]).find(
+        (dept) => dept.departamento === selectedDepartamento
+      );
+      setCities(departmentData ? departmentData.ciudades : []);
+    } else {
+      setCities([]);
+    }
+  }, [selectedDepartamento]);
+
+  const cartItems = getCartForNegocio(slug) || [];
+  const total = cartItems.reduce((sum, item) => sum + item.precio * item.cantidad, 0);
+
+  const onSubmit = (data: Address) => {
+    setAddress(data); // Guardar en el store
+    router.push(`/checkout/${slug}`); // Redirigir a checkout
   };
 
+  const handleBackToCart = () => {
+    router.push("/carro");
+  };
+
+  if (isLoading) {
+    return (
+      <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  // Componente de resumen del carrito (para reutilizar en mobile y desktop)
+  const CartSummary = () => (
+    <Paper elevation={1} sx={{ p: { xs: 2, sm: 3 }, borderRadius: 3, bgcolor: "background.paper" }}>
+      <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "text.primary" }}>
+        Resumen de tu pedido
+      </Typography>
+      <List disablePadding>
+        {cartItems.map((item) => (
+          <ListItem key={item.id} sx={{ py: 1, px: 0 }}>
+            <ListItemText
+              primary={`${item.nombre} x ${item.cantidad}`}
+              secondary={`$${item.precio.toFixed(2)} cada uno`}
+              primaryTypographyProps={{ variant: "body1", fontWeight: 500 }}
+              secondaryTypographyProps={{ variant: "body2", color: "text.secondary" }}
+            />
+            <Typography variant="body1" sx={{ fontWeight: 600, ml: 2, flexShrink: 0 }}>
+              ${(item.precio * item.cantidad).toFixed(2)}
+            </Typography>
+            <IconButton edge="end" aria-label="delete" onClick={() => removeProduct(slug, item.id)} sx={{ ml: 1 }}>
+              <Delete fontSize="small" />
+            </IconButton>
+          </ListItem>
+        ))}
+      </List>
+      <Divider sx={{ my: 2 }} />
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <Typography variant="subtitle1" sx={{ fontWeight: 600, color: "text.primary" }}>
+          Total:
+        </Typography>
+        <Typography variant="subtitle1" sx={{ fontWeight: 600, color: "text.primary" }}>
+          ${total.toFixed(2)}
+        </Typography>
+      </Box>
+      <Button
+        startIcon={<ArrowBack />}
+        onClick={handleBackToCart}
+        sx={{
+          mt: 2,
+          px: 3,
+          py: 1.2,
+          textTransform: "none",
+          fontWeight: 600,
+          fontSize: "0.95rem",
+          borderRadius: 3,
+          bgcolor: "grey.900", // gris oscuro elegante
+          color: "#fff", // texto blanco
+          transition: "all 0.3s ease",
+          "&:hover": {
+            bgcolor: "grey.800", // un poco más claro en hover
+            boxShadow: "0 6px 16px rgba(0,0,0,0.25)", // sombra premium
+          },
+          "& .MuiButton-startIcon": {
+            mr: 1,
+            fontSize: "1.1rem",
+            color: "#fff",
+          },
+        }}
+      >
+        Volver al carrito
+      </Button>
+    </Paper>
+  );
+
   return (
-    <div className="bg-white shadow-md rounded-lg p-8">
-      <h2 className="text-2xl font-bold mb-6 text-center">
-        Completa los datos de entrega
-      </h2>
+    <Fade in timeout={600}>
+      <Container maxWidth="lg" sx={{ mt: 6, mb: 8 }}>
+        <Typography
+          variant="h3"
+          sx={{
+            mb: 6,
+            fontWeight: 700,
+            textAlign: "center",
+            color: "text.primary",
+            letterSpacing: "-0.02em", // Ajuste fino en lugar de negativo exagerado
+            fontSize: { xs: "2rem", sm: "2.75rem", md: "3.25rem" }, // Un poco más grande en desktop
+            fontFamily: "'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+            lineHeight: 1.2,
+            textRendering: "optimizeLegibility",
+            WebkitFontSmoothing: "antialiased",
+          }}
+        >
+          Envío para{" "}
+          <Box component="span" sx={{ color: "primary.main" }}>
+            {negocioName}
+          </Box>
+        </Typography>
 
-      <form onSubmit={handleSubmit(onSubmit)}>
-        {/* Nombre de la persona que envía */}
-        <div className="mb-4">
-          <label
-            htmlFor="senderName"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Nombre de la persona que envía <span className="text-red-600">*</span>
-          </label>
-          <input
-            type="text"
-            className={clsx(
-              "mt-1 block w-full border rounded-lg shadow-sm p-2",
-              errors.senderName ? "border-red-500" : "border-gray-300"
-            )}
-            placeholder="Juan Pérez"
-            {...register("senderName", { required: "Este campo es obligatorio" })}
-          />
-          {errors.senderName && (
-            <p className="text-red-500 text-sm mt-1">{errors.senderName.message}</p>
-          )}
-        </div>
+        <Grid container spacing={4}>
+          {/* Formulario a la izquierda (en desktop), full width en mobile */}
+          <Grid item xs={12} md={7}>
+            <Paper
+              elevation={3} // Controla la intensidad de la sombra
+              sx={{
+                p: { xs: 2, sm: 4 },
+                borderRadius: 3,
+                border: "1px solid",
+                borderColor: "grey.300", // Borde gris premium
+                boxShadow: "0 8px 24px rgba(0,0,0,0.05)", // sombra suave elegante
+                bgcolor: "background.paper",
+              }}
+            >
+              <form onSubmit={handleSubmit(onSubmit)}>
+                <Grid container spacing={3}>
+                  <Grid item xs={12}>
+                    <Controller
+                      name="country"
+                      control={control}
+                      rules={{ required: "País requerido" }}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          label="País"
+                          fullWidth
+                          variant="outlined"
+                          disabled // Fijo en Colombia
+                          error={!!errors.country}
+                          helperText={errors.country?.message}
+                          sx={{
+                            "& .MuiOutlinedInput-root": {
+                              borderRadius: 3,
+                              bgcolor: "background.default",
+                              "& fieldset": { borderColor: "divider" },
+                              "&:hover fieldset": { borderColor: "primary.light" },
+                            },
+                            "& .MuiInputLabel-root": { color: "text.secondary" },
+                          }}
+                        />
+                      )}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Controller
+                      name="departamento"
+                      control={control}
+                      rules={{ required: "Departamento requerido" }}
+                      render={({ field }) => (
+                        <FormControl fullWidth variant="outlined" error={!!errors.departamento}>
+                          <InputLabel id="departamento-label">Departamento</InputLabel>
+                          <Select
+                            {...field}
+                            labelId="departamento-label"
+                            label="Departamento"
+                            sx={{
+                              borderRadius: 3,
+                              bgcolor: "background.default",
+                              "& .MuiOutlinedInput-notchedOutline": { borderColor: "divider" },
+                              "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "primary.light" },
+                            }}
+                          >
+                            {(colombiaData as ColombiaDepartment[]).map((dept) => (
+                              <MenuItem key={dept.id} value={dept.departamento}>
+                                {dept.departamento}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                          {errors.departamento && <FormHelperText>{errors.departamento.message}</FormHelperText>}
+                        </FormControl>
+                      )}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Controller
+                      name="ciudad"
+                      control={control}
+                      rules={{ required: "Ciudad requerida" }}
+                      render={({ field }) => (
+                        <FormControl fullWidth variant="outlined" error={!!errors.ciudad} disabled={!selectedDepartamento}>
+                          <InputLabel id="ciudad-label">Ciudad</InputLabel>
+                          <Select
+                            {...field}
+                            labelId="ciudad-label"
+                            label="Ciudad"
+                            sx={{
+                              borderRadius: 3,
+                              bgcolor: "background.default",
+                              "& .MuiOutlinedInput-notchedOutline": { borderColor: "divider" },
+                              "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "primary.light" },
+                            }}
+                          >
+                            {cities.map((city, index) => (
+                              <MenuItem key={index} value={city}>
+                                {city}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                          {errors.ciudad && <FormHelperText>{errors.ciudad.message}</FormHelperText>}
+                        </FormControl>
+                      )}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Controller
+                      name="clientName"
+                      control={control}
+                      rules={{ required: "Nombre requerido" }}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          label="Nombre del cliente"
+                          fullWidth
+                          variant="outlined"
+                          error={!!errors.clientName}
+                          helperText={errors.clientName?.message}
+                          sx={{
+                            "& .MuiOutlinedInput-root": {
+                              borderRadius: 3,
+                              bgcolor: "background.default",
+                              "& fieldset": { borderColor: "divider" },
+                              "&:hover fieldset": { borderColor: "primary.light" },
+                            },
+                            "& .MuiInputLabel-root": { color: "text.secondary" },
+                          }}
+                        />
+                      )}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Controller
+                      name="clientPhone"
+                      control={control}
+                      rules={{ required: "Teléfono requerido" }}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          label="Teléfono del cliente"
+                          fullWidth
+                          variant="outlined"
+                          error={!!errors.clientPhone}
+                          helperText={errors.clientPhone?.message}
+                          sx={{
+                            "& .MuiOutlinedInput-root": {
+                              borderRadius: 3,
+                              bgcolor: "background.default",
+                              "& fieldset": { borderColor: "divider" },
+                              "&:hover fieldset": { borderColor: "primary.light" },
+                            },
+                            "& .MuiInputLabel-root": { color: "text.secondary" },
+                          }}
+                        />
+                      )}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Controller
+                      name="deliveryAddress"
+                      control={control}
+                      rules={{ required: "Dirección de entrega requerida" }}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          label="Dirección de entrega"
+                          fullWidth
+                          variant="outlined"
+                          multiline
+                          rows={2}
+                          error={!!errors.deliveryAddress}
+                          helperText={errors.deliveryAddress?.message}
+                          sx={{
+                            "& .MuiOutlinedInput-root": {
+                              borderRadius: 3,
+                              bgcolor: "background.default",
+                              "& fieldset": { borderColor: "divider" },
+                              "&:hover fieldset": { borderColor: "primary.light" },
+                            },
+                            "& .MuiInputLabel-root": { color: "text.secondary" },
+                          }}
+                        />
+                      )}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Controller
+                      name="deliveryDate"
+                      control={control}
+                      rules={{ required: "Fecha de entrega requerida" }}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          type="date"
+                          label="Fecha de entrega"
+                          fullWidth
+                          variant="outlined"
+                          InputLabelProps={{ shrink: true }}
+                          error={!!errors.deliveryDate}
+                          helperText={errors.deliveryDate?.message}
+                          inputProps={{
+                            min: new Date().toISOString().split("T")[0], // fecha mínima = hoy
+                          }}
+                          sx={{
+                            "& .MuiOutlinedInput-root": {
+                              borderRadius: 3,
+                              bgcolor: "background.default",
+                              "& fieldset": { borderColor: "divider" },
+                              "&:hover fieldset": { borderColor: "primary.light" },
+                            },
+                            "& .MuiInputLabel-root": { color: "text.secondary" },
+                          }}
+                        />
+                      )}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Controller
+                      name="additionalComments"
+                      control={control}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          label="Comentarios adicionales (opcional)"
+                          fullWidth
+                          variant="outlined"
+                          multiline
+                          rows={3}
+                          sx={{
+                            "& .MuiOutlinedInput-root": {
+                              borderRadius: 3,
+                              bgcolor: "background.default",
+                              "& fieldset": { borderColor: "divider" },
+                              "&:hover fieldset": { borderColor: "primary.light" },
+                            },
+                            "& .MuiInputLabel-root": { color: "text.secondary" },
+                          }}
+                        />
+                      )}
+                    />
+                  </Grid>
+                </Grid>
+                <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    size="large"
+                    sx={{
+                      px: 6,
+                      py: 1.5,
+                      borderRadius: 3,
+                      textTransform: "none",
+                      fontWeight: 600,
+                      bgcolor: "primary.main",
+                      "&:hover": { bgcolor: "primary.dark", boxShadow: "0 4px 12px rgba(0,0,0,0.1)" },
+                      transition: "all 0.2s ease",
+                    }}
+                  >
+                    Continuar al pago
+                  </Button>
+                </Box>
+              </form>
+            </Paper>
+          </Grid>
 
-        {/* Teléfono de la persona que envía */}
-        <div className="mb-4">
-          <label
-            htmlFor="senderPhone"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Teléfono de la persona que envía <span className="text-red-600">*</span>
-          </label>
-          <input
-            type="tel"
-            className={clsx(
-              "mt-1 block w-full border rounded-lg shadow-sm p-2",
-              errors.senderPhone ? "border-red-500" : "border-gray-300"
-            )}
-            placeholder="300 123 4567"
-            {...register("senderPhone", {
-              required: "Este campo es obligatorio",
-              pattern: {
-                value: /^[0-9]{10}$/,
-                message: "Debe tener 10 dígitos",
-              },
-            })}
-          />
-          {errors.senderPhone && (
-            <p className="text-red-500 text-sm mt-1">{errors.senderPhone.message}</p>
-          )}
-        </div>
-
-        {/* Nombre de la persona que recibe */}
-        <div className="mb-4">
-          <label
-            htmlFor="recipientName"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Nombre de la persona que recibe (Opcional)
-          </label>
-          <input
-            type="text"
-            className="mt-1 block w-full border rounded-lg shadow-sm p-2 border-gray-300"
-            placeholder="María González"
-            {...register("recipientName")}
-          />
-        </div>
-
-        {/* Teléfono de la persona que recibe */}
-        <div className="mb-4">
-          <label
-            htmlFor="recipientPhone"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Teléfono de la persona que recibe <span className="text-red-600">*</span>
-          </label>
-          <input
-            type="tel"
-            className={clsx(
-              "mt-1 block w-full border rounded-lg shadow-sm p-2",
-              errors.recipientPhone ? "border-red-500" : "border-gray-300"
-            )}
-            placeholder="300 987 6543"
-            {...register("recipientPhone", {
-              required: "Este campo es obligatorio",
-              pattern: {
-                value: /^[0-9]{10}$/,
-                message: "Debe tener 10 dígitos",
-              },
-            })}
-          />
-          {errors.recipientPhone && (
-            <p className="text-red-500 text-sm mt-1">{errors.recipientPhone.message}</p>
-          )}
-        </div>
-
-        {/* Dirección de entrega */}
-        <div className="mb-4">
-          <label
-            htmlFor="deliveryAddress"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Dirección de entrega <span className="text-red-600">*</span>
-          </label>
-          <input
-            type="text"
-            className={clsx(
-              "mt-1 block w-full border rounded-lg shadow-sm p-2",
-              errors.deliveryAddress ? "border-red-500" : "border-gray-300"
-            )}
-            placeholder="Calle 123, N° 45"
-            {...register("deliveryAddress", { required: "Este campo es obligatorio" })}
-          />
-          {errors.deliveryAddress && (
-            <p className="text-red-500 text-sm mt-1">{errors.deliveryAddress.message}</p>
-          )}
-        </div>
-
-        {/* Ocasión */}
-        <div className="mb-4">
-          <label
-            htmlFor="occasion"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Ocasión (Opcional)
-          </label>
-          <input
-            type="text"
-            className="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2"
-            placeholder="Cumpleaños, aniversario, etc."
-            {...register("occasion")}
-          />
-        </div>
-
-        {/* Mensaje o dedicatoria */}
-        <div className="mb-4">
-          <label
-            htmlFor="dedicationMessage"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Mensaje o dedicatoria (Opcional)
-          </label>
-          <textarea
-            className="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2"
-            placeholder="Escribe un mensaje especial"
-            rows={3}
-            {...register("dedicationMessage")}
-          />
-        </div>
-
-        {/* Fecha de entrega */}
-        <div className="mb-4">
-          <label
-            htmlFor="deliveryDate"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Fecha de entrega (Opcional)
-          </label>
-          <input
-            type="date"
-            className="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2"
-            {...register("deliveryDate")}
-          />
-        </div>
-
-        {/* Hora de entrega */}
-        <div className="mb-4">
-          <label
-            htmlFor="deliveryTime"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Hora de entrega (Opcional)
-          </label>
-          <input
-            type="time"
-            className="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2"
-            {...register("deliveryTime")}
-          />
-        </div>
-
-        {/* Comentario adicional */}
-        <div className="mb-4">
-          <label
-            htmlFor="additionalComments"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Comentario adicional (Opcional)
-          </label>
-          <textarea
-            className="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2"
-            placeholder="Escribe detalles adicionales sobre la entrega"
-            rows={3}
-            {...register("additionalComments")}
-          />
-        </div>
-
-        {/* Mensaje de confirmación */}
-        <p className="text-gray-600 text-sm mb-4">
-          La fecha, hora, y disponibilidad de los productos y opciones será confirmada por uno de nuestros asesores en breve.
-        </p>
-
-        {/* Botón de enviar */}
-        <div className="text-center">
-          <button
-            disabled={!isValid}
-            type="submit"
-            className={clsx(
-              "px-6 py-2 rounded-lg font-bold text-white",
-              isValid ? "bg-[#9f86c0]  hover:bg-[#e0b1cb]" : "bg-gray-300 cursor-not-allowed"
-            )}
-          >
-            Continuar
-          </button>
-        </div>
-      </form>
-    </div>
+          {/* Resumen a la derecha (en desktop), debajo en mobile */}
+          <Grid item xs={12} md={5}>
+            <Box sx={{ position: { md: "sticky" }, top: { md: 100 } }}>
+              {CartSummary()}
+            </Box>
+          </Grid>
+        </Grid>
+      </Container>
+    </Fade>
   );
 };
+
+export default AddressNegocio;

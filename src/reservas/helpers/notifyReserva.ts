@@ -18,6 +18,10 @@ interface NotifyReservaConfirmadaClienteProps {
     descripcion?: string; // Descripción de la reserva, opcional
     template: PlantillaWhatsApp; // Nombre de la plantilla en Meta (ej. 'reserva_confirmada_cliente')
     negocioId: string; // Opcional: si se necesita contexto del negocio
+    datos_pedido?: string;
+    valor_compra?: string;
+    direccion?: string;
+    ciudad?: string;
 }
 
 export async function notifyReservaConfirmadaCliente({
@@ -30,7 +34,11 @@ export async function notifyReservaConfirmadaCliente({
     enlace_cancelar,
     template,
     descripcion,
-    negocioId
+    negocioId,
+    datos_pedido, 
+    valor_compra,
+    direccion,
+    ciudad
 }: NotifyReservaConfirmadaClienteProps) {
     // Validaciones modernas: Asegura que los datos sean válidos para evitar envíos fallidos
     console.log({negocioId}, "en notifyReservas");
@@ -102,6 +110,43 @@ export async function notifyReservaConfirmadaCliente({
             placeholderNames = ['nombre_cliente','nombre_negocio', 'fecha_anterior' , 'fecha_nueva',  'enlace_cancelar'];
             languageCode = "es"
             break;
+
+        case PlantillaWhatsApp.PEDIDO_CREADO_NEGOCIO:
+            if(!valor_compra || !datos_pedido || !nombre_cliente || !telefono_cliente ||!descripcion || !direccion){
+                throw new Error("Faltan datos para la plantilla de confirmación de pedido al negocio");
+            }
+            variables = [ nombre_negocio, datos_pedido, valor_compra, nombre_cliente, telefono_cliente, direccion, descripcion];
+            placeholderNames = ['nombre_negocio',"datos_pedido", "valor_compra" ,'nombre_cliente', "telefono_cliente", "direccion", "descripcion"];
+            languageCode = "es"
+            break;
+
+        case PlantillaWhatsApp.PEDIDO_CREADO_USUARIO_USUARIO:
+            if(!valor_compra || !datos_pedido || !nombre_cliente || !direccion ||!ciudad){
+                throw new Error("Faltan datos para la plantilla de confirmación de pedido creado por el usuario al usuario");
+            }
+            variables = [ nombre_cliente, nombre_negocio, datos_pedido, valor_compra, direccion, ciudad];
+            placeholderNames = ['nombre_cliente', 'nombre_negocio',"datos_pedido", "valor_compra" , "direccion", "ciudad"];
+            languageCode = "es"
+            break;
+
+        case PlantillaWhatsApp.PEDIDO_CREADO_NEGOCIO_USUARIO:
+            if(!nombre_cliente || !datos_pedido || !valor_compra || !direccion){
+                throw new Error("Faltan datos para la plantilla de confirmación de pedido creado por el negocio al usuario");
+            }
+            variables = [nombre_cliente, nombre_negocio, datos_pedido, valor_compra, direccion];
+            placeholderNames = ['nombre_cliente', 'nombre_negocio',"datos_pedido", "valor_compra" , "direccion"];
+            languageCode = "es"
+            break;
+        
+        case PlantillaWhatsApp.PEDIDO_CANCELADO_NEGOCIO:
+            if(!nombre_cliente || !datos_pedido || !valor_compra){
+                throw new Error("Faltan datos para la plantilla de cancelación de pedido creado por el negocio al usuario");
+            }
+            variables = [nombre_cliente, nombre_negocio, datos_pedido, valor_compra];
+            placeholderNames = ['nombre_cliente', 'nombre_negocio', 'datos_pedido', 'valor_compra'];
+            languageCode = "es"
+            break;
+
         default:
             throw new Error("Plantilla no reconocida");
     }
