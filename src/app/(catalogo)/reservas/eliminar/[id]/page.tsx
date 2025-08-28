@@ -2,6 +2,7 @@
 
 import { getInformacionReserva } from "@/reservas/actions/getInfoNegocioWhatsapp";
 import { ClientCancelModal } from "@/reservas/componentes/ClientCancelModal";
+import Link from "next/link";
 
 interface Props {
   params: Promise<{
@@ -40,12 +41,12 @@ export default async function EliminarReservaUsuarioPage({ params }: Props) {
       <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
         <h1 className="text-2xl font-bold text-gray-800 mb-2">Reserva no encontrada</h1>
         <p className="text-gray-600 mb-6">La reserva ya ha sido eliminada o no existe.</p>
-        <a
+        <Link
           href="/"
           className="bg-blue-500 text-white px-6 py-3 rounded-lg shadow-md hover:bg-blue-600 transition-colors"
         >
           Volver al inicio
-        </a>
+        </Link>
       </div>
     );
   }

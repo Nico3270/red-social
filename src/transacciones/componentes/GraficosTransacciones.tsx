@@ -5,7 +5,7 @@ import { Pie, Line, Bar } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, LineElement, PointElement, CategoryScale, LinearScale, BarElement, TooltipItem, Filler } from "chart.js";
 import { Transaction } from "@/transacciones/interfaces/types";
 import { subDays, startOfMonth, startOfYear, isAfter, isBefore, format, eachDayOfInterval, addDays } from "date-fns";
-import { SeccionesFont, titulosPrincipales } from "@/config/fonts";
+
 import {
   Box,
   Grid,
@@ -38,7 +38,6 @@ interface GraficosTransaccionesProps {
 
 const GraficosTransacciones: React.FC<GraficosTransaccionesProps> = ({ transactions }) => {
   const theme = useTheme();
-  const isDarkMode = theme.palette.mode === "dark";
   const [darkMode, setDarkMode] = useState(false); // Toggle dark mode
   const [filters, setFilters] = useState({
     period: "all", // "day", "week", "month", "year", "custom"
@@ -58,7 +57,7 @@ const GraficosTransacciones: React.FC<GraficosTransaccionesProps> = ({ transacti
   const handleFilterChange = (period: string) => {
     const today = new Date();
     let start = "";
-    let end = today.toISOString().split("T")[0];
+    const end = today.toISOString().split("T")[0];
     if (period === "day") {
       start = end;
     } else if (period === "week") {

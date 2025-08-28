@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
@@ -21,7 +20,7 @@ const allCities = colombia.flatMap((d) =>
     d.ciudades.map((ciudad) => `${ciudad} - ${d.departamento}`)
 );
 
-const countryCodes = [{ code: "+57", country: "Colombia" }];
+
 
 const selectedCountryCode = "+57";
 
@@ -252,7 +251,7 @@ export const CreateNegocioForm = ({ id }: IdUsuario) => {
                             control={control}
                             defaultValue={[]}
                             rules={{ required: "Debes seleccionar al menos una categoría" }}
-                            render={({ field }) => (
+                            render={() => (
                                 <Stack direction="row" spacing={1} flexWrap="wrap" rowGap={1}>
                                     {initialData.categorias.map((category) => {
                                         const IconComponent = iconMap[category.iconName] || FaIcons.FaQuestion;
@@ -492,5 +491,3 @@ export const CreateNegocioForm = ({ id }: IdUsuario) => {
         </div>
     );
 };
-
-

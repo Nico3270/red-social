@@ -2,9 +2,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth.config';
 import prisma from '@/lib/prisma';
-import { Prisma, Transaction } from '@prisma/client';
+import { PaymentMethod, Prisma, Transaction, TransactionType } from '@prisma/client';
 import { z } from 'zod';
-import { TransactionType, PaymentMethod } from '@/transacciones/interfaces/types';
+
 
 const querySchema = z.object({
   startDate: z.string().optional().refine((val) => !val || !isNaN(Date.parse(val)), { message: 'startDate inválida (ISO)' }),
@@ -30,7 +30,8 @@ export async function GET(req: NextRequest) {
   if (!validated.success) {
     return NextResponse.json({ error: validated.error.errors.map(e => e.message).join(', ') }, { status: 400 });
   }
-  let { startDate, endDate, type, paymentMethod } = validated.data;
+  let { startDate, endDate } = validated.data;
+  const { type, paymentMethod } = validated.data;
 
   // Default a último mes si no hay fechas (evita históricos masivos, elegante para UX inicial)
   if (!startDate && !endDate) {
@@ -70,8 +71,8 @@ export async function GET(req: NextRequest) {
 
     const total = data.length;
 
-    const ingresosAgg = await prisma.transaction.aggregate({ _sum: { amount: true }, where: { ...where, type: TransactionType.Ingreso } });
-    const gastosAgg = await prisma.transaction.aggregate({ _sum: { amount: true }, where: { ...where, type: TransactionType.Gasto } });
+    const ingresosAgg = await prisma.transaction.aggregate({ _sum: { amount: true }, where: { ...where, type: TransactionType.ingreso } });
+    const gastosAgg = await prisma.transaction.aggregate({ _sum: { amount: true }, where: { ...where, type: TransactionType.gasto } });
     const balance = {
       ingresos: ingresosAgg._sum.amount?.toNumber() ?? 0,
       gastos: gastosAgg._sum.amount?.toNumber() ?? 0,

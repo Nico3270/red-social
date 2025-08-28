@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Box,
   Grid,
@@ -16,24 +16,15 @@ import {
   Modal,
   Fade as MuiFade,
   Backdrop,
+  Snackbar,
+  Alert,
 } from "@mui/material";
-import { CheckCircleOutline, ErrorOutline } from "@mui/icons-material";
+import { CheckCircleOutline, ErrorOutline } from "@mui/icons-material"; // Corregí a CheckCircleOutline y ErrorOutline (sin Outline duplicado)
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { useCartNegocioStore } from "@/store/carro-negocio/carro-negocio-store";
 import { useAddressStore } from "@/store/address/address-store";
 import { createNewPedido } from "../actions/createNewPedido";
-
-interface Address {
-  country: string;
-  departamento: string;
-  ciudad: string;
-  clientName: string;
-  clientPhone: string;
-  deliveryAddress: string;
-  deliveryDate: string;
-  additionalComments?: string;
-}
 
 const MotionBox = motion(Box);
 
@@ -47,11 +38,18 @@ const CheckoutOrdenNegocio: React.FC = () => {
   const [modalMessage, setModalMessage] = useState("");
   const [isSuccess, setIsSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [toastOpen, setToastOpen] = useState(false); // Estado para toast
+  const [toastMessage, setToastMessage] = useState("Procesando orden..."); // Mensaje inicial toast
+  const [toastSeverity, setToastSeverity] = useState<"info" | "success" | "error">("info"); // Severidad toast
 
   const total = getTotalPrice();
 
   const handleCreatePedido = async () => {
     setIsSubmitting(true);
+    setIsLoading(true); // Activa loader global
+    setToastOpen(true); // Muestra toast de carga
+    setToastMessage("Procesando orden...");
+    setToastSeverity("info");
     setModalOpen(true);
     setModalMessage("Creando orden...");
     setIsSuccess(false);
@@ -74,6 +72,8 @@ const CheckoutOrdenNegocio: React.FC = () => {
       if (response.ok) {
         setModalMessage(response.message || "Orden creada exitosamente.");
         setIsSuccess(true);
+        setToastMessage("¡Orden creada con éxito!");
+        setToastSeverity("success");
         clearCart();
         clearAddress();
 
@@ -84,12 +84,20 @@ const CheckoutOrdenNegocio: React.FC = () => {
       } else {
         setModalMessage(response.message || "Error al crear la orden.");
         setIsSuccess(false);
+        setToastMessage("Error al crear la orden");
+        setToastSeverity("error");
       }
     } catch (error) {
-      setModalMessage("Error inesperado al crear la orden.");
+      console.error("Error en creación de pedido:", error); // Manejo de error
+      setModalMessage(error instanceof Error ? error.message : "Error inesperado al crear la orden.");
       setIsSuccess(false);
+      setToastMessage("Error inesperado");
+      setToastSeverity("error");
     } finally {
       setIsSubmitting(false);
+      setIsLoading(false); // Desactiva loader
+      // Auto-cierre toast después de 3s, pero modal queda para cierre manual
+      setTimeout(() => setToastOpen(false), 3000);
     }
   };
 
@@ -250,7 +258,7 @@ const CheckoutOrdenNegocio: React.FC = () => {
                   bgcolor: "background.paper",
                   border: `2px solid ${isSuccess ? "success.main" : "error.main"}`,
                   borderRadius: 3,
-                  boxShadow: 24, // ahora sí funciona
+                  boxShadow: 24,
                   p: 4,
                   textAlign: "center",
                 }}
@@ -282,6 +290,23 @@ const CheckoutOrdenNegocio: React.FC = () => {
             </Modal>
           )}
         </AnimatePresence>
+
+        {/* Toast (Snackbar) para feedback no bloqueante */}
+        <Snackbar
+          open={toastOpen}
+          autoHideDuration={3000}
+          onClose={() => setToastOpen(false)}
+          anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+          TransitionComponent={MuiFade}
+        >
+          <Alert
+            onClose={() => setToastOpen(false)}
+            severity={toastSeverity}
+            sx={{ width: "100%", borderRadius: 2, boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}
+          >
+            {toastMessage}
+          </Alert>
+        </Snackbar>
       </Container>
     </MuiFade>
   );

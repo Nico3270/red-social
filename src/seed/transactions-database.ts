@@ -1,5 +1,4 @@
 import { PrismaClient } from "@prisma/client";
-import { initialData } from "./seed";
 import { transactionData } from "./transactions";
 
 const prisma = new PrismaClient();

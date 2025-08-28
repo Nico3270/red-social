@@ -1,6 +1,6 @@
 "use server";
 
-import prisma from "@/lib/prisma";
+
 import { auth } from "@/auth.config";
 import { z } from "zod";
 

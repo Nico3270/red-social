@@ -22,7 +22,7 @@ const generateSlug = async (nombre: string, ciudad: string): Promise<string> => 
         .replace(/[^\w\s-]/g, "")
         .trim()
         .replace(/\s+/g, "-");
-    let ciudadBase = ciudad
+    const ciudadBase = ciudad
     .toLowerCase()
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "")

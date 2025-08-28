@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from "react"
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Navigation, Autoplay } from "swiper/modules";
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion} from "framer-motion";
 import { FaLock, FaGlobe, FaUserFriends } from "react-icons/fa";
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
@@ -21,10 +21,6 @@ import Link from "next/link";
 import { titulo1 } from "@/config/fonts";
 import { PublicacionSencilla } from "../interfaces/publicacionSencilla.interface";
 
-
-interface Props {
-  publicacion: PublicacionSencilla;
-}
 
 // Hook personalizado para obtener dimensiones de medios
 const useMediaDimensions = (url: string, tipo: "IMAGEN" | "VIDEO") => {
@@ -84,7 +80,45 @@ const useMediaDimensions = (url: string, tipo: "IMAGEN" | "VIDEO") => {
   return aspectRatio;
 };
 
+interface Props {
+  publicacion: PublicacionSencilla;
+}
 
+// Componente wrapper para cada slide
+const MediaSlide: React.FC<{ media: PublicacionSencilla["multimedia"][0]; index: number; multimediaLength: number }> = ({ media, index, multimediaLength }) => {
+  const aspectRatio = useMediaDimensions(media.url, media.tipo);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="relative w-full max-h-[500px] mx-auto"
+      style={{ aspectRatio: aspectRatio || 1 }}
+    >
+      {media.tipo === "VIDEO" ? (
+        <video
+          src={media.url}
+          controls
+          preload="metadata"
+          playsInline
+          muted={false}
+          className="w-full h-full object-contain rounded-xl"
+          aria-label={`Video ${index + 1} de ${multimediaLength} en carrusel`}
+        />
+      ) : (
+        <Image
+          src={media.url}
+          alt={`Imagen ${index + 1} de carrusel`}
+          fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          className="object-cover rounded-xl"
+          loading="lazy"
+        />
+      )}
+    </motion.div>
+  );
+};
 
 export const SocialMediaCarousel: React.FC<Props> = ({ publicacion }) => {
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
@@ -103,19 +137,6 @@ export const SocialMediaCarousel: React.FC<Props> = ({ publicacion }) => {
       .replace(/@(\w+)/g, '<Link href="/profile/$1" class="text-blue-500 hover:underline">@$1</Link>');
   }, []);
 
-  // Manejar interacciones (para pasar al componente Interactions)
-  const handleInteraction = useCallback(
-    (
-      type: "COMENTARIO" | "REACCION" | "COMPARTIDO",
-      data: { reaction?: "LIKE" | "LOVE" | "WOW" | "SAD" | "ANGRY"; comment?: string }
-    ) => {
-      // TODO: Implementar server action para guardar la interacción
-      console.log(`Interacción: ${type}`, data);
-      publicacion.onInteraction?.(type, data); // Notificar al componente padre si existe onInteraction
-    },
-    [publicacion.onInteraction]
-  );
-
   // Icono de visibilidad
   const getVisibilityIcon = useCallback(() => {
     switch (publicacion.visibilidad) {
@@ -129,7 +150,7 @@ export const SocialMediaCarousel: React.FC<Props> = ({ publicacion }) => {
         return null;
     }
   }, [publicacion.visibilidad]);
-
+  
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -214,41 +235,11 @@ export const SocialMediaCarousel: React.FC<Props> = ({ publicacion }) => {
           className="mySwiper"
         >
           {multimedia.length > 0 ? (
-            multimedia.map((media, index) => {
-              const aspectRatio = useMediaDimensions(media.url, media.tipo);
-              return (
-                <SwiperSlide key={media.id}>
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.5 }}
-                    className="relative w-full max-h-[500px] mx-auto"
-                    style={{ aspectRatio: aspectRatio || 1 }}
-                  >
-                    {media.tipo === "VIDEO" ? (
-                      <video
-                        src={media.url}
-                        controls
-                        preload="metadata"
-                        playsInline
-                        muted={false}
-                        className="w-full h-full object-contain rounded-xl"
-                        aria-label={`Video ${index + 1} de ${multimedia.length} en carrusel`}
-                      />
-                    ) : (
-                      <Image
-                        src={media.url}
-                        alt={publicacion.titulo || `Imagen ${index + 1} de carrusel`}
-                        fill
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        className="object-cover rounded-xl"
-                        loading="lazy"
-                      />
-                    )}
-                  </motion.div>
-                </SwiperSlide>
-              );
-            })
+            multimedia.map((media, index) => (
+              <SwiperSlide key={media.id}>
+                <MediaSlide media={media} index={index} multimediaLength={multimedia.length} />
+              </SwiperSlide>
+            ))
           ) : (
             <div className="relative w-full h-[400px] flex items-center justify-center bg-gray-200 rounded-xl">
               <p className="text-gray-500">No hay imágenes o videos disponibles</p>

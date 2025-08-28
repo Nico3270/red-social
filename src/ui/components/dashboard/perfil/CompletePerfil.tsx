@@ -3,7 +3,6 @@
 import { EstadoNegocio } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import imageCompression from "browser-image-compression";
 import React, { useEffect, useRef, useState, useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
@@ -16,7 +15,6 @@ import {
   RadioGroup,
   FormControlLabel,
   Radio,
-  IconButton,
   CircularProgress,
   Typography,
   Box,
@@ -31,7 +29,6 @@ import { initialData } from "@/seed/seed";
 import { MapPicker } from "../../map-picker/MapPicker";
 import { actualizarPerfilNegocio } from "@/actions/perfil/actualizarPerfil";
 import AutoUploadMedia from "../../autoUpload/AutoUploadMedia";
-
 
 interface InformacionInicialNegocio {
   nombreNegocio: string;
@@ -68,8 +65,6 @@ const iconMap: IconMap = {
   ...RiIcons,
 };
 
-
-
 type SocialMediaKeys = "facebook" | "instagram" | "twitter" | "tiktok" | "youtube";
 
 const socialMediaFields: { name: SocialMediaKeys; placeholder: string; pattern: RegExp; message: string }[] = [
@@ -104,8 +99,6 @@ const socialMediaFields: { name: SocialMediaKeys; placeholder: string; pattern: 
     message: "Ingresa una URL válida de YouTube",
   },
 ];
-
-
 
 export const CompletePerfil = ({ informacionNegocio }: Props) => {
   const {
@@ -152,13 +145,11 @@ export const CompletePerfil = ({ informacionNegocio }: Props) => {
   const router = useRouter();
   const { data: session, update } = useSession();
 
-
   const allCities = useMemo(
     () => colombia.flatMap((d) => d.ciudades.map((ciudad) => `${ciudad} - ${d.departamento}`)),
     []
   );
 
-  const countryCodes = [{ code: "+57", country: "Colombia" }];
   const selectedCountryCode = "+57";
 
   const filteredSections = initialData.secciones.filter((section) =>
@@ -172,8 +163,6 @@ export const CompletePerfil = ({ informacionNegocio }: Props) => {
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-+|-+$/g, "");
-
-
 
   const toggleSection = (id: string) => {
     setSelectedSections((prev) => {
@@ -211,7 +200,7 @@ export const CompletePerfil = ({ informacionNegocio }: Props) => {
       setFilteredCities([]);
     }
     setValue("ciudadNegocio", cityInput, { shouldValidate: true }); // Sincronizar ciudadNegocio con cityInput
-  }, [cityInput, setValue]);
+  }, [cityInput, setValue, allCities]); // Corrección: Agregamos 'allCities' como dependencia
 
   useEffect(() => {
     register("ciudadNegocio", {
@@ -234,13 +223,13 @@ export const CompletePerfil = ({ informacionNegocio }: Props) => {
 
   useEffect(() => {
     if (informacionNegocio) {
-      const ciudad = `${informacionNegocio.ciudadNegocio} - ${informacionNegocio.departamentoNegocio}`;
+      const ciudadCompleta = `${informacionNegocio.ciudadNegocio} - ${informacionNegocio.departamentoNegocio}`; // Renombramos 'ciudad' a 'ciudadCompleta' para claridad y evitar no-unused-vars
       reset({
         ...informacionNegocio,
         estadoNegocio: informacionNegocio.estadoNegocio || EstadoNegocio.activo,
         telefonoContacto: informacionNegocio.telefonoNegocio.substring(3), // Asumiendo que el teléfono ya incluye el código de país
       });
-      setCityInput(ciudad);
+      setCityInput(ciudadCompleta); // Usamos la variable renombrada
       setSelectedCategorySlugs(
         new Set(
           informacionNegocio.categoriaIds
@@ -252,7 +241,6 @@ export const CompletePerfil = ({ informacionNegocio }: Props) => {
         )
       );
       setSelectedSections(new Set(informacionNegocio.seccionesIds));
-
     }
   }, [informacionNegocio, reset]);
 
@@ -338,7 +326,6 @@ export const CompletePerfil = ({ informacionNegocio }: Props) => {
         ? data.imagenPortada[0]
         : data.imagenPortada;
 
-
       // Preparar datos para enviar
       const submitData: InformacionInicialNegocio = {
         nombreNegocio: data.nombreNegocio,
@@ -385,7 +372,6 @@ export const CompletePerfil = ({ informacionNegocio }: Props) => {
         await update({ role: "negocio" });
       }
 
-
       if (!informacionNegocio) {
         console.log("Actualizando rol y datos de negocio en sesión");
         await update({
@@ -398,14 +384,12 @@ export const CompletePerfil = ({ informacionNegocio }: Props) => {
 
       const NewSlug = data.slugNegocio;
 
-
       // Mostrar mensaje de éxito y redirigir
       setAlert({ type: "success", message: response.message });
       setTimeout(() => {
         router.push(`/perfil/${NewSlug}`);
       }, 4000);
     } catch (error) {
-
       setAlert({
         type: "error",
         message: `Error: ${error instanceof Error ? error.message : "No se pudo guardar la información."}`,
@@ -421,8 +405,6 @@ export const CompletePerfil = ({ informacionNegocio }: Props) => {
   const dataEntrada = informacionNegocio?.imagenPerfil;
   // Información de entrada para la imagen de portada
   const dataEntrada2 = informacionNegocio?.imagenPortada;
-
-
 
   return (
     <form
@@ -480,7 +462,7 @@ export const CompletePerfil = ({ informacionNegocio }: Props) => {
           name="categoriaIds"
           control={control}
           rules={{ required: "Debes seleccionar al menos una categoría" }}
-          render={({ field }) => (
+          render={() => (
             <Stack direction="row" spacing={1} flexWrap="wrap" rowGap={1}>
               {initialData.categorias.map((category) => {
                 const IconComponent = iconMap[category.iconName] || RiIcons.RiQuestionLine;
@@ -627,7 +609,7 @@ export const CompletePerfil = ({ informacionNegocio }: Props) => {
                 key={city}
                 onClick={() => {
                   const [ciudad, departamento] = city.split(" - ");
-                  setValue("ciudadNegocio", city, { shouldValidate: true }); // Usar el valor completo
+                  setValue("ciudadNegocio", ciudad, { shouldValidate: true }); // Usar el valor completo
                   setValue("departamentoNegocio", departamento, { shouldValidate: true });
                   setCityInput(city);
                   setFilteredCities([]);
@@ -700,7 +682,6 @@ export const CompletePerfil = ({ informacionNegocio }: Props) => {
 
       </FormControl>
 
-
       <Divider />
       <FormControl>
         <FormLabel sx={{ mb: 1, fontWeight: "bold" }}>Imagen de Portada</FormLabel>
@@ -723,7 +704,6 @@ export const CompletePerfil = ({ informacionNegocio }: Props) => {
           mediaType="image"
         />
       </FormControl>
-
 
       <Divider />
       <Alert severity="info" sx={{ mb: 1 }}>

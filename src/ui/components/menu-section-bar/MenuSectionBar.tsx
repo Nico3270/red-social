@@ -40,7 +40,7 @@ export const MenuSectionsBar = () => {
     checkOverflow();
     window.addEventListener("resize", checkOverflow);
     return () => window.removeEventListener("resize", checkOverflow);
-  }, [initialData.categorias.length]); // Re-chequear si cambian las categorías
+  }, []); // Removemos la dependencia innecesaria, ya que initialData es estático
 
   const scrollLeft = () => {
     scrollContainerRef.current?.scrollBy({ left: -200, behavior: "smooth" });

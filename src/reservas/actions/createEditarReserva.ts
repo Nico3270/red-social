@@ -2,7 +2,7 @@
 "use server";
 
 import prisma from "@/lib/prisma";
-import { auth, authConfig } from "@/auth.config";
+import { auth } from "@/auth.config";
 import * as z from "zod";
 import { notifyReservaConfirmadaCliente } from "../helpers/notifyReserva";
 import { PlantillaWhatsApp } from "../interfaces/interfaces.whatsapp";

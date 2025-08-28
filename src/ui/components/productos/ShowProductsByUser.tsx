@@ -21,6 +21,7 @@ import { ProductStatus } from "@prisma/client";
 import { changeStatusProduct } from "@/actions/productos/changeStatusProduct";
 import { ProductRedSocial } from "@/interfaces/productRedSocial.interface";
 import { initialData, Section } from "@/seed/seed";
+import Image from "next/image";
 
 interface ShowProductsByUserProps {
   products: ProductRedSocial[];
@@ -142,7 +143,7 @@ export default function ShowProductsByUser({ products }: ShowProductsByUserProps
 
             return (
               <div key={product.id} className="bg-white rounded-xl shadow-md overflow-hidden flex flex-col">
-                <img
+                <Image
                   src={product.imagenes[0] || "/placeholder-image.jpg"}
                   alt={product.nombre}
                   className="w-full h-48 object-cover"

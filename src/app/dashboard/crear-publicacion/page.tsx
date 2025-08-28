@@ -3,7 +3,7 @@
 import { auth } from "@/auth.config";
 import { getProductosNegocio } from "@/publicaciones/actions/getProductosNegocio";
 import { CrearPublicacionesNegocio } from "@/publicaciones/componentes/CrearPublicaciones";
-import { ContextoPublicacion, TestimonioCrearEditar } from "@/publicaciones/componentes/TestimonioCrearEditar";
+import { ContextoPublicacion } from "@/publicaciones/componentes/TestimonioCrearEditar";
 import { PublicacionTipo } from "@prisma/client";
 
 

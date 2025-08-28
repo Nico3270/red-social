@@ -2,7 +2,6 @@ import { redirect } from "next/navigation";
 import { Box } from "@mui/material";
 import { getProductsByUser } from "@/actions/productos/getProductsFromUser";
 import ShowProductsByUser from "@/ui/components/productos/ShowProductsByUser";
-import { ProductStatus } from "@prisma/client";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth.config";
 

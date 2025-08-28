@@ -1,7 +1,6 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
 import { useForm, Controller, useWatch } from "react-hook-form";
 import { motion, AnimatePresence } from "framer-motion";

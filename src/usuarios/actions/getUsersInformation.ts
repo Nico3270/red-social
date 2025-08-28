@@ -4,15 +4,15 @@
 import prisma from "@/lib/prisma";
 
 export async function getUsersInformation() {
-  return await prisma.user.findMany({
+  return await prisma.usuario.findMany({
     select: {
       id: true,
-      name: true,
+      nombre: true,
       email: true,
       role: true,
-      image: true,
       createdAt: true,
       updatedAt: true,
+      fotoPerfil: true
     },
   });
 }

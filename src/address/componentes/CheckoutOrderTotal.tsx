@@ -25,16 +25,6 @@ import { useAddressStore } from "@/store/address/address-store";
 import { fetchNegocioName } from "@/carro/componentes/ProductsInCart";
 import { createNewPedido } from "../actions/createNewPedido";
 
-interface Address {
-  country: string;
-  departamento: string;
-  ciudad: string;
-  clientName: string;
-  clientPhone: string;
-  deliveryAddress: string;
-  deliveryDate: string;
-  additionalComments?: string;
-}
 
 const MotionBox = motion(Box);
 
@@ -65,7 +55,7 @@ const CheckoutOrderTotal: React.FC = () => {
     loadData();
   }, [carts]);
 
-  const totalGlobal = Object.values(carts).reduce((globalSum, items) => 
+  const totalGlobal = Object.values(carts).reduce((globalSum, items) =>
     globalSum + items.reduce((sum, item) => sum + item.precio * item.cantidad, 0), 0);
 
   const handleCreatePedido = async () => {
@@ -116,6 +106,7 @@ const CheckoutOrderTotal: React.FC = () => {
         setIsSuccess(false);
       }
     } catch (error) {
+      console.error("Error en handleCreatePedido:", error);
       setModalMessage("Error inesperado al crear los pedidos.");
       setIsSuccess(false);
     } finally {

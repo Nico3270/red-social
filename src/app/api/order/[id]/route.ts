@@ -1,6 +1,6 @@
 import { auth } from "@/auth.config";
 import prisma from "@/lib/prisma";
-import { NextRequest, NextResponse } from "next/server";
+import {  NextResponse } from "next/server";
 import { OrderState } from "@prisma/client";
 
 interface OrderDetails {
@@ -37,8 +37,8 @@ interface OrderDetails {
   // Otros campos si son necesarios, e.g., statusHistory, etc.
 }
 
-export async function GET(request: Request, context: { params: Promise<{ id: string }> }) {
-    const params = await context.params;
+export async function GET(req: Request, context: { params: Promise<{ id: string }> }) {
+    const {id} = await context.params
   const session = await auth();
   if (!session || !session.user.negocioId) {
     return NextResponse.json(
@@ -47,7 +47,7 @@ export async function GET(request: Request, context: { params: Promise<{ id: str
     );
   }
 
-  const orderId = params.id;
+  const orderId = id;
   const negocioId = session.user.negocioId;
 
   try {

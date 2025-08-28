@@ -25,7 +25,7 @@ export const createUpdateServicio = async (
       };
     }
 
-    let negocioId = data.negocioId || session.user.negocioId;
+    const negocioId = data.negocioId || session.user.negocioId;
     if (!negocioId) {
       return {
         ok: false,

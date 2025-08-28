@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { format, addDays, subDays, parse, startOfDay, addMinutes, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
 import { FaArrowLeft, FaArrowRight, FaTimes, FaCalendarAlt, FaCheck, FaClock } from "react-icons/fa"; // Agregué FaClock para original
@@ -66,33 +66,33 @@ export const EditReservationSlotSelector = ({ reservaData, negocioId, onClose, o
   }, [initialconfig]);
 
   // Fetch reservas para currentDate (igual a ReservasDashboard)
-  const fetchReservas = async () => {
-    setLoading(true);
-    const dateStr = format(currentDate, "yyyy-MM-dd");
-    const res = await fetch(`/api/reservasConfig?date=${dateStr}`);
-    const data: ReservationsResponse = await res.json();
-    setLoading(false);
-    if (data.ok) {
-      setReservas(data.reservas as ExtendedReservationDayData[]);
-    } else {
-      console.error(data.message);
-      setReservas([]);
-    }
-  };
+  const fetchReservas = useCallback(async () => {
+  setLoading(true);
+  const dateStr = format(currentDate, "yyyy-MM-dd");
+  const res = await fetch(`/api/reservasConfig?date=${dateStr}`);
+  const data: ReservationsResponse = await res.json();
+  setLoading(false);
+  if (data.ok) {
+    setReservas(data.reservas as ExtendedReservationDayData[]);
+  } else {
+    console.error(data.message);
+    setReservas([]);
+  }
+}, [currentDate]);
 
   useEffect(() => {
-    if (initialconfig) {
-      const dayName = format(currentDate, "EEEE", { locale: es });
-      const capitalizedDay = dayName.charAt(0).toUpperCase() + dayName.slice(1);
-      const isAttendingDay = initialconfig.diasAtencion.includes(capitalizedDay);
-      if (isAttendingDay) {
-        fetchReservas();
-      } else {
-        setReservas([]);
-        setLoading(false);
-      }
+  if (initialconfig) {
+    const dayName = format(currentDate, "EEEE", { locale: es });
+    const capitalizedDay = dayName.charAt(0).toUpperCase() + dayName.slice(1);
+    const isAttendingDay = initialconfig.diasAtencion.includes(capitalizedDay);
+    if (isAttendingDay) {
+      fetchReservas();
+    } else {
+      setReservas([]);
+      setLoading(false);
     }
-  }, [currentDate, initialconfig]);
+  }
+}, [currentDate, initialconfig, fetchReservas]);
 
   // Navegación fecha
   const prevDay = () => setCurrentDate(subDays(currentDate, 1));

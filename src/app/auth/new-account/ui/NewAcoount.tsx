@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef, ReactNode } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { FaGoogle } from "react-icons/fa";
 import { IoEyeOffOutline, IoEyeOutline } from "react-icons/io5";
 import Link from "next/link";
@@ -224,8 +224,9 @@ export const RegisterForm = ({ negocio }: TipoUsuario) => {
           <div className="relative">
             <label htmlFor="ciudad" className="block font-bold">Ciudad</label>
             <Alert severity="info">
-              Por favor seleccione una ciudad válida de la lista que aparece al escribir, ejemplo: "Bogotá - Cundinamarca".
+              Por favor seleccione una ciudad válida de la lista que aparece al escribir, ejemplo: &quot;Bogotá - Cundinamarca&quot;.
             </Alert>
+
 
             <input
               type="text"

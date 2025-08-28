@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { format, addDays, subDays, parse, startOfDay, addMinutes, isBefore, isSameDay } from "date-fns";
 import { es } from "date-fns/locale"; // Locale para español/Colombia
 import { FaArrowLeft, FaArrowRight, FaCalendarAlt } from "react-icons/fa";
@@ -10,10 +10,9 @@ import { BusinessAvailabilityData } from "../actions/getCongifUserReservation";
 
 interface ReservasUserDashboardProps {
   config: BusinessAvailabilityData;
-  slug: string; // Para contexto, aunque no usado directamente
 }
 
-const ReservasUserDashboard = ({ config, slug }: ReservasUserDashboardProps) => {
+const ReservasUserDashboard = ({ config }: ReservasUserDashboardProps) => {
   const [currentDate, setCurrentDate] = useState(startOfDay(new Date())); // Fecha actual, normalizada a inicio del día
   const [reservas, setReservas] = useState<ReservationDayData[]>([]); // Reservas del día (para chequear ocupación)
   const [slots, setSlots] = useState<string[]>([]); // Cajones generados (e.g., "08:00", "08:30")
@@ -22,7 +21,7 @@ const ReservasUserDashboard = ({ config, slug }: ReservasUserDashboardProps) => 
   const [loading, setLoading] = useState(true); // Loading para fetch
   const [errorMessage, setErrorMessage] = useState<string | null>(null); // Mensaje de error para fechas pasadas
 
-  const today = startOfDay(new Date()); // Hoy, normalizado
+  const today = useMemo(() => startOfDay(new Date()), []); // Hoy, normalizado
 
   // Generar slots basados en config (similar a dashboard negocio)
   useEffect(() => {
@@ -49,19 +48,19 @@ const ReservasUserDashboard = ({ config, slug }: ReservasUserDashboardProps) => 
   }, [config]);
 
   // Fetch reservas por día para calcular ocupación (sin mostrar detalles)
-  const fetchReservas = async () => {
-    setLoading(true);
-    const dateStr = format(currentDate, "yyyy-MM-dd"); // YYYY-MM-DD para API
-    const res = await fetch(`/api/reservasConfigUser?date=${dateStr}&negocioId=${config.negocioId}`);
-    const data: ReservationsResponse = await res.json();
-    setLoading(false);
-    if (data.ok) {
-      setReservas(data.reservas);
-    } else {
-      console.error(data.message);
-      setReservas([]);
-    }
-  };
+  const fetchReservas = useCallback(async () => {
+  setLoading(true);
+  const dateStr = format(currentDate, "yyyy-MM-dd"); // YYYY-MM-DD para API
+  const res = await fetch(`/api/reservasConfigUser?date=${dateStr}&negocioId=${config.negocioId}`);
+  const data: ReservationsResponse = await res.json();
+  setLoading(false);
+  if (data.ok) {
+    setReservas(data.reservas);
+  } else {
+    console.error(data.message);
+    setReservas([]);
+  }
+}, [currentDate, config.negocioId]); // Solo depende de estas dos cosas
 
   useEffect(() => {
     // Si la fecha es anterior a hoy, no fetch y mostrar error
@@ -83,7 +82,7 @@ const ReservasUserDashboard = ({ config, slug }: ReservasUserDashboardProps) => 
       setReservas([]);
       setLoading(false);
     }
-  }, [currentDate, config]);
+  }, [currentDate, config, fetchReservas, today]);
 
   // Navegación: Prev/Next día
   const prevDay = () => {
@@ -213,8 +212,8 @@ const ReservasUserDashboard = ({ config, slug }: ReservasUserDashboardProps) => 
             {filteredSlots.map((slot) => {
               const slotReservas = getReservasForSlot(slot);
               const maxCapacidad = config.capacidadPorIntervalo;
-              const isBlocked = slotReservas.some((res) => res.estado === "BLOQUEADA");
-              const nonBlockedReservas = slotReservas.filter((res) => res.estado !== "BLOQUEADA");
+              const isBlocked = slotReservas.some(res => res.estado === "BLOQUEADA");
+              const nonBlockedReservas = slotReservas.filter(res => res.estado !== "BLOQUEADA");
               const isFull = nonBlockedReservas.length >= maxCapacidad;
               const isAvailable = !isBlocked && !isFull;
 

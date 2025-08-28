@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useMemo } from "react";
-import { Box, Card, CardContent, Chip, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, Fade, FormControl, Grid, IconButton, InputLabel, MenuItem, Paper, Select, Skeleton, Snackbar, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tabs, Tab, TextField, Tooltip, Typography, useMediaQuery, useTheme, Button } from "@mui/material";
+import React, { useState, useEffect, useMemo } from "react";
+import { Box, Card, Chip, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, Fade, FormControl, Grid, IconButton, InputLabel, MenuItem, Paper, Select, Skeleton, Snackbar, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tabs, Tab, TextField, Tooltip, Typography, useMediaQuery, useTheme, Button } from "@mui/material";
 import { Alert } from "@mui/material"; // Para Snackbar errors
 import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear, subDays, subWeeks, subMonths, subYears } from "date-fns";
 import { es } from "date-fns/locale";
@@ -9,7 +9,8 @@ import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { BsArrowLeft, BsArrowRight, BsCalendar3, BsCalendarWeek, BsCalendarMonth, BsCalendarEvent } from "react-icons/bs";
 import { ArrowUpward, ArrowDownward, Delete as DeleteIcon, Edit as EditIcon, GetAppOutlined, SearchOff as NoDataIcon, Visibility as VisibilityIcon } from "@mui/icons-material"; // Icono para no-data y Visibility
-import { Transaction, TransactionType, PaymentMethod } from "@/transacciones/interfaces/types";
+import { Transaction } from "@/transacciones/interfaces/types"; // Ajusta si es necesario
+import { TransactionType, PaymentMethod } from "@prisma/client";
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query"; // Para fetches optimizados
 import { useSession } from "next-auth/react"; // Para auth en client
 import Divider from "@/ui/components/divider/Divider";
@@ -24,7 +25,6 @@ interface ShowTransactionsProps {
 
 // Helper para capitalize
 const capitalize = (text: string) => text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
-
 
 // Helper para formatear fecha desde ISO UTC a local dd/MM/yyyy
 const formatISODate = (isoDate: string): string => {
@@ -58,7 +58,6 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ initialTransactions
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const queryClient = useQueryClient();
   const { data: session } = useSession(); // Asegura auth
-  if (!session) return <Typography>No autenticado</Typography>;
 
   const [activeTab, setActiveTab] = useState('day'); // Tabs: day, week, month, year, custom
   const [selectedStartDate, setSelectedStartDate] = useState<Date | null>(null);
@@ -78,6 +77,50 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ initialTransactions
   const [openDetail, setOpenDetail] = useState(false);
   const [detailId, setDetailId] = useState<string | null>(null);
   const [isExporting, setIsExporting] = useState(false);
+
+  // Todos los hooks se llaman incondicionalmente aquí, al principio
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError, error } = useInfiniteQuery({
+    queryKey: ['transacciones', selectedStartDate?.toISOString().split('T')[0], selectedEndDate?.toISOString().split('T')[0], filterType, filterPayment] as [string, string | undefined, string | undefined, string, string],
+    queryFn: fetchTransacciones,
+    getNextPageParam: (lastPage) => lastPage.metadata.hasMore ? lastPage.metadata.currentSkip + 10 : undefined,
+    initialPageParam: 0,
+    enabled: !!session, // Solo fetch si autenticado
+  });
+
+  // Flatten data para lista plana (siempre computado, incluso si vacío)
+  const allTransactions = data?.pages.flatMap(page => page.data) || initialTransactions;
+  const currentBalance = data?.pages[0]?.metadata.balance || { ingresos: 0, gastos: 0, neto: 0 };
+
+  // Sort local (post-fetch, para elegancia sin refetch) - Siempre computado
+  const sortedTransactions = useMemo(() => {
+    let filtered = [...allTransactions];
+    if (search) {
+      const lowerSearch = search.toLowerCase();
+      filtered = filtered.filter(t => t.description.toLowerCase().includes(lowerSearch));
+    }
+    return filtered.sort((a, b) => {
+      if (sortBy.field === "date") {
+        const dateA = new Date(a.date).getTime();
+        const dateB = new Date(b.date).getTime();
+        return sortBy.order === "asc" ? dateA - dateB : dateB - dateA;
+      }
+      if (sortBy.field === "amount") {
+        return sortBy.order === "asc" ? a.amount - b.amount : b.amount - a.amount;
+      }
+      return 0;
+    });
+  }, [allTransactions, sortBy, search]);
+
+  // Efecto para errores (siempre llamado)
+  useEffect(() => {
+    if (isError) {
+      setErrorMessage(error?.message || 'Error al cargar transacciones');
+      setOpenError(true);
+    }
+  }, [isError, error]);
+
+  // Ahora, el chequeo de sesión (después de hooks)
+  if (!session) return <Typography>No autenticado</Typography>;
 
   // Fecha actual calculada automáticamente
   const currentDate = new Date();
@@ -109,19 +152,6 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ initialTransactions
     }
     return boxes;
   };
-
-  // Fetch con TanStack para infinite scroll y caching
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError, error } = useInfiniteQuery({
-    queryKey: ['transacciones', selectedStartDate?.toISOString().split('T')[0], selectedEndDate?.toISOString().split('T')[0], filterType, filterPayment] as [string, string | undefined, string | undefined, string, string],
-    queryFn: fetchTransacciones,
-    getNextPageParam: (lastPage) => lastPage.metadata.hasMore ? lastPage.metadata.currentSkip + 10 : undefined,
-    initialPageParam: 0,
-    enabled: !!session, // Solo fetch si autenticado
-  });
-
-  // Flatten data para lista plana
-  const allTransactions = data?.pages.flatMap(page => page.data) || initialTransactions;
-  const currentBalance = data?.pages[0]?.metadata.balance || { ingresos: 0, gastos: 0, neto: 0 };
 
   // Handle tab change y selección de caja (refetch con nuevo rango)
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
@@ -215,41 +245,14 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ initialTransactions
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, "Transacciones");
       XLSX.writeFile(workbook, "transacciones.xlsx");
-    } catch (err: any) {
-      setErrorMessage(err.message || 'Error al exportar');
+    } catch (err: unknown) {  // Cambiado de any a unknown
+      const message = err instanceof Error ? err.message : 'Error al exportar';  // Check tipo
+      setErrorMessage(message);
       setOpenError(true);
     } finally {
       setIsExporting(false);
     }
   };
-
-  // Sort local (post-fetch, para elegancia sin refetch)
-  const sortedTransactions = useMemo(() => {
-    let filtered = [...allTransactions];
-    if (search) {
-      const lowerSearch = search.toLowerCase();
-      filtered = filtered.filter(t => t.description.toLowerCase().includes(lowerSearch));
-    }
-    return filtered.sort((a, b) => {
-      if (sortBy.field === "date") {
-        const dateA = new Date(a.date).getTime();
-        const dateB = new Date(b.date).getTime();
-        return sortBy.order === "asc" ? dateA - dateB : dateB - dateA;
-      }
-      if (sortBy.field === "amount") {
-        return sortBy.order === "asc" ? a.amount - b.amount : b.amount - a.amount;
-      }
-      return 0;
-    });
-  }, [allTransactions, sortBy, search]);
-
-  // Error handling
-  useEffect(() => {
-    if (isError) {
-      setErrorMessage(error?.message || 'Error al cargar transacciones');
-      setOpenError(true);
-    }
-  }, [isError, error]);
 
   // Función para abrir modal
   const handleOpenDetail = (id: string) => {
@@ -263,13 +266,13 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ initialTransactions
     setDetailId(null);
   };
 
-  const handleTransactionUpdated = (updatedTransaction: Transaction) => {
+  const handleTransactionUpdated = () => {
     queryClient.invalidateQueries({ queryKey: ['transacciones'] });
     setOpenEdit(false);
     setSelectedTransaction(null);
   };
 
-  const handleTransactionDeleted = (deletedId: string) => {
+  const handleTransactionDeleted = () => {
     queryClient.invalidateQueries({ queryKey: ['transacciones'] });
     setOpenDelete(false);
     setSelectedTransaction(null);
@@ -483,8 +486,8 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ initialTransactions
                 onChange={(e) => { setFilterType(e.target.value as string); handleFilterChange(); }}
               >
                 <MenuItem value="all">Todos</MenuItem>
-                <MenuItem value={TransactionType.Ingreso}>Ingreso</MenuItem>
-                <MenuItem value={TransactionType.Gasto}>Gasto</MenuItem>
+                <MenuItem value={TransactionType.ingreso}>Ingreso</MenuItem>
+                <MenuItem value={TransactionType.gasto}>Gasto</MenuItem>
               </Select>
             </FormControl>
 
@@ -523,7 +526,7 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ initialTransactions
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
             {sortedTransactions.map((t) => (
               <Fade in key={`fade-mobile-${t.id}-${activeTab}`}>
-                <Card key={t.id} sx={{ bgcolor: t.type === TransactionType.Ingreso ? "green.50" : "red.50", p: 2, borderBottom: `4px solid ${theme.palette[t.type === TransactionType.Ingreso ? 'success' : 'error'].light}`, borderRadius: 2 }}>
+                <Card key={t.id} sx={{ bgcolor: t.type === TransactionType.ingreso ? "green.50" : "red.50", p: 2, borderBottom: `4px solid ${theme.palette[t.type === TransactionType.ingreso ? 'success' : 'error'].light}`, borderRadius: 2 }}>
                   <Typography><strong>Fecha:</strong> {formatISODate(t.date)}</Typography>
                   <Typography
                     sx={{
@@ -545,7 +548,7 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ initialTransactions
                     {t.description}
                   </Typography>
                   <Typography><strong>Categoría:</strong> {capitalize(t.category)}</Typography>
-                  <Typography><strong>Monto:</strong> {t.type === TransactionType.Ingreso ? <ArrowUpward color="success" fontSize="small" sx={{ verticalAlign: 'middle' }} /> : <ArrowDownward color="error" fontSize="small" sx={{ verticalAlign: 'middle' }} />} ${t.amount.toLocaleString("es-CO")}</Typography>
+                  <Typography><strong>Monto:</strong> {t.type === TransactionType.ingreso ? <ArrowUpward color="success" fontSize="small" sx={{ verticalAlign: 'middle' }} /> : <ArrowDownward color="error" fontSize="small" sx={{ verticalAlign: 'middle' }} />} ${t.amount.toLocaleString("es-CO")}</Typography>
                   <Typography><strong>Medio:</strong> {capitalize(t.paymentMethod)}</Typography>
                   <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                     <Tooltip title="Ver detalles">
@@ -569,10 +572,12 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ initialTransactions
                       backgroundColor: '#424242',
                       color: 'white',
                       fontWeight: 600,
-                      textAlign: "center" 
+                      textAlign: "center",
+                      cursor: 'pointer'  // Agregado para indicar clicable
                     }}
+                    onClick={() => setSortBy(prev => ({ field: 'date', order: prev.order === 'asc' ? 'desc' : 'asc' }))}  // Usamos setSortBy aquí
                   >
-                    Fecha
+                    Fecha {sortBy.field === 'date' && (sortBy.order === 'asc' ? <ArrowUpward fontSize="small" /> : <ArrowDownward fontSize="small" />)}
                   </TableCell>
                   <TableCell 
                     sx={{ 
@@ -603,10 +608,12 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ initialTransactions
                       backgroundColor: '#424242',
                       color: 'white',
                       fontWeight: 600,
-                      textAlign: "center" 
+                      textAlign: "center",
+                      cursor: 'pointer'  // Agregado para indicar clicable
                     }}
+                    onClick={() => setSortBy(prev => ({ field: 'amount', order: prev.order === 'asc' ? 'desc' : 'asc' }))}  // Usamos setSortBy aquí
                   >
-                    Monto
+                    Monto {sortBy.field === 'amount' && (sortBy.order === 'asc' ? <ArrowUpward fontSize="small" /> : <ArrowDownward fontSize="small" />)}
                   </TableCell>
                   <TableCell 
                     sx={{ 
@@ -638,10 +645,10 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ initialTransactions
                     <TableRow
                       key={t.id}
                       sx={{
-                        bgcolor: t.type === TransactionType.Ingreso ? "green.50" : "red.50",
-                        borderBottom: `2px solid ${theme.palette[t.type === TransactionType.Ingreso ? 'success' : 'error'].light}`,
-                        boxShadow: `inset 0 -2px 0 ${theme.palette[t.type === TransactionType.Ingreso ? 'success' : 'error'].light}`,
-                        '&:hover': { bgcolor: t.type === TransactionType.Ingreso ? "green.100" : "red.100" }
+                        bgcolor: t.type === TransactionType.ingreso ? "green.50" : "red.50",
+                        borderBottom: `2px solid ${theme.palette[t.type === TransactionType.ingreso ? 'success' : 'error'].light}`,
+                        boxShadow: `inset 0 -2px 0 ${theme.palette[t.type === TransactionType.ingreso ? 'success' : 'error'].light}`,
+                        '&:hover': { bgcolor: t.type === TransactionType.ingreso ? "green.100" : "red.100" }
                       }}
                     >
                       <TableCell sx={{ borderRight: '1px solid rgba(224, 224, 224, 1)' }}>{formatISODate(t.date)}</TableCell>
@@ -681,7 +688,7 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ initialTransactions
                       </TableCell>
                       <TableCell sx={{ borderRight: '1px solid rgba(224, 224, 224, 1)' }}>{capitalize(t.category)}</TableCell>
                       <TableCell sx={{ borderRight: '1px solid rgba(224, 224, 224, 1)' }}>
-                        {t.type === TransactionType.Ingreso
+                        {t.type === TransactionType.ingreso
                           ? <ArrowUpward sx={{ color: theme.palette.success.main, verticalAlign: 'middle', mr: 0.5 }} />
                           : <ArrowDownward sx={{ color: theme.palette.error.main, verticalAlign: 'middle', mr: 0.5 }} />}
                         ${t.amount.toLocaleString("es-CO")}

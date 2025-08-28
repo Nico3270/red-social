@@ -1,12 +1,10 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Alert, TextField, Button, FormControl, FormLabel, CircularProgress } from "@mui/material";
 import { PublicacionTipo } from "@prisma/client";
-import { TituloPrincipal } from "@/ui/components/titulos/Titulos";
 import { createUpdateTestimonio } from "@/publicaciones/actions/createUpdateTestimonio";
 import AutoUploadMedia from "@/ui/components/autoUpload/AutoUploadMedia";
 
@@ -55,7 +53,6 @@ export const TestimonioProductoCrearEditar = ({ infoPublicacion, onCancel, onSuc
 
   const [alert, setAlert] = useState<{ type: "success" | "error" | "info"; message: string } | null>(null);
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
   const { data: session } = useSession();
   const userId = session?.user?.id;
 

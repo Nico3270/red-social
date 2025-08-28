@@ -46,10 +46,12 @@ const DeleteOrderById: React.FC<DeleteOrderByIdProps> = ({ orderId, open, onClos
         setError(data.message || "Error al eliminar la orden");
       }
     } catch (err) {
+      console.error("Error al eliminar la orden:", err);
       setError("Error inesperado al eliminar la orden");
     } finally {
       setLoading(false);
     }
+
   };
 
   const handleClose = () => {
@@ -62,39 +64,39 @@ const DeleteOrderById: React.FC<DeleteOrderByIdProps> = ({ orderId, open, onClos
     <AnimatePresence>
       {open && (
         <Modal
-  open={open}
-  onClose={handleClose}
-  closeAfterTransition
-  slots={{ backdrop: Backdrop }}
-  slotProps={{
-    backdrop: { timeout: 500 },
-  }}
-  sx={{
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  }}
->
+          open={open}
+          onClose={handleClose}
+          closeAfterTransition
+          slots={{ backdrop: Backdrop }}
+          slotProps={{
+            backdrop: { timeout: 500 },
+          }}
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
           <Fade in={open}>
             <MotionBox
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.95 }}
-      transition={{ duration: 0.3 }}
-      sx={{
-        width: { xs: "90%", sm: 400 },
-        bgcolor: "background.paper",
-        border: "1px solid",
-        borderColor: "grey.300", // borde gris sutil
-        borderRadius: 4, // más redondeado tipo Apple
-        boxShadow:
-          "0 4px 20px rgba(0,0,0,0.08), 0 8px 40px rgba(0,0,0,0.12)", // sombras suaves elegantes
-        p: { xs: 3, sm: 4 },
-        outline: "none",
-        textAlign: "center",
-        backdropFilter: "blur(12px)", // efecto cristal Apple
-      }}
-    >
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.3 }}
+              sx={{
+                width: { xs: "90%", sm: 400 },
+                bgcolor: "background.paper",
+                border: "1px solid",
+                borderColor: "grey.300", // borde gris sutil
+                borderRadius: 4, // más redondeado tipo Apple
+                boxShadow:
+                  "0 4px 20px rgba(0,0,0,0.08), 0 8px 40px rgba(0,0,0,0.12)", // sombras suaves elegantes
+                p: { xs: 3, sm: 4 },
+                outline: "none",
+                textAlign: "center",
+                backdropFilter: "blur(12px)", // efecto cristal Apple
+              }}
+            >
               <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
                 <IconButton onClick={handleClose} sx={{ color: "text.secondary" }}>
                   <Close />

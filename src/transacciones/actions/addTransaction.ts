@@ -3,13 +3,10 @@
 import { auth } from "@/auth.config";
 import prisma from "@/lib/prisma";
 import {
-  TransactionType,
-  IncomeCategory,
-  ExpenseCategory,
-  PaymentMethod,
   Transaction,
 } from "@/transacciones/interfaces/types";
-import { OrderState } from "@prisma/client";
+import { ExpenseCategory, IncomeCategory, OrderState } from "@prisma/client";
+import { TransactionType, PaymentMethod } from "@prisma/client";
 
 interface ItemInput {
   description: string;

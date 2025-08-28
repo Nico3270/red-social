@@ -2,7 +2,7 @@
 
 import prisma from "@/lib/prisma";
 import bcryptjs from "bcryptjs";
-import { Genero } from "@prisma/client";
+import { Genero, Prisma } from "@prisma/client";
 
 export const registerUser = async (
   nombre: string,
@@ -73,7 +73,7 @@ export const registerUser = async (
 
 
     // Generar username único
-    let usernameBase = email.split("@")[0].replace(/[^a-zA-Z0-9_]/g, "");
+    const usernameBase = email.split("@")[0].replace(/[^a-zA-Z0-9_]/g, "");
     let username = usernameBase;
     let counter = 1;
     while (await prisma.usuario.findUnique({ where: { username } })) {
@@ -123,16 +123,20 @@ export const registerUser = async (
       user,
       message: "Usuario creado",
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
+  if (error instanceof Prisma.PrismaClientKnownRequestError) {
     if (error.code === "P2002") {
+      // Prisma no tipa bien meta.target, así que hacemos un cast seguro
+      const target = error.meta?.target as string[] | undefined;
+
       return {
         ok: false,
-        message:
-          error.meta.target.includes("email")
-            ? "El correo ya está registrado."
-            : "El nombre de usuario ya está en uso.",
+        message: target?.includes("email")
+          ? "El correo ya está registrado."
+          : "El nombre de usuario ya está en uso.",
       };
     }
+  }
 
     console.error(error);
     return {

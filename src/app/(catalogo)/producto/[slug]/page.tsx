@@ -28,7 +28,7 @@ export default async function ProductPage({ params }: Props) {
     </div>;
   }
 
-  const { product, productosSimilares, telefonoNegocio, nombreNegocio } = result;
+  const { product, productosSimilares, telefonoNegocio } = result;
 
   
   if (!product) {
@@ -57,7 +57,7 @@ export default async function ProductPage({ params }: Props) {
 
 
   return (
-    <div className="sm:mt-40 p-2">
+    <div className="sm:mt-40 mb-20 p-2">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
         {/* Carrusel de imágenes */}
         <div className="flex justify-center">
@@ -70,14 +70,14 @@ export default async function ProductPage({ params }: Props) {
         </div>
 
         {/* Detalles del producto */}
-        <div className="flex flex-col space-y-6 md:space-y-4 md:flex-grow">
+        <div className="flex flex-col mt-10 space-y-6 md:space-y-4 md:flex-grow">
           <DetallesProducto product={product} telefonoNegocio={telefonoNegocio} />
         </div>
 
       </div>
       <Divider />
       {/* Productos similares */}
-      <div className="mt-2">
+      <div className="mt-2 ">
         {
           productosConvertidos.length > 0 ? (
             <h2 className={`text-2xl font-bold mb-2 ${SeccionesFont.className} text-gray-800`}>Productos Similares</h2>

@@ -7,7 +7,6 @@ import { InfoEmpresa } from "@/config/config";
 import { IoMdClose } from "react-icons/io"; // Icono de cierre para el modal
 import { HiOutlineCube } from "react-icons/hi"; // Icono de componente
 import Link from "next/link";
-import { BotonFavoritos } from "./BotonFavoritos";
 import { ProductRedSocial } from "@/interfaces/productRedSocial.interface";
 import Divider from "../divider/Divider";
 import { useSession } from "next-auth/react";
@@ -16,6 +15,7 @@ import { ModalPublicaciones } from "@/publicaciones/componentes/ModalPublicacion
 import { PublicacionTipo } from "@prisma/client";
 import { ContextoPublicacion } from "../autoUpload/UsoenForm";
 import { TestimonioProductoCrearEditar } from "@/publicaciones/componentes/TestimonioProductoCrearEditar";
+import { AddFavorites } from "./AddFavorites";
 
 
 interface AddToCartProps {
@@ -62,7 +62,7 @@ export const DetallesProducto: React.FC<AddToCartProps> = ({ product, telefonoNe
   }
 
   return (
-    <div className="mt-0 flex flex-col items-center gap-6 bg-white p-4 mb-10 sm:m-0 rounded-lg shadow-md">
+    <div className="sm:mt-10 flex flex-col items-center gap-6 bg-white p-4 mb-10 mb:20 rounded-lg shadow-md">
       {/* Información del producto */}
       <div className="text-center">
         <h1
@@ -139,13 +139,17 @@ export const DetallesProducto: React.FC<AddToCartProps> = ({ product, telefonoNe
           <BsWhatsapp className="text-lg" />
           WhatsApp
         </Link>
-        <BotonFavoritos
+        <AddFavorites
           id={product.id}
           title={product.nombre}
           price={product.precio}
-          description={product.descripcion}
           slug={product.slug}
           images={product.imagenes[0] ? [product.imagenes[0]] : []}
+          descripcionCorta={product.descripcionCorta}
+          description={product.descripcion}
+          sections={product.sections}
+          slugNegocio={product.slugNegocio || ""}
+
         />
       </div>
 

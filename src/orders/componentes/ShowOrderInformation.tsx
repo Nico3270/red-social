@@ -10,9 +10,6 @@ import {
     CircularProgress,
     List,
     ListItem,
-    ListItemText,
-    Divider,
-    Button,
     Paper,
     IconButton,
 } from "@mui/material";
@@ -81,6 +78,7 @@ const ShowOrderInformation: React.FC<ShowOrderInformationProps> = ({ orderId, op
                         setError(data.message || "Error al obtener la orden");
                     }
                 } catch (err) {
+                    console.error(err);
                     setError("Error inesperado al cargar la orden");
                 } finally {
                     setLoading(false);

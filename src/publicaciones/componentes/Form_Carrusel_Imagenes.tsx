@@ -1,12 +1,11 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
 import { useForm, Controller, useWatch } from "react-hook-form";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button, CircularProgress, IconButton } from "@mui/material";
-import { FaTimes, FaCog, FaEye, FaPlus } from "react-icons/fa";
+import { FaTimes, FaCog, FaEye } from "react-icons/fa";
 import { PublicacionTipo, Visibilidad } from "@prisma/client";
 import AutoUploadMedia from "@/ui/components/autoUpload/AutoUploadMedia";
 import { createUpdateCarruselImagenes } from "../actions/createUpdateCarruselImagenes";
@@ -53,14 +52,13 @@ const FormCrearCarruselImagenes = ({ infoPublicacion, onCancel, onSuccess }: Pro
     const [alert, setAlert] = useState<{ type: "success" | "error" | "info"; message: string } | null>(null);
     const [loading, setLoading] = useState(false);
     const [showVisibilityMenu, setShowVisibilityMenu] = useState(false);
-    const router = useRouter();
     const { data: session } = useSession();
     const userId = session?.user?.id;
-    const [isReviewModalOpen, setIsReviewModalOpen] = useState(false); // Estado para modal de reseña
+
 
     // Watch the descripcion and multimedia fields for dynamic updates
     const descripcion = useWatch({ control, name: "descripcion" });
-    const multimedia = useWatch({ control, name: "multimedia" });
+
 
     useEffect(() => {
         if (infoPublicacion) {

@@ -11,11 +11,7 @@ import "swiper/css/pagination";
 import { ServicioData } from "../interfaces/servicios.interface";
 
 
-// Hook personalizado para obtener dimensiones de medios (reutilizado de referencia)
-const useMediaDimensions = (url: string, tipo: "IMAGEN" | "VIDEO") => {
-  // Implementación similar a la referencia, omitida por brevedad; asume retorna aspectRatio
-  return 1; // Placeholder; copia la lógica completa si needed
-};
+
 
 interface Props {
   servicio: ServicioData;

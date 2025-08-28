@@ -21,7 +21,6 @@ import {
 import { AiOutlineCloudUpload } from "react-icons/ai";
 import { FaTrashAlt } from "react-icons/fa";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
 import { createProduct, generateDescriptionFromText } from "@/ui/actions/productos/createNewProduct";
 import { initialData } from "@/seed/seed";
 import * as FaIcons from "react-icons/fa";
@@ -115,7 +114,7 @@ export default function CreateNewProduct() {
     }, [nombreProducto, setValue]);
 
     const onSubmit = async (data: ProductFormData) => {
-
+        setLoading(true);
         try {
             setAlert(null);
 
@@ -186,6 +185,8 @@ export default function CreateNewProduct() {
             const errorMessage = error instanceof Error ? error.message : "Error desconocido al enviar el formulario";
             setAlert({ type: "error", message: errorMessage });
             console.error("Error al enviar el formulario:", errorMessage);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -261,7 +262,7 @@ export default function CreateNewProduct() {
 
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 bg-white p-4 rounded-lg shadow-lg max-w-4xl mx-auto ml-0">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 bg-white p-4  rounded-lg shadow-lg w-full mx-auto ml-0">
 
             <FormControl fullWidth>
                 <FormLabel sx={{ mb: 1, color: 'info.main', fontWeight: "bold", }}>Ingresa el nombre de tus producto</FormLabel>
@@ -277,7 +278,7 @@ export default function CreateNewProduct() {
                         <Stack direction="row" spacing={1} flexWrap="wrap" rowGap={1}>
                             {initialData.categorias.map((category) => {
                                 const IconComponent = iconMap[category.iconName] || FaIcons.FaQuestion;
-                                const isSelected = selectedCategorySlug === category.slug;
+                                const isSelected = field.value === category.id; // usar field.value en vez de selectedCategorySlug
 
                                 return (
                                     <Box
@@ -568,8 +569,8 @@ export default function CreateNewProduct() {
 
 
 
-            <Button type="submit" variant="contained" color="primary" fullWidth>
-                Crear Producto
+            <Button type="submit" variant="contained" color="primary" fullWidth disabled={loading}>
+                {loading ? <CircularProgress size={24} color="inherit" /> : "Crear Producto"}
             </Button>
 
             {alert && (
@@ -580,4 +581,3 @@ export default function CreateNewProduct() {
         </form>
     );
 }
-

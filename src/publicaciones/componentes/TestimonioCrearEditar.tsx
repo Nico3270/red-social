@@ -1,7 +1,6 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import {
@@ -65,7 +64,6 @@ export const TestimonioCrearEditar = ({ infoPublicacion, onCancel, productos, on
 
   const [alert, setAlert] = useState<{ type: "success" | "error" | "info"; message: string } | null>(null);
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
   const { data: session } = useSession();
   const userId = session?.user?.id;
 
@@ -132,7 +130,9 @@ export const TestimonioCrearEditar = ({ infoPublicacion, onCancel, productos, on
 
   return (
     <div className="space-y-4 bg-white p-4 rounded-lg shadow-lg max-w-3xl mx-auto">
-      <TituloPrincipal children={infoPublicacion?.publicacionId ? "Editar Testimonio" : "Crear Testimonio"} />
+      <TituloPrincipal>
+  {infoPublicacion?.publicacionId ? "Editar Testimonio" : "Crear Testimonio"}
+</TituloPrincipal>
 
       {alert && (
         <Alert

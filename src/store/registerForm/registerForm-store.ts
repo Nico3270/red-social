@@ -1,5 +1,4 @@
-import { RegisterForm } from "@/app/auth/new-account/ui/NewAcoount";
-import { inter } from "@/config/fonts";
+
 import { create } from "zustand"
 import { persist } from "zustand/middleware";
 import { PersistOptions } from "zustand/middleware";

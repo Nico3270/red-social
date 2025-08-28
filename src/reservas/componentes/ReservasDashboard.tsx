@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { format, addDays, subDays, parse, startOfDay, addMinutes } from "date-fns";
 import { es } from "date-fns/locale"; // Locale Colombia/español
 import { FaArrowLeft, FaArrowRight, FaCalendarAlt, FaEye, FaPlus, FaLock, FaUnlock, FaTimes, FaList, FaGraduationCap } from "react-icons/fa"; // Agregué icons para botones de vista
@@ -11,6 +11,7 @@ import ResumeReservations from "./ResumeReservations";
 import { toast } from "react-hot-toast"; // Asume uso de react-hot-toast para toasts elegantes (instala si no)
 import { blockSlot, deleteReserva } from "../actions/reservasActions";
 import { motion } from "framer-motion";
+import { CircularProgress } from "@mui/material"; // Agregamos para loader
 
 // Extensión del interface para incluir el nuevo estado (corrige el error de tipos)
 interface ExtendedReservationDayData extends ReservationDayData {
@@ -74,7 +75,7 @@ export const ReservasDashboard = ({ negocioId }: { negocioId: string }) => {
   }, [initialconfig]);
 
   // Función separada para fetch reservas (para refresh post-creación)
-  const fetchReservas = async () => {
+  const fetchReservas = useCallback(async () => {
     setLoading(true);
     const dateStr = format(currentDate, "yyyy-MM-dd"); // YYYY-MM-DD para API
     const res = await fetch(`/api/reservasConfig?date=${dateStr}`);
@@ -86,7 +87,7 @@ export const ReservasDashboard = ({ negocioId }: { negocioId: string }) => {
       console.error(data.message);
       setReservas([]);
     }
-  };
+  }, [currentDate]);
 
   // Fetch reservas por día si es un día de atención
   useEffect(() => {
@@ -101,7 +102,7 @@ export const ReservasDashboard = ({ negocioId }: { negocioId: string }) => {
         setLoading(false);
       }
     }
-  }, [currentDate, initialconfig]);
+  }, [currentDate, initialconfig, fetchReservas]);
 
   // Navegación: Prev/Next día
   const prevDay = () => setCurrentDate(subDays(currentDate, 1));
@@ -266,132 +267,142 @@ export const ReservasDashboard = ({ negocioId }: { negocioId: string }) => {
             </button>
           </div>
 
-          {view === 'slots' ? (
-            /* Vista de Slots (Grid responsive) */
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {slots.map((slot) => {
-                const slotReservas = getReservasForSlot(slot);
-                const maxCapacidad = initialconfig?.capacidadPorIntervalo || 1;
-                const isBlocked = slotReservas.some((res) => res.estado === "BLOQUEADA");
-                const blockedReserva = isBlocked ? slotReservas.find((res) => res.estado === "BLOQUEADA") : null;
-                const nonBlockedReservas = slotReservas.filter((res) => res.estado !== "BLOQUEADA");
-                const hasReservas = nonBlockedReservas.length > 0;
-                const isOcupado = nonBlockedReservas.length >= maxCapacidad;
-
-                let colorClass = 'bg-white border border-gray-600'; // Default: vacío (blanco con borde gris oscuro)
-                if (hasReservas && !isOcupado && !isBlocked) colorClass = 'bg-green-100 border-green-500'; // Verde si tiene reservas pero no lleno
-                if (isOcupado && !isBlocked) colorClass = 'bg-red-100 border-red-500'; // Rojo si lleno
-                if (isBlocked) colorClass = 'bg-gray-300 border-gray-400 text-gray-900'; // Gris si bloqueado
-
-                return (
-                  <div key={slot} className={`p-4 border rounded-md shadow-sm cursor-pointer hover:shadow-md transition-shadow ${colorClass}`} onClick={() => toggleExpand(slot)}>
-                    <div className="flex justify-between items-center mb-2">
-                      <h3 className="text-lg font-medium">{slot}</h3>
-                      <FaCalendarAlt className="text-gray-500" />
-                    </div>
-                    <p className="text-sm text-gray-600">Reservas: {nonBlockedReservas.length} / {maxCapacidad}</p>
-                    {expandedSlot === slot && slotReservas.length > 0 && (
-                      <ul className="mt-2 space-y-1 text-sm">
-                        {slotReservas.map((res) => (
-                          <li key={res.id} className="border-t pt-1">
-                            <span className="font-medium">{res.nombre}</span> - {format(new Date(res.fechaHoraInicio), "HH:mm")}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                    <div className="flex justify-end mt-2 space-x-2">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation(); // Evita toggle expand al clickear botón
-                          setSelectedSlotReservas(slotReservas);
-                          setSelectedResumeSlot(slot); // Establecer el slot seleccionado para Resume
-                          setShowResumeModal(true);
-                        }}
-                        className="p-1 text-blue-600 hover:text-blue-800"
-                        title="Ver reservas"
-                      >
-                        <FaEye />
-                      </button>
-                      {!isBlocked && (
-                        <button 
-                          onClick={(e) => {
-                            e.stopPropagation(); // Evita toggle
-                            openAddModal(slot);
-                          }} 
-                          className="p-1 text-green-600 hover:text-green-800" 
-                          title="Agregar manual"
-                        >
-                          <FaPlus />
-                        </button>
-                      )}
-                      {isBlocked ? (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation(); // Evita toggle
-                            blockedReserva && handleUnblockSlot(blockedReserva.id);
-                          }}
-                          className="p-1 text-yellow-600 hover:text-yellow-800"
-                          title="Desbloquear"
-                        >
-                          <FaUnlock />
-                        </button>
-                      ) : (
-                        <button 
-                          onClick={(e) => {
-                            e.stopPropagation(); // Evita toggle
-                            initiateBlockSlot(slot);
-                          }} 
-                          className="p-1 text-red-600 hover:text-red-800" 
-                          title="Bloquear"
-                        >
-                          <FaLock />
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
+          {loading ? (
+            <div className="flex justify-center items-center py-10">
+              <CircularProgress size={60} color="primary" /> {/* Loader elegante con MUI */}
             </div>
           ) : (
-            /* Vista de Lista (Tabla responsive) */
-            <div className="overflow-x-auto">
-              <h2 className="text-2xl font-bold mb-4 text-center  py-2 rounded-t-lg">
-                Listado de reservas para el día {format(currentDate, "dd 'de' MMMM 'de' yyyy", { locale: es })}
-              </h2>
-              {sortedReservas.length === 0 ? (
-                <p className="text-center text-gray-500 py-10">No hay reservas para este día.</p>
+            <>
+              {view === 'slots' ? (
+                /* Vista de Slots (Grid responsive) */
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {slots.map((slot) => {
+                    const slotReservas = getReservasForSlot(slot);
+                    const maxCapacidad = initialconfig?.capacidadPorIntervalo || 1;
+                    const isBlocked = slotReservas.some((res) => res.estado === "BLOQUEADA");
+                    const blockedReserva = isBlocked ? slotReservas.find((res) => res.estado === "BLOQUEADA") : null;
+                    const nonBlockedReservas = slotReservas.filter((res) => res.estado !== "BLOQUEADA");
+                    const hasReservas = nonBlockedReservas.length > 0;
+                    const isOcupado = nonBlockedReservas.length >= maxCapacidad;
+
+                    let colorClass = 'bg-white border border-gray-600'; // Default: vacío (blanco con borde gris oscuro)
+                    if (hasReservas && !isOcupado && !isBlocked) colorClass = 'bg-green-100 border-green-500'; // Verde si tiene reservas pero no lleno
+                    if (isOcupado && !isBlocked) colorClass = 'bg-red-100 border-red-500'; // Rojo si lleno
+                    if (isBlocked) colorClass = 'bg-gray-300 border-gray-400 text-gray-900'; // Gris si bloqueado
+
+                    return (
+                      <div key={slot} className={`p-4 border rounded-md shadow-sm cursor-pointer hover:shadow-md transition-shadow ${colorClass}`} onClick={() => toggleExpand(slot)}>
+                        <div className="flex justify-between items-center mb-2">
+                          <h3 className="text-lg font-medium">{slot}</h3>
+                          <FaCalendarAlt className="text-gray-500" />
+                        </div>
+                        <p className="text-sm text-gray-600">Reservas: {nonBlockedReservas.length} / {maxCapacidad}</p>
+                        {expandedSlot === slot && slotReservas.length > 0 && (
+                          <ul className="mt-2 space-y-1 text-sm">
+                            {slotReservas.map((res) => (
+                              <li key={res.id} className="border-t pt-1">
+                                <span className="font-medium">{res.nombre}</span> - {format(new Date(res.fechaHoraInicio), "HH:mm")}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                        <div className="flex justify-end mt-2 space-x-2">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation(); // Evita toggle expand al clickear botón
+                              setSelectedSlotReservas(slotReservas);
+                              setSelectedResumeSlot(slot); // Establecer el slot seleccionado para Resume
+                              setShowResumeModal(true);
+                            }}
+                            className="p-1 text-blue-600 hover:text-blue-800"
+                            title="Ver reservas"
+                          >
+                            <FaEye />
+                          </button>
+                          {!isBlocked && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation(); // Evita toggle
+                                openAddModal(slot);
+                              }}
+                              className="p-1 text-green-600 hover:text-green-800"
+                              title="Agregar manual"
+                            >
+                              <FaPlus />
+                            </button>
+                          )}
+                          {isBlocked ? (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation(); // Evita toggle
+                                if (blockedReserva) {  // Convertimos a 'if' para que sea un statement claro
+                                  handleUnblockSlot(blockedReserva.id);
+                                }
+                              }}
+                              className="p-1 text-yellow-600 hover:text-yellow-800"
+                              title="Desbloquear"
+                            >
+                              <FaUnlock />
+                            </button>
+                          ) : (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation(); // Evita toggle
+                                initiateBlockSlot(slot);
+                              }}
+                              className="p-1 text-red-600 hover:text-red-800"
+                              title="Bloquear"
+                            >
+                              <FaLock />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               ) : (
-                <table className="min-w-full bg-white border border-gray-300 rounded-lg shadow-md">
-                  <thead>
-                    <tr className="bg-blue-700 text-white">
-                      <th className="py-3 px-4 border-b border-r border-gray-300 text-left">Fecha</th>
-                      <th className="py-3 px-4 border-b border-r border-gray-300 text-left">Nombre</th>
-                      <th className="py-3 px-4 border-b border-r border-gray-300 text-left">Teléfono</th>
-                      <th className="py-3 px-4 border-b border-r border-gray-300 text-left">Descripción</th>
-                      <th className="py-3 px-4 border-b text-left">Estado</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {sortedReservas.map((res) => (
-                      <tr key={res.id} className="hover:bg-gray-50 transition-colors">
-                        <td 
-                          className="py-3 px-4 border-b border-r border-gray-300 text-blue-600 cursor-pointer hover:underline"
-                          onClick={() => openResumeBySlot(res)}
-                        >
-                          {format(new Date(res.fechaHoraInicio), "HH:mm")}
-                        </td>
-                        <td className="py-3 px-4 border-b border-r border-gray-300">{res.nombre}</td>
-                        <td className="py-3 px-4 border-b border-r border-gray-300">{res.telefono}</td>
-                        <td className="py-3 px-4 border-b border-r border-gray-300">{res.notas}</td>
-                        <td className="py-3 px-4 border-b">{capitalizeFirstLetter(res.estado)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                /* Vista de Lista (Tabla responsive) */
+                <div className="overflow-x-auto">
+                  <h2 className="text-2xl font-bold mb-4 text-center  py-2 rounded-t-lg">
+                    Listado de reservas para el día {format(currentDate, "dd 'de' MMMM 'de' yyyy", { locale: es })}
+                  </h2>
+                  {sortedReservas.length === 0 ? (
+                    <p className="text-center text-gray-500 py-10">No hay reservas para este día.</p>
+                  ) : (
+                    <table className="min-w-full bg-white border border-gray-300 rounded-lg shadow-md">
+                      <thead>
+                        <tr className="bg-blue-700 text-white">
+                          <th className="py-3 px-4 border-b border-r border-gray-300 text-left">Fecha</th>
+                          <th className="py-3 px-4 border-b border-r border-gray-300 text-left">Nombre</th>
+                          <th className="py-3 px-4 border-b border-r border-gray-300 text-left">Teléfono</th>
+                          <th className="py-3 px-4 border-b border-r border-gray-300 text-left">Descripción</th>
+                          <th className="py-3 px-4 border-b text-left">Estado</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {sortedReservas.map((res) => (
+                          <tr key={res.id} className="hover:bg-gray-50 transition-colors">
+                            <td
+                              className="py-3 px-4 border-b border-r border-gray-300 text-blue-600 cursor-pointer hover:underline"
+                              onClick={() => openResumeBySlot(res)}
+                            >
+                              {format(new Date(res.fechaHoraInicio), "HH:mm")}
+                            </td>
+                            <td className="py-3 px-4 border-b border-r border-gray-300">{res.nombre}</td>
+                            <td className="py-3 px-4 border-b border-r border-gray-300">{res.telefono}</td>
+                            <td className="py-3 px-4 border-b border-r border-gray-300">{res.notas}</td>
+                            <td className="py-3 px-4 border-b">{capitalizeFirstLetter(res.estado)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
+                </div>
               )}
-            </div>
+              {slots.length === 0 && <p className="text-center text-gray-500 mt-4">No hay configuración de reservas disponible. Crea una primero.</p>}
+            </>
           )}
-          {slots.length === 0 && <p className="text-center text-gray-500 mt-4">No hay configuración de reservas disponible. Crea una primero.</p>}
         </>
       )}
 

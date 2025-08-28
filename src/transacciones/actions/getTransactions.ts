@@ -3,12 +3,10 @@
 import { auth } from "@/auth.config";
 import prisma from "@/lib/prisma";
 import {
-  TransactionType,
-  IncomeCategory,
-  ExpenseCategory,
-  PaymentMethod,
+
   Transaction,
 } from "@/transacciones/interfaces/types";
+import { TransactionType, PaymentMethod, IncomeCategory, ExpenseCategory } from "@prisma/client";
 
 interface GetTransactionsParams {
   page?: number; // Página actual (para paginación)

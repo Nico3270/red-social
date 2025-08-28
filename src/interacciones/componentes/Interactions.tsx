@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useCallback, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { FaHeart, FaComment, FaShare } from "react-icons/fa";
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
@@ -19,6 +19,10 @@ interface SummaryData {
   numComentarios: number;
   numCompartidos: number;
   userReaction: ReaccionTipo | null; // Solo LIKE o null
+}
+
+interface CommentsPage {
+  comentarios: Comment[];
 }
 
 interface InteractionsProps {
@@ -66,12 +70,13 @@ const Interactions: React.FC<InteractionsProps> = ({ publicacionId, slug }) => {
 
   const isInModal = isModalOpen && modalPublicacionId === publicacionId;
 
-  const getCommentsKey = (pageIndex: number, previousPageData: any) => {
-    if (!isInModal || previousPageData && !previousPageData.comentarios.length) return null;
+
+  const getCommentsKey = (pageIndex: number, previousPageData?: CommentsPage) => {
+    if (!isInModal || (previousPageData && !previousPageData.comentarios.length)) return null;
     return `/api/comentarios/${publicacionId}?skip=${pageIndex * 5}&take=5`;
   };
 
-  const { data: commentsPages, size, setSize, isLoading: isLoadingComments, mutate: mutateComments } = useSWRInfinite(getCommentsKey, fetcher, {
+  const { data: commentsPages, setSize, isLoading: isLoadingComments, mutate: mutateComments } = useSWRInfinite(getCommentsKey, fetcher, {
     initialSize: 1,
     revalidateOnFocus: false,
   });
@@ -92,6 +97,7 @@ const Interactions: React.FC<InteractionsProps> = ({ publicacionId, slug }) => {
   useEffect(() => {
     if (!observerRef.current || !hasMore || !isInModal) return;
 
+    const target = observerRef.current; // 👈 copia aquí
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting && !isLoadingComments) {
@@ -101,53 +107,54 @@ const Interactions: React.FC<InteractionsProps> = ({ publicacionId, slug }) => {
       { threshold: 1.0 }
     );
 
-    observer.observe(observerRef.current);
+    observer.observe(target);
 
     return () => {
-      if (observerRef.current) observer.unobserve(observerRef.current);
+      observer.unobserve(target); // 👈 cleanup seguro
     };
   }, [hasMore, isLoadingComments, setSize, isInModal]);
 
-  const handleLike = useCallback(async () => {
-  if (!isAuthenticated) return;
-  const previousLiked = hasLiked;
-  const optimisticNumLikes = hasLiked ? numLikes - 1 : numLikes + 1;
-  const optimisticReaction = hasLiked ? null : ReaccionTipo.LIKE;  // Usa ReaccionTipo.LIKE para consistencia (equivalente a "LIKE")
-  mutateSummary(
-    {
-      numLikes: optimisticNumLikes,
-      numComentarios: summaryData?.numComentarios ?? 0,
-      numCompartidos: summaryData?.numCompartidos ?? 0,
-      userReaction: optimisticReaction,
-    },
-    { revalidate: false }
-  );
 
-  try {
-    const result = await postInteraccionPublicacion({ publicacionId, slug, tipo: "REACCION", reaccionTipo: hasLiked ? null : ReaccionTipo.LIKE });  // Usa ReaccionTipo.LIKE aquí también
-    if (!result.ok) throw new Error(result.message);
+  const handleLike = useCallback(async () => {
+    if (!isAuthenticated) return;
+    const previousLiked = hasLiked;
+    const optimisticNumLikes = hasLiked ? numLikes - 1 : numLikes + 1;
+    const optimisticReaction = hasLiked ? null : ReaccionTipo.LIKE;  // Usa ReaccionTipo.LIKE para consistencia (equivalente a "LIKE")
     mutateSummary(
-      (current: SummaryData | undefined) => ({
-        numLikes: result.newNumLikes ?? current?.numLikes ?? 0,
-        numComentarios: current?.numComentarios ?? 0,
-        numCompartidos: current?.numCompartidos ?? 0,
-        userReaction: result.newUserReaction ?? null,  // Agrega ?? null para manejar undefined
-      }),
+      {
+        numLikes: optimisticNumLikes,
+        numComentarios: summaryData?.numComentarios ?? 0,
+        numCompartidos: summaryData?.numCompartidos ?? 0,
+        userReaction: optimisticReaction,
+      },
       { revalidate: false }
     );
-  } catch (error) {
-    mutateSummary(
-      (current: SummaryData | undefined) => ({
-        numLikes: previousLiked ? (current?.numLikes ?? 0) + 1 : (current?.numLikes ?? 0) - 1,
-        numComentarios: current?.numComentarios ?? 0,
-        numCompartidos: current?.numCompartidos ?? 0,
-        userReaction: previousLiked ? ReaccionTipo.LIKE : null,  // Usa ReaccionTipo.LIKE para consistencia
-      }),
-      { revalidate: false }
-    );
-    console.warn("Error en like:", error);
-  }
-}, [isAuthenticated, publicacionId, slug, hasLiked, numLikes, summaryData, mutateSummary]);
+
+    try {
+      const result = await postInteraccionPublicacion({ publicacionId, slug, tipo: "REACCION", reaccionTipo: hasLiked ? null : ReaccionTipo.LIKE });  // Usa ReaccionTipo.LIKE aquí también
+      if (!result.ok) throw new Error(result.message);
+      mutateSummary(
+        (current: SummaryData | undefined) => ({
+          numLikes: result.newNumLikes ?? current?.numLikes ?? 0,
+          numComentarios: current?.numComentarios ?? 0,
+          numCompartidos: current?.numCompartidos ?? 0,
+          userReaction: result.newUserReaction ?? null,  // Agrega ?? null para manejar undefined
+        }),
+        { revalidate: false }
+      );
+    } catch (error) {
+      mutateSummary(
+        (current: SummaryData | undefined) => ({
+          numLikes: previousLiked ? (current?.numLikes ?? 0) + 1 : (current?.numLikes ?? 0) - 1,
+          numComentarios: current?.numComentarios ?? 0,
+          numCompartidos: current?.numCompartidos ?? 0,
+          userReaction: previousLiked ? ReaccionTipo.LIKE : null,  // Usa ReaccionTipo.LIKE para consistencia
+        }),
+        { revalidate: false }
+      );
+      console.warn("Error en like:", error);
+    }
+  }, [isAuthenticated, publicacionId, slug, hasLiked, numLikes, summaryData, mutateSummary]);
 
   const handleCommentSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();

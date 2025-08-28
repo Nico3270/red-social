@@ -9,13 +9,7 @@ import CrearReservasForm from "@/reservas/componentes/CrearReservasForm";
 export default function CrearReservasPage() {
   const { data: session, status } = useSession(); // Obtiene sesión en cliente
   const router = useRouter(); // Para redirecciones suaves
-
-  // Manejo de loading inicial (elegante: muestra placeholder mientras carga sesión)
-  if (status === "loading") {
-    return <div className="min-h-screen flex items-center justify-center bg-gray-100 text-gray-600">Cargando...</div>;
-  }
-
-  // Protecciones: redirige si no autenticado o sin negocio (fluido y sin bloqueos)
+   // Protecciones: redirige si no autenticado o sin negocio (fluido y sin bloqueos)
   useEffect(() => {
     if (!session?.user?.id) {
       router.push("/auth/login");
@@ -28,6 +22,13 @@ export default function CrearReservasPage() {
   }, [session, router, status]); // Dependencias para re-ejecutar solo cuando cambia sesión/status
 
   // Si no redirige, renderiza el contenido (responsive y moderno)
+
+  // Manejo de loading inicial (elegante: muestra placeholder mientras carga sesión)
+  if (status === "loading") {
+    return <div className="min-h-screen flex items-center justify-center bg-gray-100 text-gray-600">Cargando...</div>;
+  }
+
+ 
   return (
     <div className="min-h-screen bg-gray-100 p-4 sm:p-8">
       <h1 className="text-2xl font-bold mb-6 text-gray-900">Configura tu Módulo de Reservas</h1>

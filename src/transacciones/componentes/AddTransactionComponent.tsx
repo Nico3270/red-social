@@ -2,13 +2,6 @@
 
 import React, { useEffect, useState } from "react"; // Removido useRef, ya no se usa
 import { useForm, Controller, useFieldArray } from "react-hook-form";
-import {
-  TransactionType,
-  IncomeCategory,
-  ExpenseCategory,
-  PaymentMethod,
-  Transaction,
-} from "@/transacciones/interfaces/types";
 import { addTransaction } from "@/transacciones/actions/addTransaction";
 import {
   Box,
@@ -31,39 +24,49 @@ import {
   Autocomplete,
   Paper,
 } from "@mui/material";
-import { AddCircleOutline, ArrowDownward, ArrowUpward, CheckCircleOutline, ErrorOutline, DeleteOutline, Add, Save } from "@mui/icons-material";
+import { AddCircleOutline, ArrowDownward, ArrowUpward, CheckCircleOutline, ErrorOutline, DeleteOutline, Add, } from "@mui/icons-material";
 import { useProductosTransaccionesStore } from "@/store/productosTransacciones/productosTransaccionesStore";
 import { editTransaction } from "../actions/editTransaction";
+import { TransactionType, PaymentMethod } from "@prisma/client";
 
-interface Item {
-  id?: string; // ID temporal para líneas
-  description: string;
-  quantity: number;
-  price: number;
-  subtotal: number;
-  productId?: string | null; // Para productos, null para genéricos
-  isLocked?: boolean; // Para bloquear edición de descripción si es de autocomplete
-}
+import {
+  Transaction,
+  FormData
+} from "@/transacciones/interfaces/types"; // Mantén unions locales
 
-interface FormData {
-  date: string;
-  type: TransactionType;
-  category: string;
-  paymentMethod: PaymentMethod;
-  items: Item[]; // Para multi-líneas en ingresos
-  amount: number; // Calculado auto
-  description?: string; // Opcional, auto-generado de items
-}
+
 
 interface AddTransactionProps {
   onTransactionAdded: (newTransaction: Transaction) => void;
-  initialData?: FormData & { transactionId: string }; // Para modo edición: datos iniciales + ID
+  initialData?: FormData & { transactionId: string };
 }
+
+
+
+
 
 const AddTransactionComponent: React.FC<AddTransactionProps> = ({ onTransactionAdded, initialData }) => {
   const isEditMode = !!initialData;
 
   const { productos, fetchProductos, isLoading: productsLoading, error: productsError } = useProductosTransaccionesStore();
+
+  const IncomeCategories = ["ventas", "propinas", "ahorro", "otros", "prestamos"];
+  const ExpenseCategories = [
+    "implementos",
+    "materiales",
+    "arriendo",
+    "empleados",
+    "servicios_publicos",
+    "envios",
+    "deudas",
+    "mantenimiento",
+    "impuestos",
+    "otros",
+  ];
+
+  const todayLocal = new Date();
+const localDateStr = todayLocal.toLocaleDateString('sv-SE'); // formato YYYY-MM-DD
+
 
   const {
     handleSubmit,
@@ -74,18 +77,25 @@ const AddTransactionComponent: React.FC<AddTransactionProps> = ({ onTransactionA
     formState: { errors },
   } = useForm<FormData>({
     defaultValues: {
-      date: new Date().toISOString().substring(0, 10),
-      type: TransactionType.Ingreso,
-      category: IncomeCategory.Ventas,
-      paymentMethod: PaymentMethod.Efectivo,
-      items: [{ id: crypto.randomUUID(), description: "", quantity: 1, price: 0, subtotal: 0, isLocked: false }], // Inicial con una línea
+      date: localDateStr,
+      type: TransactionType.ingreso,
+      category: "ventas", // 👈 Esto debería ser válido
+      paymentMethod: PaymentMethod.efectivo,
+      items: [{
+        id: crypto.randomUUID(),
+        description: "",
+        quantity: 1,
+        price: 0,
+        subtotal: 0,
+        isLocked: false
+      }],
       amount: 0,
     },
   });
 
   const transactionType = watch("type");
-  const items = watch("items");
-  const category = watch("category");
+
+
 
   const { fields, append, remove, } = useFieldArray({
     control,
@@ -159,9 +169,6 @@ const AddTransactionComponent: React.FC<AddTransactionProps> = ({ onTransactionA
       // Generar descripción auto si multi-items
       const generatedDesc = data.items.map(item => `${item.description} x${item.quantity}`).join(", ");
 
-      // Parsear data.date como local midnight explícitamente
-      const [year, month, day] = data.date.split('-').map(Number);
-      const selectedDateLocal = new Date(year, month - 1, day); // Crea 00:00 local
 
       // Agregar hora actual local
       // Crear cadena de fecha/hora LOCAL explícita (YYYY-MM-DDTHH:mm:ss)
@@ -222,15 +229,16 @@ const AddTransactionComponent: React.FC<AddTransactionProps> = ({ onTransactionA
     setAddedTransaction(null);
   };
 
+
   // Colores dinámicos para toggle buttons y botón agregar
   const ingresoColor = "#4CAF50";
   const ingresoHover = "#66BB6A";
   const gastoColor = "#EF5350";
   const gastoHover = "#F44336";
 
-  const submitButtonColor = transactionType === TransactionType.Ingreso ? ingresoColor : gastoColor;
-  const submitButtonHoverColor = transactionType === TransactionType.Ingreso ? ingresoHover : gastoHover;
-  const modalBorderColor = addedTransaction?.type === TransactionType.Ingreso ? ingresoColor : gastoColor;
+  const submitButtonColor = transactionType === "ingreso" ? ingresoColor : gastoColor;
+  const submitButtonHoverColor = transactionType === "ingreso" ? ingresoHover : gastoHover;
+  const modalBorderColor = addedTransaction?.type === "ingreso" ? ingresoColor : gastoColor;
 
   // Si error en productos
   if (productsError) {
@@ -273,11 +281,11 @@ const AddTransactionComponent: React.FC<AddTransactionProps> = ({ onTransactionA
                         const oldType = field.value; // Tipo actual antes del cambio
                         field.onChange(value);
                         if (oldType !== value) {
-                          if (value === TransactionType.Ingreso) {
-                            setValue("category", IncomeCategory.Ventas);
+                          if (value === TransactionType.ingreso) {
+                            setValue("category", "ventas");
                             // Opcional: Si quieres limpiar description: setValue("description", "");
-                          } else if (value === TransactionType.Gasto) {
-                            setValue("category", ExpenseCategory.Materiales);
+                          } else if (value === TransactionType.gasto) {
+                            setValue("category", "materiales");
                             setValue("items", []);
                             setValue("amount", 0);
                             // Opcional: Si quieres limpiar otros campos
@@ -287,13 +295,13 @@ const AddTransactionComponent: React.FC<AddTransactionProps> = ({ onTransactionA
                     }}
                   >
                     <ToggleButton
-                      value={TransactionType.Ingreso}
+                      value={TransactionType.ingreso}
                       sx={{
                         textTransform: "none",
                         borderColor: "green.300",
-                        color: transactionType === TransactionType.Ingreso ? "white !important" : "green.700",
-                        bgcolor: transactionType === TransactionType.Ingreso ? ingresoColor : "transparent",
-                        "&:hover": { bgcolor: transactionType === TransactionType.Ingreso ? ingresoHover : "#E8F5E9" },
+                        color: transactionType === TransactionType.ingreso ? "white !important" : "green.700",
+                        bgcolor: transactionType === TransactionType.ingreso ? ingresoColor : "transparent",
+                        "&:hover": { bgcolor: transactionType === TransactionType.ingreso ? ingresoHover : "#E8F5E9" },
                         fontWeight: 600,
                         flex: 1,
                         gap: 1,
@@ -305,13 +313,13 @@ const AddTransactionComponent: React.FC<AddTransactionProps> = ({ onTransactionA
                       <ArrowUpward fontSize="small" /> Ingreso
                     </ToggleButton>
                     <ToggleButton
-                      value={TransactionType.Gasto}
+                      value={TransactionType.gasto}
                       sx={{
                         textTransform: "none",
                         borderColor: "red.300",
-                        color: transactionType === TransactionType.Gasto ? "white !important" : "red.700",
-                        bgcolor: transactionType === TransactionType.Gasto ? gastoColor : "transparent",
-                        "&:hover": { bgcolor: transactionType === TransactionType.Gasto ? gastoHover : "#FFEBEE" },
+                        color: transactionType === TransactionType.gasto ? "white !important" : "red.700",
+                        bgcolor: transactionType === TransactionType.gasto ? gastoColor : "transparent",
+                        "&:hover": { bgcolor: transactionType === TransactionType.gasto ? gastoHover : "#FFEBEE" },
                         fontWeight: 600,
                         flex: 1,
                         gap: 1,
@@ -339,22 +347,24 @@ const AddTransactionComponent: React.FC<AddTransactionProps> = ({ onTransactionA
               />
             </Grid>
 
-            {/* Categoría */}
+            {/* Categoría con Tooltip para UX elegante */}
             <Grid item xs={12} sm={6}>
-              <Controller
-                name="category"
-                control={control}
-                render={({ field }) => (
-                  <FormControl fullWidth>
-                    <InputLabel>Categoría</InputLabel>
-                    <Select {...field} label="Categoría" variant="outlined" sx={{ borderRadius: 2 }}>
-                      {transactionType === TransactionType.Ingreso
-                        ? Object.values(IncomeCategory).map((cat) => <MenuItem key={cat} value={cat}>{cat.charAt(0).toUpperCase() + cat.slice(1)}</MenuItem>)
-                        : Object.values(ExpenseCategory).map((cat) => <MenuItem key={cat} value={cat}>{cat.charAt(0).toUpperCase() + cat.slice(1)}</MenuItem>)}
-                    </Select>
-                  </FormControl>
-                )}
-              />
+              <Tooltip title="Selecciona la categoría basada en el tipo de transacción" placement="top">
+                <Controller
+                  name="category"
+                  control={control}
+                  render={({ field }) => (
+                    <FormControl fullWidth>
+                      <InputLabel>Categoría</InputLabel>
+                      <Select {...field} label="Categoría" variant="outlined" sx={{ borderRadius: 2 }}>
+                        {transactionType === TransactionType.ingreso
+                          ? IncomeCategories.map((cat) => <MenuItem key={cat} value={cat}>{cat.charAt(0).toUpperCase() + cat.slice(1)}</MenuItem>)
+                          : ExpenseCategories.map((cat) => <MenuItem key={cat} value={cat}>{cat.charAt(0).toUpperCase() + cat.slice(1)}</MenuItem>)}
+                      </Select>
+                    </FormControl>
+                  )}
+                />
+              </Tooltip>
             </Grid>
 
             {/* Medio de pago */}
@@ -374,7 +384,7 @@ const AddTransactionComponent: React.FC<AddTransactionProps> = ({ onTransactionA
             </Grid>
 
             {/* Sección de Items solo para Ingresos */}
-            {transactionType === TransactionType.Ingreso && (
+            {transactionType === TransactionType.ingreso && (
               <Grid item xs={12}>
                 <Paper elevation={1} sx={{ p: 2, borderRadius: 2, mb: 2 }}>
                   <Typography variant="subtitle1" sx={{ mb: 2 }}>Items de la transacción</Typography>
@@ -433,8 +443,8 @@ const AddTransactionComponent: React.FC<AddTransactionProps> = ({ onTransactionA
                                 <Controller
                                   name={`items.${index}.quantity`}
                                   control={control}
-                                  rules={{ 
-                                    required: "Cantidad requerida", 
+                                  rules={{
+                                    required: "Cantidad requerida",
                                     min: { value: 1, message: "Mínimo 1" },
                                     validate: value => !isNaN(Number(value)) || "Debe ser un número válido"
                                   }}
@@ -461,8 +471,8 @@ const AddTransactionComponent: React.FC<AddTransactionProps> = ({ onTransactionA
                                 <Controller
                                   name={`items.${index}.price`}
                                   control={control}
-                                  rules={{ 
-                                    required: "Precio requerido", 
+                                  rules={{
+                                    required: "Precio requerido",
                                     min: { value: 0.01, message: "Mínimo 0.01" },
                                     validate: value => !isNaN(Number(value)) || "Debe ser un número válido"
                                   }}
@@ -520,15 +530,15 @@ const AddTransactionComponent: React.FC<AddTransactionProps> = ({ onTransactionA
             )}
 
             {/* Para Gastos: Mantener campos simples */}
-            {transactionType === TransactionType.Gasto && (
+            {transactionType === TransactionType.gasto && (
               <>
                 {/* Valor para gastos */}
                 <Grid item xs={12} sm={6}>
                   <Controller
                     name="amount"
                     control={control}
-                    rules={{ 
-                      required: "El valor es requerido", 
+                    rules={{
+                      required: "El valor es requerido",
                       min: { value: 0.01, message: "El valor debe ser mayor a 0" },
                       validate: value => !isNaN(Number(value)) || "Debe ser un número válido"
                     }}

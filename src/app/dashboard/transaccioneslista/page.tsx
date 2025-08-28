@@ -9,9 +9,10 @@ const Page = async () => {
 
   return (
     <main className="min-h-screen bg-gray-50 py-8 px-4 sm:px-8 md:px-12">
-      <ShowTransactions transactions={transactions} />
+      <ShowTransactions initialTransactions={transactions.transactions} />
     </main>
   );
 };
 
 export default Page;
+ 

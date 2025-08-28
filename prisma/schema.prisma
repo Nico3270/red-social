@@ -76,31 +76,7 @@ enum Genero {
   otro
 }
 
-model Transaction {
-  id            String          @id @default(uuid())
-  date          DateTime
-  type          TransactionType
-  description   String
-  category      String // Almacena el valor del enum correspondiente (IncomeCategory o ExpenseCategory) como string
-  amount        Decimal
-  paymentMethod PaymentMethod
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
-  usuarioId     String
-  orderId       String?         @unique
-  order         Order? // 🔹 Campo inverso para relación con Order
-  usuario       Usuario         @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
 
-  @@index([usuarioId]) // Índice para consultas rápidas por usuario
-  @@index([type]) // Índice para filtrar por tipo (ingreso/gasto)
-  @@index([date]) // Índice para ordenar por fecha
-  @@index([usuarioId, date, type])
-}
-
-enum TransactionType {
-  ingreso
-  gasto
-}
 
 model BusinessAvailability {
   id                       String   @id @default(cuid())
@@ -150,6 +126,32 @@ enum ReservationStatus {
   CANCELADA
   COMPLETADA
   BLOQUEADA
+}
+
+model Transaction {
+  id            String          @id @default(uuid())
+  date          DateTime
+  type          TransactionType
+  description   String
+  category      String // Almacena el valor del enum correspondiente (IncomeCategory o ExpenseCategory) como string
+  amount        Decimal
+  paymentMethod PaymentMethod
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  usuarioId     String
+  orderId       String?         @unique
+  order         Order? // 🔹 Campo inverso para relación con Order
+  usuario       Usuario         @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@index([usuarioId]) // Índice para consultas rápidas por usuario
+  @@index([type]) // Índice para filtrar por tipo (ingreso/gasto)
+  @@index([date]) // Índice para ordenar por fecha
+  @@index([usuarioId, date, type])
+}
+
+enum TransactionType {
+  ingreso
+  gasto
 }
 
 enum IncomeCategory {

@@ -1,12 +1,11 @@
 "use client";
 
-import React, { useCallback, useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { createPortal } from "react-dom";
 import { FaTimes } from "react-icons/fa";
 import { ShowTestimonioPublicacion } from "@/publicaciones/componentes/ShowTestimonioPublicacion";
 import { SocialMediaCarousel } from "@/publicaciones/componentes/SocialMediaPublicacion";
-import { EnhancedPublicacion } from "@/publicaciones/interfaces/enhancedPublicacion.interface";
 import { usePublicacionModalStore } from "@/store/publicacionModal/publicacionModalStore";
 import { PublicacionSencilla } from "../interfaces/publicacionSencilla.interface";
 
@@ -22,7 +21,7 @@ const componentMap: Record<string, React.FC<{ publicacion: PublicacionSencilla }
 };
 
 const PublicationModal: React.FC<PublicationModalProps> = ({ isOpen, publication, onClose }) => {
-  const { closeModal, updatedComments } = usePublicacionModalStore();
+  const { closeModal } = usePublicacionModalStore();
 
   const handleClose = useCallback(() => {
     onClose();

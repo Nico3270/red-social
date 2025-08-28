@@ -1,6 +1,6 @@
 import { auth } from "@/auth.config";
 import prisma from "@/lib/prisma";
-import { OrderItem, OrderState } from "@prisma/client";
+import {  OrderState } from "@prisma/client";
 
 export interface Orders {
   id: string;

@@ -1,6 +1,7 @@
+import { getSectionsFromDB } from "@/actions/productos/getSectionsFromDB";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { getSectionsFromDB } from "@/seccion/actions/getSectionsFromDB";
+
 
 // 📌 Interfaz para la sección
 export interface Section {

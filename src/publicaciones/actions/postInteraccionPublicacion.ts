@@ -74,7 +74,7 @@ export const postInteraccionPublicacion = async ({
       return { ok: false, message: "La publicación no pertenece al negocio especificado" };
     }
 
-    const negocioSlug = publicacion.negocio?.slug;
+
     const revalidatePublications = (negocioSlug?: string | null) => {
   if (negocioSlug) {
     console.log(`Revalidating tag for publications: negocio-publications-${negocioSlug}`);
@@ -118,7 +118,7 @@ export const postInteraccionPublicacion = async ({
         if (!existingReaction) {
           return { ok: false, message: "No hay like para eliminar" };
         }
-        const [_, updatedPublicacion] = await prisma.$transaction([
+        const [, updatedPublicacion] = await prisma.$transaction([
           prisma.interaccion.delete({ where: { id: existingReaction.id } }),
           prisma.publicacion.update({
             where: { id: publicacionId },

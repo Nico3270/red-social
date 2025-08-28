@@ -85,9 +85,9 @@ export const authConfig: NextAuthConfig = {
         token.name = user.name;
         token.apellido = user.apellido ?? "";
         token.email = user.email!;
-        token.role = (user as any).role;
-        token.emailVerified = (user as any).emailVerified ?? null;
-        token.ciudad = (user as any).ciudad ?? null;
+        token.role = (user as { role: Role }).role;
+        token.emailVerified = (user as { emailVerified?: Date | null }).emailVerified ?? null;
+        token.ciudad = (user as { ciudad?: string }).ciudad ?? null;
         
         // Nuevos campos
         token.negocioId = usuarioConNegocio?.negocio?.id ?? null;

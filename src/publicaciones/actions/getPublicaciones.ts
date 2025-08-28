@@ -1,19 +1,9 @@
 "use server";
 
 import prisma from "@/lib/prisma";
-import { PublicacionTipo, InteraccionTipo } from "@prisma/client";
+import { PublicacionTipo} from "@prisma/client";
 import { PublicacionSencilla } from "../interfaces/publicacionSencilla.interface";
 
-
-
-// Tipos existentes
-interface User {
-  id: string;
-  nombre: string;
-  apellido: string;
-  fotoPerfil?: string;
-  username: string;
-}
 
 export interface Media {
   id: string;
@@ -23,14 +13,6 @@ export interface Media {
   orden: number;
 }
 
-
-
-// Tipo para las reacciones del usuario
-interface UserReaction {
-  publicacionId: string;
-  tipo: "LIKE" | "LOVE" | "WOW" | "SAD" | "ANGRY";
-  id: string;
-}
 
 interface Props {
   slug: string;
@@ -46,15 +28,13 @@ interface PublicacionesResult {
   publicaciones: PublicacionSencilla[];
 }
 
-// Definición de ReaccionTipo como tipo literal para validación
-type ReaccionTipo = "LIKE" | "LOVE" | "WOW" | "SAD" | "ANGRY";
+
 
 export const getPublicacionesNegocio = async ({
   slug,
   tipo,
   skip = 0,
   take = 10,
-  userId,
 }: Props): Promise<PublicacionesResult> => {
   // Validate slug
   if (!slug || !/^[a-z0-9-]+$/i.test(slug)) {

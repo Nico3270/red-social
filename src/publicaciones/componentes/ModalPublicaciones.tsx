@@ -13,6 +13,12 @@ interface ModalPublicacionesProps {
   successMessage?: string;
 }
 
+interface ModalChildProps {
+  onCancel: () => void;
+  onSuccess: (message?: string) => void;
+}
+
+
 export const ModalPublicaciones: React.FC<ModalPublicacionesProps> = ({
   userId,
   onClose,
@@ -87,10 +93,10 @@ export const ModalPublicaciones: React.FC<ModalPublicacionesProps> = ({
             ) : (
               // Aquí se inyecta cualquier formulario (por ejemplo: <TestimonioProductoCrearEditar ... />)
               children &&
-              React.cloneElement(children as React.ReactElement<any>, {
-                onCancel: handleClose,
-                onSuccess: handleSuccess,
-              })
+React.cloneElement(children as React.ReactElement<ModalChildProps>, {
+  onCancel: handleClose,
+  onSuccess: handleSuccess,
+})
             )}
           </>
         )}

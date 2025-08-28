@@ -6,11 +6,16 @@ import clsx from "clsx";
 import { initialData } from "@/seed/seed";
 import { ProductGridProduct } from "../productos/ProductGridProduct";
 import useSWRInfinite from "swr/infinite";
+import Image from "next/image";
 
 interface Props {
   initialProducts: ProductRedSocial[];
   slug: string;
   take?: number;
+}
+
+interface ProductsPage {
+  products: ProductRedSocial[];
 }
 
 export const ProductGridWithSectionFilter = ({ initialProducts, slug, take = 10 }: Props) => {
@@ -21,7 +26,7 @@ export const ProductGridWithSectionFilter = ({ initialProducts, slug, take = 10 
   const observer = useRef<IntersectionObserver | null>(null);
 
   // Mejorar getKey con freno definitivo
-  const getKey = (pageIndex: number, previousPageData: any) => {
+  const getKey = (pageIndex: number, previousPageData: ProductsPage | null) => {
     if (hasReachedEndRef.current) return null; // Freno definitivo
     if (pageIndex === 0) return `/api/productos/${slug}?skip=0&take=${take}`;
     if (!previousPageData || !previousPageData.products || previousPageData.products.length === 0) {
@@ -34,7 +39,7 @@ export const ProductGridWithSectionFilter = ({ initialProducts, slug, take = 10 
 
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
-  const { data, size, setSize, isLoading, isValidating, error } = useSWRInfinite<any>(
+  const { data,  setSize, isLoading, isValidating, error } = useSWRInfinite<ProductsPage>(
     getKey,
     fetcher,
     {
@@ -54,8 +59,8 @@ export const ProductGridWithSectionFilter = ({ initialProducts, slug, take = 10 
 
   const products = useMemo(() => {
     const allProducts = data
-      ? data.flatMap((page: any) => page?.products || [])
-      : initialProducts;
+  ? data.flatMap((page: ProductsPage) => page?.products || [])
+  : initialProducts;
     const uniqueProducts = Array.from(
       new Map(allProducts.map((product) => [product.id, product])).values()
     );
@@ -161,13 +166,17 @@ export const ProductGridWithSectionFilter = ({ initialProducts, slug, take = 10 
                   isSelected ? "bg-gray-600 text-white" : "bg-gray-100"
                 )}
               >
-                <img
-                  src={`/imgs/iconos/${sec.iconName}`}
-                  alt={sec.nombre}
-                  className="w-full h-full object-contain"
-                  loading="lazy" // Optimización para performance
-                  onError={(e) => { e.currentTarget.src = "/imgs/iconos/placeholder.png"; }} // Fallback elegante si la imagen falla
-                />
+                <Image
+  src={`/imgs/iconos/${sec.iconName}`}
+  alt={sec.nombre}
+  width={32}
+  height={32}
+  className="w-full h-full object-contain"
+  loading="lazy"
+  onError={(e) => {
+    (e.currentTarget as HTMLImageElement).src = "/imgs/iconos/placeholder.png";
+  }}
+/>
               </div>
               <span className="text-xs font-medium text-center">{sec.nombre}</span>
             </button>

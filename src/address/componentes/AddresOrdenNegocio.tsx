@@ -14,7 +14,6 @@ import {
     ListItemText,
     Divider,
     Fade,
-    CircularProgress,
     IconButton,
     Container,
     Select,
@@ -64,8 +63,6 @@ const AddresOrdenNegocio: React.FC = () => {
         },
     });
 
-    const [isLoading, setIsLoading] = React.useState(false);
-
     // Estado para las ciudades basadas en el departamento seleccionado
     const [cities, setCities] = useState<string[]>([]);
 
@@ -74,7 +71,6 @@ const AddresOrdenNegocio: React.FC = () => {
 
     // Prellenar form con datos del store si existen
     useEffect(() => {
-        // Prellenar form con datos del store si existen
         if (address && address.country) {
             reset(address);
         }
@@ -103,28 +99,20 @@ const AddresOrdenNegocio: React.FC = () => {
         router.push("/dashboard/orders/crear");
     };
 
-    if (isLoading) {
-        return (
-            <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
-                <CircularProgress />
-            </Box>
-        );
-    }
-
     // Componente de resumen del carrito (para reutilizar en mobile y desktop)
     const CartSummary = () => (
         <Paper elevation={1} sx={{ p: { xs: 2, sm: 3 }, borderRadius: 3, bgcolor: "background.paper" }}>
             <Typography
-  variant="h6"
-  sx={{
-    mb: 2,
-    fontWeight: 600,
-    color: "text.primary",
-    textAlign: "center",
-  }}
->
-  Resumen de tu pedido
-</Typography>
+                variant="h6"
+                sx={{
+                    mb: 2,
+                    fontWeight: 600,
+                    color: "text.primary",
+                    textAlign: "center",
+                }}
+            >
+                Resumen de tu pedido
+            </Typography>
 
             <List disablePadding>
                 {cart.map((item) => (
@@ -174,34 +162,34 @@ const AddresOrdenNegocio: React.FC = () => {
                 </Typography>
             </Box>
             <Box sx={{ display: "flex", justifyContent: "center" }}>
-  <Button
-    startIcon={<ArrowBack />}
-    onClick={handleBackToCart}
-    sx={{
-      mt: 2,
-      px: 3,
-      py: 1.2,
-      textTransform: "none",
-      fontWeight: 600,
-      fontSize: "0.95rem",
-      borderRadius: 3,
-      bgcolor: "grey.900",
-      color: "#fff",
-      transition: "all 0.3s ease",
-      "&:hover": {
-        bgcolor: "grey.800",
-        boxShadow: "0 6px 16px rgba(0,0,0,0.25)",
-      },
-      "& .MuiButton-startIcon": {
-        mr: 1,
-        fontSize: "1.1rem",
-        color: "#fff",
-      },
-    }}
-  >
-    Volver a agregar productos
-  </Button>
-</Box>
+                <Button
+                    startIcon={<ArrowBack />}
+                    onClick={handleBackToCart}
+                    sx={{
+                        mt: 2,
+                        px: 3,
+                        py: 1.2,
+                        textTransform: "none",
+                        fontWeight: 600,
+                        fontSize: "0.95rem",
+                        borderRadius: 3,
+                        bgcolor: "grey.900",
+                        color: "#fff",
+                        transition: "all 0.3s ease",
+                        "&:hover": {
+                            bgcolor: "grey.800",
+                            boxShadow: "0 6px 16px rgba(0,0,0,0.25)",
+                        },
+                        "& .MuiButton-startIcon": {
+                            mr: 1,
+                            fontSize: "1.1rem",
+                            color: "#fff",
+                        },
+                    }}
+                >
+                    Volver a agregar productos
+                </Button>
+            </Box>
 
         </Paper>
     );

@@ -26,16 +26,6 @@ import { fetchNegocioName } from "@/carro/componentes/ProductsInCart";
 import { createNewPedido } from "../actions/createNewPedido";
 
 
-interface Address {
-  country: string;
-  departamento: string;
-  ciudad: string;
-  clientName: string;
-  clientPhone: string;
-  deliveryAddress: string;
-  deliveryDate: string;
-  additionalComments?: string;
-}
 
 interface CheckoutOrderProps {
   slug: string;
@@ -53,7 +43,7 @@ const CheckoutOrder: React.FC<CheckoutOrderProps> = ({ slug }) => {
   const [modalMessage, setModalMessage] = useState("");
   const [isSuccess, setIsSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   // Fetch nombre del negocio
   useEffect(() => {
     const loadData = async () => {
@@ -104,9 +94,11 @@ const CheckoutOrder: React.FC<CheckoutOrderProps> = ({ slug }) => {
         setIsSuccess(false);
       }
     } catch (error) {
-      setModalMessage("Error inesperado al crear el pedido.");
+      console.error("Error en handleCreatePedido:", error);
+      setModalMessage("Error inesperado al crear los pedidos.");
       setIsSuccess(false);
-    } finally {
+    }
+    finally {
       setIsSubmitting(false);
     }
   };

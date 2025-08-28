@@ -3,23 +3,8 @@
 
 import { ProductRedSocial } from "@/interfaces/productRedSocial.interface";
 import prisma from "@/lib/prisma";
-import { ProductStatus } from "@prisma/client";
 
-interface Product {
-  id: string;
-  nombre: string;
-  precio: number;
-  descripcion: string;
-  descripcionCorta: string;
-  slug: string;
-  prioridad: number;
-  status: ProductStatus;
-  tags: string[];
-  categoriaId: string;
-  imagenes: { id: string; url: string }[];
-  componentes: string[];
-  sections: { section: { id: string; slug: string } }[];
-}
+
 
 interface GetProductById {
   ok: boolean;
@@ -36,7 +21,7 @@ export async function getProductById(id: string): Promise<GetProductById> {
       return { ok: false, message: "El ID del producto es obligatorio.", userId:"Error" };
     }
 
-    console.log("Consultando producto...");
+    // console.log("Consultando producto...");
     const product = await prisma.product.findUnique({
       where: { id },
       select: {
@@ -72,11 +57,11 @@ export async function getProductById(id: string): Promise<GetProductById> {
     });
 
     if (!product) {
-      console.log("Producto no encontrado para id:", id);
+      // console.log("Producto no encontrado para id:", id);
       return { ok: false, message: "Producto no encontrado.", userId:"Error" };
     }
 
-    console.log("Producto encontrado:", product.id);
+    // console.log("Producto encontrado:", product.id);
 
     // Transform the data to match the Product interface
     const formattedProduct: ProductRedSocial = {

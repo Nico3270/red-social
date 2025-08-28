@@ -1,4 +1,4 @@
-import CheckoutOrder from "@/address/componentes/CheckoutOrders";
+
 import CheckoutOrderTotal from "@/address/componentes/CheckoutOrderTotal";
 
 // src/app/cart/page.tsx

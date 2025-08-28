@@ -8,15 +8,13 @@ import {
     Button,
     Typography,
     Paper,
-    List,
-    ListItem,
-    ListItemText,
     Divider,
     IconButton,
     Container,
     Autocomplete,
     Fade,
 } from "@mui/material";
+
 import { Add, Delete, Remove, ArrowForward } from "@mui/icons-material";
 import { useCartNegocioStore } from "@/store/carro-negocio/carro-negocio-store";
 import { CartProduct } from "@/store/carro-negocio/carro-negocio-store"; // Ajusta a la interfaz correcta del nuevo store
@@ -26,12 +24,13 @@ interface AddProductosNegocioProps {
     initialProducts?: CartProduct[];
 }
 
+
 const AddProductosNegocio: React.FC<AddProductosNegocioProps> = ({ initialProducts }) => {
     const { cart, addProductToCart, removeProduct, updateProductQuantity, getTotalPrice, clearCart } = useCartNegocioStore();
     const router = useRouter();
-    const [products, setProducts] = useState<any[]>([]); // Tipo según la respuesta de la API
+    const [products, setProducts] = useState<CartProduct[]>([]);
+    const [selectedProduct, setSelectedProduct] = useState<CartProduct | null>(null);
     const [showAddForm, setShowAddForm] = useState(false);
-    const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
     const [quantity, setQuantity] = useState(1);
 
     // Fetch productos al montar el componente
@@ -366,7 +365,7 @@ const AddProductosNegocio: React.FC<AddProductosNegocioProps> = ({ initialProduc
                                                                     disabled={item.cantidad <= 1}
                                                                     sx={{
                                                                         bgcolor: "grey.700",
-                                                                        color:"white",
+                                                                        color: "white",
                                                                         borderRadius: "50%",
                                                                         "&:hover": { bgcolor: "grey.200", color: "black" },
                                                                     }}
@@ -391,7 +390,7 @@ const AddProductosNegocio: React.FC<AddProductosNegocioProps> = ({ initialProduc
                                                                     }
                                                                     sx={{
                                                                         bgcolor: "grey.700",
-                                                                        color:"white",
+                                                                        color: "white",
                                                                         borderRadius: "50%",
                                                                         "&:hover": { bgcolor: "grey.200", color: "black" },
                                                                     }}
@@ -400,27 +399,27 @@ const AddProductosNegocio: React.FC<AddProductosNegocioProps> = ({ initialProduc
                                                                 </IconButton>
 
                                                                 <IconButton
-  edge="end"
-  aria-label="delete"
-  onClick={() => removeProduct(item.cartItemId)}
-  sx={{
-    ml: 2,
-    bgcolor: "white",
-    color: "red",
-    borderRadius: "50%",
-    border: "1.5px solid rgba(0,0,0,0.1)", // borde sutil elegante
-    boxShadow: "0 2px 6px rgba(0,0,0,0.05)", // toque moderno
-    transition: "all 0.25s ease",
-    "&:hover": {
-      bgcolor: "red",
-      color: "white",
-      borderColor: "red", // el borde se integra al hover
-      boxShadow: "0 4px 10px rgba(0,0,0,0.12)",
-    },
-  }}
->
-  <Delete fontSize="small" />
-</IconButton>
+                                                                    edge="end"
+                                                                    aria-label="delete"
+                                                                    onClick={() => removeProduct(item.cartItemId)}
+                                                                    sx={{
+                                                                        ml: 2,
+                                                                        bgcolor: "white",
+                                                                        color: "red",
+                                                                        borderRadius: "50%",
+                                                                        border: "1.5px solid rgba(0,0,0,0.1)", // borde sutil elegante
+                                                                        boxShadow: "0 2px 6px rgba(0,0,0,0.05)", // toque moderno
+                                                                        transition: "all 0.25s ease",
+                                                                        "&:hover": {
+                                                                            bgcolor: "red",
+                                                                            color: "white",
+                                                                            borderColor: "red", // el borde se integra al hover
+                                                                            boxShadow: "0 4px 10px rgba(0,0,0,0.12)",
+                                                                        },
+                                                                    }}
+                                                                >
+                                                                    <Delete fontSize="small" />
+                                                                </IconButton>
 
                                                             </Box>
                                                         </Paper>

@@ -4,12 +4,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import {
-  FaHome,
-  FaPlusSquare,
-  FaUserCircle,
   FaSearch,
-  FaShoppingCart,
-  FaHeart,
+
 } from "react-icons/fa";
 import { SideBar } from "../side-bar/SideBar";
 import { MenuSectionsBar } from "../menu-section-bar/MenuSectionBar";

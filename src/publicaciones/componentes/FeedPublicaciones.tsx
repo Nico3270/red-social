@@ -24,6 +24,15 @@ interface ProductDestacado {
   slug: string;
 }
 
+interface PublicacionExtendida extends PublicacionSencilla {
+  comments: { id: string; createdAt: string }[]; // ajusta al tipo real de comentario
+  numComentarios: number;
+  numLikes: number;
+  numCompartidos: number;
+  userReaction: string | null;
+}
+
+
 interface FeedPublicacionesProps {
   publicaciones: PublicacionSencilla[];
   productosDestacados?: ProductDestacado[];
@@ -36,7 +45,6 @@ const componentMap: Record<string, React.FC<{ publicacion: PublicacionSencilla }
 };
 
 const WidgetCard: React.FC<{ id: string; titulo: string; contenido?: string }> = ({
-  id,
   titulo,
   contenido,
 }) => (
@@ -182,7 +190,7 @@ const FeedPublicaciones: React.FC<FeedPublicacionesProps> = ({
 
   const publicaciones = useMemo(() => {
     const publicationMap = new Map<string, PublicacionSencilla>();
-    
+
     initialPublicaciones.forEach((pub) => {
       const commentsFromStore = updatedComments[pub.id] || [];
       // No hay initialComments desde servidor, solo del store
@@ -191,16 +199,16 @@ const FeedPublicaciones: React.FC<FeedPublicacionesProps> = ({
       const sortedComments = uniqueComments
         .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
         .slice(0, 3);
-      
+
       publicationMap.set(pub.id, {
         ...pub,
-        // Agregamos fields necesarios para compatibilidad con componentes
         comments: sortedComments,
         numComentarios: uniqueComments.length,
-        numLikes: 0, // No cargado desde servidor
-        numCompartidos: 0, // No cargado desde servidor
-        userReaction: null, // No cargado desde servidor
-      } as any); // Usamos any para extender temporalmente el tipo
+        numLikes: 0,
+        numCompartidos: 0,
+        userReaction: null,
+      } as PublicacionExtendida);
+      // Usamos any para extender temporalmente el tipo
     });
 
     dynamicPublicaciones.forEach((pub) => {
@@ -209,15 +217,16 @@ const FeedPublicaciones: React.FC<FeedPublicacionesProps> = ({
       const sortedComments = uniqueComments
         .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
         .slice(0, 3);
-      
+
       publicationMap.set(pub.id, {
-        ...pub,
-        comments: sortedComments,
-        numComentarios: uniqueComments.length,
-        numLikes: 0,
-        numCompartidos: 0,
-        userReaction: null,
-      } as any);
+  ...pub,
+  comments: sortedComments,
+  numComentarios: uniqueComments.length,
+  numLikes: 0,
+  numCompartidos: 0,
+  userReaction: null,
+} as PublicacionExtendida);
+
     });
 
     return Array.from(publicationMap.values());

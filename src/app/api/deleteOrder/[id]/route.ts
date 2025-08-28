@@ -2,15 +2,13 @@ import { auth } from "@/auth.config";
 import prisma from "@/lib/prisma";
 import { notifyReservaConfirmadaCliente } from "@/reservas/helpers/notifyReserva";
 import { PlantillaWhatsApp } from "@/reservas/interfaces/interfaces.whatsapp";
+import { Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
 
 
-type Params = { id: string };
 
-export async function DELETE(req: Request, context: { params: Params }) {
-  const params = await context.params; // 👈 forzar await
-
-  const { id } = params;
+export async function DELETE(req: Request, context: { params: Promise<{ id: string }> }) {
+  const { id } = await context.params; // Espera la resolución de params
   const session = await auth();
   if (!session || !session.user.negocioId) {
     return NextResponse.json(
@@ -80,14 +78,18 @@ export async function DELETE(req: Request, context: { params: Params }) {
       { ok: true, message: "Orden eliminada exitosamente" },
       { status: 200 }
     );
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error al eliminar la orden:", error);
-    if (error.code === "P2025") { // Prisma error para registro no encontrado (aunque ya chequeamos)
-      return NextResponse.json(
-        { ok: false, message: "Orden no encontrada" },
-        { status: 404 }
-      );
+
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error.code === "P2025") {
+        return NextResponse.json(
+          { ok: false, message: "Orden no encontrada" },
+          { status: 404 }
+        );
+      }
     }
+
     return NextResponse.json(
       { ok: false, message: "Error al eliminar la orden" },
       { status: 500 }

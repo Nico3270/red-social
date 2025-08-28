@@ -241,8 +241,8 @@ const ListaServiciosNegocio: React.FC<Props> = ({ servicios: initialServicios = 
                             exit={{ scale: 0.95, y: 50 }}
                             transition={{ duration: 0.3 }}
                             className={`relative w-full max-w-md bg-white rounded-3xl shadow-xl p-6 border-t-4 ${deleteResultModal.type === "success"
-                                    ? "border-green-500"
-                                    : "border-red-500"
+                                ? "border-green-500"
+                                : "border-red-500"
                                 }`}
                             onClick={(e) => e.stopPropagation()}
                         >
@@ -314,8 +314,9 @@ const ListaServiciosNegocio: React.FC<Props> = ({ servicios: initialServicios = 
                             onClick={(e) => e.stopPropagation()}
                         >
                             <Typography variant="h6" className="text-gray-900 mb-4">
-                                ¿Estás seguro de eliminar "{selectedServicio?.titulo}"?
+                                ¿Estás seguro de eliminar {`"${selectedServicio?.titulo}"`}?
                             </Typography>
+
                             <div className="flex justify-end gap-4">
                                 <Button onClick={() => setConfirmDeleteOpen(false)} className="text-gray-500">
                                     Cancelar

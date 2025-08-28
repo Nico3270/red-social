@@ -4,9 +4,9 @@
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 
-export async function changeUserRole(userId: string, newRole: "admin" | "user") {
+export async function changeUserRole(userId: string, newRole: "admin" | "user" | "negocio") {
   try {
-    await prisma.user.update({
+    await prisma.usuario.update({
       where: { id: userId },
       data: { role: newRole },
     });

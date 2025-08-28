@@ -5,20 +5,9 @@ import { useMediaQuery, useTheme } from "@mui/material";
 import {
   Box,
   AppBar,
-  Toolbar,
-  IconButton,
-  Drawer,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
   Typography,
   Fade,
   Fab,
-  Grid,
-  Card,
-  CardContent,
   BottomNavigation,
   BottomNavigationAction,
 } from "@mui/material";
@@ -29,7 +18,7 @@ import ListAltIcon from "@mui/icons-material/ListAlt";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import { Tabs, Tab } from "@mui/material";
 import { getTransactions } from "@/transacciones/actions/getTransactions";
-import { Transaction, TransactionType } from "@/transacciones/interfaces/types";
+import { Transaction} from "@/transacciones/interfaces/types";
 
 // Lazy loading para componentes
 const AddTransactionComponent = lazy(() => import("@/transacciones/componentes/AddTransactionComponent"));
@@ -73,20 +62,7 @@ const Page = () => {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
-
-  // Calcular KPIs
-  const calculateKPIs = () => {
-    const ingresos = transactions
-      .filter((t) => t.type === TransactionType.Ingreso)
-      .reduce((sum, t) => sum + t.amount, 0);
-    const gastos = transactions
-      .filter((t) => t.type === TransactionType.Gasto)
-      .reduce((sum, t) => sum + t.amount, 0);
-    const balance = ingresos - gastos;
-    return { ingresos, gastos, balance };
-  };
-
-  const { ingresos, gastos, balance } = calculateKPIs();
+  
 
   // Navegación items
   const navItems = [

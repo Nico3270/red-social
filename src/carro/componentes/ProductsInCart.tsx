@@ -43,7 +43,6 @@ export const ProductsInCart = () => {
   useEffect(() => {
     const loadNames = async () => {
       setIsLoading(true);
-      const newNames: Record<string, string> = { ...negocioNames }; // Copia actual
       const promises: Promise<void>[] = [];
 
       for (const id of negocioIds) {
@@ -51,16 +50,19 @@ export const ProductsInCart = () => {
           promises.push(
             fetchNegocioName(id).then((name) => {
               negocioNameCache[id] = name;
-              newNames[id] = name;
             })
           );
-        } else {
-          newNames[id] = negocioNameCache[id];
         }
       }
 
       await Promise.all(promises);
-      setNegocioNames(newNames);
+      setNegocioNames((prev) => {
+        const newNames = { ...prev }; // Copia actual usando functional update
+        negocioIds.forEach((id) => {
+          newNames[id] = negocioNameCache[id] || "Negocio Desconocido";
+        });
+        return newNames;
+      });
       setIsLoading(false);
     };
 
@@ -69,7 +71,7 @@ export const ProductsInCart = () => {
     } else {
       setIsLoading(false);
     }
-  }, [negocioIds.join(',')]); // Dependencia solo en negocioIds memoizado
+  }, [negocioIds]); // Dependencia solo en negocioIds memoizado
 
   // Calcular total general
   const total = useMemo(() => getTotalPrice(), [getTotalPrice]);

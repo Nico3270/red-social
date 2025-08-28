@@ -5,7 +5,10 @@ export const dynamic = "force-dynamic"; // Asegura que la acción no use caché
 export default async function NewProductPage() {
   return (
     <div className="w-full bg-white">
-      <TituloPrincipal children="Crear Nuevo Producto" />
+      <TituloPrincipal>
+  Crear Nuevo Producto
+</TituloPrincipal>
+
       <CreateNewProduct  />
     </div>
   );

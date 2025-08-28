@@ -1,21 +1,17 @@
 "use client";
 
-import React, { useEffect, useState, forwardRef } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import {
     Box,
     Grid,
     TextField,
     Button,
     Typography,
-    Paper,
     List,
     ListItem,
     ListItemText,
-    Divider,
     IconButton,
-    Container,
     Autocomplete,
-    Fade,
     Modal,
     Snackbar,
     Alert,
@@ -26,8 +22,8 @@ import {
     InputLabel,
     FormHelperText,
 } from "@mui/material";
-import { Add, Delete, Remove, ArrowForward, Close } from "@mui/icons-material";
-import { AnimatePresence, motion } from "framer-motion";
+import { Add, Delete, Remove, Close } from "@mui/icons-material";
+import { AnimatePresence, HTMLMotionProps, motion } from "framer-motion";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { CartProduct } from "@/store/carro-negocio/carro-negocio-store"; // Ajusta según tu interfaz
 import colombiaData from "@/config/colombia.json";
@@ -66,23 +62,34 @@ interface EditOrderModalProps {
     onUpdateSuccess: (updatedOrder: Partial<Orders> & { id: string }) => void;
 }
 
-const AnimatedBackdrop = forwardRef<HTMLDivElement, any>((props, ref) => {
-    const { ownerState, ...other } = props;
-    return (
-        <motion.div
-            ref={ref}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            {...other}
-        />
-    );
-});
+type AnimatedBackdropProps = HTMLMotionProps<"div">; // 👈 Removido ownerState (no se usa)
 
-AnimatedBackdrop.displayName = 'AnimatedBackdrop';
+const AnimatedBackdrop = React.forwardRef<HTMLDivElement, AnimatedBackdropProps>(
+  (props, ref) => ( // 👈 Removido ownerState de los params
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      {...props} // ya no pasa ownerState
+    />
+  )
+);
+
+AnimatedBackdrop.displayName = "AnimatedBackdrop";
+
+interface Product {
+    id: string;
+    slug: string;
+    nombre: string;
+    precio: number;
+    imagen: string;
+    seccionIds: string[];
+    descripcionCorta: string;
+}
 
 const EditOrderModal: React.FC<EditOrderModalProps> = ({ orderId, open, onClose, onUpdateSuccess }) => {
-    const defaultAddressValues: Address = {
+    const defaultAddressValues = useMemo<Address>(() => ({
         country: "Colombia",
         departamento: "",
         ciudad: "",
@@ -91,12 +98,13 @@ const EditOrderModal: React.FC<EditOrderModalProps> = ({ orderId, open, onClose,
         deliveryAddress: "",
         deliveryDate: new Date().toISOString().substring(0, 10),
         additionalComments: "",
-    };
+    }), []);
 
     const [localCart, setLocalCart] = useState<CartProduct[]>([]);
-    const [products, setProducts] = useState<any[]>([]); // Productos disponibles
+    const [products, setProducts] = useState<Product[]>([]); // Productos disponibles
+    const [isLoadingProducts, setIsLoadingProducts] = useState(false);
     const [showAddForm, setShowAddForm] = useState(false);
-    const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
+    const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
     const [quantity, setQuantity] = useState(1);
     const [status, setStatus] = useState<OrderState>(OrderState.Recibida); // Cambiado a OrderState, con valor inicial del enum
     const [isFetching, setIsFetching] = useState(false);
@@ -112,8 +120,37 @@ const EditOrderModal: React.FC<EditOrderModalProps> = ({ orderId, open, onClose,
     const [cities, setCities] = useState<string[]>([]);
     const selectedDepartamento = watch("departamento");
 
+    // Memoizado con useCallback para referencia estable
+    const revertWithFreshData = useCallback(async () => {
+        try {
+            const response = await fetch(`/api/editarOrder/${orderId}`);
+            if (response.ok) {
+                const freshData: OrderData = await response.json();
+                const freshItems = freshData.products.map((p) => ({
+                    id: crypto.randomUUID(),
+                    orderId: orderId,
+                    productId: p.id,
+                    quantity: p.cantidad,
+                    price: p.precio,
+                    subtotal: p.precio * p.cantidad,
+                    description: p.nombre,
+                }));
+                const freshTotal = freshData.products.reduce((sum, p) => sum + p.precio * p.cantidad, 0);
+                onUpdateSuccess({
+                    id: orderId,
+                    items: freshItems,
+                    totalAmount: freshTotal,
+                    status: freshData.status ?? OrderState.Recibida,
+                });
+            }
+        } catch (error) {
+            console.error("Error fetching fresh order data:", error);
+        }
+    }, [orderId, onUpdateSuccess]);
+
     // Fetch productos disponibles
     useEffect(() => {
+        setIsLoadingProducts(true); // Feedback visual
         const fetchProducts = async () => {
             try {
                 const response = await fetch("/api/productosNegocio");
@@ -121,11 +158,15 @@ const EditOrderModal: React.FC<EditOrderModalProps> = ({ orderId, open, onClose,
                 const data = await response.json();
                 setProducts(data);
             } catch (error) {
-                console.error("Error fetching products:", error);
+                console.error(error);
+                showSnackbar("Error inesperado al actualizar la orden.", "error");
+                await revertWithFreshData();
+            } finally {
+                setIsLoadingProducts(false); // 👈 Siempre cerrar el loading
             }
         };
         fetchProducts();
-    }, []);
+    }, [revertWithFreshData]); // 👈 Agregada la dependencia para eliminar el warning (estable, no causa loop)
 
     // Fetch datos de la orden
     useEffect(() => {
@@ -138,7 +179,7 @@ const EditOrderModal: React.FC<EditOrderModalProps> = ({ orderId, open, onClose,
                     const data: OrderData = await response.json();
                     setLocalCart(data.products.map((p) => ({ ...p, cartItemId: crypto.randomUUID() })));
                     setStatus(data.status ?? OrderState.Recibida); // Fallback si undefined
-                    reset({ ...defaultAddressValues, ...data.address }); // Merge con defaults para evitar undefined
+                    reset({ ...defaultAddressValues, ...data.address });
                 } catch (error) {
                     console.error("Error fetching order:", error);
                     showSnackbar("Error al cargar la orden", "error");
@@ -148,7 +189,7 @@ const EditOrderModal: React.FC<EditOrderModalProps> = ({ orderId, open, onClose,
             };
             fetchOrder();
         }
-    }, [open, orderId, reset]);
+    }, [open, orderId, reset, defaultAddressValues]);
 
     // Actualizar ciudades y reset ciudad si necesario
     useEffect(() => {
@@ -270,38 +311,12 @@ const EditOrderModal: React.FC<EditOrderModalProps> = ({ orderId, open, onClose,
                 await revertWithFreshData();
             }
         } catch (error) {
+            console.error(error); // Usamos error aquí
             showSnackbar("Error inesperado al actualizar la orden.", "error");
             // Revertir con fetch fresco
             await revertWithFreshData();
         } finally {
             setIsSubmitting(false);
-        }
-    };
-
-    const revertWithFreshData = async () => {
-        try {
-            const response = await fetch(`/api/editarOrder/${orderId}`);
-            if (response.ok) {
-                const freshData: OrderData = await response.json();
-                const freshItems = freshData.products.map((p) => ({
-                    id: crypto.randomUUID(),
-                    orderId: orderId,
-                    productId: p.id,
-                    quantity: p.cantidad,
-                    price: p.precio,
-                    subtotal: p.precio * p.cantidad,
-                    description: p.nombre,
-                }));
-                const freshTotal = freshData.products.reduce((sum, p) => sum + p.precio * p.cantidad, 0);
-                onUpdateSuccess({
-                    id: orderId,
-                    items: freshItems,
-                    totalAmount: freshTotal,
-                    status: freshData.status ?? OrderState.Recibida,
-                });
-            }
-        } catch (error) {
-            console.error("Error fetching fresh order data:", error);
         }
     };
 
@@ -389,66 +404,77 @@ const EditOrderModal: React.FC<EditOrderModalProps> = ({ orderId, open, onClose,
                             <Typography variant="h5" sx={{ mb: 2 }}>
                                 Productos
                             </Typography>
-                            {!showAddForm ? (
-                                <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
-                                    <Button variant="contained" startIcon={<Add />} onClick={handleAddClick}>
-                                        Añadir Producto
-                                    </Button>
+                            {isLoadingProducts ? ( // 👈 Uso de isLoadingProducts: CircularProgress responsive y elegante
+                                <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", mb: 4, height: 100 }}>
+                                    <CircularProgress size={24} color="primary" />
+                                    <Typography variant="body2" sx={{ ml: 2, color: "text.secondary" }}>
+                                        Cargando productos disponibles...
+                                    </Typography>
                                 </Box>
                             ) : (
-                                <Box sx={{ mb: 4 }}>
-                                    <Autocomplete
-                                        options={products}
-                                        getOptionLabel={(option) => option.nombre}
-                                        onChange={(event, value) => setSelectedProduct(value)}
-                                        renderInput={(params) => <TextField {...params} label="Buscar producto" />}
-                                    />
-                                    {selectedProduct && (
-                                        <>
-                                            <Typography>Precio: ${selectedProduct.precio.toFixed(2)}</Typography>
-                                            <Box sx={{ display: "flex", alignItems: "center" }}>
-                                                <IconButton onClick={handleDecrement} disabled={quantity <= 1}>
+                                <>
+                                    {!showAddForm ? (
+                                        <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
+                                            <Button variant="contained" startIcon={<Add />} onClick={handleAddClick}>
+                                                Añadir Producto
+                                            </Button>
+                                        </Box>
+                                    ) : (
+                                        <Box sx={{ mb: 4 }}>
+                                            <Autocomplete
+                                                options={products}
+                                                getOptionLabel={(option) => option.nombre}
+                                                onChange={(event, value) => setSelectedProduct(value)}
+                                                renderInput={(params) => <TextField {...params} label="Buscar producto" />}
+                                            />
+                                            {selectedProduct && (
+                                                <>
+                                                    <Typography>Precio: ${selectedProduct.precio.toFixed(2)}</Typography>
+                                                    <Box sx={{ display: "flex", alignItems: "center" }}>
+                                                        <IconButton onClick={handleDecrement} disabled={quantity <= 1}>
+                                                            <Remove />
+                                                        </IconButton>
+                                                        <TextField
+                                                            type="number"
+                                                            value={quantity}
+                                                            onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                                                            sx={{ width: 60, mx: 1 }}
+                                                        />
+                                                        <IconButton onClick={handleIncrement}>
+                                                            <Add />
+                                                        </IconButton>
+                                                    </Box>
+                                                    <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
+                                                        <Button onClick={() => setShowAddForm(false)}>Cancelar</Button>
+                                                        <Button variant="contained" onClick={handleAddToCart} disabled={quantity < 1}>
+                                                            Añadir
+                                                        </Button>
+                                                    </Box>
+                                                </>
+                                            )}
+                                        </Box>
+                                    )}
+
+                                    <List>
+                                        {localCart.map((item) => (
+                                            <ListItem key={item.cartItemId}>
+                                                <ListItemText primary={item.nombre} secondary={`x${item.cantidad} - $${(item.precio * item.cantidad).toFixed(2)}`} />
+                                                <IconButton onClick={() => handleQuantityChange(item.cartItemId, item.cantidad - 1)} disabled={item.cantidad <= 1}>
                                                     <Remove />
                                                 </IconButton>
-                                                <TextField
-                                                    type="number"
-                                                    value={quantity}
-                                                    onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                                                    sx={{ width: 60, mx: 1 }}
-                                                />
-                                                <IconButton onClick={handleIncrement}>
+                                                <Typography sx={{ mx: 1 }}>{item.cantidad}</Typography>
+                                                <IconButton onClick={() => handleQuantityChange(item.cartItemId, item.cantidad + 1)}>
                                                     <Add />
                                                 </IconButton>
-                                            </Box>
-                                            <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
-                                                <Button onClick={() => setShowAddForm(false)}>Cancelar</Button>
-                                                <Button variant="contained" onClick={handleAddToCart} disabled={quantity < 1}>
-                                                    Añadir
-                                                </Button>
-                                            </Box>
-                                        </>
-                                    )}
-                                </Box>
+                                                <IconButton onClick={() => handleRemoveProduct(item.cartItemId)}>
+                                                    <Delete />
+                                                </IconButton>
+                                            </ListItem>
+                                        ))}
+                                    </List>
+                                    <Typography>Total: ${getTotalPrice().toFixed(2)}</Typography>
+                                </>
                             )}
-
-                            <List>
-                                {localCart.map((item) => (
-                                    <ListItem key={item.cartItemId}>
-                                        <ListItemText primary={item.nombre} secondary={`x${item.cantidad} - $${(item.precio * item.cantidad).toFixed(2)}`} />
-                                        <IconButton onClick={() => handleQuantityChange(item.cartItemId, item.cantidad - 1)} disabled={item.cantidad <= 1}>
-                                            <Remove />
-                                        </IconButton>
-                                        <Typography sx={{ mx: 1 }}>{item.cantidad}</Typography>
-                                        <IconButton onClick={() => handleQuantityChange(item.cartItemId, item.cantidad + 1)}>
-                                            <Add />
-                                        </IconButton>
-                                        <IconButton onClick={() => handleRemoveProduct(item.cartItemId)}>
-                                            <Delete />
-                                        </IconButton>
-                                    </ListItem>
-                                ))}
-                            </List>
-                            <Typography>Total: ${getTotalPrice().toFixed(2)}</Typography>
 
                             {/* Sección de Dirección */}
                             <Typography variant="h5" sx={{ mt: 4, mb: 2 }}>
@@ -483,7 +509,8 @@ const EditOrderModal: React.FC<EditOrderModalProps> = ({ orderId, open, onClose,
                                             )}
                                         />
                                     </Grid>
-                                    <Grid item xs={12} sm={6}>
+                                    {/* ... (el resto del Grid y form permanece igual, sin cambios) */}
+                                     <Grid item xs={12} sm={6}>
                                         <Controller
                                             name="departamento"
                                             control={control}

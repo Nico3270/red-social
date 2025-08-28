@@ -13,8 +13,6 @@ import {
   Radio,
   Chip,
   FormControlLabel,
-  IconButton,
-  CircularProgress,
   Typography,
   Box,
 } from "@mui/material";
@@ -27,6 +25,7 @@ import { initialData } from "@/seed/seed";
 import * as FaIcons from "react-icons/fa";
 import * as RiIcons from "react-icons/ri";
 import { IconType } from "react-icons";
+import { Backdrop, CircularProgress } from "@mui/material";
 import Divider from "../divider/Divider";
 import { ProductStatus } from "@prisma/client";
 import { updateProduct } from "@/ui/actions/productos/updateProduct";
@@ -83,7 +82,7 @@ export default function CreateOrUpdateProduct({ product }: Props) {
   // Es un set o array de strings con las secciones seleccionadas, se inicia vacío 
   const [selectedSections, setSelectedSections] = useState<Set<string>>(new Set());
   // Es un array de objetos, cada objeto representa una imagen con id, file y url, se inicia vacío el array vacío
-  const [images, setImages] = useState<{ id: string; file: File; url: string }[]>([]);
+
   // Imagenes cargadas, es un array con las imagenes ya subidas a Cloudinary
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   // Sirve para bloquear los botones mientras se esta creando o actualizando el producto
@@ -232,11 +231,11 @@ export default function CreateOrUpdateProduct({ product }: Props) {
         }
         if (product && product.id) {
           updateProductoStore(product.id, {
-            nombre: data.nombre ,
-            precio: data.precio ,
+            nombre: data.nombre,
+            precio: data.precio,
           })
         }
-        
+
         // enlace creado para redirigir al usuario a la página del producto creado o actualizado
         const redirectUrl = `/${selectedCategorySlug}/${section.slug}/${result.product?.slug}`;
         setAlert({
@@ -348,7 +347,7 @@ export default function CreateOrUpdateProduct({ product }: Props) {
         <Controller
           name="categoriaId"
           control={control}
-          render={({ field }) => (
+          render={() => (
             <Stack direction="row" spacing={1} flexWrap="wrap" rowGap={1}>
               {initialData.categorias.map((category) => {
                 const IconComponent = iconMap[category.iconName] || FaIcons.FaQuestion;
@@ -445,7 +444,7 @@ export default function CreateOrUpdateProduct({ product }: Props) {
         <h4 className="text-blue-700 font-semibold">📸 Instrucción para Subida de Imágenes</h4>
         <p className="text-gray-600 text-md mt-1">
           Agrega imágenes del producto utilizando el botón de carga, con icono de cámara. <br />
-          Luego, presiona <strong>"Cargar imágenes seleccionadas"</strong> y espera el mensaje de confirmación antes de continuar.
+          Luego, presiona <strong> &quot;Cargar imágenes seleccionadas&quot; </strong>y espera el mensaje de confirmación antes de continuar.
         </p>
       </div>
 
@@ -479,7 +478,7 @@ export default function CreateOrUpdateProduct({ product }: Props) {
           Para optimizar la visibilidad de tu producto y atraer más clientes, ingresa una descripción detallada con sus principales características.
           No es necesario un formato específico, pero procura incluir información clara y relevante.
           <br /><br />
-          Luego, presiona <strong>"Generar Descripción con IA"</strong>. En unos segundos, la IA mejorará la redacción, estructurará la información
+          Luego, presiona <strong>&quot;Generar Descripción con IA&quot;</strong>. En unos segundos, la IA mejorará la redacción, estructurará la información
           y generará palabras clave (tags) optimizadas para SEO, ayudando a que más personas encuentren tu producto fácilmente. Estas descripciones
           las puedes modificar o eliminar según tus preferencias.
         </p>
@@ -660,6 +659,10 @@ export default function CreateOrUpdateProduct({ product }: Props) {
       <Button type="submit" variant="contained" color="primary" fullWidth>
         {product ? "Actualizar Producto" : "Crear Producto"}
       </Button>
+
+      <Backdrop open={loading} sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
 
       {alert && (
         <Alert severity={alert.type} onClose={() => setAlert(null)}>

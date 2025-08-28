@@ -33,7 +33,7 @@ export default async function ProductPage({ params }: Props) {
     );
   }
 
-  const { product, productosSimilares, telefonoNegocio, nombreNegocio } = result;
+  const { product, productosSimilares, telefonoNegocio} = result;
 
   if (!product) {
     return <h1>No hay producto</h1>;

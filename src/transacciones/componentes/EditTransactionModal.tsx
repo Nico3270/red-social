@@ -11,9 +11,26 @@ import {
   IconButton,
 } from "@mui/material";
 import { Close } from "@mui/icons-material";
-import AddTransactionComponent from "./AddTransactionComponent"; // Ajusta la ruta según sea necesario
-import { Transaction } from "@/transacciones/interfaces/types"; // Ajusta la ruta según sea necesario
-import { TransactionType } from "@prisma/client";
+import AddTransactionComponent from "./AddTransactionComponent";
+import { TransactionType, PaymentMethod, IncomeCategory, ExpenseCategory } from "@prisma/client";
+import { FormData,  Transaction } from "@/transacciones/interfaces/types"; // Import compartido
+
+// Interface auxiliar para API (category como string, ya que viene de DB)
+interface ApiTransactionData {
+  date: string;
+  type: TransactionType;
+  category: string; // String crudo de DB
+  paymentMethod: PaymentMethod;
+  orderItems?: Array<{
+    description: string;
+    quantity: number;
+    price: number;
+    subtotal: number;
+    product?: { id: string };
+  }>;
+  amount: number;
+  description: string;
+}
 
 interface EditTransactionModalProps {
   open: boolean;
@@ -28,7 +45,7 @@ const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
   transactionId,
   onTransactionUpdated,
 }) => {
-  const [initialData, setInitialData] = useState<any>(null); // Tipar como FormData & { transactionId: string } si es posible
+  const [initialData, setInitialData] = useState<(FormData & { transactionId: string }) | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -42,12 +59,11 @@ const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
           if (!response.ok) {
             throw new Error("Error al obtener la transacción");
           }
-          const { data } = await response.json();
+          const { data }: { data: ApiTransactionData } = await response.json();
 
-          // Mapear los datos de la API al formato esperado por el componente
           const formattedDate = new Date(data.date).toISOString().substring(0, 10);
           const items = data.orderItems
-            ? data.orderItems.map((item: any) => ({
+            ? data.orderItems.map((item) => ({
                 description: item.description,
                 quantity: item.quantity,
                 price: item.price,
@@ -60,11 +76,11 @@ const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
           setInitialData({
             date: formattedDate,
             type: data.type || TransactionType.ingreso,
-            category: data.category,
+            category: data.category as IncomeCategory | ExpenseCategory, // Casting seguro (validado en DB)
             paymentMethod: data.paymentMethod,
             items,
             amount: data.amount,
-            description: data.description, // Cambiado de 'descripcion' a 'description' en la API
+            description: data.description,
             transactionId,
           });
         } catch (err) {

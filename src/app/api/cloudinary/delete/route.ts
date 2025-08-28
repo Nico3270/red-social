@@ -33,12 +33,12 @@ export async function POST(req: Request) {
       api_secret: apiSecret,
     });
 
-    console.log("Deleting resource:", { publicId, resourceType });
-    console.log("Cloudinary config:", {
-      cloud_name: cloudName,
-      api_key: apiKey,
-      api_secret: apiSecret ? "[REDACTED]" : undefined,
-    });
+    // console.log("Deleting resource:", { publicId, resourceType });
+    // console.log("Cloudinary config:", {
+    //   cloud_name: cloudName,
+    //   api_key: apiKey,
+    //   api_secret: apiSecret ? "[REDACTED]" : undefined,
+    // });
 
     const result = await cloudinary.uploader.destroy(publicId, {
       resource_type: resourceType || "image",
@@ -54,16 +54,23 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
-  } catch (error: any) {
-    console.error("Cloudinary delete error:", {
-      message: error.message,
-      name: error.name,
-      http_code: error.http_code,
-      response: error.response,
-    });
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("Cloudinary delete error:", {
+        message: error.message,
+        name: error.name,
+      });
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: 500 }
+      );
+    }
+
+    // fallback si no es instancia de Error
+    console.error("Cloudinary delete error:", error);
     return NextResponse.json(
-      { success: false, error: error.message || "Server error" },
-      { status: error.http_code || 500 }
+      { success: false, error: "Unknown server error" },
+      { status: 500 }
     );
   }
 }

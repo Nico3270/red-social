@@ -1,7 +1,6 @@
-
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react"; // Agregamos useRef
 import imageCompression from "browser-image-compression";
 import { IconButton, CircularProgress } from "@mui/material";
 import { FaTrashAlt } from "react-icons/fa";
@@ -14,8 +13,6 @@ interface Media {
   file: File;
   url: string;
 }
-
-
 
 interface RenderMedia {
   id: string;
@@ -52,6 +49,7 @@ const AutoUploadMedia: React.FC<AutoUploadMediaProps> = ({
   const [uploadedMedia, setUploadedMedia] = useState<UploadedMedia[]>([]);
   const [loading, setLoading] = useState(false);
   const [uploadingFiles, setUploadingFiles] = useState<Set<string>>(new Set());
+  const isInitialized = useRef(false); // Flag para inicialización (no causa re-renders)
 
   // Determinar el atributo accept según mediaType
   const getAcceptValue = () => {
@@ -66,8 +64,10 @@ const AutoUploadMedia: React.FC<AutoUploadMediaProps> = ({
     }
   };
 
-  // 1. Efecto para inicializar `uploadedMedia` desde initialData
+  // 1. Efecto para inicializar `uploadedMedia` desde initialData (con safeguard)
   useEffect(() => {
+    if (isInitialized.current) return; // Solo inicializa una vez
+
     const initialUrls = Array.isArray(initialData)
       ? initialData
       : initialData
@@ -84,14 +84,15 @@ const AutoUploadMedia: React.FC<AutoUploadMediaProps> = ({
         return { url, publicId };
       })
     );
+
+    isInitialized.current = true; // Marca como inicializado
   }, [initialData]);
 
   // 2. Efecto separado para ejecutar `onChange` de forma segura
   useEffect(() => {
     const urls = uploadedMedia.map((m) => m.url);
     onChange(multiple ? urls : urls[0] || undefined);
-  }, [uploadedMedia, multiple]);
-
+  }, [uploadedMedia, multiple, onChange]);
 
   // Manejar selección de archivo
   const handleAddMedia = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -222,6 +223,7 @@ const AutoUploadMedia: React.FC<AutoUploadMediaProps> = ({
     if (media.length > 0) {
       media.forEach((m) => uploadFile(m));
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [media, multiple, onChange, onError, onLoading]);
 
   // Eliminar archivo de Cloudinary

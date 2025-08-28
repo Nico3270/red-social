@@ -1,4 +1,4 @@
-interface SummaryData {
+export interface SummaryData {
   numLikes: number;
   numComentarios: number;
   numCompartidos: number;

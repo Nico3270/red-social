@@ -4,8 +4,9 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import clsx from "clsx";
 import { useCartCatalogoStore } from "@/store/carro/carro-store";
-import { Precio } from "@/seccion/componentes/Precio";
+
 import { titleFont } from "@/config/fonts";
+import { Precio } from "@/ui/components/productos/Precio";
 
 export const OrderSummaryWithActions = () => {
   const [isMounted, setIsMounted] = useState(false); // Asegura que el componente se renderice solo en el cliente

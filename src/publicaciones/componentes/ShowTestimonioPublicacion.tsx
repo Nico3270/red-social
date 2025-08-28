@@ -1,13 +1,12 @@
 "use client";
 
-import React, { useCallback } from "react";
+import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
 import { Typography } from "@mui/material";
 import { titulo1 } from "@/config/fonts";
-import { EnhancedPublicacion } from "../interfaces/enhancedPublicacion.interface";
 import Interactions from "@/interacciones/componentes/Interactions";
 import { PublicacionSencilla } from "../interfaces/publicacionSencilla.interface";
 
@@ -28,13 +27,7 @@ export const ShowTestimonioPublicacion = ({ publicacion, productos }: ShowTestim
   const mediaUrl = publicacion.multimedia?.[0]?.url || "/placeholder-image.jpg";
   const timeAgo = formatDistanceToNow(new Date(publicacion.createdAt), { addSuffix: true, locale: es });
 
-  const handleInteraction = useCallback(
-    (type: "COMENTARIO" | "REACCION" | "COMPARTIDO", data: { reaction?: "LIKE" | "LOVE" | "WOW" | "SAD" | "ANGRY"; comment?: string }) => {
-      console.log(`Interacción: ${type}`, data);
-      publicacion.onInteraction?.(type, data);
-    },
-    [publicacion.onInteraction]
-  );
+
 
   if (!publicacion.id || !/^c[0-9a-z]{24}$/.test(publicacion.id)) {
     return (

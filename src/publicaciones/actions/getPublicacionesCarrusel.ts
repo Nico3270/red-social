@@ -1,7 +1,7 @@
 "use server";
 
 import prisma from "@/lib/prisma";
-import { Prisma, PublicacionTipo } from "@prisma/client";
+import { PublicacionTipo } from "@prisma/client";
 
 interface Media {
   id: string;
