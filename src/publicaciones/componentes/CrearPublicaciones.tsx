@@ -6,7 +6,7 @@ import FormCrearCarruselImagenes from './Form_Carrusel_Imagenes';
 import { TestimonioCrearEditar } from "@/publicaciones/componentes/TestimonioCrearEditar";
 import { useSession } from 'next-auth/react';
 import { PublicacionTipo } from '@prisma/client';
-import { PlusCircle, Image as ImageIcon, Star } from 'lucide-react';
+import { PlusCircle, Image, Star } from 'lucide-react';
 
 type ContextoPublicacion = "producto" | "negocio" | "usuario";
 
@@ -39,16 +39,14 @@ export const CrearPublicacionesNegocio = ({ infoInicialProducto }: Props) => {
                     <PlusCircle className="w-6 h-6 text-indigo-600" />
                     Crear Nueva Publicación
                 </h2>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Botón para Carrusel de Imágenes */}
                     <button
                         className="group flex items-center justify-center gap-3 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white font-medium py-4 px-6 rounded-xl hover:from-indigo-700 hover:to-indigo-800 transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg"
                         onClick={() => setIsModalCarruselOpen(true)}
                     >
-                        <ImageIcon className="w-5 h-5 group-hover:animate-pulse" aria-hidden="true" />
-
-
+                        <Image className="w-5 h-5 group-hover:animate-pulse" />
                         Publicar Carrusel
                     </button>
 
@@ -68,9 +66,13 @@ export const CrearPublicacionesNegocio = ({ infoInicialProducto }: Props) => {
                         onClose={() => setIsModalCarruselOpen(false)}
                         userId={userId}
                     >
-                        <div className="animate-fade-in">
-                            <FormCrearCarruselImagenes />
-                        </div>
+                        <FormCrearCarruselImagenes
+                            infoPublicacion={
+                                infoInicialProducto
+                                    ? { ...infoInicialProducto, tipo: PublicacionTipo.CARRUSEL_IMAGENES }
+                                    : { tipo: PublicacionTipo.CARRUSEL_IMAGENES } // fallback si no hay infoInicial
+                            }
+                        />
                     </ModalPublicaciones>
                 )}
 
@@ -80,12 +82,10 @@ export const CrearPublicacionesNegocio = ({ infoInicialProducto }: Props) => {
                         onClose={() => setIsModalTestimonioOpen(false)}
                         userId={userId}
                     >
-                        <div className="animate-fade-in">
-                            <TestimonioCrearEditar
-                                infoPublicacion={infoInicialProducto}
-                                productos={infoInicialProducto?.productos}
-                            />
-                        </div>
+                        <TestimonioCrearEditar
+                            infoPublicacion={infoInicialProducto}
+                            productos={infoInicialProducto?.productos}
+                        />
                     </ModalPublicaciones>
                 )}
             </div>

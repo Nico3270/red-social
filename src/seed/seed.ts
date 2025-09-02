@@ -42,22 +42,32 @@ export const initialData: SeedData = {
   secciones: [
     // Moda y Accesorios
     { id: 's1', nombre: 'Camisas', iconName: 'camisas.png', slug: 'camisas', href: '/productos/moda/camisas', order: 1, isActive: true, categorySlug: 'moda' },
-    { id: 's2', nombre: 'Pantalones', iconName: 'pantalones.png', slug: 'pantalones', href: '/productos/moda/pantalones', order: 2, isActive: true, categorySlug: 'moda' },
-    { id: 's3', nombre: 'Zapatos', iconName: 'zapatos.png', slug: 'zapatos', href: '/productos/moda/zapatos', order: 3, isActive: true, categorySlug: 'moda' },
-    { id: 's4', nombre: 'Accesorios', iconName: 'accesorios.png', slug: 'accesorios', href: '/productos/moda/accesorios', order: 4, isActive: true, categorySlug: 'moda' },
+    { id: 's112', nombre: 'Camisetas', iconName: 't-shirts.png', slug: 'camisetas', href: '/productos/moda/camisetas', order: 1, isActive: true, categorySlug: 'moda' },
+    { id: 's124', nombre: 'Blusas', iconName: 'blusas.png', slug: 'blusas', href: '/productos/moda/blusas', order: 1, isActive: true, categorySlug: 'moda' },
     { id: 's5', nombre: 'Chaquetas', iconName: 'jackets.png', slug: 'chaquetas', href: '/productos/moda/chaquetas', order: 5, isActive: true, categorySlug: 'moda' },
     { id: 's6', nombre: 'Vestidos mujer', iconName: 'vestidos.png', slug: 'vestidosMujer', href: '/productos/moda/vestidosMujer', order: 6, isActive: true, categorySlug: 'moda' },
-    { id: 's7', nombre: 'Ropa Interior', iconName: 'ropaInterior.png', slug: 'ropa-interior', href: '/productos/moda/ropa-interior', order: 7, isActive: true, categorySlug: 'moda' },
     { id: 's81', nombre: 'Vestidos Hombre', iconName: 'vestidoHombre.png', slug: 'vestidos-hombre', href: '/productos/moda/vestidos-hombre', order: 9, isActive: true, categorySlug: 'moda' },
-    { id: 's82', nombre: 'Corbatas', iconName: 'corbatas.png', slug: 'corbatas', href: '/productos/moda/corbatas', order: 10, isActive: true, categorySlug: 'moda' },
+    { id: 's2', nombre: 'Pantalones', iconName: 'pantalones.png', slug: 'pantalones', href: '/productos/moda/pantalones', order: 2, isActive: true, categorySlug: 'moda' },
+    { id: 's118', nombre: 'Hoodies', iconName: 'hoodies.png', slug: 'hoodies', href: '/productos/moda/hoodies', order: 1, isActive: true, categorySlug: 'moda' },
+    { id: 's123', nombre: 'Sacos', iconName: 'sacos.png', slug: 'sacos', href: '/productos/moda/sacos', order: 1, isActive: true, categorySlug: 'moda' },
+    { id: 's119', nombre: 'Shorts', iconName: 'shorts.png', slug: 'shorts', href: '/productos/moda/shorts', order: 1, isActive: true, categorySlug: 'moda' },
     { id: 's83', nombre: 'Sudaderas', iconName: 'sudaderas.png', slug: 'sudaderas', href: '/productos/moda/sudaderas', order: 11, isActive: true, categorySlug: 'moda' },
-    { id: 's84', nombre: 'Gorras', iconName: 'gorras.png', slug: 'gorras', href: '/productos/moda/gorras', order: 8, isActive: true, categorySlug: 'moda' },
+    { id: 's113', nombre: 'Ropa Deportiva', iconName: 'ropa-deportiva.png', slug: 'ropa-deportiva1', href: '/productos/moda/ropa-deportiva', order: 1, isActive: true, categorySlug: 'moda' },
+    { id: 's3', nombre: 'Zapatos', iconName: 'zapatos.png', slug: 'zapatos', href: '/productos/moda/zapatos', order: 3, isActive: true, categorySlug: 'moda' },
+    { id: 's90', nombre: 'Sandalias', iconName: 'sandalias.png', slug: 'sandalias', href: '/productos/moda/sandalias', order: 18, isActive: true, categorySlug: 'moda' },
+    { id: 's4', nombre: 'Accesorios', iconName: 'accesorios.png', slug: 'accesorios', href: '/productos/moda/accesorios', order: 4, isActive: true, categorySlug: 'moda' },
+    { id: 's7', nombre: 'Ropa Interior', iconName: 'ropaInterior.png', slug: 'ropa-interior', href: '/productos/moda/ropa-interior', order: 7, isActive: true, categorySlug: 'moda' },
     { id: 's85', nombre: 'Faldas', iconName: 'faldas.png', slug: 'faldas', href: '/productos/moda/faldas', order: 13, isActive: true, categorySlug: 'moda' },
-    { id: 's86', nombre: 'Sombreros', iconName: 'sombreros.png', slug: 'sombreros', href: '/productos/moda/sombreros', order: 14, isActive: true, categorySlug: 'moda' },
+    { id: 's84', nombre: 'Gorras', iconName: 'gorras.png', slug: 'gorras', href: '/productos/moda/gorras', order: 8, isActive: true, categorySlug: 'moda' },
     { id: 's87', nombre: 'Bufandas', iconName: 'bufandas.png', slug: 'bufandas', href: '/productos/moda/bufandas', order: 15, isActive: true, categorySlug: 'moda' },
     { id: 's88', nombre: 'Guantes', iconName: 'guantes.png', slug: 'guantes', href: '/productos/moda/guantes', order: 16, isActive: true, categorySlug: 'moda' },
     { id: 's89', nombre: 'Medias', iconName: 'medias.png', slug: 'medias', href: '/productos/moda/medias', order: 17, isActive: true, categorySlug: 'moda' },
-    { id: 's90', nombre: 'Sandalias', iconName: 'sandalias.png', slug: 'sandalias', href: '/productos/moda/sandalias', order: 18, isActive: true, categorySlug: 'moda' },
+    { id: 's120', nombre: 'Bolsos', iconName: 'bolsos.png', slug: 'bolsos', href: '/productos/moda/bolsos', order: 1, isActive: true, categorySlug: 'moda' },
+    { id: 's121', nombre: 'Maletas', iconName: 'maletas.png', slug: 'maletas', href: '/productos/moda/maletas', order: 1, isActive: true, categorySlug: 'moda' },
+    { id: 's122', nombre: 'Billeteras', iconName: 'billeteras.png', slug: 'billeteras', href: '/productos/moda/billeteras', order: 1, isActive: true, categorySlug: 'moda' },
+    { id: 's86', nombre: 'Sombreros', iconName: 'sombreros.png', slug: 'sombreros', href: '/productos/moda/sombreros', order: 14, isActive: true, categorySlug: 'moda' },
+    { id: 's82', nombre: 'Corbatas', iconName: 'corbatas.png', slug: 'corbatas', href: '/productos/moda/corbatas', order: 10, isActive: true, categorySlug: 'moda' },
+
 
 
 
@@ -97,6 +107,10 @@ export const initialData: SeedData = {
     { id: 's27', nombre: 'Smartwatches', iconName: 'smartwatch.png', slug: 'smartwatches', href: '/productos/tecnologia/smartwatches', order: 4, isActive: true, categorySlug: 'tecnologia' },
     { id: 's28', nombre: 'Tablets', iconName: 'tablet.png', slug: 'tablets', href: '/productos/tecnologia/tablets', order: 5, isActive: true, categorySlug: 'tecnologia' },
     { id: 's29', nombre: 'Cámaras', iconName: 'cameras.png', slug: 'camaras', href: '/productos/tecnologia/camaras', order: 6, isActive: true, categorySlug: 'tecnologia' },
+    { id: 's114', nombre: 'Gaming', iconName: 'gaming.png', slug: 'gaming', href: '/productos/tecnologia/gaming', order: 7, isActive: true, categorySlug: 'tecnologia' },
+    { id: 's115', nombre: 'Audio', iconName: 'audio.png', slug: 'audio', href: '/productos/tecnologia/audio', order: 8, isActive: true, categorySlug: 'tecnologia' },
+    { id: 's116', nombre: 'Smart Home', iconName: 'appliances.png', slug: 'audio', href: '/productos/tecnologia/smart-home', order: 9, isActive: true, categorySlug: 'tecnologia' },
+
 
     // Hogar y Decoración
     { id: 's30', nombre: 'Decoración', iconName: 'decoracion.png', slug: 'decoracion', href: '/productos/hogar/decoracion', order: 1, isActive: true, categorySlug: 'hogar' },

@@ -69,41 +69,24 @@ export const actualizarPerfilNegocio = async (
     return { ok: false, message: "El usuario no tiene ningún negocio asociado." };
   }
 
-  const generateSlug = async (nombre: string, ciudad: string): Promise<string> => {
-    const randomId = Math.random().toString(36).substring(2, 6);
-    const baseSlug = nombre
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/[^\w\s-]/g, "")
-      .trim()
-      .replace(/\s+/g, "-");
-    let slug = `${baseSlug}-${ciudad.toLowerCase()}-${randomId}`;
 
-    // Verificar unicidad del slug
-    let counter = 1;
-    while (await prisma.negocio.findUnique({ where: { slug } })) {
-      slug = `${baseSlug}-${ciudad.toLowerCase()}-${randomId}-${counter}`;
-      counter++;
-    }
-
-    return slug;
-  };
 
   try {
     // Validaciones adicionales
     console.log("Validación del slug del negocio, coordenadas y categorías...");
-    
-    
+
+
     // 1. Verificar que el slug no esté en uso por otro negocio
-    if (data.slugNegocio !== negocio.slug) {
+    const slugNegocio = data.slugNegocio; // Usa el proporcionado, no generes nuevo
+    if (slugNegocio !== negocio.slug) {
       const existingSlug = await prisma.negocio.findUnique({
-        where: { slug: data.slugNegocio },
+        where: { slug: slugNegocio }, // Cambia a slugNegocio
         select: { id: true },
       });
       if (existingSlug && existingSlug.id !== negocio.id) {
         return { ok: false, message: "El slug ya está en uso por otro negocio." };
       }
+
     }
 
     // 2. Validar coordenadas
@@ -137,13 +120,13 @@ export const actualizarPerfilNegocio = async (
     }
 
     console.log("Validaciones pasadas, procediendo a actualizar el perfil del negocio...  ");
-    const slugNegocio = await generateSlug(data.nombreNegocio, data.ciudadNegocio);
+
 
     const tieneUbicacion = !!(data.latitudNegocio && data.longitudNegocio);
     // Preparar los datos para la actualización
     const negocioData = {
       nombre: data.nombreNegocio,
-      slug: slugNegocio,
+      slug: data.slugNegocio, // Mantiene el original
       descripcion: data.descripcionNegocio,
       telefonoContacto: data.telefonoNegocio,
       ciudad: data.ciudadNegocio,

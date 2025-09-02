@@ -4,12 +4,14 @@ import { useState, useEffect } from "react";
 import { FaGoogle } from "react-icons/fa";
 import Link from "next/link";
 import { IoInformationOutline } from "react-icons/io5";
+import { FaEye, FaEyeSlash } from "react-icons/fa"; // 👈 íconos para mostrar/ocultar
 import clsx from "clsx";
 import { signIn } from "next-auth/react";
 import { authenticate } from "@/actions/auth/login";
 import { useSearchParams } from "next/navigation";
 
 export const LoginForm = () => {
+  const [showPassword, setShowPassword] = useState(false); // 👈 estado para visibilidad
   const [state, setState] = useState<
     "Idle" | "Loading" | "Success" | "Error" | "CredentialsSignin" | "UnknownError"
   >("Idle");
@@ -71,18 +73,29 @@ export const LoginForm = () => {
               required
             />
           </div>
+          {/* Campo contraseña con botón para mostrar/ocultar */}
           <div>
             <label htmlFor="password" className="block font-bold">
               Contraseña
             </label>
-            <input
-              type="password"
-              name="password"
-              className="w-full border rounded-lg p-2 mt-2 focus:outline-none focus:ring-2 focus:ring-red-600"
-              placeholder="Ingresa tu contraseña"
-              required
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                className="w-full border rounded-lg p-2 mt-2 pr-10 focus:outline-none focus:ring-2 focus:ring-red-600"
+                placeholder="Ingresa tu contraseña"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-gray-800"
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
+            </div>
           </div>
+          
           <div className="flex items-center justify-between">
             <label className="flex items-center">
               <input type="checkbox" className="mr-2" />

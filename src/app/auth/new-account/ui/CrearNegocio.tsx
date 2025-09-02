@@ -1,19 +1,17 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import { useSession } from "next-auth/react";
 import clsx from "clsx";
 import colombia from "@/config/colombia.json";
 import "react-datepicker/dist/react-datepicker.css";
 import { initialData } from "@/seed/seed";
-import * as FaIcons from "react-icons/fa";
-import * as RiIcons from "react-icons/ri";
-import { IconType } from "react-icons";
-import { Alert, Box, FormControl, FormLabel, Stack, Typography } from "@mui/material";
+import { Alert, Box, FormControl, FormLabel, Stack, Typography, Select, MenuItem, InputLabel, FormHelperText } from "@mui/material";
 import Divider from "@/ui/components/divider/Divider";
 import { GiColombia } from "react-icons/gi";
 import { createNegocio } from "@/actions/auth/createHegocio";
+import Image from "next/image";
 
 
 const allCities = colombia.flatMap((d) =>
@@ -21,12 +19,8 @@ const allCities = colombia.flatMap((d) =>
 );
 
 
-
 const selectedCountryCode = "+57";
 
-function removeAccents(str: string) {
-    return str.normalize("NFD").replace(/\p{Diacritic}/gu, "");
-}
 
 type FormInputs = {
     nombre: string;
@@ -41,20 +35,17 @@ type IdUsuario = {
     id: string;
 };
 
-type IconMap = {
-    [key: string]: IconType;
-};
-
-const iconMap: IconMap = {
-    ...FaIcons,
-    ...RiIcons,
-};
+interface ColombiaDepartment {
+  id: number;
+  departamento: string;
+  ciudades: string[];
+}
 
 export const CreateNegocioForm = ({ id }: IdUsuario) => {
     const [isPending, setIsPending] = useState(false);
-    const [cityInput, setCityInput] = useState("");
-    const [filteredCities, setFilteredCities] = useState<string[]>([]);
-    const suggestionsRef = useRef<HTMLUListElement>(null);
+    const [selectedDepartamento, setSelectedDepartamento] = useState("");
+    const [selectedCity, setSelectedCity] = useState("");
+    const [cities, setCities] = useState<string[]>([]);
     const [selectedCategorySlugs, setSelectedCategorySlugs] = useState<Set<string>>(new Set());
     const [selectedSections, setSelectedSections] = useState<Set<string>>(new Set());
     const [alert, setAlert] = useState<{ type: "success" | "error" | "info"; message: string } | null>(null);
@@ -87,6 +78,25 @@ export const CreateNegocioForm = ({ id }: IdUsuario) => {
             .map((cat) => cat.id);
         setValue("categoriaIds", selectedIds);
     }, [selectedCategorySlugs, setValue]);
+
+    useEffect(() => {
+        if (selectedDepartamento) {
+          const departmentData = (colombia as ColombiaDepartment[]).find(
+            (dept) => dept.departamento === selectedDepartamento
+          );
+          setCities(departmentData ? departmentData.ciudades : []);
+        } else {
+          setCities([]);
+        }
+      }, [selectedDepartamento]);
+
+    useEffect(() => {
+        if (selectedCity && selectedDepartamento) {
+          setValue("ciudad", `${selectedCity} - ${selectedDepartamento}`);
+        } else {
+          setValue("ciudad", "");
+        }
+      }, [selectedCity, selectedDepartamento, setValue]);
 
     const onSubmit: SubmitHandler<FormInputs> = async (data) => {
         setIsPending(true);
@@ -161,13 +171,17 @@ export const CreateNegocioForm = ({ id }: IdUsuario) => {
             // ✅ Paso 1: Refrescar la sesión desde el backend
             console.log("Actualizando sesión con role: negocio");
             await update({ role: "negocio" });
+            await update({ negocioNombre: data.nombre || "" });
+            await update({ negocioSlug: response.slugNegocio});
+            await update({negocioId: response.negocioId})
+
 
             // ✅ Paso 3: Mostrar mensaje de éxito
             setAlert({ type: "success", message: response.message || "Negocio creado exitosamente." });
 
             // ✅ Paso 4: Redirigir al perfil
             setTimeout(() => {
-                window.location.replace("/dashboard/perfil");
+                window.location.replace("/dashboard/editar-perfil");
             }, 3000);
 
         } catch (error) {
@@ -177,28 +191,6 @@ export const CreateNegocioForm = ({ id }: IdUsuario) => {
             setIsPending(false);
         }
     };
-
-    useEffect(() => {
-        if (cityInput.length >= 3) {
-            const matches = allCities.filter((city) =>
-                removeAccents(city.toLowerCase()).includes(removeAccents(cityInput.toLowerCase()))
-            );
-            setFilteredCities(matches.slice(0, 10));
-        } else {
-            setFilteredCities([]);
-        }
-        setValue("ciudad", cityInput);
-    }, [cityInput, setValue]);
-
-    useEffect(() => {
-        const handleClickOutside = (e: MouseEvent) => {
-            if (suggestionsRef.current && !suggestionsRef.current.contains(e.target as Node)) {
-                setFilteredCities([]);
-            }
-        };
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, []);
 
     const toggleSection = (id: string) => {
         setSelectedSections((prev) => {
@@ -254,7 +246,6 @@ export const CreateNegocioForm = ({ id }: IdUsuario) => {
                             render={() => (
                                 <Stack direction="row" spacing={1} flexWrap="wrap" rowGap={1}>
                                     {initialData.categorias.map((category) => {
-                                        const IconComponent = iconMap[category.iconName] || FaIcons.FaQuestion;
                                         const isSelected = selectedCategorySlugs.has(category.slug);
                                         return (
                                             <Box
@@ -281,7 +272,13 @@ export const CreateNegocioForm = ({ id }: IdUsuario) => {
                                                     },
                                                 }}
                                             >
-                                                <IconComponent size={18} style={{ marginRight: 8 }} />
+                                                <Image
+                                                    src={`/imgs/iconos/${category.iconName}`} 
+                                                    alt={category.nombre} 
+                                                    width={18} 
+                                                    height={18} 
+                                                    style={{ marginRight: 8 }} 
+                                                />
                                                 <Typography variant="body2" sx={{ fontWeight: 500 }}>
                                                     {category.nombre}
                                                 </Typography>
@@ -338,6 +335,13 @@ export const CreateNegocioForm = ({ id }: IdUsuario) => {
                                                 },
                                             }}
                                         >
+                                            <Image 
+                                                src={`/imgs/iconos/${section.iconName}`} 
+                                                alt={section.nombre} 
+                                                width={18} 
+                                                height={18} 
+                                                style={{ marginRight: 8 }} 
+                                            />
                                             <Typography variant="body2" sx={{ fontWeight: 500 }}>
                                                 {section.nombre}
                                             </Typography>
@@ -381,50 +385,46 @@ export const CreateNegocioForm = ({ id }: IdUsuario) => {
                         {errors.descripcion && <span className="text-red-500 text-sm">{errors.descripcion.message}</span>}
                     </div>
 
-                    <div className="relative">
-                        <label htmlFor="ciudad" className="block font-bold">
-                            Ciudad
-                        </label>
-                        <Alert severity="info">
-                            Por favor seleccione una ciudad válida de la lista que aparece al escribir
-                        </Alert>
-                        <input
-                            type="text"
-                            {...register("ciudad", { required: "La ciudad es requerida" })}
-                            value={cityInput}
-                            onChange={(e) => setCityInput(e.target.value)}
-                            className={clsx(
-                                "w-full border rounded-lg p-2 mt-2 focus:outline-none focus:ring-2 focus:ring-red-600",
-                                { "border-red-500": errors.ciudad }
-                            )}
-                            placeholder="Ej. Medellín - Antioquia"
-                            autoComplete="off" // <- más confiable
-                            name="fake_ciudad" // <- cambiar el "name" es clave
-                            id="ciudad-autocomplete-fix" // <- opcional para identificar
-                            spellCheck="false"
-                        />
-                        {errors.ciudad && <span className="text-red-500 text-sm">{errors.ciudad.message}</span>}
-                        {filteredCities.length > 0 && (
-                            <ul
-                                ref={suggestionsRef}
-                                className="absolute z-10 bg-white border rounded-md mt-1 max-h-48 overflow-y-auto shadow-md w-full"
-                            >
-                                {filteredCities.map((city) => (
-                                    <li
-                                        key={city}
-                                        onClick={() => {
-                                            setValue("ciudad", city);
-                                            setCityInput(city);
-                                            setFilteredCities([]);
-                                        }}
-                                        className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                                    >
-                                        {city}
-                                    </li>
-                                ))}
-                            </ul>
-                        )}
-                    </div>
+                    <input type="hidden" {...register("ciudad", { required: "La ciudad es requerida - verifica el formato (Ciudad - Departamento)" })} />
+
+                    <FormControl fullWidth variant="outlined" error={!!errors.ciudad && !selectedDepartamento}>
+                        <InputLabel id="departamento-label">Departamento</InputLabel>
+                        <Select
+                            value={selectedDepartamento}
+                            onChange={(e) => {
+                                setSelectedDepartamento(e.target.value as string);
+                                setSelectedCity("");
+                            }}
+                            labelId="departamento-label"
+                            label="Departamento"
+                        >
+                            <MenuItem value="">Selecciona un departamento</MenuItem>
+                            {(colombia as ColombiaDepartment[]).map((dept) => (
+                                <MenuItem key={dept.id} value={dept.departamento}>
+                                    {dept.departamento}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                        {errors.ciudad && !selectedDepartamento && <FormHelperText>Departamento requerido</FormHelperText>}
+                    </FormControl>
+
+                    <FormControl fullWidth variant="outlined" error={!!errors.ciudad} disabled={!selectedDepartamento}>
+                        <InputLabel id="ciudad-label">Ciudad</InputLabel>
+                        <Select
+                            value={selectedCity}
+                            onChange={(e) => setSelectedCity(e.target.value as string)}
+                            labelId="ciudad-label"
+                            label="Ciudad"
+                        >
+                            <MenuItem value="">Selecciona una ciudad</MenuItem>
+                            {cities.map((city, index) => (
+                                <MenuItem key={index} value={city}>
+                                    {city}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                        {errors.ciudad && <FormHelperText>{errors.ciudad.message}</FormHelperText>}
+                    </FormControl>
 
                     <div>
                         <label htmlFor="direccion" className="block font-bold">

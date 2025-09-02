@@ -4,6 +4,7 @@ import React, { useEffect, useState, ReactNode } from "react";
 import { IoMdClose } from "react-icons/io";
 import { useRouter } from "next/navigation";
 import { Alert, Button } from "@mui/material";
+import { motion } from "framer-motion"; // Importa para animaciones elegantes
 
 interface ModalPublicacionesProps {
   userId?: string;
@@ -13,11 +14,27 @@ interface ModalPublicacionesProps {
   successMessage?: string;
 }
 
-interface ModalChildProps {
-  onCancel: () => void;
-  onSuccess: (message?: string) => void;
-}
+class ErrorBoundary extends React.Component<{ children: ReactNode }, { hasError: boolean }> {
+  constructor(props: { children: ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
 
+  static getDerivedStateFromError(error: any) {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: any, errorInfo: any) {
+    console.error('Error en child render', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return <p className="text-red-500">Error al cargar formulario. Intenta de nuevo.</p>;
+    }
+    return this.props.children;
+  }
+}
 
 export const ModalPublicaciones: React.FC<ModalPublicacionesProps> = ({
   userId,
@@ -27,9 +44,8 @@ export const ModalPublicaciones: React.FC<ModalPublicacionesProps> = ({
   successMessage = "Tu acción se ha completado exitosamente.",
 }) => {
   const [showSuccess, setShowSuccess] = useState(false);
-  const router = useRouter();
   const [customMessage, setCustomMessage] = useState<string | null>(null);
-
+  const router = useRouter();
 
   const handleSuccess = (message?: string) => {
     if (message) setCustomMessage(message);
@@ -50,10 +66,37 @@ export const ModalPublicaciones: React.FC<ModalPublicacionesProps> = ({
     onClose();
   };
 
+  // Función helper para clonar recursivamente si hay envoltorio
+  const cloneWithProps = (child: ReactNode): ReactNode => {
+    if (React.isValidElement(child)) {
+      return React.cloneElement(child as React.ReactElement<{ onCancel?: () => void; onSuccess?: (message?: string) => void }>, {
+        onCancel: handleClose,
+        onSuccess: handleSuccess,
+      });
+    }
+    return child;
+  };
+
+  // Debug log para mount
+  useEffect(() => {
+    console.log('Modal mounted, showSuccess:', showSuccess, 'userId:', userId);
+  }, [showSuccess, userId]);
+
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-      <div
+    <motion.div 
+      initial={{ opacity: 0 }} 
+      animate={{ opacity: 1 }} 
+      exit={{ opacity: 0 }} 
+      transition={{ duration: 0.3 }}
+      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+      onClick={handleClose} // Cierra al clic en backdrop (UX elegante como Instagram)
+    >
+      <motion.div
+        initial={{ scale: 0.95, y: 20 }}
+        animate={{ scale: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
         className="bg-white p-6 rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()} // Evita cierre al clic dentro
       >
         <div className="flex justify-end mb-4">
           <button onClick={handleClose} className="text-gray-500 hover:text-gray-700">
@@ -84,23 +127,20 @@ export const ModalPublicaciones: React.FC<ModalPublicacionesProps> = ({
             </div>
           </div>
         ) : (
+          // Elimina el duplicado: Solo un check de showSuccess
           <>
             {showSuccess ? (
               <Alert severity="success" className="mb-4">
                 {customMessage || successMessage}
               </Alert>
-
             ) : (
-              // Aquí se inyecta cualquier formulario (por ejemplo: <TestimonioProductoCrearEditar ... />)
-              children &&
-React.cloneElement(children as React.ReactElement<ModalChildProps>, {
-  onCancel: handleClose,
-  onSuccess: handleSuccess,
-})
+              <ErrorBoundary>
+                {cloneWithProps(children)}
+              </ErrorBoundary>
             )}
           </>
         )}
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };

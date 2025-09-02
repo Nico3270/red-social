@@ -34,15 +34,10 @@ import {
   FormData
 } from "@/transacciones/interfaces/types"; // Mantén unions locales
 
-
-
 interface AddTransactionProps {
   onTransactionAdded: (newTransaction: Transaction) => void;
   initialData?: FormData & { transactionId: string };
 }
-
-
-
 
 
 const AddTransactionComponent: React.FC<AddTransactionProps> = ({ onTransactionAdded, initialData }) => {

@@ -1,15 +1,15 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useForm, Controller, useWatch } from "react-hook-form";
 import { motion, AnimatePresence } from "framer-motion";
-import { Button, CircularProgress, IconButton } from "@mui/material";
-import { FaTimes, FaCog, FaEye } from "react-icons/fa";
+import { Button, CircularProgress, IconButton, Tooltip } from "@mui/material";
+import { FaTimes, FaCog, FaEye } from "react-icons/fa"; // Mantenido FaPlus del original
 import { PublicacionTipo, Visibilidad } from "@prisma/client";
 import AutoUploadMedia from "@/ui/components/autoUpload/AutoUploadMedia";
 import { createUpdateCarruselImagenes } from "../actions/createUpdateCarruselImagenes";
-
+import debounce from "lodash/debounce"; // Asegúrate de instalar: npm i lodash
 
 interface InformacionPublicacion {
     usuarioId?: string;
@@ -54,13 +54,14 @@ const FormCrearCarruselImagenes = ({ infoPublicacion, onCancel, onSuccess }: Pro
     const [showVisibilityMenu, setShowVisibilityMenu] = useState(false);
     const { data: session } = useSession();
     const userId = session?.user?.id;
-
+ 
 
     // Watch the descripcion and multimedia fields for dynamic updates
     const descripcion = useWatch({ control, name: "descripcion" });
-
+    const multimedia = useWatch({ control, name: "multimedia" });
 
     useEffect(() => {
+        console.log('Form_Carrusel_imagenes mounted/updated, infoPublicacion:', infoPublicacion);
         if (infoPublicacion) {
             reset({
                 descripcion: infoPublicacion.descripcion || "",
@@ -68,35 +69,37 @@ const FormCrearCarruselImagenes = ({ infoPublicacion, onCancel, onSuccess }: Pro
                 visibilidad: infoPublicacion.visibilidad || Visibilidad.PUBLICA,
             });
         }
-    }, [infoPublicacion, reset]);
+    }, [JSON.stringify(infoPublicacion), reset]);
 
-    const onFormSubmit = async (data: FormDataPublicacion) => {
+    const onFormSubmit = useCallback(async (data: FormDataPublicacion) => {
         setLoading(true);
-        if (!userId) {
-            setAlert({ type: "error", message: "No estás autenticado. Por favor, inicia sesión." });
+        try {
+            if (!userId) {
+                throw new Error("No estás autenticado. Por favor, inicia sesión.");
+            }
+
+            const submissionData: InformacionPublicacion = {
+                usuarioId: userId,
+                negocioId: infoPublicacion?.negocioId,
+                tipo: infoPublicacion?.tipo || PublicacionTipo.CARRUSEL_IMAGENES,
+                descripcion: data.descripcion || "",
+                multimedia: data.multimedia ? (Array.isArray(data.multimedia) ? data.multimedia : [data.multimedia]) : [],
+                publicacionId: infoPublicacion?.publicacionId,
+                visibilidad: data.visibilidad || Visibilidad.PUBLICA,
+            };
+
+            const result = await createUpdateCarruselImagenes(submissionData);
+            setAlert({ type: result.ok ? "success" : "error", message: result.message });
+            if (result.ok) {
+                reset();
+                onSuccess?.("Publicación creada exitosamente");
+            }
+        } catch (error) {
+            setAlert({ type: "error", message: (error as Error).message || "Error inesperado." });
+        } finally {
             setLoading(false);
-            return;
         }
-
-        const submissionData: InformacionPublicacion = {
-            usuarioId: userId,
-            negocioId: infoPublicacion?.negocioId,
-            tipo: infoPublicacion?.tipo || PublicacionTipo.CARRUSEL_IMAGENES,
-            descripcion: data.descripcion || "",
-            multimedia: data.multimedia ? (Array.isArray(data.multimedia) ? data.multimedia : [data.multimedia]) : [],
-            publicacionId: infoPublicacion?.publicacionId,
-            visibilidad: data.visibilidad || Visibilidad.PUBLICA,
-        };
-
-        const result = await createUpdateCarruselImagenes(submissionData);
-        setAlert({ type: result.ok ? "success" : "error", message: result.message });
-        if (result.ok) {
-            reset();
-            onSuccess?.("Publicación creada exitosamente");
-            
-        }
-        setLoading(false);
-    };
+    }, [userId, infoPublicacion, reset, onSuccess]);
 
     if (!session) {
         return (
@@ -116,6 +119,7 @@ const FormCrearCarruselImagenes = ({ infoPublicacion, onCancel, onSuccess }: Pro
 
     const multiple = true;
     const dataEntrada = infoPublicacion?.multimedia;
+    const debouncedSetValue = useCallback(debounce(setValue, 300), []);
 
     return (
         <motion.div
@@ -138,13 +142,17 @@ const FormCrearCarruselImagenes = ({ infoPublicacion, onCancel, onSuccess }: Pro
                         {infoPublicacion?.publicacionId ? "Editar galería" : "Nueva galería"}
                     </h2>
                     <div className="relative">
-                        <IconButton
-                            onClick={() => setShowVisibilityMenu(!showVisibilityMenu)}
-                            aria-label="Configurar visibilidad"
-                            className="text-gray-500 hover:text-gray-700"
-                        >
-                            <FaCog size={20} />
-                        </IconButton>
+                        <Tooltip title="Configurar visibilidad" arrow placement="bottom" enterDelay={300}>
+                            <span> {/* Wrap en <span> para un solo child directo, resuelve TS error */}
+                                <IconButton
+                                    onClick={() => setShowVisibilityMenu(!showVisibilityMenu)}
+                                    aria-label="Configurar visibilidad"
+                                    className="text-gray-500 hover:text-gray-700"
+                                >
+                                    <FaCog size={20} />
+                                </IconButton>
+                            </span>
+                        </Tooltip>
                         <AnimatePresence>
                             {showVisibilityMenu && (
                                 <motion.div
@@ -185,7 +193,6 @@ const FormCrearCarruselImagenes = ({ infoPublicacion, onCancel, onSuccess }: Pro
 
                 {/* Área de multimedia */}
                 <div className="p-6 relative">
-
                     <AutoUploadMedia
                         initialData={
                             multiple
@@ -199,7 +206,7 @@ const FormCrearCarruselImagenes = ({ infoPublicacion, onCancel, onSuccess }: Pro
                                     : dataEntrada
                         }
                         multiple={true}
-                        onChange={(urls) => setValue("multimedia", urls, { shouldValidate: true })}
+                        onChange={(urls) => debouncedSetValue("multimedia", urls, { shouldValidate: true })}
                         onError={(message) => setAlert({ type: "error", message })}
                         onLoading={setLoading}
                         mediaType="mixto"
@@ -213,7 +220,7 @@ const FormCrearCarruselImagenes = ({ infoPublicacion, onCancel, onSuccess }: Pro
                         <textarea
                             {...register("descripcion", {
                                 required: "La descripción es obligatoria",
-                                maxLength: { value: 280, message: "Máximo 280 caracteres" },
+                                maxLength: { value: 1000, message: "Máximo 1000 caracteres" },
                             })}
                             placeholder="Escribe una descripción elegante y clara..."
                             rows={4}
@@ -236,7 +243,7 @@ const FormCrearCarruselImagenes = ({ infoPublicacion, onCancel, onSuccess }: Pro
                             </motion.p>
                         )}
                         <div className="absolute bottom-3 right-4 text-gray-400 text-xs">
-                            {descripcion?.length || 0}/280
+                            {descripcion?.length || 0}/1000
                         </div>
                     </div>
                 </div>

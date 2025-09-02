@@ -4,12 +4,11 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from "react"
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Navigation, Autoplay } from "swiper/modules";
 import Image from "next/image";
-import { motion} from "framer-motion";
+import { motion } from "framer-motion";
 import { FaLock, FaGlobe, FaUserFriends } from "react-icons/fa";
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
 import { Swiper as SwiperType } from "swiper";
-
 
 // Import Swiper styles
 import "swiper/css";
@@ -20,9 +19,10 @@ import Interactions from "@/interacciones/componentes/Interactions";
 import Link from "next/link";
 import { titulo1 } from "@/config/fonts";
 import { PublicacionSencilla } from "../interfaces/publicacionSencilla.interface";
+// ++++++++++ NUEVA IMPORTACIÓN ++++++++++
+import { usePublicacionModalStore } from "@/store/publicacionModal/publicacionModalStore";
 
-
-// Hook personalizado para obtener dimensiones de medios
+// Hook personalizado para obtener dimensiones de medios (sin cambios)
 const useMediaDimensions = (url: string, tipo: "IMAGEN" | "VIDEO") => {
   const [aspectRatio, setAspectRatio] = useState<number | null>(null);
 
@@ -84,8 +84,14 @@ interface Props {
   publicacion: PublicacionSencilla;
 }
 
-// Componente wrapper para cada slide
-const MediaSlide: React.FC<{ media: PublicacionSencilla["multimedia"][0]; index: number; multimediaLength: number }> = ({ media, index, multimediaLength }) => {
+// Componente wrapper para cada slide (con cambios para click en imagen)
+const MediaSlide: React.FC<{ 
+  media: PublicacionSencilla["multimedia"][0]; 
+  index: number; 
+  multimediaLength: number; 
+  onClick: () => void; // ++++++++++ NUEVA PROP PARA ABRIR MODAL ++++++++++
+  isInModal: boolean; // ++++++++++ NUEVA PROP PARA EVITAR CLICKS EN MODAL ++++++++++
+}> = ({ media, index, multimediaLength, onClick, isInModal }) => {
   const aspectRatio = useMediaDimensions(media.url, media.tipo);
 
   return (
@@ -95,6 +101,11 @@ const MediaSlide: React.FC<{ media: PublicacionSencilla["multimedia"][0]; index:
       transition={{ duration: 0.5 }}
       className="relative w-full max-h-[500px] mx-auto"
       style={{ aspectRatio: aspectRatio || 1 }}
+      // ++++++++++ AGREGAR ONCLICK SOLO SI NO ESTAMOS EN MODAL ++++++++++
+      onClick={!isInModal ? onClick : undefined}
+      role={!isInModal ? "button" : undefined} // Accesibilidad: Hacer clickable solo fuera del modal
+      tabIndex={!isInModal ? 0 : undefined}
+      aria-label={!isInModal ? `Abrir modal con detalle de la media ${index + 1} de ${multimediaLength}` : undefined}
     >
       {media.tipo === "VIDEO" ? (
         <video
@@ -121,8 +132,12 @@ const MediaSlide: React.FC<{ media: PublicacionSencilla["multimedia"][0]; index:
 };
 
 export const SocialMediaCarousel: React.FC<Props> = ({ publicacion }) => {
-  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
-  const maxDescriptionLength = 100; // Límite para mostrar "Ver más"
+  // ++++++++++ USAR EL STORE PARA ABRIR MODAL Y DETECTAR SI ESTAMOS EN ÉL ++++++++++
+  const { isModalOpen, modalPublicacionId, openModal } = usePublicacionModalStore();
+  const isInModal = isModalOpen && modalPublicacionId === publicacion.id;
+
+  const maxDescriptionLength = 100; // Límite para mostrar "Ver más" (solo fuera del modal)
+
   const swiperRef = useRef<SwiperType | null>(null);
 
   // Cachear multimedia para evitar re-renderizados
@@ -150,6 +165,11 @@ export const SocialMediaCarousel: React.FC<Props> = ({ publicacion }) => {
         return null;
     }
   }, [publicacion.visibilidad]);
+
+  // ++++++++++ FUNCIÓN PARA ABRIR MODAL (MEMOIZADA) ++++++++++
+  const handleOpenModal = useCallback(() => {
+    openModal(publicacion.id);
+  }, [openModal, publicacion.id]);
   
   return (
     <motion.div
@@ -182,12 +202,13 @@ export const SocialMediaCarousel: React.FC<Props> = ({ publicacion }) => {
         </div>
       </div>
 
-      {/* Descripción */}
+      {/* Descripción (con cambios: completa en modal, truncada fuera) */}
       {publicacion.descripcion && (
         <div className="px-4 pt-2 pb-4 text-[18px] text-gray-800 leading-snug">
           <div
-            className={`transition-all duration-300 ease-in-out overflow-hidden ${isDescriptionExpanded ? "max-h-[999px]" : "max-h-[4.8em]"
-              } relative`}
+            className={`transition-all duration-300 ease-in-out overflow-hidden 
+              // ++++++++++ SI EN MODAL, MOSTRAR COMPLETA; SINO, TRUNCADA ++++++++++
+              ${isInModal ? "max-h-[999px]" : "max-h-[4.8em]"} relative`}
           >
             <p
               className="whitespace-pre-wrap break-words text-md"
@@ -195,16 +216,17 @@ export const SocialMediaCarousel: React.FC<Props> = ({ publicacion }) => {
                 __html: formatDescription(publicacion.descripcion),
               }}
             />
-            {!isDescriptionExpanded && publicacion.descripcion.length > maxDescriptionLength && (
+            {!isInModal && publicacion.descripcion.length > maxDescriptionLength && (
               <div className="absolute bottom-0 left-0 w-full h-6 bg-gradient-to-t from-white to-transparent" />
             )}
           </div>
-          {publicacion.descripcion.length > maxDescriptionLength && (
+          {/* ++++++++++ BOTÓN "VER MÁS" SOLO FUERA DEL MODAL, Y ABRE MODAL ++++++++++ */}
+          {!isInModal && publicacion.descripcion.length > maxDescriptionLength && (
             <button
-              onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
+              onClick={handleOpenModal} // Cambiado: abre modal en lugar de expandir localmente
               className="mt-2 text-indigo-600 hover:text-indigo-800 font-medium text-sm focus:outline-none"
             >
-              {isDescriptionExpanded ? "Ver menos" : "Ver más"}
+              Ver más
             </button>
           )}
         </div>
@@ -237,7 +259,14 @@ export const SocialMediaCarousel: React.FC<Props> = ({ publicacion }) => {
           {multimedia.length > 0 ? (
             multimedia.map((media, index) => (
               <SwiperSlide key={media.id}>
-                <MediaSlide media={media} index={index} multimediaLength={multimedia.length} />
+                {/* ++++++++++ PASAR onClick Y isInModal A MediaSlide ++++++++++ */}
+                <MediaSlide 
+                  media={media} 
+                  index={index} 
+                  multimediaLength={multimedia.length} 
+                  onClick={handleOpenModal}
+                  isInModal={isInModal}
+                />
               </SwiperSlide>
             ))
           ) : (
@@ -269,19 +298,12 @@ export const SocialMediaCarousel: React.FC<Props> = ({ publicacion }) => {
             </button>
           </>
         )}
-
       </div>
 
-
-
-      {/* Interacciones */}
+      {/* Interacciones (sin cambios) */}
       <Interactions
         publicacionId={publicacion.id}
       />
-
-
-
-
     </motion.div>
   );
 };

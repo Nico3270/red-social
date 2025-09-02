@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -14,7 +15,8 @@ import {
   FaBriefcase,
   FaCalendarCheck,
   FaRegCommentDots,
-  FaPencilAlt, // Nuevo icono para el botón de editar perfil
+  FaPencilAlt,
+  FaTimes, // Icono para cerrar el modal
 } from "react-icons/fa";
 import { Button } from "../button/Button";
 import clsx from "clsx";
@@ -29,7 +31,7 @@ import { PublicacionSencilla } from "@/publicaciones/interfaces/publicacionSenci
 import ServicioViewer from "@/servicios/componentes/ServicioViewer";
 import { ServicioData } from "@/servicios/interfaces/servicios.interface";
 import { useSession } from "next-auth/react";
-
+import { motion, AnimatePresence } from "framer-motion"; // Importar para el modal
 
 export interface InformacionInicialNegocio {
   nombreNegocio: string;
@@ -54,8 +56,8 @@ export interface InformacionInicialNegocio {
   categoriaIds: string[];
   seccionesIds: string[];
   estadoNegocio: EstadoNegocio;
-  configReservation: boolean; // Indica si el negocio tiene reservas configuradas
-  configEncuestas: boolean; // Indica si el negocio tiene encuestas configuradas
+  configReservation: boolean;
+  configEncuestas: boolean;
 }
 
 export interface Product {
@@ -77,7 +79,7 @@ export interface Product {
 
 interface Props {
   activeTabComponent: "Publicaciones" | "Productos" | "Negocio";
-  productos?: ProductRedSocial[]; // Mantendremos como entrada inicial
+  productos?: ProductRedSocial[];
   publicaciones?: PublicacionSencilla[];
   informacionNegocio?: InformacionInicialNegocio;
   seccionesProductos?: { id: string; nombre: string; slug: string };
@@ -94,8 +96,20 @@ export default function PerfilUsuarioHeader({
   );
   const [servicios, setServicios] = useState<ServicioData[]>([]);
   const [loadingServicios, setLoadingServicios] = useState(false);
+  const [isDescriptionModalOpen, setIsDescriptionModalOpen] = useState(false); // Estado para el modal
   const { data: session } = useSession();
-  const isNegocio = session?.user.negocioSlug === informacionNegocio?.slugNegocio
+  const isNegocio = session?.user.negocioSlug === informacionNegocio?.slugNegocio;
+
+  // Manejar cierre del modal con tecla Escape
+  useEffect(() => {
+    const handleEsc = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && isDescriptionModalOpen) {
+        setIsDescriptionModalOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, [isDescriptionModalOpen]);
 
   useEffect(() => {
     const fetchServicios = async () => {
@@ -105,10 +119,7 @@ export default function PerfilUsuarioHeader({
           const res = await fetch(`/api/getServiciosBySlug?slug=${informacionNegocio.slugNegocio}`);
           if (!res.ok) throw new Error("Error al obtener servicios");
           const data = await res.json();
-
-          // Corrección clave: Extrae 'servicios' del objeto data
-          setServicios(data.servicios || []);  // Si no hay 'servicios', usa array vacío
-
+          setServicios(data.servicios || []);
         } catch (err) {
           console.error(err);
           setServicios([]);
@@ -120,8 +131,6 @@ export default function PerfilUsuarioHeader({
 
     fetchServicios();
   }, [activeTab, informacionNegocio?.slugNegocio]);
-
-
 
   const redes = [
     {
@@ -168,6 +177,12 @@ export default function PerfilUsuarioHeader({
     "Negocio",
   ];
 
+  // Función para truncar la descripción
+  const truncateDescription = (description: string, maxLength: number) => {
+    if (description.length <= maxLength) return description;
+    return description.substring(0, maxLength).trim() + "...";
+  };
+
   return (
     <div className="w-full bg-white rounded-b-3xl shadow-lg overflow-auto">
       {/* Cover Image */}
@@ -211,37 +226,60 @@ export default function PerfilUsuarioHeader({
                 <Link href={`/dashboard/editar-perfil`}>
                   <Button
                     className="
-      px-4 py-2 mx-4
-      rounded-full 
-      bg-yellow-400 
-      text-gray-900 
-      font-semibold 
-      text-sm
-      shadow-md 
-      hover:shadow-lg 
-      hover:bg-yellow-500 
-      hover:scale-105 
-      transition-all duration-300 ease-out
-      flex items-center gap-2
-      focus:outline-none focus:ring-2 focus:ring-yellow-300
-    "
+                      px-4 py-2 mx-4
+                      rounded-full 
+                      bg-yellow-400 
+                      text-gray-900 
+                      font-semibold 
+                      text-sm
+                      shadow-md 
+                      hover:shadow-lg 
+                      hover:bg-yellow-500 
+                      hover:scale-105 
+                      transition-all duration-300 ease-out
+                      flex items-center gap-2
+                      focus:outline-none focus:ring-2 focus:ring-yellow-300
+                    "
                     aria-label="Editar Perfil"
                   >
                     <FaPencilAlt className="text-gray-800 text-base" />
                     Editar Perfil
                   </Button>
                 </Link>
-
-
               )}
             </div>
             <p className="text-gray-600 text-sm sm:text-base">@{informacionNegocio?.slugNegocio}</p>
 
-            {/* Business Description */}
-            <p className="text-gray-700 text-base sm:text-lg leading-relaxed">
-              {informacionNegocio?.descripcionNegocio ||
-                "Explora nuestros productos y servicios, diseñados para ofrecerte la mejor experiencia."}
-            </p>
+            {/* Business Description with Truncation and Modal Trigger */}
+            <div className="flex items-center gap-2">
+              <p className="text-gray-700 text-base sm:text-lg leading-relaxed">
+                {informacionNegocio?.descripcionNegocio
+                  ? truncateDescription(informacionNegocio.descripcionNegocio, 200)
+                  : "Explora nuestros productos y servicios, diseñados para ofrecerte la mejor experiencia."}
+              </p>
+              {informacionNegocio?.descripcionNegocio &&
+                informacionNegocio.descripcionNegocio.length > 200 && (
+                  <button
+                    onClick={() => setIsDescriptionModalOpen(true)}
+                    className="
+        px-3 py-1.5
+        text-sm sm:text-base
+        font-semibold
+        text-blue-600
+        rounded-full
+        bg-blue-50
+        hover:bg-blue-100 hover:text-blue-700
+        transition-all duration-200
+        shadow-sm hover:shadow-md
+        focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-1
+        active:scale-95
+      "
+                    aria-label="Ver descripción completa"
+                  >
+                    Ver más
+                  </button>
+                )}
+            </div>
 
             {/* Location and Website */}
             <div className="flex flex-col sm:flex-row flex-wrap gap-4 text-sm sm:text-base text-gray-600">
@@ -249,7 +287,7 @@ export default function PerfilUsuarioHeader({
                 <FaMapMarkerAlt className="text-gray-500" />
                 <span>
                   {`${informacionNegocio?.ciudadNegocio}, ${informacionNegocio?.departamentoNegocio}`}
-                  {informacionNegocio?.direccionNegocio && ` - - ${informacionNegocio.direccionNegocio}`}
+                  {informacionNegocio?.direccionNegocio && ` - ${informacionNegocio.direccionNegocio}`}
                 </span>
               </div>
               {informacionNegocio?.sitioWeb && (
@@ -268,32 +306,7 @@ export default function PerfilUsuarioHeader({
 
           {/* Right Column: Stats, Follow Button, and Social Links */}
           <div className="flex sm:mt-8 flex-col items-center gap-6">
-            {/* Statistics */}
-            {/* <div className="flex justify-around gap-6 sm:gap-8 text-center">
-              <div>
-                <p className="font-semibold text-lg text-gray-900">235</p>
-                <p className="text-gray-600 text-sm">Publicaciones</p>
-              </div>
-              <div>
-                <p className="font-semibold text-lg text-gray-900">4.1K</p>
-                <p className="text-gray-600 text-sm">Seguidores</p>
-              </div>
-              <div>
-                <p className="font-semibold text-lg text-gray-900">180</p>
-                <p className="text-gray-600 text-sm">Siguiendo</p>
-              </div>
-              <div className="mt-0p-1">
-                <Button
-                  variant="outline"
-                  className="text-sm sm:text-base px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 transition-colors"
-                  aria-label="Seguir negocio"
-                >
-                  Seguir
-                </Button>
-              </div>
-            </div> */}
-
-            <div className="flex  items-center gap-4">
+            <div className="flex items-center gap-4">
               {/* Botón de Solicitar Reserva (condicional, premium y responsive) */}
               {informacionNegocio?.configReservation && (
                 <Link
@@ -328,10 +341,6 @@ export default function PerfilUsuarioHeader({
                 </Link>
               )}
             </div>
-
-
-
-
 
             {/* Social Media Links */}
             <div className="flex justify-around px-2 sm:gap-8 gap-6 pt-2">
@@ -454,10 +463,46 @@ export default function PerfilUsuarioHeader({
                 </p>
               )}
             </div>
-
           )}
         </div>
       </div>
+
+      {/* Modal para la descripción completa */}
+      <AnimatePresence>
+        {isDescriptionModalOpen && informacionNegocio?.descripcionNegocio && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+            onClick={() => setIsDescriptionModalOpen(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 50 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 50 }}
+              transition={{ type: "spring", damping: 20, stiffness: 300 }}
+              className="relative w-full max-w-2xl bg-white rounded-xl shadow-2xl overflow-hidden transform transition-all duration-300 mx-4"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                onClick={() => setIsDescriptionModalOpen(false)}
+                className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition-colors duration-200 z-10"
+                aria-label="Cerrar modal"
+              >
+                <FaTimes size={20} />
+              </button>
+              <div className="p-6 max-h-[80vh] overflow-y-auto">
+                <h2 className="text-xl font-bold mb-4 text-gray-900">Descripción Completa</h2>
+                <p className="text-gray-700 text-base sm:text-lg leading-relaxed">
+                  {informacionNegocio.descripcionNegocio}
+                </p>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

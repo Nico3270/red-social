@@ -25,7 +25,11 @@ export default async function CrearPublicacionNegocio() {
   const session = await auth();
 
   if (!session || !session.user) {
-    return <div>No estás autenticado. Por favor, inicia sesión.</div>;
+    return <div className="flex h-screen items-center justify-center bg-gray-50">
+      <p className="text-xl text-gray-600">
+        No estás autenticado. Por favor, inicia sesión.
+      </p>
+    </div>;
   }
 
   const { productos, negocioId } = await getProductosNegocio();
@@ -43,7 +47,7 @@ export default async function CrearPublicacionNegocio() {
   }
 
   return (
-    <div className="w-full bg-white">
+    <div className="w-full bg-white min-h-screen flex items-center justify-center">
       <CrearPublicacionesNegocio infoInicialProducto={initialData} />
 
       {/* <TestimonioCrearEditar infoPublicacion={initialData} productos={productos} /> */}

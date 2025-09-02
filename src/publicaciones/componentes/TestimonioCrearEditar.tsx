@@ -1,7 +1,7 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useForm, Controller } from "react-hook-form";
 import {
   Alert,
@@ -12,11 +12,14 @@ import {
   Select,
   MenuItem,
   CircularProgress,
+  Tooltip,
 } from "@mui/material";
+import { motion } from "framer-motion"; // Para animaciones premium
 import { PublicacionTipo } from "@prisma/client";
 import { TituloPrincipal } from "@/ui/components/titulos/Titulos";
 import { createUpdateTestimonio } from "../actions/createUpdateTestimonio";
 import AutoUploadMedia from "@/ui/components/autoUpload/AutoUploadMedia";
+import debounce from "lodash/debounce"; // Instala si no: npm i lodash
 
 export type ContextoPublicacion = "producto" | "negocio" | "usuario";
 
@@ -41,8 +44,7 @@ interface Props {
   infoPublicacion?: InformacionPublicacion;
   onCancel?: () => void;
   productos?: { id: string; nombre: string }[];
-  onClose?: () => void;
-  onSuccess?: (message?: string) => void;
+  onSuccess?: (message?: string) => void; // Quité onClose no usado
 }
 
 export const TestimonioCrearEditar = ({ infoPublicacion, onCancel, productos, onSuccess }: Props) => {
@@ -64,10 +66,11 @@ export const TestimonioCrearEditar = ({ infoPublicacion, onCancel, productos, on
 
   const [alert, setAlert] = useState<{ type: "success" | "error" | "info"; message: string } | null>(null);
   const [loading, setLoading] = useState(false);
-  const { data: session } = useSession();
+  const { data: session, status } = useSession(); // Agregado status para loading UX
   const userId = session?.user?.id;
 
   useEffect(() => {
+    console.log('TestimonioCrearEditar mounted/updated, infoPublicacion:', infoPublicacion);
     if (infoPublicacion) {
       reset({
         descripcion: infoPublicacion.descripcion || "",
@@ -75,50 +78,51 @@ export const TestimonioCrearEditar = ({ infoPublicacion, onCancel, productos, on
         productoId: infoPublicacion.productoId || "",
       });
     }
-  }, [infoPublicacion, reset]);
+  }, [JSON.stringify(infoPublicacion), reset]);
 
-  const onFormSubmit = async (data: FormDataPublicacion) => {
+  const onFormSubmit = useCallback(async (data: FormDataPublicacion) => {
     setLoading(true);
-    if (!userId) {
-      setAlert({ type: "error", message: "No estás autenticado. Por favor, inicia sesión." });
+    try {
+      if (!userId) {
+        throw new Error("No estás autenticado. Por favor, inicia sesión.");
+      }
+
+      const submissionData: InformacionPublicacion = {
+        usuarioId: userId,
+        negocioId:  session.user.negocioId || "",
+        productoId: data.productoId,
+        tipo: infoPublicacion?.tipo || PublicacionTipo.TESTIMONIO,
+        contexto: infoPublicacion?.contexto || "usuario",
+        descripcion: data.descripcion || "",
+        multimedia: data.multimedia ? (Array.isArray(data.multimedia) ? data.multimedia : [data.multimedia]) : [],
+        publicacionId: infoPublicacion?.publicacionId,
+      };
+
+      console.log({ submissionData });
+
+      if (submissionData.contexto === "producto" && !submissionData.productoId) {
+        throw new Error("Debes seleccionar un producto en este contexto.");
+      }
+      if (submissionData.contexto === "negocio" && !submissionData.negocioId) {
+        throw new Error("Falta el negocioId en este contexto.");
+      }
+
+      const result = await createUpdateTestimonio(submissionData);
+      setAlert({ type: result.ok ? "success" : "error", message: result.message });
+      if (result.ok) {
+        reset();
+        onSuccess?.("Publicación creada exitosamente");
+      }
+    } catch (error) {
+      setAlert({ type: "error", message: (error as Error).message });
+    } finally {
       setLoading(false);
-      return;
     }
+  }, [userId, infoPublicacion, reset, onSuccess]);
 
-    const submissionData: InformacionPublicacion = {
-      usuarioId: userId,
-      negocioId: infoPublicacion?.negocioId,
-      productoId: data.productoId,
-      tipo: infoPublicacion?.tipo || PublicacionTipo.TESTIMONIO,
-      contexto: infoPublicacion?.contexto || "usuario",
-      descripcion: data.descripcion || "",
-      multimedia: data.multimedia ? (Array.isArray(data.multimedia) ? data.multimedia : [data.multimedia]) : [],
-      publicacionId: infoPublicacion?.publicacionId,
-    };
-
-    console.log({ submissionData });
-
-
-
-    if (submissionData.contexto === "producto" && !submissionData.productoId) {
-      setAlert({ type: "error", message: "Debes seleccionar un producto en este contexto." });
-      setLoading(false);
-      return;
-    }
-    if (submissionData.contexto === "negocio" && !submissionData.negocioId) {
-      setAlert({ type: "error", message: "Falta el negocioId en este contexto." });
-      setLoading(false);
-      return;
-    }
-
-    const result = await createUpdateTestimonio(submissionData);
-    setAlert({ type: result.ok ? "success" : "error", message: result.message });
-    if (result.ok) {
-      reset();
-      onSuccess?.("Publicación creada exitosamente");
-    }
-    setLoading(false);
-  };
+  if (status === "loading") {
+    return <CircularProgress className="m-auto block" />; // Spinner premium para loading
+  }
 
   if (!session) {
     return <Alert severity="error">No estás autenticado. Por favor, inicia sesión.</Alert>;
@@ -127,12 +131,18 @@ export const TestimonioCrearEditar = ({ infoPublicacion, onCancel, productos, on
   // Variable bandera para decirle al componente que reciba uno o varios archivos
   const multiple = false;
   const dataEntrada = infoPublicacion?.multimedia
+  const debouncedSetValue = useCallback(debounce(setValue, 300), []); // Debounce para evitar loops en onChange
 
   return (
-    <div className="space-y-4 bg-white p-4 rounded-lg shadow-lg max-w-3xl mx-auto">
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }} 
+      animate={{ opacity: 1, y: 0 }} 
+      transition={{ duration: 0.3 }}
+      className="space-y-4 bg-white p-4 rounded-lg shadow-lg max-w-3xl mx-auto flex-col" // Flex para responsividad
+    >
       <TituloPrincipal>
-  {infoPublicacion?.publicacionId ? "Editar Testimonio" : "Crear Testimonio"}
-</TituloPrincipal>
+        {infoPublicacion?.publicacionId ? "Editar Testimonio" : "Crear Testimonio"}
+      </TituloPrincipal>
 
       {alert && (
         <Alert
@@ -159,7 +169,7 @@ export const TestimonioCrearEditar = ({ infoPublicacion, onCancel, productos, on
               : dataEntrada
         }
         multiple={multiple}
-        onChange={(urls) => setValue("multimedia", urls, { shouldValidate: true })}
+        onChange={(urls) => debouncedSetValue("multimedia", urls, { shouldValidate: true })} // Debounce para perf
         onError={(message) => setAlert({ type: "error", message })}
         onLoading={setLoading}
         mediaType="mixto"
@@ -167,13 +177,15 @@ export const TestimonioCrearEditar = ({ infoPublicacion, onCancel, productos, on
 
       <div className="mt-6">
         <FormControl fullWidth className="mb-6">
-          <FormLabel className="text-gray-700 font-medium mb-2">
-            ¿Qué tienes en mente?
-          </FormLabel>
+          <Tooltip title="Escribe tu testimonio aquí (máx 1000 chars)" arrow placement="top">
+            <FormLabel className="text-gray-700 font-medium mb-2">
+              ¿Qué tienes en mente?
+            </FormLabel>
+          </Tooltip>
           <TextField
             {...register("descripcion", {
               required: "La descripción es obligatoria",
-              maxLength: { value: 280, message: "Máximo 280 caracteres" },
+              maxLength: { value: 1000, message: "Máximo 1000 caracteres" },
             })}
             multiline
             rows={4}
@@ -203,8 +215,8 @@ export const TestimonioCrearEditar = ({ infoPublicacion, onCancel, productos, on
               },
             }}
           />
-          <div className="text-right text-xs text-gray-400 mt-2">
-            {watch("descripcion")?.length || 0}/280
+          <div className={`text-right text-xs mt-2 ${ (watch("descripcion")?.length || 0) > 250 ? 'text-red-500' : 'text-gray-400' }`}> {/* Color dinámico premium como Twitter */}
+            {watch("descripcion")?.length || 0}/1000
           </div>
         </FormControl>
 
@@ -221,9 +233,11 @@ export const TestimonioCrearEditar = ({ infoPublicacion, onCancel, productos, on
               defaultValue={infoPublicacion?.productoId || ""}
               render={({ field }) => (
                 <div className="relative">
-                  <label className="block text-gray-700 font-medium mb-2 ml-1">
-                    Producto relacionado (opcional)
-                  </label>
+                  <Tooltip title="Selecciona un producto relacionado (opcional)" arrow placement="top">
+                    <label className="block text-gray-700 font-medium mb-2 ml-1">
+                      Producto relacionado (opcional)
+                    </label>
+                  </Tooltip>
                   <Select
                     {...field}
                     displayEmpty
@@ -324,6 +338,6 @@ export const TestimonioCrearEditar = ({ infoPublicacion, onCancel, productos, on
 
       </div>
 
-    </div>
+    </motion.div>
   );
 };

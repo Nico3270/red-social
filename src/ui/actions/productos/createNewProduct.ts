@@ -6,6 +6,7 @@ import prisma from "@/lib/prisma";
 import OpenAI from "openai";
 import { Prisma, Product, ProductStatus } from "@prisma/client";
 import { auth } from "@/auth.config";
+import { revalidateTag } from "next/cache";  // ← Agrega este import
 
 if (!process.env.CLOUDINARY_URL) {
     throw new Error("CLOUDINARY_URL no está configurado en las variables de entorno.");
@@ -29,7 +30,7 @@ export async function createProduct(formData: FormData): Promise<CreacionProduct
 
         const negocio = await prisma.negocio.findUnique({
             where: { usuarioId },
-            select: { id: true },
+            select: { id: true, slug:true },
         });
         if (!negocio) {
             return { ok: false, message: "El usuario no tiene un negocio asociado." };
@@ -164,6 +165,7 @@ export async function createProduct(formData: FormData): Promise<CreacionProduct
             return newProduct;
         });
         console.log("Producto creado exitosamente:", product);
+        revalidateTag(`negocio-products-${negocio.slug}`);
         return { ok: true, product, message: "Producto creado exitosamente." };
     } catch (error) {
         // Verificar si el error es de Prisma

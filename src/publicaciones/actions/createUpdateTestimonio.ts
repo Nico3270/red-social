@@ -3,6 +3,7 @@
 import { auth } from "@/auth.config";
 import prisma from "@/lib/prisma";
 import { PublicacionTipo } from "@prisma/client";
+import { revalidateTag } from "next/cache";
 
 
 // Tipo de la publicación creada para el retorno
@@ -51,10 +52,17 @@ export async function createUpdateTestimonio(data: InformacionPublicacion): Prom
 
   // Verificar si el usuario tiene un negocio asociado (si role es "negocio")
   if (role === "negocio") {
-    const negocio = await prisma.negocio.findFirst({
-      where: { usuarioId },
-    });
-    negocioIdFromUser = negocio?.id;
+    negocioIdFromUser = session.user.negocioId ?? undefined;
+    if (!negocioIdFromUser) {
+      const negocio = await prisma.negocio.findFirst({
+        where: { usuarioId },
+        select: { id: true },
+      });
+      negocioIdFromUser = negocio?.id;
+      if (!negocioIdFromUser) {
+        return { ok: false, message: "No se encontró un negocio asociado a este usuario." };
+      }
+    }
     if (data.negocioId && negocioIdFromUser && data.negocioId !== negocioIdFromUser) {
       return { ok: false, message: "El negocioId no coincide con el usuario autenticado." };
     }
@@ -107,11 +115,11 @@ export async function createUpdateTestimonio(data: InformacionPublicacion): Prom
               },
               productosEnPublicacion: data.productoId
                 ? {
-                    create: {
-                      productoId: data.productoId,
-                      orden: 0,
-                    },
-                  }
+                  create: {
+                    productoId: data.productoId,
+                    orden: 0,
+                  },
+                }
                 : undefined,
             },
             include: {
@@ -217,6 +225,26 @@ export async function createUpdateTestimonio(data: InformacionPublicacion): Prom
       createdAt: publicacion.createdAt,
       updatedAt: publicacion.updatedAt,
     };
+
+
+    if (publicacion.negocioId) {
+      // Primero intentamos obtenerlo de la sesión
+      let negocioSlug = session.user.negocioSlug;
+
+      // Si no viene en la sesión, buscamos en BD
+      if (!negocioSlug || negocioSlug === "") {
+        const negocio = await prisma.negocio.findUnique({
+          where: { id: publicacion.negocioId },
+          select: { slug: true },
+        });
+        negocioSlug = negocio?.slug || null;
+      }
+
+      // Si finalmente tenemos slug válido, revalidamos
+      if (negocioSlug) {
+        revalidateTag(`negocio-publications-${negocioSlug}`);
+      }
+    }
 
     return {
       ok: true,

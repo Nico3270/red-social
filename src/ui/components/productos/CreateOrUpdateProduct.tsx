@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useForm, Controller } from "react-hook-form";
 import {
   Alert,
@@ -13,25 +13,25 @@ import {
   Radio,
   Chip,
   FormControlLabel,
+  CircularProgress,
   Typography,
   Box,
 } from "@mui/material";
 import { AiOutlineCloudUpload } from "react-icons/ai";
-import { FaTrashAlt } from "react-icons/fa";
+import { FaTrashAlt, FaTimes } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { createProduct, generateDescriptionFromText } from "@/ui/actions/productos/createNewProduct";
 import { initialData } from "@/seed/seed";
-import * as FaIcons from "react-icons/fa";
-import * as RiIcons from "react-icons/ri";
-import { IconType } from "react-icons";
-import { Backdrop, CircularProgress } from "@mui/material";
 import Divider from "../divider/Divider";
 import { ProductStatus } from "@prisma/client";
 import { updateProduct } from "@/ui/actions/productos/updateProduct";
 import { ProductRedSocial } from "@/interfaces/productRedSocial.interface";
 import AutoUploadMedia from "../autoUpload/AutoUploadMedia";
 import { useProductosTransaccionesStore } from "@/store/productosTransacciones/productosTransaccionesStore";
+import { motion, AnimatePresence } from "framer-motion";
+import { createPortal } from "react-dom";
+import Image from "next/image";
 
 interface ProductFormData {
   nombre: string;
@@ -39,27 +39,15 @@ interface ProductFormData {
   descripcion: string;
   descripcionCorta: string;
   slug: string;
-  prioridad: number;
   status: ProductStatus;
   tags: string;
   categoriaId: string;
 }
 
-
-
 //Hacemos opcional el producto para que el componente sirva para editar o crear un nuevo producto
 interface Props {
   product?: ProductRedSocial;
 }
-
-type IconMap = {
-  [key: string]: IconType;
-};
-
-const iconMap: IconMap = {
-  ...FaIcons,
-  ...RiIcons,
-};
 
 export default function CreateOrUpdateProduct({ product }: Props) {
   const { register, handleSubmit, control, setValue, watch, reset } = useForm<ProductFormData>({
@@ -69,7 +57,6 @@ export default function CreateOrUpdateProduct({ product }: Props) {
       descripcion: "",
       descripcionCorta: "",
       slug: "",
-      prioridad: 0,
       status: "disponible" as ProductStatus,
       tags: "",
       categoriaId: "",
@@ -81,8 +68,6 @@ export default function CreateOrUpdateProduct({ product }: Props) {
   const [selectedCategorySlug, setSelectedCategorySlug] = useState<string>("");
   // Es un set o array de strings con las secciones seleccionadas, se inicia vacío 
   const [selectedSections, setSelectedSections] = useState<Set<string>>(new Set());
-  // Es un array de objetos, cada objeto representa una imagen con id, file y url, se inicia vacío el array vacío
-
   // Imagenes cargadas, es un array con las imagenes ya subidas a Cloudinary
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   // Sirve para bloquear los botones mientras se esta creando o actualizando el producto
@@ -102,6 +87,17 @@ export default function CreateOrUpdateProduct({ product }: Props) {
 
   const updateProductoStore = useProductosTransaccionesStore((state) => state.updateProducto);
 
+  const [modalState, setModalState] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [modalMessage, setModalMessage] = useState('');
+  const [redirectUrl, setRedirectUrl] = useState('');
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleMediaChange = useCallback((urls: string[] | string | undefined) => {
+    setUploadedImages(
+        Array.isArray(urls) ? urls : urls ? [urls] : []
+    );
+}, []); // Dependencias vacías: setUploadedImages es estable.
+
   useEffect(() => {
     // Si viene el producto con el método rerset de useForm, insertamos estos valores del producto en el formulario
     if (product) {
@@ -111,7 +107,6 @@ export default function CreateOrUpdateProduct({ product }: Props) {
         descripcion: product.descripcion,
         descripcionCorta: product.descripcionCorta,
         slug: product.slug,
-        prioridad: product.prioridad,
         status: product.status,
         tags: product.tags.join(", "),
         categoriaId: product.categoriaId,
@@ -165,26 +160,34 @@ export default function CreateOrUpdateProduct({ product }: Props) {
 
   // Función que se ejecuta al enviar el formulario, recibe los datos del formulario como parámetro
   const onSubmit = async (data: ProductFormData) => {
+    setLoading(true);
+    setModalState('loading');
+    setModalMessage(product ? 'Estamos actualizando tu producto...' : 'Estamos creando tu producto...');
+
     try {
       setAlert(null);
       // Revisa el id del usuario autenticado, si no hay un id, muestra un mensaje de error
       if (!id) {
-        setAlert({ type: "error", message: "Debes iniciar sesión para guardar el producto." });
+        setModalState('error');
+        setModalMessage("Debes iniciar sesión para guardar el producto.");
         return;
       }
       // Cada producto debe tener al menos un nombre, un precio y un slug, si no hay un nombre, muestra un mensaje de error
       if (!selectedCategorySlug) {
-        setAlert({ type: "error", message: "Debes seleccionar una categoría." });
+        setModalState('error');
+        setModalMessage("Debes seleccionar una categoría.");
         return;
       }
       // Cada producto debe tener imagenes, si no hay imágenes subidas, muestra un mensaje de error
       if (uploadedImages.length === 0) {
-        setAlert({ type: "error", message: "Debes subir al menos una imagen antes de guardar el producto." });
+        setModalState('error');
+        setModalMessage("Debes subir al menos una imagen antes de guardar el producto.");
         return;
       }
       // Cada productodebe pertenecer a una categoría y tener al menos una sección seleccionada, si no hay secciones seleccionadas, muestra un mensaje de error
       if (selectedSections.size === 0) {
-        setAlert({ type: "error", message: "Debes seleccionar al menos una sección." });
+        setModalState('error');
+        setModalMessage("Debes seleccionar al menos una sección.");
         return;
       }
       // Se crea un formData para enviar los datos del formulario al servidor, se utiliza FormData para manejar archivos e imágenes con la información del formulario
@@ -195,7 +198,7 @@ export default function CreateOrUpdateProduct({ product }: Props) {
       formData.append("descripcion", data.descripcion);
       formData.append("descripcionCorta", data.descripcionCorta);
       formData.append("slug", data.slug);
-      formData.append("prioridad", data.prioridad.toString());
+      formData.append("prioridad", "1");
       formData.append("status", data.status);
       formData.append("tags", data.tags);
       formData.append("usuarioId", id);
@@ -206,7 +209,8 @@ export default function CreateOrUpdateProduct({ product }: Props) {
         formData.append("categoriaId", category.id);
       } else {
         // Si la categoría no existe, muestra un mensaje de error
-        setAlert({ type: "error", message: "La categoría seleccionada no existe." });
+        setModalState('error');
+        setModalMessage("La categoría seleccionada no existe.");
         return;
       }
       // Se agregan las secciones seleccionadas, se convierte el set de selectedSections a un array y se agrega cada id al formData
@@ -226,7 +230,8 @@ export default function CreateOrUpdateProduct({ product }: Props) {
         const firstSectionId = Array.from(selectedSections)[0];
         const section = initialData.secciones.find((sec) => sec.id === firstSectionId);
         if (!section) {
-          setAlert({ type: "error", message: "La sección seleccionada no existe." });
+          setModalState('error');
+          setModalMessage("La sección seleccionada no existe.");
           return;
         }
         if (product && product.id) {
@@ -237,23 +242,28 @@ export default function CreateOrUpdateProduct({ product }: Props) {
         }
 
         // enlace creado para redirigir al usuario a la página del producto creado o actualizado
-        const redirectUrl = `/${selectedCategorySlug}/${section.slug}/${result.product?.slug}`;
-        setAlert({
-          type: "success",
-          message: product ? "Producto actualizado exitosamente." : "Producto creado exitosamente.",
-        });
-        router.push(redirectUrl);
+        const url = `/${selectedCategorySlug}/${section.slug}/${result.product?.slug}`;
+        setRedirectUrl(url);
+        setSubmitted(true);
+        setModalState('success');
+        setModalMessage(product ? "Producto actualizado exitosamente." : "Producto creado exitosamente.");
+
+        setTimeout(() => {
+          router.push(url);
+        }, 2000);
       } else {
-        setAlert({ type: "error", message: result.message || "Ocurrió un error al guardar el producto." });
+        setModalState('error');
+        setModalMessage(result.message || "Ocurrió un error al guardar el producto.");
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Error desconocido al enviar el formulario";
-      setAlert({ type: "error", message: errorMessage });
+      setModalState('error');
+      setModalMessage(errorMessage);
       console.error("Error al enviar el formulario:", errorMessage);
+    } finally {
+      setLoading(false);
     }
   };
-
-
 
   // Función para alternar la selección de secciones, recibe el id de la sección y actualiza el set de selectedSections
   const toggleSection = (id: string) => {
@@ -267,7 +277,7 @@ export default function CreateOrUpdateProduct({ product }: Props) {
   // Fucnión que se ejecuta al cambiar la categoría, recibe el slug de la categoría y actualiza el estado de selectedCategorySlug y selectedSections
   const handleCategoryChange = (slug: string) => {
     setSelectedCategorySlug(slug);
-    setSelectedSections(new Set());
+    setSelectedSections(new Set()); // Clear sections when category changes
   };
   // funcuión que se ejecuta al cambiar el input de características del producto, actualiza el estado de caracteristicas
   const handleGenerateDescription = async () => {
@@ -323,15 +333,25 @@ export default function CreateOrUpdateProduct({ product }: Props) {
     setComponentes((prev) => prev.filter((_, i) => i !== index));
   };
 
+  const handleCloseModal = () => {
+    setModalState('idle');
+    if (modalState === 'success' && redirectUrl) {
+        router.push(redirectUrl);
+    }
+  };
+
   // Variables para definir la cantidad de archivos, si el input permite uno o varios, y si hay archivos iniciales
 
   const multiple = true;
   const dataEntrada = product?.imagenes;
 
+  const isModalOpen = modalState !== 'idle';
+
   return (
+    <>
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="space-y-4 bg-white p-4 rounded-lg shadow-lg max-w-6xl mx-auto"
+      className="space-y-4 bg-white p-4 rounded-lg shadow-lg w-full mx-auto ml-0"
     >
       <Typography variant="h5" sx={{ mb: 2, fontWeight: "bold" }}>
         {product ? "Editar Producto" : "Crear Nuevo Producto"}
@@ -347,15 +367,14 @@ export default function CreateOrUpdateProduct({ product }: Props) {
         <Controller
           name="categoriaId"
           control={control}
-          render={() => (
+          render={({ field }) => (
             <Stack direction="row" spacing={1} flexWrap="wrap" rowGap={1}>
               {initialData.categorias.map((category) => {
-                const IconComponent = iconMap[category.iconName] || FaIcons.FaQuestion;
-                const isSelected = selectedCategorySlug === category.slug;
+                const isSelected = field.value === category.id;
 
                 return (
                   <Box
-                    key={category.id}
+                    key={`${category.id}-${category.slug}`}
                     onClick={() => {
                       handleCategoryChange(category.slug);
                       setValue("categoriaId", category.id);
@@ -381,7 +400,13 @@ export default function CreateOrUpdateProduct({ product }: Props) {
                       },
                     }}
                   >
-                    <IconComponent size={18} style={{ marginRight: 8 }} />
+                    <Image
+                      src={`/imgs/iconos/${category.iconName}`}
+                      alt={category.nombre}
+                      width={18}
+                      height={18}
+                      style={{ marginRight: 8 }}
+                    />
                     <Typography variant="body2" sx={{ fontWeight: 500 }}>
                       {category.nombre}
                     </Typography>
@@ -406,7 +431,7 @@ export default function CreateOrUpdateProduct({ product }: Props) {
               const isActive = selectedSections.has(section.id);
               return (
                 <Box
-                  key={section.id}
+                  key={`${section.id}-${section.nombre}`}
                   onClick={() => toggleSection(section.id)}
                   sx={{
                     display: "inline-flex",
@@ -428,6 +453,13 @@ export default function CreateOrUpdateProduct({ product }: Props) {
                     },
                   }}
                 >
+                  <Image
+                    src={`/imgs/iconos/${section.iconName}`}
+                    alt={section.nombre}
+                    width={18}
+                    height={18}
+                    style={{ marginRight: 8 }}
+                  />
                   <Typography variant="body2" sx={{ fontWeight: 500 }}>
                     {section.nombre}
                   </Typography>
@@ -463,9 +495,7 @@ export default function CreateOrUpdateProduct({ product }: Props) {
                 : dataEntrada
           }
           multiple={multiple}
-          onChange={(urls) => setUploadedImages(
-            Array.isArray(urls) ? urls : urls ? [urls] : []
-          )}
+          onChange={handleMediaChange} // Usamos la versión memoizada
           onError={(message) => setAlert({ type: "error", message })}
           onLoading={setLoading}
           mediaType="image"
@@ -499,7 +529,7 @@ export default function CreateOrUpdateProduct({ product }: Props) {
       </FormControl>
 
       <Button variant="contained" color="primary" onClick={handleGenerateComponentes} fullWidth>
-        Generar Componentes
+        Agregar
       </Button>
       <Divider />
 
@@ -509,7 +539,7 @@ export default function CreateOrUpdateProduct({ product }: Props) {
           <Stack direction="row" spacing={1} flexWrap="wrap">
             {componentes.map((componente, index) => (
               <Chip
-                key={index}
+                key={`componente-${index}`}
                 label={componente}
                 onDelete={() => handleRemoveComponente(index)}
                 deleteIcon={<FaTrashAlt />}
@@ -520,8 +550,6 @@ export default function CreateOrUpdateProduct({ product }: Props) {
           </Stack>
         </div>
       )}
-      <Divider />
-
       <FormControl fullWidth>
         <FormLabel sx={{ mb: 1, color: "info.main", fontWeight: "bold" }}>Características principales del producto</FormLabel>
         <TextField
@@ -635,11 +663,6 @@ export default function CreateOrUpdateProduct({ product }: Props) {
         />
       </FormControl>
       <Divider />
-      <FormControl fullWidth margin="normal">
-        <FormLabel sx={{ mb: 1, color: "info.main", fontWeight: "bold" }}>Prioridad</FormLabel>
-        <TextField label="Prioridad" type="number" {...register("prioridad")} fullWidth />
-      </FormControl>
-      <Divider />
       <FormControl>
         <FormLabel sx={{ mb: 1, color: "info.main", fontWeight: "bold" }}>Estado</FormLabel>
         <Controller
@@ -656,13 +679,9 @@ export default function CreateOrUpdateProduct({ product }: Props) {
         />
       </FormControl>
 
-      <Button type="submit" variant="contained" color="primary" fullWidth>
-        {product ? "Actualizar Producto" : "Crear Producto"}
+      <Button type="submit" variant="contained" color="primary" fullWidth disabled={loading || submitted}>
+        {loading ? <CircularProgress size={24} color="inherit" /> : (product ? "Actualizar Producto" : "Crear Producto")}
       </Button>
-
-      <Backdrop open={loading} sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-        <CircularProgress color="inherit" />
-      </Backdrop>
 
       {alert && (
         <Alert severity={alert.type} onClose={() => setAlert(null)}>
@@ -670,5 +689,61 @@ export default function CreateOrUpdateProduct({ product }: Props) {
         </Alert>
       )}
     </form>
+
+    {isModalOpen && createPortal(
+      <AnimatePresence>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.3 }}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+          onClick={handleCloseModal}
+        >
+          <motion.div
+            initial={{ scale: 0.9, y: 50 }}
+            animate={{ scale: 1, y: 0 }}
+            exit={{ scale: 0.9, y: 50 }}
+            transition={{ type: "spring", damping: 20, stiffness: 300 }}
+            className="relative w-full max-w-md bg-white rounded-xl shadow-2xl overflow-hidden transform transition-all duration-300 p-6"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={handleCloseModal}
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition-colors duration-200 z-10"
+              aria-label="Cerrar modal"
+            >
+              <FaTimes size={20} />
+            </button>
+            <div className="flex flex-col items-center justify-center text-center">
+              {modalState === 'loading' && (
+                <>
+                  <CircularProgress size={40} className="mb-4" />
+                  <Typography variant="h6">{modalMessage}</Typography>
+                </>
+              )}
+              {modalState === 'success' && (
+                <>
+                  <Typography variant="h6" color="success.main">{modalMessage}</Typography>
+                  <Button onClick={handleCloseModal} variant="contained" color="primary" className="mt-4">
+                    Cerrar
+                  </Button>
+                </>
+              )}
+              {modalState === 'error' && (
+                <>
+                  <Typography variant="h6" color="error.main">{modalMessage}</Typography>
+                  <Button onClick={handleCloseModal} variant="contained" color="primary" className="mt-4">
+                    Cerrar
+                  </Button>
+                </>
+              )}
+            </div>
+          </motion.div>
+        </motion.div>
+      </AnimatePresence>,
+      document.body
+    )}
+    </>
   );
 }

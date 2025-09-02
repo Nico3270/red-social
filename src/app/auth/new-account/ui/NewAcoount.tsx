@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { FaGoogle } from "react-icons/fa";
 import { IoEyeOffOutline, IoEyeOutline } from "react-icons/io5";
 import Link from "next/link";
@@ -9,19 +9,11 @@ import clsx from "clsx";
 import colombia from "@/config/colombia.json";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { login } from "@/actions/auth/login";
 import { registerUser } from "@/actions/auth/registerUser";
 import { signIn, SignInResponse } from "next-auth/react";
 import { Alert } from "@mui/material";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation"; // Agregado useRouter para redirecciones elegantes
 
-const allCities = colombia.flatMap((d) =>
-  d.ciudades.map((ciudad) => `${ciudad} - ${d.departamento}`)
-);
-
-function removeAccents(str: string) {
-  return str.normalize("NFD").replace(/\p{Diacritic}/gu, "");
-}
 
 type FormInputs = {
   nombre: string;
@@ -37,17 +29,23 @@ type TipoUsuario = {
   negocio: boolean;
 };
 
+interface ColombiaDepartment {
+  id: number;
+  departamento: string;
+  ciudades: string[];
+}
+
 export const RegisterForm = ({ negocio }: TipoUsuario) => {
   const [isPending, setIsPending] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [cityInput, setCityInput] = useState("");
-  const [filteredCities, setFilteredCities] = useState<string[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [showPassword, setShowPassword] = useState(false);
-  const suggestionsRef = useRef<HTMLUListElement>(null);
+  const [selectedDepartamento, setSelectedDepartamento] = useState("");
+  const [selectedCity, setSelectedCity] = useState("");
+  const [cities, setCities] = useState<string[]>([]);
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/";
-
+  const router = useRouter(); // Para redirecciones SPA-modernas
 
   const {
     register,
@@ -55,6 +53,31 @@ export const RegisterForm = ({ negocio }: TipoUsuario) => {
     formState: { errors },
     setValue,
   } = useForm<FormInputs>();
+
+  const departments = (colombia as ColombiaDepartment[]).map((dept) => dept.departamento);
+
+  useEffect(() => {
+    if (selectedDepartamento) {
+      const departmentData = (colombia as ColombiaDepartment[]).find(
+        (dept) => dept.departamento === selectedDepartamento
+      );
+      setCities(departmentData ? departmentData.ciudades : []);
+      setSelectedCity(""); // Reset city when department changes
+      setValue("ciudad", ""); // Clear ciudad value
+    } else {
+      setCities([]);
+      setSelectedCity("");
+      setValue("ciudad", "");
+    }
+  }, [selectedDepartamento, setValue]);
+
+  useEffect(() => {
+    if (selectedCity && selectedDepartamento) {
+      setValue("ciudad", `${selectedCity} - ${selectedDepartamento}`);
+    } else {
+      setValue("ciudad", "");
+    }
+  }, [selectedCity, selectedDepartamento, setValue]);
 
   const onSubmit: SubmitHandler<FormInputs> = async (data) => {
     setErrorMessage("");
@@ -83,32 +106,48 @@ export const RegisterForm = ({ negocio }: TipoUsuario) => {
       return;
     }
 
-    // Iniciar sesión
-    await login(email.toLowerCase(), contraseña);
+    // Iniciar sesión directamente en cliente con signIn (evita server action y NEXT_REDIRECT)
+    try {
+      const signInResponse: SignInResponse | undefined = await signIn("credentials", {
+        email: email.toLowerCase(),
+        password: contraseña,
+        redirect: false, // Evita redirect automático
+      });
 
+      if (signInResponse?.error) {
+        setErrorMessage("Error al iniciar sesión: " + signInResponse.error);
+        setIsPending(false);
+        return;
+      }
 
-    if (negocio) {
-      window.location.replace(`/crear_negocio/${response.user.id}`);
-    } else {
-      window.location.replace(callbackUrl);
+      // Redirección manual (elegante y sin errores en consola)
+      if (negocio) {
+        router.push(`/crear_negocio/${response.user.id}`); // Usa router.push para SPA-feel
+      } else {
+        router.push(callbackUrl);
+      }
+    } catch (error) {
+      console.error("Error en signIn cliente:", error); // Log solo si es error real, no NEXT_REDIRECT
+      setErrorMessage("Error inesperado al iniciar sesión.");
+      setIsPending(false);
     }
   };
 
   const handleGoogleRegister = async () => {
     try {
-      setIsPending(true); // Iniciar estado de carga
-      // Autenticación con Google usando NextAuth
-
-      //TODO: Se debe redirigir a una ruta donde inserte información faltante como ciudad, género, fecha de nacimiento, etc.
-
+      setIsPending(true);
+      // Autenticación con Google (ya es cliente, no cambia)
       const response: SignInResponse | undefined = await signIn("google", {
         callbackUrl: callbackUrl,
-        redirect: false, // 👈 IMPORTANTE
+        redirect: false,
       });
 
       if (response?.error) {
         setErrorMessage("No se pudo completar el inicio de sesión con Google");
         setIsPending(false);
+      } else {
+        // Maneja redirección manual si es necesario
+        router.push(callbackUrl);
       }
     } catch {
       setErrorMessage("No se pudo completar el inicio de sesión con Google");
@@ -116,34 +155,13 @@ export const RegisterForm = ({ negocio }: TipoUsuario) => {
     }
   };
 
-  useEffect(() => {
-    if (cityInput.length >= 3) {
-      const matches = allCities.filter((city) =>
-        removeAccents(city.toLowerCase()).includes(removeAccents(cityInput.toLowerCase()))
-      );
-      setFilteredCities(matches.slice(0, 10));
-    } else {
-      setFilteredCities([]);
-    }
-  }, [cityInput]);
-
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (suggestionsRef.current && !suggestionsRef.current.contains(e.target as Node)) {
-        setFilteredCities([]);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
   return (
     <div className="md:w-1/2 bg-white flex flex-col justify-center p-8">
       <div className="max-w-md w-full mx-auto">
         <h1 className="text-4xl font-bold mb-4 text-center">Crear una cuenta</h1>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
-            <label htmlFor="nombre" className="block font-bold">Nombre</label>
+            <label htmlFor="nombre" className="block font-bold">Nombre del administrador</label>
             <input
               type="text"
               {...register("nombre", { required: "El nombre es requerido" })}
@@ -157,7 +175,7 @@ export const RegisterForm = ({ negocio }: TipoUsuario) => {
           </div>
 
           <div>
-            <label htmlFor="apellido" className="block font-bold">Apellido</label>
+            <label htmlFor="apellido" className="block font-bold">Apellido del administrador</label>
             <input
               type="text"
               {...register("apellido", { required: "El apellido es requerido" })}
@@ -220,51 +238,53 @@ export const RegisterForm = ({ negocio }: TipoUsuario) => {
             {errors.contraseña && <span className="text-red-500 text-sm">{errors.contraseña.message}</span>}
           </div>
 
+          {/* Campo hidden para ciudad */}
+          <input
+            type="hidden"
+            {...register("ciudad", { required: "La ciudad es requerida - verifica el formato (Ciudad - Departamento)" })}
+          />
+
+          <div>
+            <label htmlFor="departamento" className="block font-bold">Departamento</label>
+            <select
+              value={selectedDepartamento}
+              onChange={(e) => setSelectedDepartamento(e.target.value)}
+              className={clsx(
+                "w-full border rounded-lg p-2 mt-2 focus:outline-none focus:ring-2 focus:ring-red-600",
+                { "border-red-500": errors.ciudad && !selectedDepartamento }
+              )}
+            >
+              <option value="">Selecciona un departamento</option>
+              {departments.map((dept) => (
+                <option key={dept} value={dept}>
+                  {dept}
+                </option>
+              ))}
+            </select>
+          </div>
 
           <div className="relative">
-            <label htmlFor="ciudad" className="block font-bold">Ciudad</label>
+            <label htmlFor="ciudad-select" className="block font-bold">Ciudad</label>
             <Alert severity="info">
-              Por favor seleccione una ciudad válida de la lista que aparece al escribir, ejemplo: &quot;Bogotá - Cundinamarca&quot;.
+              Por favor selecciona un departamento primero, luego una ciudad válida.
             </Alert>
-
-
-            <input
-              type="text"
-              {...register("ciudad", { required: "La ciudad es requerida - verifica el formato (Ciudad - Departamento)" })}
-              value={cityInput}
-              onChange={(e) => setCityInput(e.target.value)}
+            <select
+              value={selectedCity}
+              onChange={(e) => setSelectedCity(e.target.value)}
+              disabled={!selectedDepartamento}
               className={clsx(
                 "w-full border rounded-lg p-2 mt-2 focus:outline-none focus:ring-2 focus:ring-red-600",
                 { "border-red-500": errors.ciudad }
               )}
-              placeholder="Ej. Medellín - Antioquia"
-              autoComplete="off" // <- más confiable
-              onFocus={(e) => e.currentTarget.removeAttribute('readOnly')}
-              name="fake_ciudad" // <- cambiar el "name" es clave
-              id="ciudad-autocomplete-fix" // <- opcional para identificar
-              spellCheck="false"
-            />
+            >
+              <option value="">Selecciona una ciudad</option>
+              {cities.map((city) => (
+                <option key={city} value={city}>
+                  {city}
+                </option>
+              ))}
+            </select>
             {errors.ciudad && <span className="text-red-500 text-sm">{errors.ciudad.message}</span>}
-            {filteredCities.length > 0 && (
-              <ul
-                ref={suggestionsRef}
-                className="absolute z-10 bg-white border rounded-md mt-1 max-h-48 overflow-y-auto shadow-md w-full"
-              >
-                {filteredCities.map((city) => (
-                  <li
-                    key={city}
-                    onClick={() => {
-                      setValue("ciudad", city);
-                      setCityInput(city);
-                      setFilteredCities([]);
-                    }}
-                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                  >
-                    {city}
-                  </li>
-                ))}
-              </ul>
-            )}
           </div>
 
           <div>

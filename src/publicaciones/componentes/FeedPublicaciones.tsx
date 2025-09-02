@@ -94,6 +94,15 @@ const ProductosDestacados: React.FC<{ productos: ProductDestacado[] }> = ({ prod
   </div>
 );
 
+function reorderForColumns<T>(items: T[], cols: number): T[] {
+  if (cols <= 1) return items;
+  const out: T[] = [];
+  for (let c = 0; c < cols; c++) {
+    for (let i = c; i < items.length; i += cols) out.push(items[i]);
+  }
+  return out;
+}
+
 const FeedPublicaciones: React.FC<FeedPublicacionesProps> = ({
   publicaciones: initialPublicaciones,
   productosDestacados = [],
@@ -219,13 +228,13 @@ const FeedPublicaciones: React.FC<FeedPublicacionesProps> = ({
         .slice(0, 3);
 
       publicationMap.set(pub.id, {
-  ...pub,
-  comments: sortedComments,
-  numComentarios: uniqueComments.length,
-  numLikes: 0,
-  numCompartidos: 0,
-  userReaction: null,
-} as PublicacionExtendida);
+        ...pub,
+        comments: sortedComments,
+        numComentarios: uniqueComments.length,
+        numLikes: 0,
+        numCompartidos: 0,
+        userReaction: null,
+      } as PublicacionExtendida);
 
     });
 
@@ -259,6 +268,32 @@ const FeedPublicaciones: React.FC<FeedPublicacionesProps> = ({
     }
     return filtered;
   }, [filtro, publicaciones]);
+
+  const [cols, setCols] = useState(3);
+
+  useEffect(() => {
+    const update = () => {
+      const w = window.innerWidth;
+      setCols(w <= 768 ? 1 : w <= 1100 ? 2 : 3);
+    };
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
+
+  const fijadas = useMemo(
+    () => publicacionesFiltradas.filter((p) => p.id === "fijada"),
+    [publicacionesFiltradas]
+  );
+  const noFijadas = useMemo(
+    () => publicacionesFiltradas.filter((p) => p.id !== "fijada"),
+    [publicacionesFiltradas]
+  );
+
+  const reorderedNoFijadas = useMemo(
+    () => reorderForColumns(noFijadas, cols),
+    [noFijadas, cols]
+  );
 
   useEffect(() => {
     // console.log("Modal state:", { isModalOpen, modalPublicacionId, selectedPublication });
@@ -349,28 +384,22 @@ const FeedPublicaciones: React.FC<FeedPublicacionesProps> = ({
       </div>
 
       <div className="flex-1 masonry-container">
-        {publicacionesFiltradas
-          .filter((pub) => pub.id === "fijada")
-          .map((pub) => (
-            <motion.div
-              key={pub.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-              className="w-full bg-yellow-50 border-2 border-yellow-400 rounded-2xl shadow-md overflow-hidden mb-6"
-            >
-              <div className="p-2 text-sm font-medium text-yellow-700">
-                Publicación Fijada
-              </div>
-              {renderPublicacion(pub)}
-            </motion.div>
-          ))}
+        {fijadas.map((pub) => (
+          <motion.div
+            key={pub.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="w-full bg-yellow-50 border-2 border-yellow-400 rounded-2xl shadow-md overflow-hidden mb-6"
+          >
+            <div className="p-2 text-sm font-medium text-yellow-700">
+              Publicación Fijada
+            </div>
+            {renderPublicacion(pub)}
+          </motion.div>
+        ))}
 
-        {publicacionesFiltradas
-          .filter((pub) => pub.id !== "fijada")
-          .map((pub) => {
-            return renderPublicacion(pub);
-          })}
+        {reorderedNoFijadas.map((pub) => renderPublicacion(pub))}
 
         {widgets.map((widget) => (
           <WidgetCard

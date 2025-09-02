@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react"; // Agregamos useRef
+import React, { useState, useEffect, useRef, useId } from "react"; // Agregamos useRef
 import imageCompression from "browser-image-compression";
 import { IconButton, CircularProgress } from "@mui/material";
 import { FaTrashAlt } from "react-icons/fa";
@@ -50,6 +50,7 @@ const AutoUploadMedia: React.FC<AutoUploadMediaProps> = ({
   const [loading, setLoading] = useState(false);
   const [uploadingFiles, setUploadingFiles] = useState<Set<string>>(new Set());
   const isInitialized = useRef(false); // Flag para inicialización (no causa re-renders)
+  const inputId = useId();
 
   // Determinar el atributo accept según mediaType
   const getAcceptValue = () => {
@@ -286,12 +287,12 @@ const AutoUploadMedia: React.FC<AutoUploadMediaProps> = ({
   // Justo antes del return en el componente
   const getTitleText = () => {
     if (mediaType === "image") {
-      return multiple ? "Añade tus fotos" : "Añade una foto";
+      return multiple ? "Añade tus imágenes" : "Añade una imagen";
     } else if (mediaType === "video") {
       return multiple ? "Añade tus videos" : "Añade un video";
     } else {
       // Caso mixto
-      return multiple ? "Añade tus fotos o videos" : "Añade una foto o video";
+      return multiple ? "Añade tus imágenes o videos" : "Añade una imagen o video";
     }
   };
 
@@ -335,12 +336,12 @@ const AutoUploadMedia: React.FC<AutoUploadMediaProps> = ({
             accept={getAcceptValue()}
             onChange={handleAddMedia}
             className="hidden"
-            id="media-file-input"
+            id={inputId}  // Usa el ID único
             multiple={multiple}
           />
           <button
             type="button"
-            onClick={() => document.getElementById("media-file-input")?.click()}
+            onClick={() => document.getElementById(inputId)?.click()}  // Busca por el ID único
             className="p-3 rounded-full bg-gray-200 hover:bg-blue-100 text-gray-600 hover:text-blue-600 transition-all"
           >
             <MdAddAPhoto className="text-4xl" />

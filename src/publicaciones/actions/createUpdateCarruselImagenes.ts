@@ -3,6 +3,7 @@
 import { auth } from "@/auth.config";
 import prisma from "@/lib/prisma";
 import { Prisma, PublicacionTipo, Visibilidad, MultimediaTipo } from "@prisma/client";
+import { revalidateTag } from 'next/cache';
 
 interface InformacionPublicacion {
   usuarioId?: string;
@@ -36,19 +37,14 @@ export const createUpdateCarruselImagenes = async (
 
     // Determinar negocioId para usuarios con rol "negocio"
     let negocioId: string | null = data.negocioId || null;
-    if (session.user.role === "negocio" && !data.negocioId) {
-      const negocio = await prisma.negocio.findUnique({
-        where: { usuarioId: session.user.id },
-        select: { id: true },
-      });
-      if (!negocio) {
-        return {
-          ok: false,
-          message: "No se encontró un negocio asociado a este usuario",
-        };
-      }
-      negocioId = negocio.id;
+    if (session.user.role === "negocio" && !session.user.negocioId) {
+      return {
+        ok: false,
+        message: "No se encontró un negocio asociado a este usuario",
+      };
     }
+
+    negocioId = session.user.negocioId ?? negocioId;
 
     // Preparar datos de la publicación
     const publicacionData: Prisma.PublicacionCreateInput = {
@@ -119,6 +115,27 @@ export const createUpdateCarruselImagenes = async (
       multimedia: publicacion.multimedia.map((media) => media.url),
       visibilidad: publicacion.visibilidad,
     };
+
+    if (publicacion.negocioId) {
+      // Primero intentamos obtenerlo de la sesión
+      let negocioSlug = session.user.negocioSlug;
+
+      // Si no viene en la sesión, buscamos en BD
+      if (!negocioSlug || negocioSlug === "") {
+        const negocio = await prisma.negocio.findUnique({
+          where: { id: publicacion.negocioId },
+          select: { slug: true },
+        });
+        negocioSlug = negocio?.slug || null;
+      }
+
+      // Si finalmente tenemos slug válido, revalidamos
+      if (negocioSlug) {
+        revalidateTag(`negocio-publications-${negocioSlug}`);
+      }
+    }
+
+
 
     return {
       ok: true,

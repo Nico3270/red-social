@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { Button, Modal, Box } from "@mui/material";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import { MultimediaTipo } from "@prisma/client";
-import { sansFont } from "@/config/fonts";
+import {  sansFont } from "@/config/fonts";
 import Image from "next/image";
 
 interface ResenaProductoTestimonio {
@@ -19,12 +19,10 @@ interface ResenasProductoProps {
     resenas: ResenaProductoTestimonio[];
 }
 
-
 export const ResenasProducto: React.FC<ResenasProductoProps> = ({ resenas }) => {
     const [selectedResena, setSelectedResena] = useState<ResenaProductoTestimonio | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
-
 
     // Inicializar videoRefs con null para cada reseña al montar
     useEffect(() => {
@@ -90,14 +88,7 @@ export const ResenasProducto: React.FC<ResenasProductoProps> = ({ resenas }) => 
                                     {hasMedia ? (
                                         <div className="w-full h-full sm:h-80 overflow-hidden rounded-md">
                                             {isImage ? (
-                                                <Image
-                                                    src={resena.mediaUrl || ""}
-                                                    alt="Reseña"
-                                                    width={500}      // ⚠️ obligatorio en next/image
-                                                    height={500}     // ⚠️ obligatorio en next/image
-                                                    className="w-full h-full object-cover"
-                                                />
-
+                                                <Image src={resena.mediaUrl || ""} alt="Reseña" className="w-full h-full object-cover" />
                                             ) : isVideo ? (
                                                 <video
                                                     ref={(el) => {
@@ -169,11 +160,8 @@ export const ResenasProducto: React.FC<ResenasProductoProps> = ({ resenas }) => 
                                         <Image
                                             src={selectedResena.mediaUrl}
                                             alt="Reseña completa"
-                                            width={800}
-                                            height={600}
                                             className="w-full max-h-[400px] md:max-h-[500px] object-contain rounded-md mx-auto"
                                         />
-
 
                                     ) : (
                                         <video

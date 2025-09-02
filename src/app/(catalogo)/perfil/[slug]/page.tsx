@@ -21,36 +21,37 @@ export async function generateStaticParams() {
   return slugs.map((negocio) => ({ slug: negocio.slug }));
 }
 
-const getCachedProducts = unstable_cache(
-  async (slug: string, take: number) => getNegocioProductsBySlug(slug, take),
-  ["negocio-products"],
-  { revalidate: 3600 } // Reducir a 60 segundos para pruebas
-);
-
 
 
 
 export default async function NegocioPage({ params }: Props) {
   const { slug } = await params;
 
+  const getCachedProducts = unstable_cache(
+  async (slug: string, take: number) => getNegocioProductsBySlug(slug, take),
+  ["negocio-products"],
+  { revalidate: 3600, tags: [`negocio-products-${slug}`] }  // ← Agrega tag dinámico
+);
+
+
   // Mueve esta definición aquí para acceso a 'slug'
   const getCachedPublications = unstable_cache(
-    async (props: { take: number }) => getPublicacionesNegocio({ slug, ...props }), // Inyecta slug fijo, props solo tiene take
+    async (slug: string, take: number) => getPublicacionesNegocio({ slug, take }), // Inyecta slug fijo, props solo tiene take
     ["negocio-publications"], // Quita props.slug; args se hashean automáticamente
     { revalidate: 60, tags: [`negocio-publications-${slug}`] } // Agrega tag dinámico per-slug
   );
 
   const getCachedProfile = unstable_cache(
-    async () => getInfoPerfilBySlugNegocio(slug),
+    async (slug: string) => getInfoPerfilBySlugNegocio(slug),
     ["negocio-profile"],
     { revalidate: 3600, tags: [`negocio-profile-${slug}`] }
   );
 
   const result = await getCachedProducts(slug, 20);
-  const { negocio } = await getCachedProfile();
+  const { negocio } = await getCachedProfile(slug);
 
 
-  const publicacionesIniciales = await getCachedPublications({ take: 20 }); // Llama con { take: 20 }
+  const publicacionesIniciales = await getCachedPublications(slug, 20); // Llama con { take: 20 }
 
   if (!result.ok) {
     return <div>Error al cargar productos: {result.message}</div>;
@@ -78,11 +79,11 @@ export const revalidate = 60; // Reducir a 60 segundos para pruebas
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const getCachedProfile = unstable_cache(
-    async () => getInfoPerfilBySlugNegocio(slug),
+    async (slug: string) => getInfoPerfilBySlugNegocio(slug),
     ["negocio-profile"],
     { revalidate: 3600, tags: [`negocio-profile-${slug}`] }
   );
-  const { negocio } = await getCachedProfile();
+  const { negocio } = await getCachedProfile(slug);
 
   return {
     title: negocio ? `${negocio.nombreNegocio} - Perfil` : "Perfil de Negocio",

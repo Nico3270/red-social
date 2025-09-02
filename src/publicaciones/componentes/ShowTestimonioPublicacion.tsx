@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
@@ -9,6 +9,8 @@ import { Typography } from "@mui/material";
 import { titulo1 } from "@/config/fonts";
 import Interactions from "@/interacciones/componentes/Interactions";
 import { PublicacionSencilla } from "../interfaces/publicacionSencilla.interface";
+// ++++++++++ NUEVA IMPORTACIÓN PARA EL STORE ++++++++++
+import { usePublicacionModalStore } from "@/store/publicacionModal/publicacionModalStore";
 
 interface Productos {
   id: string;
@@ -23,10 +25,74 @@ interface ShowTestimonioPublicacionProps {
   productos?: Productos[];
 }
 
-export const ShowTestimonioPublicacion = ({ publicacion, productos }: ShowTestimonioPublicacionProps) => {
-  const mediaUrl = publicacion.multimedia?.[0]?.url || "/placeholder-image.jpg";
-  const timeAgo = formatDistanceToNow(new Date(publicacion.createdAt), { addSuffix: true, locale: es });
+// Hook personalizado para obtener dimensiones de medios (sin cambios)
+const useMediaDimensions = (url: string, tipo: "IMAGEN" | "VIDEO" | undefined) => {
+  const [aspectRatio, setAspectRatio] = useState<number | null>(null);
 
+  useEffect(() => {
+    if (!url) {
+      setAspectRatio(1); // Fallback si no hay URL
+      return;
+    }
+
+    const loadDimensions = async () => {
+      try {
+        if (tipo === "IMAGEN" || !tipo) { // Asumiendo "IMAGEN" por defecto si tipo no está definido
+          const img = new window.Image();
+          img.src = url;
+          await new Promise((resolve, reject) => {
+            img.onload = () => {
+              setAspectRatio(img.naturalWidth / img.naturalHeight || 1);
+              resolve(null);
+            };
+            img.onerror = () => {
+              setAspectRatio(1); // Fallback: proporción cuadrada
+              reject(new Error("Error cargando imagen"));
+            };
+          });
+        } else if (tipo === "VIDEO") {
+          const video = document.createElement("video");
+          video.src = url + "#t=0.1";
+          video.muted = true;
+          await new Promise((resolve, reject) => {
+            video.onloadedmetadata = () => {
+              setAspectRatio(video.videoWidth / video.videoHeight || 9 / 16);
+              resolve(null);
+            };
+            video.onerror = () => {
+              setAspectRatio(9 / 16); // Fallback: proporción vertical típica
+              reject(new Error("Error cargando video"));
+            };
+          });
+          video.remove();
+        }
+      } catch (error) {
+        if (process.env.NODE_ENV === "development") {
+          console.error("Error cargando dimensiones:", error);
+        }
+        setAspectRatio(tipo === "VIDEO" ? 9 / 16 : 1); // Fallback según tipo
+      }
+    };
+
+    loadDimensions();
+    return () => {
+      setAspectRatio(null);
+    };
+  }, [url, tipo]);
+
+  return aspectRatio;
+};
+
+export const ShowTestimonioPublicacion = ({ publicacion, productos }: ShowTestimonioPublicacionProps) => {
+  // ++++++++++ USAR EL STORE PARA ABRIR MODAL Y DETECTAR SI ESTAMOS EN ÉL ++++++++++
+  const { isModalOpen, modalPublicacionId, openModal } = usePublicacionModalStore();
+  const isInModal = isModalOpen && modalPublicacionId === publicacion.id;
+
+  const media = publicacion.multimedia?.[0];
+  const mediaUrl = media?.url || "/placeholder-image.jpg";
+  const mediaTipo = media?.tipo; // Usamos tipo si está disponible en la interfaz
+  const aspectRatio = useMediaDimensions(mediaUrl, mediaTipo);
+  const timeAgo = formatDistanceToNow(new Date(publicacion.createdAt), { addSuffix: true, locale: es });
 
 
   if (!publicacion.id || !/^c[0-9a-z]{24}$/.test(publicacion.id)) {
@@ -44,10 +110,15 @@ export const ShowTestimonioPublicacion = ({ publicacion, productos }: ShowTestim
     );
   }
 
+  // ++++++++++ FUNCIÓN PARA ABRIR MODAL (MEMOIZADA) ++++++++++
+  const handleOpenModal = useCallback(() => {
+    openModal(publicacion.id);
+  }, [openModal, publicacion.id]);
+
   return (
     <div className="w-full my-6 bg-white rounded-2xl shadow-md overflow-hidden">
       {/* Cabecera: Usuario/Negocio */}
-      <div className="p-4 flex items-center border-b border-gray-100">
+      <div className="flex items-center p-4 border-b border-gray-100">
         <div className="relative w-12 h-12 rounded-full overflow-hidden mr-3">
           <Image
             src={publicacion.negocio.fotoPerfil || "/default-profile.png"}
@@ -69,40 +140,60 @@ export const ShowTestimonioPublicacion = ({ publicacion, productos }: ShowTestim
         </div>
       </div>
 
-      {/* Descripción encima de la imagen */}
+      {/* Descripción encima de la imagen (con cambios: completa en modal, truncada fuera) */}
       {publicacion.descripcion && (
         <div className="p-4 text-gray-800 leading-snug relative">
-          <div className="transition-all duration-300 ease-in-out overflow-hidden max-h-[4.8em]">
+          <div
+            className={`transition-all duration-300 ease-in-out overflow-hidden 
+              // ++++++++++ SI EN MODAL, MOSTRAR COMPLETA; SINO, TRUNCADA ++++++++++
+              ${isInModal ? "max-h-[999px]" : "max-h-[4.8em]"} relative`}
+          >
             <p className="whitespace-pre-wrap break-words text-md">
-              {publicacion.descripcion.length > 100
-                ? `${publicacion.descripcion.slice(0, 100)}...`
-                : publicacion.descripcion}
+              {publicacion.descripcion}
             </p>
+            {!isInModal && publicacion.descripcion.length > 100 && (
+              <div className="absolute bottom-0 left-0 w-full h-6 bg-gradient-to-t from-white to-transparent" />
+            )}
           </div>
+          {/* ++++++++++ BOTÓN "VER MÁS" SOLO FUERA DEL MODAL, Y ABRE MODAL ++++++++++ */}
+          {!isInModal && publicacion.descripcion.length > 100 && (
+            <button
+              onClick={handleOpenModal} // Abre modal en lugar de expandir localmente
+              className="mt-2 text-indigo-600 hover:text-indigo-800 font-medium text-sm focus:outline-none"
+            >
+              Ver más
+            </button>
+          )}
         </div>
       )}
 
-      {/* Imagen o Video */}
-      <div className="relative w-full">
-        <div className="relative w-full" style={{ aspectRatio: 16 / 9 }}>
-          {mediaUrl.endsWith(".mp4") ? (
-            <video
-              src={mediaUrl}
-              className="w-full h-full object-cover rounded-b-xl"
-              controls
-              preload="metadata"
-            />
-          ) : (
-            <Image
-              src={mediaUrl}
-              alt={publicacion.titulo || "Publicación"}
-              fill
-              className="object-cover rounded-b-xl"
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              loading="lazy"
-            />
-          )}
-        </div>
+      {/* Imagen o Video (con cambios para click) */}
+      <div 
+        className="relative w-full max-h-[500px] mx-auto" 
+        style={{ aspectRatio: aspectRatio || 16 / 9 }}
+        // ++++++++++ AGREGAR ONCLICK SOLO SI NO ESTAMOS EN MODAL ++++++++++
+        onClick={!isInModal ? handleOpenModal : undefined}
+        role={!isInModal ? "button" : undefined} // Accesibilidad: Hacer clickable solo fuera del modal
+        tabIndex={!isInModal ? 0 : undefined}
+        aria-label={!isInModal ? "Abrir modal con detalle del testimonio" : undefined}
+      >
+        {mediaUrl.endsWith(".mp4") || mediaTipo === "VIDEO" ? (
+          <video
+            src={mediaUrl}
+            className="w-full h-full object-contain rounded-b-xl"
+            controls
+            preload="metadata"
+          />
+        ) : (
+          <Image
+            src={mediaUrl}
+            alt={publicacion.titulo || "Publicación"}
+            fill
+            className="object-contain rounded-b-xl"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            loading="lazy"
+          />
+        )}
       </div>
 
       {/* Contenido (título y productos) */}

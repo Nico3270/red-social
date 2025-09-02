@@ -17,8 +17,8 @@ const opciones: CrearOption[] = [
   { nombre: "Nuevo Producto", imagen: "/imgs/iconos/crear-producto.png", href: "/dashboard/productos/nuevo_producto" },
   { nombre: "Nuevo Pedido", imagen: "/imgs/iconos/crear-pedido.png", href: "/dashboard/orders" },
   { nombre: "Nueva Transacción", imagen: "/imgs/iconos/crear-transaccion.png", href: "/dashboard/transacciones" },
-  { nombre: "Crear Encuesta", imagen: "/imgs/iconos/crear-encuesta.png", href: "/dashboard/dashboard/encuestas" },
-  { nombre: "Crear Reservas", imagen: "/imgs/iconos/crear-reserva.png", href: "/dashboard/dashboard/reservas" },
+  { nombre: "Crear Encuesta", imagen: "/imgs/iconos/crear-encuesta.png", href: "/dashboard/encuestas" },
+  { nombre: "Crear Reservas", imagen: "/imgs/iconos/crear-reserva.png", href: "/dashboard/reservas" },
 ];
 
 interface CrearModalProps {

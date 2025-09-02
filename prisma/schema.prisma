@@ -45,6 +45,8 @@ model Usuario {
   Transaction     Transaction[]
   orders          Order[] // 🔹 Campo inverso para relación con Order
   reservations    Reservation[] // relación 1:N
+  followsOut Follow[] @relation("Follower")     // Follows que este usuario inicia
+  followsIn  Follow[] @relation("FollowedUser") // Follows recibidos como usuario
 
   // Relaciones inversas
   respuestas Respuesta[] @relation("UsuarioRespuestas")
@@ -74,6 +76,71 @@ enum Genero {
   masculino
   femenino
   otro
+}
+
+model Negocio {
+  id               String            @id @default(uuid())
+  usuarioId        String            @unique
+  usuario          Usuario           @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  nombre           String
+  slug             String            @unique
+  categorias       NegocioCategory[]
+  secciones        NegocioSection[]
+  descripcion      String?
+  ciudad           String
+  departamento     String
+  direccion        String? // Nuevo: Dirección legible
+  urlGoogleMaps    String?
+  latitud          Float?
+  longitud         Float?
+  horarios         Json?
+  imagenes         String[]
+  fotoPerfil       String?
+  fotoPortada      String?
+  sitioWeb         String?
+  telefonoContacto String?
+  Product          Product[]
+  estado           EstadoNegocio     @default(activo)
+
+  createdAt     DateTime              @default(now())
+  updatedAt     DateTime              @updatedAt
+  publicaciones Publicacion[] // Relación para reseñas y anuncios
+  orders        Order[] // 🔹 Campo inverso para relación con Order
+  // 🔹 Campos inversos agregados
+  availability  BusinessAvailability? // relación 1:1
+  reservations  Reservation[] // relación 1:N
+  Servicio      Servicio[]
+  encuestas     Encuesta[]            @relation("NegocioEncuestas")
+  preguntas     Pregunta[]            @relation("NegocioPreguntas")
+  followsIn  Follow[] @relation("FollowedBusiness") // Follows recibidos como negocio, con name para match
+
+  @@index([ciudad])
+  @@index([departamento])
+  @@index([estado])
+  @@index([usuarioId])
+}
+
+model Follow {
+  id          String   @id @default(cuid())
+  followerId  String   // ID del seguidor (Usuario)
+  followedId  String   // ID del seguido (puede ser Usuario o Negocio, pero usaremos type para discriminar)
+  type        FollowType // Enum para tipo: USER_TO_BUSINESS, BUSINESS_TO_USER, USER_TO_USER
+  createdAt   DateTime @default(now())
+ 
+  // Relaciones con map para constraints únicas
+  follower    Usuario  @relation("Follower", fields: [followerId], references: [id], onDelete: Cascade)
+  followedUser Usuario? @relation("FollowedUser", fields: [followedId], references: [id], onDelete: Cascade, map: "fk_follow_followed_user") // Nombre único para FK
+  followedBusiness Negocio? @relation("FollowedBusiness", fields: [followedId], references: [id], onDelete: Cascade, map: "fk_follow_followed_business") // Nombre único para FK
+ 
+  @@unique([followerId, followedId]) // Evita duplicados
+  @@index([followerId, type]) // Para queries: "mis follows"
+  @@index([followedId, type]) // Para: "seguidores de X"
+}
+
+enum FollowType {
+  USER_TO_BUSINESS    // Usuario sigue Negocio (principal)
+  BUSINESS_TO_USER    // Negocio sigue Usuario (e.g., para marketing)
+  USER_TO_USER        // Usuario sigue Usuario (social puro, si expands)
 }
 
 
@@ -183,46 +250,7 @@ enum PaymentMethod {
   transferencias
 }
 
-model Negocio {
-  id               String            @id @default(uuid())
-  usuarioId        String            @unique
-  usuario          Usuario           @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
-  nombre           String
-  slug             String            @unique
-  categorias       NegocioCategory[]
-  secciones        NegocioSection[]
-  descripcion      String?
-  ciudad           String
-  departamento     String
-  direccion        String? // Nuevo: Dirección legible
-  urlGoogleMaps    String?
-  latitud          Float?
-  longitud         Float?
-  horarios         Json?
-  imagenes         String[]
-  fotoPerfil       String?
-  fotoPortada      String?
-  sitioWeb         String?
-  telefonoContacto String?
-  Product          Product[]
-  estado           EstadoNegocio     @default(activo)
 
-  createdAt     DateTime              @default(now())
-  updatedAt     DateTime              @updatedAt
-  publicaciones Publicacion[] // Relación para reseñas y anuncios
-  orders        Order[] // 🔹 Campo inverso para relación con Order
-  // 🔹 Campos inversos agregados
-  availability  BusinessAvailability? // relación 1:1
-  reservations  Reservation[] // relación 1:N
-  Servicio      Servicio[]
-  encuestas     Encuesta[]            @relation("NegocioEncuestas")
-  preguntas     Pregunta[]            @relation("NegocioPreguntas")
-
-  @@index([ciudad])
-  @@index([departamento])
-  @@index([estado])
-  @@index([usuarioId])
-}
 
 enum EstadoNegocio {
   activo
