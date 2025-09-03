@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -32,10 +31,12 @@ import ServicioViewer from "@/servicios/componentes/ServicioViewer";
 import { ServicioData } from "@/servicios/interfaces/servicios.interface";
 import { useSession } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion"; // Importar para el modal
+import { FollowButton } from "@/feed/componentes/FollowButton";
 
 export interface InformacionInicialNegocio {
   nombreNegocio: string;
   slugNegocio: string;
+  negocioId: string;
   descripcionNegocio: string;
   telefonoNegocio: string;
   ciudadNegocio: string;
@@ -91,14 +92,15 @@ export default function PerfilUsuarioHeader({
   informacionNegocio,
   publicaciones,
 }: Props) {
-  const [activeTab, setActiveTab] = useState<"Publicaciones" | "Productos" | "Negocio">(
-    activeTabComponent || "Publicaciones"
-  );
+  const [activeTab, setActiveTab] = useState<
+    "Publicaciones" | "Productos" | "Negocio"
+  >(activeTabComponent || "Publicaciones");
   const [servicios, setServicios] = useState<ServicioData[]>([]);
   const [loadingServicios, setLoadingServicios] = useState(false);
   const [isDescriptionModalOpen, setIsDescriptionModalOpen] = useState(false); // Estado para el modal
   const { data: session } = useSession();
-  const isNegocio = session?.user.negocioSlug === informacionNegocio?.slugNegocio;
+  const isNegocio =
+    session?.user.negocioSlug === informacionNegocio?.slugNegocio;
 
   // Manejar cierre del modal con tecla Escape
   useEffect(() => {
@@ -116,7 +118,9 @@ export default function PerfilUsuarioHeader({
       if (activeTab === "Negocio" && informacionNegocio?.slugNegocio) {
         try {
           setLoadingServicios(true);
-          const res = await fetch(`/api/getServiciosBySlug?slug=${informacionNegocio.slugNegocio}`);
+          const res = await fetch(
+            `/api/getServiciosBySlug?slug=${informacionNegocio.slugNegocio}`
+          );
           if (!res.ok) throw new Error("Error al obtener servicios");
           const data = await res.json();
           setServicios(data.servicios || []);
@@ -188,7 +192,10 @@ export default function PerfilUsuarioHeader({
       {/* Cover Image */}
       <div className="relative w-full h-48 sm:h-64 md:h-80 lg:h-96 bg-gray-200">
         <Image
-          src={informacionNegocio?.imagenPortada || "https://picsum.photos/1200/400?random=1"}
+          src={
+            informacionNegocio?.imagenPortada ||
+            "https://picsum.photos/1200/400?random=1"
+          }
           alt={`Portada de ${informacionNegocio?.nombreNegocio || "Negocio"}`}
           className="object-cover w-full h-full transition-transform duration-300 hover:scale-105"
           width={1200}
@@ -202,7 +209,10 @@ export default function PerfilUsuarioHeader({
         {/* Profile Image */}
         <div className="absolute bottom-[-20px] left-4 sm:left-6 z-10">
           <Image
-            src={informacionNegocio?.imagenPerfil || "https://picsum.photos/200?random=2"}
+            src={
+              informacionNegocio?.imagenPerfil ||
+              "https://picsum.photos/200?random=2"
+            }
             alt={`Perfil de ${informacionNegocio?.nombreNegocio || "Negocio"}`}
             className="w-24 h-24 sm:w-32 sm:h-32 lg:w-40 lg:h-40 rounded-full border-4 border-white shadow-xl object-cover transition-transform duration-300 hover:scale-105"
             width={160}
@@ -248,13 +258,18 @@ export default function PerfilUsuarioHeader({
                 </Link>
               )}
             </div>
-            <p className="text-gray-600 text-sm sm:text-base">@{informacionNegocio?.slugNegocio}</p>
+            <p className="text-gray-600 text-sm sm:text-base">
+              @{informacionNegocio?.slugNegocio}
+            </p>
 
             {/* Business Description with Truncation and Modal Trigger */}
             <div className="flex items-center gap-2">
               <p className="text-gray-700 text-base sm:text-lg leading-relaxed">
                 {informacionNegocio?.descripcionNegocio
-                  ? truncateDescription(informacionNegocio.descripcionNegocio, 200)
+                  ? truncateDescription(
+                      informacionNegocio.descripcionNegocio,
+                      200
+                    )
                   : "Explora nuestros productos y servicios, diseñados para ofrecerte la mejor experiencia."}
               </p>
               {informacionNegocio?.descripcionNegocio &&
@@ -287,7 +302,8 @@ export default function PerfilUsuarioHeader({
                 <FaMapMarkerAlt className="text-gray-500" />
                 <span>
                   {`${informacionNegocio?.ciudadNegocio}, ${informacionNegocio?.departamentoNegocio}`}
-                  {informacionNegocio?.direccionNegocio && ` - ${informacionNegocio.direccionNegocio}`}
+                  {informacionNegocio?.direccionNegocio &&
+                    ` - ${informacionNegocio.direccionNegocio}`}
                 </span>
               </div>
               {informacionNegocio?.sitioWeb && (
@@ -298,7 +314,9 @@ export default function PerfilUsuarioHeader({
                   className="flex items-center gap-2 text-blue-600 hover:text-blue-700 transition-colors"
                 >
                   <FaLink />
-                  <span className="truncate max-w-xs">{informacionNegocio.sitioWeb}</span>
+                  <span className="truncate max-w-xs">
+                    {informacionNegocio.sitioWeb}
+                  </span>
                 </Link>
               )}
             </div>
@@ -307,6 +325,12 @@ export default function PerfilUsuarioHeader({
           {/* Right Column: Stats, Follow Button, and Social Links */}
           <div className="flex sm:mt-8 flex-col items-center gap-6">
             <div className="flex items-center gap-4">
+              <FollowButton
+                followedId={informacionNegocio?.negocioId || ""}
+                type="USER_TO_BUSINESS"
+                className="mt-2"
+              />
+
               {/* Botón de Solicitar Reserva (condicional, premium y responsive) */}
               {informacionNegocio?.configReservation && (
                 <Link
@@ -380,13 +404,29 @@ export default function PerfilUsuarioHeader({
         <div className="flex justify-center sm:justify-between gap-2 sm:gap-3 border-b border-blue-400 pb-2 px-4 sm:px-0">
           {tabs.map((tab) => {
             const isActive = activeTab === tab;
-            const icon = tab === "Publicaciones" ? (
-              <FaRegNewspaper className={clsx("text-lg", isActive ? "text-blue-600" : "text-gray-500")} />
-            ) : tab === "Productos" ? (
-              <FaStore className={clsx("text-lg", isActive ? "text-green-600" : "text-gray-500")} />
-            ) : (
-              <FaBriefcase className={clsx("text-lg", isActive ? "text-yellow-600" : "text-gray-500")} />
-            );
+            const icon =
+              tab === "Publicaciones" ? (
+                <FaRegNewspaper
+                  className={clsx(
+                    "text-lg",
+                    isActive ? "text-blue-600" : "text-gray-500"
+                  )}
+                />
+              ) : tab === "Productos" ? (
+                <FaStore
+                  className={clsx(
+                    "text-lg",
+                    isActive ? "text-green-600" : "text-gray-500"
+                  )}
+                />
+              ) : (
+                <FaBriefcase
+                  className={clsx(
+                    "text-lg",
+                    isActive ? "text-yellow-600" : "text-gray-500"
+                  )}
+                />
+              );
 
             return (
               <button
@@ -416,8 +456,16 @@ export default function PerfilUsuarioHeader({
                 <FeedPublicaciones
                   publicaciones={publicaciones}
                   widgets={[
-                    { id: "widget-1", titulo: "Oferta Especial", contenido: "¡Descubre nuestras promociones!" },
-                    { id: "widget-2", titulo: "Publicidad", contenido: "Espacio para anuncios." },
+                    {
+                      id: "widget-1",
+                      titulo: "Oferta Especial",
+                      contenido: "¡Descubre nuestras promociones!",
+                    },
+                    {
+                      id: "widget-2",
+                      titulo: "Publicidad",
+                      contenido: "Espacio para anuncios.",
+                    },
                   ]}
                 />
               ) : (
@@ -434,7 +482,10 @@ export default function PerfilUsuarioHeader({
                   No hay productos disponibles.
                 </p>
               ) : (
-                <ProductGridWithSectionFilter initialProducts={productos} slug={informacionNegocio?.slugNegocio || ""} />
+                <ProductGridWithSectionFilter
+                  initialProducts={productos}
+                  slug={informacionNegocio?.slugNegocio || ""}
+                />
               )}
             </div>
           )}
@@ -442,8 +493,8 @@ export default function PerfilUsuarioHeader({
           {/* Información del Negocio */}
           {activeTab === "Negocio" && (
             <div className="flex flex-col gap-4 text-gray-700">
-              <h2 className="flex items-center justify-center gap-2 font-semibold text-gray-900 text-lg sm:text-xl">
-                <FaBriefcase className="text-yellow-600 text-xl" />
+              <h2 className="flex items-center justify-center gap-2 font-semibold text-gray-900 text-lg sm:text-3xl">
+                <FaBriefcase className="text-yellow-600 text-xl sm:text-3xl" />
                 Servicios del Negocio
               </h2>
 
@@ -454,7 +505,10 @@ export default function PerfilUsuarioHeader({
               ) : servicios.length > 0 ? (
                 <div className="flex flex-col gap-6">
                   {servicios.map((servicio, idx) => (
-                    <ServicioViewer key={servicio.id || idx} servicio={servicio} />
+                    <ServicioViewer
+                      key={servicio.id || idx}
+                      servicio={servicio}
+                    />
                   ))}
                 </div>
               ) : (
@@ -494,7 +548,9 @@ export default function PerfilUsuarioHeader({
                 <FaTimes size={20} />
               </button>
               <div className="p-6 max-h-[80vh] overflow-y-auto">
-                <h2 className="text-xl font-bold mb-4 text-gray-900">Descripción Completa</h2>
+                <h2 className="text-xl font-bold mb-4 text-gray-900">
+                  Descripción Completa
+                </h2>
                 <p className="text-gray-700 text-base sm:text-lg leading-relaxed">
                   {informacionNegocio.descripcionNegocio}
                 </p>

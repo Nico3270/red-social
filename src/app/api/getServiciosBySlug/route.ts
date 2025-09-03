@@ -19,7 +19,7 @@ export async function GET(req: Request) {
 
     const negocioId = await prisma.negocio.findUnique({
       where: { slug },
-      select: { id: true },
+      select: { id: true, nombre:true, telefonoContacto:true, fotoPerfil:true },
     });
 
     if (!negocioId) {
@@ -58,6 +58,10 @@ export async function GET(req: Request) {
           tipo: media.tipo === MultimediaTipo.VIDEO ? "VIDEO" : "IMAGEN",
         })),
         negocioId: servicio.negocioId,
+        negocioSlug: slug,
+        nombreNegocio: negocioId.nombre || "Ver negocio",
+        telefonoNegocio: negocioId.telefonoContacto || "",
+        negocioFotoPerfil: negocioId.fotoPerfil || "/imgs/admin-avatar.webp"
       })),
     });
   } catch (error) {

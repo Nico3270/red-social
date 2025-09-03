@@ -8,6 +8,7 @@ export interface BusinessCardData {
   id: string;
   nombre: string;
   slug: string;
+  negocioId: string;
   descripcion?: string; // Truncar en UI a 100 chars para elegancia
   ciudad: string;
   departamento: string;
@@ -21,6 +22,7 @@ export interface BusinessCardData {
   createdAt: Date; // Para recency en sorting
   // Opcionales para teaser: e.g., numProductos?: number; numPublicaciones?: number;
 }
+
 
 // Interface para ProductCard
 export interface ProductRedSocial {
@@ -39,9 +41,10 @@ export interface ProductRedSocial {
   sections: string[];
   slugNegocio?: string;
   nombreNegocio?: string;
+  negocioId: string;
   telefonoContacto?: string;
+  negocioFotoPerfil: string;
 }
-
 // Interface para publicaciones en componentes como ShowTestimonioPublicacion y SocialMediaPublicacion
 // Solo tenemos publicaciones del tipo TESTIMONIO que se muestran en ShowTestimonioPublicacion
 // y publicaciones del tipo CARRUSEL_IMAGENES que se muestran en SocialMediaPublicacion
@@ -100,6 +103,10 @@ export interface ServicioData {
   tags?: string[];
   multimedia?: MediaItem[];
   negocioId: string;
+  negocioSlug: string;
+  nombreNegocio: string;
+  telefonoNegocio:string
+  negocioFotoPerfil: string;
 }
 
 export type FeedItemType = 'product' | 'publication' | 'service' | 'business';

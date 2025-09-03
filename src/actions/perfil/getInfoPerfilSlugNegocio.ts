@@ -50,6 +50,7 @@ export interface InformacionInicialNegocio {
   estadoNegocio: EstadoNegocio;
   configReservation: boolean; // Indica si el negocio tiene reservas configuradas
   configEncuestas: boolean; // Indica si el negocio tiene encuestas configuradas
+  negocioId:string
 }
 
 export interface DatosPerfilNegocio {
@@ -165,7 +166,8 @@ export const getInfoPerfilBySlugNegocio = async (slugNegocio: string): Promise<D
       seccionesIds: result.negocio.secciones.map((seccion) => seccion.sectionId) || [],
       estadoNegocio: result.negocio.estado || EstadoNegocio.activo,
       configReservation, 
-      configEncuestas
+      configEncuestas,
+      negocioId: result.negocio.id
     };
 
     return {

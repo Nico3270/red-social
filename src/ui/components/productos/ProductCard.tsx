@@ -13,6 +13,7 @@ import { ProductRedSocial } from "@/interfaces/productRedSocial.interface";
 import { initialData, Section } from "@/seed/seed";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCartCatalogoStore } from "@/store/carro/carro-store";
+import { FollowButton } from "@/feed/componentes/FollowButton";
 
 interface ProductCardProps {
   product: ProductRedSocial;
@@ -58,6 +59,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       imagen: product.imagenes[0],
       seccionIds: product.sections,
       descripcionCorta: product.descripcionCorta,
+      negocioFotoPerfil: product.negocioFotoPerfil
     };
 
     addProductToCart(product.slugNegocio, cartProduct);
@@ -68,20 +70,43 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   };
 
   return (
-    <div className="relative bg-white border-2 border-gray-100 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300  flex flex-col h-[480px] w-full max-w-[380px] mx-auto overflow-hidden p-2">
+
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="relative bg-white border-2 border-gray-100 rounded-2xl 
+    shadow-xl hover:shadow-2xl transition-all duration-300  flex flex-col h-[480px] w-full max-w-[380px] mx-auto overflow-hidden p-2">
 
       {/* Header con nombre del negocio */}
       {/* Header con nombre del negocio estilo premium */}
+      {/* Header con nombre del negocio estilo premium */}
       <div className="flex items-center justify-between px-3 mb-3">
-        {product.nombreNegocio && product.slugNegocio && (
-          <Link
-            href={`/perfil/${product.slugNegocio}`}
-            className={`font-semibold text-gray-800 hover:text-blue-700  text-md transition-colors duration-200 ${titulo1.className}`}
+        <div className="flex items-center gap-2">
+          {/* Imagen del negocio */}
+          <div className="relative w-8 h-8 rounded-full overflow-hidden">
+            <Image
+              src={product.negocioFotoPerfil || "/default-profile.png"}
+              alt={`Perfil de ${product.nombreNegocio}`}
+              fill
+              className="object-cover"
+            />
+          </div>
 
-          >
-            {product.nombreNegocio}
-          </Link>
-        )}
+          {/* Nombre con link */}
+          {product.nombreNegocio && product.slugNegocio && (
+            <Link
+              href={`/perfil/${product.slugNegocio}`}
+              className={`font-semibold text-gray-800 hover:text-blue-700 text-md transition-colors duration-200 ${titulo1.className}`}
+            >
+              {product.nombreNegocio}
+            </Link>
+          )}
+        </div>
+
+        {/* Botón de seguir */}
+        <FollowButton
+          followedId={product.negocioId}
+          version={2}
+          type="USER_TO_BUSINESS"
+          className="text-sm"
+        />
 
         {/* Botón de favoritos premium */}
         <div className="z-20">
@@ -91,26 +116,27 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             price={product.precio}
             description={product.descripcion}
             slug={product.slug}
-            images={product.imagenes} // Actualizado: pasa todo el array de imágenes
-            descripcionCorta={product.descripcionCorta} // Nueva prop
-            sections={product.sections} // Nueva prop
-            slugNegocio={product.slugNegocio || ""} // Nueva prop (con fallback si es undefined)
+            images={product.imagenes}
+            descripcionCorta={product.descripcionCorta}
+            sections={product.sections}
+            slugNegocio={product.slugNegocio || ""}
           />
         </div>
       </div>
 
 
+
       {/* Imagen con enlace */}
       <Link href={`/${categorySlug}/${sectionSlug}/${product.slug}`} className="block relative">
         <div className="relative h-64 w-full cursor-pointer rounded-lg overflow-hidden"
-        onMouseEnter={() => {
-    if (product.imagenes.length > 1) {
-      setDisplayImage(product.imagenes[1]); // cambia a la segunda imagen
-    }
-  }}
-  onMouseLeave={() => {
-    setDisplayImage(product.imagenes[0]); // vuelve a la primera imagen
-  }}>
+          onMouseEnter={() => {
+            if (product.imagenes.length > 1) {
+              setDisplayImage(product.imagenes[1]); // cambia a la segunda imagen
+            }
+          }}
+          onMouseLeave={() => {
+            setDisplayImage(product.imagenes[0]); // vuelve a la primera imagen
+          }}>
           <Image
             src={displayImage}
             alt={product.nombre}
@@ -271,7 +297,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
 
       </div>
-    </div>
+    </motion.div>
 
   );
 };

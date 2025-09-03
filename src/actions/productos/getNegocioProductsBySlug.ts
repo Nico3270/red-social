@@ -61,6 +61,8 @@ export const getNegocioProductsBySlug = async (
             nombre: true,
             slug: true,
             telefonoContacto: true,
+            fotoPerfil: true
+            
           },
         },
         imagenes: {
@@ -93,6 +95,8 @@ export const getNegocioProductsBySlug = async (
       slugNegocio: product.negocio.slug,
       nombreNegocio: product.negocio.nombre,
       telefonoContacto: product.negocio.telefonoContacto || "",
+      negocioId: product.negocio.id,
+      negocioFotoPerfil: product.negocio.fotoPerfil || "imgs/admin-avatar.webp"
     }));
 
     return { ok: true, products: formattedProducts, message: "productos obtenidos exitosamente" };

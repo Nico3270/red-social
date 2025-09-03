@@ -11,6 +11,8 @@ import Interactions from "@/interacciones/componentes/Interactions";
 import { PublicacionSencilla } from "../interfaces/publicacionSencilla.interface";
 // ++++++++++ NUEVA IMPORTACIÓN PARA EL STORE ++++++++++
 import { usePublicacionModalStore } from "@/store/publicacionModal/publicacionModalStore";
+import { motion } from "framer-motion";
+import { FollowButton } from "@/feed/componentes/FollowButton";
 
 interface Productos {
   id: string;
@@ -116,9 +118,14 @@ export const ShowTestimonioPublicacion = ({ publicacion, productos }: ShowTestim
   }, [openModal, publicacion.id]);
 
   return (
-    <div className="w-full my-6 bg-white rounded-2xl shadow-md overflow-hidden">
+    <motion.div 
+    initial={{ opacity: 0, y: 20 }} 
+    animate={{ opacity: 1, y: 0 }} 
+    transition={{ duration: 0.3 }}
+    className="w-full my-6 bg-white rounded-2xl shadow-md overflow-hidden"
+  >
       {/* Cabecera: Usuario/Negocio */}
-      <div className="flex items-center p-4 border-b border-gray-100">
+      <div className="flex items-between p-4 border-b border-gray-100">
         <div className="relative w-12 h-12 rounded-full overflow-hidden mr-3">
           <Image
             src={publicacion.negocio.fotoPerfil || "/default-profile.png"}
@@ -138,6 +145,7 @@ export const ShowTestimonioPublicacion = ({ publicacion, productos }: ShowTestim
             <span>{timeAgo}</span>
           </div>
         </div>
+          <FollowButton followedId={publicacion.negocio?.id || ''} version={2} type="USER_TO_BUSINESS" className="ml-auto" />
       </div>
 
       {/* Descripción encima de la imagen (con cambios: completa en modal, truncada fuera) */}
@@ -247,7 +255,7 @@ export const ShowTestimonioPublicacion = ({ publicacion, productos }: ShowTestim
       <Interactions
         publicacionId={publicacion.id}
       />
-    </div>
+    </motion.div>
   );
 };
 

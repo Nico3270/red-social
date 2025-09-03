@@ -121,20 +121,23 @@ model Negocio {
 }
 
 model Follow {
-  id          String   @id @default(cuid())
-  followerId  String   // ID del seguidor (Usuario)
-  followedId  String   // ID del seguido (puede ser Usuario o Negocio, pero usaremos type para discriminar)
-  type        FollowType // Enum para tipo: USER_TO_BUSINESS, BUSINESS_TO_USER, USER_TO_USER
-  createdAt   DateTime @default(now())
- 
-  // Relaciones con map para constraints únicas
-  follower    Usuario  @relation("Follower", fields: [followerId], references: [id], onDelete: Cascade)
-  followedUser Usuario? @relation("FollowedUser", fields: [followedId], references: [id], onDelete: Cascade, map: "fk_follow_followed_user") // Nombre único para FK
-  followedBusiness Negocio? @relation("FollowedBusiness", fields: [followedId], references: [id], onDelete: Cascade, map: "fk_follow_followed_business") // Nombre único para FK
- 
-  @@unique([followerId, followedId]) // Evita duplicados
-  @@index([followerId, type]) // Para queries: "mis follows"
-  @@index([followedId, type]) // Para: "seguidores de X"
+  id                String   @id @default(cuid())
+  followerId        String   // ID del seguidor (Usuario)
+  followedUserId    String?  // ID para Usuario seguido (setear si type USER_TO_USER o BUSINESS_TO_USER)
+  followedBusinessId String? // ID para Negocio seguido (setear si type USER_TO_BUSINESS)
+  type              FollowType
+  createdAt         DateTime @default(now())
+
+  // Relaciones con map únicos
+  follower          Usuario  @relation("Follower", fields: [followerId], references: [id], onDelete: Cascade)
+  followedUser      Usuario? @relation("FollowedUser", fields: [followedUserId], references: [id], onDelete: Cascade, map: "fk_follow_followed_user")
+  followedBusiness  Negocio? @relation("FollowedBusiness", fields: [followedBusinessId], references: [id], onDelete: Cascade, map: "fk_follow_followed_business")
+
+  @@unique([followerId, followedUserId])    // Único para user-user o business-user
+  @@unique([followerId, followedBusinessId]) // Único para user-business
+  @@index([followerId, type])
+  @@index([followedUserId, type])
+  @@index([followedBusinessId, type])
 }
 
 enum FollowType {

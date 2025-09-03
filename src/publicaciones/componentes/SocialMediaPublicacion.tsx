@@ -21,6 +21,7 @@ import { titulo1 } from "@/config/fonts";
 import { PublicacionSencilla } from "../interfaces/publicacionSencilla.interface";
 // ++++++++++ NUEVA IMPORTACIÓN ++++++++++
 import { usePublicacionModalStore } from "@/store/publicacionModal/publicacionModalStore";
+import { FollowButton } from "@/feed/componentes/FollowButton";
 
 // Hook personalizado para obtener dimensiones de medios (sin cambios)
 const useMediaDimensions = (url: string, tipo: "IMAGEN" | "VIDEO") => {
@@ -200,6 +201,7 @@ export const SocialMediaCarousel: React.FC<Props> = ({ publicacion }) => {
             <span className="ml-2">{getVisibilityIcon()}</span>
           </div>
         </div>
+        <FollowButton followedId={publicacion.negocio?.id || publicacion.usuario.id} version={2} type={publicacion.negocio ? "USER_TO_BUSINESS" : "USER_TO_USER"} className="ml-auto" />
       </div>
 
       {/* Descripción (con cambios: completa en modal, truncada fuera) */}

@@ -17,4 +17,8 @@ export interface ServicioData {
   tags?: string[];
   multimedia?: MediaItem[];
   negocioId: string;
+  negocioSlug: string;
+  nombreNegocio: string;
+  telefonoNegocio:string
+  negocioFotoPerfil: string;
 }

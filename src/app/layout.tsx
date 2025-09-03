@@ -3,6 +3,7 @@ import "./globals.css";
 import { Provider } from "@/providers/Provider";
 import { InfoEmpresa as empresa } from "@/config/config";
 import PreferencesModalWrapper from "@/preferences/componentes/PreferencesModalWrapper";
+import ReactQueryProvider from "@/feed/componentes/ReactQueryProvider";
 
 
 export const metadata: Metadata = {
@@ -21,7 +22,7 @@ export const metadata: Metadata = {
         url: empresa.imagenesPlaceholder.imagenRepresentativa,
         width: 800,
         height: 600,
-        alt: empresa.descripcion
+        alt: empresa.descripcion,
       },
     ],
   },
@@ -29,9 +30,9 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="es">
       <head>
@@ -46,28 +47,28 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "Organization",
-              "name": empresa.nombreCompleto,
-              "url": empresa.website,
-              "logo": empresa.imagenesPlaceholder.imagenRepresentativa,
-              "contactPoint": {
+              name: empresa.nombreCompleto,
+              url: empresa.website,
+              logo: empresa.imagenesPlaceholder.imagenRepresentativa,
+              contactPoint: {
                 "@type": "ContactPoint",
-                "telephone": empresa.telefono,
-                "contactType": "customer service",
-                "email": empresa.email,
+                telephone: empresa.telefono,
+                contactType: "customer service",
+                email: empresa.email,
               },
-              "sameAs": [
+              sameAs: [
                 empresa.urlInstagram,
                 empresa.urlFacebook,
-                empresa.urlTiktok
-              ].filter(url => url) // Filtra URLs vacías
+                empresa.urlTiktok,
+              ].filter((url) => url),
             }),
           }}
         />
       </head>
-      <body className={` bg-white`}>
+      <body className="bg-white">
         <Provider>
           <PreferencesModalWrapper>
-            {children}
+            <ReactQueryProvider>{children}</ReactQueryProvider>
           </PreferencesModalWrapper>
         </Provider>
       </body>

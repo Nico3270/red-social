@@ -7,6 +7,8 @@ import Image from "next/image";
 import { useState } from "react";
 import { descripcionCard, titulo1, tituloCard } from "@/config/fonts";
 import { BusinessCardData } from "../feed.interfaces";
+import { FollowButton } from "./FollowButton";
+import { motion } from "framer-motion";
 
 interface BusinessCardProps {
   business: BusinessCardData;
@@ -21,16 +23,22 @@ export const BusinessCard: React.FC<BusinessCardProps> = ({ business }) => {
   );
 
   return (
-    <div className="relative bg-white border-2 border-gray-100 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-[480px] w-full max-w-[380px] mx-auto overflow-hidden p-2">
+    <motion.div 
+    initial={{ opacity: 0, y: 20 }} 
+    animate={{ opacity: 1, y: 0 }} 
+    transition={{ duration: 0.3 }}
+    className="relative bg-white border-2 border-gray-100 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-[480px] w-full max-w-[380px] mx-auto overflow-hidden p-2"
+  >
       
       {/* Header con nombre del negocio */}
-      <div className="flex items-center justify-between px-3 mb-3">
+      <div className="flex items-center justify-around px-3 mb-3">
         <Link
           href={`/perfil/${business.slug}`}
           className={`font-semibold text-gray-800 hover:text-blue-700 text-md transition-colors duration-200 ${titulo1.className}`}
         >
           {business.nombre}
         </Link>
+        <FollowButton followedId={ business.negocioId || ""} type="USER_TO_BUSINESS" className="mt-2" />
       </div>
 
       {/* Imagen con enlace (hover para zoom, similar a ProductCard) */}
@@ -117,6 +125,6 @@ export const BusinessCard: React.FC<BusinessCardProps> = ({ business }) => {
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };

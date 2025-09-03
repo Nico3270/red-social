@@ -18,5 +18,7 @@ export interface ProductRedSocial {
   sections: string[];
   slugNegocio?: string;
   nombreNegocio?: string;
+  negocioId: string;
   telefonoContacto?: string;
+  negocioFotoPerfil: string;
 }
