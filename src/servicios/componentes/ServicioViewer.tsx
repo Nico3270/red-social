@@ -18,11 +18,12 @@ import { FaTimes } from "react-icons/fa";
 
 interface Props {
   servicio: ServicioData;
+  version?: 1 | 2;
 }
 
 const urlWebProduccion = empresa.linkWebProduccion;
 
-const ServicioViewer: React.FC<Props> = ({ servicio }) => {
+const ServicioViewer: React.FC<Props> = ({ servicio, version = 1 }) => {
   const { titulo, descripcion, precio, currency, multimedia = [], negocioSlug, telefonoNegocio, nombreNegocio, negocioFotoPerfil } = servicio;
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -38,16 +39,29 @@ const ServicioViewer: React.FC<Props> = ({ servicio }) => {
   const fullDescription = descripcion.join('\n\n');
   const isLongDescription = fullDescription.length > 150;
 
+  // Clases condicionales basadas en la versión
+  const containerClasses = version === 1 
+    ? "grid grid-cols-1 md:grid-cols-2 md:grid-rows-[auto_auto_1fr_auto] gap-6 p-6 bg-white rounded-3xl shadow-md hover:shadow-lg transition-shadow duration-300 max-w-4xl mx-auto"
+    : "grid grid-cols-1 gap-6 p-6 bg-white rounded-3xl shadow-md hover:shadow-lg transition-shadow duration-300 max-w-[380px] mx-auto cursor-pointer";
+
+  // Handler para abrir modal en version=2 al clickear la card
+  const handleCardClick = () => {
+    if (version === 2) {
+      setIsModalOpen(true);
+    }
+  };
+
   return (
     <>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className="grid grid-cols-1 md:grid-cols-2 md:grid-rows-[auto_auto_1fr_auto] gap-6 p-6 bg-white rounded-3xl shadow-md hover:shadow-lg transition-shadow duration-300 max-w-4xl mx-auto"
+        className={containerClasses}
+        onClick={handleCardClick} // Solo clickable en version=2
       >
         {/* Header: Nombre del negocio + Follow (siempre arriba) */}
-        <div className="md:col-start-2 md:row-start-1 flex items-center justify-between pb-2 border-b border-gray-100">
+        <div className="flex items-center justify-between pb-2 border-b border-gray-100">
           <div className="flex items-center gap-2">
             {negocioFotoPerfil && (
               <div className="relative w-8 h-8 rounded-full overflow-hidden">
@@ -70,13 +84,13 @@ const ServicioViewer: React.FC<Props> = ({ servicio }) => {
         </div>
 
         {/* Título (debajo de header en mobile, row 2 en desktop) */}
-        <h2 className="md:col-start-2 md:row-start-2 text-3xl md:text-3xl text-center font-semibold text-gray-900 leading-tight">
+        <h2 className="text-3xl md:text-3xl text-center font-semibold text-gray-900 leading-tight">
           {titulo}
         </h2>
 
         {/* Multimedia (debajo de título en mobile, izquierda full-height en desktop) */}
         <div
-          className="md:col-start-1 md:row-start-1 md:row-span-4 relative w-full h-[200px] sm:h-[250px] md:h-auto rounded-2xl overflow-hidden cursor-pointer"
+          className="relative w-full h-[200px] sm:h-[250px] md:h-auto rounded-2xl overflow-hidden cursor-pointer"
           onClick={() => setIsModalOpen(true)}
           role="button"
           tabIndex={0}
@@ -116,7 +130,7 @@ const ServicioViewer: React.FC<Props> = ({ servicio }) => {
         </div>
 
         {/* Descripción (debajo de swiper en mobile, row 3 en desktop) */}
-        <div className="md:col-start-2 md:row-start-3 text-gray-600 text-base leading-relaxed relative">
+        <div className="text-gray-600 text-base leading-relaxed relative">
           <div className={isLongDescription ? "line-clamp-3" : ""}>
             {descripcion.map((parrafo, index) => (
               <p key={index} className="mb-2">{parrafo}</p>
@@ -130,7 +144,7 @@ const ServicioViewer: React.FC<Props> = ({ servicio }) => {
         </div>
 
         {/* Footer: Precio + WhatsApp (debajo en mobile, row 4 en desktop) */}
-        <div className="md:col-start-2 md:row-start-4 flex items-center justify-around mt-auto pt-4 border-t border-gray-100">
+        <div className="flex items-center justify-around mt-auto pt-4 border-t border-gray-100">
           {precio && (
             <p className="text-xl font-medium text-gray-900">
               {precio.toLocaleString()} {currency}

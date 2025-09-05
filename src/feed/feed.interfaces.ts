@@ -1,8 +1,8 @@
-import { ProductStatus } from "@prisma/client";
+import { ProductStatus, Currency, ServicioStatus, EstadoNegocio } from "@prisma/client";
+import { RawBusiness, RawData, RawProduct, RawPublication, RawService } from "./actions/selects";
 
 
-// src/interfaces/business.interface.ts (nuevo archivo o en feed.interface.ts)
-import { EstadoNegocio } from "@prisma/client";
+
 
 export interface BusinessCardData {
   id: string;
@@ -20,8 +20,8 @@ export interface BusinessCardData {
   secciones: string[]; // Ids de secciones para filtros/badges
   estado: EstadoNegocio; // Para filtrar solo 'activo' en feed
   createdAt: Date; // Para recency en sorting
-  // Opcionales para teaser: e.g., numProductos?: number; numPublicaciones?: number;
 }
+
 
 
 // Interface para ProductCard
@@ -44,6 +44,8 @@ export interface ProductRedSocial {
   negocioId: string;
   telefonoContacto?: string;
   negocioFotoPerfil: string;
+  ciudad?: string; // De negocio
+  departamento?: string;
 }
 // Interface para publicaciones en componentes como ShowTestimonioPublicacion y SocialMediaPublicacion
 // Solo tenemos publicaciones del tipo TESTIMONIO que se muestran en ShowTestimonioPublicacion
@@ -69,7 +71,6 @@ export interface Media {
 export interface PublicacionSencilla {
   id: string;
   usuario: User;
-  negocio?: { id: string; nombre: string; fotoPerfil?: string; slug?: string };
   tipo: "CARRUSEL_IMAGENES" | "VIDEO_HORIZONTAL" | "VIDEO_VERTICAL" | "PRODUCTO_DESTACADO" | "MINI_GRID" | "TESTIMONIO";
   titulo?: string;
   descripcion?: string;
@@ -81,10 +82,13 @@ export interface PublicacionSencilla {
     type: "COMENTARIO" | "REACCION" | "COMPARTIDO",
     data: { reaction?: "LIKE" | "LOVE" | "WOW" | "SAD" | "ANGRY"; comment?: string }
   ) => void;
+  numLikes?: number;
+  numComentarios?: number;
+  negocio?: { id: string; nombre: string; fotoPerfil?: string; slug?: string; ciudad?: string; departamento?: string };
 }
 
 // Interface para servicios
-import { Currency, ServicioStatus } from "@prisma/client";
+
 
 export interface MediaItem {
   url: string;
@@ -121,11 +125,13 @@ export interface FeedItem {
   descriptionShort: string; // Truncada para previews
   imageUrl: string; // Primera imagen/multimedia
   businessSlug: string; // Enlace a perfil de negocio
+  isFollowed: boolean; // Boost visual (badge como en Instagram)
   // Data específica por tipo
   data: ProductRedSocial | PublicacionSencilla | ServicioData | BusinessCardData;
   // Opcionales: price para products/services, numLikes para publications
   price?: number;
   numLikes?: number; // Para hotness en sorting
+  status?: ProductStatus | ServicioStatus | EstadoNegocio; // Filtrar activos
 }
 
 export interface FeedQueryParams {
@@ -136,4 +142,56 @@ export interface FeedQueryParams {
   page: number; // Para paginación
   limit: number; // e.g., 20
   seenIds: string[]; // Para anti-duplicados (ids como 'product-uuid')
+  followedBusinessIds?: string[]; // Opcional: solo si auth, para boost en scores
+  cursor?: { product?: string; publication?: string; service?: string; business?: string };
 }
+
+// Para respuesta de getFeedData (en Paso 3)
+export interface FeedResponse {
+  items: FeedItem[];
+  nextCursor: { product?: string; publication?: string; service?: string; business?: string }; // Cursor por tipo para paginación paralela
+}
+
+interface FeedRendererProps {
+  items: FeedItem[];
+  hasMore: boolean;
+  isLoadingNext: boolean;
+  sentinelRef: React.RefCallback<HTMLDivElement>; // Callback para useInView compatibilidad
+}
+
+// src/interfaces/feed.interfaces.ts (al final)
+
+// Type Guards para narrowing elegante
+export function isProductItem(item: FeedItem): item is FeedItem & { data: ProductRedSocial } {
+  return item.type === 'product';
+}
+
+export function isPublicationItem(item: FeedItem): item is FeedItem & { data: PublicacionSencilla } {
+  return item.type === 'publication';
+}
+
+export function isServiceItem(item: FeedItem): item is FeedItem & { data: ServicioData } {
+  return item.type === 'service';
+}
+
+export function isBusinessItem(item: FeedItem): item is FeedItem & { data: BusinessCardData } {
+  return item.type === 'business';
+}
+
+// Helpers para narrowing (añade a interfaces.ts)
+export function isRawProduct(raw: RawData): raw is RawProduct {
+  return 'precio' in raw && 'tags' in raw;
+}
+
+export function isRawPublication(raw: RawData): raw is RawPublication {
+  return 'multimedia' in raw && 'usuario' in raw;
+}
+
+export function isRawService(raw: RawData): raw is RawService {
+  return 'titulo' in raw && 'descripcion' in raw && Array.isArray(raw.descripcion);
+}
+
+export function isRawBusiness(raw: RawData): raw is RawBusiness {
+  return 'estado' in raw && 'categorias' in raw;
+}
+
