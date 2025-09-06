@@ -1,13 +1,14 @@
 "use client";
 
-import React, { useCallback, useEffect, } from "react";
+import React, { useCallback, useEffect, Suspense, lazy } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { createPortal } from "react-dom";
 import { FaTimes } from "react-icons/fa";
-import { ShowTestimonioPublicacion } from "@/publicaciones/componentes/ShowTestimonioPublicacion";
-import { SocialMediaCarousel } from "@/publicaciones/componentes/SocialMediaPublicacion";
-import { usePublicacionModalStore } from "@/store/publicacionModal/publicacionModalStore";
 import { PublicacionSencilla } from "../interfaces/publicacionSencilla.interface";
+
+// Lazy imports para romper ciclos
+const LazyShowTestimonioPublicacion = lazy(() => import("@/publicaciones/componentes/ShowTestimonioPublicacion"));
+const LazySocialMediaCarousel = lazy(() => import("@/publicaciones/componentes/SocialMediaPublicacion"));
 
 interface PublicationModalProps {
   isOpen: boolean;
@@ -15,20 +16,10 @@ interface PublicationModalProps {
   onClose: () => void;
 }
 
-const componentMap: Record<string, React.FC<{ publicacion: PublicacionSencilla }>> = {
-  TESTIMONIO: ShowTestimonioPublicacion,
-  CARRUSEL_IMAGENES: SocialMediaCarousel,
-};
-
 const PublicationModal: React.FC<PublicationModalProps> = ({ isOpen, publication, onClose }) => {
-  const { closeModal } = usePublicacionModalStore();
-
   const handleClose = useCallback(() => {
     onClose();
-    closeModal();
-  }, [onClose, closeModal]);
-
-  
+  }, [onClose]);
 
   useEffect(() => {
     if (isOpen) {
@@ -50,7 +41,13 @@ const PublicationModal: React.FC<PublicationModalProps> = ({ isOpen, publication
 
   if (!isOpen || !publication) return null;
 
-  const Component = componentMap[publication.tipo] || ShowTestimonioPublicacion;
+  // componentMap con lazy components
+  const componentMap: Record<string, React.LazyExoticComponent<React.FC<{ publicacion: PublicacionSencilla; isInModal?: boolean }>>> = {
+    TESTIMONIO: LazyShowTestimonioPublicacion,
+    CARRUSEL_IMAGENES: LazySocialMediaCarousel,
+  };
+
+  const Component = componentMap[publication.tipo] || LazyShowTestimonioPublicacion;
 
   return createPortal(
     <AnimatePresence>
@@ -68,7 +65,7 @@ const PublicationModal: React.FC<PublicationModalProps> = ({ isOpen, publication
             animate={{ scale: 1, y: 0 }}
             exit={{ scale: 0.9, y: 50 }}
             transition={{ type: "spring", damping: 20, stiffness: 300 }}
-            className="relative w-full max-w-3xl bg-white rounded-xl shadow-2xl overflow-hidden transform transition-all duration-300"
+            className="relative w-full max-w-3xl bg-white rounded-xl shadow-2xl overflow-hidden transform transition-all duration-300 md:max-w-4xl" // Responsive: wider en desktop
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -80,7 +77,9 @@ const PublicationModal: React.FC<PublicationModalProps> = ({ isOpen, publication
             </button>
             <div className="p-6 max-h-[80vh] overflow-y-auto modal-content">
               <h2 className="text-xl font-bold mb-4">{publication.titulo || "Publicación"}</h2>
-              <Component publicacion={{ ...publication, }} />
+              <Suspense fallback={<div className="flex justify-center items-center h-32"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div></div>}>
+                <Component publicacion={publication} isInModal={true} /> {/* Pasa isInModal=true */}
+              </Suspense>
             </div>
           </motion.div>
         </motion.div>

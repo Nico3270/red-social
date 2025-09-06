@@ -10,8 +10,6 @@ import { ShowTestimonioPublicacion } from "@/publicaciones/componentes/ShowTesti
 import { SocialMediaCarousel } from "@/publicaciones/componentes/SocialMediaPublicacion";
 import clsx from "clsx";
 import "./FeedPublicaciones.css";
-import { usePublicacionModalStore } from "@/store/publicacionModal/publicacionModalStore";
-import PublicationModal from "./PublicationModal";
 import { PublicacionesResult } from "@/actions/perfil/getInfoPerfilSlugNegocio";
 import { PublicacionSencilla, Media } from "../interfaces/publicacionSencilla.interface";
 
@@ -23,15 +21,6 @@ interface ProductDestacado {
   imagen: string | null;
   slug: string;
 }
-
-interface PublicacionExtendida extends PublicacionSencilla {
-  comments: { id: string; createdAt: string }[]; // ajusta al tipo real de comentario
-  numComentarios: number;
-  numLikes: number;
-  numCompartidos: number;
-  userReaction: string | null;
-}
-
 
 interface FeedPublicacionesProps {
   publicaciones: PublicacionSencilla[];
@@ -114,8 +103,6 @@ const FeedPublicaciones: React.FC<FeedPublicacionesProps> = ({
   const hasReachedEndRef = useRef(false);
   const [hasReachedEndLocal, setHasReachedEndLocal] = useState(false);
   const observer = useRef<IntersectionObserver | null>(null);
-
-  const { isModalOpen, modalPublicacionId, updatedComments } = usePublicacionModalStore();
 
   // Log inicial para verificar initialPublicaciones
   useEffect(() => {
@@ -200,57 +187,11 @@ const FeedPublicaciones: React.FC<FeedPublicacionesProps> = ({
   const publicaciones = useMemo(() => {
     const publicationMap = new Map<string, PublicacionSencilla>();
 
-    initialPublicaciones.forEach((pub) => {
-      const commentsFromStore = updatedComments[pub.id] || [];
-      // No hay initialComments desde servidor, solo del store
-      const uniqueComments = Array.from(new Map(commentsFromStore.map((c) => [c.id, c])).values());
-      // Ordenar por fecha descendente y tomar los últimos 3 para feed
-      const sortedComments = uniqueComments
-        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-        .slice(0, 3);
-
-      publicationMap.set(pub.id, {
-        ...pub,
-        comments: sortedComments,
-        numComentarios: uniqueComments.length,
-        numLikes: 0,
-        numCompartidos: 0,
-        userReaction: null,
-      } as PublicacionExtendida);
-      // Usamos any para extender temporalmente el tipo
-    });
-
-    dynamicPublicaciones.forEach((pub) => {
-      const commentsFromStore = updatedComments[pub.id] || [];
-      const uniqueComments = Array.from(new Map(commentsFromStore.map((c) => [c.id, c])).values());
-      const sortedComments = uniqueComments
-        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-        .slice(0, 3);
-
-      publicationMap.set(pub.id, {
-        ...pub,
-        comments: sortedComments,
-        numComentarios: uniqueComments.length,
-        numLikes: 0,
-        numCompartidos: 0,
-        userReaction: null,
-      } as PublicacionExtendida);
-
-    });
+    initialPublicaciones.forEach((pub) => publicationMap.set(pub.id, pub));
+    dynamicPublicaciones.forEach((pub) => publicationMap.set(pub.id, pub));
 
     return Array.from(publicationMap.values());
-  }, [initialPublicaciones, dynamicPublicaciones, updatedComments]);
-
-  const selectedPublication = useMemo(() => {
-    const found = publicaciones.find((pub) => pub.id === modalPublicacionId);
-    console.log("Selected publication:", found, "for ID:", modalPublicacionId);
-    return found || null;
-  }, [publicaciones, modalPublicacionId]);
-
-  const handleCloseModal = useCallback(() => {
-    const { closeModal } = usePublicacionModalStore.getState();
-    closeModal();
-  }, []);
+  }, [initialPublicaciones, dynamicPublicaciones]);
 
   const publicacionesFiltradas = useMemo(() => {
     let filtered = [...publicaciones];
@@ -294,13 +235,6 @@ const FeedPublicaciones: React.FC<FeedPublicacionesProps> = ({
     () => reorderForColumns(noFijadas, cols),
     [noFijadas, cols]
   );
-
-  useEffect(() => {
-    // console.log("Modal state:", { isModalOpen, modalPublicacionId, selectedPublication });
-    // if (error) {
-    //   console.error("SWR error:", error);
-    // }
-  }, [isModalOpen, modalPublicacionId, selectedPublication, error]);
 
   useEffect(() => {
     if (hasReachedEndRef.current) {
@@ -424,12 +358,6 @@ const FeedPublicaciones: React.FC<FeedPublicacionesProps> = ({
           )}
         </div>
       </div>
-
-      <PublicationModal
-        isOpen={isModalOpen}
-        publication={selectedPublication}
-        onClose={handleCloseModal}
-      />
     </div>
   );
 };
