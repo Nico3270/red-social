@@ -1,30 +1,61 @@
+/* :root variables para theming premium */
+:root {
+  --gap-column: 12px; /* Gap base columnas */
+  --gap-vertical: 16px;
+  --bg-primary: #f9f9f9;
+  --bg-card: #ffffff;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --border-color: #e5e7eb;
+  --text-primary: #1f2937;
+  --text-secondary: #6b7280;
+  --accent-blue: #3b82f6;
+  --transition-duration: 200ms;
+}
+
+/* Dark mode futuro */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-primary: #1f2937;
+    --bg-card: #374151;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2);
+    --text-primary: #f3f4f6;
+    --text-secondary: #9ca3af;
+    --border-color: #4b5563;
+  }
+}
+
+/* Masonry premium */
 .masonry-container {
   display: flex;
-  margin-left: -16px; /* Compensar gap */
+  margin-left: calc(-1 * var(--gap-column));
   width: auto;
 }
 
-.masonry-column {
-  padding-left: 16px; /* Gap entre columnas */
+
+
+.masonry-column > div {
+  margin-bottom: clamp(12px, var(--gap-vertical), 20px); /* Aumentar vertical para más aire */
   background-clip: padding-box;
 }
 
-/* Items dentro de columnas */
 .masonry-column > div {
-  margin-bottom: 16px; /* Espacio vertical */
+  margin-bottom: clamp(12px, var(--gap-vertical), 16px);
 }
 
-/* Responsive: mobile-first */
+/* Responsive fine-tuning */
 @media (max-width: 1100px) {
-  .masonry-container {
-    margin-left: -12px;
-  }
-  .masonry-column {
-    padding-left: 12px;
+  :root {
+    --gap-column: 10px;
+    --gap-vertical: 14px;
   }
 }
 
 @media (max-width: 768px) {
+  :root {
+    --gap-column: 0;
+    --gap-vertical: 12px;
+  }
   .masonry-container {
     margin-left: 0;
   }
@@ -33,8 +64,64 @@
   }
 }
 
-/* Animaciones y shadows para premium feel */
+@media (min-width: 1280px) {
+  :root {
+    --gap-column: 8px; /* Más estrecho en pantallas grandes */
+  }
+}
+
+/* Tabs scroll suave */
+.flex.overflow-x-auto {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.flex.overflow-x-auto::-webkit-scrollbar {
+  display: none;
+}
+
+/* Animations y shadows premium */
+@media (prefers-reduced-motion: no-preference) {
+  motion.div {
+    transition: opacity var(--transition-duration) ease-out, transform var(--transition-duration) ease-out;
+  }
+}
+
+/* Ajustes para mini-navbar de categorías */
+.flex.overflow-x-auto.justify-around {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.flex.overflow-x-auto.justify-around::-webkit-scrollbar {
+  display: none;
+}
+
+/* Gaps para 4 columnas en grandes pantallas */
+@media (min-width: 1400px) {
+  :root {
+    --gap-column: 10px; /* Más espacio para 4 cols */
+  }
+}
+
 motion.div {
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  border-radius: 16px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+/* General */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+button:hover {
+  transition: background-color var(--transition-duration) ease-in-out;
+}
+
+button:focus {
+  outline: none;
+  ring: 2px solid var(--accent-blue);
 }

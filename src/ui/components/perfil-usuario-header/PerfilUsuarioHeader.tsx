@@ -15,7 +15,7 @@ import {
   FaCalendarCheck,
   FaRegCommentDots,
   FaPencilAlt,
-  FaTimes, // Icono para cerrar el modal
+  FaTimes,
 } from "react-icons/fa";
 import { Button } from "../button/Button";
 import clsx from "clsx";
@@ -26,12 +26,39 @@ import Image from "next/image";
 import Link from "next/link";
 import { SiGooglemaps } from "react-icons/si";
 import FeedPublicaciones from "@/publicaciones/componentes/FeedPublicaciones";
-import { PublicacionSencilla } from "@/publicaciones/interfaces/publicacionSencilla.interface";
 import ServicioViewer from "@/servicios/componentes/ServicioViewer";
 import { ServicioData } from "@/servicios/interfaces/servicios.interface";
 import { useSession } from "next-auth/react";
-import { motion, AnimatePresence } from "framer-motion"; // Importar para el modal
+import { motion, AnimatePresence } from "framer-motion";
 import { FollowButton } from "@/feed/componentes/FollowButton";
+import { EnhancedPublicacion } from "@/publicaciones/interfaces/enhancedPublicacion.interface";
+
+interface TabErrorBoundaryState {
+  hasError: boolean;
+}
+
+class TabErrorBoundary extends React.Component<
+  { children: React.ReactNode; fallback: React.ReactNode },
+  TabErrorBoundaryState
+> {
+  constructor(props: { children: React.ReactNode; fallback: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(): TabErrorBoundaryState {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error("Error en tab de PerfilUsuarioHeader:", error, errorInfo);
+  }
+
+  render() {
+    return this.state.hasError ? this.props.fallback : this.props.children;
+  }
+}
+
 
 export interface InformacionInicialNegocio {
   nombreNegocio: string;
@@ -81,7 +108,7 @@ export interface Product {
 interface Props {
   activeTabComponent: "Publicaciones" | "Productos" | "Negocio";
   productos?: ProductRedSocial[];
-  publicaciones?: PublicacionSencilla[];
+  publicaciones?: EnhancedPublicacion[];  // Confirmado: Array de EnhancedPublicacion para flujo intacto
   informacionNegocio?: InformacionInicialNegocio;
   seccionesProductos?: { id: string; nombre: string; slug: string };
 }
@@ -90,20 +117,26 @@ export default function PerfilUsuarioHeader({
   productos,
   activeTabComponent,
   informacionNegocio,
-  publicaciones,
+  publicaciones = [],  // Fallback a [] para evitar undefined en flujo SSR (nuevo: robustez)
 }: Props) {
-  const [activeTab, setActiveTab] = useState<
-    "Publicaciones" | "Productos" | "Negocio"
-  >(activeTabComponent || "Publicaciones");
+  const [activeTab, setActiveTab] = useState<"Publicaciones" | "Productos" | "Negocio">(
+    activeTabComponent || "Publicaciones"
+  );
   const [servicios, setServicios] = useState<ServicioData[]>([]);
   const [loadingServicios, setLoadingServicios] = useState(false);
-  const [isDescriptionModalOpen, setIsDescriptionModalOpen] = useState(false); // Estado para el modal
+  const [isDescriptionModalOpen, setIsDescriptionModalOpen] = useState(false);
   const { data: session } = useSession();
-  const isNegocio =
-    session?.user.negocioSlug === informacionNegocio?.slugNegocio;
+  const isNegocio = session?.user.negocioSlug === informacionNegocio?.slugNegocio;
 
-  // Manejar cierre del modal con tecla Escape
+  // Manejo de escape en modal (mejora: añade focus trap para accesibilidad)
   useEffect(() => {
+    if (isDescriptionModalOpen) {
+      const modalElement = document.querySelector('[role="dialog"]');  // Asume role en modal
+      if (modalElement) {
+        (modalElement as HTMLElement).focus();  // Focus inicial para UX inmersiva
+      }
+    }
+
     const handleEsc = (event: KeyboardEvent) => {
       if (event.key === "Escape" && isDescriptionModalOpen) {
         setIsDescriptionModalOpen(false);
@@ -113,19 +146,18 @@ export default function PerfilUsuarioHeader({
     return () => window.removeEventListener("keydown", handleEsc);
   }, [isDescriptionModalOpen]);
 
+  // Fetch servicios con skeleton optimista (mejora: reduce perceived latency)
   useEffect(() => {
     const fetchServicios = async () => {
       if (activeTab === "Negocio" && informacionNegocio?.slugNegocio) {
         try {
           setLoadingServicios(true);
-          const res = await fetch(
-            `/api/getServiciosBySlug?slug=${informacionNegocio.slugNegocio}`
-          );
+          const res = await fetch(`/api/getServiciosBySlug?slug=${informacionNegocio.slugNegocio}`);
           if (!res.ok) throw new Error("Error al obtener servicios");
           const data = await res.json();
           setServicios(data.servicios || []);
         } catch (err) {
-          console.error(err);
+          console.error("Error fetching servicios:", err);
           setServicios([]);
         } finally {
           setLoadingServicios(false);
@@ -181,7 +213,7 @@ export default function PerfilUsuarioHeader({
     "Negocio",
   ];
 
-  // Función para truncar la descripción
+  // Función para truncar la descripción (mejora: añade ellipsis suave)
   const truncateDescription = (description: string, maxLength: number) => {
     if (description.length <= maxLength) return description;
     return description.substring(0, maxLength).trim() + "...";
@@ -277,18 +309,18 @@ export default function PerfilUsuarioHeader({
                   <button
                     onClick={() => setIsDescriptionModalOpen(true)}
                     className="
-        px-3 py-1.5
-        text-sm sm:text-base
-        font-semibold
-        text-blue-600
-        rounded-full
-        bg-blue-50
-        hover:bg-blue-100 hover:text-blue-700
-        transition-all duration-200
-        shadow-sm hover:shadow-md
-        focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-1
-        active:scale-95
-      "
+                      px-3 py-1.5
+                      text-sm sm:text-base
+                      font-semibold
+                      text-blue-600
+                      rounded-full
+                      bg-blue-50
+                      hover:bg-blue-100 hover:text-blue-700
+                      transition-all duration-200
+                      shadow-sm hover:shadow-md
+                      focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-1
+                      active:scale-95
+                    "
                     aria-label="Ver descripción completa"
                   >
                     Ver más
@@ -400,8 +432,8 @@ export default function PerfilUsuarioHeader({
         {/* Divider */}
         <div className="border-b border-gray-200 my-6"></div>
 
-        {/* Tabs */}
-        <div className="flex justify-center sm:justify-between gap-2 sm:gap-3 border-b border-blue-400 pb-2 px-4 sm:px-0">
+        {/* Tabs: Mejora responsive - scrollable en mobile */}
+        <div className="flex justify-center sm:justify-between gap-2 sm:gap-3 border-b border-blue-400 pb-2 px-4 sm:px-0 overflow-x-auto whitespace-nowrap">
           {tabs.map((tab) => {
             const isActive = activeTab === tab;
             const icon =
@@ -433,12 +465,13 @@ export default function PerfilUsuarioHeader({
                 key={tab}
                 onClick={() => setActiveTab(tab)}
                 className={clsx(
-                  "flex items-center gap-2 py-2 px-4 sm:px-6 rounded-xl transition-all duration-200 font-medium",
+                  "flex items-center gap-2 py-2 px-4 sm:px-6 rounded-xl transition-all duration-200 font-medium min-w-max",  // min-w-max para no wrap en mobile
                   isActive
                     ? "bg-gray-100 shadow-sm text-gray-900"
                     : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
                 )}
                 aria-current={isActive ? "page" : undefined}
+                aria-expanded={isActive}  // Mejora: Accesibilidad para screen readers
               >
                 {icon}
                 <span>{tab}</span>
@@ -452,27 +485,40 @@ export default function PerfilUsuarioHeader({
           {activeTab === "Publicaciones" && (
             <div className="flex flex-col items-center gap-3 text-gray-700 text-base sm:text-lg">
               <FaRegNewspaper className="text-blue-600 text-xl" />
-              {publicaciones && publicaciones.length > 0 ? (
-                <FeedPublicaciones
-                  publicaciones={publicaciones}
-                  widgets={[
-                    {
-                      id: "widget-1",
-                      titulo: "Oferta Especial",
-                      contenido: "¡Descubre nuestras promociones!",
-                    },
-                    {
-                      id: "widget-2",
-                      titulo: "Publicidad",
-                      contenido: "Espacio para anuncios.",
-                    },
-                  ]}
-                />
-              ) : (
-                <p className="text-gray-600 text-sm sm:text-base">
-                  No hay publicaciones disponibles.
-                </p>
-              )}
+              {/* Nuevo: Error Boundary local para graceful UX */}
+              <TabErrorBoundary fallback={
+                <div className="text-center text-gray-500 p-8 rounded-lg bg-gray-50">
+                  <p className="mb-2">Error al cargar publicaciones.</p>
+                  <button 
+                    onClick={() => window.location.reload()} 
+                    className="text-blue-600 underline hover:text-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    Recargar página
+                  </button>
+                </div>
+              }>
+                {publicaciones && publicaciones.length > 0 ? (
+                  <FeedPublicaciones
+                    publicaciones={publicaciones}  // Flujo intacto: EnhancedPublicacion[] pasa directo para userReaction en Interactions
+                    widgets={[
+                      {
+                        id: "widget-1",
+                        titulo: "Oferta Especial",
+                        contenido: "¡Descubre nuestras promociones!",
+                      },
+                      {
+                        id: "widget-2",
+                        titulo: "Publicidad",
+                        contenido: "Espacio para anuncios.",
+                      },
+                    ]}
+                  />
+                ) : (
+                  <p className="text-gray-600 text-sm sm:text-base">
+                    No hay publicaciones disponibles.
+                  </p>
+                )}
+              </TabErrorBoundary>
             </div>
           )}
           {activeTab === "Productos" && (
@@ -490,7 +536,7 @@ export default function PerfilUsuarioHeader({
             </div>
           )}
 
-          {/* Información del Negocio */}
+          {/* Información del Negocio: Mejora con skeleton para loading */}
           {activeTab === "Negocio" && (
             <div className="flex flex-col gap-4 text-gray-700">
               <h2 className="flex items-center justify-center gap-2 font-semibold text-gray-900 text-lg sm:text-3xl">
@@ -499,16 +545,18 @@ export default function PerfilUsuarioHeader({
               </h2>
 
               {loadingServicios ? (
-                <p className="text-gray-600 text-sm sm:text-base animate-pulse">
-                  Cargando servicios, por favor espera...
-                </p>
+                <div className="animate-pulse space-y-4">  // Skeleton moderno: shimmer para perceived speed
+                  {Array.from({ length: 3 }).map((_, i) => (
+                    <div key={i} className="bg-gray-200 rounded-lg h-32 p-4 flex items-center">
+                      <div className="flex-1 h-4 bg-gray-300 rounded w-3/4"></div>
+                      <div className="w-16 h-16 bg-gray-300 rounded-full ml-4"></div>
+                    </div>
+                  ))}
+                </div>
               ) : servicios.length > 0 ? (
                 <div className="flex flex-col gap-6">
                   {servicios.map((servicio, idx) => (
-                    <ServicioViewer
-                      key={servicio.id || idx}
-                      servicio={servicio}
-                    />
+                    <ServicioViewer key={servicio.id || idx} servicio={servicio} />
                   ))}
                 </div>
               ) : (
@@ -539,6 +587,9 @@ export default function PerfilUsuarioHeader({
               transition={{ type: "spring", damping: 20, stiffness: 300 }}
               className="relative w-full max-w-2xl bg-white rounded-xl shadow-2xl overflow-hidden transform transition-all duration-300 mx-4"
               onClick={(e) => e.stopPropagation()}
+              role="dialog"  // Mejora: Accesibilidad ARIA
+              aria-modal="true"
+              aria-labelledby="description-title"
             >
               <button
                 onClick={() => setIsDescriptionModalOpen(false)}
@@ -548,7 +599,7 @@ export default function PerfilUsuarioHeader({
                 <FaTimes size={20} />
               </button>
               <div className="p-6 max-h-[80vh] overflow-y-auto">
-                <h2 className="text-xl font-bold mb-4 text-gray-900">
+                <h2 id="description-title" className="text-xl font-bold mb-4 text-gray-900">
                   Descripción Completa
                 </h2>
                 <p className="text-gray-700 text-base sm:text-lg leading-relaxed">

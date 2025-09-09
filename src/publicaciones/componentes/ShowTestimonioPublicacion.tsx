@@ -7,11 +7,11 @@ import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
 import { Typography } from "@mui/material";
 import { titulo1 } from "@/config/fonts";
-import Interactions from "@/interacciones/componentes/Interactions"; // Asegúrate de la ruta correcta
-import PublicationModal from "./PublicationModal"; // Asegúrate de la ruta correcta
+import Interactions from "@/interacciones/componentes/Interactions";
+import PublicationModal from "./PublicationModal";
 import { motion } from "framer-motion";
 import { FollowButton } from "@/feed/componentes/FollowButton";
-import { PublicacionSencilla } from "../interfaces/publicacionSencilla.interface";
+import { EnhancedPublicacion } from "../interfaces/enhancedPublicacion.interface";
 
 interface Productos {
   id: string;
@@ -22,24 +22,24 @@ interface Productos {
 }
 
 interface ShowTestimonioPublicacionProps {
-  publicacion: PublicacionSencilla;
+  publicacion: EnhancedPublicacion;
   productos?: Productos[];
-  isInModal?: boolean; // Prop para detectar si estamos en modal (evita recursión)
+  isInModal?: boolean;
 }
 
-// Hook personalizado para obtener dimensiones de medios (sin cambios)
+// Hook personalizado para obtener dimensiones de medios (optimizado con fallback responsive)
 const useMediaDimensions = (url: string, tipo: "IMAGEN" | "VIDEO" | undefined) => {
   const [aspectRatio, setAspectRatio] = useState<number | null>(null);
 
   useEffect(() => {
     if (!url) {
-      setAspectRatio(1); // Fallback si no hay URL
+      setAspectRatio(1); // Fallback cuadrado
       return;
     }
 
     const loadDimensions = async () => {
       try {
-        if (tipo === "IMAGEN" || !tipo) { // Asumiendo "IMAGEN" por defecto si tipo no está definido
+        if (tipo === "IMAGEN" || !tipo) {
           const img = new window.Image();
           img.src = url;
           await new Promise((resolve, reject) => {
@@ -48,7 +48,7 @@ const useMediaDimensions = (url: string, tipo: "IMAGEN" | "VIDEO" | undefined) =
               resolve(null);
             };
             img.onerror = () => {
-              setAspectRatio(1); // Fallback: proporción cuadrada
+              setAspectRatio(1);
               reject(new Error("Error cargando imagen"));
             };
           });
@@ -58,11 +58,11 @@ const useMediaDimensions = (url: string, tipo: "IMAGEN" | "VIDEO" | undefined) =
           video.muted = true;
           await new Promise((resolve, reject) => {
             video.onloadedmetadata = () => {
-              setAspectRatio(video.videoWidth / video.videoHeight || 9 / 16);
+              setAspectRatio(video.videoWidth / video.videoHeight || 9 / 16); // Vertical para videos sociales
               resolve(null);
             };
             video.onerror = () => {
-              setAspectRatio(9 / 16); // Fallback: proporción vertical típica
+              setAspectRatio(9 / 16);
               reject(new Error("Error cargando video"));
             };
           });
@@ -72,7 +72,7 @@ const useMediaDimensions = (url: string, tipo: "IMAGEN" | "VIDEO" | undefined) =
         if (process.env.NODE_ENV === "development") {
           console.error("Error cargando dimensiones:", error);
         }
-        setAspectRatio(tipo === "VIDEO" ? 9 / 16 : 1); // Fallback según tipo
+        setAspectRatio(tipo === "VIDEO" ? 9 / 16 : 1);
       }
     };
 
@@ -86,12 +86,11 @@ const useMediaDimensions = (url: string, tipo: "IMAGEN" | "VIDEO" | undefined) =
 };
 
 export const ShowTestimonioPublicacion = ({ publicacion, productos, isInModal = false }: ShowTestimonioPublicacionProps) => {
-  // Estado local para controlar el modal (solo si !isInModal)
   const [isModalOpenLocal, setIsModalOpenLocal] = useState(false);
 
   const media = publicacion.multimedia?.[0];
   const mediaUrl = media?.url || "/placeholder-image.jpg";
-  const mediaTipo = media?.tipo; // Usamos tipo si está disponible en la interfaz
+  const mediaTipo = media?.tipo;
   const aspectRatio = useMediaDimensions(mediaUrl, mediaTipo);
   const timeAgo = formatDistanceToNow(new Date(publicacion.createdAt), { addSuffix: true, locale: es });
 
@@ -110,51 +109,50 @@ export const ShowTestimonioPublicacion = ({ publicacion, productos, isInModal = 
     );
   }
 
-  // Función para abrir modal (local, solo si !isInModal)
   const handleOpenModal = useCallback(() => {
     if (!isInModal) {
       setIsModalOpenLocal(true);
     }
   }, [isInModal]);
 
-  // Función para cerrar modal (local)
   const handleCloseModal = useCallback(() => {
     setIsModalOpenLocal(false);
   }, []);
 
   return (
     <>
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }} 
-        animate={{ opacity: 1, y: 0 }} 
+      <motion.div
+        key={publicacion.id} // Key para reconciliation óptima en listas/feeds
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
         className="w-full my-6 bg-white rounded-2xl shadow-md overflow-hidden"
       >
         {/* Cabecera: Usuario/Negocio */}
-        <div className="flex items-between p-4 border-b border-gray-100">
+        <div className="flex items-center justify-between p-4 border-b border-gray-100"> {/* Fixed items-between a items-center para responsive */}
           <div className="relative w-12 h-12 rounded-full overflow-hidden mr-3">
             <Image
               src={publicacion.negocio.fotoPerfil || "/default-profile.png"}
-              alt="Avatar negocio"
+              alt="Avatar del negocio"
               fill
               className="object-cover"
             />
           </div>
-          <div className="flex-1">
+          <div className="flex-1 min-w-0"> {/* min-w-0 para truncate en móviles */}
             <Link
               href={`/perfil/${publicacion.negocio.slug}`}
-              className={`font-semibold text-red-800 hover:text-blue-600 transition-colors duration-200 ${titulo1.className}`}
+              className={`font-semibold text-red-800 hover:text-blue-600 transition-colors duration-200 truncate ${titulo1.className}`}
             >
               {publicacion.negocio?.nombre || "Negocio Desconocido"}
             </Link>
             <div className="flex items-center text-sm text-gray-500">
-              <span>{timeAgo}</span>
+              <span className="truncate">{timeAgo}</span>
             </div>
           </div>
-          <FollowButton followedId={publicacion.negocio?.id || ''} version={2} type="USER_TO_BUSINESS" className="ml-auto" />
+          <FollowButton followedId={publicacion.negocio?.id || ''} version={2} type="USER_TO_BUSINESS" className="ml-auto flex-shrink-0" />
         </div>
 
-        {/* Descripción encima de la imagen */}
+        {/* Descripción encima de la imagen (elegante truncate con gradiente) */}
         {publicacion.descripcion && (
           <div className="p-4 text-gray-800 leading-snug relative">
             <div
@@ -165,13 +163,14 @@ export const ShowTestimonioPublicacion = ({ publicacion, productos, isInModal = 
                 {publicacion.descripcion}
               </p>
               {!isInModal && publicacion.descripcion.length > 100 && (
-                <div className="absolute bottom-0 left-0 w-full h-6 bg-gradient-to-t from-white to-transparent" />
+                <div className="absolute bottom-0 left-0 w-full h-6 bg-gradient-to-t from-white to-transparent pointer-events-none" />
               )}
             </div>
             {!isInModal && publicacion.descripcion.length > 100 && (
               <button
                 onClick={handleOpenModal}
-                className="mt-2 text-indigo-600 hover:text-indigo-800 font-medium text-sm focus:outline-none"
+                className="mt-2 text-indigo-600 hover:text-indigo-800 font-medium text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded"
+                aria-label="Ver descripción completa"
               >
                 Ver más
               </button>
@@ -179,10 +178,10 @@ export const ShowTestimonioPublicacion = ({ publicacion, productos, isInModal = 
           </div>
         )}
 
-        {/* Imagen o Video */}
-        <div 
-          className="relative w-full max-h-[500px] mx-auto" 
-          style={{ aspectRatio: aspectRatio || 16 / 9 }}
+        {/* Imagen o Video (responsive aspect-ratio) */}
+        <div
+          className="relative w-full max-h-[500px] mx-auto cursor-pointer" // Cursor solo si clickable
+          style={{ aspectRatio: aspectRatio || (mediaTipo === "VIDEO" ? 9 / 16 : 16 / 9) }} // Fallback específico por tipo
           onClick={!isInModal ? handleOpenModal : undefined}
           role={!isInModal ? "button" : undefined}
           tabIndex={!isInModal ? 0 : undefined}
@@ -191,23 +190,24 @@ export const ShowTestimonioPublicacion = ({ publicacion, productos, isInModal = 
           {mediaUrl.endsWith(".mp4") || mediaTipo === "VIDEO" ? (
             <video
               src={mediaUrl}
-              className="w-full h-full object-contain rounded-b-xl"
+              className="w-full h-full object-contain rounded-b-xl" // Contain para no distorsionar
               controls
               preload="metadata"
+              poster="/placeholder-video-poster.jpg" // Opcional para thumbnail
             />
           ) : (
             <Image
               src={mediaUrl}
-              alt={publicacion.titulo || "Publicación"}
+              alt={publicacion.titulo || "Publicación del testimonio"}
               fill
-              className="object-contain rounded-b-xl"
+              className="object-contain rounded-b-xl hover:scale-105 transition-transform duration-300" // Hover sutil para engagement
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               loading="lazy"
             />
           )}
         </div>
 
-        {/* Contenido (título y productos) */}
+        {/* Contenido (título y productos – grid responsive) */}
         <div className="p-4">
           {publicacion.titulo && (
             <Typography variant="h6" className="font-bold text-gray-900 mb-2">
@@ -216,16 +216,16 @@ export const ShowTestimonioPublicacion = ({ publicacion, productos, isInModal = 
           )}
           {productos && productos.length > 0 && (
             <div className="mb-4">
-              <Typography variant="caption" className="text-gray-500 mb-2 block">
+              <Typography variant="caption" className="text-gray-500 mb-2 block font-medium">
                 Productos relacionados:
               </Typography>
               <div className="flex flex-wrap gap-3">
                 {productos.map((producto) => (
                   <div
                     key={producto.id}
-                    className="flex items-center gap-2 bg-gray-50 p-2 rounded-lg shadow-sm hover:bg-gray-100 transition-colors"
+                    className="flex items-center gap-2 bg-gray-50 p-2 rounded-lg shadow-sm hover:bg-gray-100 transition-colors flex-1 min-w-[140px]" // Responsive min-width
                   >
-                    <div className="w-12 h-12 relative">
+                    <div className="relative w-12 h-12 flex-shrink-0">
                       <Image
                         src={producto.imagen || "/placeholder-image.jpg"}
                         alt={producto.nombre}
@@ -233,17 +233,13 @@ export const ShowTestimonioPublicacion = ({ publicacion, productos, isInModal = 
                         className="object-cover rounded-md"
                       />
                     </div>
-                    <div className="flex flex-col">
-                      <Link href={`/producto/${producto.slug}`} passHref>
-                        <Typography
-                          variant="body2"
-                          className="text-blue-600 hover:underline cursor-pointer"
-                          style={{ textDecoration: "none" }}
-                        >
+                    <div className="flex flex-col min-w-0 flex-1">
+                      <Link href={`/producto/${producto.slug}`} passHref legacyBehavior>
+                        <a className="text-blue-600 hover:underline text-sm font-medium truncate">
                           {producto.nombre}
-                        </Typography>
+                        </a>
                       </Link>
-                      <Typography variant="caption" className="text-gray-600">
+                      <Typography variant="caption" className="text-gray-600 font-semibold">
                         ${producto.precio.toFixed(2)}
                       </Typography>
                     </div>
@@ -254,16 +250,22 @@ export const ShowTestimonioPublicacion = ({ publicacion, productos, isInModal = 
           )}
         </div>
 
-        {/* Interacciones - Pasamos onOpenModal y isInModal */}
+        {/* Interacciones – con key para optimización */}
         <Interactions
+          key={publicacion.id} // Para React reconciliation en feeds múltiples
           publicacionId={publicacion.id}
-          slug={publicacion.negocio?.slug} // Si necesitas slug
+          slug={publicacion.negocio?.slug}
           onOpenModal={handleOpenModal}
-          isInModal={isInModal} // Pasa para condicionar lógica en Interactions
+          isInModal={isInModal}
+          numLikes={publicacion.numLikes}
+          numComentarios={publicacion.numComentarios}
+          numCompartidos={publicacion.numCompartidos}
+          userReaction={publicacion.userReaction?.tipo ?? null} // Fix: Extrae solo 'tipo' (enum ReaccionTipo | null)
+          initialComments={publicacion.comments?.slice(0, 3) || []}
         />
       </motion.div>
 
-      {/* ++++++++++ RENDERIZADO LOCAL DEL MODAL SOLO SI !isInModal ++++++++++ */}
+      {/* Renderizado local del modal solo si !isInModal */}
       {!isInModal && (
         <PublicationModal
           isOpen={isModalOpenLocal}

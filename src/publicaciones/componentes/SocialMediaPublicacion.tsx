@@ -19,8 +19,9 @@ import Interactions from "@/interacciones/componentes/Interactions";
 import PublicationModal from "./PublicationModal";
 import Link from "next/link";
 import { titulo1 } from "@/config/fonts";
-import { PublicacionSencilla } from "../interfaces/publicacionSencilla.interface";
+
 import { FollowButton } from "@/feed/componentes/FollowButton";
+import { EnhancedPublicacion } from "../interfaces/enhancedPublicacion.interface";
 
 // Hook personalizado para obtener dimensiones de medios (sin cambios, optimizado)
 const useMediaDimensions = (url: string, tipo: "IMAGEN" | "VIDEO") => {
@@ -81,13 +82,13 @@ const useMediaDimensions = (url: string, tipo: "IMAGEN" | "VIDEO") => {
 };
 
 interface Props {
-  publicacion: PublicacionSencilla;
+  publicacion: EnhancedPublicacion;
   isInModal?: boolean; // ++++++++++ NUEVA PROP PARA DETECTAR SI ESTAMOS EN MODAL ++++++++++
 }
 
 // Componente wrapper para cada slide (con cambios para click en imagen)
 const MediaSlide: React.FC<{ 
-  media: PublicacionSencilla["multimedia"][0]; 
+  media: EnhancedPublicacion["multimedia"][0]; 
   index: number; 
   multimediaLength: number; 
   onClick: () => void; // Prop para abrir modal
@@ -307,10 +308,16 @@ export const SocialMediaCarousel: React.FC<Props> = ({ publicacion, isInModal = 
 
         {/* Interacciones (pasamos onOpenModal y isInModal) */}
         <Interactions
+          key={publicacion.id} // Para React reconciliation en feeds múltiples
           publicacionId={publicacion.id}
           slug={publicacion.negocio?.slug}
           onOpenModal={handleOpenModal}
-          isInModal={isInModal} // ++++++++++ PASA isInModal A INTERACTIONS ++++++++++
+          isInModal={isInModal}
+          numLikes={publicacion.numLikes}
+          numComentarios={publicacion.numComentarios}
+          numCompartidos={publicacion.numCompartidos}
+          userReaction={publicacion.userReaction?.tipo ?? null} // Fix: Extrae solo 'tipo' (enum ReaccionTipo | null)
+          initialComments={publicacion.comments?.slice(0, 3) || []}
         />
       </motion.div>
 

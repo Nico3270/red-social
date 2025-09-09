@@ -2,6 +2,7 @@ import { getInfoPerfilBySlugNegocio } from "@/actions/perfil/getInfoPerfilSlugNe
 import { getNegocioProductsBySlug } from "@/actions/productos/getNegocioProductsBySlug";
 import prisma from "@/lib/prisma";
 import { getPublicacionesNegocio } from "@/publicaciones/actions/getPublicaciones";
+import { auth } from "@/auth.config";  // Importa auth aquí para server-side
 import PerfilUsuarioHeader from "@/ui/components/perfil-usuario-header/PerfilUsuarioHeader";
 import { Metadata } from "next";
 import { Suspense } from "react";
@@ -21,61 +22,71 @@ export async function generateStaticParams() {
   return slugs.map((negocio) => ({ slug: negocio.slug }));
 }
 
-
 export default async function NegocioPage({ params }: Props) {
   const { slug } = await params;
 
+  // NUEVO: Obtén sesión DINÁMICA FUERA de cualquier cache (server-side seguro)
+  const session = await auth();
+  const userId = session?.user?.id || null;  // Null para guests/anónimos
+
+  // Cache para productos (igual, pero opcional: pasa userId si la action lo necesita)
   const getCachedProducts = unstable_cache(
-  async (slug: string, take: number) => getNegocioProductsBySlug(slug, take),
-  ["negocio-products"],
-  { revalidate: 3600, tags: [`negocio-products-${slug}`] }  // ← Agrega tag dinámico
-);
-
-
-  // Mueve esta definición aquí para acceso a 'slug'
-  const getCachedPublications = unstable_cache(
-    async (slug: string, take: number) => getPublicacionesNegocio({ slug, take }), // Inyecta slug fijo, props solo tiene take
-    ["negocio-publications"], // Quita props.slug; args se hashean automáticamente
-    { revalidate: 60, tags: [`negocio-publications-${slug}`] } // Agrega tag dinámico per-slug
+    async (slug: string, take: number) => getNegocioProductsBySlug(slug, take),
+    ["negocio-products"],
+    { revalidate: 3600, tags: [`negocio-products-${slug}`] }
   );
 
+  // NUEVO: Cache para publicaciones, con userId como parámetro (dinámico pasado desde fuera)
+  const getCachedPublications = unstable_cache(
+    async (slug: string, take: number, userId: string | null) => 
+      getPublicacionesNegocio({ slug, take, userId }),  // Pasa userId para personalizar userReaction
+    ["negocio-publications"],  // Key estática por slug (cache global); userId se procesa en runtime
+    { 
+      revalidate: 60,  // 1min para frescura en feeds sociales
+      tags: [`negocio-publications-${slug}`]  // Tag dinámico para invalidar por slug (e.g., en mutations)
+    }
+  );
+
+  // Cache para perfil (igual)
   const getCachedProfile = unstable_cache(
     async (slug: string) => getInfoPerfilBySlugNegocio(slug),
     ["negocio-profile"],
     { revalidate: 3600, tags: [`negocio-profile-${slug}`] }
   );
 
+  // Llamadas cacheadas (ahora con userId en publications)
   const result = await getCachedProducts(slug, 20);
   const { negocio } = await getCachedProfile(slug);
-
-
-  const publicacionesIniciales = await getCachedPublications(slug, 20); // Llama con { take: 20 }
+  const publicacionesIniciales = await getCachedPublications(slug, 20, userId);  // Pasa userId aquí
 
   if (!result.ok) {
-    return <div>Error al cargar productos: {result.message}</div>;
+    return <div className="error-container">Error al cargar productos: {result.message}</div>;  // UX elegante: clase para styling responsive
   }
   if (!negocio) {
-    return <div>Error al cargar el perfil del negocio</div>;
+    return <div className="error-container">Error al cargar el perfil del negocio</div>;
   }
 
   return (
-    <div className="sm:mt-40">
-      <Suspense fallback={<div>Cargando perfil...</div>}>
+    <div className="sm:mt-40">  {/* Tu contenedor responsive */}
+      <Suspense fallback={<div className="loading-skeleton">Cargando perfil...</div>}>  {/* Skeleton moderno para loading */}
         <PerfilUsuarioHeader
           activeTabComponent="Productos"
           productos={result.products || []}
           informacionNegocio={negocio}
-          publicaciones={publicacionesIniciales.publicaciones || []}
+          publicaciones={publicacionesIniciales.publicaciones || []}  // Ahora con userReaction personalizada
         />
       </Suspense>
     </div>
   );
 }
 
-export const revalidate = 60; // Reducir a 60 segundos para pruebas
+export const revalidate = 60;  // Global revalidate para pruebas; en prod, usa tags para granularidad
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
+
+  // Para metadata, obtén sesión si necesitas personalización (pero metadata suele ser estática)
+  // Si no usas auth aquí, cachea sin problemas
   const getCachedProfile = unstable_cache(
     async (slug: string) => getInfoPerfilBySlugNegocio(slug),
     ["negocio-profile"],
@@ -90,8 +101,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: negocio ? `${negocio.nombreNegocio} - Perfil` : "Perfil de Negocio",
       description: negocio ? negocio.descripcionNegocio || "Explora el perfil de este negocio." : "Perfil de un negocio.",
       images: negocio && negocio.imagenPortada ? [negocio.imagenPortada] : ["/default-og-image.jpg"],
-      url: `https://tu-dominio.com/perfil/${slug}`,
-      siteName: "Tu Red Social",
+      url: `https://tu-dominio.com/perfil/${slug}`,  // Ajusta tu dominio
+      siteName: "Tu Red Social",  // Nombre de tu plataforma
       type: "website",
     },
     twitter: {

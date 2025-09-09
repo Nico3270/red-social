@@ -1,4 +1,6 @@
+import { ReaccionTipo } from "@prisma/client";
 import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware"; // Middleware para persistencia
 
 interface Comment {
   id: string;
@@ -15,48 +17,133 @@ interface Comment {
 
 interface PublicacionModalState {
   isModalOpen: boolean;
-  modalPublicacionId: string | null; // Usar solo este para evitar duplicados
-  updatedComments: Record<string, Comment[]>; // Comentarios actualizados por publicacionId
-  updatedNumComentarios: Record<string, number>; // Contador de comentarios por publicacionId
+  modalPublicacionId: string | null;
+  updatedComments: Record<string, Comment[]>;
+  updatedNumComentarios: Record<string, number>;
+  updatedLikes: Record<string, number>;
+  updatedUserReaction: Record<string, ReaccionTipo | null>;
+  updatedCompartidos: Record<string, number>; // Para completitud con numCompartidos
   openModal: (publicacionId: string) => void;
   closeModal: () => void;
   addComment: (publicacionId: string, comment: Comment) => void;
   updateComment: (publicacionId: string, tempId: string, comment: Comment) => void;
-  incrementNumComentarios: (publicacionId: string) => void; // Nueva acción para incrementar contador
+  removeComment: (publicacionId: string, commentId: string) => void;
+  incrementNumComentarios: (publicacionId: string) => void;
+  decrementNumComentarios: (publicacionId: string) => void;
+  updateLikes: (publicacionId: string, newLikes: number) => void;
+  updateUserReaction: (publicacionId: string, reaction: ReaccionTipo | null) => void;
+  updateCompartidos: (publicacionId: string, newCount: number) => void;
 }
 
-export const usePublicacionModalStore = create<PublicacionModalState>((set) => ({
-  isModalOpen: false,
-  modalPublicacionId: null,
-  updatedComments: {},
-  updatedNumComentarios: {}, // Mapa de publicacionId a contador
-  openModal: (publicacionId) =>
-    set({ isModalOpen: true, modalPublicacionId: publicacionId }),
-  closeModal: () => set({ isModalOpen: false, modalPublicacionId: null }),
-  addComment: (publicacionId, comment) =>
-    set((state) => ({
-      updatedComments: {
-        ...state.updatedComments,
-        [publicacionId]: [
-          comment,
-          ...(state.updatedComments[publicacionId] || []),
-        ].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
+export const usePublicacionModalStore = create<PublicacionModalState>()(
+  persist(
+    (set) => ({
+      // ESTADOS PRIMERO (convención para claridad y mantenimiento)
+      isModalOpen: false,
+      modalPublicacionId: null,
+      updatedComments: {},
+      updatedNumComentarios: {},
+      updatedLikes: {},
+      updatedUserReaction: {},
+      updatedCompartidos: {},
+
+      // ACCIONES DESPUÉS (inmutables y tipadas)
+      openModal: (publicacionId: string) =>
+        set({ isModalOpen: true, modalPublicacionId: publicacionId }),
+
+      closeModal: () => {
+        set({ isModalOpen: false, modalPublicacionId: null });
+        // Opcional: Limpia storage al cerrar modal (evita acumulación de drafts viejos)
+        // localStorage.removeItem('publicacion-modal-storage');
       },
-    })),
-  updateComment: (publicacionId, tempId, comment) =>
-    set((state) => ({
-      updatedComments: {
-        ...state.updatedComments,
-        [publicacionId]: (state.updatedComments[publicacionId] || []).map((c) =>
-          c.id === tempId ? comment : c
-        ).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
-      },
-    })),
-  incrementNumComentarios: (publicacionId) =>
-    set((state) => ({
-      updatedNumComentarios: {
-        ...state.updatedNumComentarios,
-        [publicacionId]: (state.updatedNumComentarios[publicacionId] || 0) + 1,
-      },
-    })),
-}));
+
+      addComment: (publicacionId, comment) =>
+        set((state) => ({
+          updatedComments: {
+            ...state.updatedComments,
+            [publicacionId]: [
+              comment,
+              ...(state.updatedComments[publicacionId] || []),
+            ].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
+          },
+        })),
+
+      updateComment: (publicacionId, tempId, comment) =>
+        set((state) => ({
+          updatedComments: {
+            ...state.updatedComments,
+            [publicacionId]: (state.updatedComments[publicacionId] || [])
+              .map((c) => (c.id === tempId ? comment : c))
+              .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
+          },
+        })),
+
+      removeComment: (publicacionId, commentId) =>
+        set((state) => ({
+          updatedComments: {
+            ...state.updatedComments,
+            [publicacionId]: (state.updatedComments[publicacionId] || [])
+              .filter((c) => c.id !== commentId)
+              .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
+          },
+        })),
+
+      incrementNumComentarios: (publicacionId) =>
+        set((state) => ({
+          updatedNumComentarios: {
+            ...state.updatedNumComentarios,
+            [publicacionId]: (state.updatedNumComentarios[publicacionId] || 0) + 1,
+          },
+        })),
+
+      decrementNumComentarios: (publicacionId) =>
+        set((state) => {
+          const currentCount = state.updatedNumComentarios[publicacionId] || 0;
+          return {
+            updatedNumComentarios: {
+              ...state.updatedNumComentarios,
+              [publicacionId]: Math.max(currentCount - 1, 0), // Evita contadores negativos
+            },
+          };
+        }),
+
+      updateLikes: (publicacionId, newLikes) =>
+        set((state) => ({
+          updatedLikes: {
+            ...state.updatedLikes,
+            [publicacionId]: newLikes,
+          },
+        })),
+
+      updateUserReaction: (publicacionId, reaction) =>
+        set((state) => ({
+          updatedUserReaction: {
+            ...state.updatedUserReaction,
+            [publicacionId]: reaction,
+          },
+        })),
+
+      updateCompartidos: (publicacionId, newCount) =>
+        set((state) => ({
+          updatedCompartidos: {
+            ...state.updatedCompartidos,
+            [publicacionId]: newCount,
+          },
+        })),
+    }),
+    {
+      name: "publicacion-modal-storage", // Namespace único en localStorage
+      storage: createJSONStorage(() => localStorage), // Usa localStorage (o sessionStorage para efímero)
+      partialize: (state) => ({
+        // Solo persiste estados críticos (no modales efímeros como isModalOpen)
+        updatedComments: state.updatedComments,
+        updatedNumComentarios: state.updatedNumComentarios,
+        updatedLikes: state.updatedLikes,
+        updatedUserReaction: state.updatedUserReaction,
+        updatedCompartidos: state.updatedCompartidos,
+      }),
+      // Opcional: onRehydrateStorage: () => (state, error) => { if (error) console.warn('Hydration failed'); }
+      // Limpia storage en rehydrate si >1 día (para evitar datos obsoletos)
+    }
+  )
+);

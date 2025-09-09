@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback, useMemo, useRef, useEffect, memo } from "react";
+import React, { useState, useMemo, useRef, useEffect, memo } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
@@ -11,8 +11,7 @@ import { SocialMediaCarousel } from "@/publicaciones/componentes/SocialMediaPubl
 import clsx from "clsx";
 import "./FeedPublicaciones.css";
 import { PublicacionesResult } from "@/actions/perfil/getInfoPerfilSlugNegocio";
-import { PublicacionSencilla, Media } from "../interfaces/publicacionSencilla.interface";
-
+import { EnhancedPublicacion, Media } from "../interfaces/enhancedPublicacion.interface";
 
 interface ProductDestacado {
   id: string;
@@ -23,17 +22,18 @@ interface ProductDestacado {
 }
 
 interface FeedPublicacionesProps {
-  publicaciones: PublicacionSencilla[];
+  publicaciones: EnhancedPublicacion[];  // Confirmado: Array completo para flujo a subcomponentes
   productosDestacados?: ProductDestacado[];
   widgets?: { id: string; titulo: string; contenido?: string }[];
 }
 
-const componentMap: Record<string, React.FC<{ publicacion: PublicacionSencilla }>> = {
+const componentMap: Record<string, React.FC<{ publicacion: EnhancedPublicacion }>> = {
   TESTIMONIO: ShowTestimonioPublicacion,
   CARRUSEL_IMAGENES: SocialMediaCarousel,
 };
 
 const WidgetCard: React.FC<{ id: string; titulo: string; contenido?: string }> = ({
+  id,
   titulo,
   contenido,
 }) => (
@@ -83,8 +83,9 @@ const ProductosDestacados: React.FC<{ productos: ProductDestacado[] }> = ({ prod
   </div>
 );
 
-function reorderForColumns<T>(items: T[], cols: number): T[] {
-  if (cols <= 1) return items;
+// Función para reordenar en columnas (mejora: type guard para items)
+function reorderForColumns<T extends EnhancedPublicacion>(items: T[], cols: number): T[] {
+  if (cols <= 1 || !items.length) return items;  // Type guard: evita errores en empty array
   const out: T[] = [];
   for (let c = 0; c < cols; c++) {
     for (let i = c; i < items.length; i += cols) out.push(items[i]);
@@ -92,24 +93,26 @@ function reorderForColumns<T>(items: T[], cols: number): T[] {
   return out;
 }
 
-const FeedPublicaciones: React.FC<FeedPublicacionesProps> = ({
-  publicaciones: initialPublicaciones,
+const FeedPublicaciones: React.FC<FeedPublicacionesProps> = memo(({
+  publicaciones: initialPublicaciones = [],  // Fallback a [] para robustez SSR
   productosDestacados = [],
   widgets = [],
 }) => {
-  const [filtro, setFiltro] = useState<"Recientes" | "Videos" | "Carruseles">("Recientes");
-  const [dynamicPublicaciones, setDynamicPublicaciones] = useState<PublicacionSencilla[]>([]);
+  const [filtro, setFiltro] = useState<"Recientes" | "Videos" | "Carruseles" | "Populares">("Recientes");  // Agregado "Populares" para engagement
+  const [dynamicPublicaciones, setDynamicPublicaciones] = useState<EnhancedPublicacion[]>([]);
   const observerRef = useRef<HTMLDivElement>(null);
   const hasReachedEndRef = useRef(false);
   const [hasReachedEndLocal, setHasReachedEndLocal] = useState(false);
   const observer = useRef<IntersectionObserver | null>(null);
 
-  // Log inicial para verificar initialPublicaciones
+  // Log inicial para verificar initialPublicaciones (mejora: solo en dev)
   useEffect(() => {
-    console.log(
-      "Initial publicaciones:",
-      initialPublicaciones.map((pub) => ({ id: pub.id, tipo: pub.tipo, createdAt: pub.createdAt }))
-    );
+    if (process.env.NODE_ENV === "development") {
+      console.log(
+        "Initial publicaciones en FeedPublicaciones:",
+        initialPublicaciones.map((pub) => ({ id: pub.id, tipo: pub.tipo, createdAt: pub.createdAt, hasUserReaction: !!pub.userReaction }))
+      );
+    }
   }, [initialPublicaciones]);
 
   const getKey = (pageIndex: number, previousPageData: PublicacionesResult | null) => {
@@ -122,7 +125,6 @@ const FeedPublicaciones: React.FC<FeedPublicacionesProps> = ({
       console.log("getKey: No slug available");
       return null;
     }
-    // Comenzar desde skip=10, ya que initialPublicaciones ya cubre las primeras 10
     const skip = initialPublicaciones.length + pageIndex * 10;
     const url = `/api/publicaciones/${slug}?skip=${skip}&take=10`;
     console.log("getKey: pageIndex=", pageIndex, "skip=", skip, "url=", url);
@@ -161,36 +163,38 @@ const FeedPublicaciones: React.FC<FeedPublicacionesProps> = ({
     }
   );
 
-  // Almacenar publicaciones dinámicas en el estado local
+  // Almacenar publicaciones dinámicas en el estado local (mejora: type guard para data)
   useEffect(() => {
-    if (data) {
+    if (data && Array.isArray(data)) {  // Type guard: evita flatMap en undefined
       const newDynamicPublicaciones = data.flatMap((page) => page.publicaciones || []);
-      console.log("Updating dynamic publicaciones:", newDynamicPublicaciones.length);
-      console.log(
-        "New dynamic publicaciones:",
-        newDynamicPublicaciones.map((pub) => ({ id: pub.id, tipo: pub.tipo, createdAt: pub.createdAt }))
-      );
-      setDynamicPublicaciones((prev) => {
-        const publicationMap = new Map<string, PublicacionSencilla>();
-        prev.forEach((pub) => publicationMap.set(pub.id, pub));
-        newDynamicPublicaciones.forEach((pub) => publicationMap.set(pub.id, pub));
-        const updated = Array.from(publicationMap.values());
+      if (process.env.NODE_ENV === "development") {
+        console.log("Updating dynamic publicaciones:", newDynamicPublicaciones.length);
         console.log(
-          "Updated dynamic publicaciones:",
-          updated.map((pub) => ({ id: pub.id, tipo: pub.tipo, createdAt: pub.createdAt }))
+          "New dynamic publicaciones:",
+          newDynamicPublicaciones.map((pub) => ({ id: pub.id, tipo: pub.tipo, createdAt: pub.createdAt, hasUserReaction: !!pub.userReaction }))
         );
+      }
+      setDynamicPublicaciones((prev) => {
+        const publicationMap = new Map<string, EnhancedPublicacion>();
+        prev.forEach((pub) => publicationMap.set(pub.id, pub));
+        newDynamicPublicaciones.forEach((pub) => publicationMap.set(pub.id, pub));  // Merge unique por ID, preservando userReaction
+        const updated = Array.from(publicationMap.values());
+        if (process.env.NODE_ENV === "development") {
+          console.log(
+            "Updated dynamic publicaciones:",
+            updated.map((pub) => ({ id: pub.id, tipo: pub.tipo, createdAt: pub.createdAt, hasUserReaction: !!pub.userReaction }))
+          );
+        }
         return updated;
       });
     }
   }, [data]);
 
   const publicaciones = useMemo(() => {
-    const publicationMap = new Map<string, PublicacionSencilla>();
-
+    const publicationMap = new Map<string, EnhancedPublicacion>();
     initialPublicaciones.forEach((pub) => publicationMap.set(pub.id, pub));
     dynamicPublicaciones.forEach((pub) => publicationMap.set(pub.id, pub));
-
-    return Array.from(publicationMap.values());
+    return Array.from(publicationMap.values());  // Flujo intacto: Array completo de EnhancedPublicacion
   }, [initialPublicaciones, dynamicPublicaciones]);
 
   const publicacionesFiltradas = useMemo(() => {
@@ -204,7 +208,10 @@ const FeedPublicaciones: React.FC<FeedPublicacionesProps> = ({
       case "Carruseles":
         filtered = filtered.filter((pub) => pub.tipo === "CARRUSEL_IMAGENES");
         break;
-      default:
+      case "Populares":  // Nuevo filtro: Sort por engagement (numLikes + numComentarios)
+        filtered.sort((a, b) => ((b.numLikes || 0) + (b.numComentarios || 0)) - ((a.numLikes || 0) + (a.numComentarios || 0)));
+        break;
+      default:  // "Recientes"
         filtered.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     }
     return filtered;
@@ -215,7 +222,7 @@ const FeedPublicaciones: React.FC<FeedPublicacionesProps> = ({
   useEffect(() => {
     const update = () => {
       const w = window.innerWidth;
-      setCols(w <= 768 ? 1 : w <= 1100 ? 2 : 3);
+      setCols(w <= 768 ? 1 : w <= 1100 ? 2 : 3);  // Responsive masonry: 1 col mobile, 3 desktop
     };
     update();
     window.addEventListener("resize", update);
@@ -235,6 +242,15 @@ const FeedPublicaciones: React.FC<FeedPublicacionesProps> = ({
     () => reorderForColumns(noFijadas, cols),
     [noFijadas, cols]
   );
+
+  // Cleanup observer (mejora: previene leaks en unmount para performance en SPA)
+  useEffect(() => {
+    return () => {
+      if (observer.current) {
+        observer.current.disconnect();
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (hasReachedEndRef.current) {
@@ -266,19 +282,24 @@ const FeedPublicaciones: React.FC<FeedPublicacionesProps> = ({
     };
   }, [isLoading, isValidating, setSize, size]);
 
-  const renderPublicacion = (publicacion: PublicacionSencilla) => {
-    const Component = componentMap[publicacion.tipo] || ShowTestimonioPublicacion;
-    return <Component key={publicacion.id} publicacion={publicacion} />;
+  const renderPublicacion = (publicacion: EnhancedPublicacion) => {
+    // Type guard para tipo válido (mejora: TS strict, fallback a ShowTestimonio si tipo inválido)
+    const Component = componentMap[publicacion.tipo as keyof typeof componentMap] || ShowTestimonioPublicacion;
+    return <Component key={publicacion.id} publicacion={publicacion} />;  // Flujo intacto: publicacion completa para Interactions (numLikes, userReaction, etc.)
   };
 
   const Loader = () => (
-    <div className="flex justify-center items-center h-24">
+    <motion.div  // Mejora: Animación con motion para elegancia
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="flex justify-center items-center h-24"
+    >
       <div className="flex space-x-2">
         <div className="w-3 h-3 bg-blue-600 rounded-full animate-bounce"></div>
-        <div className="w-3 h-3 bg-blue-600 rounded-full animate-bounce delay-100"></div>
-        <div className="w-3 h-3 bg-blue-600 rounded-full animate-bounce delay-200"></div>
+        <div className="w-3 h-3 bg-blue-600 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+        <div className="w-3 h-3 bg-blue-600 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
       </div>
-    </div>
+    </motion.div>
   );
 
   const styles = `
@@ -289,8 +310,6 @@ const FeedPublicaciones: React.FC<FeedPublicacionesProps> = ({
     .animate-bounce {
       animation: bounce 0.6s infinite;
     }
-    .delay-100 { animation-delay: 0.1s; }
-    .delay-200 { animation-delay: 0.2s; }
   `;
 
   return (
@@ -298,15 +317,15 @@ const FeedPublicaciones: React.FC<FeedPublicacionesProps> = ({
       <style>{styles}</style>
       <div className="flex justify-between items-center mb-6">
         <div className="flex gap-2 flex-wrap">
-          {["Recientes", "Videos", "Carruseles"].map((f) => (
+          {["Recientes", "Populares", "Videos", "Carruseles"].map((f) => (  // Agregado "Populares" al filtro
             <button
               key={f}
               onClick={() => setFiltro(f as typeof filtro)}
               className={clsx(
                 "px-4 py-2 rounded-full text-sm font-medium transition-colors",
                 filtro === f
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  ? "bg-blue-600 text-white shadow-md"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-sm"
               )}
               aria-label={`Filtrar por ${f}`}
             >
@@ -317,7 +336,7 @@ const FeedPublicaciones: React.FC<FeedPublicacionesProps> = ({
         <FaFilter className="text-gray-500 text-lg" aria-hidden="true" />
       </div>
 
-      <div className="flex-1 masonry-container">
+      <div className="flex-1 masonry-container">  {/* Masonry responsive ya con cols */}
         {fijadas.map((pub) => (
           <motion.div
             key={pub.id}
@@ -351,15 +370,15 @@ const FeedPublicaciones: React.FC<FeedPublicacionesProps> = ({
         <div ref={observerRef} className="mt-4">
           {(isLoading || isValidating) && <Loader />}
           {hasReachedEndLocal && (
-            <p className="text-center text-gray-600">No hay más publicaciones que mostrar.</p>
+            <p className="text-center text-gray-600 py-8">No hay más publicaciones que mostrar.</p>
           )}
           {error && (
-            <p className="text-center text-red-600">Error al cargar publicaciones: {error.message}</p>
+            <p className="text-center text-red-600 py-8">Error al cargar publicaciones: {error.message}</p>
           )}
         </div>
       </div>
     </div>
   );
-};
+});
 
-export default memo(FeedPublicaciones);
+export default FeedPublicaciones;

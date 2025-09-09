@@ -137,19 +137,20 @@ export interface FeedItem {
 export interface FeedQueryParams {
   ciudad: string;
   departamento: string;
-  preferencias: string[]; // Slugs de categorías
-  secciones: string[]; // Ids de secciones
-  page: number; // Para paginación
-  limit: number; // e.g., 20
-  seenIds: string[]; // Para anti-duplicados (ids como 'product-uuid')
-  followedBusinessIds?: string[]; // Opcional: solo si auth, para boost en scores
-  cursor?: { product?: string; publication?: string; service?: string; business?: string };
+  preferencias: string[]; 
+  secciones: string[]; 
+  page?: number; // Ahora opcional
+  limit: number; 
+  seenIds: string[]; 
+  followedBusinessIds?: string[]; 
+  cursor?: string; // Simplificado
 }
 
-// Para respuesta de getFeedData (en Paso 3)
+
+
 export interface FeedResponse {
   items: FeedItem[];
-  nextCursor: { product?: string; publication?: string; service?: string; business?: string }; // Cursor por tipo para paginación paralela
+  nextCursor?: string; // Simplificado a string | undefined
 }
 
 interface FeedRendererProps {

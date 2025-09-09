@@ -12,7 +12,7 @@ import {
 } from "../feed.interfaces";
 import { RawBusiness, RawData, RawProduct, RawPublication, RawService } from "./selects";
 
-// Overloads
+// Overloads (sin cambios)
 export function mapToFeedItem(raw: RawProduct, type: 'product'): FeedItem;
 export function mapToFeedItem(raw: RawPublication, type: 'publication'): FeedItem;
 export function mapToFeedItem(raw: RawService, type: 'service'): FeedItem;
@@ -22,14 +22,24 @@ export function mapToFeedItem(raw: RawData, type: FeedItemType): FeedItem {
   switch (type) {
     case 'product':
       if (!isRawProduct(raw)) throw new Error('Raw no matcha Product');
+      
+      // Fix: Validación robusta para imageUrl (evita crash si imagenes es undefined/null)
+      let imageUrlProduct = '';
+      if (raw.imagenes && Array.isArray(raw.imagenes) && raw.imagenes.length > 0) {
+        imageUrlProduct = raw.imagenes[0].url || ''; // Acceso seguro post-validación
+      } else {
+        // Fallback elegante: Placeholder responsive de tu app (ajusta la ruta según tu assets)
+        imageUrlProduct = '/imgs/placeholder-producto.png'; // O raw.negocio?.fotoPerfil si aplica para negocio
+      }
+
       return {
         id: raw.id,
         type,
         score: 0,
-        createdAt: raw.createdAt instanceof Date ? raw.createdAt : new Date(raw.createdAt ?? Date.now()), // Unificar a Date
+        createdAt: raw.createdAt instanceof Date ? raw.createdAt : new Date(raw.createdAt ?? Date.now()),
         title: raw.nombre,
         descriptionShort: raw.descripcionCorta || (raw.descripcion ? raw.descripcion.slice(0, 100) : ''),
-        imageUrl: raw.imagenes[0]?.url || '',
+        imageUrl: imageUrlProduct,
         businessSlug: raw.negocio?.slug || '',
         isFollowed: false,
         data: {
@@ -43,22 +53,31 @@ export function mapToFeedItem(raw: RawData, type: FeedItemType): FeedItem {
           status: raw.status,
           tags: raw.tags,
           categoriaId: raw.categoryId,
-          imagenes: raw.imagenes.map(img => img.url),
+          imagenes: raw.imagenes ? raw.imagenes.map(img => img.url) : [], // Guard para map (evita crash en data)
           componentes: raw.componentes || [],
-          sections: raw.secciones.map(s => s.section.id),
-          slugNegocio: raw.negocio.slug || '',
-          nombreNegocio: raw.negocio.nombre || '',
-          telefonoContacto: raw.negocio.telefonoContacto || "",
-          negocioId: raw.negocio.id,
-          negocioFotoPerfil: raw.negocio.fotoPerfil || "imgs/admin-avatar.webp",
-          ciudad: raw.negocio.ciudad ?? '',
-          departamento: raw.negocio.departamento ?? '',
+          sections: raw.secciones ? raw.secciones.map(s => s.section.id) : [], // Similar guard
+          slugNegocio: raw.negocio?.slug || '',
+          nombreNegocio: raw.negocio?.nombre || '',
+          telefonoContacto: raw.negocio?.telefonoContacto || "",
+          negocioId: raw.negocio?.id || '',
+          negocioFotoPerfil: raw.negocio?.fotoPerfil || "/imgs/admin-avatar.webp",
+          ciudad: raw.negocio?.ciudad ?? '',
+          departamento: raw.negocio?.departamento ?? '',
         } as ProductRedSocial,
         price: raw.precio,
         status: raw.status,
       };
     case 'publication':
       if (!isRawPublication(raw)) throw new Error('Raw no matcha Publication');
+      
+      // Fix: Validación robusta para imageUrl (evita crash si multimedia es undefined/null)
+      let imageUrlPublication = '';
+      if (raw.multimedia && Array.isArray(raw.multimedia) && raw.multimedia.length > 0) {
+        imageUrlPublication = raw.multimedia[0].url || '';
+      } else {
+        imageUrlPublication = '/imgs/placeholder-publicacion.png'; // Placeholder para publicaciones sin media
+      }
+
       return {
         id: raw.id,
         type,
@@ -66,7 +85,7 @@ export function mapToFeedItem(raw: RawData, type: FeedItemType): FeedItem {
         createdAt: raw.createdAt instanceof Date ? raw.createdAt : new Date(raw.createdAt),
         title: raw.titulo || 'Publicación',
         descriptionShort: raw.descripcion ? raw.descripcion.slice(0, 100) : '',
-        imageUrl: raw.multimedia[0]?.url || '',
+        imageUrl: imageUrlPublication,
         businessSlug: raw.negocio?.slug || '',
         isFollowed: false,
         data: {
@@ -75,13 +94,13 @@ export function mapToFeedItem(raw: RawData, type: FeedItemType): FeedItem {
           tipo: raw.tipo,
           titulo: raw.titulo,
           descripcion: raw.descripcion,
-          multimedia: raw.multimedia.map(m => ({
+          multimedia: raw.multimedia ? raw.multimedia.map(m => ({
             id: m.id || '',
             url: m.url,
             tipo: m.tipo || 'IMAGEN',
             formato: m.formato,
             orden: m.orden || 0,
-          })),
+          })) : [], // Guard para map (evita crash en data)
           visibilidad: raw.visibilidad,
           createdAt: raw.createdAt instanceof Date ? raw.createdAt.toISOString() : raw.createdAt,
           numLikes: raw.numLikes,
@@ -99,6 +118,15 @@ export function mapToFeedItem(raw: RawData, type: FeedItemType): FeedItem {
       };
     case 'service':
       if (!isRawService(raw)) throw new Error('Raw no matcha Service');
+      
+      // Fix: Validación robusta para imageUrl (evita crash si multimedia es undefined/null)
+      let imageUrlService = '';
+      if (raw.multimedia && Array.isArray(raw.multimedia) && raw.multimedia.length > 0) {
+        imageUrlService = raw.multimedia[0].url || '';
+      } else {
+        imageUrlService = '/imgs/placeholder-servicio.png'; // Placeholder para servicios sin media
+      }
+
       return {
         id: raw.id || '',
         type,
@@ -106,7 +134,7 @@ export function mapToFeedItem(raw: RawData, type: FeedItemType): FeedItem {
         createdAt: raw.createdAt instanceof Date ? raw.createdAt : new Date(raw.createdAt ?? Date.now()),
         title: raw.titulo,
         descriptionShort: raw.descripcion[0]?.slice(0, 100) || '',
-        imageUrl: raw.multimedia?.[0]?.url || '',
+        imageUrl: imageUrlService,
         businessSlug: raw.negocio?.slug || '',
         isFollowed: false,
         data: {
@@ -118,7 +146,7 @@ export function mapToFeedItem(raw: RawData, type: FeedItemType): FeedItem {
           currency: raw.currency,
           status: raw.status,
           tags: raw.tags,
-          multimedia: raw.multimedia || [],
+          multimedia: raw.multimedia || [], // Array vacío si undefined
           negocioId: raw.negocio.id,
           negocioSlug: raw.negocio.slug,
           nombreNegocio: raw.negocio.nombre,
@@ -130,6 +158,10 @@ export function mapToFeedItem(raw: RawData, type: FeedItemType): FeedItem {
       };
     case 'business':
       if (!isRawBusiness(raw)) throw new Error('Raw no matcha Business');
+      
+      // Para negocios: fotoPerfil es string directo, pero agregar guard opcional por consistencia
+      const imageUrlBusiness = raw.fotoPerfil || '/imgs/placeholder-negocio.png';
+
       return {
         id: raw.id,
         type,
@@ -137,7 +169,7 @@ export function mapToFeedItem(raw: RawData, type: FeedItemType): FeedItem {
         createdAt: raw.createdAt instanceof Date ? raw.createdAt : new Date(raw.createdAt),
         title: raw.nombre,
         descriptionShort: raw.descripcion ? raw.descripcion.slice(0, 100) : '',
-        imageUrl: raw.fotoPerfil || '',
+        imageUrl: imageUrlBusiness,
         businessSlug: raw.slug,
         isFollowed: false,
         data: {
@@ -152,8 +184,8 @@ export function mapToFeedItem(raw: RawData, type: FeedItemType): FeedItem {
           imagenPortada: raw.fotoPortada,
           telefonoContacto: raw.telefonoContacto,
           urlGoogleMaps: raw.urlGoogleMaps,
-          categorias: raw.categorias.map(c => c.category.slug),
-          secciones: raw.secciones.map(s => s.section.id),
+          categorias: raw.categorias ? raw.categorias.map(c => c.category.slug) : [], // Guard para map
+          secciones: raw.secciones ? raw.secciones.map(s => s.section.id) : [], // Similar
           estado: raw.estado,
           createdAt: raw.createdAt instanceof Date ? raw.createdAt : new Date(raw.createdAt),
         } as BusinessCardData,
