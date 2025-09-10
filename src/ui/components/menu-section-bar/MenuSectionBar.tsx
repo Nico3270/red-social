@@ -68,7 +68,7 @@ export const MenuSectionsBar = () => {
               </div>
             ))
           : initialData.categorias.map((section) => (
-              <Link key={section.id} href={`/seccion/${section.slug}`}>
+              <Link key={section.id} href={`/category/${section.slug}`}>
                 <div className="flex flex-col items-center text-center min-w-[80px] sm:min-w-[100px] flex-shrink-0 cursor-pointer">
                   <motion.img
                     src={`/imgs/iconos/${section.iconName}`}

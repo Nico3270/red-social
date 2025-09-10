@@ -78,73 +78,8 @@ enum Genero {
   otro
 }
 
-model Negocio {
-  id               String            @id @default(uuid())
-  usuarioId        String            @unique
-  usuario          Usuario           @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
-  nombre           String
-  slug             String            @unique
-  categorias       NegocioCategory[]
-  secciones        NegocioSection[]
-  descripcion      String?
-  ciudad           String
-  departamento     String
-  direccion        String? // Nuevo: Dirección legible
-  urlGoogleMaps    String?
-  latitud          Float?
-  longitud         Float?
-  horarios         Json?
-  imagenes         String[]
-  fotoPerfil       String?
-  fotoPortada      String?
-  sitioWeb         String?
-  telefonoContacto String?
-  Product          Product[]
-  estado           EstadoNegocio     @default(activo)
 
-  createdAt     DateTime              @default(now())
-  updatedAt     DateTime              @updatedAt
-  publicaciones Publicacion[] // Relación para reseñas y anuncios
-  orders        Order[] // 🔹 Campo inverso para relación con Order
-  // 🔹 Campos inversos agregados
-  availability  BusinessAvailability? // relación 1:1
-  reservations  Reservation[] // relación 1:N
-  Servicio      Servicio[]
-  encuestas     Encuesta[]            @relation("NegocioEncuestas")
-  preguntas     Pregunta[]            @relation("NegocioPreguntas")
-  followsIn  Follow[] @relation("FollowedBusiness") // Follows recibidos como negocio, con name para match
 
-  @@index([ciudad])
-  @@index([departamento])
-  @@index([estado])
-  @@index([usuarioId])
-}
-
-model Follow {
-  id                String   @id @default(cuid())
-  followerId        String   // ID del seguidor (Usuario)
-  followedUserId    String?  // ID para Usuario seguido (setear si type USER_TO_USER o BUSINESS_TO_USER)
-  followedBusinessId String? // ID para Negocio seguido (setear si type USER_TO_BUSINESS)
-  type              FollowType
-  createdAt         DateTime @default(now())
-
-  // Relaciones con map únicos
-  follower          Usuario  @relation("Follower", fields: [followerId], references: [id], onDelete: Cascade)
-  followedUser      Usuario? @relation("FollowedUser", fields: [followedUserId], references: [id], onDelete: Cascade, map: "fk_follow_followed_user")
-  followedBusiness  Negocio? @relation("FollowedBusiness", fields: [followedBusinessId], references: [id], onDelete: Cascade, map: "fk_follow_followed_business")
-
-  @@unique([followerId, followedUserId])    // Único para user-user o business-user
-  @@unique([followerId, followedBusinessId]) // Único para user-business
-  @@index([followerId, type])
-  @@index([followedUserId, type])
-  @@index([followedBusinessId, type])
-}
-
-enum FollowType {
-  USER_TO_BUSINESS    // Usuario sigue Negocio (principal)
-  BUSINESS_TO_USER    // Negocio sigue Usuario (e.g., para marketing)
-  USER_TO_USER        // Usuario sigue Usuario (social puro, si expands)
-}
 
 
 
@@ -255,32 +190,6 @@ enum PaymentMethod {
 
 
 
-enum EstadoNegocio {
-  activo
-  suspendido
-  eliminado
-}
-
-model NegocioCategory {
-  negocioId  String
-  categoryId String
-  negocio    Negocio  @relation(fields: [negocioId], references: [id], onDelete: Cascade)
-  category   Category @relation(fields: [categoryId], references: [id])
-
-  @@unique([negocioId, categoryId])
-  @@index([categoryId])
-}
-
-model NegocioSection {
-  negocioId String
-  sectionId String
-  negocio   Negocio @relation(fields: [negocioId], references: [id], onDelete: Cascade)
-  section   Section @relation("NegocioSection", fields: [sectionId], references: [id]) // ✅ se agregó el nombre
-  prioridad Int     @default(0)
-
-  @@unique([negocioId, sectionId])
-  @@index([sectionId])
-}
 
 model Order {
   id             String               @id @default(uuid())
@@ -459,19 +368,6 @@ enum Currency {
 
 
 
-model Category {
-  id        String    @id @default(uuid())
-  nombre    String
-  slug      String    @unique
-  iconName  String? // Ícono opcional para UI
-  secciones Section[]
-  productos Product[] // Productos relacionados
-  isActive  Boolean   @default(true) // ✅ AGREGAR ESTA LÍNEA
-
-  createdAt DateTime          @default(now())
-  updatedAt DateTime          @updatedAt
-  negocios  NegocioCategory[] // sin @relation (usa nombre implícito o explícito si lo necesitas)
-}
 
 
 
@@ -479,28 +375,58 @@ model Category {
 
 // Apartado de publicaciones
 
-model Publicacion {
-  id                     String                @id @default(cuid())
-  usuarioId              String
-  usuario                Usuario               @relation(fields: [usuarioId], references: [id])
-  negocioId              String? // Nuevo campo para asociar con Negocio
-  negocio                Negocio?              @relation(fields: [negocioId], references: [id], onDelete: Cascade)
-  tipo                   PublicacionTipo
-  titulo                 String?
-  descripcion            String?
-  multimedia             Media[] // Cambiado a Media
-  visibilidad            Visibilidad           @default(PUBLICA)
-  createdAt              DateTime              @default(now())
-  updatedAt              DateTime              @updatedAt
-  productosEnPublicacion PublicacionProducto[]
-  numLikes               Int                   @default(0)
-  numComentarios         Int                   @default(0)
-  numCompartidos         Int                   @default(0)
-  interacciones          Interaccion[]         @relation("PublicacionInteracciones")
+model Follow {
+  id                String   @id @default(cuid())
+  followerId        String   // ID del seguidor (Usuario)
+  followedUserId    String?  // ID para Usuario seguido (setear si type USER_TO_USER o BUSINESS_TO_USER)
+  followedBusinessId String? // ID para Negocio seguido (setear si type USER_TO_BUSINESS)
+  type              FollowType
+  createdAt         DateTime @default(now())
 
+  // Relaciones con map únicos
+  follower          Usuario  @relation("Follower", fields: [followerId], references: [id], onDelete: Cascade)
+  followedUser      Usuario? @relation("FollowedUser", fields: [followedUserId], references: [id], onDelete: Cascade, map: "fk_follow_followed_user")
+  followedBusiness  Negocio? @relation("FollowedBusiness", fields: [followedBusinessId], references: [id], onDelete: Cascade, map: "fk_follow_followed_business")
+
+  @@unique([followerId, followedUserId])    // Único para user-user o business-user
+  @@unique([followerId, followedBusinessId]) // Único para user-business
+  @@index([followerId, type])
+  @@index([followedUserId, type])
+  @@index([followedBusinessId, type])
+  @@index([followedBusinessId])
+}
+
+enum FollowType {
+  USER_TO_BUSINESS    // Usuario sigue Negocio (principal)
+  BUSINESS_TO_USER    // Negocio sigue Usuario (e.g., para marketing)
+  USER_TO_USER        // Usuario sigue Usuario (social puro, si expands)
+}
+
+
+model Publicacion {
+  id String @id @default(cuid())
+  usuarioId String
+  usuario Usuario @relation(fields: [usuarioId], references: [id])
+  negocioId String? // Nuevo campo para asociar con Negocio
+  negocio Negocio? @relation(fields: [negocioId], references: [id], onDelete: Cascade)
+  tipo PublicacionTipo
+  titulo String?
+  descripcion String?
+  multimedia Media[] // Cambiado a Media
+  visibilidad Visibilidad @default(PUBLICA)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  productosEnPublicacion PublicacionProducto[]
+  numLikes Int @default(0)
+  numComentarios Int @default(0)
+  numCompartidos Int @default(0)
+  order Float @default(5.0) // NUEVO: Score precomputado (1.0-10.0, default neutral para nuevas)
+  interacciones Interaccion[] @relation("PublicacionInteracciones")
   @@index([tipo, visibilidad, createdAt])
   @@index([usuarioId, createdAt])
   @@index([negocioId, createdAt])
+  @@index([negocioId, visibilidad, createdAt])
+  @@index([order(sort: Desc), createdAt(sort: Desc)]) // NUEVO: Para orderBy eficiente en feeds (top scores primero, fallback recencia)
 }
 
 enum Visibilidad {
@@ -539,11 +465,134 @@ model Media {
   servicioId    String?
   publicacion   Publicacion?   @relation(fields: [publicacionId], references: [id], onDelete: Cascade)
   servicio      Servicio?      @relation(fields: [servicioId], references: [id], onDelete: Cascade)
+  @@index([publicacionId])
+  @@index([publicacionId, tipo])
 }
+
+
+model Interaccion {
+  id            String          @id @default(cuid())
+  tipo          InteraccionTipo
+  contenido     String?         @db.Text // Cambiar a Text para soportar comentarios largos
+  reaccionTipo  ReaccionTipo?
+  usuarioId     String
+  publicacionId String
+  createdAt     DateTime        @default(now())
+
+  usuario     Usuario     @relation("UsuarioInteracciones", fields: [usuarioId], references: [id])
+  publicacion Publicacion @relation("PublicacionInteracciones", fields: [publicacionId], references: [id], onDelete: Cascade)
+
+  @@index([publicacionId, createdAt]) // Índice compuesto para paginación y ordenamiento
+  @@index([publicacionId, tipo]) // Índice para filtrar por tipo (ej. solo comentarios)
+  @@index([usuarioId, createdAt]) // Índice para actividad del usuario
+  @@index([publicacionId, reaccionTipo])
+}
+
+enum InteraccionTipo {
+  COMENTARIO
+  REACCION
+  COMPARTIDO
+}
+
+enum ReaccionTipo {
+  LIKE
+  LOVE
+  WOW
+  SAD
+  ANGRY
+}
+
+
 
 enum MultimediaTipo {
   IMAGEN
   VIDEO
+}
+
+model Negocio {
+  id               String            @id @default(uuid())
+  usuarioId        String            @unique
+  usuario          Usuario           @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  nombre           String
+  slug             String            @unique
+  categorias       NegocioCategory[]
+  secciones        NegocioSection[]
+  descripcion      String?
+  ciudad           String
+  departamento     String
+  direccion        String? // Nuevo: Dirección legible
+  urlGoogleMaps    String?
+  latitud          Float?
+  longitud         Float?
+  horarios         Json?
+  imagenes         String[]
+  fotoPerfil       String?
+  fotoPortada      String?
+  sitioWeb         String?
+  telefonoContacto String?
+  Product          Product[]
+  estado           EstadoNegocio     @default(activo)
+
+  createdAt     DateTime              @default(now())
+  updatedAt     DateTime              @updatedAt
+  publicaciones Publicacion[] // Relación para reseñas y anuncios
+  orders        Order[] // 🔹 Campo inverso para relación con Order
+  // 🔹 Campos inversos agregados
+  availability  BusinessAvailability? // relación 1:1
+  reservations  Reservation[] // relación 1:N
+  Servicio      Servicio[]
+  encuestas     Encuesta[]            @relation("NegocioEncuestas")
+  preguntas     Pregunta[]            @relation("NegocioPreguntas")
+  followsIn  Follow[] @relation("FollowedBusiness") // Follows recibidos como negocio, con name para match
+
+  @@index([ciudad])
+  @@index([departamento])
+  @@index([estado])
+  @@index([usuarioId])
+  @@index([estado, createdAt])
+}
+
+enum EstadoNegocio {
+  activo
+  suspendido
+  eliminado
+}
+
+model NegocioCategory {
+  negocioId  String
+  categoryId String
+  negocio    Negocio  @relation(fields: [negocioId], references: [id], onDelete: Cascade)
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  @@unique([negocioId, categoryId])
+  @@index([categoryId])
+}
+
+model NegocioSection {
+  negocioId String
+  sectionId String
+  negocio   Negocio @relation(fields: [negocioId], references: [id], onDelete: Cascade)
+  section   Section @relation("NegocioSection", fields: [sectionId], references: [id]) // ✅ se agregó el nombre
+  prioridad Int     @default(0)
+
+  @@unique([negocioId, sectionId])
+  @@index([sectionId])
+}
+
+model Category {
+  id        String    @id @default(uuid())
+  nombre    String
+  slug      String    @unique
+  iconName  String? // Ícono opcional para UI
+  secciones Section[]
+  productos Product[] // Productos relacionados
+  isActive  Boolean   @default(true) // ✅ AGREGAR ESTA LÍNEA
+
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  negocios  NegocioCategory[] // sin @relation (usa nombre implícito o explícito si lo necesitas)
+
+  @@index([slug])
 }
 
 model Servicio {
@@ -660,33 +709,4 @@ model Respuesta {
   usuario   Usuario? @relation("UsuarioRespuestas", fields: [usuarioId], references: [id])
 }
 
-model Interaccion {
-  id            String          @id @default(cuid())
-  tipo          InteraccionTipo
-  contenido     String?         @db.Text // Cambiar a Text para soportar comentarios largos
-  reaccionTipo  ReaccionTipo?
-  usuarioId     String
-  publicacionId String
-  createdAt     DateTime        @default(now())
 
-  usuario     Usuario     @relation("UsuarioInteracciones", fields: [usuarioId], references: [id])
-  publicacion Publicacion @relation("PublicacionInteracciones", fields: [publicacionId], references: [id], onDelete: Cascade)
-
-  @@index([publicacionId, createdAt]) // Índice compuesto para paginación y ordenamiento
-  @@index([publicacionId, tipo]) // Índice para filtrar por tipo (ej. solo comentarios)
-  @@index([usuarioId, createdAt]) // Índice para actividad del usuario
-}
-
-enum InteraccionTipo {
-  COMENTARIO
-  REACCION
-  COMPARTIDO
-}
-
-enum ReaccionTipo {
-  LIKE
-  LOVE
-  WOW
-  SAD
-  ANGRY
-}
