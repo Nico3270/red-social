@@ -1,5 +1,6 @@
 import { ProductStatus, Currency, ServicioStatus, EstadoNegocio } from "@prisma/client";
 import { RawBusiness, RawData, RawProduct, RawPublication, RawService } from "./actions/selects";
+import { EnhancedPublicacion } from "@/publicaciones/interfaces/enhancedPublicacion.interface";
 
 
 
@@ -68,26 +69,6 @@ export interface Media {
 }
 
 
-export interface PublicacionSencilla {
-  id: string;
-  usuario: User;
-  tipo: "CARRUSEL_IMAGENES" | "VIDEO_HORIZONTAL" | "VIDEO_VERTICAL" | "PRODUCTO_DESTACADO" | "MINI_GRID" | "TESTIMONIO";
-  titulo?: string;
-  descripcion?: string;
-  multimedia: Media[];
-  visibilidad: "PUBLICA" | "PRIVADA" | "AMIGOS";
-  createdAt: string;
-  isAuthenticated?: boolean;
-  onInteraction?: (
-    type: "COMENTARIO" | "REACCION" | "COMPARTIDO",
-    data: { reaction?: "LIKE" | "LOVE" | "WOW" | "SAD" | "ANGRY"; comment?: string }
-  ) => void;
-  numLikes?: number;
-  numComentarios?: number;
-  negocio?: { id: string; nombre: string; fotoPerfil?: string; slug?: string; ciudad?: string; departamento?: string };
-}
-
-// Interface para servicios
 
 
 export interface MediaItem {
@@ -127,7 +108,7 @@ export interface FeedItem {
   businessSlug: string; // Enlace a perfil de negocio
   isFollowed: boolean; // Boost visual (badge como en Instagram)
   // Data específica por tipo
-  data: ProductRedSocial | PublicacionSencilla | ServicioData | BusinessCardData;
+  data: ProductRedSocial | EnhancedPublicacion | ServicioData | BusinessCardData;
   // Opcionales: price para products/services, numLikes para publications
   price?: number;
   numLikes?: number; // Para hotness en sorting
@@ -167,7 +148,8 @@ export function isProductItem(item: FeedItem): item is FeedItem & { data: Produc
   return item.type === 'product';
 }
 
-export function isPublicationItem(item: FeedItem): item is FeedItem & { data: PublicacionSencilla } {
+export function isPublicationItem(item: FeedItem): item is FeedItem & { data: EnhancedPublicacion } {
+  // CAMBIO: Ahora usa EnhancedPublicacion en lugar de PublicacionSencilla
   return item.type === 'publication';
 }
 

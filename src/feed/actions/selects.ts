@@ -39,15 +39,61 @@ export const publicationSelect = Prisma.validator<Prisma.PublicacionSelect>()({
   id: true,
   titulo: true,
   descripcion: true,
-  multimedia: { select: { id: true, url: true, tipo: true, formato: true, orden: true } },
-  negocio: { select: { id: true, slug: true, nombre: true, fotoPerfil: true, ciudad: true, departamento: true } },
+  multimedia: { 
+    select: { id: true, url: true, tipo: true, formato: true, orden: true } 
+  },
+  negocio: { 
+    select: { 
+      id: true, 
+      slug: true, 
+      nombre: true, 
+      fotoPerfil: true, 
+      ciudad: true, 
+      departamento: true  // Útil para filtros locales en feed
+    } 
+  },
   numLikes: true,
   numComentarios: true,
-  usuario: { select: { id: true, nombre: true, apellido: true, username: true, fotoPerfil: true } },
+  numCompartidos: true,  // CAMBIO: Agregado explícitamente para EnhancedPublicacion (denormalizado)
+  usuario: { 
+    select: { 
+      id: true, 
+      nombre: true, 
+      apellido: true, 
+      username: true, 
+      fotoPerfil: true 
+    } 
+  },
   tipo: true,
   visibilidad: true,
   createdAt: true,
+  // CORREGIDO: Reemplazado 'comments' por 'interacciones' filtrado por tipo 'COMENTARIO' (como en referencia)
+  // Limitado a 3 para previews en feed; solo campos de EnhancedPublicacion.comments
+  interacciones: {
+    where: { 
+      tipo: 'COMENTARIO'  // Filtra solo comentarios (discriminador)
+    },
+    take: 3,
+    orderBy: { createdAt: 'desc' },  // Más recientes primero
+    select: {
+      id: true,
+      contenido: true,  // Campo específico de interacciones para COMENTARIO
+      createdAt: true,
+      usuario: {
+        select: {
+          id: true,
+          nombre: true,
+          apellido: true,
+          fotoPerfil: true,
+          username: true,
+        },
+      },
+    },
+  },
+  // NOTA: No incluimos interacciones para REACCION aquí (user-specific); se maneja con batch query en server action
+  // Si quieres preview genérico (e.g., total reacciones), agrega un count: { where: { tipo: 'REACCION' }, _count: true }
 });
+
 export type RawPublication = Prisma.PublicacionGetPayload<{ select: typeof publicationSelect }>;
 
 // SERVICE

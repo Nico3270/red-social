@@ -13,14 +13,18 @@ import { toast } from 'sonner';
 import FeedRenderer from "@/publicaciones/componentes/FeedRederer";
 
 
+interface ExtendedFeedQueryParams extends FeedQueryParams {
+  userId?: string | null;
+}
+
 export default function FeedComponent() {
   const { data: session } = useSession();
   const { ciudad, departamento, preferencias, secciones, seenIds, addSeenId } = usePreferencesStore();
   const [followedBusinessIds, setFollowedBusinessIds] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState<"Publicaciones" | "Productos" | "Servicios" | "Negocios">("Publicaciones"); // Español
 
-  // Params
-  const params = useMemo<FeedQueryParams | null>(() => {
+  // CAMBIO: Agrega userId a params (de session; null para anónimos)
+  const params = useMemo<ExtendedFeedQueryParams | null>(() => {
     if (!ciudad) return null;
     return {
       ciudad,
@@ -30,8 +34,9 @@ export default function FeedComponent() {
       followedBusinessIds,
       limit: 20,
       seenIds,
+      userId: session?.user?.id || null,  // CAMBIO: Incluye userId para personalización de reacciones
     };
-  }, [ciudad, departamento, preferencias, secciones, followedBusinessIds, seenIds]);
+  }, [ciudad, departamento, preferencias, secciones, followedBusinessIds, seenIds, session?.user?.id]);  // Dependencia en session para invalidar si cambia
 
   // Carga follows
   useEffect(() => {
@@ -51,11 +56,11 @@ export default function FeedComponent() {
 
  
 
-  const publicationsQuery = useInfiniteQuery<FeedResponse, Error, InfiniteData<FeedResponse>, [string, FeedQueryParams | null], string | undefined>({
-    queryKey: ['feed-publicaciones', params],
+  const publicationsQuery = useInfiniteQuery<FeedResponse, Error, InfiniteData<FeedResponse>, [string, ExtendedFeedQueryParams | null], string | undefined>({
+    queryKey: ['feed-publicaciones', params],  // Incluye userId en key para invalidar login/logout
     queryFn: async ({ pageParam }) => {
       if (!params) throw new Error("Params no listos");
-      return getFeedDataByType("publications", { ...params, cursor: pageParam });
+      return getFeedDataByType("publications", { ...params, cursor: pageParam });  // CAMBIO: Pasa userId en spread
     },
     enabled: !!params,
     getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -66,11 +71,11 @@ export default function FeedComponent() {
     retry: 2,
   });
 
-  const productsQuery = useInfiniteQuery<FeedResponse, Error, InfiniteData<FeedResponse>, [string, FeedQueryParams | null], string | undefined>({
+  const productsQuery = useInfiniteQuery<FeedResponse, Error, InfiniteData<FeedResponse>, [string, ExtendedFeedQueryParams | null], string | undefined>({
     queryKey: ['feed-productos', params],
     queryFn: async ({ pageParam }) => {
       if (!params) throw new Error("Params no listos");
-      return getFeedDataByType("products", { ...params, cursor: pageParam });
+      return getFeedDataByType("products", { ...params, cursor: pageParam });  // CAMBIO: Pasa userId (aunque no usado, para consistencia)
     },
     enabled: !!params && activeTab === "Productos",
     getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -81,11 +86,11 @@ export default function FeedComponent() {
     retry: 2,
   });
 
-  const servicesQuery = useInfiniteQuery<FeedResponse, Error, InfiniteData<FeedResponse>, [string, FeedQueryParams | null], string | undefined>({
+  const servicesQuery = useInfiniteQuery<FeedResponse, Error, InfiniteData<FeedResponse>, [string, ExtendedFeedQueryParams | null], string | undefined>({
     queryKey: ['feed-servicios', params],
     queryFn: async ({ pageParam }) => {
       if (!params) throw new Error("Params no listos");
-      return getFeedDataByType("services", { ...params, cursor: pageParam });
+      return getFeedDataByType("services", { ...params, cursor: pageParam });  // CAMBIO: Pasa userId
     },
     enabled: !!params && activeTab === "Servicios",
     getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -96,11 +101,11 @@ export default function FeedComponent() {
     retry: 2,
   });
 
-  const businessesQuery = useInfiniteQuery<FeedResponse, Error, InfiniteData<FeedResponse>, [string, FeedQueryParams | null], string | undefined>({
+  const businessesQuery = useInfiniteQuery<FeedResponse, Error, InfiniteData<FeedResponse>, [string, ExtendedFeedQueryParams | null], string | undefined>({
     queryKey: ['feed-negocios', params],
     queryFn: async ({ pageParam }) => {
       if (!params) throw new Error("Params no listos");
-      return getFeedDataByType("businesses", { ...params, cursor: pageParam });
+      return getFeedDataByType("businesses", { ...params, cursor: pageParam });  // CAMBIO: Pasa userId
     },
     enabled: !!params && activeTab === "Negocios",
     getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -111,7 +116,7 @@ export default function FeedComponent() {
     retry: 2,
   });
 
-  // Queries mapeadas
+  // Queries mapeadas (SIN CAMBIOS)
   const queries = {
     Publicaciones: publicationsQuery,
     Productos: productsQuery,

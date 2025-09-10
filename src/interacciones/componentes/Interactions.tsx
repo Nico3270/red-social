@@ -9,17 +9,9 @@ import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { postInteraccionPublicacion } from "@/publicaciones/actions/postInteraccionPublicacion";
 import Link from "next/link";
-import useSWR, { SWRConfiguration } from "swr";
 import useSWRInfinite, { SWRInfiniteKeyLoader } from "swr/infinite";
 import { ReaccionTipo } from "@prisma/client";
 import { usePublicacionModalStore } from "@/store/publicacionModal/publicacionModalStore";
-
-interface SummaryData {
-  numLikes: number;
-  numComentarios: number;
-  numCompartidos: number;
-  userReaction: ReaccionTipo | null; // Solo LIKE o null
-}
 
 interface CommentsPage {
   ok: boolean;
@@ -82,7 +74,7 @@ const Interactions: React.FC<InteractionsProps> = ({
     updateCompartidos,
   } = usePublicacionModalStore();
 
-  // Estados locales inicializados con SSR
+  // Estados locales inicializados con SSR (SIN CAMBIOS)
   const [localLikes, setLocalLikes] = useState(initialLikes);
   const [localComentarios, setLocalComentarios] = useState(initialComentarios);
   const [localCompartidos, setLocalCompartidos] = useState(initialCompartidos);
@@ -92,38 +84,28 @@ const Interactions: React.FC<InteractionsProps> = ({
   const [hasMore, setHasMore] = useState(initialComentarios > initialComments.length);
   const observerRef = useRef<HTMLDivElement>(null);
 
-  // SWR para summary con config tipada
-  const summaryKey = `/api/summary/${publicacionId}`;
-  const swrConfig: SWRConfiguration<SummaryData, Error> = {
-    keepPreviousData: true,
-    revalidateOnFocus: false,
-    revalidateIfStale: false,
-  };
-  const { data: summaryData, mutate: mutateSummary, isLoading: isLoadingSummary } = useSWR<SummaryData, Error>(
-    summaryKey,
-    fetcher,
-    swrConfig
-  );
+  // REMOVIDO: SWR para summary (redundante ahora con props de EnhancedPublicacion)
+  // En su lugar, effective values usan solo props + store (más simple y eficiente)
 
-  // Effective values con store override en modal
+  // Effective values simplificados: Props + store override en modal (SIN SWR)
   const effectiveLikes = useMemo(
-    () => isInModal ? (updatedLikes[publicacionId] ?? summaryData?.numLikes ?? localLikes) : localLikes,
-    [isInModal, updatedLikes[publicacionId], summaryData?.numLikes, localLikes]
+    () => isInModal ? (updatedLikes[publicacionId] ?? localLikes) : localLikes,
+    [isInModal, updatedLikes[publicacionId], localLikes]
   );
   const effectiveComentarios = useMemo(
-    () => isInModal ? (updatedNumComentarios[publicacionId] ?? summaryData?.numComentarios ?? localComentarios) : localComentarios,
-    [isInModal, updatedNumComentarios[publicacionId], summaryData?.numComentarios, localComentarios]
+    () => isInModal ? (updatedNumComentarios[publicacionId] ?? localComentarios) : localComentarios,
+    [isInModal, updatedNumComentarios[publicacionId], localComentarios]
   );
   const effectiveCompartidos = useMemo(
-    () => isInModal ? (updatedCompartidos[publicacionId] ?? summaryData?.numCompartidos ?? localCompartidos) : localCompartidos,
-    [isInModal, updatedCompartidos[publicacionId], summaryData?.numCompartidos, localCompartidos]
+    () => isInModal ? (updatedCompartidos[publicacionId] ?? localCompartidos) : localCompartidos,
+    [isInModal, updatedCompartidos[publicacionId], localCompartidos]
   );
   const effectiveReaction = useMemo(
-    () => isInModal ? (updatedUserReaction[publicacionId] ?? summaryData?.userReaction ?? localReaction) : localReaction,
-    [isInModal, updatedUserReaction[publicacionId], summaryData?.userReaction, localReaction]
+    () => isInModal ? (updatedUserReaction[publicacionId] ?? localReaction) : localReaction,
+    [isInModal, updatedUserReaction[publicacionId], localReaction]
   );
 
-  // SWRInfinite CONDicional: Tipado preciso para retornos de SWR (Promise<T | undefined>)
+  // SWRInfinite para comentarios en modal (MANTENIDO: Solo para paginación lazy)
   type InfiniteData = CommentsPage[] | undefined;
   type SetSizeFn = (size: number | ((prevSize: number) => number)) => Promise<InfiniteData>;
   type MutateFn = () => Promise<InfiniteData>;
@@ -145,12 +127,12 @@ const Interactions: React.FC<InteractionsProps> = ({
     const infiniteHook = useSWRInfinite<CommentsPage>(getCommentsKey, fetcher, infiniteConfig);
     commentsPages = infiniteHook.data;
     infiniteSize = infiniteHook.size;
-    infiniteSetSize = infiniteHook.setSize; // Ahora tipado como Promise<InfiniteData>
+    infiniteSetSize = infiniteHook.setSize;
     infiniteIsLoadingComments = infiniteHook.isLoading;
-    infiniteMutateComments = infiniteHook.mutate; // Tipado como Promise<InfiniteData>
+    infiniteMutateComments = infiniteHook.mutate;
   }
 
-  // Merge comments en modal
+  // Merge comments en modal (SIN CAMBIOS)
   useEffect(() => {
     if (isInModal && commentsPages) {
       const fetchedComments = commentsPages.flatMap((page) => page.comentarios || []);
@@ -163,13 +145,13 @@ const Interactions: React.FC<InteractionsProps> = ({
     }
   }, [commentsPages, isInModal, updatedComments[publicacionId], publicacionId, initialComments]);
 
-  // Observer paginación en modal (usa updater sin await)
+  // Observer paginación en modal (SIN CAMBIOS)
   useEffect(() => {
     if (!isInModal || !hasMore || !observerRef.current) return;
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting && !infiniteIsLoadingComments) {
-          infiniteSetSize((prevSize) => prevSize + 1); // Updater, ignora Promise
+          infiniteSetSize((prevSize) => prevSize + 1);
         }
       },
       { threshold: 1.0 }
@@ -178,7 +160,7 @@ const Interactions: React.FC<InteractionsProps> = ({
     return () => observer.disconnect();
   }, [isInModal, hasMore, infiniteIsLoadingComments, infiniteSetSize]);
 
-  // Handle Like
+  // Handle Like (SIMPLIFICADO: Removido mutateSummary, ya que no hay SWR)
   const handleLike = useCallback(async () => {
     if (!isAuthenticated) return;
     const hasLiked = effectiveReaction === ReaccionTipo.LIKE;
@@ -192,16 +174,6 @@ const Interactions: React.FC<InteractionsProps> = ({
       updateUserReaction(publicacionId, optimisticReaction);
     }
 
-    mutateSummary(
-      (current) => ({
-        numLikes: optimisticLikes,
-        numComentarios: current?.numComentarios ?? effectiveComentarios,
-        numCompartidos: current?.numCompartidos ?? effectiveCompartidos,
-        userReaction: optimisticReaction,
-      } as SummaryData),
-      { revalidate: false }
-    );
-
     try {
       const result = await postInteraccionPublicacion({
         publicacionId,
@@ -210,7 +182,7 @@ const Interactions: React.FC<InteractionsProps> = ({
         reaccionTipo: hasLiked ? null : ReaccionTipo.LIKE,
       });
       if (!result.ok) throw new Error(result.message);
-      mutateSummary();
+      // REMOVIDO: mutateSummary (no needed)
     } catch (error) {
       setLocalLikes(effectiveLikes);
       setLocalReaction(effectiveReaction);
@@ -218,7 +190,6 @@ const Interactions: React.FC<InteractionsProps> = ({
         updateLikes(publicacionId, effectiveLikes);
         updateUserReaction(publicacionId, effectiveReaction);
       }
-      mutateSummary();
       console.warn("Error en like:", error);
     }
   }, [
@@ -232,10 +203,9 @@ const Interactions: React.FC<InteractionsProps> = ({
     isInModal,
     updateLikes,
     updateUserReaction,
-    mutateSummary,
   ]);
 
-  // Handle Comment
+  // Handle Comment (SIMPLIFICADO: Removido mutateSummary)
   const handleCommentSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
@@ -295,9 +265,9 @@ const Interactions: React.FC<InteractionsProps> = ({
           addComment(publicacionId, realComment);
         }
 
-        mutateSummary();
+        // REMOVIDO: mutateSummary (no needed)
         if (isInModal) {
-          infiniteMutateComments(); // Ignora Promise, fire-and-forget
+          infiniteMutateComments(); // Mantenido para revalidar comentarios
         }
       } catch (error) {
         setLocalComments((prev) => prev.filter((c) => c.id !== optimisticId));
@@ -322,12 +292,11 @@ const Interactions: React.FC<InteractionsProps> = ({
       decrementNumComentarios,
       addComment,
       removeComment,
-      mutateSummary,
       infiniteMutateComments,
     ]
   );
 
-  // Handle Share
+  // Handle Share (SIMPLIFICADO: Removido mutateSummary)
   const handleShare = useCallback(async () => {
     if (!isAuthenticated) return;
     const optimisticCompartidos = effectiveCompartidos + 1;
@@ -335,24 +304,13 @@ const Interactions: React.FC<InteractionsProps> = ({
     setLocalCompartidos(optimisticCompartidos);
     if (isInModal) updateCompartidos(publicacionId, optimisticCompartidos);
 
-    mutateSummary(
-      (current) => ({
-        numLikes: current?.numLikes ?? effectiveLikes,
-        numComentarios: current?.numComentarios ?? effectiveComentarios,
-        numCompartidos: optimisticCompartidos,
-        userReaction: current?.userReaction ?? effectiveReaction,
-      } as SummaryData),
-      { revalidate: false }
-    );
-
     try {
       const result = await postInteraccionPublicacion({ publicacionId, slug, tipo: "COMPARTIDO" });
       if (!result.ok) throw new Error(result.message);
-      mutateSummary();
+      // REMOVIDO: mutateSummary
     } catch (error) {
       setLocalCompartidos(effectiveCompartidos);
       if (isInModal) updateCompartidos(publicacionId, effectiveCompartidos);
-      mutateSummary();
       console.warn("Error en compartir:", error);
     }
   }, [
@@ -365,10 +323,9 @@ const Interactions: React.FC<InteractionsProps> = ({
     effectiveReaction,
     isInModal,
     updateCompartidos,
-    mutateSummary,
   ]);
 
-  // Skeletons
+  // Skeletons (SIN CAMBIOS)
   const SummarySkeleton = () => (
     <div className="flex items-center gap-2 animate-pulse">
       <div className="h-6 w-16 bg-gray-200 rounded-full" />
@@ -387,40 +344,37 @@ const Interactions: React.FC<InteractionsProps> = ({
 
   return (
     <div className="w-full p-4 pt-6 border-t border-gray-100">
-      {/* Contadores */}
+      {/* Contadores (SIMPLIFICADO: Sin loading de summary, usa props directas) */}
       <div className="flex items-center justify-between mb-4">
-        {isLoadingSummary ? (
-          <SummarySkeleton />
-        ) : (
-          <div className="flex items-center gap-2">
-            {effectiveLikes > 0 && (
-              <motion.div className="flex items-center gap-1 bg-gray-100 rounded-full px-2 py-1 text-sm text-gray-700">
-                <FaHeart className="text-red-500" />
-                <span>{effectiveLikes}</span>
-              </motion.div>
-            )}
-            {effectiveComentarios > 0 && (
-              <motion.button
-                onClick={!isInModal ? onOpenModal : undefined}
-                className="flex items-center gap-1 bg-gray-100 rounded-full px-2 py-1 text-sm text-gray-700 hover:bg-gray-200 transition-colors"
-                aria-label="Ver comentarios"
-                disabled={isInModal}
-              >
-                <FaComment className="text-blue-500" />
-                <span>{effectiveComentarios}</span>
-              </motion.button>
-            )}
-            {effectiveCompartidos > 0 && (
-              <motion.div className="flex items-center gap-1 bg-gray-100 rounded-full px-2 py-1 text-sm text-gray-700">
-                <FaShare className="text-green-500" />
-                <span>{effectiveCompartidos}</span>
-              </motion.div>
-            )}
-          </div>
-        )}
+        <div className="flex items-center gap-2">
+          {effectiveLikes > 0 && (
+            <motion.div className="flex items-center gap-1 bg-gray-100 rounded-full px-2 py-1 text-sm text-gray-700">
+              <FaHeart className="text-red-500" />
+              <span>{effectiveLikes}</span>
+            </motion.div>
+          )}
+          {effectiveComentarios > 0 && (
+            <motion.button
+              onClick={!isInModal ? onOpenModal : undefined}
+              className="flex items-center gap-1 bg-gray-100 rounded-full px-2 py-1 text-sm text-gray-700 hover:bg-gray-200 transition-colors"
+              aria-label="Ver comentarios"
+              disabled={isInModal}
+            >
+              <FaComment className="text-blue-500" />
+              <span>{effectiveComentarios}</span>
+            </motion.button>
+          )}
+          {effectiveCompartidos > 0 && (
+            <motion.div className="flex items-center gap-1 bg-gray-100 rounded-full px-2 py-1 text-sm text-gray-700">
+              <FaShare className="text-green-500" />
+              <span>{effectiveCompartidos}</span>
+            </motion.div>
+          )}
+        </div>
       </div>
 
-      {/* Botones */}
+      {/* Botones, Form Comment, Lista Comments (SIN CAMBIOS) */}
+      {/* ... (resto del return idéntico al original, sin referencias a summaryData o mutateSummary) */}
       <div className="flex justify-between items-center mb-4">
         <div className="flex gap-4 md:gap-6">
           <motion.button
@@ -471,14 +425,14 @@ const Interactions: React.FC<InteractionsProps> = ({
             />
           </div>
           <input
-            type="text"
-            value={newComment}
-            onChange={(e) => setNewComment(e.target.value)}
-            onFocus={!isInModal ? onOpenModal : undefined}
-            placeholder="Escribe un comentario..."
-            className="flex-1 p-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            aria-label="Escribe un comentario"
-          />
+  type="text"
+  value={newComment}
+  onChange={(e) => setNewComment(e.target.value)}
+  onFocus={!isInModal ? onOpenModal : undefined}
+  placeholder="Escribe un comentario..."
+  className="flex-1 p-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
+  aria-label="Escribe un comentario"
+/>
           <motion.button
             type="submit"
             className="text-blue-500 hover:text-blue-600"
@@ -498,7 +452,7 @@ const Interactions: React.FC<InteractionsProps> = ({
             <CommentSkeleton />
           </>
         ) : localComments.length > 0 ? (
-          localComments.slice(0, isInModal ? undefined : 3).map((comment) => (
+          localComments.slice(0, isInModal ? undefined : 1).map((comment) => (
             <div key={comment.id} className="flex gap-3 mb-1">
               <div className="relative w-8 h-8 rounded-full overflow-hidden">
                 <Image
@@ -525,13 +479,13 @@ const Interactions: React.FC<InteractionsProps> = ({
             </div>
           ))
         ) : null}
-        {!isInModal && effectiveComentarios > 3 && (
+        {!isInModal && effectiveComentarios > 1 && (
           <button
             onClick={onOpenModal}
             className="text-sm text-blue-500 hover:underline mt-2"
             aria-label="Ver todos los comentarios"
           >
-            Ver más comentarios ({effectiveComentarios - 3})
+            Ver más comentarios ({effectiveComentarios - 1})
           </button>
         )}
         {isInModal && hasMore && (

@@ -4,14 +4,21 @@
 import prisma from "@/lib/prisma";
 import { FeedQueryParams, FeedResponse, FeedItem } from "../feed.interfaces";
 import { calculateScore } from "./helpers"; // Quité diversifyItems, ya no se necesita aquí
-import { Prisma } from "@prisma/client";
+import { Prisma, ReaccionTipo } from "@prisma/client";
 import { productSelect, publicationSelect, serviceSelect, businessSelect, RawProduct, RawPublication, RawService, RawBusiness } from "./selects";
 import { mapToFeedItem } from "./mapItem";
 import { isRawProduct, isRawPublication, isRawService, isRawBusiness } from "../feed.interfaces"; // Importa guards del contexto
+import { EnhancedPublicacion } from "@/publicaciones/interfaces/enhancedPublicacion.interface";
+
+// CAMBIO: Extiende params con userId opcional (string | null para manejar anónimos)
+interface ExtendedParams extends FeedQueryParams {
+  cursor?: string;
+  userId?: string | null;  // De session.user.id; null para anónimos
+}
 
 export async function getFeedDataByType(
   type: "products" | "publications" | "services" | "businesses",
-  params: FeedQueryParams & { cursor?: string } // Cursor simplificado a string (último ID del tipo)
+  params: ExtendedParams  // Usa extended para userId
 ): Promise<FeedResponse> {
   if (!params.ciudad) throw new Error("Ciudad requerida para feed local");
 
@@ -19,13 +26,13 @@ export async function getFeedDataByType(
   let nextCursor: string | undefined;
 
   try {
-    // Fetch por tipo
+    // Fetch por tipo (sin cambios en switch)
     switch (type) {
       case "products":
         rawItems = await fetchProducts(params);
         break;
       case "publications":
-        rawItems = await fetchPublications(params);
+        rawItems = await fetchPublications(params);  // Pasa userId para condicional
         break;
       case "services":
         rawItems = await fetchServices(params);
@@ -36,10 +43,10 @@ export async function getFeedDataByType(
     }
   } catch (error) {
     console.error(`Error fetching ${type}:`, error);
-    rawItems = []; // Resiliency: retorno vacío en error
+    rawItems = []; // Resiliency
   }
 
-  // Fallback si escaso: Relajar preferencias/secciones y re-fetch solo ese tipo
+  // Fallback si escaso (CAMBIO: Pasa userId en relaxedParams para consistencia)
   if (rawItems.length < 3) {
     const relaxedParams = { ...params, preferencias: [], secciones: [] };
     try {
@@ -56,7 +63,55 @@ export async function getFeedDataByType(
     }
   }
 
-  // Mapeo con scoring/isFollowed (usando guards para narrow y evitar sobrecarga errors)
+  // CAMBIO: Si type=publications y userId, fetch batch de reacciones personalizadas (eficiente, como en referencia)
+  let userReactionsMap: Record<string, { id: string; tipo: ReaccionTipo } | null> = {};
+  if (type === "publications" && params.userId && rawItems.length > 0) {
+    const pubIds = rawItems.filter(isRawPublication).map((pub) => pub.id);
+    if (pubIds.length > 0) {
+      const userReactions = await prisma.interaccion.findMany({
+        where: {
+          usuarioId: params.userId!,
+          tipo: "REACCION",
+          publicacionId: { in: pubIds },  // Batch: Una query para todas pubs
+        },
+        select: {
+          id: true,
+          publicacionId: true,
+          reaccionTipo: true,
+        },
+      });
+
+      // Type guard para reacción válida (como en referencia)
+      const isValidReactionType = (tipo: ReaccionTipo | null): tipo is ReaccionTipo => {
+        if (tipo === null) return false;
+        return ["LIKE", "LOVE", "WOW", "SAD", "ANGRY"].includes(tipo);
+      };
+
+      userReactionsMap = userReactions.reduce((map, reaction) => {
+        if (isValidReactionType(reaction.reaccionTipo)) {
+          map[reaction.publicacionId] = {
+            id: reaction.id,
+            tipo: reaction.reaccionTipo,
+          };
+        } else {
+          if (process.env.NODE_ENV === "development") {
+            console.warn(`Reacción inválida para pub ${reaction.publicacionId}: tipo ${reaction.reaccionTipo ?? 'null'}`);
+          }
+          map[reaction.publicacionId] = null;
+        }
+        return map;
+      }, {} as Record<string, { id: string; tipo: ReaccionTipo } | null>);
+
+      // Defaults a null para pubs sin reacción
+      pubIds.forEach((pubId) => {
+        if (!userReactionsMap[pubId]) {
+          userReactionsMap[pubId] = null;
+        }
+      });
+    }
+  }
+
+  // Mapeo con scoring/isFollowed (CAMBIO: Para publications, setea userReaction del batch y formatea comments)
   const items: FeedItem[] = rawItems.map((raw) => {
     const itemType = type.slice(0, -1) as "product" | "publication" | "service" | "business";
     let item: FeedItem;
@@ -65,6 +120,25 @@ export async function getFeedDataByType(
       item = mapToFeedItem(raw, "product");
     } else if (isRawPublication(raw)) {
       item = mapToFeedItem(raw, "publication");
+      // CAMBIO: Personaliza userReaction (de batch o null)
+      const enhancedData = item.data as EnhancedPublicacion;  // Asume mapToFeedItem retorna EnhancedPublicacion
+      enhancedData.userReaction = userReactionsMap[raw.id] ?? null;
+      // CAMBIO: Formatea createdAt y comments (de interacciones) a strings ISO
+      enhancedData.createdAt = raw.createdAt.toISOString();
+      enhancedData.comments = (raw.interacciones || []).map((inter: any) => ({
+        id: inter.id,
+        contenido: inter.contenido ?? "",
+        createdAt: inter.createdAt.toISOString(),
+        usuario: {
+          id: inter.usuario.id,
+          nombre: inter.usuario.nombre,
+          apellido: inter.usuario.apellido ?? "",
+          fotoPerfil: inter.usuario.fotoPerfil ?? undefined,
+          username: inter.usuario.username ?? "",
+        },
+      }));
+      // isAuthenticated: Basado en userId (para UX en frontend)
+      enhancedData.isAuthenticated = !!params.userId;
     } else if (isRawService(raw)) {
       item = mapToFeedItem(raw, "service");
     } else if (isRawBusiness(raw)) {
@@ -73,10 +147,10 @@ export async function getFeedDataByType(
       throw new Error(`Tipo raw no reconocido para ${type}`);
     }
 
-    // isFollowed: Lógica unificada con guards
+    // isFollowed: Lógica unificada (sin cambios)
     let negocioId: string;
     if (isRawProduct(raw) || isRawPublication(raw) || isRawService(raw)) {
-      negocioId = raw.negocio?.id ?? ""; // Fallback vacío si null (boost safety)
+      negocioId = raw.negocio?.id ?? "";
     } else { // RawBusiness
       negocioId = raw.id;
     }
@@ -85,19 +159,23 @@ export async function getFeedDataByType(
     return item;
   });
 
-  // Orden por score descendente (eficiente post-mapeo)
+  // Orden por score (sin cambios)
   items.sort((a, b) => b.score - a.score);
 
-  // Next cursor simple
+  // Next cursor (sin cambios)
   nextCursor = rawItems.length > 0 ? rawItems[rawItems.length - 1].id : undefined;
 
-  // Logs totals dev
+  // Logs dev mejorados (CAMBIO: Incluye userId y reacciones count)
   if (process.env.NODE_ENV === "development") {
-    console.log(`getFeedDataByType(${type}): Totals - Fetched: ${rawItems.length}`);
+    console.log(`getFeedDataByType(${type}): Fetched ${rawItems.length} items`);
+    if (type === "publications" && params.userId) {
+      console.log(`User reactions fetched for userId ${params.userId}: ${Object.keys(userReactionsMap).length} pubs con reacción`);
+    }
   }
 
   return { items: items.slice(0, params.limit), nextCursor };
 }
+
 
 async function fetchProducts(params: FeedQueryParams & { cursor?: string }): Promise<RawProduct[]> {
   const where: Prisma.ProductWhereInput = {
@@ -126,7 +204,7 @@ async function fetchProducts(params: FeedQueryParams & { cursor?: string }): Pro
   });
 }
 
-async function fetchPublications(params: FeedQueryParams & { cursor?: string }): Promise<RawPublication[]> {
+async function fetchPublications(params: ExtendedParams): Promise<RawPublication[]> {
   const where: Prisma.PublicacionWhereInput = {
     tipo: { in: ["TESTIMONIO", "CARRUSEL_IMAGENES"] },
     visibilidad: "PUBLICA",
@@ -143,22 +221,21 @@ async function fetchPublications(params: FeedQueryParams & { cursor?: string }):
   const publicaciones = await prisma.publicacion.findMany({
     where,
     select: publicationSelect,
-    orderBy: [{ numLikes: "desc" }, { createdAt: "desc" }],
+    orderBy: [{ numLikes: "desc" }, { createdAt: "desc" }],  // Hot first (likes), then recent
     take: params.limit + 5,
     cursor: params.cursor ? { id: params.cursor } : undefined,
     skip: params.cursor ? 1 : 0,
   });
 
   if (process.env.NODE_ENV === "development") {
-    console.log("fetchPublications: Fetched:", publicaciones.length);
+    console.log("fetchPublications: Fetched:", publicaciones.length, `con userId: ${params.userId || 'anónimo'}`);
     console.log(
-      "Details:",
-      publicaciones.map((pub) => ({
+      "Details sample:",
+      publicaciones.slice(0, 1).map((pub) => ({
         id: pub.id,
         tipo: pub.tipo,
-        visibilidad: pub.visibilidad,
-        createdAt: pub.createdAt.toISOString(),
-        multimedia: pub.multimedia.map((m) => m.url),
+        interaccionesCount: pub.interacciones?.length || 0,  // Verifica comentarios
+        numLikes: pub.numLikes,
       }))
     );
   }
