@@ -1,12 +1,11 @@
-// src/actions/publicaciones/updatePublicationOrder.ts
-"use server";
+// scripts/updatePublicationScores.ts
+import { PrismaClient } from '@prisma/client';
+import { Visibilidad, EstadoNegocio, FollowType } from '@prisma/client';
 
-import prisma from "@/lib/prisma";
-import { Publicacion, InteraccionTipo, ReaccionTipo, Visibilidad, EstadoNegocio, FollowType } from "@prisma/client";
+const prisma = new PrismaClient();
 
-// Función principal de recalculo (exportada para cron/API route)
-export async function updatePublicationOrders() {
-  console.log("🌀 Iniciando recalculo batch de scores para publicaciones..."); // Log para monitoreo
+async function main() {
+  console.log("🌀 Iniciando recalculo batch de scores para publicaciones (local testing)...");
 
   try {
     // Paso 1: Query all publicaciones públicas elegibles (visibilidad PUBLICA, con includes para aggregates)
@@ -89,6 +88,8 @@ export async function updatePublicationOrders() {
     }
 
     return { success: false, error: String(error), updated: 0 };
+  } finally {
+    await prisma.$disconnect();
   }
 }
 
@@ -139,3 +140,14 @@ function calculatePublicationScore(pub: any): number {
 
   return score;
 }
+
+// Autoinvocación (ejecuta main al cargar el script)
+main()
+  .then(async () => {
+    await prisma.$disconnect();
+  })
+  .catch(async (e) => {
+    console.error(e);
+    await prisma.$disconnect();
+    process.exit(1);
+  });

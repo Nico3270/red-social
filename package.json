@@ -14,6 +14,10 @@
     "seed2": "ts-node src/seed/seed-database copy.ts",
     "transaction": "ts-node src/seed/transactions-database.ts",
     "preguntas": "ts-node src/seed/preguntas-database.ts",
+    "updateScores": "ts-node src/seed/updateScores.ts",
+    "updateProductScores": "ts-node src/seed/updateProductsOrder.ts",
+    "updateNegocioScores": "ts-node src/seed/updateBusinessScores.ts",
+    "updateServiciosScores": "ts-node src/seed/updateServiceScores.ts",
     "index": "ts-node src/seed/index.ts",
     "test": "jest",
     "test:watch": "jest --watch"
@@ -105,6 +109,7 @@
     "tailwindcss": "^3.4.15",
     "ts-jest": "^29.4.1",
     "ts-node": "^10.9.2",
+    "tsx": "^4.20.5",
     "typescript": "^5"
   }
 }

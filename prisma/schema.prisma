@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -38,24 +32,485 @@ model Usuario {
   ultimaActividad DateTime      @default(now())
   estado          EstadoUsuario @default(activo)
   emailVerified   DateTime?
-  negocio         Negocio?      @relation // Relación uno-a-uno
   preferencias    String[]
-  publicaciones   Publicacion[]
+  encuestas       Encuesta[]    @relation("UsuarioEncuestas")
+  followsOut      Follow[]      @relation("Follower")
+  followsIn       Follow[]      @relation("FollowedUser")
   interacciones   Interaccion[] @relation("UsuarioInteracciones")
+  negocio         Negocio?
+  orders          Order[]
+  publicaciones   Publicacion[]
+  resenas         Resena[]
+  reservations    Reservation[]
+  respuestas      Respuesta[]   @relation("UsuarioRespuestas")
   Transaction     Transaction[]
-  orders          Order[] // 🔹 Campo inverso para relación con Order
-  reservations    Reservation[] // relación 1:N
-  followsOut Follow[] @relation("Follower")     // Follows que este usuario inicia
-  followsIn  Follow[] @relation("FollowedUser") // Follows recibidos como usuario
-
-  // Relaciones inversas
-  respuestas Respuesta[] @relation("UsuarioRespuestas")
-  resenas    Resena[]
-  encuestas  Encuesta[]  @relation("UsuarioEncuestas")
 
   @@index([username])
   @@index([email])
   @@index([role])
+}
+
+model BusinessAvailability {
+  id                       String   @id @default(cuid())
+  negocioId                String   @unique
+  diasAtencion             String[]
+  franjaMananaInicio       String?
+  franjaMananaFin          String?
+  franjaTardeInicio        String?
+  franjaTardeFin           String?
+  intervaloMinutos         Int
+  capacidadPorIntervalo    Int
+  duracionMinimaIntervalos Int?
+  camposCustom             Boolean  @default(false)
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+  negocio                  Negocio  @relation(fields: [negocioId], references: [id], onDelete: Cascade)
+
+  @@index([negocioId])
+}
+
+model Reservation {
+  id              String            @id @default(cuid())
+  negocioId       String
+  usuarioId       String?
+  nombre          String
+  telefono        String
+  fechaHoraInicio DateTime
+  fechaHoraFin    DateTime?
+  notas           String?
+  estado          ReservationStatus @default(PENDIENTE)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  negocio         Negocio           @relation(fields: [negocioId], references: [id], onDelete: Cascade)
+  usuario         Usuario?          @relation(fields: [usuarioId], references: [id])
+
+  @@index([negocioId, fechaHoraInicio])
+  @@index([estado])
+}
+
+model Transaction {
+  id            String          @id @default(uuid())
+  date          DateTime
+  type          TransactionType
+  description   String
+  category      String
+  amount        Decimal
+  paymentMethod PaymentMethod
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  usuarioId     String
+  orderId       String?         @unique
+  order         Order?
+  usuario       Usuario         @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@index([usuarioId])
+  @@index([type])
+  @@index([date])
+  @@index([usuarioId, date, type])
+}
+
+model Order {
+  id             String               @id @default(uuid())
+  date           DateTime             @default(now())
+  description    String?
+  totalAmount    Decimal
+  paymentMethod  PaymentMethod?
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+  negocioId      String?
+  deliveryDataId String?              @unique
+  userId         String?
+  TipoUsuario    TipoUsuario          @default(negocio)
+  transactionId  String?              @unique
+  category       String               @default("ventas")
+  status         OrderState           @default(Recibida)
+  type           TransactionType
+  datosDeEntrega DeliveryData?        @relation(fields: [deliveryDataId], references: [id], onDelete: Cascade)
+  negocio        Negocio?             @relation(fields: [negocioId], references: [id])
+  transaction    Transaction?         @relation(fields: [transactionId], references: [id])
+  user           Usuario?             @relation(fields: [userId], references: [id])
+  items          OrderItem[]
+  statusHistory  OrderStatusHistory[]
+
+  @@index([negocioId, date])
+  @@index([userId])
+  @@index([status])
+}
+
+model OrderItem {
+  id          String   @id @default(uuid())
+  description String
+  quantity    Int      @default(1)
+  price       Decimal
+  subtotal    Decimal
+  orderId     String
+  productId   String?
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product     Product? @relation(fields: [productId], references: [id])
+
+  @@index([orderId])
+  @@index([productId])
+}
+
+model OrderStatusHistory {
+  id            String   @id @default(uuid())
+  orderId       String
+  previousState String?
+  newState      String
+  comment       String?
+  createdAt     DateTime @default(now())
+  order         Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+model DeliveryData {
+  id                 String    @id @default(uuid())
+  clientName         String
+  clientPhone        String
+  deliveryAddress    String
+  deliveryDate       DateTime?
+  ciudad             String
+  country            String    @default("Colombia")
+  departamento       String
+  additionalComments String?
+  order              Order?
+}
+
+model Product {
+  id                        String                   @id @default(uuid())
+  nombre                    String
+  slug                      String                   @unique
+  descripcion               String
+  descripcionCorta          String?
+  precio                    Float
+  currency                  Currency                 @default(COP)
+  prioridad                 Int?
+  status                    ProductStatus            @default(disponible)
+  etiquetaEspecial          ProductEtiquetaEspecial? @default(ninguna)
+  tags                      String[]
+  componentes               String[]
+  disponibleDesde           DateTime?
+  disponibleHasta           DateTime?
+  createdAt                 DateTime                 @default(now())
+  updatedAt                 DateTime                 @updatedAt
+  categoryId                String
+  negocioId                 String
+  orden                     Float                    @default(8.0)
+  imagenes                  Image[]                  @relation("ProductImages")
+  orderItems                OrderItem[]
+  category                  Category                 @relation(fields: [categoryId], references: [id])
+  negocio                   Negocio                  @relation(fields: [negocioId], references: [id], onDelete: Cascade)
+  secciones                 ProductSection[]
+  publicacionesRelacionadas PublicacionProducto[]
+
+  @@index([negocioId])
+  @@index([categoryId])
+  @@index([nombre])
+  @@index([status])
+  @@index([categoryId, status])
+  @@index([etiquetaEspecial])
+  @@index([negocioId, status])
+  @@index([negocioId, createdAt])
+  @@index([orden(sort: Desc), createdAt(sort: Desc)])
+}
+
+model ProductSection {
+  id        String  @id @default(uuid())
+  productId String
+  sectionId String
+  prioridad Int     @default(0)
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  section   Section @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, sectionId])
+}
+
+model Image {
+  id        String  @id @default(uuid())
+  url       String
+  productId String
+  product   Product @relation("ProductImages", fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+}
+
+model Section {
+  id         String           @id @default(uuid())
+  nombre     String
+  slug       String           @unique
+  iconName   String?
+  order      Int
+  isActive   Boolean
+  categoryId String?
+  negocios   NegocioSection[] @relation("NegocioSection")
+  products   ProductSection[]
+  Category   Category?        @relation(fields: [categoryId], references: [id])
+
+  @@index([categoryId])
+}
+
+model Follow {
+  id                 String     @id @default(cuid())
+  followerId         String
+  type               FollowType
+  createdAt          DateTime   @default(now())
+  followedBusinessId String?
+  followedUserId     String?
+  follower           Usuario    @relation("Follower", fields: [followerId], references: [id], onDelete: Cascade)
+  followedBusiness   Negocio?   @relation("FollowedBusiness", fields: [followedBusinessId], references: [id], onDelete: Cascade, map: "fk_follow_followed_business")
+  followedUser       Usuario?   @relation("FollowedUser", fields: [followedUserId], references: [id], onDelete: Cascade, map: "fk_follow_followed_user")
+
+  @@unique([followerId, followedUserId])
+  @@unique([followerId, followedBusinessId])
+  @@index([followerId, type])
+  @@index([followedUserId, type])
+  @@index([followedBusinessId, type])
+  @@index([followedBusinessId])
+}
+
+model Publicacion {
+  id                     String                @id @default(cuid())
+  usuarioId              String
+  negocioId              String?
+  tipo                   PublicacionTipo
+  titulo                 String?
+  descripcion            String?
+  visibilidad            Visibilidad           @default(PUBLICA)
+  createdAt              DateTime              @default(now())
+  updatedAt              DateTime              @updatedAt
+  numLikes               Int                   @default(0)
+  numComentarios         Int                   @default(0)
+  numCompartidos         Int                   @default(0)
+  orden                  Float                 @default(8.0)
+  interacciones          Interaccion[]         @relation("PublicacionInteracciones")
+  multimedia             Media[]
+  negocio                Negocio?              @relation(fields: [negocioId], references: [id], onDelete: Cascade)
+  usuario                Usuario               @relation(fields: [usuarioId], references: [id])
+  productosEnPublicacion PublicacionProducto[]
+
+  @@index([tipo, visibilidad, createdAt])
+  @@index([usuarioId, createdAt])
+  @@index([negocioId, createdAt])
+  @@index([negocioId, visibilidad, createdAt])
+  @@index([orden(sort: Desc), createdAt(sort: Desc)])
+}
+
+model PublicacionProducto {
+  id            String      @id @default(cuid())
+  publicacionId String
+  productoId    String
+  orden         Int         @default(0)
+  producto      Product     @relation(fields: [productoId], references: [id], onDelete: Cascade)
+  publicacion   Publicacion @relation(fields: [publicacionId], references: [id], onDelete: Cascade)
+
+  @@unique([publicacionId, productoId])
+  @@index([productoId])
+}
+
+model Media {
+  id            String         @id @default(uuid())
+  url           String         @db.VarChar(2048)
+  tipo          MultimediaTipo
+  formato       String?
+  orden         Int            @default(0)
+  publicacionId String?
+  servicioId    String?
+  publicacion   Publicacion?   @relation(fields: [publicacionId], references: [id], onDelete: Cascade)
+  servicio      Servicio?      @relation(fields: [servicioId], references: [id], onDelete: Cascade)
+
+  @@index([publicacionId])
+  @@index([publicacionId, tipo])
+}
+
+model Interaccion {
+  id            String          @id @default(cuid())
+  tipo          InteraccionTipo
+  contenido     String?
+  reaccionTipo  ReaccionTipo?
+  usuarioId     String
+  publicacionId String
+  createdAt     DateTime        @default(now())
+  publicacion   Publicacion     @relation("PublicacionInteracciones", fields: [publicacionId], references: [id], onDelete: Cascade)
+  usuario       Usuario         @relation("UsuarioInteracciones", fields: [usuarioId], references: [id])
+
+  @@index([publicacionId, createdAt])
+  @@index([publicacionId, tipo])
+  @@index([usuarioId, createdAt])
+  @@index([publicacionId, reaccionTipo])
+}
+
+model Negocio {
+  id               String                @id @default(uuid())
+  usuarioId        String                @unique
+  nombre           String
+  descripcion      String?
+  ciudad           String
+  departamento     String
+  direccion        String?
+  urlGoogleMaps    String?
+  horarios         Json?
+  imagenes         String[]
+  sitioWeb         String?
+  telefonoContacto String?
+  estado           EstadoNegocio         @default(activo)
+  createdAt        DateTime              @default(now())
+  updatedAt        DateTime              @updatedAt
+  slug             String                @unique
+  fotoPerfil       String?
+  fotoPortada      String?
+  latitud          Float?
+  longitud         Float?
+  availability     BusinessAvailability?
+  encuestas        Encuesta[]            @relation("NegocioEncuestas")
+  followsIn        Follow[]              @relation("FollowedBusiness")
+  usuario          Usuario               @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  categorias       NegocioCategory[]
+  secciones        NegocioSection[]
+   orden                  Float                 @default(8.0)
+  orders           Order[]
+  preguntas        Pregunta[]            @relation("NegocioPreguntas")
+  Product          Product[]
+  publicaciones    Publicacion[]
+  reservations     Reservation[]
+  Servicio         Servicio[]
+
+  @@index([ciudad])
+  @@index([departamento])
+  @@index([estado])
+  @@index([usuarioId])
+  @@index([estado, createdAt])
+  @@index([orden(sort: Desc), createdAt(sort: Desc)])
+}
+
+model Servicio {
+  id          String         @id @default(uuid())
+  titulo      String
+  descripcion String[]
+  slug        String         @unique
+  precio      Float?
+  currency    Currency       @default(COP)
+  status      ServicioStatus @default(disponible)
+  tags        String[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  negocioId   String
+  multimedia  Media[]
+  negocio     Negocio        @relation(fields: [negocioId], references: [id], onDelete: Cascade)
+  orden                  Float                 @default(8.0)
+  @@index([negocioId])
+  @@index([status])
+  @@index([negocioId, status])
+  @@index([orden(sort: Desc), createdAt(sort: Desc)])
+}
+
+model NegocioCategory {
+  negocioId  String
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id])
+  negocio    Negocio  @relation(fields: [negocioId], references: [id], onDelete: Cascade)
+
+  @@unique([negocioId, categoryId])
+  @@index([categoryId])
+}
+
+model NegocioSection {
+  negocioId String
+  sectionId String
+  prioridad Int     @default(0)
+  negocio   Negocio @relation(fields: [negocioId], references: [id], onDelete: Cascade)
+  section   Section @relation("NegocioSection", fields: [sectionId], references: [id])
+
+  @@unique([negocioId, sectionId])
+  @@index([sectionId])
+}
+
+model Category {
+  id        String            @id @default(uuid())
+  nombre    String
+  slug      String            @unique
+  iconName  String?
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  isActive  Boolean           @default(true)
+  negocios  NegocioCategory[]
+  productos Product[]
+  secciones Section[]
+
+  @@index([slug])
+}
+
+
+
+model Pregunta {
+  id         String             @id @default(cuid())
+  texto      String
+  tipo       TipoPregunta
+  creador    Creador
+  negocioId  String?
+  requerida  Boolean            @default(false)
+  orden      Int?
+  categoria  String?
+  createdAt  DateTime           @default(now())
+  updatedAt  DateTime           @updatedAt
+  encuestas  EncuestaPregunta[]
+  negocio    Negocio?           @relation("NegocioPreguntas", fields: [negocioId], references: [id])
+  respuestas Respuesta[]
+
+  @@index([creador, negocioId])
+}
+
+model Encuesta {
+  id          String             @id @default(cuid())
+  negocioId   String
+  titulo      String
+  descripcion String?
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  usuarioId   String?
+  negocio     Negocio            @relation("NegocioEncuestas", fields: [negocioId], references: [id])
+  usuario     Usuario?           @relation("UsuarioEncuestas", fields: [usuarioId], references: [id])
+  preguntas   EncuestaPregunta[]
+  resenas     Resena[]
+
+  @@index([negocioId, createdAt])
+}
+
+model EncuestaPregunta {
+  encuestaId String
+  preguntaId String
+  orden      Int?
+  encuesta   Encuesta @relation(fields: [encuestaId], references: [id])
+  pregunta   Pregunta @relation(fields: [preguntaId], references: [id])
+
+  @@id([encuestaId, preguntaId])
+}
+
+model Resena {
+  id                 String      @id @default(cuid())
+  encuestaId         String
+  usuarioId          String?
+  nombre             String?
+  telefono           String?
+  descripcionGeneral String?
+  multimedia         String[]    @default([])
+  createdAt          DateTime    @default(now())
+  encuesta           Encuesta    @relation(fields: [encuestaId], references: [id])
+  usuario            Usuario?    @relation(fields: [usuarioId], references: [id])
+  respuestas         Respuesta[]
+
+  @@index([encuestaId, createdAt])
+  @@index([usuarioId])
+}
+
+model Respuesta {
+  id           String   @id @default(cuid())
+  resenaId     String
+  preguntaId   String
+  valor        String?
+  usuarioId    String?
+  calificacion Int?
+  pregunta     Pregunta @relation(fields: [preguntaId], references: [id])
+  resena       Resena   @relation(fields: [resenaId], references: [id])
+  usuario      Usuario? @relation("UsuarioRespuestas", fields: [usuarioId], references: [id])
 }
 
 enum EstadoUsuario {
@@ -78,80 +533,12 @@ enum Genero {
   otro
 }
 
-
-
-
-
-
-model BusinessAvailability {
-  id                       String   @id @default(cuid())
-  negocioId                String   @unique // FK a Negocio, asegura 1:1
-  diasAtencion             String[] // Array de strings, e.g., ["Lunes", "Martes"]
-  franjaMananaInicio       String? // Formato HH:mm, e.g., "08:00"
-  franjaMananaFin          String? // Formato HH:mm, e.g., "12:00"
-  franjaTardeInicio        String? // Formato HH:mm, e.g., "14:00"
-  franjaTardeFin           String? // Formato HH:mm, e.g., "18:00"
-  intervaloMinutos         Int // e.g., 15, 30
-  capacidadPorIntervalo    Int // e.g., 1 para únicos, 10 para múltiples
-  duracionMinimaIntervalos Int? // Opcional, e.g., 2 si ocupa múltiples slots
-  camposCustom             Boolean  @default(false) // Activa fields extra en reservas
-  createdAt                DateTime @default(now())
-  updatedAt                DateTime @updatedAt
-
-  // Relación
-  negocio Negocio @relation(fields: [negocioId], references: [id], onDelete: Cascade)
-
-  @@index([negocioId]) // Para queries rápidas por negocio
-}
-
-model Reservation {
-  id              String            @id @default(cuid())
-  negocioId       String // FK a Negocio
-  usuarioId       String? // FK a User, opcional si guest
-  nombre          String // Nombre del cliente
-  telefono        String // Teléfono del cliente
-  fechaHoraInicio DateTime // e.g., "2025-08-20T09:00:00Z"
-  fechaHoraFin    DateTime? // Calculado, opcional si fijo por intervalo
-  notas           String? // Opcional, e.g., "Motivo: consulta"
-  estado          ReservationStatus @default(PENDIENTE) // Enum definido abajo
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-
-  // Relaciones
-  negocio Negocio  @relation(fields: [negocioId], references: [id], onDelete: Cascade)
-  usuario Usuario? @relation(fields: [usuarioId], references: [id], onDelete: SetNull)
-
-  @@index([negocioId, fechaHoraInicio]) // Para chequeos de overbooking por slot
-  @@index([estado]) // Para filtros por estado en dashboards
-}
-
 enum ReservationStatus {
   PENDIENTE
   CONFIRMADA
   CANCELADA
   COMPLETADA
   BLOQUEADA
-}
-
-model Transaction {
-  id            String          @id @default(uuid())
-  date          DateTime
-  type          TransactionType
-  description   String
-  category      String // Almacena el valor del enum correspondiente (IncomeCategory o ExpenseCategory) como string
-  amount        Decimal
-  paymentMethod PaymentMethod
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
-  usuarioId     String
-  orderId       String?         @unique
-  order         Order? // 🔹 Campo inverso para relación con Order
-  usuario       Usuario         @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
-
-  @@index([usuarioId]) // Índice para consultas rápidas por usuario
-  @@index([type]) // Índice para filtrar por tipo (ingreso/gasto)
-  @@index([date]) // Índice para ordenar por fecha
-  @@index([usuarioId, date, type])
 }
 
 enum TransactionType {
@@ -188,37 +575,6 @@ enum PaymentMethod {
   transferencias
 }
 
-
-
-
-model Order {
-  id             String               @id @default(uuid())
-  date           DateTime             @default(now())
-  status         OrderState           @default(Recibida)
-  type           TransactionType // Herencia de TransactionType (solo ingreso por ahora?)
-  TipoUsuario    TipoUsuario          @default(negocio)
-  category       String               @default("ventas")
-  description    String?
-  totalAmount    Decimal
-  createdAt      DateTime             @default(now())
-  updatedAt      DateTime             @updatedAt
-  userId         String? // 🔹 Nuevo: Relación con comprador (Usuario)
-  user           Usuario?             @relation(fields: [userId], references: [id], onDelete: SetNull) // 🔹 Nueva relación
-  negocioId      String?
-  negocio        Negocio?             @relation(fields: [negocioId], references: [id], onDelete: SetNull)
-  transactionId  String?              @unique // Opcional: Liga a Transaction generada
-  items          OrderItem[]
-  datosDeEntrega DeliveryData?        @relation(fields: [deliveryDataId], references: [id], onDelete: Cascade)
-  deliveryDataId String?              @unique // Debe ser único en una relación 1:1
-  statusHistory  OrderStatusHistory[] // Relación con el historial de estados
-  paymentMethod  PaymentMethod? // 🔹 Nuevo: Método de pago (e.g., "efectivo", "tarjeta")
-  transaction    Transaction?         @relation(fields: [transactionId], references: [id], onDelete: SetNull)
-
-  @@index([negocioId, date])
-  @@index([userId]) // 🔹 Nuevo: Para órdenes por usuario
-  @@index([status])
-}
-
 enum TipoUsuario {
   negocio
   usuario
@@ -232,96 +588,11 @@ enum OrderState {
   Preparacion
 }
 
-model OrderItem {
-  id          String   @id @default(uuid())
-  description String
-  quantity    Int      @default(1)
-  price       Decimal // Precio unitario al momento de venta (snapshot)
-  subtotal    Decimal // price * quantity
-  orderId     String
-  productId   String? // Opcional: Si es producto
-  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  product     Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
-
-  @@index([orderId])
-  @@index([productId]) // Para métricas rápidas
-}
-
-model OrderStatusHistory {
-  id            String   @id @default(uuid())
-  orderId       String
-  order         Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  previousState String? // Cambiado a nullable
-  newState      String
-  comment       String?
-  createdAt     DateTime @default(now())
-}
-
-model DeliveryData {
-  id              String    @id @default(uuid())
-  country         String    @default("Colombia")
-  departamento    String
-  ciudad          String
-  clientName      String
-  clientPhone     String
-  deliveryAddress String
-  deliveryDate    DateTime?
-  additionalComments  String?
-  order           Order?    @relation
-}
-
-model Product {
-  id               String                   @id @default(uuid())
-  nombre           String
-  slug             String                   @unique
-  descripcion      String
-  descripcionCorta String?
-  precio           Float
-  currency         Currency                 @default(COP)
-  prioridad        Int?
-  status           ProductStatus            @default(disponible)
-  etiquetaEspecial ProductEtiquetaEspecial? @default(ninguna)
-  tags             String[]
-  componentes      String[] // opcional: puede pasar a atributos
-  imagenes         Image[]                  @relation("ProductImages")
-  secciones        ProductSection[]
-  disponibleDesde  DateTime?
-  disponibleHasta  DateTime?
-  createdAt        DateTime                 @default(now())
-  updatedAt        DateTime                 @updatedAt
-  negocioId        String
-  categoryId       String
-
-  negocio                   Negocio               @relation(fields: [negocioId], references: [id], onDelete: Cascade)
-  category                  Category              @relation(fields: [categoryId], references: [id])
-  publicacionesRelacionadas PublicacionProducto[] // Sin @relation("ProductosEnPublicacion")
-  orderItems                OrderItem[] // 🔹 Campo inverso para relación con OrderItem
-
-  @@index([negocioId]) // Para filtrar productos por usuario rápidamente
-  @@index([categoryId]) // Mejora las consultas filtradas por categoría
-  @@index([nombre])
-  @@index([status])
-  @@index([categoryId, status])
-  @@index([etiquetaEspecial])
-  @@index([negocioId, status])
-}
-
 enum ProductStatus {
   disponible
   agotado
   oculto
   descontinuado
-}
-
-model ProductSection {
-  id        String  @id @default(uuid())
-  productId String
-  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-  sectionId String
-  section   Section @relation(fields: [sectionId], references: [id], onDelete: Cascade)
-  prioridad Int     @default(0)
-
-  @@unique([productId, sectionId]) // Añade esta línea si no está presente
 }
 
 enum ProductEtiquetaEspecial {
@@ -334,116 +605,25 @@ enum ProductEtiquetaEspecial {
   ninguna
 }
 
-model Image {
-  id        String  @id @default(uuid())
-  url       String
-  productId String
-  product   Product @relation("ProductImages", fields: [productId], references: [id], onDelete: Cascade)
-}
-
-model Section {
-  id       String           @id @default(uuid())
-  nombre   String
-  slug     String           @unique
-  iconName String? // Nuevo campo opcional para el nombre del ícono
-  order    Int // Orden o prioridad
-  isActive Boolean // Estado activo/inactivo
-  products ProductSection[]
-  negocios NegocioSection[] @relation("NegocioSection")
-
-  Category   Category? @relation(fields: [categoryId], references: [id])
-  categoryId String?
-
-  @@index([categoryId])
-}
-
 enum Currency {
-  COP // Pesos colombianos
-  USD // Dólar estadounidense
-  EUR // Euro
-  MXN // Peso mexicano
-  ARS // Peso argentino
-  BRL // Real brasileño
-}
-
-
-
-
-
-
-
-
-// Apartado de publicaciones
-
-model Follow {
-  id                String   @id @default(cuid())
-  followerId        String   // ID del seguidor (Usuario)
-  followedUserId    String?  // ID para Usuario seguido (setear si type USER_TO_USER o BUSINESS_TO_USER)
-  followedBusinessId String? // ID para Negocio seguido (setear si type USER_TO_BUSINESS)
-  type              FollowType
-  createdAt         DateTime @default(now())
-
-  // Relaciones con map únicos
-  follower          Usuario  @relation("Follower", fields: [followerId], references: [id], onDelete: Cascade)
-  followedUser      Usuario? @relation("FollowedUser", fields: [followedUserId], references: [id], onDelete: Cascade, map: "fk_follow_followed_user")
-  followedBusiness  Negocio? @relation("FollowedBusiness", fields: [followedBusinessId], references: [id], onDelete: Cascade, map: "fk_follow_followed_business")
-
-  @@unique([followerId, followedUserId])    // Único para user-user o business-user
-  @@unique([followerId, followedBusinessId]) // Único para user-business
-  @@index([followerId, type])
-  @@index([followedUserId, type])
-  @@index([followedBusinessId, type])
-  @@index([followedBusinessId])
+  COP
+  USD
+  EUR
+  MXN
+  ARS
+  BRL
 }
 
 enum FollowType {
-  USER_TO_BUSINESS    // Usuario sigue Negocio (principal)
-  BUSINESS_TO_USER    // Negocio sigue Usuario (e.g., para marketing)
-  USER_TO_USER        // Usuario sigue Usuario (social puro, si expands)
-}
-
-
-model Publicacion {
-  id String @id @default(cuid())
-  usuarioId String
-  usuario Usuario @relation(fields: [usuarioId], references: [id])
-  negocioId String? // Nuevo campo para asociar con Negocio
-  negocio Negocio? @relation(fields: [negocioId], references: [id], onDelete: Cascade)
-  tipo PublicacionTipo
-  titulo String?
-  descripcion String?
-  multimedia Media[] // Cambiado a Media
-  visibilidad Visibilidad @default(PUBLICA)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  productosEnPublicacion PublicacionProducto[]
-  numLikes Int @default(0)
-  numComentarios Int @default(0)
-  numCompartidos Int @default(0)
-  order Float @default(5.0) // NUEVO: Score precomputado (1.0-10.0, default neutral para nuevas)
-  interacciones Interaccion[] @relation("PublicacionInteracciones")
-  @@index([tipo, visibilidad, createdAt])
-  @@index([usuarioId, createdAt])
-  @@index([negocioId, createdAt])
-  @@index([negocioId, visibilidad, createdAt])
-  @@index([order(sort: Desc), createdAt(sort: Desc)]) // NUEVO: Para orderBy eficiente en feeds (top scores primero, fallback recencia)
+  USER_TO_BUSINESS
+  BUSINESS_TO_USER
+  USER_TO_USER
 }
 
 enum Visibilidad {
   PUBLICA
   PRIVADA
-  AMIGOS // O cualquier otra opción relevante
-}
-
-model PublicacionProducto {
-  id            String      @id @default(cuid())
-  publicacionId String
-  productoId    String
-  publicacion   Publicacion @relation(fields: [publicacionId], references: [id], onDelete: Cascade)
-  producto      Product     @relation(fields: [productoId], references: [id], onDelete: Cascade)
-  orden         Int         @default(0)
-
-  @@unique([publicacionId, productoId])
+  AMIGOS
 }
 
 enum PublicacionTipo {
@@ -453,39 +633,6 @@ enum PublicacionTipo {
   PRODUCTO_DESTACADO
   MINI_GRID
   TESTIMONIO
-}
-
-model Media {
-  id            String         @id @default(uuid())
-  url           String         @db.VarChar(2048)
-  tipo          MultimediaTipo
-  formato       String?
-  orden         Int            @default(0)
-  publicacionId String?
-  servicioId    String?
-  publicacion   Publicacion?   @relation(fields: [publicacionId], references: [id], onDelete: Cascade)
-  servicio      Servicio?      @relation(fields: [servicioId], references: [id], onDelete: Cascade)
-  @@index([publicacionId])
-  @@index([publicacionId, tipo])
-}
-
-
-model Interaccion {
-  id            String          @id @default(cuid())
-  tipo          InteraccionTipo
-  contenido     String?         @db.Text // Cambiar a Text para soportar comentarios largos
-  reaccionTipo  ReaccionTipo?
-  usuarioId     String
-  publicacionId String
-  createdAt     DateTime        @default(now())
-
-  usuario     Usuario     @relation("UsuarioInteracciones", fields: [usuarioId], references: [id])
-  publicacion Publicacion @relation("PublicacionInteracciones", fields: [publicacionId], references: [id], onDelete: Cascade)
-
-  @@index([publicacionId, createdAt]) // Índice compuesto para paginación y ordenamiento
-  @@index([publicacionId, tipo]) // Índice para filtrar por tipo (ej. solo comentarios)
-  @@index([usuarioId, createdAt]) // Índice para actividad del usuario
-  @@index([publicacionId, reaccionTipo])
 }
 
 enum InteraccionTipo {
@@ -502,54 +649,9 @@ enum ReaccionTipo {
   ANGRY
 }
 
-
-
 enum MultimediaTipo {
   IMAGEN
   VIDEO
-}
-
-model Negocio {
-  id               String            @id @default(uuid())
-  usuarioId        String            @unique
-  usuario          Usuario           @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
-  nombre           String
-  slug             String            @unique
-  categorias       NegocioCategory[]
-  secciones        NegocioSection[]
-  descripcion      String?
-  ciudad           String
-  departamento     String
-  direccion        String? // Nuevo: Dirección legible
-  urlGoogleMaps    String?
-  latitud          Float?
-  longitud         Float?
-  horarios         Json?
-  imagenes         String[]
-  fotoPerfil       String?
-  fotoPortada      String?
-  sitioWeb         String?
-  telefonoContacto String?
-  Product          Product[]
-  estado           EstadoNegocio     @default(activo)
-
-  createdAt     DateTime              @default(now())
-  updatedAt     DateTime              @updatedAt
-  publicaciones Publicacion[] // Relación para reseñas y anuncios
-  orders        Order[] // 🔹 Campo inverso para relación con Order
-  // 🔹 Campos inversos agregados
-  availability  BusinessAvailability? // relación 1:1
-  reservations  Reservation[] // relación 1:N
-  Servicio      Servicio[]
-  encuestas     Encuesta[]            @relation("NegocioEncuestas")
-  preguntas     Pregunta[]            @relation("NegocioPreguntas")
-  followsIn  Follow[] @relation("FollowedBusiness") // Follows recibidos como negocio, con name para match
-
-  @@index([ciudad])
-  @@index([departamento])
-  @@index([estado])
-  @@index([usuarioId])
-  @@index([estado, createdAt])
 }
 
 enum EstadoNegocio {
@@ -558,87 +660,11 @@ enum EstadoNegocio {
   eliminado
 }
 
-model NegocioCategory {
-  negocioId  String
-  categoryId String
-  negocio    Negocio  @relation(fields: [negocioId], references: [id], onDelete: Cascade)
-  category   Category @relation(fields: [categoryId], references: [id])
-
-  @@unique([negocioId, categoryId])
-  @@index([categoryId])
-}
-
-model NegocioSection {
-  negocioId String
-  sectionId String
-  negocio   Negocio @relation(fields: [negocioId], references: [id], onDelete: Cascade)
-  section   Section @relation("NegocioSection", fields: [sectionId], references: [id]) // ✅ se agregó el nombre
-  prioridad Int     @default(0)
-
-  @@unique([negocioId, sectionId])
-  @@index([sectionId])
-}
-
-model Category {
-  id        String    @id @default(uuid())
-  nombre    String
-  slug      String    @unique
-  iconName  String? // Ícono opcional para UI
-  secciones Section[]
-  productos Product[] // Productos relacionados
-  isActive  Boolean   @default(true) // ✅ AGREGAR ESTA LÍNEA
-
-  createdAt DateTime          @default(now())
-  updatedAt DateTime          @updatedAt
-  negocios  NegocioCategory[] // sin @relation (usa nombre implícito o explícito si lo necesitas)
-
-  @@index([slug])
-}
-
-model Servicio {
-  id          String         @id @default(uuid())
-  titulo      String // Título del servicio/experiencia
-  descripcion String[] // Array de strings para párrafos separados
-  slug        String         @unique // Para URLs amigables
-  precio      Float? // Opcional: precio si aplica
-  currency    Currency       @default(COP) // Reutilizando enum existente
-  status      ServicioStatus @default(disponible) // Enum para estado
-  tags        String[] // Etiquetas para búsqueda
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
-  negocioId   String // Relación con Negocio
-  negocio     Negocio        @relation(fields: [negocioId], references: [id], onDelete: Cascade)
-  multimedia  Media[] // Relación con Media (imágenes/videos)
-
-  @@index([negocioId]) // Para filtrar por negocio
-  @@index([status]) // Para consultas por disponibilidad
-  @@index([negocioId, status]) // Índice compuesto para eficiencia
-}
-
 enum ServicioStatus {
   disponible
   no_disponible
   oculto
   descontinuado
-}
-
-model Pregunta {
-  id        String       @id @default(cuid())
-  texto     String
-  tipo      TipoPregunta // Enum: CALIFICABLE | TEXTO
-  creador   Creador // Enum: ADMIN | NEGOCIO
-  negocioId String?
-  requerida Boolean      @default(false)
-  orden     Int?
-  categoria String?
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
-
-  negocio    Negocio?           @relation("NegocioPreguntas", fields: [negocioId], references: [id])
-  encuestas  EncuestaPregunta[] // Relación pivot
-  respuestas Respuesta[] // Respuestas a esta pregunta
-
-  @@index([creador, negocioId])
 }
 
 enum TipoPregunta {
@@ -650,63 +676,3 @@ enum Creador {
   ADMIN
   NEGOCIO
 }
-
-model Encuesta {
-  id          String             @id @default(cuid())
-  negocioId   String
-  titulo      String
-  descripcion String?
-  createdAt   DateTime           @default(now())
-  updatedAt   DateTime           @updatedAt
-  preguntas   EncuestaPregunta[] // Preguntas seleccionadas
-  resenas     Resena[] // Reseñas basadas en esta encuesta
-  negocio     Negocio            @relation("NegocioEncuestas", fields: [negocioId], references: [id])
-  usuarioId   String?
-  usuario     Usuario?           @relation("UsuarioEncuestas", fields: [usuarioId], references: [id])
-
-  @@index([negocioId, createdAt])
-}
-
-model EncuestaPregunta {
-  encuestaId String
-  preguntaId String
-  orden      Int?
-
-  encuesta Encuesta @relation(fields: [encuestaId], references: [id])
-  pregunta Pregunta @relation(fields: [preguntaId], references: [id])
-
-  @@id([encuestaId, preguntaId]) // ID compuesto para unicidad
-}
-
-model Resena {
-  id                 String   @id @default(cuid())
-  encuestaId         String
-  usuarioId          String?
-  nombre             String?
-  telefono           String?
-  descripcionGeneral String?
-  multimedia         String[] @default([])
-  createdAt          DateTime @default(now())
-
-  encuesta   Encuesta    @relation(fields: [encuestaId], references: [id])
-  usuario    Usuario?    @relation(fields: [usuarioId], references: [id])
-  respuestas Respuesta[]
-
-  @@index([encuestaId, createdAt])
-  @@index([usuarioId])
-}
-
-model Respuesta {
-  id           String   @id @default(cuid())
-  resenaId     String
-  preguntaId   String
-  valor        String?
-  calificacion Int?
-  resena       Resena   @relation(fields: [resenaId], references: [id])
-  pregunta     Pregunta @relation(fields: [preguntaId], references: [id])
-
-  usuarioId String?
-  usuario   Usuario? @relation("UsuarioRespuestas", fields: [usuarioId], references: [id])
-}
-
-
