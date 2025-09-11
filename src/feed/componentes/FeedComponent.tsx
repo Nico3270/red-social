@@ -37,8 +37,9 @@ export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedCo
   const { ciudad, departamento, preferencias, secciones, seenIds, addSeenId } = usePreferencesStore();
   const [followedBusinessIds, setFollowedBusinessIds] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState<"Publicaciones" | "Productos" | "Servicios" | "Negocios">("Publicaciones");
+  const [prevItemsLength, setPrevItemsLength] = useState(0); // Track para marking lazy de nuevos items
 
-  console.log({categoriaSlug});
+  console.log({ categoriaSlug });
 
   // Params incluyen categoriaSlug condicional
   const params = useMemo<ExtendedFeedQueryParams | null>(() => {
@@ -110,8 +111,8 @@ export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedCo
     staleTime: categoriaSlug ? 2 * 60 * 1000 : 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
     refetchOnWindowFocus: false,
-    retry: 2,
-    structuralSharing: false, // Optimiza para data mutante (evita merges innecesarios)
+    retry: 3, // Aumentado para robustez
+    structuralSharing: false, // Optimiza para data mutante
   });
 
   const productsQuery = useInfiniteQuery<
@@ -126,12 +127,12 @@ export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedCo
     enabled: !!params && activeTab === "Productos",
     getNextPageParam: (lastPage) => lastPage.nextCursor,
     initialPageParam: undefined,
-    staleTime: categoriaSlug ? 2 * 60 * 1000 : 5 * 60 * 1000,
+    staleTime: 2 * 60 * 1000, // Más corto para tabs (refresca al switch)
     gcTime: 10 * 60 * 1000,
     refetchOnWindowFocus: false,
     refetchOnMount: true,  // Refresca al activar tab
-    retry: 2,
-    structuralSharing: false, // Optimiza para data mutante
+    retry: 3,
+    structuralSharing: false,
   });
 
   const servicesQuery = useInfiniteQuery<
@@ -146,12 +147,12 @@ export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedCo
     enabled: !!params && activeTab === "Servicios",
     getNextPageParam: (lastPage) => lastPage.nextCursor,
     initialPageParam: undefined,
-    staleTime: categoriaSlug ? 2 * 60 * 1000 : 5 * 60 * 1000,
+    staleTime: 2 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
     refetchOnWindowFocus: false,
-    refetchOnMount: true,  // Refresca al activar tab
-    retry: 2,
-    structuralSharing: false, // Optimiza para data mutante
+    refetchOnMount: true,
+    retry: 3,
+    structuralSharing: false,
   });
 
   const businessesQuery = useInfiniteQuery<
@@ -166,12 +167,12 @@ export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedCo
     enabled: !!params && activeTab === "Negocios",
     getNextPageParam: (lastPage) => lastPage.nextCursor,
     initialPageParam: undefined,
-    staleTime: categoriaSlug ? 2 * 60 * 1000 : 5 * 60 * 1000,
+    staleTime: 2 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
     refetchOnWindowFocus: false,
-    refetchOnMount: true,  // Refresca al activar tab
-    retry: 2,
-    structuralSharing: false, // Optimiza para data mutante
+    refetchOnMount: true,
+    retry: 3,
+    structuralSharing: false,
   });
 
   // Queries mapeadas
@@ -182,10 +183,10 @@ export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedCo
     Negocios: businessesQuery,
   };
 
-  // Sentinel para infinite scroll
+  // Sentinel para infinite scroll (pre-fetch suave)
   const { ref: sentinelRef, inView } = useInView({
     threshold: 0,
-    rootMargin: '200px',
+    rootMargin: '200px', // Pre-carga antes de llegar al fondo
   });
 
   useEffect(() => {
@@ -195,16 +196,24 @@ export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedCo
     }
   }, [inView, activeTab, queries]);
 
-  // Manejo de errores personalizado
+  // Manejo de errores con retry manual
   useEffect(() => {
     const currentQuery = queries[activeTab];
     if (currentQuery.error) {
       const contexto = categoriaNombre || 'global';
-      toast.error(`Error al cargar ${activeTab} en ${contexto}: ${currentQuery.error.message}. Intenta refrescar.`);
+      toast.error(
+        `Error al cargar ${activeTab} en ${contexto}: ${currentQuery.error.message}.`, 
+        { 
+          action: { 
+            label: 'Reintentar', 
+            onClick: () => currentQuery.refetch() 
+          } 
+        }
+      );
     }
   }, [activeTab, queries, categoriaNombre]);
 
-  // Items por tab: SIMPLIFICADO (flatMap + dedup + sort; confía en backend interleave, sin mixing duplicado)
+  // Items por tab: FlatMap + dedup + sort por DB order (no score)
   const getItemsForTab = useCallback((tab: typeof activeTab): FeedItem[] => {
     const query = queries[tab];
     const allItems = query.data?.pages.flatMap((page) => page.items) || [];
@@ -228,36 +237,52 @@ export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedCo
       console.log(`📊 getItemsForTab(${tab}): After dedup ${uniqueItems.length} items (prefixed for categoria: ${!!categoriaSlug})`);
     }
     
-    // Sort final por score (relevancia)
-    return uniqueItems.sort((a, b) => b.score - a.score);
+    // Sort final por orden DB (orden DESC + createdAt DESC; respeta backend)
+    return uniqueItems.sort((a, b) => {
+      const dataA = a.data as any;
+      const dataB = b.data as any;
+      const orderA = dataA.orden || 0;
+      const orderB = dataB.orden || 0;
+      if (orderB !== orderA) return orderB - orderA;
+      return new Date(dataB.createdAt || 0).getTime() - new Date(dataA.createdAt || 0).getTime();
+    });
   }, [queries, categoriaSlug]);
 
-  // Mark as seen con prefijo (LAZY: Solo post-fetch success)
+  // Mark as seen lazy: Solo nuevos items (delta con prevLength)
   const markAsSeen = useCallback(() => {
-    const itemsToMark = getItemsForTab(activeTab);
-    itemsToMark.forEach((item) => {
-      const prefixedId = categoriaSlug ? `${categoriaSlug}-${item.id}` : item.id;
-      addSeenId(prefixedId);
-    });
-    if (process.env.NODE_ENV === "development") {
-      console.log(`👁️ markAsSeen(${activeTab}): Agregados ${itemsToMark.length} IDs a seenIds (total now: ${seenIds.length + itemsToMark.length})`);
+    const currentItems = getItemsForTab(activeTab);
+    const currentLength = currentItems.length;
+    const newItemsCount = currentLength - prevItemsLength;
+    if (newItemsCount > 0) {
+      // Solo marca los últimos/nuevos
+      const itemsToMark = currentItems.slice(-newItemsCount);
+      itemsToMark.forEach((item) => {
+        const prefixedId = categoriaSlug ? `${categoriaSlug}-${item.id}` : item.id;
+        if (!seenIds.includes(prefixedId)) {
+          addSeenId(prefixedId);
+        }
+      });
+      setPrevItemsLength(currentLength);
+      if (process.env.NODE_ENV === "development") {
+        console.log(`👁️ markAsSeen(${activeTab}): +${newItemsCount} nuevos IDs agregados (total now: ${seenIds.length + newItemsCount})`);
+      }
     }
-  }, [activeTab, getItemsForTab, categoriaSlug, addSeenId, seenIds.length]);
+  }, [activeTab, getItemsForTab, categoriaSlug, addSeenId, seenIds, prevItemsLength]);
 
-  // Lazy marking: Solo después de fetch success y datos nuevos (evita saturación prematura)
+  // Lazy marking: Post-fetch success y solo si hay datos nuevos
   useEffect(() => {
     const currentQuery = queries[activeTab];
     if (currentQuery.isSuccess && currentQuery.data?.pages.length > 0) {
       markAsSeen();
     }
-  }, [activeTab, queries, markAsSeen]); // Dependencia en isSuccess implícita vía currentQuery
+  }, [activeTab, queries, markAsSeen]);
 
   // Estado de loading generalizado para tab activo
   const currentQuery = queries[activeTab];
   const items = getItemsForTab(activeTab);
   const isLoading = currentQuery.isPending || (currentQuery.isFetching && items.length === 0);
 
-  // Loader: Spinner para inicial o cambio de tab
+  // Loader: Spinner elegante para inicial o cambio de tab
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center py-16">

@@ -3,133 +3,306 @@
 
 import prisma from "@/lib/prisma";
 import { FeedQueryParams, FeedResponse, FeedItem } from "../feed.interfaces";
-import { calculateScore } from "./helpers";
 import { Prisma, ReaccionTipo } from "@prisma/client";
 import { productSelect, publicationSelect, serviceSelect, businessSelect, RawProduct, RawPublication, RawService, RawBusiness } from "./selects";
 import { mapToFeedItem } from "./mapItem";
 import { isRawProduct, isRawPublication, isRawService, isRawBusiness } from "../feed.interfaces";
 import { EnhancedPublicacion } from "@/publicaciones/interfaces/enhancedPublicacion.interface";
 
-// CAMBIO: Extiende params con userId opcional (string | null para manejar anónimos)
+// Extiende params con userId opcional (string | null para manejar anónimos)
 interface ExtendedParams extends FeedQueryParams {
   cursor?: string;
   userId?: string | null;  // De session.user.id; null para anónimos
 }
 
-// INTEGR: Función interleave refinada (de getFeedDataByCategory): Boost equidad para smalls + round-robin progresivo (sin truncar, full batch)
-function interleaveItemsByBusiness(items: FeedItem[], limit: number): FeedItem[] {
-  if (items.length === 0) return []; // OPTIM: Early return para casos vacíos (resiliencia)
+// Helper genérico para fallback gradual (reutilizable, eficiente con dedup)
+async function fetchWithFallback<T>(
+  fetchStrict: (params: any) => Promise<T[]>,
+  fetchLocal: (params: any) => Promise<T[]>,
+  fetchAll: (params: any) => Promise<T[]>,
+  params: any,
+  type: string,
+  thresholdStrict: number = 10,
+  thresholdLocal: number = 5
+): Promise<T[]> {
+  let items: T[] = [];
 
-  if (items.length <= 1) return items;
-
-  // Paso 1: Agrupar por negocioId (todos items, no truncar)
-  const groups = new Map<string, FeedItem[]>();
-  const originalSizes = new Map<string, number>(); // Track original size para ratios
-  for (const item of items) {
-    const negocioId = (item.data as any).negocioId || (item.type === "business" ? item.data.id : "");
-    if (!negocioId) {
-      console.warn(`⚠️ Item sin negocioId: ${item.type}-${item.id}, agregado sin grupo`);
-      continue;
-    }
-    if (!groups.has(negocioId)) {
-      groups.set(negocioId, []);
-      originalSizes.set(negocioId, 0);
-    }
-    groups.get(negocioId)!.push(item);
-    originalSizes.set(negocioId, groups.get(negocioId)!.length);
-  }
-
-  const numBiz = groups.size;
-  if (numBiz <= 1) return items; // Fallback sort si no variedad
-  if (numBiz < 3) {
-    const sorted = items.sort((a, b) => b.score - a.score); // OPTIM: Asigna a var para log
+  // 1. Estricto: Prefs + secciones + local (ciudad/depto)
+  try {
+    items = await fetchStrict(params);
     if (process.env.NODE_ENV === "development") {
-      console.log(`🌀 Interleave fallback sort por score (pocos biz: ${numBiz})`);
+      console.log(`🔍 ${type} estricto: ${items.length} items (prefs: ${params.preferencias?.length || 0}, secciones: ${params.secciones?.length || 0}, cursor: ${params.cursor || 'initial'})`);
     }
-    return sorted;
+  } catch (e) {
+    console.error(`Error en ${type} estricto:`, e);
   }
 
-  // Paso 2: Ordenar cada grupo por score desc (tops primero, full)
-  for (const group of groups.values()) {
-    group.sort((a, b) => b.score - a.score);
+  // 2. Si escaso, relaja a local (solo ciudad/depto, sin prefs/secciones)
+  if (items.length < thresholdStrict) {
+    const localParams = { ...params, preferencias: [], secciones: [] };
+    try {
+      const localItems = await fetchLocal(localParams);
+      // Dedup por ID (evita duplicados entre niveles)
+      const newItems = localItems.filter(item => !items.some(existing => (existing as any).id === (item as any).id));
+      items = [...items, ...newItems];
+      if (process.env.NODE_ENV === "development") {
+        console.log(`🔍 ${type} local fallback: +${newItems.length} (total: ${items.length}, seen filtrados: ${localParams.seenIds?.length || 0})`);
+      }
+    } catch (e) {
+      console.error(`Error en ${type} local:`, e);
+    }
   }
 
-  // Paso 3: BizList con boost equidad (smalls first: equity = topScore * (1 + 1/size) + bonus si small)
-  const bizList = Array.from(groups.keys()).sort((a, b) => {
-    const groupA = groups.get(a)!;
-    const groupB = groups.get(b)!;
-    const sizeA = originalSizes.get(a)!;
-    const sizeB = originalSizes.get(b)!;
-    const topScoreA = groupA[0]?.score || 0;
-    const topScoreB = groupB[0]?.score || 0;
-    const equityA = topScoreA * (1 + (1 / sizeA)) + (sizeA <= 2 ? 0.5 : 0); // Boost strong para smalls (<=2 items)
-    const equityB = topScoreB * (1 + (1 / sizeB)) + (sizeB <= 2 ? 0.5 : 0);
-    return equityB - equityA; // Desc: High equity first (smalls boosted)
+  // 3. Si aún escaso, relaja a todo (nacional, sin filtros locales/prefs)
+  if (items.length < thresholdLocal) {
+    const allParams = { ...params, preferencias: [], secciones: [], ciudad: undefined, departamento: undefined };
+    try {
+      const allItems = await fetchAll(allParams);
+      const newItems = allItems.filter(item => !items.some(existing => (existing as any).id === (item as any).id));
+      items = [...items, ...newItems];
+      if (process.env.NODE_ENV === "development") {
+        console.log(`⚠️ ${type} nacional fallback: +${newItems.length} (total final: ${items.length})`);
+      }
+    } catch (e) {
+      console.error(`Error en ${type} nacional:`, e);
+    }
+  }
+
+  // Ordena final por DB (orden DESC + createdAt DESC) y aplica buffer
+  items.sort((a, b) => {
+    const orderA = (a as any).orden || 0;
+    const orderB = (b as any).orden || 0;
+    if (orderB !== orderA) return orderB - orderA;
+    return new Date((b as any).createdAt).getTime() - new Date((a as any).createdAt).getTime();
+  });
+  return items.slice(0, params.limit + 10);
+}
+
+// Fetch functions para Products (strict/local/all)
+async function fetchProductsStrict(params: any): Promise<RawProduct[]> {
+  const where: Prisma.ProductWhereInput = {
+    status: "disponible",
+    id: { notIn: params.seenIds.filter((id: string) => id.startsWith("product-")) },
+    negocio: {
+      OR: [{ ciudad: params.ciudad }, { departamento: params.departamento }],
+    },
+  };
+  if (params.preferencias?.length > 0) {
+    where.negocio!.categorias = { some: { category: { slug: { in: params.preferencias } } } };
+  }
+  if (params.secciones?.length > 0) {
+    where.secciones = { some: { section: { slug: { in: params.secciones } } } };
+  }
+  return prisma.product.findMany({
+    where,
+    select: productSelect,
+    orderBy: [{ orden: "desc" }, { createdAt: "desc" }],
+    take: params.limit + 10,
+    cursor: params.cursor ? { id: params.cursor } : undefined,
+    skip: params.cursor ? 1 : 0,
+  });
+}
+
+async function fetchProductsLocal(params: any): Promise<RawProduct[]> {
+  const where: Prisma.ProductWhereInput = {
+    status: "disponible",
+    id: { notIn: params.seenIds.filter((id: string) => id.startsWith("product-")) },
+    negocio: {
+      OR: [{ ciudad: params.ciudad }, { departamento: params.departamento }],
+    },
+  };
+  return prisma.product.findMany({
+    where,
+    select: productSelect,
+    orderBy: [{ orden: "desc" }, { createdAt: "desc" }],
+    take: params.limit + 10,
+    cursor: params.cursor ? { id: params.cursor } : undefined,
+    skip: params.cursor ? 1 : 0,
+  });
+}
+
+async function fetchProductsAll(params: any): Promise<RawProduct[]> {
+  const where: Prisma.ProductWhereInput = {
+    status: "disponible",
+    id: { notIn: params.seenIds.filter((id: string) => id.startsWith("product-")) },
+  };
+  return prisma.product.findMany({
+    where,
+    select: productSelect,
+    orderBy: [{ orden: "desc" }, { createdAt: "desc" }],
+    take: params.limit + 10,
+    cursor: params.cursor ? { id: params.cursor } : undefined,
+    skip: params.cursor ? 1 : 0,
+  });
+}
+
+// Fetch functions para Services
+async function fetchServicesStrict(params: any): Promise<RawService[]> {
+  const where: Prisma.ServicioWhereInput = {
+    status: "disponible",
+    id: { notIn: params.seenIds.filter((id: string) => id.startsWith("serv-")) },
+    negocio: {
+      OR: [{ ciudad: params.ciudad }, { departamento: params.departamento }],
+    },
+  };
+  if (params.preferencias?.length > 0) {
+    where.tags = { hasSome: params.preferencias };
+  }
+  if (params.secciones?.length > 0) {
+    where.negocio!.secciones = { some: { section: { slug: { in: params.secciones } } } };
+  }
+  return prisma.servicio.findMany({
+    where,
+    select: serviceSelect,
+    orderBy: [{ orden: "desc" }, { createdAt: "desc" }],
+    take: params.limit + 10,
+    cursor: params.cursor ? { id: params.cursor } : undefined,
+    skip: params.cursor ? 1 : 0,
+  });
+}
+
+async function fetchServicesLocal(params: any): Promise<RawService[]> {
+  const where: Prisma.ServicioWhereInput = {
+    status: "disponible",
+    id: { notIn: params.seenIds.filter((id: string) => id.startsWith("serv-")) },
+    negocio: {
+      OR: [{ ciudad: params.ciudad }, { departamento: params.departamento }],
+    },
+  };
+  return prisma.servicio.findMany({
+    where,
+    select: serviceSelect,
+    orderBy: [{ orden: "desc" }, { createdAt: "desc" }],
+    take: params.limit + 10,
+    cursor: params.cursor ? { id: params.cursor } : undefined,
+    skip: params.cursor ? 1 : 0,
+  });
+}
+
+async function fetchServicesAll(params: any): Promise<RawService[]> {
+  const where: Prisma.ServicioWhereInput = {
+    status: "disponible",
+    id: { notIn: params.seenIds.filter((id: string) => id.startsWith("serv-")) },
+  };
+  return prisma.servicio.findMany({
+    where,
+    select: serviceSelect,
+    orderBy: [{ orden: "desc" }, { createdAt: "desc" }],
+    take: params.limit + 10,
+    cursor: params.cursor ? { id: params.cursor } : undefined,
+    skip: params.cursor ? 1 : 0,
+  });
+}
+
+// Fetch functions para Businesses
+async function fetchBusinessesStrict(params: any): Promise<RawBusiness[]> {
+  const where: Prisma.NegocioWhereInput = {
+    estado: "activo",
+    id: { notIn: params.seenIds.filter((id: string) => id.startsWith("bus-")) },
+    OR: [{ ciudad: params.ciudad }, { departamento: params.departamento }],
+  };
+  if (params.preferencias?.length > 0) {
+    where.categorias = { some: { category: { slug: { in: params.preferencias } } } };
+  }
+  if (params.secciones?.length > 0) {
+    where.secciones = { some: { section: { slug: { in: params.secciones } } } };
+  }
+  return prisma.negocio.findMany({
+    where,
+    select: businessSelect,
+    orderBy: [{ orden: "desc" }, { createdAt: "desc" }],
+    take: params.limit + 10,
+    cursor: params.cursor ? { id: params.cursor } : undefined,
+    skip: params.cursor ? 1 : 0,
+  });
+}
+
+async function fetchBusinessesLocal(params: any): Promise<RawBusiness[]> {
+  const where: Prisma.NegocioWhereInput = {
+    estado: "activo",
+    id: { notIn: params.seenIds.filter((id: string) => id.startsWith("bus-")) },
+    OR: [{ ciudad: params.ciudad }, { departamento: params.departamento }],
+  };
+  return prisma.negocio.findMany({
+    where,
+    select: businessSelect,
+    orderBy: [{ orden: "desc" }, { createdAt: "desc" }],
+    take: params.limit + 10,
+    cursor: params.cursor ? { id: params.cursor } : undefined,
+    skip: params.cursor ? 1 : 0,
+  });
+}
+
+async function fetchBusinessesAll(params: any): Promise<RawBusiness[]> {
+  const where: Prisma.NegocioWhereInput = {
+    estado: "activo",
+    id: { notIn: params.seenIds.filter((id: string) => id.startsWith("bus-")) },
+  };
+  return prisma.negocio.findMany({
+    where,
+    select: businessSelect,
+    orderBy: [{ orden: "desc" }, { createdAt: "desc" }],
+    take: params.limit + 10,
+    cursor: params.cursor ? { id: params.cursor } : undefined,
+    skip: params.cursor ? 1 : 0,
+  });
+}
+
+// Fetch para Publications (con fallback simple si <5)
+async function fetchPublications(params: ExtendedParams): Promise<RawPublication[]> {
+  const where: Prisma.PublicacionWhereInput = {
+    tipo: { in: ["TESTIMONIO", "CARRUSEL_IMAGENES"] },
+    visibilidad: "PUBLICA",
+    id: { notIn: params.seenIds.filter((id: string) => id.startsWith("pub-")) },
+    negocio: {
+      OR: [{ ciudad: params.ciudad }, { departamento: params.departamento }],
+    },
+  };
+  if (params.preferencias?.length > 0) {
+    where.negocio!.categorias = { some: { category: { slug: { in: params.preferencias } } } };
+  }
+
+  const strictItems = await prisma.publicacion.findMany({
+    where,
+    select: publicationSelect,
+    orderBy: [{ orden: "desc" }, { createdAt: "desc" }],
+    take: params.limit + 10,
+    cursor: params.cursor ? { id: params.cursor } : undefined,
+    skip: params.cursor ? 1 : 0,
   });
 
-  // Paso 4: Round-robin progresivo (rota queue, prioriza under-represented por ratio shown/original)
-  const mixed: FeedItem[] = [];
-  const shownCounts = new Map<string, number>(); // Track shown por biz
-  bizList.forEach(biz => shownCounts.set(biz, 0));
-  let queueIndex = 0; // Para rotación circular
-
-  while (mixed.length < items.length) {
-    // Re-sort queue por under-represented (menor ratio shown/original) cada 5 items (progresivo)
-    if (mixed.length % 5 === 0 && mixed.length > 0) {
-      const activeBiz = bizList.filter(biz => groups.get(biz)!.length > 0);
-      if (activeBiz.length > 1) {
-        bizList.sort((a, b) => {
-          if (groups.get(a)!.length === 0) return 1; // Mueve agotados al final
-          if (groups.get(b)!.length === 0) return -1;
-          const ratioA = shownCounts.get(a)! / originalSizes.get(a)!;
-          const ratioB = shownCounts.get(b)! / originalSizes.get(b)!;
-          return ratioA - ratioB; // Asc: Bajo ratio first (under-represented/small remaining)
-        });
-        queueIndex = 0; // Reset rotación después re-sort
-      }
+  // Fallback si <5: Relaja a local (sin prefs)
+  if (strictItems.length < 5) {
+    const localWhere = {
+      ...where,
+      negocio: {
+        OR: [{ ciudad: params.ciudad }, { departamento: params.departamento }],
+      },
+    };
+    const localItems = await prisma.publicacion.findMany({
+      where: localWhere,
+      select: publicationSelect,
+      orderBy: [{ orden: "desc" }, { createdAt: "desc" }],
+      take: params.limit + 10,
+      cursor: params.cursor ? { id: params.cursor } : undefined,
+      skip: params.cursor ? 1 : 0,
+    });
+    const combined = [...strictItems, ...localItems.filter(item => !strictItems.some(s => s.id === item.id))];
+    if (process.env.NODE_ENV === "development") {
+      console.log(`fetchPublications fallback: +${localItems.length} (total: ${combined.length})`);
     }
-
-    // Toma del siguiente en queue (rota)
-    let added = false;
-    for (let attempts = 0; attempts < numBiz; attempts++) {
-      const currentIndex = (queueIndex + attempts) % bizList.length;
-      const bizId = bizList[currentIndex];
-      const group = groups.get(bizId);
-      if (group && group.length > 0) {
-        const nextItem = group.shift()!;
-        mixed.push(nextItem);
-        shownCounts.set(bizId, shownCounts.get(bizId)! + 1);
-        queueIndex = (currentIndex + 1) % bizList.length; // Avanza queue
-        added = true;
-        break;
-      }
-    }
-    if (!added) break; // No más items
+    return combined.slice(0, params.limit + 10);
   }
 
-  // Asegura full length (raro, pero por si skips)
-  if (mixed.length < items.length) {
-    // Agrega restantes por score (no push raw)
-    const remaining = [];
-    for (const group of groups.values()) {
-      remaining.push(...group);
-    }
-    remaining.sort((a, b) => b.score - a.score);
-    mixed.push(...remaining);
-  }
-
-  // Log debug refinado (INTEGR: Adaptado para este contexto)
   if (process.env.NODE_ENV === "development") {
-    const finalSizes = Array.from(groups.keys()).map(biz => `${biz.slice(-4)}: ${originalSizes.get(biz)} (shown: ${shownCounts.get(biz)})`);
-    console.log(`🌀 Interleave en getFeedDataByType: Full mixed ${mixed.length}/${items.length} (biz: ${numBiz}, equity boost smalls, progresivo ratios: [${finalSizes.join(', ')}])`);
+    console.log("fetchPublications: Fetched:", strictItems.length, `con userId: ${params.userId || 'anónimo'}`);
   }
-
-  return mixed;
+  return strictItems;
 }
 
 export async function getFeedDataByType(
   type: "products" | "publications" | "services" | "businesses",
-  params: ExtendedParams  // Usa extended para userId
+  params: ExtendedParams
 ): Promise<FeedResponse> {
   if (!params.ciudad) throw new Error("Ciudad requerida para feed local");
 
@@ -137,19 +310,19 @@ export async function getFeedDataByType(
   let nextCursor: string | undefined;
 
   try {
-    // Fetch por tipo (sin cambios en switch)
+    // Fetch por tipo con fallbacks
     switch (type) {
       case "products":
-        rawItems = await fetchProducts(params);
+        rawItems = await fetchWithFallback(fetchProductsStrict, fetchProductsLocal, fetchProductsAll, params, "products");
         break;
       case "publications":
-        rawItems = await fetchPublications(params);  // Pasa userId para condicional
+        rawItems = await fetchPublications(params);
         break;
       case "services":
-        rawItems = await fetchServices(params);
+        rawItems = await fetchWithFallback(fetchServicesStrict, fetchServicesLocal, fetchServicesAll, params, "services");
         break;
       case "businesses":
-        rawItems = await fetchBusinesses(params);
+        rawItems = await fetchWithFallback(fetchBusinessesStrict, fetchBusinessesLocal, fetchBusinessesAll, params, "businesses");
         break;
     }
   } catch (error) {
@@ -157,7 +330,7 @@ export async function getFeedDataByType(
     rawItems = []; // Resiliency
   }
 
-  // OPTIM: Log seenIds filtrados para debug (solo dev)
+  // Log seenIds filtrados para debug (solo dev)
   if (process.env.NODE_ENV === "development") {
     const filteredSeen = params.seenIds.filter(id => {
       switch (type) {
@@ -171,27 +344,33 @@ export async function getFeedDataByType(
     console.log(`🔍 ${type} seenIds filtrados: ${filteredSeen}/${params.seenIds.length} (total)`);
   }
 
-  // Fallback si escaso (CAMBIO: Pasa userId en relaxedParams para consistencia)
+  // Si aún escaso post-fetch, fallback global (sin prefs/secciones, pero mantén ciudad)
   if (rawItems.length < 3) {
     const relaxedParams = { ...params, preferencias: [], secciones: [] };
     try {
-      rawItems =
-        type === "products"
-          ? await fetchProducts(relaxedParams)
-          : type === "publications"
-          ? await fetchPublications(relaxedParams)
-          : type === "services"
-          ? await fetchServices(relaxedParams)
-          : await fetchBusinesses(relaxedParams);
+      switch (type) {
+        case "products":
+          rawItems = await fetchProductsLocal(relaxedParams);
+          break;
+        case "publications":
+          rawItems = await fetchPublications(relaxedParams);
+          break;
+        case "services":
+          rawItems = await fetchServicesLocal(relaxedParams);
+          break;
+        case "businesses":
+          rawItems = await fetchBusinessesLocal(relaxedParams);
+          break;
+      }
       if (process.env.NODE_ENV === "development") {
-        console.log(`⚠️ Fallback activado para ${type}: ${rawItems.length} items (relajado prefs/secciones)`);
+        console.log(`⚠️ Fallback global activado para ${type}: ${rawItems.length} items (relajado prefs/secciones)`);
       }
     } catch (error) {
       console.error(`Error in fallback for ${type}:`, error);
     }
   }
 
-  // CAMBIO: Si type=publications y userId, fetch batch de reacciones personalizadas (eficiente, como en referencia)
+  // Fetch batch de reacciones para publications si aplica
   let userReactionsMap: Record<string, { id: string; tipo: ReaccionTipo } | null> = {};
   if (type === "publications" && params.userId && rawItems.length > 0) {
     const pubIds = rawItems.filter(isRawPublication).map((pub) => pub.id);
@@ -200,7 +379,7 @@ export async function getFeedDataByType(
         where: {
           usuarioId: params.userId!,
           tipo: "REACCION",
-          publicacionId: { in: pubIds },  // Batch: Una query para todas pubs
+          publicacionId: { in: pubIds },  // Batch eficiente
         },
         select: {
           id: true,
@@ -209,7 +388,7 @@ export async function getFeedDataByType(
         },
       });
 
-      // Type guard para reacción válida (como en referencia)
+      // Type guard para reacción válida
       const isValidReactionType = (tipo: ReaccionTipo | null): tipo is ReaccionTipo => {
         if (tipo === null) return false;
         return ["LIKE", "LOVE", "WOW", "SAD", "ANGRY"].includes(tipo);
@@ -239,7 +418,7 @@ export async function getFeedDataByType(
     }
   }
 
-  // Mapeo con scoring/isFollowed (CAMBIO: Para publications, setea userReaction del batch y formatea comments)
+  // Mapeo simplificado (sin score ni interleave: orden ya de DB)
   const items: FeedItem[] = rawItems.map((raw) => {
     const itemType = type.slice(0, -1) as "product" | "publication" | "service" | "business";
     let item: FeedItem;
@@ -248,10 +427,10 @@ export async function getFeedDataByType(
       item = mapToFeedItem(raw, "product");
     } else if (isRawPublication(raw)) {
       item = mapToFeedItem(raw, "publication");
-      // CAMBIO: Personaliza userReaction (de batch o null)
-      const enhancedData = item.data as EnhancedPublicacion;  // Asume mapToFeedItem retorna EnhancedPublicacion
+      // Personaliza userReaction (de batch o null)
+      const enhancedData = item.data as EnhancedPublicacion;
       enhancedData.userReaction = userReactionsMap[raw.id] ?? null;
-      // CAMBIO: Formatea createdAt y comments (de interacciones) a strings ISO
+      // Formatea createdAt y comments a strings ISO
       enhancedData.createdAt = raw.createdAt.toISOString();
       enhancedData.comments = (raw.interacciones || []).map((inter: any) => ({
         id: inter.id,
@@ -275,183 +454,34 @@ export async function getFeedDataByType(
       throw new Error(`Tipo raw no reconocido para ${type}`);
     }
 
-    // isFollowed: Lógica unificada (sin cambios)
+    // isFollowed: Lógica unificada
     let negocioId: string;
     if (isRawProduct(raw) || isRawPublication(raw) || isRawService(raw)) {
       negocioId = raw.negocio?.id ?? "";
     } else { // RawBusiness
       negocioId = raw.id;
     }
-    // INTEGR: Set negocioId en data para facilitar grouping en interleave (ajusta si data no es mutable)
+    // Set negocioId en data para facilitar frontend (si needed)
     (item.data as any).negocioId = negocioId;
 
     item.isFollowed = params.followedBusinessIds?.includes(negocioId) ?? false;
-    item.score = calculateScore(item, params);
+    
     return item;
   });
 
-  // INTEGR: Reemplaza sort simple por interleave para variedad (full batch, boost smalls)
-  const mixedItems = interleaveItemsByBusiness(items, params.limit);
+  // Usa items directamente (ordenados por fetch)
+  const orderedItems = items;
 
-  // OPTIM: nextCursor más conservador (solo si rawItems >= limit, explícito fin para UX)
+  // nextCursor conservador pero generoso post-fallback
   nextCursor = rawItems.length >= params.limit ? rawItems[rawItems.length - 1].id : undefined;
 
-  // Logs dev mejorados (INTEGR: Incluye userId, reacciones y interleave)
+  // Logs dev simplificados
   if (process.env.NODE_ENV === "development") {
-    console.log(`getFeedDataByType(${type}): Fetched ${rawItems.length} raw items -> Mixed ${mixedItems.length} (diversidad aplicada)`);
+    console.log(`getFeedDataByType(${type}): Fetched ${rawItems.length} raw (con fallbacks) -> Returned ${orderedItems.length} (orden por DB)`);
     if (type === "publications" && params.userId) {
       console.log(`User reactions fetched for userId ${params.userId}: ${Object.keys(userReactionsMap).length} pubs con reacción`);
     }
   }
 
-  return { items: mixedItems.slice(0, params.limit), nextCursor };
-}
-
-// Las funciones fetch permanecen IDÉNTICAS (con OPTIM: buffer +10 para robustez paginación)
-async function fetchProducts(params: FeedQueryParams & { cursor?: string }): Promise<RawProduct[]> {
-  const where: Prisma.ProductWhereInput = {
-    status: "disponible",
-    id: { notIn: params.seenIds.filter((id) => id.startsWith("product-")) },
-    negocio: {
-      OR: [{ ciudad: params.ciudad }, { departamento: params.departamento }],
-    },
-  };
-
-  if (params.preferencias.length > 0) {
-    where.negocio!.categorias = { some: { category: { slug: { in: params.preferencias } } } };
-  }
-
-  if (params.secciones.length > 0) {
-    where.secciones = { some: { section: { slug: { in: params.secciones } } } };
-  }
-
-  return prisma.product.findMany({
-    where,
-    select: productSelect,
-    orderBy: { createdAt: "desc" },
-    take: params.limit + 10, // OPTIM: +10 buffer (de +5) para compensar seenIds y asegurar paginación
-    cursor: params.cursor ? { id: params.cursor } : undefined,
-    skip: params.cursor ? 1 : 0,
-  });
-}
-
-async function fetchPublications(params: ExtendedParams): Promise<RawPublication[]> {
-  const where: Prisma.PublicacionWhereInput = {
-    tipo: { in: ["TESTIMONIO", "CARRUSEL_IMAGENES"] },
-    visibilidad: "PUBLICA",
-    id: { notIn: params.seenIds.filter((id) => id.startsWith("pub-")) },
-    negocio: {
-      OR: [{ ciudad: params.ciudad }, { departamento: params.departamento }],
-    },
-  };
-
-  if (params.preferencias.length > 0) {
-    where.negocio!.categorias = { some: { category: { slug: { in: params.preferencias } } } };
-  }
-
-  const publicaciones = await prisma.publicacion.findMany({
-    where,
-    select: publicationSelect,
-    orderBy: [{ numLikes: "desc" }, { createdAt: "desc" }],  // Hot first (likes), then recent
-    take: params.limit + 10, // OPTIM: +10 buffer para robustez
-    cursor: params.cursor ? { id: params.cursor } : undefined,
-    skip: params.cursor ? 1 : 0,
-  });
-
-  if (process.env.NODE_ENV === "development") {
-    console.log("fetchPublications: Fetched:", publicaciones.length, `con userId: ${params.userId || 'anónimo'}`);
-    console.log(
-      "Details sample:",
-      publicaciones.slice(0, 1).map((pub) => ({
-        id: pub.id,
-        tipo: pub.tipo,
-        interaccionesCount: pub.interacciones?.length || 0,  // Verifica comentarios
-        numLikes: pub.numLikes,
-      }))
-    );
-  }
-
-  return publicaciones;
-}
-
-async function fetchServices(params: FeedQueryParams & { cursor?: string }): Promise<RawService[]> {
-  const where: Prisma.ServicioWhereInput = {
-    status: "disponible",
-    id: { notIn: params.seenIds.filter((id) => id.startsWith("serv-")) },
-    negocio: {
-      OR: [{ ciudad: params.ciudad }, { departamento: params.departamento }],
-    },
-  };
-
-  if (params.preferencias.length > 0) {
-    where.tags = { hasSome: params.preferencias };
-  }
-
-  if (params.secciones.length > 0) {
-    where.negocio!.secciones = { some: { section: { slug: { in: params.secciones } } } };
-  }
-
-  const services = await prisma.servicio.findMany({
-    where,
-    select: serviceSelect,
-    orderBy: { createdAt: "desc" },
-    take: params.limit + 10, // OPTIM: +10 buffer
-    cursor: params.cursor ? { id: params.cursor } : undefined,
-    skip: params.cursor ? 1 : 0,
-  });
-
-  if (process.env.NODE_ENV === "development") {
-    console.log("fetchServices: Fetched servicios:", services.length);
-    console.log(
-      "Details:",
-      services.map((serv) => ({
-        id: serv.id,
-        status: serv.status,
-        createdAt: serv.createdAt.toISOString(),
-        multimedia: serv.multimedia.map((m) => m.url),
-      }))
-    );
-  }
-
-  return services;
-}
-
-async function fetchBusinesses(params: FeedQueryParams & { cursor?: string }): Promise<RawBusiness[]> {
-  const where: Prisma.NegocioWhereInput = {
-    estado: "activo",
-    id: { notIn: params.seenIds.filter((id) => id.startsWith("bus-")) },
-    OR: [{ ciudad: params.ciudad }, { departamento: params.departamento }],
-  };
-
-  if (params.preferencias.length > 0) {
-    where.categorias = { some: { category: { slug: { in: params.preferencias } } } };
-  }
-
-  if (params.secciones.length > 0) {
-    where.secciones = { some: { section: { slug: { in: params.secciones } } } };
-  }
-
-  const businesses = await prisma.negocio.findMany({
-    where,
-    select: businessSelect,
-    orderBy: { createdAt: "desc" },
-    take: params.limit + 10, // OPTIM: +10 buffer
-    cursor: params.cursor ? { id: params.cursor } : undefined,
-    skip: params.cursor ? 1 : 0,
-  });
-
-  if (process.env.NODE_ENV === "development") {
-    console.log("fetchBusinesses: Fetched negocios:", businesses.length);
-    console.log(
-      "Details:",
-      businesses.map((bus) => ({
-        id: bus.id,
-        estado: bus.estado,
-        createdAt: bus.createdAt.toISOString(),
-        categorias: bus.categorias.map((c) => c.category.slug),
-      }))
-    );
-  }
-
-  return businesses;
+  return { items: orderedItems.slice(0, params.limit), nextCursor };
 }
