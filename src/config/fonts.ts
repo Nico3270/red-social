@@ -15,6 +15,7 @@ import {
   Slabo_27px,
   Patua_One,
   DM_Sans,
+  Yanone_Kaffeesatz,
 } from "next/font/google";
 
 // Fuentes base
@@ -26,6 +27,7 @@ export const tituloLogo = Protest_Guerrilla({ subsets: ["latin"], weight: ["400"
 export const titulosElegantes = Playfair_Display({ subsets: ["latin"] });
 export const merriWeather = Merriweather({ subsets: ["latin"], weight: ["300"] });
 
+
 // Fuentes específicas
 export const RobotoFont = Roboto({ subsets: ["latin"], weight: ["400"] });
 export const LatoFont = Lato({ subsets: ["latin"], weight: ["400"] });
@@ -35,7 +37,7 @@ export const titulosCarrusel = Work_Sans({ subsets: ["latin"], weight: ["400"] }
 // Fuentes personalizadas por secciones
 export const textmenuSections = Patua_One({ subsets: ["latin"], weight: ["400"] });
 export const SeccionesFont = Domine({ subsets: ["latin"] });
-export const LogoFont = Domine({ subsets: ["latin"] });
+export const LogoFont = Yanone_Kaffeesatz({ subsets: ["latin"], weight:  ["400", "700", ], });
 export const titulosPrincipales = Domine({ subsets: ["latin"] });
 
 export const titleFont = Montserrat_Alternates({ subsets: ["latin"], weight: ["500", "700"] });

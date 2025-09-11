@@ -18,6 +18,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Alert, Box, Button, CircularProgress, FormControl, InputLabel, MenuItem, Select, Typography } from "@mui/material";
 import colombia from "@/config/colombia.json"; // Tu JSON de Colombia
 import { updateUserPreferences } from "@/preferences/actions/updateUserPreferences"; // Ajusta la ruta según sea necesario
+import { LogoFont } from "@/config/fonts";
 
 interface ColombiaDepartment {
   id: number;
@@ -214,15 +215,29 @@ export const TopMenu = () => {
     <header className="fixed top-0 w-full z-50 bg-white shadow-md border-b">
       <div className="max-w-7xl mx-auto px-4 flex justify-between items-center h-20">
         {/* Logo a la izquierda */}
-        <Link href="/" className="flex items-center">
-          <Image
-            src="/imgs/logo final-1.png"
-            alt="Logo MagiSurprise"
-            width={80}
-            height={80}
-            className="rounded-full"
-          />
-        </Link>
+        <Link href="/" className="flex items-center space-x-1">
+  <Image
+    src="/imgs/Logo Final.png"
+    alt="Logo Myckeo"
+    width={100}
+    height={100}
+    unoptimized
+    className="rounded-full"
+  />
+  <span
+    className={`
+      text-3xl font-bold text-gray-900 
+      tracking-tight relative
+      ${LogoFont.className}
+    `}
+    style={{
+      textShadow: "1px 1px 2px rgba(0,0,0,0.15)", // sombra sutil
+    }}
+  >
+    Myckeo
+  </span>
+</Link>
+
 
         {/* Barra de búsqueda centrada con botón de ubicación al lado */}
         <div className="flex items-center w-full max-w-md mx-4">
@@ -266,6 +281,7 @@ export const TopMenu = () => {
               alt="Inicio"
               width={24}
               height={24}
+              unoptimized
               className="
         w-5 h-5 md:w-6 md:h-6 text-gray-600 
         transform transition-all duration-300 
@@ -295,6 +311,7 @@ export const TopMenu = () => {
               alt="Inicio"
               width={24}
               height={24}
+              unoptimized
               className="
         w-5 h-5 md:w-6 md:h-6 text-gray-600 
         transform transition-all duration-300 
@@ -332,6 +349,7 @@ export const TopMenu = () => {
               alt="Inicio"
               width={24}
               height={24}
+              unoptimized
               className="
         w-5 h-5 md:w-6 md:h-6 text-gray-600 
         transform transition-all duration-300 
@@ -366,6 +384,7 @@ export const TopMenu = () => {
                 alt="Inicio"
                 width={24}
                 height={24}
+                unoptimized
                 className="
         w-5 h-5 md:w-6 md:h-6 text-gray-600 
         transform transition-all duration-300 
@@ -396,6 +415,7 @@ export const TopMenu = () => {
               alt="Inicio"
               width={24}
               height={24}
+              unoptimized
               className="
         w-5 h-5 md:w-6 md:h-6 text-gray-600 
         transform transition-all duration-300 

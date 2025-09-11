@@ -104,12 +104,6 @@ export interface FeedResponse {
   nextCursor?: string; // Simplificado a string | undefined
 }
 
-interface FeedRendererProps {
-  items: FeedItem[];
-  hasMore: boolean;
-  isLoadingNext: boolean;
-  sentinelRef: React.RefCallback<HTMLDivElement>; // Callback para useInView compatibilidad
-}
 
 // src/interfaces/feed.interfaces.ts (al final)
 

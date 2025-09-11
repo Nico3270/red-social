@@ -215,10 +215,11 @@ export const TopMenuMobile = () => {
           {/* Logo a la izquierda */}
           <Link href="/" className="flex items-center">
             <Image
-              src="/imgs/logo final-1.png"
-              alt="Logo MagiSurprise"
-              width={50}
-              height={50}
+              src="/imgs/Logo Final.png"
+              alt="Logo Myckeo"
+              width={60}
+              height={60}
+              unoptimized
               className="rounded-full"
             />
           </Link>
@@ -226,8 +227,8 @@ export const TopMenuMobile = () => {
           {/* Barra de búsqueda en el centro con botón de ubicación al lado */}
           <div className="flex items-center flex-1 mx-4">
             <div className="relative flex-1">
-              <div className="flex items-center bg-white rounded-full shadow-md border border-green-600 px-3 py-1">
-                <FaSearch className="text-green-600" />
+              <div className="flex items-center bg-white rounded-full shadow-md border border-gray-600 px-3 py-1">
+                <FaSearch className="text-gray-600" />
                 <input
                   type="text"
                   placeholder="Buscar..."
@@ -279,6 +280,7 @@ export const TopMenuMobile = () => {
             <Image
               src="/imgs/iconos/home.png"
               alt="Inicio"
+              unoptimized
               width={24}
               height={24}
               className="
@@ -310,6 +312,7 @@ export const TopMenuMobile = () => {
               alt="Inicio"
               width={24}
               height={24}
+              unoptimized
               className="
         w-5 h-5 md:w-6 md:h-6 text-gray-600 
         transform transition-all duration-300 
@@ -347,6 +350,7 @@ export const TopMenuMobile = () => {
               alt="Inicio"
               width={24}
               height={24}
+              unoptimized
               className="
         w-5 h-5 md:w-6 md:h-6 text-gray-600 
         transform transition-all duration-300 
@@ -385,6 +389,7 @@ export const TopMenuMobile = () => {
                   alt="Inicio"
                   width={24}
                   height={24}
+                  unoptimized
                   className="
                       w-5 h-5 md:w-6 md:h-6 text-gray-600 
                       transform transition-all duration-300 
@@ -416,6 +421,7 @@ export const TopMenuMobile = () => {
               alt="Inicio"
               width={24}
               height={24}
+              unoptimized
               className="
                   w-5 h-5 md:w-6 md:h-6 text-gray-600 
                   transform transition-all duration-300 
