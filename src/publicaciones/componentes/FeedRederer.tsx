@@ -60,14 +60,20 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({ items, hasMore, isLoadingNe
 
   // Items filtrados SOLO por tab (sin categoría, para extraer categorías disponibles)
   const itemsPorTab = useMemo(() => {
-    return items.filter(item => {
-      if (activeTab === "Productos" && !isProductItem(item)) return false;
-      if (activeTab === "Servicios" && !isServiceItem(item)) return false;
-      if (activeTab === "Negocios" && !isBusinessItem(item)) return false;
-      if (activeTab === "Publicaciones" && !isPublicationItem(item)) return false;
-      return true;
-    });
-  }, [items, activeTab]);
+  const filtrados = items.filter(item => {
+    if (activeTab === "Productos" && !isProductItem(item)) return false;
+    if (activeTab === "Servicios" && !isServiceItem(item)) return false;
+    if (activeTab === "Negocios" && !isBusinessItem(item)) return false;
+    if (activeTab === "Publicaciones" && !isPublicationItem(item)) return false;
+    return true;
+  });
+
+  console.log("🌀 activeTab:", activeTab);
+  console.log("📦 items originales:", items);
+  console.log("✅ items filtrados:", filtrados);
+
+  return filtrados;
+}, [items, activeTab]);
 
   // Categorías disponibles: únicas extraídas de itemsPorTab (solo para tabs relevantes)
   const categoriasDisponibles = useMemo(() => {
@@ -101,9 +107,9 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({ items, hasMore, isLoadingNe
       : PUBLICACIONES_SERVICIOS_BREAKPOINTS;
   }, [activeTab]);
 
-  // Filtrar items por tab Y categoría (con type guards para type safety)
+  // Filtrar items por tab Y categoría, preservando orden DB original (no sort por score)
   const filteredItems = useMemo(() => {
-    let filtered = itemsPorTab; // Ya filtrados por tab
+    let filtered = itemsPorTab; // Ya filtrados por tab, en orden DB del parent
 
     // Filtrar por categoría solo si aplica y hay selección
     if (selectedCategory && (activeTab === "Productos" || activeTab === "Negocios" || activeTab === "Servicios")) {
@@ -125,10 +131,24 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({ items, hasMore, isLoadingNe
       });
     }
 
-    return filtered.sort((a, b) => b.score - a.score);
+    // CAMBIO: Preservar orden DB original (orden DESC + createdAt DESC; no score)
+    const sortedFiltered = filtered.sort((a, b) => {
+      const dataA = a.data as any;
+      const dataB = b.data as any;
+      const orderA = dataA.orden || 0;
+      const orderB = dataB.orden || 0;
+      if (orderB !== orderA) return orderB - orderA;
+      return new Date(dataB.createdAt || 0).getTime() - new Date(dataA.createdAt || 0).getTime();
+    });
+
+    if (process.env.NODE_ENV === "development") {
+      console.log(`📊 FeedRenderer filteredItems (${activeTab}, cat: ${selectedCategory || 'all'}): ${sortedFiltered.length} items, orden preservado DB`);
+    }
+
+    return sortedFiltered;
   }, [itemsPorTab, activeTab, selectedCategory]);
 
-  // Render item (sin cambios)
+  // Render item (sin cambios; mantiene orden de array)
   const renderItem = (item: FeedItem, index: number) => {
     if (!item) return null;
 

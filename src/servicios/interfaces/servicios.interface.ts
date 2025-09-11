@@ -15,7 +15,7 @@ export interface ServicioData {
   currency?: Currency;
   status?: ServicioStatus;
   tags?: string[];
-  multimedia?: MediaItem[];
+  multimedia: MediaItem[]; // <-- sin "?"
   negocioId: string;
   negocioSlug: string;
   nombreNegocio: string;

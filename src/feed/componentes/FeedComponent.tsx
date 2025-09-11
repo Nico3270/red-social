@@ -14,7 +14,7 @@ import { toast } from 'sonner';
 import FeedRenderer from "@/publicaciones/componentes/FeedRederer";
 import { CircularProgress } from "@mui/material";
 
-// EXTENSIÓN: Agrega categoriaSlug a params
+// EXTENSIÓN: Agrega categoriaSlug a params (para temático futuro)
 interface ExtendedFeedQueryParams extends FeedQueryParams {
   userId?: string | null;
   categoriaSlug?: string;  // Para filtrado temático
@@ -34,28 +34,26 @@ type BackendExtendedParams = ExtendedFeedQueryParams & {
 
 export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedComponentProps = {}) {
   const { data: session } = useSession();
-  const { ciudad, departamento, preferencias, secciones, seenIds, addSeenId } = usePreferencesStore();
+  const { ciudad, departamento, seenIds, addSeenId } = usePreferencesStore();  // Simplificado: solo ciudad/depto/seen
   const [followedBusinessIds, setFollowedBusinessIds] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState<"Publicaciones" | "Productos" | "Servicios" | "Negocios">("Publicaciones");
   const [prevItemsLength, setPrevItemsLength] = useState(0); // Track para marking lazy de nuevos items
 
   console.log({ categoriaSlug });
 
-  // Params incluyen categoriaSlug condicional
+  // Params simplificados: Solo ciudad/depto + essentials (sin preferencias/secciones)
   const params = useMemo<ExtendedFeedQueryParams | null>(() => {
-    if (!ciudad) return null;
+    if (!ciudad) return null;  // Si no ciudad, no fetch
     const baseParams: ExtendedFeedQueryParams = {
       ciudad,
       departamento,
-      preferencias,
-      secciones,
       followedBusinessIds,
       limit: 20,
       seenIds,
       userId: session?.user?.id || null,
     };
     return categoriaSlug ? { ...baseParams, categoriaSlug } : baseParams;
-  }, [ciudad, departamento, preferencias, secciones, followedBusinessIds, seenIds, session?.user?.id, categoriaSlug]);
+  }, [ciudad, departamento, followedBusinessIds, seenIds, session?.user?.id, categoriaSlug]);  // Dependencias limpias
 
   // Carga follows
   useEffect(() => {
@@ -72,6 +70,13 @@ export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedCo
     }
     loadFollows();
   }, [session]);
+
+  // Si no ciudad, toast y loader (UX elegante)
+  useEffect(() => {
+    if (!ciudad && params === null) {
+      toast.info('Configura tu ciudad en preferencias para ver feeds locales.');
+    }
+  }, [ciudad, params]);
 
   // Helper para queryKey flexible
   const getQueryKey = useCallback((type: string): readonly (string | ExtendedFeedQueryParams | null)[] => {
@@ -105,14 +110,14 @@ export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedCo
   >({
     queryKey: getQueryKey('publicaciones'),
     queryFn: getQueryFn('publications'),
-    enabled: !!params,
+    enabled: !!params,  // Solo si params listos (ciudad)
     getNextPageParam: (lastPage) => lastPage.nextCursor,
     initialPageParam: undefined,
     staleTime: categoriaSlug ? 2 * 60 * 1000 : 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
     refetchOnWindowFocus: false,
-    retry: 3, // Aumentado para robustez
-    structuralSharing: false, // Optimiza para data mutante
+    retry: 3,
+    structuralSharing: false,
   });
 
   const productsQuery = useInfiniteQuery<
@@ -127,7 +132,7 @@ export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedCo
     enabled: !!params && activeTab === "Productos",
     getNextPageParam: (lastPage) => lastPage.nextCursor,
     initialPageParam: undefined,
-    staleTime: 2 * 60 * 1000, // Más corto para tabs (refresca al switch)
+    staleTime: 2 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
     refetchOnWindowFocus: false,
     refetchOnMount: true,  // Refresca al activar tab
@@ -213,7 +218,7 @@ export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedCo
     }
   }, [activeTab, queries, categoriaNombre]);
 
-  // Items por tab: FlatMap + dedup + sort por DB order (no score)
+  // Items por tab: FlatMap + dedup + sort por DB order (no score; dinámico por backend)
   const getItemsForTab = useCallback((tab: typeof activeTab): FeedItem[] => {
     const query = queries[tab];
     const allItems = query.data?.pages.flatMap((page) => page.items) || [];
@@ -222,7 +227,7 @@ export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedCo
       console.log(`📊 getItemsForTab(${tab}): FlatMap ${allItems.length} items from ${query.data?.pages.length || 0} pages`);
     }
     
-    // Deduplica con prefijo para seenIds temático (sin mixing extra; backend ya intercala)
+    // Deduplica: Prefixed solo si categoriaSlug (global: id puro para dinamismo)
     const uniqueMap = new Map<string, FeedItem>();
     allItems.forEach((item) => {
       const prefixedId = categoriaSlug ? `${categoriaSlug}-${item.id}` : item.id;
@@ -234,10 +239,10 @@ export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedCo
     const uniqueItems = Array.from(uniqueMap.values());
     
     if (process.env.NODE_ENV === "development") {
-      console.log(`📊 getItemsForTab(${tab}): After dedup ${uniqueItems.length} items (prefixed for categoria: ${!!categoriaSlug})`);
+      console.log(`📊 getItemsForTab(${tab}): After dedup ${uniqueItems.length} items (prefixed: ${!!categoriaSlug})`);
     }
     
-    // Sort final por orden DB (orden DESC + createdAt DESC; respeta backend)
+    // Sort por orden DB (preserva backend; elegante y consistente)
     return uniqueItems.sort((a, b) => {
       const dataA = a.data as any;
       const dataB = b.data as any;
@@ -248,13 +253,12 @@ export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedCo
     });
   }, [queries, categoriaSlug]);
 
-  // Mark as seen lazy: Solo nuevos items (delta con prevLength)
+  // Mark as seen lazy: Solo nuevos items (delta con prevLength; no satura seenIds)
   const markAsSeen = useCallback(() => {
     const currentItems = getItemsForTab(activeTab);
     const currentLength = currentItems.length;
     const newItemsCount = currentLength - prevItemsLength;
     if (newItemsCount > 0) {
-      // Solo marca los últimos/nuevos
       const itemsToMark = currentItems.slice(-newItemsCount);
       itemsToMark.forEach((item) => {
         const prefixedId = categoriaSlug ? `${categoriaSlug}-${item.id}` : item.id;
@@ -264,7 +268,7 @@ export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedCo
       });
       setPrevItemsLength(currentLength);
       if (process.env.NODE_ENV === "development") {
-        console.log(`👁️ markAsSeen(${activeTab}): +${newItemsCount} nuevos IDs agregados (total now: ${seenIds.length + newItemsCount})`);
+        console.log(`👁️ markAsSeen(${activeTab}): +${newItemsCount} nuevos IDs (total: ${seenIds.length + newItemsCount})`);
       }
     }
   }, [activeTab, getItemsForTab, categoriaSlug, addSeenId, seenIds, prevItemsLength]);
@@ -277,12 +281,12 @@ export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedCo
     }
   }, [activeTab, queries, markAsSeen]);
 
-  // Estado de loading generalizado para tab activo
+  // Estado de loading: Si no params (sin ciudad), loader específico
   const currentQuery = queries[activeTab];
   const items = getItemsForTab(activeTab);
-  const isLoading = currentQuery.isPending || (currentQuery.isFetching && items.length === 0);
+  const isLoading = currentQuery.isPending || (currentQuery.isFetching && items.length === 0) || !params;
 
-  // Loader: Spinner elegante para inicial o cambio de tab
+  // Loader: Spinner elegante, contextual (incluye si no ciudad)
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center py-16">
@@ -290,6 +294,8 @@ export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedCo
         <p className="mt-4 text-gray-600 text-sm">
           {categoriaNombre 
             ? `Cargando ${activeTab.toLowerCase()} en ${categoriaNombre}...` 
+            : !ciudad 
+            ? 'Configura tu ciudad para ver feeds locales...' 
             : `Cargando tu feed de ${activeTab.toLowerCase()}...`}
         </p>
       </div>

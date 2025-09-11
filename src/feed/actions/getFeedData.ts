@@ -15,94 +15,55 @@ interface ExtendedParams extends FeedQueryParams {
   userId?: string | null;  // De session.user.id; null para anónimos
 }
 
-// Helper genérico para fallback gradual (reutilizable, eficiente con dedup)
+// Helper simplificado para fallback (local primero, nacional si escaso; sin prefs)
 async function fetchWithFallback<T>(
-  fetchStrict: (params: any) => Promise<T[]>,
   fetchLocal: (params: any) => Promise<T[]>,
   fetchAll: (params: any) => Promise<T[]>,
   params: any,
   type: string,
-  thresholdStrict: number = 10,
   thresholdLocal: number = 5
 ): Promise<T[]> {
   let items: T[] = [];
 
-  // 1. Estricto: Prefs + secciones + local (ciudad/depto)
+  // 1. Local: Solo ciudad/depto + seen filter
   try {
-    items = await fetchStrict(params);
+    items = await fetchLocal(params);
     if (process.env.NODE_ENV === "development") {
-      console.log(`🔍 ${type} estricto: ${items.length} items (prefs: ${params.preferencias?.length || 0}, secciones: ${params.secciones?.length || 0}, cursor: ${params.cursor || 'initial'})`);
+      console.log(`🔍 ${type} local: ${items.length} items (ciudad: ${params.ciudad}, depto: ${params.departamento}, cursor: ${params.cursor || 'initial'})`);
     }
   } catch (e) {
-    console.error(`Error en ${type} estricto:`, e);
+    console.error(`Error en ${type} local:`, e);
   }
 
-  // 2. Si escaso, relaja a local (solo ciudad/depto, sin prefs/secciones)
-  if (items.length < thresholdStrict) {
-    const localParams = { ...params, preferencias: [], secciones: [] };
-    try {
-      const localItems = await fetchLocal(localParams);
-      // Dedup por ID (evita duplicados entre niveles)
-      const newItems = localItems.filter(item => !items.some(existing => (existing as any).id === (item as any).id));
-      items = [...items, ...newItems];
-      if (process.env.NODE_ENV === "development") {
-        console.log(`🔍 ${type} local fallback: +${newItems.length} (total: ${items.length}, seen filtrados: ${localParams.seenIds?.length || 0})`);
-      }
-    } catch (e) {
-      console.error(`Error en ${type} local:`, e);
-    }
-  }
-
-  // 3. Si aún escaso, relaja a todo (nacional, sin filtros locales/prefs)
+  // 2. Si escaso, fallback nacional (sin ciudad/depto)
   if (items.length < thresholdLocal) {
-    const allParams = { ...params, preferencias: [], secciones: [], ciudad: undefined, departamento: undefined };
+    const allParams = { ...params, ciudad: undefined, departamento: undefined };
     try {
       const allItems = await fetchAll(allParams);
+      // Dedup por ID
       const newItems = allItems.filter(item => !items.some(existing => (existing as any).id === (item as any).id));
       items = [...items, ...newItems];
       if (process.env.NODE_ENV === "development") {
-        console.log(`⚠️ ${type} nacional fallback: +${newItems.length} (total final: ${items.length})`);
+        console.log(`⚠️ ${type} nacional fallback: +${newItems.length} (total: ${items.length}, seen: ${allParams.seenIds?.length || 0})`);
       }
     } catch (e) {
       console.error(`Error en ${type} nacional:`, e);
     }
   }
 
-  // Ordena final por DB (orden DESC + createdAt DESC) y aplica buffer
+  // Ordena por DB (orden si existe, sino createdAt DESC) y buffer
   items.sort((a, b) => {
-    const orderA = (a as any).orden || 0;
-    const orderB = (b as any).orden || 0;
+    const dataA = a as any;
+    const dataB = b as any;
+    const orderA = dataA.orden || 0;
+    const orderB = dataB.orden || 0;
     if (orderB !== orderA) return orderB - orderA;
-    return new Date((b as any).createdAt).getTime() - new Date((a as any).createdAt).getTime();
+    return new Date(dataB.createdAt).getTime() - new Date(dataA.createdAt).getTime();
   });
   return items.slice(0, params.limit + 10);
 }
 
-// Fetch functions para Products (strict/local/all)
-async function fetchProductsStrict(params: any): Promise<RawProduct[]> {
-  const where: Prisma.ProductWhereInput = {
-    status: "disponible",
-    id: { notIn: params.seenIds.filter((id: string) => id.startsWith("product-")) },
-    negocio: {
-      OR: [{ ciudad: params.ciudad }, { departamento: params.departamento }],
-    },
-  };
-  if (params.preferencias?.length > 0) {
-    where.negocio!.categorias = { some: { category: { slug: { in: params.preferencias } } } };
-  }
-  if (params.secciones?.length > 0) {
-    where.secciones = { some: { section: { slug: { in: params.secciones } } } };
-  }
-  return prisma.product.findMany({
-    where,
-    select: productSelect,
-    orderBy: [{ orden: "desc" }, { createdAt: "desc" }],
-    take: params.limit + 10,
-    cursor: params.cursor ? { id: params.cursor } : undefined,
-    skip: params.cursor ? 1 : 0,
-  });
-}
-
+// Fetch local para Products (solo ciudad/depto)
 async function fetchProductsLocal(params: any): Promise<RawProduct[]> {
   const where: Prisma.ProductWhereInput = {
     status: "disponible",
@@ -136,31 +97,7 @@ async function fetchProductsAll(params: any): Promise<RawProduct[]> {
   });
 }
 
-// Fetch functions para Services
-async function fetchServicesStrict(params: any): Promise<RawService[]> {
-  const where: Prisma.ServicioWhereInput = {
-    status: "disponible",
-    id: { notIn: params.seenIds.filter((id: string) => id.startsWith("serv-")) },
-    negocio: {
-      OR: [{ ciudad: params.ciudad }, { departamento: params.departamento }],
-    },
-  };
-  if (params.preferencias?.length > 0) {
-    where.tags = { hasSome: params.preferencias };
-  }
-  if (params.secciones?.length > 0) {
-    where.negocio!.secciones = { some: { section: { slug: { in: params.secciones } } } };
-  }
-  return prisma.servicio.findMany({
-    where,
-    select: serviceSelect,
-    orderBy: [{ orden: "desc" }, { createdAt: "desc" }],
-    take: params.limit + 10,
-    cursor: params.cursor ? { id: params.cursor } : undefined,
-    skip: params.cursor ? 1 : 0,
-  });
-}
-
+// Fetch local para Services (solo ciudad/depto; orderBy createdAt ya que no tiene orden en schema)
 async function fetchServicesLocal(params: any): Promise<RawService[]> {
   const where: Prisma.ServicioWhereInput = {
     status: "disponible",
@@ -169,10 +106,14 @@ async function fetchServicesLocal(params: any): Promise<RawService[]> {
       OR: [{ ciudad: params.ciudad }, { departamento: params.departamento }],
     },
   };
+  if (process.env.NODE_ENV === "development") {
+    console.log(`🔍 Services where debug: ciudad=${params.ciudad}, depto=${params.departamento}, seen=${params.seenIds.length}`);
+  }
+  
   return prisma.servicio.findMany({
     where,
     select: serviceSelect,
-    orderBy: [{ orden: "desc" }, { createdAt: "desc" }],
+    orderBy: [{ orden: "desc" }, { createdAt: "desc" }], // Solo createdAt (no orden en schema)
     take: params.limit + 10,
     cursor: params.cursor ? { id: params.cursor } : undefined,
     skip: params.cursor ? 1 : 0,
@@ -187,36 +128,14 @@ async function fetchServicesAll(params: any): Promise<RawService[]> {
   return prisma.servicio.findMany({
     where,
     select: serviceSelect,
-    orderBy: [{ orden: "desc" }, { createdAt: "desc" }],
+    orderBy: [{ orden: "desc" }, { createdAt: "desc" }], // Solo createdAt (no orden en schema)
     take: params.limit + 10,
     cursor: params.cursor ? { id: params.cursor } : undefined,
     skip: params.cursor ? 1 : 0,
   });
 }
 
-// Fetch functions para Businesses
-async function fetchBusinessesStrict(params: any): Promise<RawBusiness[]> {
-  const where: Prisma.NegocioWhereInput = {
-    estado: "activo",
-    id: { notIn: params.seenIds.filter((id: string) => id.startsWith("bus-")) },
-    OR: [{ ciudad: params.ciudad }, { departamento: params.departamento }],
-  };
-  if (params.preferencias?.length > 0) {
-    where.categorias = { some: { category: { slug: { in: params.preferencias } } } };
-  }
-  if (params.secciones?.length > 0) {
-    where.secciones = { some: { section: { slug: { in: params.secciones } } } };
-  }
-  return prisma.negocio.findMany({
-    where,
-    select: businessSelect,
-    orderBy: [{ orden: "desc" }, { createdAt: "desc" }],
-    take: params.limit + 10,
-    cursor: params.cursor ? { id: params.cursor } : undefined,
-    skip: params.cursor ? 1 : 0,
-  });
-}
-
+// Fetch local para Businesses (solo ciudad/depto; orderBy createdAt)
 async function fetchBusinessesLocal(params: any): Promise<RawBusiness[]> {
   const where: Prisma.NegocioWhereInput = {
     estado: "activo",
@@ -226,7 +145,7 @@ async function fetchBusinessesLocal(params: any): Promise<RawBusiness[]> {
   return prisma.negocio.findMany({
     where,
     select: businessSelect,
-    orderBy: [{ orden: "desc" }, { createdAt: "desc" }],
+    orderBy: { createdAt: "desc" },  // Solo createdAt (no orden en schema)
     take: params.limit + 10,
     cursor: params.cursor ? { id: params.cursor } : undefined,
     skip: params.cursor ? 1 : 0,
@@ -241,14 +160,14 @@ async function fetchBusinessesAll(params: any): Promise<RawBusiness[]> {
   return prisma.negocio.findMany({
     where,
     select: businessSelect,
-    orderBy: [{ orden: "desc" }, { createdAt: "desc" }],
+    orderBy: { createdAt: "desc" },
     take: params.limit + 10,
     cursor: params.cursor ? { id: params.cursor } : undefined,
     skip: params.cursor ? 1 : 0,
   });
 }
 
-// Fetch para Publications (con fallback simple si <5)
+// Fetch para Publications (solo ciudad/depto, sin prefs; fallback si <5)
 async function fetchPublications(params: ExtendedParams): Promise<RawPublication[]> {
   const where: Prisma.PublicacionWhereInput = {
     tipo: { in: ["TESTIMONIO", "CARRUSEL_IMAGENES"] },
@@ -258,11 +177,8 @@ async function fetchPublications(params: ExtendedParams): Promise<RawPublication
       OR: [{ ciudad: params.ciudad }, { departamento: params.departamento }],
     },
   };
-  if (params.preferencias?.length > 0) {
-    where.negocio!.categorias = { some: { category: { slug: { in: params.preferencias } } } };
-  }
 
-  const strictItems = await prisma.publicacion.findMany({
+  const localItems = await prisma.publicacion.findMany({
     where,
     select: publicationSelect,
     orderBy: [{ orden: "desc" }, { createdAt: "desc" }],
@@ -271,33 +187,31 @@ async function fetchPublications(params: ExtendedParams): Promise<RawPublication
     skip: params.cursor ? 1 : 0,
   });
 
-  // Fallback si <5: Relaja a local (sin prefs)
-  if (strictItems.length < 5) {
-    const localWhere = {
+  // Fallback nacional si <5
+  if (localItems.length < 5) {
+    const allWhere = {
       ...where,
-      negocio: {
-        OR: [{ ciudad: params.ciudad }, { departamento: params.departamento }],
-      },
+      negocio: undefined,  // Sin filtro local
     };
-    const localItems = await prisma.publicacion.findMany({
-      where: localWhere,
+    const allItems = await prisma.publicacion.findMany({
+      where: allWhere,
       select: publicationSelect,
       orderBy: [{ orden: "desc" }, { createdAt: "desc" }],
       take: params.limit + 10,
       cursor: params.cursor ? { id: params.cursor } : undefined,
       skip: params.cursor ? 1 : 0,
     });
-    const combined = [...strictItems, ...localItems.filter(item => !strictItems.some(s => s.id === item.id))];
+    const combined = [...localItems, ...allItems.filter(item => !localItems.some(s => s.id === item.id))];
     if (process.env.NODE_ENV === "development") {
-      console.log(`fetchPublications fallback: +${localItems.length} (total: ${combined.length})`);
+      console.log(`fetchPublications fallback: +${allItems.length} (total: ${combined.length})`);
     }
     return combined.slice(0, params.limit + 10);
   }
 
   if (process.env.NODE_ENV === "development") {
-    console.log("fetchPublications: Fetched:", strictItems.length, `con userId: ${params.userId || 'anónimo'}`);
+    console.log("fetchPublications: Fetched local:", localItems.length, `con userId: ${params.userId || 'anónimo'}`);
   }
-  return strictItems;
+  return localItems;
 }
 
 export async function getFeedDataByType(
@@ -308,21 +222,35 @@ export async function getFeedDataByType(
 
   let rawItems: (RawProduct | RawPublication | RawService | RawBusiness)[] = [];
   let nextCursor: string | undefined;
+  if (process.env.NODE_ENV === "development") {
+  console.log(`▶️ getFeedDataByType(${type})`, {
+    ciudad: params.ciudad,
+    depto: params.departamento,
+    cursor: params.cursor,
+    limit: params.limit,
+    seen: params.seenIds?.length,
+    userId: params.userId || "anon",
+    followed: params.followedBusinessIds?.length
+  });
+}
 
   try {
-    // Fetch por tipo con fallbacks
+    console.log(`🟢 Antes de switch, type=${type}, rawItems.len=${rawItems.length}`);
+
+    // Fetch por tipo (local + fallback nacional si escaso)
     switch (type) {
       case "products":
-        rawItems = await fetchWithFallback(fetchProductsStrict, fetchProductsLocal, fetchProductsAll, params, "products");
+        rawItems = await fetchWithFallback(fetchProductsLocal, fetchProductsAll, params, "products");
         break;
       case "publications":
         rawItems = await fetchPublications(params);
         break;
       case "services":
-        rawItems = await fetchWithFallback(fetchServicesStrict, fetchServicesLocal, fetchServicesAll, params, "services");
+        rawItems = await fetchWithFallback(fetchServicesLocal, fetchServicesAll, params, "services");
+        console.log({ rawItems }, "Servicios");
         break;
       case "businesses":
-        rawItems = await fetchWithFallback(fetchBusinessesStrict, fetchBusinessesLocal, fetchBusinessesAll, params, "businesses");
+        rawItems = await fetchWithFallback(fetchBusinessesLocal, fetchBusinessesAll, params, "businesses");
         break;
     }
   } catch (error) {
@@ -344,32 +272,6 @@ export async function getFeedDataByType(
     console.log(`🔍 ${type} seenIds filtrados: ${filteredSeen}/${params.seenIds.length} (total)`);
   }
 
-  // Si aún escaso post-fetch, fallback global (sin prefs/secciones, pero mantén ciudad)
-  if (rawItems.length < 3) {
-    const relaxedParams = { ...params, preferencias: [], secciones: [] };
-    try {
-      switch (type) {
-        case "products":
-          rawItems = await fetchProductsLocal(relaxedParams);
-          break;
-        case "publications":
-          rawItems = await fetchPublications(relaxedParams);
-          break;
-        case "services":
-          rawItems = await fetchServicesLocal(relaxedParams);
-          break;
-        case "businesses":
-          rawItems = await fetchBusinessesLocal(relaxedParams);
-          break;
-      }
-      if (process.env.NODE_ENV === "development") {
-        console.log(`⚠️ Fallback global activado para ${type}: ${rawItems.length} items (relajado prefs/secciones)`);
-      }
-    } catch (error) {
-      console.error(`Error in fallback for ${type}:`, error);
-    }
-  }
-
   // Fetch batch de reacciones para publications si aplica
   let userReactionsMap: Record<string, { id: string; tipo: ReaccionTipo } | null> = {};
   if (type === "publications" && params.userId && rawItems.length > 0) {
@@ -379,7 +281,7 @@ export async function getFeedDataByType(
         where: {
           usuarioId: params.userId!,
           tipo: "REACCION",
-          publicacionId: { in: pubIds },  // Batch eficiente
+          publicacionId: { in: pubIds },
         },
         select: {
           id: true,
@@ -388,7 +290,6 @@ export async function getFeedDataByType(
         },
       });
 
-      // Type guard para reacción válida
       const isValidReactionType = (tipo: ReaccionTipo | null): tipo is ReaccionTipo => {
         if (tipo === null) return false;
         return ["LIKE", "LOVE", "WOW", "SAD", "ANGRY"].includes(tipo);
@@ -409,7 +310,6 @@ export async function getFeedDataByType(
         return map;
       }, {} as Record<string, { id: string; tipo: ReaccionTipo } | null>);
 
-      // Defaults a null para pubs sin reacción
       pubIds.forEach((pubId) => {
         if (!userReactionsMap[pubId]) {
           userReactionsMap[pubId] = null;
@@ -418,19 +318,22 @@ export async function getFeedDataByType(
     }
   }
 
-  // Mapeo simplificado (sin score ni interleave: orden ya de DB)
+  // Mapeo simplificado (orden ya de DB)
   const items: FeedItem[] = rawItems.map((raw) => {
     const itemType = type.slice(0, -1) as "product" | "publication" | "service" | "business";
     let item: FeedItem;
+    console.log(`📦 Raw ${type} item antes de map:`, raw.id, raw);
+
+console.log(`🔎 Detectando tipo de raw con keys:`, Object.keys(raw));
 
     if (isRawProduct(raw)) {
+      console.log("🛒 mapToFeedItem con PRODUCT", raw.id);
       item = mapToFeedItem(raw, "product");
     } else if (isRawPublication(raw)) {
+      console.log("📰 mapToFeedItem con PUBLICATION", raw.id);
       item = mapToFeedItem(raw, "publication");
-      // Personaliza userReaction (de batch o null)
       const enhancedData = item.data as EnhancedPublicacion;
       enhancedData.userReaction = userReactionsMap[raw.id] ?? null;
-      // Formatea createdAt y comments a strings ISO
       enhancedData.createdAt = raw.createdAt.toISOString();
       enhancedData.comments = (raw.interacciones || []).map((inter: any) => ({
         id: inter.id,
@@ -444,43 +347,49 @@ export async function getFeedDataByType(
           username: inter.usuario.username ?? "",
         },
       }));
-      // isAuthenticated: Basado en userId (para UX en frontend)
       enhancedData.isAuthenticated = !!params.userId;
     } else if (isRawService(raw)) {
+      console.log("🛠️ mapToFeedItem con SERVICE", raw.id);
       item = mapToFeedItem(raw, "service");
+      console.log("✅ Item mapeado SERVICE:", item);
     } else if (isRawBusiness(raw)) {
       item = mapToFeedItem(raw, "business");
     } else {
       throw new Error(`Tipo raw no reconocido para ${type}`);
     }
 
-    // isFollowed: Lógica unificada
     let negocioId: string;
     if (isRawProduct(raw) || isRawPublication(raw) || isRawService(raw)) {
+      console.log("🔗 Negocio asociado al item", raw.id, "→ negocioId:", raw.negocio?.id);
       negocioId = raw.negocio?.id ?? "";
-    } else { // RawBusiness
+    } else {
+      console.log("🏢 Item es BUSINESS directo", raw.id);
       negocioId = raw.id;
     }
-    // Set negocioId en data para facilitar frontend (si needed)
     (item.data as any).negocioId = negocioId;
+    console.log("🔗 negocioId asignado:", negocioId, "isFollowed:", item.isFollowed);
+
 
     item.isFollowed = params.followedBusinessIds?.includes(negocioId) ?? false;
-    
+
     return item;
   });
 
-  // Usa items directamente (ordenados por fetch)
-  const orderedItems = items;
+  const orderedItems = items;  // Orden de DB preservado
 
-  // nextCursor conservador pero generoso post-fallback
   nextCursor = rawItems.length >= params.limit ? rawItems[rawItems.length - 1].id : undefined;
 
-  // Logs dev simplificados
   if (process.env.NODE_ENV === "development") {
-    console.log(`getFeedDataByType(${type}): Fetched ${rawItems.length} raw (con fallbacks) -> Returned ${orderedItems.length} (orden por DB)`);
+    console.log(`getFeedDataByType(${type}): Fetched ${rawItems.length} raw (local + fallback) -> ${orderedItems.length} items (orden DB)`);
     if (type === "publications" && params.userId) {
-      console.log(`User reactions fetched for userId ${params.userId}: ${Object.keys(userReactionsMap).length} pubs con reacción`);
+      console.log(`User reactions: ${Object.keys(userReactionsMap).length} pubs`);
     }
+    console.log("📊 orderedItems detalle:", orderedItems.map(i => ({
+  id: i.id,
+  type: i.type,
+  negocioId: (i.data as any).negocioId,
+  isFollowed: i.isFollowed
+})));
   }
 
   return { items: orderedItems.slice(0, params.limit), nextCursor };

@@ -1,6 +1,7 @@
 import { ProductStatus, Currency, ServicioStatus, EstadoNegocio } from "@prisma/client";
 import { RawBusiness, RawData, RawProduct, RawPublication, RawService } from "./actions/selects";
 import { EnhancedPublicacion } from "@/publicaciones/interfaces/enhancedPublicacion.interface";
+import { ServicioData } from "@/servicios/interfaces/servicios.interface";
 
 
 
@@ -52,13 +53,7 @@ export interface ProductRedSocial {
 // Solo tenemos publicaciones del tipo TESTIMONIO que se muestran en ShowTestimonioPublicacion
 // y publicaciones del tipo CARRUSEL_IMAGENES que se muestran en SocialMediaPublicacion
 
-interface User {
-  id: string;
-  nombre: string;
-  apellido: string;
-  fotoPerfil?: string;
-  username: string;
-}
+
 
 export interface Media {
   id: string;
@@ -68,31 +63,6 @@ export interface Media {
   orden: number;
 }
 
-
-
-
-export interface MediaItem {
-  url: string;
-  orden: number;
-  tipo?: 'IMAGEN' | 'VIDEO';
-}
-
-export interface ServicioData {
-  id?: string;
-  titulo: string;
-  descripcion: string[];
-  slug?: string;
-  precio?: number;
-  currency?: Currency;
-  status?: ServicioStatus;
-  tags?: string[];
-  multimedia?: MediaItem[];
-  negocioId: string;
-  negocioSlug: string;
-  nombreNegocio: string;
-  telefonoNegocio:string
-  negocioFotoPerfil: string;
-}
 
 export type FeedItemType = 'product' | 'publication' | 'service' | 'business';
 
@@ -118,13 +88,13 @@ export interface FeedItem {
 export interface FeedQueryParams {
   ciudad: string;
   departamento: string;
-  preferencias: string[]; 
-  secciones: string[]; 
-  page?: number; // Ahora opcional
+  preferencias?: string[];  // Opcional: para futuro dinamismo
+  secciones?: string[];     // Opcional: para futuro dinamismo
+  page?: number;           // Opcional (ya lo es)
   limit: number; 
   seenIds: string[]; 
   followedBusinessIds?: string[]; 
-  cursor?: string; // Simplificado
+  cursor?: string;         // Opcional
 }
 
 
@@ -163,18 +133,30 @@ export function isBusinessItem(item: FeedItem): item is FeedItem & { data: Busin
 
 // Helpers para narrowing (añade a interfaces.ts)
 export function isRawProduct(raw: RawData): raw is RawProduct {
-  return 'precio' in raw && 'tags' in raw;
+  return (
+    'nombre' in raw &&                        // Productos usan "nombre"
+    Array.isArray((raw as any).imagenes)      // y tienen imágenes
+  );
 }
 
 export function isRawPublication(raw: RawData): raw is RawPublication {
-  return 'multimedia' in raw && 'usuario' in raw;
+  return (
+    'multimedia' in raw &&
+    'usuario' in raw
+  );
 }
 
 export function isRawService(raw: RawData): raw is RawService {
-  return 'titulo' in raw && 'descripcion' in raw && Array.isArray(raw.descripcion);
+  return (
+    'titulo' in raw &&                        // Servicios usan "titulo"
+    Array.isArray((raw as any).multimedia)    // y tienen multimedia
+  );
 }
 
 export function isRawBusiness(raw: RawData): raw is RawBusiness {
-  return 'estado' in raw && 'categorias' in raw;
+  return (
+    'estado' in raw &&
+    'categorias' in raw
+  );
 }
 

@@ -15,6 +15,7 @@ import { InfoEmpresa as empresa } from "@/config/config";
 import { BsWhatsapp } from "react-icons/bs";
 import { titulo1 } from "@/config/fonts";
 import { FaTimes } from "react-icons/fa";
+import { Precio } from "@/ui/components/productos/Precio";
 
 interface Props {
   servicio: ServicioData;
@@ -22,6 +23,105 @@ interface Props {
 }
 
 const urlWebProduccion = empresa.linkWebProduccion;
+
+// Hook personalizado para obtener dimensiones de medios (copiado de SocialMediaCarousel)
+const useMediaDimensions = (url: string, tipo: "IMAGEN" | "VIDEO") => {
+  const [aspectRatio, setAspectRatio] = useState<number | null>(null);
+
+  React.useEffect(() => {
+    if (!url) {
+      setAspectRatio(1); // Fallback si no hay URL
+      return;
+    }
+
+    const loadDimensions = async () => {
+      try {
+        if (tipo === "IMAGEN") {
+          const img = new window.Image();
+          img.src = url;
+          await new Promise((resolve, reject) => {
+            img.onload = () => {
+              setAspectRatio(img.naturalWidth / img.naturalHeight || 1);
+              resolve(null);
+            };
+            img.onerror = () => {
+              setAspectRatio(1); // Fallback: proporción cuadrada
+              reject(new Error("Error cargando imagen"));
+            };
+          });
+        } else if (tipo === "VIDEO") {
+          const video = document.createElement("video");
+          video.src = url + "#t=0.1";
+          video.muted = true;
+          await new Promise((resolve, reject) => {
+            video.onloadedmetadata = () => {
+              setAspectRatio(video.videoWidth / video.videoHeight || 9 / 16);
+              resolve(null);
+            };
+            video.onerror = () => {
+              setAspectRatio(9 / 16); // Fallback: proporción vertical típica
+              reject(new Error("Error cargando video"));
+            };
+          });
+          video.remove();
+        }
+      } catch (error) {
+        if (process.env.NODE_ENV === "development") {
+          console.error("Error cargando dimensiones:", error);
+        }
+        setAspectRatio(tipo === "VIDEO" ? 9 / 16 : 1); // Fallback según tipo
+      }
+    };
+
+    loadDimensions();
+    return () => {
+      setAspectRatio(null);
+    };
+  }, [url, tipo]);
+
+  return aspectRatio;
+};
+
+// Componente wrapper para cada slide (similar a MediaSlide en SocialMediaCarousel)
+const MediaSlide: React.FC<{ 
+  media: ServicioData["multimedia"][0]; 
+  index: number; 
+  multimediaLength: number; 
+  isInModal: boolean;
+}> = ({ media, index, multimediaLength, isInModal }) => {
+  const aspectRatio = useMediaDimensions(media.url, media.tipo as "IMAGEN" | "VIDEO");
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="relative w-full max-h-[500px] mx-auto"
+      style={{ aspectRatio: aspectRatio || 1 }}
+    >
+      {media.tipo === "VIDEO" ? (
+        <video
+          src={media.url}
+          controls
+          preload="metadata"
+          playsInline
+          muted={false}
+          className="w-full h-full object-contain rounded-xl"
+          aria-label={`Video ${index + 1} de ${multimediaLength} en carrusel`}
+        />
+      ) : (
+        <Image
+          src={media.url}
+          alt={`Imagen ${index + 1} de carrusel`}
+          fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          className="object-cover rounded-xl"
+          loading="lazy"
+        />
+      )}
+    </motion.div>
+  );
+};
 
 const ServicioViewer: React.FC<Props> = ({ servicio, version = 1 }) => {
   const { titulo, descripcion, precio, currency, multimedia = [], negocioSlug, telefonoNegocio, nombreNegocio, negocioFotoPerfil } = servicio;
@@ -38,15 +138,17 @@ const ServicioViewer: React.FC<Props> = ({ servicio, version = 1 }) => {
 
   const fullDescription = descripcion.join('\n\n');
   const isLongDescription = fullDescription.length > 150;
+  const maxDescriptionLength = 100; // Alineado con SocialMediaCarousel
 
   // Clases condicionales basadas en la versión
-  const containerClasses = version === 1 
-    ? "grid grid-cols-1 md:grid-cols-2 md:grid-rows-[auto_auto_1fr_auto] gap-6 p-6 bg-white rounded-3xl shadow-md hover:shadow-lg transition-shadow duration-300 max-w-4xl mx-auto"
-    : "grid grid-cols-1 gap-6 p-6 bg-white rounded-3xl shadow-md hover:shadow-lg transition-shadow duration-300 max-w-[380px] mx-auto cursor-pointer";
+  const containerClasses =
+    version === 1
+      ? "grid grid-cols-1 md:grid-cols-2 md:grid-rows-[auto_auto_1fr_auto] gap-6 p-6 bg-white rounded-3xl shadow-md hover:shadow-lg transition-shadow duration-300 max-w-4xl mx-auto"
+      : "max-w-2xl mx-auto bg-white rounded-2xl shadow-md overflow-hidden mb-6";
 
-  // Handler para abrir modal en version=2 al clickear la card
-  const handleCardClick = () => {
-    if (version === 2) {
+  // Handler para abrir modal en version=2 al clickear la card (excepto en elementos interactivos)
+  const handleCardClick = (e: React.MouseEvent) => {
+    if (version === 2 && !(e.target as HTMLElement).closest('button, a, video')) {
       setIsModalOpen(true);
     }
   };
@@ -56,15 +158,15 @@ const ServicioViewer: React.FC<Props> = ({ servicio, version = 1 }) => {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
+        transition={{ duration: 0.3 }}
         className={containerClasses}
-        onClick={handleCardClick} // Solo clickable en version=2
+        onClick={handleCardClick} // Solo clickable en version=2, pero evita bubbling en botones/links
       >
-        {/* Header: Nombre del negocio + Follow (siempre arriba) */}
-        <div className="flex items-center justify-between pb-2 border-b border-gray-100">
-          <div className="flex items-center gap-2">
+        {/* Header: Nombre del negocio + Follow (alineado con SocialMediaCarousel en v2) */}
+        <div className={version === 1 ? "flex items-center justify-between pb-2 border-b border-gray-100" : "flex items-center p-4 border-b border-gray-100"}>
+          <div className="flex items-center gap-3"> {/* Ajustado mr-3 para alinear */}
             {negocioFotoPerfil && (
-              <div className="relative w-8 h-8 rounded-full overflow-hidden">
+              <div className="relative w-12 h-12 rounded-full overflow-hidden">
                 <Image
                   src={negocioFotoPerfil}
                   alt={`Perfil de ${nombreNegocio}`}
@@ -73,99 +175,105 @@ const ServicioViewer: React.FC<Props> = ({ servicio, version = 1 }) => {
                 />
               </div>
             )}
-            <Link
-              href={`/perfil/${negocioSlug || ''}`}
-              className={`text-lg font-medium text-gray-800 hover:text-gray-900 transition-colors duration-200 ${titulo1.className}`}
-            >
-              {nombreNegocio || "Negocio Desconocido"}
-            </Link>
-          </div>
-          <FollowButton followedId={servicio.negocioId} type="USER_TO_BUSINESS" className="text-sm" />
-        </div>
-
-        {/* Título (debajo de header en mobile, row 2 en desktop) */}
-        <h2 className="text-3xl md:text-3xl text-center font-semibold text-gray-900 leading-tight">
-          {titulo}
-        </h2>
-
-        {/* Multimedia (debajo de título en mobile, izquierda full-height en desktop) */}
-        <div
-          className="relative w-full h-[200px] sm:h-[250px] md:h-auto rounded-2xl overflow-hidden cursor-pointer"
-          onClick={() => setIsModalOpen(true)}
-          role="button"
-          tabIndex={0}
-          aria-label="Ampliar servicio"
-          style={{ aspectRatio: '4 / 3' }}
-        >
-          {orderedMultimedia.length > 1 ? (
-            <Swiper
-              spaceBetween={10}
-              slidesPerView={1}
-              navigation
-              pagination={{ clickable: true }}
-              modules={[Pagination, Navigation]}
-              className="w-full h-full"
-            >
-              {orderedMultimedia.map((media, index) => (
-                <SwiperSlide key={index}>
-                  {media.url.endsWith('.mp4') || media.url.endsWith('.mov') ? (
-                    <video src={media.url} controls className="w-full h-full object-cover" />
-                  ) : (
-                    <Image src={media.url} alt={`Imagen ${index + 1}`} fill className="object-cover transition-transform duration-300 hover:scale-105" loading="lazy" />
-                  )}
-                </SwiperSlide>
-              ))}
-            </Swiper>
-          ) : orderedMultimedia.length === 1 ? (
-            orderedMultimedia[0].url.endsWith('.mp4') || orderedMultimedia[0].url.endsWith('.mov') ? (
-              <video src={orderedMultimedia[0].url} controls className="w-full h-full object-cover" />
-            ) : (
-              <Image src={orderedMultimedia[0].url} alt="Imagen del servicio" fill className="object-cover transition-transform duration-300 hover:scale-105" loading="lazy" />
-            )
-          ) : (
-            <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-500 rounded-2xl">
-              No hay multimedia disponible
+            <div className="flex-1">
+              <Link
+                href={`/perfil/${negocioSlug || ''}`}
+                className={`font-semibold text-red-800 hover:text-blue-600 transition-colors duration-200 cursor-pointer ${titulo1.className}`}
+              >
+                {nombreNegocio || "Negocio Desconocido"}
+              </Link>
+              {/* Espacio para timestamp/icon si se agrega en futuro, pero vacío por ahora para mantener estructura */}
+              <div className="flex items-center text-sm text-gray-500">
+                {/* Placeholder vacío */}
+              </div>
             </div>
-          )}
+          </div>
+          <FollowButton followedId={servicio.negocioId} version={2} type="USER_TO_BUSINESS" className="ml-auto text-sm" />
         </div>
 
-        {/* Descripción (debajo de swiper en mobile, row 3 en desktop) */}
-        <div className="text-gray-600 text-base leading-relaxed relative">
-          <div className={isLongDescription ? "line-clamp-3" : ""}>
+        {/* Título (elegante, con padding similar a descripción en SocialMediaCarousel) */}
+        <div className="px-4 pt-3 pb-2">
+          <h2 className="text-2xl font-semibold text-gray-900 leading-tight text-center md:text-left">
+            {titulo}
+          </h2>
+        </div>
+
+        {/* Descripción (alineada con estilo de SocialMediaCarousel: padding, overflow, "Ver más") */}
+        <div className="px-4 pt-0 pb-4 text-[18px] text-gray-800 leading-snug">
+          <div
+  className={`transition-all duration-300 ease-in-out overflow-hidden relative
+    ${isLongDescription ? "max-h-[4.8em] md:max-h-[19.2em]" : ""}`}
+>
             {descripcion.map((parrafo, index) => (
-              <p key={index} className="mb-2">{parrafo}</p>
+              <p key={index} className="whitespace-pre-wrap break-words text-md mb-2">
+                {parrafo}
+              </p>
             ))}
+            {isLongDescription && (
+              <div className="absolute bottom-0 left-0 w-full h-6 bg-gradient-to-t from-white to-transparent" />
+            )}
           </div>
           {isLongDescription && (
-            <button onClick={() => setIsModalOpen(true)} className="mt-2 text-blue-600 hover:text-blue-800 font-medium text-sm focus:outline-none">
+            <button onClick={() => setIsModalOpen(true)} className="mt-2 text-indigo-600 hover:text-indigo-800 font-medium text-sm focus:outline-none">
               Ver más
             </button>
           )}
         </div>
 
-        {/* Footer: Precio + WhatsApp (debajo en mobile, row 4 en desktop) */}
-        <div className="flex items-center justify-around mt-auto pt-4 border-t border-gray-100">
+        {/* Multimedia (alineado con SocialMediaCarousel: dinámico, max-h-[500px], rounded-xl) */}
+        <div className="relative w-full">
+          <Swiper
+            spaceBetween={10}
+            slidesPerView={1}
+            navigation
+            pagination={{ clickable: true }}
+            modules={[Pagination, Navigation]}
+            className="mySwiper"
+          >
+            {orderedMultimedia.length > 0 ? (
+              orderedMultimedia.map((media, index) => (
+                <SwiperSlide key={index}>
+                  <MediaSlide 
+                    media={media} 
+                    index={index} 
+                    multimediaLength={orderedMultimedia.length} 
+                    isInModal={false}
+                  />
+                </SwiperSlide>
+              ))
+            ) : (
+              <SwiperSlide>
+                <div className="relative w-full h-[400px] flex items-center justify-center bg-gray-200 rounded-xl">
+                  <p className="text-gray-500">No hay multimedia disponible</p>
+                </div>
+              </SwiperSlide>
+            )}
+          </Swiper>
+        </div>
+
+        {/* Footer: Precio + WhatsApp (con padding similar a interacciones en SocialMediaCarousel) */}
+        <div className="px-4 py-4 flex items-center justify-between border-t border-gray-100">
           {precio && (
-            <p className="text-xl font-medium text-gray-900">
-              {precio.toLocaleString()} {currency}
-            </p>
+            
+            <Precio value={precio}  />
           )}
           {telefonoNegocio && (
             <motion.a
               href={`https://wa.me/57${telefonoNegocio}?text=${whatsappMessage}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-[#25D366] text-white p-3 rounded-full hover:bg-[#20bd5a] transition-all duration-300 shadow-md"
+              className="bg-[#25D366] text-white px-4 py-2 rounded-full hover:bg-[#20bd5a] transition-all duration-300 shadow-md flex items-center gap-2"
               whileHover={{ scale: 1.05 }}
               aria-label="Contactar vía WhatsApp"
             >
               <BsWhatsapp className="text-2xl" />
+              <span className="font-medium">Informes</span>
             </motion.a>
           )}
         </div>
       </motion.div>
 
-      {/* Modal (mantenido elegante, con scroll suave y responsive) */}
+      {/* Modal (mantenido, con ajustes menores para consistencia: padding, rounded) */}
       <AnimatePresence>
         {isModalOpen && (
           <motion.div
@@ -196,11 +304,11 @@ const ServicioViewer: React.FC<Props> = ({ servicio, version = 1 }) => {
               </motion.button>
 
               <div className="flex flex-col space-y-6">
-                {/* Header del negocio */}
-                <div className="flex items-center justify-around pb-2 pr-2 border-b border-gray-100">
-                  <div className="flex items-center gap-2">
+                {/* Header del negocio (alineado con v2 header) */}
+                <div className="flex items-center p-4 border-b border-gray-100">
+                  <div className="flex items-center gap-3">
                     {negocioFotoPerfil && (
-                      <div className="relative w-10 h-10 rounded-full overflow-hidden">
+                      <div className="relative w-12 h-12 rounded-full overflow-hidden">
                         <Image
                           src={negocioFotoPerfil}
                           alt={`Perfil de ${nombreNegocio}`}
@@ -209,92 +317,85 @@ const ServicioViewer: React.FC<Props> = ({ servicio, version = 1 }) => {
                         />
                       </div>
                     )}
-                    <Link
-                      href={`/perfil/${negocioSlug || ''}`}
-                      className={`text-lg font-medium text-gray-800 hover:text-gray-900 transition-colors duration-200 ${titulo1.className}`}
-                    >
-                      {nombreNegocio || "Negocio Desconocido"}
-                    </Link>
+                    <div className="flex-1">
+                      <Link
+                        href={`/perfil/${negocioSlug || ''}`}
+                        className={`font-semibold text-red-800 hover:text-blue-600 transition-colors duration-200 cursor-pointer ${titulo1.className}`}
+                      >
+                        {nombreNegocio || "Negocio Desconocido"}
+                      </Link>
+                      <div className="flex items-center text-sm text-gray-500">
+                        {/* Placeholder vacío */}
+                      </div>
+                    </div>
                   </div>
                   <FollowButton
                     followedId={servicio.negocioId}
                     version={2}
                     type="USER_TO_BUSINESS"
-                    className="text-sm"
+                    className="ml-auto text-sm"
                   />
                 </div>
 
                 {/* Título */}
-                <h2 className="text-3xl font-semibold text-gray-900 text-center">
+                <h2 className="text-2xl font-semibold text-gray-900 leading-tight text-center">
                   {titulo}
                 </h2>
 
                 {/* Multimedia */}
-                <div className="relative w-full h-[40vh] md:h-[400px] rounded-2xl overflow-hidden">
-                  {orderedMultimedia.length > 1 ? (
-                    <Swiper
-                      spaceBetween={10}
-                      slidesPerView={1}
-                      navigation
-                      pagination={{ clickable: true }}
-                      modules={[Pagination, Navigation]}
-                      className="w-full h-full"
-                    >
-                      {orderedMultimedia.map((media, index) => (
+                <div className="relative w-full">
+                  <Swiper
+                    spaceBetween={10}
+                    slidesPerView={1}
+                    navigation
+                    pagination={{ clickable: true }}
+                    modules={[Pagination, Navigation]}
+                    className="mySwiper"
+                  >
+                    {orderedMultimedia.length > 0 ? (
+                      orderedMultimedia.map((media, index) => (
                         <SwiperSlide key={index}>
-                          {media.url.endsWith('.mp4') || media.url.endsWith('.mov') ? (
-                            <video src={media.url} controls className="w-full h-full object-contain" />
-                          ) : (
-                            <Image
-                              src={media.url}
-                              alt={`Imagen ${index + 1}`}
-                              fill
-                              className="object-contain"
-                              loading="lazy"
-                            />
-                          )}
+                          <MediaSlide 
+                            media={media} 
+                            index={index} 
+                            multimediaLength={orderedMultimedia.length} 
+                            isInModal={true}
+                          />
                         </SwiperSlide>
-                      ))}
-                    </Swiper>
-                  ) : orderedMultimedia.length === 1 ? (
-                    orderedMultimedia[0].url.endsWith('.mp4') || orderedMultimedia[0].url.endsWith('.mov') ? (
-                      <video src={orderedMultimedia[0].url} controls className="w-full h-full object-contain" />
+                      ))
                     ) : (
-                      <Image
-                        src={orderedMultimedia[0].url}
-                        alt="Imagen del servicio"
-                        fill
-                        className="object-contain"
-                        loading="lazy"
-                      />
-                    )
-                  ) : (
-                    <p className="text-gray-500 text-center">No hay multimedia</p>
-                  )}
+                      <SwiperSlide>
+                        <div className="relative w-full h-[400px] flex items-center justify-center bg-gray-200 rounded-xl">
+                          <p className="text-gray-500">No hay multimedia disponible</p>
+                        </div>
+                      </SwiperSlide>
+                    )}
+                  </Swiper>
                 </div>
 
-                {/* Descripción completa */}
-                <div className="text-gray-600 text-base leading-relaxed overflow-y-auto max-h-[30vh] md:max-h-none p-2">
+                {/* Descripción completa (sin clamp, con padding) */}
+                <div className="px-4 pt-2 pb-4 text-[18px] text-gray-800 leading-snug overflow-y-auto max-h-[30vh] md:max-h-none">
                   {descripcion.map((parrafo, index) => (
-                    <p key={index} className="mb-4">{parrafo}</p>
+                    <p key={index} className="whitespace-pre-wrap break-words text-md mb-4">
+                      {parrafo}
+                    </p>
                   ))}
                 </div>
 
                 {/* Footer con Precio + WhatsApp */}
-                <div className="flex flex-col md:flex-row items-center justify-around gap-4 mt-6 pt-4 border-t border-gray-100">
+                <div className="px-4 py-4 flex items-center justify-between border-t border-gray-100">
                   {precio && (
-                    <p className="text-xl font-medium text-gray-900 text-center md:text-left">
-                      {precio.toLocaleString()} {currency}
-                    </p>
+                     <Precio value={precio}  />
                   )}
                   {telefonoNegocio && (
                     <Link
                       href={`https://wa.me/57${telefonoNegocio}?text=${whatsappMessage}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="bg-[#25D366] text-white p-3 rounded-full hover:bg-[#20bd5a] transition-all duration-300 flex items-center gap-2 w-full md:w-auto justify-center shadow-md"
+                      className="bg-[#25D366] text-white px-4 py-2 rounded-full hover:bg-[#20bd5a] transition-all duration-300 flex items-center gap-2 shadow-md"
                     >
-                      <BsWhatsapp className="text-2xl" /> Contactar
+                      <BsWhatsapp className="text-2xl" />
+                      <span className="font-medium">Informes</span>
                     </Link>
                   )}
                 </div>

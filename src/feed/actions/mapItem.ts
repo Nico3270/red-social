@@ -1,9 +1,8 @@
-import { 
+import { EnhancedPublicacion } from "@/publicaciones/interfaces/enhancedPublicacion.interface";
+import {
   FeedItem,
   FeedItemType,
   ProductRedSocial,
-  PublicacionSencilla,
-  ServicioData,
   BusinessCardData,
   isRawProduct,
   isRawPublication,
@@ -11,6 +10,7 @@ import {
   isRawBusiness
 } from "../feed.interfaces";
 import { RawBusiness, RawData, RawProduct, RawPublication, RawService } from "./selects";
+import { ServicioData } from "@/servicios/interfaces/servicios.interface";
 
 // Overloads (sin cambios)
 export function mapToFeedItem(raw: RawProduct, type: 'product'): FeedItem;
@@ -22,7 +22,7 @@ export function mapToFeedItem(raw: RawData, type: FeedItemType): FeedItem {
   switch (type) {
     case 'product':
       if (!isRawProduct(raw)) throw new Error('Raw no matcha Product');
-      
+
       // Fix: Validación robusta para imageUrl (evita crash si imagenes es undefined/null)
       let imageUrlProduct = '';
       if (raw.imagenes && Array.isArray(raw.imagenes) && raw.imagenes.length > 0) {
@@ -69,7 +69,7 @@ export function mapToFeedItem(raw: RawData, type: FeedItemType): FeedItem {
       };
     case 'publication':
       if (!isRawPublication(raw)) throw new Error('Raw no matcha Publication');
-      
+
       // Fix: Validación robusta para imageUrl (evita crash si multimedia es undefined/null)
       let imageUrlPublication = '';
       if (raw.multimedia && Array.isArray(raw.multimedia) && raw.multimedia.length > 0) {
@@ -113,52 +113,72 @@ export function mapToFeedItem(raw: RawData, type: FeedItemType): FeedItem {
             ciudad: raw.negocio.ciudad,
             departamento: raw.negocio.departamento,
           } : undefined,
-        } as PublicacionSencilla,
+        } as EnhancedPublicacion,
         numLikes: raw.numLikes,
       };
     case 'service':
-      if (!isRawService(raw)) throw new Error('Raw no matcha Service');
-      
-      // Fix: Validación robusta para imageUrl (evita crash si multimedia es undefined/null)
-      let imageUrlService = '';
-      if (raw.multimedia && Array.isArray(raw.multimedia) && raw.multimedia.length > 0) {
-        imageUrlService = raw.multimedia[0].url || '';
-      } else {
-        imageUrlService = '/imgs/placeholder-servicio.png'; // Placeholder para servicios sin media
-      }
+  console.log("🛠️ Entrando a case 'service' con raw:", raw);
 
-      return {
-        id: raw.id || '',
-        type,
-        score: 0,
-        createdAt: raw.createdAt instanceof Date ? raw.createdAt : new Date(raw.createdAt ?? Date.now()),
-        title: raw.titulo,
-        descriptionShort: raw.descripcion[0]?.slice(0, 100) || '',
-        imageUrl: imageUrlService,
-        businessSlug: raw.negocio?.slug || '',
-        isFollowed: false,
-        data: {
-          id: raw.id,
-          titulo: raw.titulo,
-          descripcion: raw.descripcion,
-          slug: raw.slug,
-          precio: raw.precio,
-          currency: raw.currency,
-          status: raw.status,
-          tags: raw.tags,
-          multimedia: raw.multimedia || [], // Array vacío si undefined
-          negocioId: raw.negocio.id,
-          negocioSlug: raw.negocio.slug,
-          nombreNegocio: raw.negocio.nombre,
-          telefonoNegocio: raw.negocio.telefonoContacto || '',
-          negocioFotoPerfil: raw.negocio.fotoPerfil || 'imgs/admin-avatar.webp',
-        } as ServicioData,
-        price: raw.precio || 0,
-        status: raw.status,
-      };
-    case 'business':
+  if (!isRawService(raw)) {
+    console.error("❌ raw NO matcha Service:", raw);
+    throw new Error("Raw no matcha Service");
+  }
+
+  // Fix: Validación robusta para imageUrl (evita crash si multimedia es undefined/null)
+  let imageUrlService = '';
+  if (raw.multimedia && Array.isArray(raw.multimedia) && raw.multimedia.length > 0) {
+    imageUrlService = raw.multimedia[0].url || '';
+  } else {
+    imageUrlService = '/imgs/placeholder-servicio.png'; // Placeholder para servicios sin media
+  }
+
+  const serviceItem: FeedItem = {
+    id: raw.id || '',
+    type,
+    score: 0,
+    createdAt: raw.createdAt instanceof Date ? raw.createdAt : new Date(raw.createdAt ?? Date.now()),
+    title: raw.titulo,
+    descriptionShort: Array.isArray(raw.descripcion)
+  ? (raw.descripcion as string[])[0]?.slice(0, 100) || ''
+  : ((raw.descripcion as string)?.slice(0, 100) || ''),
+    imageUrl: imageUrlService,
+    businessSlug: raw.negocio?.slug || '',
+    isFollowed: false,
+    data: {
+      id: raw.id,
+      titulo: raw.titulo,
+      descripcion: raw.descripcion,
+      slug: raw.slug,
+      precio: raw.precio,
+      currency: raw.currency,
+      status: raw.status,
+      tags: raw.tags,
+      multimedia: raw.multimedia
+        ? raw.multimedia.map(m => ({
+          url: m.url,
+          orden: m.orden || 0,
+          tipo: m.tipo || 'IMAGEN',
+        }))
+        : [],
+      negocioId: raw.negocio.id,
+      negocioSlug: raw.negocio.slug,
+      nombreNegocio: raw.negocio.nombre,
+      telefonoNegocio: raw.negocio.telefonoContacto || '',
+      negocioFotoPerfil: raw.negocio.fotoPerfil || '/imgs/admin-avatar.webp',
+    } as ServicioData,
+    price: raw.precio || 0,
+    status: raw.status,
+  };
+
+  console.log("✅ mapToFeedItem service ->", serviceItem);
+
+  return serviceItem;
+
+    
+    
+      case 'business':
       if (!isRawBusiness(raw)) throw new Error('Raw no matcha Business');
-      
+
       // Para negocios: fotoPerfil es string directo, pero agregar guard opcional por consistencia
       const imageUrlBusiness = raw.fotoPerfil || '/imgs/placeholder-negocio.png';
 
