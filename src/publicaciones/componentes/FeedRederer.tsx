@@ -60,20 +60,20 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({ items, hasMore, isLoadingNe
 
   // Items filtrados SOLO por tab (sin categoría, para extraer categorías disponibles)
   const itemsPorTab = useMemo(() => {
-  const filtrados = items.filter(item => {
-    if (activeTab === "Productos" && !isProductItem(item)) return false;
-    if (activeTab === "Servicios" && !isServiceItem(item)) return false;
-    if (activeTab === "Negocios" && !isBusinessItem(item)) return false;
-    if (activeTab === "Publicaciones" && !isPublicationItem(item)) return false;
-    return true;
-  });
+    const filtrados = items.filter(item => {
+      if (activeTab === "Productos" && !isProductItem(item)) return false;
+      if (activeTab === "Servicios" && !isServiceItem(item)) return false;
+      if (activeTab === "Negocios" && !isBusinessItem(item)) return false;
+      if (activeTab === "Publicaciones" && !isPublicationItem(item)) return false;
+      return true;
+    });
 
-  console.log("🌀 activeTab:", activeTab);
-  console.log("📦 items originales:", items);
-  console.log("✅ items filtrados:", filtrados);
+    console.log("🌀 activeTab:", activeTab);
+    console.log("📦 items originales:", items);
+    console.log("✅ items filtrados:", filtrados);
 
-  return filtrados;
-}, [items, activeTab]);
+    return filtrados;
+  }, [items, activeTab]);
 
   // Categorías disponibles: únicas extraídas de itemsPorTab (solo para tabs relevantes)
   const categoriasDisponibles = useMemo(() => {
@@ -131,21 +131,11 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({ items, hasMore, isLoadingNe
       });
     }
 
-    // CAMBIO: Preservar orden DB original (orden DESC + createdAt DESC; no score)
-    const sortedFiltered = filtered.sort((a, b) => {
-      const dataA = a.data as any;
-      const dataB = b.data as any;
-      const orderA = dataA.orden || 0;
-      const orderB = dataB.orden || 0;
-      if (orderB !== orderA) return orderB - orderA;
-      return new Date(dataB.createdAt || 0).getTime() - new Date(dataA.createdAt || 0).getTime();
-    });
-
     if (process.env.NODE_ENV === "development") {
-      console.log(`📊 FeedRenderer filteredItems (${activeTab}, cat: ${selectedCategory || 'all'}): ${sortedFiltered.length} items, orden preservado DB`);
+      console.log(`📊 FeedRenderer filteredItems (${activeTab}, cat: ${selectedCategory || 'all'}): ${filtered.length} items, orden preservado DB`);
     }
 
-    return sortedFiltered;
+    return filtered;
   }, [itemsPorTab, activeTab, selectedCategory]);
 
   // Render item (sin cambios; mantiene orden de array)
@@ -217,6 +207,7 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({ items, hasMore, isLoadingNe
                   height={24}
                   className="w-full h-full object-contain"
                   loading="lazy"
+                  unoptimized
                   onError={(e) => {
                     (e.currentTarget as HTMLImageElement).src = "/imgs/iconos/placeholder.png";
                   }}

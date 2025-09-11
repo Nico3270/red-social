@@ -218,7 +218,7 @@ export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedCo
     }
   }, [activeTab, queries, categoriaNombre]);
 
-  // Items por tab: FlatMap + dedup + sort por DB order (no score; dinámico por backend)
+  // Items por tab: FlatMap + dedup (sin sort para preservar orden geo + grupo del backend)
   const getItemsForTab = useCallback((tab: typeof activeTab): FeedItem[] => {
     const query = queries[tab];
     const allItems = query.data?.pages.flatMap((page) => page.items) || [];
@@ -242,15 +242,7 @@ export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedCo
       console.log(`📊 getItemsForTab(${tab}): After dedup ${uniqueItems.length} items (prefixed: ${!!categoriaSlug})`);
     }
     
-    // Sort por orden DB (preserva backend; elegante y consistente)
-    return uniqueItems.sort((a, b) => {
-      const dataA = a.data as any;
-      const dataB = b.data as any;
-      const orderA = dataA.orden || 0;
-      const orderB = dataB.orden || 0;
-      if (orderB !== orderA) return orderB - orderA;
-      return new Date(dataB.createdAt || 0).getTime() - new Date(dataA.createdAt || 0).getTime();
-    });
+    return uniqueItems;
   }, [queries, categoriaSlug]);
 
   // Mark as seen lazy: Solo nuevos items (delta con prevLength; no satura seenIds)
@@ -284,12 +276,15 @@ export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedCo
   // Estado de loading: Si no params (sin ciudad), loader específico
   const currentQuery = queries[activeTab];
   const items = getItemsForTab(activeTab);
-  const isLoading = currentQuery.isPending || (currentQuery.isFetching && items.length === 0) || !params;
+  const isLoading =
+  !params || // <- mientras no haya ciudad definida
+  currentQuery.isPending ||
+  (currentQuery.isFetching && items.length === 0);
 
   // Loader: Spinner elegante, contextual (incluye si no ciudad)
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center py-16">
+      <div className="flex flex-col items-center justify-center min-h-screen">
         <CircularProgress />
         <p className="mt-4 text-gray-600 text-sm">
           {categoriaNombre 

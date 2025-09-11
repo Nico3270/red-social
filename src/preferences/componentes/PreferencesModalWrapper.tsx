@@ -24,10 +24,11 @@ const PreferencesModalWrapper: React.FC<{ children: React.ReactNode }> = ({ chil
 
   useEffect(() => {
     if (!hasHydrated) return; // ⬅️ espera a que cargue del localStorage
-    if (!ciudad || !departamento || preferencias.length === 0) {
+    // if (!ciudad || !departamento || preferencias.length === 0) { // Comentado: ya no requerimos preferencias
+    if (!ciudad || !departamento) {
       setIsModalOpen(true);
     }
-  }, [ciudad, departamento, preferencias, hasHydrated]);
+  }, [ciudad, departamento, /* preferencias, */ hasHydrated]); // Comentado: ya no requerimos preferencias
 
   // ⬅️ aquí va la opción B
   if (!hasHydrated) return <>{children}</>; 

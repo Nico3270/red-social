@@ -25,18 +25,18 @@ interface ColombiaDepartment {
 
 const PreferencesSelectorModal: React.FC<PreferencesSelectorModalProps> = ({ isOpen, onClose }) => {
   const { data: session } = useSession();
-  const { ciudad, departamento, preferencias, secciones, setUbicacion, setPreferencias, setSecciones } = usePreferencesStore();
+  const { ciudad, departamento, /* preferencias, secciones, */ setUbicacion, /* setPreferencias, setSecciones */ } = usePreferencesStore(); // Comentado: ya no requerimos preferencias ni secciones
   const [selectedDepartamento, setSelectedDepartamento] = useState(departamento);
   const [selectedCity, setSelectedCity] = useState(ciudad);
   const [cities, setCities] = useState<string[]>([]);
-  const [selectedCategorySlugs, setSelectedCategorySlugs] = useState<Set<string>>(new Set(preferencias));
-  const [selectedSectionSlugs, setSelectedSectionSlugs] = useState<Set<string>>(new Set(secciones)); // Cambiado a slugs
+  // const [selectedCategorySlugs, setSelectedCategorySlugs] = useState<Set<string>>(new Set(preferencias)); // Comentado: ya no requerimos categorías
+  // const [selectedSectionSlugs, setSelectedSectionSlugs] = useState<Set<string>>(new Set(secciones)); // Comentado: ya no requerimos secciones
   const [alert, setAlert] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [showWelcome, setShowWelcome] = useState(true); // Estado para pantalla de bienvenida
   const [showThankYou, setShowThankYou] = useState(false); // Estado para mensaje de agradecimiento
 
-  const filteredSections = initialData.secciones.filter((section) => selectedCategorySlugs.has(section.categorySlug));
+  // const filteredSections = initialData.secciones.filter((section) => selectedCategorySlugs.has(section.categorySlug)); // Comentado: ya no requerimos secciones
 
   useEffect(() => {
     if (selectedDepartamento) {
@@ -49,13 +49,15 @@ const PreferencesSelectorModal: React.FC<PreferencesSelectorModalProps> = ({ isO
 
   useEffect(() => {
     // Cargar de DB si autenticado y store vacío
-    if (session?.user && !ciudad && !departamento && preferencias.length === 0) {
+    // if (session?.user && !ciudad && !departamento && preferencias.length === 0) { // Comentado: ya no requerimos preferencias
+    if (session?.user && !ciudad && !departamento) {
       // Asume fetch de DB aquí si necesitas, pero por simplicidad usamos store
     }
   }, [session]);
 
   const handleSave = async () => {
-    if (!selectedCity || !selectedDepartamento || selectedCategorySlugs.size === 0) {
+    // if (!selectedCity || !selectedDepartamento || selectedCategorySlugs.size === 0) { // Comentado: ya no requerimos categorías
+    if (!selectedCity || !selectedDepartamento) {
       setAlert({ type: 'error', message: 'Completa todos los campos requeridos.' });
       return;
     }
@@ -65,15 +67,15 @@ const PreferencesSelectorModal: React.FC<PreferencesSelectorModalProps> = ({ isO
 
     // Actualizar store con slugs de secciones
     setUbicacion(selectedCity, selectedDepartamento);
-    setPreferencias(Array.from(selectedCategorySlugs));
-    setSecciones(Array.from(selectedSectionSlugs));
+    // setPreferencias(Array.from(selectedCategorySlugs)); // Comentado: ya no requerimos preferencias
+    // setSecciones(Array.from(selectedSectionSlugs)); // Comentado: ya no requerimos secciones
 
     // Si autenticado, guardar en DB
     if (session?.user) {
       const response = await updateUserPreferences({
         ciudad: selectedCity,
         departamento: selectedDepartamento,
-        preferencias: Array.from(selectedCategorySlugs),
+        preferencias: [], // Agregado: pasar array vacío para cumplir con el tipo requerido
       });
       if (!response.ok) {
         setAlert({ type: 'error', message: response.message });
@@ -87,14 +89,16 @@ const PreferencesSelectorModal: React.FC<PreferencesSelectorModalProps> = ({ isO
     setTimeout(onClose, 3000); // Cierra modal tras 3 segundos para ver el mensaje
   };
 
+  /* // Comentado: ya no requerimos secciones
   const toggleSection = (slug: string) => {
     setSelectedSectionSlugs((prev) => {
       const newSet = new Set(prev);
       newSet.has(slug) ? newSet.delete(slug) : newSet.add(slug);
       return newSet;
     });
-  };
+  }; */
 
+  /* // Comentado: ya no requerimos categorías
   const handleCategoryChange = (slug: string) => {
     setSelectedCategorySlugs((prev) => {
       const newSet = new Set(prev);
@@ -107,7 +111,7 @@ const PreferencesSelectorModal: React.FC<PreferencesSelectorModalProps> = ({ isO
       }
       return newSet;
     });
-  };
+  }; */
 
   return (
     <AnimatePresence>
@@ -148,7 +152,7 @@ const PreferencesSelectorModal: React.FC<PreferencesSelectorModalProps> = ({ isO
                     ¡Hola!
                   </Typography>
                   <Typography variant="body1" sx={{ color: 'text.secondary', lineHeight: 1.6 }}>
-                    Queremos conocerte mejor para ofrecerte el contenido más relevante y personalizado. Por favor, comparte tus preferencias de ubicación y categorías de interés. ¡Es rápido y nos ayudará a mejorar tu experiencia!
+                    Queremos conocerte mejor para ofrecerte el contenido más relevante y personalizado. Por favor, comparte tus preferencias de ubicación. ¡Es rápido y nos ayudará a mejorar tu experiencia!
                   </Typography>
                   <Button
                     variant="contained"
@@ -224,9 +228,10 @@ const PreferencesSelectorModal: React.FC<PreferencesSelectorModalProps> = ({ isO
                     </Select>
                   </FormControl>
 
-                  <Divider />
+                  {/* <Divider /> */} {/* Comentado: no necesario sin categorías */}
 
                   {/* Selector Categorías - Vertical con wrap y grid de máximo 2 columnas */}
+                  {/* Comentado: ya no requerimos categorías
                   <FormLabel sx={{ mb: 1.5, fontWeight: 'medium', color: 'text.primary' }}>Categorías de Interés</FormLabel>
                   <Box
                     sx={{
@@ -264,9 +269,10 @@ const PreferencesSelectorModal: React.FC<PreferencesSelectorModalProps> = ({ isO
                         </Box>
                       );
                     })}
-                  </Box>
+                  </Box> */}
 
                   {/* Selector Secciones - Similar, máximo 2 columnas */}
+                  {/* Comentado: ya no requerimos secciones
                   {selectedCategorySlugs.size > 0 && (
                     <>
                       <FormLabel sx={{ mb: 1.5, fontWeight: 'medium', color: 'text.primary' }}>Secciones Asociadas</FormLabel>
@@ -308,7 +314,7 @@ const PreferencesSelectorModal: React.FC<PreferencesSelectorModalProps> = ({ isO
                         })}
                       </Box>
                     </>
-                  )}
+                  )} */}
 
                   <Button
                     variant="contained"
