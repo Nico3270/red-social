@@ -30,6 +30,8 @@ class ErrorBoundary extends React.Component<{ children: ReactNode }, { hasError:
     console.error('Error en child render', _error, _errorInfo);
   }
 
+  
+
   render() {
     if (this.state.hasError) {
       return <p className="text-red-500">Error al cargar formulario. Intenta de nuevo.</p>;
