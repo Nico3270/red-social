@@ -224,19 +224,19 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({ items, hasMore, isLoadingNe
   };
 
   return (
-    <div className="w-full mx-auto px-6 sm:px-0 lg:px-4 py-6 min-h-screen overflow-y-auto bg-gray-50">
+    <div className="w-full mx-auto px-1 sm:px-0 lg:px-1 py-0  min-h-screen overflow-y-auto bg-gray-50">
       {/* Tabs premium optimizadas */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
-        className="flex justify-between lg:justify-around w-5/6 px-6 mx-auto my-2 bg-white rounded-xl shadow-md border border-gray-100 overflow-x-auto lg:overflow-visible"
+        className="flex justify-between lg:justify-around w-full px-1 mx-auto my-2 sm:mt-8 bg-white rounded-xl shadow-md border border-gray-100 overflow-x-auto lg:overflow-visible"
       >
         {tabs.map((tab, index) => (
           <button
             key={tab.label}
             onClick={() => onTabChange(tab.label)}
-            className={`flex-1 lg:flex-none flex items-center justify-center gap-1 lg:gap-2 px-2 lg:px-4 py-3 font-semibold text-xs lg:text-sm transition-all duration-200 hover:shadow-sm min-w-fit ${
+            className={`flex-1 lg:flex-none flex items-center justify-center gap-1 lg:gap-2 px-2 lg:px-4 py-3 lg:py-4 font-semibold text-sm lg:text-base transition-all duration-200 hover:shadow-sm min-w-fit ${
               activeTab === tab.label
                 ? 'bg-blue-50 text-blue-600 border-b-2 border-blue-600'
                 : 'text-gray-600 hover:bg-gray-50'
@@ -244,7 +244,7 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({ items, hasMore, isLoadingNe
             aria-label={`Cambiar a pestaña ${tab.label}`}
           >
             {tab.icon}
-            <span className={activeTab === tab.label ? 'inline' : 'hidden lg:inline'}>
+            <span className={activeTab === tab.label ? 'inline' : 'inline'}>
               {tab.label}
             </span>
           </button>
@@ -262,14 +262,14 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({ items, hasMore, isLoadingNe
         transition={{ duration: 0.4, ease: "easeInOut" }}
       >
         {filteredItems.length === 0 && !isLoadingNext ? (
-          <div className="text-center py-8 text-gray-500 font-light">
+          <div className="text-center py-4 text-gray-500 font-light">
             No hay {activeTab.toLowerCase()} disponibles{selectedCategory ? ` en la categoría "${categoriasDisponibles.find(cat => cat.id === selectedCategory)?.nombre || 'seleccionada'}"` : ""}.
           </div>
         ) : (
           <Masonry
             breakpointCols={breakpointCols}
-            className="masonry-container flex w-auto -ml-1 sm:-ml-2"
-            columnClassName="masonry-column pl-1 sm:pl-2 bg-clip-padding"
+            className="masonry-container flex w-auto -ml-1 sm:-ml-1"
+            columnClassName="masonry-column pl-1 sm:pl-1 bg-clip-padding"
           >
             {filteredItems.map((item, index) => renderItem(item, index))}
           </Masonry>

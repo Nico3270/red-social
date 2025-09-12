@@ -1,28 +1,28 @@
 
 
 // Información general de la aplicación
-export const APP_Nombre = "MagiSurprise";
-export const App_Nombre1 = "MagiSurprise";
-export const App_Nombre2 = "MagiSurprise";
+export const APP_Nombre = "Myckeo";
+export const App_Nombre1 = "Myckeo";
+export const App_Nombre2 = "Myckeo";
 export const InfoEmpresa = {
-  nombreCompleto: "MagiSurprise",
+  nombreCompleto: "Myckeo",
   direccion: "Cra 9A # 7 -03, Tunja - Colombia",
   iframeGoogleMaps : "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3971.394594074716!2d-73.37225322535299!3d5.508293434128291!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e6a7de1c1eac06f%3A0xcbfdc6875cf68173!2sCra.%209A%20%237-14%2C%20Tunja%2C%20Boyac%C3%A1!5e0!3m2!1sen!2sco!4v1732853148670!5m2!1sen!2sco",
   nombreCorto: {
-    parte1: "MagiSurprise",
+    parte1: "Myckeo",
     parte2: ""
   },
   telefono:"3132390868",
-  email: "magisurprisetunja@gmail.com", 
-  website: "https://magisurprise.com",
+  email: "myckeo@gmail.com", 
+  website: "https://myckeo.com",
   horarios: {lunes_viernes: "8:00 - 12:00 y de 2:00 - 6:00", sabados: "9:00 - 12:00 y de 2:00 - 5:00", domingos:" No atendemos"},
   nit: "900123456-7",
   urlInstagram: "/",
   urlFacebook: "/",
   urlTiktok: "/",
-  titulo:"MagiSurprise – Regalos Exclusivos y Creativos", //Importante para SEO con SEO
-  descripcion: "Regalos mágicos y personalizados para cada ocasión. En MagiSurprise, hacemos que cada detalle sea especial con entrega rápida. ¡Descubre más!", // Entre 120 - 160 caracteres
-  keywords: "regalos personalizados, detalles sorpresa, desayunos sorpresa, experiencias únicas, regalos creativos, regalos personalizados a domicilio, detalles para aniversarios, desayunos sorpresa para cumpleaños, entrega rápida de regalos, detalles especiales para San Valentín, obsequios personalizados para bodas, regalos express, detalles sorpresa para Navidad, regalos para fechas especiales, desayunos sorpresa a domicilio, detalles únicos y personalizados, sorpresas de última hora, regalos originales para aniversarios, compra de regalos personalizados, experiencias inolvidables con entrega rápida,regalos personalizados en Tunja, detalles sorpresa en Tunja, desayunos sorpresa en Tunja, experiencias únicas en Tunja, regalos creativos Tunja, regalos personalizados a domicilio en Tunja, detalles para aniversarios en Tunja, desayunos sorpresa para cumpleaños en Tunja, entrega rápida de regalos en Tunja, detalles especiales para San Valentín Tunja, obsequios personalizados para bodas en Tunja, regalos express Tunja, detalles sorpresa para Navidad en Tunja, regalos para fechas especiales en Tunja, desayunos sorpresa a domicilio en Tunja, detalles únicos y personalizados en Tunja, sorpresas de última hora en Tunja, regalos originales para aniversarios en Tunja, compra de regalos personalizados en Tunja, experiencias inolvidables con entrega rápida en Tunja ",
+  titulo:"Myckeo: Crea Tu Tienda Online Rápida y Conecta con Clientes", //Importante para SEO con SEO
+  descripcion: "Myckeo: Red social-comercial para negocios locales, con perfiles profesionales, publicaciones multimedia y mapa de ubicación. Gestiona catálogo productos fácilmente y recibe reseñas que impulsan ventas. Crea tu tienda ahora.", // Entre 120 - 160 caracteres
+  keywords: "Myckeo plataforma, tienda online gratis, crear tienda online, catálogo productos emprendedores, red social negocios locales, reseñas multimedia productos, perfil profesional independiente, QR negocio digital, feed publicaciones comerciales, agenda citas profesionales, tiendas online para pymes, conectar clientes WhatsApp, vitrina virtual emprendedores, reseñas clientes reales, plataforma social comercial",
   imagenesPlaceholder: {
     domicilio: "/imgs/domicilio.webp",
     emptyCart : "/imgs/empty_cart.webp",
@@ -35,20 +35,9 @@ export const InfoEmpresa = {
     imagenCarroVacio: "/imgs/empty_cart.webp",
     imagenTiendaContacto: "/imgs/tienda_contacto.webp",
   },
-  linkWebProduccion: "http://localhost:3000/"
+  linkWebProduccion: "https://red-social-codex.vercel.app/"
 }
 
-// Barra de navegación principal e inferior
-export const TopMenuConfig = {
-  EnlacesNavegacionTopMenu : [{ section: "Productos", ruta: "/productos" },  { section: "Servicios", ruta: "/servicios" },{ section: "Magic Blogs", ruta: "/blog" }, ],
-  widthLogo : 80,
-  heightLogo : 80,
-  //Mobile
-  width_height_logo_topMenuMobile : 50,
-  height_height_logo_topMenuMobile : 50,
-  enlacePrincipalInferior : { nombre: "Productos", ruta: "/", icono: "" },
-  Color_Circulo_Numero_Iconos_Mobile : "bg-red-600 text-[#f2f2f2]"
-}
 
 
 //Data para secciónes de Privacidad, 

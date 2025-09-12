@@ -146,7 +146,7 @@ export const ProductsInCart = () => {
               const subtotal = getSubtotalForNegocio(negocioId);
               const nombreNegocio = negocioNames[negocioId] || "Negocio Desconocido";
               return (
-                <div key={negocioId} className="flex justify-between text-sm text-gray-600">
+                <div key={negocioId} className="flex justify-between text-base sm:text-sm text-gray-600">
                   <span>Subtotal en {nombreNegocio}</span>
                   <span className="font-medium text-gray-900">
                     ${new Intl.NumberFormat("es-CO").format(subtotal)}
@@ -155,7 +155,7 @@ export const ProductsInCart = () => {
               );
             })}
           </div>
-          <div className="border-t border-gray-200 pt-2 flex justify-between text-base font-medium text-gray-900">
+          <div className="border-t border-gray-200 pt-2 flex justify-between text-lg sm:text-base font-medium text-gray-900">
             <span>Total General</span>
             <span>${new Intl.NumberFormat("es-CO").format(total)}</span>
           </div>
@@ -230,7 +230,7 @@ export const ProductsInCart = () => {
                             <h3 className="text-base font-medium text-gray-900 leading-tight">
                               {item.nombre}
                             </h3>
-                            <p className="text-sm text-gray-500 mt-1">
+                            <p className="text-base sm:text-sm text-gray-500 mt-1">
                               ${new Intl.NumberFormat("es-CO").format(item.precio)}{" "}
                               <span className="text-gray-400">c/u</span>
                             </p>
@@ -285,7 +285,7 @@ export const ProductsInCart = () => {
                   <h3 className="text-lg font-semibold text-gray-800 mb-4">Resumen de {nombreNegocio}</h3>
 
                   {/* Encabezados tipo tabla */}
-                  <div className="grid grid-cols-3 text-xs font-medium text-gray-700 border-b border-gray-200 pb-2 mb-2">
+                  <div className="grid grid-cols-3 text-sm sm:text-xs font-medium text-gray-700 border-b border-gray-200 pb-2 mb-2">
                     <span>Cant.</span>
                     <span className="text-center">Producto</span>
                     <span className="text-right">Precio</span>
@@ -296,7 +296,7 @@ export const ProductsInCart = () => {
                     {items.map((item) => (
                       <div
                         key={item.cartItemId}
-                        className="grid grid-cols-3 text-xs text-gray-600"
+                        className="grid grid-cols-3 text-base sm:text-sm text-gray-600"
                       >
                         <span>{item.cantidad}</span>
                         <span className="text-center truncate">{item.nombre}</span>
@@ -308,7 +308,7 @@ export const ProductsInCart = () => {
                   </div>
 
                   {/* Subtotal */}
-                  <div className="border-t border-gray-200 mt-4 pt-4 flex justify-between text-sm font-semibold text-gray-900">
+                  <div className="border-t border-gray-200 mt-4 pt-4 flex justify-between text-base sm:text-sm font-semibold text-gray-900">
                     <span>Subtotal</span>
                     <span>${new Intl.NumberFormat("es-CO").format(subtotal)}</span>
                   </div>

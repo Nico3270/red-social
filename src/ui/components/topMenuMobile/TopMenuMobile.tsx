@@ -215,12 +215,12 @@ export const TopMenuMobile = () => {
           {/* Logo a la izquierda */}
           <Link href="/" className="flex items-center">
             <Image
-              src="/imgs/Logo Final.png"
+              src="/imgs/Logo Final (1).png"
               alt="Logo Myckeo"
-              width={60}
-              height={60}
+              width={100}
+              height={100}
               unoptimized
-              className="rounded-full"
+              className="rounded-xl"
             />
           </Link>
 
@@ -269,13 +269,10 @@ export const TopMenuMobile = () => {
           <Link
             href="/"
             className="
-      group relative flex flex-col items-center justify-center 
-      w-12 h-12 md:w-14 md:h-14 
-      rounded-xl border border-gray-200 
-      bg-white shadow-md 
-      hover:shadow-lg hover:border-blue-200
-      transition-all duration-300
-    "
+              group relative flex flex-col items-center justify-center 
+              w-12 h-12 md:w-14 md:h-14 
+              transition-all duration-300
+            "
           >
             <Image
               src="/imgs/iconos/home.png"
@@ -284,11 +281,11 @@ export const TopMenuMobile = () => {
               width={24}
               height={24}
               className="
-        w-5 h-5 md:w-6 md:h-6 text-gray-600 
-        transform transition-all duration-300 
-        group-hover:scale-110 group-hover:-translate-y-0.5 
-        group-hover:rotate-3
-      "
+                w-5 h-5 md:w-6 md:h-6 text-gray-600 
+                transform transition-all duration-300 
+                group-hover:scale-110 group-hover:-translate-y-0.5 
+                group-hover:rotate-3
+              "
             />
             <span className="text-[10px] md:text-[11px] font-medium mt-1 text-gray-500 group-hover:text-blue-600">
               Inicio
@@ -299,26 +296,23 @@ export const TopMenuMobile = () => {
           <Link
             href={mounted && totalItemsInCart > 0 ? "/carro" : "/empty"}
             className="
-      group relative flex flex-col items-center justify-center 
-      w-12 h-12 md:w-14 md:h-14 
-      rounded-xl border border-gray-200 
-      bg-white shadow-md 
-      hover:shadow-lg hover:border-blue-200
-      transition-all duration-300
-    "
+              group relative flex flex-col items-center justify-center 
+              w-12 h-12 md:w-14 md:h-14 
+              transition-all duration-300
+            "
           >
             <Image
               src="/imgs/iconos/cart.png"
-              alt="Inicio"
+              alt="Carro"
               width={24}
               height={24}
               unoptimized
               className="
-        w-5 h-5 md:w-6 md:h-6 text-gray-600 
-        transform transition-all duration-300 
-        group-hover:scale-110 group-hover:-translate-y-0.5 
-        group-hover:rotate-3
-      "
+                w-5 h-5 md:w-6 md:h-6 text-gray-600 
+                transform transition-all duration-300 
+                group-hover:scale-110 group-hover:-translate-y-0.5 
+                group-hover:rotate-3
+              "
             />
 
             {/* 👇 Evita mismatch usando mounted */}
@@ -337,26 +331,23 @@ export const TopMenuMobile = () => {
           <Link
             href="/favoritos"
             className="
-      group relative flex flex-col items-center justify-center 
-      w-12 h-12 md:w-14 md:h-14 
-      rounded-xl border border-gray-200 
-      bg-white shadow-md 
-      hover:shadow-lg hover:border-blue-200
-      transition-all duration-300
-    "
+              group relative flex flex-col items-center justify-center 
+              w-12 h-12 md:w-14 md:h-14 
+              transition-all duration-300
+            "
           >
             <Image
               src="/imgs/iconos/heart.png"
-              alt="Inicio"
+              alt="Favoritos"
               width={24}
               height={24}
               unoptimized
               className="
-        w-5 h-5 md:w-6 md:h-6 text-gray-600 
-        transform transition-all duration-300 
-        group-hover:scale-110 group-hover:-translate-y-0.5 
-        group-hover:rotate-3
-      "
+                w-5 h-5 md:w-6 md:h-6 text-gray-600 
+                transform transition-all duration-300 
+                group-hover:scale-110 group-hover:-translate-y-0.5 
+                group-hover:rotate-3
+              "
             />
             {mounted && totalFavorites > 0 && (
               <span className="absolute -top-1 -right-1 bg-red-500 text-white font-bold rounded-full text-[10px] min-w-[18px] h-[18px] flex items-center justify-center shadow-md">
@@ -369,65 +360,55 @@ export const TopMenuMobile = () => {
           </Link>
 
           {/* Crear */}
-
-          {
-            isNegocio && (
-
-              <button
-                onClick={() => setIsCrearModalOpen(true)}
-                className="
-                    group relative flex flex-col items-center justify-center 
-                    w-12 h-12 md:w-14 md:h-14 
-                    rounded-xl border border-gray-200 
-                    bg-white shadow-md 
-                    hover:shadow-lg hover:border-blue-200
-                    transition-all duration-300
-                  "
-              >
-                <Image
-                  src="/imgs/iconos/plus.png"
-                  alt="Inicio"
-                  width={24}
-                  height={24}
-                  unoptimized
-                  className="
-                      w-5 h-5 md:w-6 md:h-6 text-gray-600 
-                      transform transition-all duration-300 
-                      group-hover:scale-110 group-hover:-translate-y-0.5 
-                      group-hover:rotate-3
-                    "
-                />
-                <span className="text-[10px] md:text-[11px] font-medium mt-1 text-gray-500 group-hover:text-purple-600">
-                  Crear
-                </span>
-              </button>
-            )
-          }
-
-          {/* Perfil */}
-          <button
-            onClick={() => setIsDrawerOpen(true)}
-            className="
+          {isNegocio && (
+            <button
+              onClick={() => setIsCrearModalOpen(true)}
+              className="
                 group relative flex flex-col items-center justify-center 
                 w-12 h-12 md:w-14 md:h-14 
-                rounded-xl border border-gray-200 
-                bg-white shadow-md 
-                hover:shadow-lg hover:border-blue-200
                 transition-all duration-300
               "
-          >
-            <Image
-              src="/imgs/iconos/profile.png"
-              alt="Inicio"
-              width={24}
-              height={24}
-              unoptimized
-              className="
+            >
+              <Image
+                src="/imgs/iconos/plus.png"
+                alt="Crear"
+                width={24}
+                height={24}
+                unoptimized
+                className="
                   w-5 h-5 md:w-6 md:h-6 text-gray-600 
                   transform transition-all duration-300 
                   group-hover:scale-110 group-hover:-translate-y-0.5 
                   group-hover:rotate-3
                 "
+              />
+              <span className="text-[10px] md:text-[11px] font-medium mt-1 text-gray-500 group-hover:text-purple-600">
+                Crear
+              </span>
+            </button>
+          )}
+
+          {/* Perfil */}
+          <button
+            onClick={() => setIsDrawerOpen(true)}
+            className="
+              group relative flex flex-col items-center justify-center 
+              w-12 h-12 md:w-14 md:h-14 
+              transition-all duration-300
+            "
+          >
+            <Image
+              src="/imgs/iconos/profile.png"
+              alt="Perfil"
+              width={24}
+              height={24}
+              unoptimized
+              className="
+                w-5 h-5 md:w-6 md:h-6 text-gray-600 
+                transform transition-all duration-300 
+                group-hover:scale-110 group-hover:-translate-y-0.5 
+                group-hover:rotate-3
+              "
             />
             <span className="text-[10px] md:text-[11px] font-medium mt-1 text-gray-500 group-hover:text-indigo-600">
               Perfil

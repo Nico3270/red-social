@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { FaHeart } from "react-icons/fa"; // Asumimos que usas este ícono para favoritos
+import { IoMdClose } from "react-icons/io"; // Icono de cierre para el modal
 import { FavoriteProduct } from "@/interfaces/product.interface";
 import { motion, AnimatePresence } from "framer-motion"; // Opcional para toast
 import { useFavoritesCatalogoStore } from "@/store/favoritos/favoritos-store";
@@ -81,16 +82,36 @@ export const AddFavorites: React.FC<AddFavoritesProps> = ({
   />
 </button>
 
-      {/* Toast simple para feedback */}
+      {/* Toast centrado como modal overlay para mejor visibilidad */}
       <AnimatePresence>
         {showToast && (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            className="fixed bottom-4 right-4 bg-white p-4 rounded-lg shadow-lg border border-gray-200 text-sm"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-50" // Overlay semi-transparente para enfoque
+            onClick={() => setShowToast(false)} // Cierra al clic en backdrop
           >
-            {isFavorite ? "❤️ Agregado a favoritos" : "💔 Removido de favoritos"}
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="bg-white p-6 rounded-xl shadow-2xl max-w-sm w-full mx-4 text-center text-gray-800 relative" // Texto oscuro para visibilidad
+              onClick={(e) => e.stopPropagation()} // Evita cierre al clic dentro
+            >
+              <button
+                onClick={() => setShowToast(false)}
+                className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 transition-colors"
+                aria-label="Cerrar"
+              >
+                <IoMdClose className="text-2xl" />
+              </button>
+              <p className="text-xl font-medium mb-2">
+                {isFavorite ? "❤️ Agregado a favoritos" : "💔 Removido de favoritos"}
+              </p>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

@@ -2,7 +2,7 @@
 
 import React, { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
-import { FaHeart, FaComment, FaShare } from "react-icons/fa";
+import { FaHeart, FaComment,  } from "react-icons/fa";
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
 import Image from "next/image";
@@ -50,7 +50,7 @@ const Interactions: React.FC<InteractionsProps> = ({
   slug,
   numLikes: initialLikes,
   numComentarios: initialComentarios,
-  numCompartidos: initialCompartidos,
+  // numCompartidos: initialCompartidos,
   userReaction: initialReaction,
   initialComments = [],
   onOpenModal,
@@ -70,14 +70,14 @@ const Interactions: React.FC<InteractionsProps> = ({
     updatedUserReaction,
     updateLikes,
     updateUserReaction,
-    updatedCompartidos,
-    updateCompartidos,
+    // updatedCompartidos,
+    // updateCompartidos,
   } = usePublicacionModalStore();
 
   // Estados locales inicializados con SSR (SIN CAMBIOS)
   const [localLikes, setLocalLikes] = useState(initialLikes);
   const [localComentarios, setLocalComentarios] = useState(initialComentarios);
-  const [localCompartidos, setLocalCompartidos] = useState(initialCompartidos);
+  // const [localCompartidos, setLocalCompartidos] = useState(initialCompartidos);
   const [localReaction, setLocalReaction] = useState(initialReaction);
   const [localComments, setLocalComments] = useState<Comment[]>(initialComments);
   const [newComment, setNewComment] = useState("");
@@ -90,7 +90,7 @@ const Interactions: React.FC<InteractionsProps> = ({
   // Extraer expresiones complejas para dependencias estáticas
   const updatedLikesForId = updatedLikes[publicacionId];
   const updatedNumComentariosForId = updatedNumComentarios[publicacionId];
-  const updatedCompartidosForId = updatedCompartidos[publicacionId];
+  // const updatedCompartidosForId = updatedCompartidos[publicacionId];
   const updatedUserReactionForId = updatedUserReaction[publicacionId];
   const updatedCommentsForId = updatedComments[publicacionId];
 
@@ -103,10 +103,10 @@ const Interactions: React.FC<InteractionsProps> = ({
     () => isInModal ? (updatedNumComentariosForId ?? localComentarios) : localComentarios,
     [isInModal, updatedNumComentariosForId, localComentarios]
   );
-  const effectiveCompartidos = useMemo(
-    () => isInModal ? (updatedCompartidosForId ?? localCompartidos) : localCompartidos,
-    [isInModal, updatedCompartidosForId, localCompartidos]
-  );
+  // const effectiveCompartidos = useMemo(
+  //   () => isInModal ? (updatedCompartidosForId ?? localCompartidos) : localCompartidos,
+  //   [isInModal, updatedCompartidosForId, localCompartidos]
+  // );
   const effectiveReaction = useMemo(
     () => isInModal ? (updatedUserReactionForId ?? localReaction) : localReaction,
     [isInModal, updatedUserReactionForId, localReaction]
@@ -292,30 +292,30 @@ const Interactions: React.FC<InteractionsProps> = ({
   );
 
   // Handle Share (SIMPLIFICADO: Removido mutateSummary)
-  const handleShare = useCallback(async () => {
-    if (!isAuthenticated) return;
-    const optimisticCompartidos = effectiveCompartidos + 1;
+  // const handleShare = useCallback(async () => {
+  //   if (!isAuthenticated) return;
+  //   const optimisticCompartidos = effectiveCompartidos + 1;
 
-    setLocalCompartidos(optimisticCompartidos);
-    if (isInModal) updateCompartidos(publicacionId, optimisticCompartidos);
+  //   setLocalCompartidos(optimisticCompartidos);
+  //   if (isInModal) updateCompartidos(publicacionId, optimisticCompartidos);
 
-    try {
-      const result = await postInteraccionPublicacion({ publicacionId, slug, tipo: "COMPARTIDO" });
-      if (!result.ok) throw new Error(result.message);
-      // REMOVIDO: mutateSummary
-    } catch (error) {
-      setLocalCompartidos(effectiveCompartidos);
-      if (isInModal) updateCompartidos(publicacionId, effectiveCompartidos);
-      console.warn("Error en compartir:", error);
-    }
-  }, [
-    isAuthenticated,
-    publicacionId,
-    slug,
-    effectiveCompartidos,
-    isInModal,
-    updateCompartidos,
-  ]);
+  //   try {
+  //     const result = await postInteraccionPublicacion({ publicacionId, slug, tipo: "COMPARTIDO" });
+  //     if (!result.ok) throw new Error(result.message);
+  //     // REMOVIDO: mutateSummary
+  //   } catch (error) {
+  //     setLocalCompartidos(effectiveCompartidos);
+  //     if (isInModal) updateCompartidos(publicacionId, effectiveCompartidos);
+  //     console.warn("Error en compartir:", error);
+  //   }
+  // }, [
+  //   isAuthenticated,
+  //   publicacionId,
+  //   slug,
+  //   effectiveCompartidos,
+  //   isInModal,
+  //   updateCompartidos,
+  // ]);
 
   // Skeletons (SIN CAMBIOS)
   const CommentSkeleton = () => (
@@ -328,7 +328,7 @@ const Interactions: React.FC<InteractionsProps> = ({
   const hasLiked = effectiveReaction === ReaccionTipo.LIKE;
 
   return (
-    <div className="w-full p-4 pt-6 border-t border-gray-100">
+    <div className="w-full p-4 pt-2 border-t border-gray-100">
       {/* Contadores (SIMPLIFICADO: Sin loading de summary, usa props directas) */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
@@ -349,19 +349,19 @@ const Interactions: React.FC<InteractionsProps> = ({
               <span>{effectiveComentarios}</span>
             </motion.button>
           )}
-          {effectiveCompartidos > 0 && (
+          {/* {effectiveCompartidos > 0 && (
             <motion.div className="flex items-center gap-1 bg-gray-100 rounded-full px-2 py-1 text-sm text-gray-700">
               <FaShare className="text-green-500" />
               <span>{effectiveCompartidos}</span>
             </motion.div>
-          )}
+          )} */}
         </div>
       </div>
 
       {/* Botones, Form Comment, Lista Comments (SIN CAMBIOS) */}
       {/* ... (resto del return idéntico al original, sin referencias a summaryData o mutateSummary) */}
       <div className="flex justify-between items-center mb-4">
-        <div className="flex gap-4 md:gap-6">
+        <div className="flex gap-8 md:gap-6">
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -385,7 +385,7 @@ const Interactions: React.FC<InteractionsProps> = ({
             <span>Comentar</span>
           </motion.button>
 
-          <motion.button
+          {/* <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={handleShare}
@@ -394,7 +394,7 @@ const Interactions: React.FC<InteractionsProps> = ({
           >
             <FaShare />
             <span>Compartir</span>
-          </motion.button>
+          </motion.button> */}
         </div>
       </div>
 

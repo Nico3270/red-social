@@ -217,7 +217,7 @@ export const TopMenu = () => {
         {/* Logo a la izquierda */}
         <Link href="/" className="flex items-center space-x-1">
   <Image
-    src="/imgs/Logo Final.png"
+    src="/imgs/Logo Final (1).png"
     alt="Logo Myckeo"
     width={100}
     height={100}
