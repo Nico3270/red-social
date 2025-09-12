@@ -32,8 +32,7 @@ const componentMap: Record<string, React.FC<{ publicacion: EnhancedPublicacion }
   CARRUSEL_IMAGENES: SocialMediaCarousel,
 };
 
-const WidgetCard: React.FC<{ id: string; titulo: string; contenido?: string }> = ({
-  id,
+const WidgetCard: React.FC<{ titulo: string; contenido?: string }> = ({
   titulo,
   contenido,
 }) => (
@@ -93,11 +92,11 @@ function reorderForColumns<T extends EnhancedPublicacion>(items: T[], cols: numb
   return out;
 }
 
-const FeedPublicaciones: React.FC<FeedPublicacionesProps> = memo(({
+const FeedPublicaciones = memo(function FeedPublicaciones({
   publicaciones: initialPublicaciones = [],  // Fallback a [] para robustez SSR
   productosDestacados = [],
   widgets = [],
-}) => {
+}: FeedPublicacionesProps) {
   const [filtro, setFiltro] = useState<"Recientes" | "Videos" | "Carruseles" | "Populares">("Recientes");  // Agregado "Populares" para engagement
   const [dynamicPublicaciones, setDynamicPublicaciones] = useState<EnhancedPublicacion[]>([]);
   const observerRef = useRef<HTMLDivElement>(null);
@@ -357,7 +356,6 @@ const FeedPublicaciones: React.FC<FeedPublicacionesProps> = memo(({
         {widgets.map((widget) => (
           <WidgetCard
             key={widget.id}
-            id={widget.id}
             titulo={widget.titulo}
             contenido={widget.contenido}
           />

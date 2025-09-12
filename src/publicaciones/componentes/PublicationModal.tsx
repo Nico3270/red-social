@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, Suspense, lazy } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { createPortal } from "react-dom";
 import { FaTimes } from "react-icons/fa";
-import { PublicacionSencilla } from "../interfaces/publicacionSencilla.interface";
+import { EnhancedPublicacion } from "../interfaces/enhancedPublicacion.interface";
 
 // Lazy imports para romper ciclos
 const LazyShowTestimonioPublicacion = lazy(() => import("@/publicaciones/componentes/ShowTestimonioPublicacion"));
@@ -12,7 +12,7 @@ const LazySocialMediaCarousel = lazy(() => import("@/publicaciones/componentes/S
 
 interface PublicationModalProps {
   isOpen: boolean;
-  publication: PublicacionSencilla | null;
+  publication: EnhancedPublicacion | null;
   onClose: () => void;
 }
 
@@ -42,7 +42,7 @@ const PublicationModal: React.FC<PublicationModalProps> = ({ isOpen, publication
   if (!isOpen || !publication) return null;
 
   // componentMap con lazy components
-  const componentMap: Record<string, React.LazyExoticComponent<React.FC<{ publicacion: PublicacionSencilla; isInModal?: boolean }>>> = {
+  const componentMap: Record<string, React.LazyExoticComponent<React.FC<{ publicacion: EnhancedPublicacion; isInModal?: boolean }>>> = {
     TESTIMONIO: LazyShowTestimonioPublicacion,
     CARRUSEL_IMAGENES: LazySocialMediaCarousel,
   };

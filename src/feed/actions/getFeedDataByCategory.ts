@@ -424,7 +424,7 @@ export async function getFeedDataByCategory(
 
   // Mapeo simplificado (orden ya por grupos + interno)
   const items: FeedItem[] = rawItems.map((raw) => {
-    const itemType = type.slice(0, -1) as "product" | "publication" | "service" | "business";
+    
     let item: FeedItem;
 
     if (isRawProduct(raw)) {
@@ -469,7 +469,9 @@ export async function getFeedDataByCategory(
 
   const orderedItems = items;  // Orden ya priorizado por geo + grupo interno
 
-  nextCursor = rawItems.length >= params.limit ? rawItems[rawItems.length - 1].id : undefined;
+  if (rawItems.length >= params.limit) {
+  nextCursor = rawItems[rawItems.length - 1].id;
+}
 
   if (process.env.NODE_ENV === "development") {
     console.log(`getFeedDataByCategory(${type}, '${params.categoriaSlug}'): Fetched ${rawItems.length} raw (ciudad > depto > nacional) -> ${orderedItems.length} items`);

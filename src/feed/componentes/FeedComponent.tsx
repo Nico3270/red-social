@@ -180,13 +180,13 @@ export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedCo
     structuralSharing: false,
   });
 
-  // Queries mapeadas
-  const queries = {
+  // Queries mapeadas: Memoizado para evitar recreación en cada render y estabilizar dependencias
+  const queries = useMemo(() => ({
     Publicaciones: publicationsQuery,
     Productos: productsQuery,
     Servicios: servicesQuery,
     Negocios: businessesQuery,
-  };
+  }), [publicationsQuery, productsQuery, servicesQuery, businessesQuery]);
 
   // Sentinel para infinite scroll (pre-fetch suave)
   const { ref: sentinelRef, inView } = useInView({

@@ -244,75 +244,6 @@ async function fetchBusinessesNational(params: ExtendedParams): Promise<RawBusin
 }
 
 
-
-// Publications priorizado: Ciudad > Depto excluyendo ciudad > Nacional
-// async function fetchPublications(params: ExtendedParams): Promise<RawPublication[]> {
-//   const limitWithBuffer = params.limit + 10;
-//   let items: RawPublication[] = [];
-//   let remaining = limitWithBuffer;
-
-//   // 1. Ciudad
-//   const cityWhere: Prisma.PublicacionWhereInput = {
-//     tipo: { in: ["TESTIMONIO", "CARRUSEL_IMAGENES"] },
-//     visibilidad: "PUBLICA",
-//     id: { notIn: params.seenIds.filter((id: string) => id.startsWith("pub-")) },
-//     negocio: { ciudad: params.ciudad },
-//   };
-//   const cityItems = await prisma.publicacion.findMany({
-//     where: cityWhere,
-//     select: publicationSelect,
-//     orderBy: [{ orden: "desc" }, { createdAt: "desc" }],
-//     take: remaining,
-//     cursor: params.cursor ? { id: params.cursor } : undefined,
-//     skip: params.cursor ? 1 : 0,
-//   });
-//   items = [...items, ...sortGroup(cityItems)];
-//   remaining -= cityItems.length;
-
-//   // 2. Depto excluyendo ciudad
-//   if (remaining > 0 && params.departamento) {
-//     const deptWhere: Prisma.PublicacionWhereInput = {
-//       tipo: { in: ["TESTIMONIO", "CARRUSEL_IMAGENES"] },
-//       visibilidad: "PUBLICA",
-//       id: { notIn: params.seenIds.filter((id: string) => id.startsWith("pub-")) },
-//       negocio: {
-//         departamento: params.departamento,
-//         ciudad: { not: params.ciudad },
-//       },
-//     };
-//     const deptItems = await prisma.publicacion.findMany({
-//       where: deptWhere,
-//       select: publicationSelect,
-//       orderBy: [{ orden: "desc" }, { createdAt: "desc" }],
-//       take: remaining,
-//       cursor: params.cursor ? { id: params.cursor } : undefined,
-//       skip: params.cursor ? 1 : 0,
-//     });
-//     items = [...items, ...sortGroup(deptItems)];
-//     remaining -= deptItems.length;
-//   }
-
-//   // 3. Nacional
-//   if (remaining > 0) {
-//     const nationalWhere: Prisma.PublicacionWhereInput = {
-//       tipo: { in: ["TESTIMONIO", "CARRUSEL_IMAGENES"] },
-//       visibilidad: "PUBLICA",
-//       id: { notIn: params.seenIds.filter((id: string) => id.startsWith("pub-")) },
-//     };
-//     const nationalItems = await prisma.publicacion.findMany({
-//       where: nationalWhere,
-//       select: publicationSelect,
-//       orderBy: [{ orden: "desc" }, { createdAt: "desc" }],
-//       take: remaining,
-//       cursor: params.cursor ? { id: params.cursor } : undefined,
-//       skip: params.cursor ? 1 : 0,
-//     });
-//     items = [...items, ...sortGroup(nationalItems)];
-//   }
-
-//   return items.slice(0, params.limit + 10);
-// }
-
 async function fetchPublicationsCity(params: ExtendedParams): Promise<RawPublication[]> {
   return prisma.publicacion.findMany({
     where: {
@@ -470,7 +401,6 @@ export async function getFeedDataByType(
 
   // Mapeo simplificado (orden ya por grupos + interno)
   const items: FeedItem[] = rawItems.map((raw) => {
-    const itemType = type.slice(0, -1) as "product" | "publication" | "service" | "business";
     let item: FeedItem;
     console.log(`📦 Raw ${type} item antes de map:`, raw.id, raw);
 
@@ -527,7 +457,9 @@ export async function getFeedDataByType(
 
   const orderedItems = items;  // Orden ya priorizado por geo + grupo interno
 
-  nextCursor = rawItems.length >= params.limit ? rawItems[rawItems.length - 1].id : undefined;
+ if (rawItems.length >= params.limit) {
+  nextCursor = rawItems[rawItems.length - 1].id;
+}
 
   if (process.env.NODE_ENV === "development") {
     console.log(`getFeedDataByType(${type}): Fetched ${rawItems.length} raw (ciudad > depto > nacional) -> ${orderedItems.length} items`);

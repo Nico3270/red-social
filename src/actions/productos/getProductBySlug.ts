@@ -42,6 +42,11 @@ export const getProductBySlug = async (slug: string): Promise<GetProductBySlug> 
                 categoryId: true,
                 componentes: true,
                 negocioId: true,
+                negocio: {
+                    select: {
+                        fotoPerfil: true,
+                    },
+                },
                 imagenes: {
                     select: {
                         url: true,
@@ -95,6 +100,8 @@ export const getProductBySlug = async (slug: string): Promise<GetProductBySlug> 
             slugNegocio: negocio?.slug || "",
             nombreNegocio: negocio?.nombre || "",
             telefonoContacto: negocio?.telefonoContacto || "",
+            negocioId: product.negocioId,
+            negocioFotoPerfil: product.negocio.fotoPerfil || "",
         }
 
         if (!negocio) {
@@ -170,7 +177,9 @@ export const getProductBySlug = async (slug: string): Promise<GetProductBySlug> 
             sections: p.secciones.map((seccion) => seccion.section.id),
             telefonoContacto: negocio.telefonoContacto || "",
             slugNegocio: negocio.slug || "",
-            nombreNegocio: negocio.nombre || "",    
+            nombreNegocio: negocio.nombre || "",  
+            negocioId: p.negocioId,
+            negocioFotoPerfil: "", // No es necesario para productos similares  
         }));
 
 

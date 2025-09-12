@@ -14,7 +14,7 @@ interface PreferencesState {
   setSecciones: (secciones: string[]) => void;
 }
 
-const preferencesCreator: StateCreator<PreferencesState> = (set, get) => ({
+const preferencesCreator: StateCreator<PreferencesState> = (set) => ({
   ciudad: '',
   departamento: '',
   preferencias: [],

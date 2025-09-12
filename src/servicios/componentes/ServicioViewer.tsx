@@ -87,8 +87,7 @@ const MediaSlide: React.FC<{
   media: ServicioData["multimedia"][0]; 
   index: number; 
   multimediaLength: number; 
-  isInModal: boolean;
-}> = ({ media, index, multimediaLength, isInModal }) => {
+}> = ({ media, index, multimediaLength }) => {
   const aspectRatio = useMediaDimensions(media.url, media.tipo as "IMAGEN" | "VIDEO");
 
   return (
@@ -124,7 +123,7 @@ const MediaSlide: React.FC<{
 };
 
 const ServicioViewer: React.FC<Props> = ({ servicio, version = 1 }) => {
-  const { titulo, descripcion, precio, currency, multimedia = [], negocioSlug, telefonoNegocio, nombreNegocio, negocioFotoPerfil } = servicio;
+  const { titulo, descripcion, precio,  multimedia = [], negocioSlug, telefonoNegocio, nombreNegocio, negocioFotoPerfil } = servicio;
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const whatsappMessage = encodeURIComponent(
@@ -138,7 +137,12 @@ const ServicioViewer: React.FC<Props> = ({ servicio, version = 1 }) => {
 
   const fullDescription = descripcion.join('\n\n');
   const isLongDescription = fullDescription.length > 150;
-  const maxDescriptionLength = 100; // Alineado con SocialMediaCarousel
+  const maxDescriptionLength = 100; // Usado para truncar en v2
+
+  // Truncar descripción en v2
+  // const truncatedDescription = version === 2 && isLongDescription
+  //   ? fullDescription.slice(0, maxDescriptionLength) + '...'
+  //   : fullDescription;
 
   // Clases condicionales basadas en la versión
   const containerClasses =
@@ -201,12 +205,12 @@ const ServicioViewer: React.FC<Props> = ({ servicio, version = 1 }) => {
         {/* Descripción (alineada con estilo de SocialMediaCarousel: padding, overflow, "Ver más") */}
         <div className="px-4 pt-0 pb-4 text-[18px] text-gray-800 leading-snug">
           <div
-  className={`transition-all duration-300 ease-in-out overflow-hidden relative
-    ${isLongDescription ? "max-h-[4.8em] md:max-h-[19.2em]" : ""}`}
->
+            className={`transition-all duration-300 ease-in-out overflow-hidden relative
+              ${isLongDescription ? "max-h-[4.8em] md:max-h-[19.2em]" : ""}`}
+          >
             {descripcion.map((parrafo, index) => (
               <p key={index} className="whitespace-pre-wrap break-words text-md mb-2">
-                {parrafo}
+                {version === 2 ? parrafo.slice(0, maxDescriptionLength) + (parrafo.length > maxDescriptionLength ? '...' : '') : parrafo}
               </p>
             ))}
             {isLongDescription && (
@@ -237,7 +241,6 @@ const ServicioViewer: React.FC<Props> = ({ servicio, version = 1 }) => {
                     media={media} 
                     index={index} 
                     multimediaLength={orderedMultimedia.length} 
-                    isInModal={false}
                   />
                 </SwiperSlide>
               ))
@@ -254,7 +257,6 @@ const ServicioViewer: React.FC<Props> = ({ servicio, version = 1 }) => {
         {/* Footer: Precio + WhatsApp (con padding similar a interacciones en SocialMediaCarousel) */}
         <div className="px-4 py-4 flex items-center justify-between border-t border-gray-100">
           {precio && (
-            
             <Precio value={precio}  />
           )}
           {telefonoNegocio && (
@@ -359,7 +361,6 @@ const ServicioViewer: React.FC<Props> = ({ servicio, version = 1 }) => {
                             media={media} 
                             index={index} 
                             multimediaLength={orderedMultimedia.length} 
-                            isInModal={true}
                           />
                         </SwiperSlide>
                       ))
@@ -385,7 +386,7 @@ const ServicioViewer: React.FC<Props> = ({ servicio, version = 1 }) => {
                 {/* Footer con Precio + WhatsApp */}
                 <div className="px-4 py-4 flex items-center justify-between border-t border-gray-100">
                   {precio && (
-                     <Precio value={precio}  />
+                    <Precio value={precio}  />
                   )}
                   {telefonoNegocio && (
                     <Link

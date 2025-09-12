@@ -1,7 +1,7 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useForm, Controller } from "react-hook-form";
 import {
   Alert,
@@ -68,17 +68,21 @@ export const TestimonioCrearEditar = ({ infoPublicacion, onCancel, productos, on
   const [loading, setLoading] = useState(false);
   const { data: session, status } = useSession(); // Agregado status para loading UX
   const userId = session?.user?.id;
+  const negocioId = session?.user?.negocioId;
+
+  const infoPublicacionJson = useMemo(() => JSON.stringify(infoPublicacion), [infoPublicacion]);
 
   useEffect(() => {
-    console.log('TestimonioCrearEditar mounted/updated, infoPublicacion:', infoPublicacion);
-    if (infoPublicacion) {
+    const parsedInfo = infoPublicacionJson ? JSON.parse(infoPublicacionJson) : undefined;
+    console.log('TestimonioCrearEditar mounted/updated, infoPublicacion:', parsedInfo);
+    if (parsedInfo) {
       reset({
-        descripcion: infoPublicacion.descripcion || "",
-        multimedia: infoPublicacion.multimedia?.[0] || undefined,
-        productoId: infoPublicacion.productoId || "",
+        descripcion: parsedInfo.descripcion || "",
+        multimedia: parsedInfo.multimedia?.[0] || undefined,
+        productoId: parsedInfo.productoId || "",
       });
     }
-  }, [JSON.stringify(infoPublicacion), reset]);
+  }, [infoPublicacionJson, reset]);
 
   const onFormSubmit = useCallback(async (data: FormDataPublicacion) => {
     setLoading(true);
@@ -89,7 +93,7 @@ export const TestimonioCrearEditar = ({ infoPublicacion, onCancel, productos, on
 
       const submissionData: InformacionPublicacion = {
         usuarioId: userId,
-        negocioId:  session.user.negocioId || "",
+        negocioId: negocioId || "",
         productoId: data.productoId,
         tipo: infoPublicacion?.tipo || PublicacionTipo.TESTIMONIO,
         contexto: infoPublicacion?.contexto || "usuario",
@@ -118,7 +122,9 @@ export const TestimonioCrearEditar = ({ infoPublicacion, onCancel, productos, on
     } finally {
       setLoading(false);
     }
-  }, [userId, infoPublicacion, reset, onSuccess]);
+  }, [userId, negocioId, infoPublicacion, reset, onSuccess]);
+
+  const debouncedSetValue = useMemo(() => debounce(setValue, 300), [setValue]);
 
   if (status === "loading") {
     return <CircularProgress className="m-auto block" />; // Spinner premium para loading
@@ -131,7 +137,6 @@ export const TestimonioCrearEditar = ({ infoPublicacion, onCancel, productos, on
   // Variable bandera para decirle al componente que reciba uno o varios archivos
   const multiple = false;
   const dataEntrada = infoPublicacion?.multimedia
-  const debouncedSetValue = useCallback(debounce(setValue, 300), []); // Debounce para evitar loops en onChange
 
   return (
     <motion.div 

@@ -1,13 +1,26 @@
 // scripts/updateBusinessScores.ts
-import { PrismaClient, EstadoNegocio, ProductEtiquetaEspecial, ProductStatus, FollowType } from "@prisma/client";
+import { Prisma, PrismaClient, EstadoNegocio, ProductEtiquetaEspecial, ProductStatus, FollowType } from "@prisma/client";
 
 const prisma = new PrismaClient();
+
+type NegocioWithRelations = Prisma.NegocioGetPayload<{
+  include: {
+    Product: true;
+    orders: { select: { id: true; createdAt: true } };
+    followsIn: { select: { id: true; type: true; createdAt: true } };
+    reservations: { select: { id: true; createdAt: true } };
+    Servicio: { select: { id: true; createdAt: true } };
+    publicaciones: { include: { productosEnPublicacion: true } };
+  };
+}>;
+
+type Negocio = Prisma.NegocioGetPayload<null>; // Tipo base del modelo Negocio para el output de update
 
 async function main() {
   console.log("🌀 Iniciando recalculo batch de scores para negocios...");
 
   // Traemos relaciones necesarias (nombres EXACTOS según tu schema)
-  const negocios = await prisma.negocio.findMany({
+  const negocios: NegocioWithRelations[] = await prisma.negocio.findMany({
     include: {
       Product: true, // productos del negocio
       orders: { select: { id: true, createdAt: true } }, // órdenes (para activity)
@@ -27,7 +40,7 @@ async function main() {
 
   console.log(`📊 Procesando ${negocios.length} negocios...`);
 
-  const updates: any[] = [];
+  const updates: Prisma.PrismaPromise<Negocio>[] = [];
 
   for (const negocio of negocios) {
     const score = calculateBusinessScore(negocio);
@@ -48,7 +61,7 @@ async function main() {
   await prisma.$disconnect();
 }
 
-function calculateBusinessScore(negocio: any): number {
+function calculateBusinessScore(negocio: NegocioWithRelations): number {
   let score = 6.0; // base
   const now = Date.now();
   const daysSince = (now - new Date(negocio.createdAt).getTime()) / (1000 * 60 * 60 * 24);
@@ -71,7 +84,7 @@ function calculateBusinessScore(negocio: any): number {
   // Penalidad: 0 orders en últimos 60 días => -1.0
   let lastOrderDays = Infinity;
   if (countOrders > 0) {
-    const lastOrder = (negocio.orders as any[]).reduce((prev, cur) => (new Date(prev.createdAt) > new Date(cur.createdAt) ? prev : cur));
+    const lastOrder = (negocio.orders).reduce((prev, cur) => (new Date(prev.createdAt) > new Date(cur.createdAt) ? prev : cur));
     lastOrderDays = (now - new Date(lastOrder.createdAt).getTime()) / (1000 * 60 * 60 * 24);
   }
   if (countOrders === 0 || lastOrderDays > 60) {
@@ -79,7 +92,7 @@ function calculateBusinessScore(negocio: any): number {
   }
 
   // Bonus si >5 productos disponibles
-  const productosDisponibles = (negocio.Product ?? []).filter((p: any) => p.status === ProductStatus.disponible).length;
+  const productosDisponibles = (negocio.Product ?? []).filter((p) => p.status === ProductStatus.disponible).length;
   if (productosDisponibles > 5) factorActividad += 0.5;
 
   score += factorActividad * 0.4;
@@ -96,7 +109,7 @@ function calculateBusinessScore(negocio: any): number {
   // ------------------------
   // 4) Engagement social (peso 0.2 -> 0.1 follows + 0.1 reservas/servicios)
   // ------------------------
-  const followsCount = (negocio.followsIn ?? []).filter((f: any) => f.type === FollowType.USER_TO_BUSINESS).length;
+  const followsCount = (negocio.followsIn ?? []).filter((f) => f.type === FollowType.USER_TO_BUSINESS).length;
   let factorFollows = Math.min(1.0, 0.5 + (followsCount / 10) * 0.5);
 
   const reservasCount = (negocio.reservations ?? []).length;
@@ -117,18 +130,18 @@ function calculateBusinessScore(negocio: any): number {
   // ------------------------
   let factorRelevancia = 0.5;
 
-  if ((negocio.Product ?? []).some((p: any) =>
+  if ((negocio.Product ?? []).some((p) =>
     p.etiquetaEspecial === ProductEtiquetaEspecial.mas_vendido || p.etiquetaEspecial === ProductEtiquetaEspecial.novedad
   )) {
     factorRelevancia += 1.0;
   }
 
   // contar PublicacionProducto para el negocio recorriendo publicaciones
-  const totalPubProd = (negocio.publicaciones ?? []).reduce((acc: number, pub: any) => acc + ((pub.productosEnPublicacion ?? []).length), 0);
+  const totalPubProd = (negocio.publicaciones ?? []).reduce((acc: number, pub) => acc + ((pub.productosEnPublicacion ?? []).length), 0);
   if (totalPubProd > 5) factorRelevancia += 0.5;
 
   // penalidad si >50% productos agotados
-  const agotados = (negocio.Product ?? []).filter((p: any) => p.status === ProductStatus.agotado).length;
+  const agotados = (negocio.Product ?? []).filter((p) => p.status === ProductStatus.agotado).length;
   if (countProducts > 0 && (agotados / countProducts) > 0.5) factorRelevancia -= 0.5;
 
   factorRelevancia = Math.min(1.5, factorRelevancia);

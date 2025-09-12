@@ -1,15 +1,42 @@
 // scripts/updatePublicationScores.ts
-import { PrismaClient } from '@prisma/client';
-import { Visibilidad, EstadoNegocio, FollowType } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
+import { Visibilidad, EstadoNegocio, FollowType, InteraccionTipo, ReaccionTipo } from '@prisma/client';
 
 const prisma = new PrismaClient();
+
+type PublicacionWithRelations = Prisma.PublicacionGetPayload<{
+  include: {
+    interacciones: {
+      select: {
+        tipo: true;
+        reaccionTipo: true;
+        createdAt: true;
+      };
+    };
+    multimedia: true;
+    productosEnPublicacion: true;
+    negocio: {
+      select: {
+        id: true;
+        estado: true;
+        createdAt: true;
+        followsIn: {
+          select: {
+            id: true;
+          };
+        };
+        publicaciones: true;
+      };
+    };
+  };
+}>;
 
 async function main() {
   console.log("🌀 Iniciando recalculo batch de scores para publicaciones (local testing)...");
 
   try {
     // Paso 1: Query all publicaciones públicas elegibles (visibilidad PUBLICA, con includes para aggregates)
-    const publicaciones = await prisma.publicacion.findMany({
+    const publicaciones: PublicacionWithRelations[] = await prisma.publicacion.findMany({
       where: {
         visibilidad: Visibilidad.PUBLICA, // Solo públicas para feeds
       },
@@ -94,7 +121,7 @@ async function main() {
 }
 
 // Función auxiliar para calcular score (numérico, alto rendimiento, adaptada al schema)
-function calculatePublicationScore(pub: any): number {
+function calculatePublicationScore(pub: PublicacionWithRelations): number {
   // Base neutral
   let score = 5.0;
 
@@ -107,8 +134,8 @@ function calculatePublicationScore(pub: any): number {
   score += factorRecencia * 0.3;
 
   // 2. Factor Interacciones (log-normalización para likes/comentarios, peso 0.5)
-  const likes = pub.interacciones.filter((i: any) => i.tipo === 'REACCION' && i.reaccionTipo === 'LIKE').length;
-  const comentarios = pub.interacciones.filter((i: any) => i.tipo === 'COMENTARIO').length;
+  const likes = pub.interacciones.filter((i) => i.tipo === InteraccionTipo.REACCION && i.reaccionTipo === ReaccionTipo.LIKE).length;
+  const comentarios = pub.interacciones.filter((i) => i.tipo === InteraccionTipo.COMENTARIO).length;
   const totalInteracciones = likes + (comentarios * 1.5); // Comentarios valen 1.5x
   const factorInteracciones = Math.log(1 + totalInteracciones) * 2.0; // Log evita explosión (10 likes = ~2.3, 100 = ~4.6)
   score += Math.min(3.0, factorInteracciones) * 0.5; // Cap 3.0, peso 0.5
@@ -121,7 +148,7 @@ function calculatePublicationScore(pub: any): number {
   }
 
   // 4. Factor Boost Negocios Activos con Follows Altos (peso 0.1)
-  if (pub.negocio && pub.negocio.estado === 'activo' && pub.visibilidad === 'PUBLICA') {
+  if (pub.negocio && pub.negocio.estado === EstadoNegocio.activo && pub.visibilidad === Visibilidad.PUBLICA) {
     const countFollows = pub.negocio.followsIn.length;
     const factorNegociosActivos = Math.min(1.0, 0.5 + (countFollows / 10) * 0.5); // 0.5 base + 0.5 por 10 follows
     score += factorNegociosActivos * 0.1;

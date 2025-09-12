@@ -1,7 +1,7 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useForm, Controller, useWatch } from "react-hook-form";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button, CircularProgress, IconButton, Tooltip } from "@mui/material";
@@ -58,20 +58,23 @@ const FormCrearCarruselImagenes = ({ infoPublicacion, onCancel, onSuccess }: Pro
 
     // Watch the descripcion and multimedia fields for dynamic updates
     const descripcion = useWatch({ control, name: "descripcion" });
-    const multimedia = useWatch({ control, name: "multimedia" });
+
+
+    const infoPublicacionJson = useMemo(() => JSON.stringify(infoPublicacion), [infoPublicacion]);
 
     useEffect(() => {
-        console.log('Form_Carrusel_imagenes mounted/updated, infoPublicacion:', infoPublicacion);
-        if (infoPublicacion) {
+        const parsedInfo = infoPublicacionJson ? JSON.parse(infoPublicacionJson) : undefined;
+        console.log('Form_Carrusel_imagenes mounted/updated, infoPublicacion:', parsedInfo);
+        if (parsedInfo) {
             reset({
-                descripcion: infoPublicacion.descripcion || "",
-                multimedia: infoPublicacion.multimedia,
-                visibilidad: infoPublicacion.visibilidad || Visibilidad.PUBLICA,
+                descripcion: parsedInfo.descripcion || "",
+                multimedia: parsedInfo.multimedia,
+                visibilidad: parsedInfo.visibilidad || Visibilidad.PUBLICA,
             });
         }
-    }, [JSON.stringify(infoPublicacion), reset]);
+    }, [infoPublicacionJson, reset]);
 
-    const onFormSubmit = useCallback(async (data: FormDataPublicacion) => {
+    const onFormSubmit = async (data: FormDataPublicacion) => {
         setLoading(true);
         try {
             if (!userId) {
@@ -99,7 +102,9 @@ const FormCrearCarruselImagenes = ({ infoPublicacion, onCancel, onSuccess }: Pro
         } finally {
             setLoading(false);
         }
-    }, [userId, infoPublicacion, reset, onSuccess]);
+    };
+
+    const debouncedSetValue = useMemo(() => debounce(setValue, 300), [setValue]);
 
     if (!session) {
         return (
@@ -119,7 +124,6 @@ const FormCrearCarruselImagenes = ({ infoPublicacion, onCancel, onSuccess }: Pro
 
     const multiple = true;
     const dataEntrada = infoPublicacion?.multimedia;
-    const debouncedSetValue = useCallback(debounce(setValue, 300), []);
 
     return (
         <motion.div

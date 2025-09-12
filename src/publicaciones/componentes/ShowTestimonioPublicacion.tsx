@@ -94,6 +94,16 @@ export const ShowTestimonioPublicacion = ({ publicacion, productos, isInModal = 
   const aspectRatio = useMediaDimensions(mediaUrl, mediaTipo);
   const timeAgo = formatDistanceToNow(new Date(publicacion.createdAt), { addSuffix: true, locale: es });
 
+  const handleOpenModal = useCallback(() => {
+    if (!isInModal) {
+      setIsModalOpenLocal(true);
+    }
+  }, [isInModal]);
+
+  const handleCloseModal = useCallback(() => {
+    setIsModalOpenLocal(false);
+  }, []);
+
   if (!publicacion.id || !/^c[0-9a-z]{24}$/.test(publicacion.id)) {
     return (
       <div className="w-full my-6 bg-white rounded-2xl shadow-lg p-4">
@@ -108,16 +118,6 @@ export const ShowTestimonioPublicacion = ({ publicacion, productos, isInModal = 
       </div>
     );
   }
-
-  const handleOpenModal = useCallback(() => {
-    if (!isInModal) {
-      setIsModalOpenLocal(true);
-    }
-  }, [isInModal]);
-
-  const handleCloseModal = useCallback(() => {
-    setIsModalOpenLocal(false);
-  }, []);
 
   return (
     <>

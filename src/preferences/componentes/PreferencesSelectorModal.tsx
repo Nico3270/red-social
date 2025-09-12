@@ -4,11 +4,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSession } from 'next-auth/react';
-import Image from 'next/image';
-import { Alert, Box, FormControl, FormLabel, Stack, Typography, Select, MenuItem, InputLabel, FormHelperText, Button, CircularProgress } from '@mui/material';
-import Divider from '@/ui/components/divider/Divider'; // Asume tu Divider
+import { Alert, Box, FormControl, Typography, Select, MenuItem, InputLabel,  Button, CircularProgress } from '@mui/material';
 import colombia from '@/config/colombia.json'; // Tu JSON de Colombia
-import { initialData } from '@/seed/seed'; // Tus categorías/secciones
 import { usePreferencesStore } from '@/store/preferences/preferences-store';
 import { updateUserPreferences } from '../actions/updateUserPreferences';
 
@@ -53,7 +50,7 @@ const PreferencesSelectorModal: React.FC<PreferencesSelectorModalProps> = ({ isO
     if (session?.user && !ciudad && !departamento) {
       // Asume fetch de DB aquí si necesitas, pero por simplicidad usamos store
     }
-  }, [session]);
+  }, [session, ciudad, departamento]);
 
   const handleSave = async () => {
     // if (!selectedCity || !selectedDepartamento || selectedCategorySlugs.size === 0) { // Comentado: ya no requerimos categorías

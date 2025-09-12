@@ -87,63 +87,60 @@ const Interactions: React.FC<InteractionsProps> = ({
   // REMOVIDO: SWR para summary (redundante ahora con props de EnhancedPublicacion)
   // En su lugar, effective values usan solo props + store (más simple y eficiente)
 
+  // Extraer expresiones complejas para dependencias estáticas
+  const updatedLikesForId = updatedLikes[publicacionId];
+  const updatedNumComentariosForId = updatedNumComentarios[publicacionId];
+  const updatedCompartidosForId = updatedCompartidos[publicacionId];
+  const updatedUserReactionForId = updatedUserReaction[publicacionId];
+  const updatedCommentsForId = updatedComments[publicacionId];
+
   // Effective values simplificados: Props + store override en modal (SIN SWR)
   const effectiveLikes = useMemo(
-    () => isInModal ? (updatedLikes[publicacionId] ?? localLikes) : localLikes,
-    [isInModal, updatedLikes[publicacionId], localLikes]
+    () => isInModal ? (updatedLikesForId ?? localLikes) : localLikes,
+    [isInModal, updatedLikesForId, localLikes]
   );
   const effectiveComentarios = useMemo(
-    () => isInModal ? (updatedNumComentarios[publicacionId] ?? localComentarios) : localComentarios,
-    [isInModal, updatedNumComentarios[publicacionId], localComentarios]
+    () => isInModal ? (updatedNumComentariosForId ?? localComentarios) : localComentarios,
+    [isInModal, updatedNumComentariosForId, localComentarios]
   );
   const effectiveCompartidos = useMemo(
-    () => isInModal ? (updatedCompartidos[publicacionId] ?? localCompartidos) : localCompartidos,
-    [isInModal, updatedCompartidos[publicacionId], localCompartidos]
+    () => isInModal ? (updatedCompartidosForId ?? localCompartidos) : localCompartidos,
+    [isInModal, updatedCompartidosForId, localCompartidos]
   );
   const effectiveReaction = useMemo(
-    () => isInModal ? (updatedUserReaction[publicacionId] ?? localReaction) : localReaction,
-    [isInModal, updatedUserReaction[publicacionId], localReaction]
+    () => isInModal ? (updatedUserReactionForId ?? localReaction) : localReaction,
+    [isInModal, updatedUserReactionForId, localReaction]
   );
 
   // SWRInfinite para comentarios en modal (MANTENIDO: Solo para paginación lazy)
-  type InfiniteData = CommentsPage[] | undefined;
-  type SetSizeFn = (size: number | ((prevSize: number) => number)) => Promise<InfiniteData>;
-  type MutateFn = () => Promise<InfiniteData>;
-  let commentsPages: InfiniteData = undefined;
-  let infiniteSize: number = 0;
-  let infiniteSetSize: SetSizeFn | (() => void) = () => {};
-  let infiniteIsLoadingComments: boolean = false;
-  let infiniteMutateComments: MutateFn | (() => Promise<void>) = async () => {};
-  if (isInModal) {
-    const getCommentsKey: SWRInfiniteKeyLoader = (pageIndex: number, previousPageData?: CommentsPage) => {
-      if (previousPageData && !previousPageData.comentarios?.length) return null;
-      return `/api/comentarios/${publicacionId}?skip=${pageIndex * 10}&take=10`;
-    };
-    const infiniteConfig = {
-      initialSize: 1,
-      revalidateOnFocus: false,
-      revalidateIfStale: false,
-    };
-    const infiniteHook = useSWRInfinite<CommentsPage>(getCommentsKey, fetcher, infiniteConfig);
-    commentsPages = infiniteHook.data;
-    infiniteSize = infiniteHook.size;
-    infiniteSetSize = infiniteHook.setSize;
-    infiniteIsLoadingComments = infiniteHook.isLoading;
-    infiniteMutateComments = infiniteHook.mutate;
-  }
+  const getCommentsKey: SWRInfiniteKeyLoader = (pageIndex: number, previousPageData?: CommentsPage) => {
+    if (!isInModal) return null;
+    if (previousPageData && !previousPageData.comentarios?.length) return null;
+    return `/api/comentarios/${publicacionId}?skip=${pageIndex * 10}&take=10`;
+  };
+  const infiniteConfig = {
+    initialSize: 1,
+    revalidateOnFocus: false,
+    revalidateIfStale: false,
+  };
+  const infiniteHook = useSWRInfinite<CommentsPage>(getCommentsKey, fetcher, infiniteConfig);
+  const commentsPages = infiniteHook.data;
+  const infiniteSetSize = infiniteHook.setSize;
+  const infiniteIsLoadingComments = infiniteHook.isLoading;
+  const infiniteMutateComments = infiniteHook.mutate;
 
   // Merge comments en modal (SIN CAMBIOS)
   useEffect(() => {
     if (isInModal && commentsPages) {
       const fetchedComments = commentsPages.flatMap((page) => page.comentarios || []);
-      const storeComments = updatedComments[publicacionId] || [];
+      const storeComments = updatedCommentsForId || [];
       const allComments = [...fetchedComments, ...storeComments, ...initialComments];
       const uniqueComments = Array.from(new Map(allComments.map((c) => [c.id, c])).values())
         .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
       setLocalComments(uniqueComments);
       setHasMore(commentsPages[commentsPages.length - 1]?.comentarios?.length === 10);
     }
-  }, [commentsPages, isInModal, updatedComments[publicacionId], publicacionId, initialComments]);
+  }, [commentsPages, isInModal, updatedCommentsForId, publicacionId, initialComments, updatedComments]);
 
   // Observer paginación en modal (SIN CAMBIOS)
   useEffect(() => {
@@ -197,8 +194,6 @@ const Interactions: React.FC<InteractionsProps> = ({
     publicacionId,
     slug,
     effectiveLikes,
-    effectiveComentarios,
-    effectiveCompartidos,
     effectiveReaction,
     isInModal,
     updateLikes,
@@ -318,21 +313,11 @@ const Interactions: React.FC<InteractionsProps> = ({
     publicacionId,
     slug,
     effectiveCompartidos,
-    effectiveLikes,
-    effectiveComentarios,
-    effectiveReaction,
     isInModal,
     updateCompartidos,
   ]);
 
   // Skeletons (SIN CAMBIOS)
-  const SummarySkeleton = () => (
-    <div className="flex items-center gap-2 animate-pulse">
-      <div className="h-6 w-16 bg-gray-200 rounded-full" />
-      <div className="h-6 w-16 bg-gray-200 rounded-full" />
-    </div>
-  );
-
   const CommentSkeleton = () => (
     <div className="flex gap-3 mb-1 animate-pulse">
       <div className="w-8 h-8 bg-gray-200 rounded-full" />
@@ -425,14 +410,14 @@ const Interactions: React.FC<InteractionsProps> = ({
             />
           </div>
           <input
-  type="text"
-  value={newComment}
-  onChange={(e) => setNewComment(e.target.value)}
-  onFocus={!isInModal ? onOpenModal : undefined}
-  placeholder="Escribe un comentario..."
-  className="flex-1 p-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
-  aria-label="Escribe un comentario"
-/>
+            type="text"
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+            onFocus={!isInModal ? onOpenModal : undefined}
+            placeholder="Escribe un comentario..."
+            className="flex-1 p-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
+            aria-label="Escribe un comentario"
+          />
           <motion.button
             type="submit"
             className="text-blue-500 hover:text-blue-600"

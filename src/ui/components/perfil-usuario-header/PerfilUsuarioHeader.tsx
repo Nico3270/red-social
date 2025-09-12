@@ -545,7 +545,7 @@ export default function PerfilUsuarioHeader({
               </h2>
 
               {loadingServicios ? (
-                <div className="animate-pulse space-y-4">  // Skeleton moderno: shimmer para perceived speed
+                <div className="animate-pulse space-y-4">  {/* Skeleton moderno: shimmer para perceived speed */}
                   {Array.from({ length: 3 }).map((_, i) => (
                     <div key={i} className="bg-gray-200 rounded-lg h-32 p-4 flex items-center">
                       <div className="flex-1 h-4 bg-gray-300 rounded w-3/4"></div>

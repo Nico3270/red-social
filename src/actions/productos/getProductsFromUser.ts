@@ -43,6 +43,11 @@ export async function getProductsByUser(id: string): Promise<GetProductsByUserRe
         categoryId: true,
         componentes: true,
         negocioId: true,
+        negocio: {
+          select: {
+            fotoPerfil: true,
+          },
+        },
         category: {
           select: {
             nombre: true,
@@ -93,7 +98,8 @@ export async function getProductsByUser(id: string): Promise<GetProductsByUserRe
       category: product.category,
       imagen: product.imagenes[0], // First image or undefined
       slug: product.slug,
-      status: product.status
+      status: product.status,
+      negocioFotoPerfil: product.negocio.fotoPerfil || "", // No es necesario para esta función
     }));
 
     return { ok: true, products: formattedProducts };

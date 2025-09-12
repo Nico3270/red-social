@@ -1,5 +1,5 @@
 // src/actions/feed/selects.ts
-import { Prisma, ProductStatus } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 
 // PRODUCT
 export const productSelect = Prisma.validator<Prisma.ProductSelect>()({

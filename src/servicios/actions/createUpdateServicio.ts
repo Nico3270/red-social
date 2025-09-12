@@ -123,6 +123,10 @@ export const createUpdateServicio = async (
         tipo: media.tipo === MultimediaTipo.VIDEO ? 'VIDEO' : 'IMAGEN',
       })),
       negocioId: servicio.negocioId,
+      negocioFotoPerfil: negocio.fotoPerfil || "",
+      negocioSlug: negocio.slug,
+      nombreNegocio: negocio.nombre,
+      telefonoNegocio: negocio.telefonoContacto || "",
     };
 
     return {

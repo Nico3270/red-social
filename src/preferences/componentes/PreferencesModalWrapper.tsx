@@ -17,7 +17,7 @@ const useHasHydrated = () => {
 };
 
 const PreferencesModalWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { ciudad, departamento, preferencias } = usePreferencesStore();
+  const { ciudad, departamento} = usePreferencesStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const hasHydrated = useHasHydrated();

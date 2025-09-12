@@ -53,6 +53,8 @@ export default async function ProductPage({ params }: Props) {
     telefonoContacto: producto.telefonoContacto || "",
     slugNegocio: producto.slugNegocio || "",
     nombreNegocio: producto.nombreNegocio || "",
+    negocioId: producto.negocioId,
+    negocioFotoPerfil: producto.negocioFotoPerfil || "",
   }));
 
 

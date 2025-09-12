@@ -113,6 +113,10 @@ const CrearServicio: React.FC<Props> = ({ servicio, onCancel, onSuccess }) => {
       multimedia: (data.multimedia || []).map((url, index) => ({ url, orden: index, tipo: url.endsWith('.mp4') || url.endsWith('.mov') ? 'VIDEO' : 'IMAGEN' })),
       negocioId,
       id: servicio?.id,
+      negocioSlug: "", // Rellenado en backend
+      nombreNegocio: "", // Rellenado en backend
+      telefonoNegocio: "", // Rellenado en backend
+      negocioFotoPerfil: "", // Rellenado en backend
     };
 
     console.log({ submissionData });
@@ -151,6 +155,11 @@ const CrearServicio: React.FC<Props> = ({ servicio, onCancel, onSuccess }) => {
     tags: tags,
     multimedia: (multimedia || []).map((url, index) => ({ url, orden: index, tipo: url.endsWith('.mp4') || url.endsWith('.mov') ? 'VIDEO' : 'IMAGEN' })),
     negocioId: negocioId || "preview",
+    negocioSlug: session?.user?.negocioSlug || "",
+    nombreNegocio: "",
+    telefonoNegocio:  "",
+    negocioFotoPerfil:  "",
+    id: servicio?.id,
   };
 
   if (!session) {

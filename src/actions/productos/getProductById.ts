@@ -37,6 +37,11 @@ export async function getProductById(id: string): Promise<GetProductById> {
         categoryId: true,
         componentes: true,
         negocioId: true,
+        negocio: {
+          select: {
+            fotoPerfil: true,
+          },
+        },
         imagenes: {
           select: {
             url: true,
@@ -78,6 +83,8 @@ export async function getProductById(id: string): Promise<GetProductById> {
       componentes: product.componentes,
       imagenes: product.imagenes.map((img)=>img.url),
       sections: product.secciones.map((s) => s.section.id),
+      negocioId: product.negocioId,
+      negocioFotoPerfil: product.negocio.fotoPerfil || "", // Este campo no está en la consulta original
     };
 
     return { ok: true, product: formattedProduct, userId: product.negocioId };

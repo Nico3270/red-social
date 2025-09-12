@@ -1,7 +1,23 @@
 // scripts/updateServiceScores.ts
-import { PrismaClient, ServicioStatus, FollowType } from "@prisma/client";
+import { Prisma, PrismaClient, ServicioStatus, FollowType } from "@prisma/client";
 
 const prisma = new PrismaClient();
+
+type ServicioWithRelations = Prisma.ServicioGetPayload<{
+  include: {
+    negocio: {
+      include: {
+        followsIn: true;
+        reservations: true;
+        orders: true;
+        Servicio: true;
+      };
+    };
+    multimedia: true;
+  };
+}>;
+
+type Servicio = Prisma.ServicioGetPayload<null>;
 
 async function main() {
   console.log("🌀 Iniciando recalculo batch de scores para servicios...");
@@ -11,7 +27,7 @@ async function main() {
   const globalAvgPrice = (avgRes._avg && avgRes._avg.precio) ? Number(avgRes._avg.precio) : null;
 
   // 1) Trae todos los servicios con las relaciones necesarias (negocio + multimedia)
-  const servicios = await prisma.servicio.findMany({
+  const servicios: ServicioWithRelations[] = await prisma.servicio.findMany({
     include: {
       negocio: {
         include: {
@@ -34,7 +50,7 @@ async function main() {
 
   console.log(`📊 Procesando ${servicios.length} servicios...`);
 
-  const updates: any[] = [];
+  const updates: Prisma.PrismaPromise<Servicio>[] = [];
 
   for (const svc of servicios) {
     const score = calculateServiceScore(svc, globalAvgPrice);
@@ -51,7 +67,7 @@ async function main() {
   await prisma.$disconnect();
 }
 
-function calculateServiceScore(svc: any, globalAvgPrice: number | null): number {
+function calculateServiceScore(svc: ServicioWithRelations, globalAvgPrice: number | null): number {
   let score = 6.0; // base neutral
   const now = Date.now();
   const daysSince = (now - new Date(svc.createdAt).getTime()) / (1000 * 60 * 60 * 24);
@@ -80,7 +96,7 @@ function calculateServiceScore(svc: any, globalAvgPrice: number | null): number 
   // Penalidad: 0 reservas en últimos 60 días (o última reserva >60d)
   let lastResDays = Infinity;
   if ((negocio.reservations ?? []).length > 0) {
-    const lastRes = (negocio.reservations as any[]).reduce((prev, cur) =>
+    const lastRes = (negocio.reservations).reduce((prev, cur) =>
       new Date(prev.createdAt) > new Date(cur.createdAt) ? prev : cur
     );
     lastResDays = (now - new Date(lastRes.createdAt).getTime()) / (1000 * 60 * 60 * 24);
@@ -107,7 +123,7 @@ function calculateServiceScore(svc: any, globalAvgPrice: number | null): number 
   // ------------------------
   // 4) Engagement social (peso 0.2 -> 0.1 follows + 0.1 multimedia/tags)
   // ------------------------
-  const followsCount = (negocio.followsIn ?? []).filter((f: any) => f.type === FollowType.USER_TO_BUSINESS).length;
+  const followsCount = (negocio.followsIn ?? []).filter((f) => f.type === FollowType.USER_TO_BUSINESS).length;
   let factorFollows = Math.min(1.0, 0.5 + (followsCount / 10) * 0.5);
 
   const multimediaCount = (svc.multimedia ?? []).length;

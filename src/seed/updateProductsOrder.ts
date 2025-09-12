@@ -1,14 +1,32 @@
 // scripts/updateProductScores.ts
-import { PrismaClient, ProductStatus, ProductEtiquetaEspecial } from "@prisma/client";
+import { Prisma, PrismaClient, ProductStatus, ProductEtiquetaEspecial } from "@prisma/client";
 
 const prisma = new PrismaClient();
+
+type ProductWithRelations = Prisma.ProductGetPayload<{
+  include: {
+    orderItems: true;
+    imagenes: true;
+    publicacionesRelacionadas: true;
+    negocio: {
+      include: {
+        Product: true;
+      };
+    };
+    category: {
+      include: {
+        productos: true;
+      };
+    };
+  };
+}>;
 
 async function main() {
   console.log("🌀 Iniciando recalculo batch de scores para productos...");
 
   try {
     // Paso 1: Query all products con includes necesarios
-    const productos = await prisma.product.findMany({
+    const productos: ProductWithRelations[] = await prisma.product.findMany({
       include: {
         orderItems: true, // Para contar ventas
         imagenes: true, // Para count media
@@ -63,7 +81,7 @@ async function main() {
 }
 
 // Función auxiliar para calcular score de productos
-function calculateProductScore(product: any): number {
+function calculateProductScore(product: ProductWithRelations): number {
   let score = 6.0; // Base neutral
 
   const now = Date.now();
@@ -74,7 +92,7 @@ function calculateProductScore(product: any): number {
   score += Math.min(3.0, factorRecencia) * 0.3;
 
   // 2. Factor Popularidad por Ventas (peso 0.4)
-  const ventas = product.orderItems.reduce((sum: number, oi: any) => sum + oi.quantity, 0);
+  const ventas = product.orderItems.reduce((sum: number, oi) => sum + oi.quantity, 0);
   let factorVentas = Math.log(1 + ventas) * 2.0;
   if (ventas < 10) factorVentas += Math.random() * 0.2; // Aleatoriedad ligera
   if (product.etiquetaEspecial === ProductEtiquetaEspecial.mas_vendido) factorVentas += 1.0;
@@ -95,7 +113,7 @@ function calculateProductScore(product: any): number {
   const countPubs = product.publicacionesRelacionadas.length;
   let factorMedia = Math.min(1.5, countImages * 0.5);
   if (countImages > 5) factorMedia += 0.3; // Bonus extra
-  let factorPubs = Math.min(1.5, countPubs * 1.0);
+  const factorPubs = Math.min(1.5, countPubs * 1.0);
   score += (factorMedia * 0.15) + (factorPubs * 0.15);
 
   // 5. Factor Relevancia Categórica (peso 0.1)

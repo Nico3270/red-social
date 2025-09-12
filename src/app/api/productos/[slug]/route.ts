@@ -63,6 +63,7 @@ export async function GET(
             nombre: true,
             slug: true,
             telefonoContacto: true,
+            fotoPerfil: true,
           },
         },
         imagenes: {
@@ -97,6 +98,8 @@ export async function GET(
       slugNegocio: product.negocio.slug,
       nombreNegocio: product.negocio.nombre,
       telefonoContacto: product.negocio.telefonoContacto || "",
+      negocioId: product.negocio.id,
+      negocioFotoPerfil: product.negocio.fotoPerfil || "",
     }));
 
     return NextResponse.json(

@@ -32,6 +32,8 @@ const SkeletonCard = React.memo(() => (
   </div>
 ));
 
+SkeletonCard.displayName = "SkeletonCard";
+
 // Objetos explícitos para breakpointCols (evita unions con undefined)
 const PRODUCTOS_NEGOCIOS_BREAKPOINTS = {
   default: 4,  // 4 columnas en >1400px para productos/negocios

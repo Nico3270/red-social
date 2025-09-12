@@ -1,10 +1,7 @@
-import { ProductStatus, Currency, ServicioStatus, EstadoNegocio } from "@prisma/client";
+import { ProductStatus, ServicioStatus, EstadoNegocio } from "@prisma/client";
 import { RawBusiness, RawData, RawProduct, RawPublication, RawService } from "./actions/selects";
 import { EnhancedPublicacion } from "@/publicaciones/interfaces/enhancedPublicacion.interface";
 import { ServicioData } from "@/servicios/interfaces/servicios.interface";
-
-
-
 
 export interface BusinessCardData {
   id: string;
@@ -23,7 +20,6 @@ export interface BusinessCardData {
   estado: EstadoNegocio; // Para filtrar solo 'activo' en feed
   createdAt: Date; // Para recency en sorting
 }
-
 
 
 // Interface para ProductCard
@@ -129,7 +125,8 @@ export function isBusinessItem(item: FeedItem): item is FeedItem & { data: Busin
 export function isRawProduct(raw: RawData): raw is RawProduct {
   return (
     'nombre' in raw &&                        // Productos usan "nombre"
-    Array.isArray((raw as any).imagenes)      // y tienen imágenes
+    'imagenes' in raw &&                      // Verifica existencia de la propiedad
+    Array.isArray(raw.imagenes)               // y tienen imágenes como array
   );
 }
 
@@ -143,7 +140,8 @@ export function isRawPublication(raw: RawData): raw is RawPublication {
 export function isRawService(raw: RawData): raw is RawService {
   return (
     'titulo' in raw &&                        // Servicios usan "titulo"
-    Array.isArray((raw as any).multimedia)    // y tienen multimedia
+    'multimedia' in raw &&                    // Verifica existencia de la propiedad
+    Array.isArray(raw.multimedia)             // y tienen multimedia como array
   );
 }
 
@@ -153,4 +151,3 @@ export function isRawBusiness(raw: RawData): raw is RawBusiness {
     'categorias' in raw
   );
 }
-

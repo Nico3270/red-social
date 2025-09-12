@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useEffect, useState, ReactNode } from "react";
+
+import React, { useState, useEffect, ReactNode } from "react";
 import { IoMdClose } from "react-icons/io";
 import { useRouter } from "next/navigation";
 import { Alert, Button } from "@mui/material";
@@ -20,12 +21,13 @@ class ErrorBoundary extends React.Component<{ children: ReactNode }, { hasError:
     this.state = { hasError: false };
   }
 
-  static getDerivedStateFromError(error: any) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  static getDerivedStateFromError(_: unknown) {
     return { hasError: true };
   }
 
-  componentDidCatch(error: any, errorInfo: any) {
-    console.error('Error en child render', error, errorInfo);
+  componentDidCatch(_error: unknown, _errorInfo: React.ErrorInfo) {
+    console.error('Error en child render', _error, _errorInfo);
   }
 
   render() {
