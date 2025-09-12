@@ -1,8 +1,0 @@
-{
-  "crons": [
-    {
-      "path": "/api/update-scores",
-      "schedule": "0 */4 * * *"
-    }
-  ]
-}
