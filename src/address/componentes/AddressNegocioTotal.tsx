@@ -170,26 +170,50 @@ const AddressNegocioTotal: React.FC = () => {
         );
       })}
       <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mt: 2, p: 2, bgcolor: "background.paper", borderRadius: 3 }}>
-        <Typography variant="h6" sx={{ fontWeight: 600 }}>
-          Total Global:
-        </Typography>
-        <Typography variant="h6" sx={{ fontWeight: 600 }}>
-          ${totalGlobal.toFixed(2)}
-        </Typography>
+        <Typography 
+  variant="h6" 
+  sx={{ fontWeight: 600, color: "text.primary" }}
+>
+  Total Global:
+</Typography>
+
+<Typography 
+  variant="h6" 
+  sx={{ fontWeight: 700, color: "grey.900" }} // más oscuro para el precio
+>
+  ${totalGlobal.toFixed(2)}
+</Typography>
       </Box>
-      <Button
+      <Box sx={{ display: "flex", justifyContent: "center" }}>
+<Button
         startIcon={<ArrowBack />}
         onClick={handleBackToCart}
         sx={{
-          mt: 2,
-          textTransform: "none",
-          fontWeight: 500,
-          color: "primary.main",
-          "&:hover": { bgcolor: "action.hover" },
-        }}
+      mt: 2,
+      px: 3,
+      py: 1.2,
+      textTransform: "none",
+      fontWeight: 600,
+      fontSize: "0.95rem",
+      borderRadius: 3,
+      bgcolor: "grey.900", // gris oscuro elegante
+      color: "#fff", // texto blanco
+      transition: "all 0.3s ease",
+      "&:hover": {
+        bgcolor: "grey.800", // un poco más claro en hover
+        boxShadow: "0 6px 16px rgba(0,0,0,0.25)", // sombra premium
+      },
+      "& .MuiButton-startIcon": {
+        mr: 1,
+        fontSize: "1.1rem",
+        color: "#fff",
+      },
+    }}
       >
         Volver al carrito
       </Button>
+      </Box>
+      
     </>
   );
 
@@ -383,7 +407,7 @@ const AddressNegocioTotal: React.FC = () => {
                     )}
                   />
                 </Grid>
-                <Grid item xs={12}>
+                <Grid item xs={12} sx={{ display: 'none' }}>
                   <Controller
                     name="deliveryDate"
                     control={control}
@@ -437,7 +461,7 @@ const AddressNegocioTotal: React.FC = () => {
                   />
                 </Grid>
               </Grid>
-              <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 4 }}>
+              <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
                 <Button
                   type="submit"
                   variant="contained"

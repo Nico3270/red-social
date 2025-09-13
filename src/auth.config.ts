@@ -88,6 +88,7 @@ export const authConfig: NextAuthConfig = {
         token.role = (user as { role: Role }).role;
         token.emailVerified = (user as { emailVerified?: Date | null }).emailVerified ?? null;
         token.ciudad = (user as { ciudad?: string }).ciudad ?? null;
+        token.fotoPerfil = user.image || "/imgs/usuario-sin-foto.png";
         
         // Nuevos campos
         token.negocioId = usuarioConNegocio?.negocio?.id ?? null;
@@ -106,6 +107,7 @@ export const authConfig: NextAuthConfig = {
         if (session?.negocioNombre) token.negocioNombre = session.negocioNombre;
         if (session?.configReservation !== undefined) token.configReservation = session.configReservation; // Permitir actualización
         if (session?.configEncuestas !== undefined) token.configEncuestas = session.configEncuestas; // Permitir actualización
+        if (session?.fotoPerfil) token.fotoPerfil = session.fotoPerfil;
       }
 
       return token;
@@ -125,6 +127,7 @@ export const authConfig: NextAuthConfig = {
         negocioNombre: token.negocioNombre as string | null,
         configReservation: token.configReservation as boolean, // Nuevo campo agregado
         configEncuestas: token.configEncuestas as boolean, // Nuevo campo agregado
+        fotoPerfil : token.fotoPerfil as string,
       };
       return session;
     },

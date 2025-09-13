@@ -15,6 +15,17 @@ interface BusinessCardProps {
   business: BusinessCardData;
 }
 
+
+const isValidUrl = (url?: string) => {
+  if (!url || url.trim() === "") return false;
+  try {
+    new URL(url);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 export const BusinessCard: React.FC<BusinessCardProps> = ({ business }) => {
   const [displayImage, setDisplayImage] = useState(business.imagenPortada || business.imagenPerfil || "/placeholder-business.jpg");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -112,9 +123,9 @@ export const BusinessCard: React.FC<BusinessCardProps> = ({ business }) => {
                 )}
 
                 {/* Botón de Google Maps (si disponible) */}
-                {business.urlGoogleMaps && (
+                {business.urlGoogleMaps?.trim() !== "" && (
                   <Link
-                    href={business.urlGoogleMaps}
+                    href={business.urlGoogleMaps || "#"}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="bg-gradient-to-r from-rose-500 to-rose-600 p-2 rounded-full hover:from-rose-600 hover:to-rose-700 flex items-center justify-center transition-all duration-300"
@@ -211,14 +222,14 @@ export const BusinessCard: React.FC<BusinessCardProps> = ({ business }) => {
                         <BsWhatsapp className="text-white text-2xl" />
                       </Link>
                     )}
-                    {business.urlGoogleMaps && (
+                    {isValidUrl(business.urlGoogleMaps) && (
                       <Link
-                        href={business.urlGoogleMaps}
+                        href={business.urlGoogleMaps || "#"}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="bg-gradient-to-r from-rose-500 to-rose-600 p-3 rounded-full hover:from-rose-600 hover:to-rose-700 flex items-center justify-center transition-all duration-300"
+                        className="bg-gradient-to-r from-rose-500 to-rose-600 p-2 rounded-full hover:from-rose-600 hover:to-rose-700 flex items-center justify-center transition-all duration-300"
                       >
-                        <SiGooglemaps className="text-white text-2xl" />
+                        <SiGooglemaps className="text-white text-xl" />
                       </Link>
                     )}
                   </div>

@@ -49,7 +49,7 @@ const LayoutDashboardComponent: React.FC<LayoutDashboardComponentProps> = ({ chi
           height: "100%",
           transition: "width 0.3s ease-in-out",
           bgcolor: "grey.800",
-          zIndex: 10,
+          zIndex: 11, // Increased zIndex to stack above the overlay
           width: isSidebarOpen ? { xs: "80%", sm: "200px" } : "4rem",
           display: isMobile && !isSidebarOpen ? "none" : "block",
         }}

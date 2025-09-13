@@ -88,7 +88,14 @@ export const ResenasProducto: React.FC<ResenasProductoProps> = ({ resenas }) => 
                                     {hasMedia ? (
                                         <div className="w-full h-full sm:h-80 overflow-hidden rounded-md">
                                             {isImage ? (
-                                                <Image src={resena.mediaUrl || ""} alt="Reseña" className="w-full h-full object-cover" />
+                                                <div className="relative w-full h-80">
+  <Image
+    src={resena.mediaUrl || "/imgs/placeholder.png"}
+    alt="Reseña"
+    fill
+    className="object-cover rounded-md"
+  />
+</div>
                                             ) : isVideo ? (
                                                 <video
                                                     ref={(el) => {
@@ -157,11 +164,14 @@ export const ResenasProducto: React.FC<ResenasProductoProps> = ({ resenas }) => 
                             {selectedResena.mediaUrl && (
                                 <div className="mb-4">
                                     {selectedResena.mediaTipo === MultimediaTipo.IMAGEN ? (
-                                        <Image
-                                            src={selectedResena.mediaUrl}
-                                            alt="Reseña completa"
-                                            className="w-full max-h-[400px] md:max-h-[500px] object-contain rounded-md mx-auto"
-                                        />
+                                        <div className="relative w-full max-h-[400px] md:max-h-[500px] mx-auto">
+  <Image
+    src={selectedResena.mediaUrl}
+    alt="Reseña completa"
+    fill
+    className="object-contain rounded-md"
+  />
+</div>
 
                                     ) : (
                                         <video

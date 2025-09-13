@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useMemo, useRef, useEffect, memo } from "react";
+import React, { useState, useMemo, useRef, useEffect, useCallback, memo } from "react";
 import { motion } from "framer-motion";
+import Masonry from 'react-masonry-css';  // Para masonry estable y responsive
 import Image from "next/image";
 import Link from "next/link";
 import { FaFilter, FaStar } from "react-icons/fa";
@@ -22,7 +23,7 @@ interface ProductDestacado {
 }
 
 interface FeedPublicacionesProps {
-  publicaciones: EnhancedPublicacion[];  // Confirmado: Array completo para flujo a subcomponentes
+  publicaciones: EnhancedPublicacion[];
   productosDestacados?: ProductDestacado[];
   widgets?: { id: string; titulo: string; contenido?: string }[];
 }
@@ -40,7 +41,7 @@ const WidgetCard: React.FC<{ titulo: string; contenido?: string }> = ({
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ duration: 0.3 }}
-    className="w-full bg-white rounded-2xl shadow-md overflow-hidden p-4 mb-6"
+    className="w-full bg-white rounded-2xl shadow-md overflow-hidden p-4"
   >
     <h3 className="text-lg font-semibold text-gray-900 mb-2">{titulo}</h3>
     <p className="text-gray-600 text-sm">
@@ -50,7 +51,7 @@ const WidgetCard: React.FC<{ titulo: string; contenido?: string }> = ({
 );
 
 const ProductosDestacados: React.FC<{ productos: ProductDestacado[] }> = ({ productos }) => (
-  <div className="w-full bg-white rounded-2xl shadow-md p-4 mb-6">
+  <div className="w-full bg-white rounded-2xl shadow-md p-4">
     <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
       <FaStar className="text-yellow-500" />
       Productos Destacados
@@ -82,9 +83,9 @@ const ProductosDestacados: React.FC<{ productos: ProductDestacado[] }> = ({ prod
   </div>
 );
 
-// Función para reordenar en columnas (mejora: type guard para items)
+// Función para reordenar en columnas
 function reorderForColumns<T extends EnhancedPublicacion>(items: T[], cols: number): T[] {
-  if (cols <= 1 || !items.length) return items;  // Type guard: evita errores en empty array
+  if (cols <= 1 || !items.length) return items;
   const out: T[] = [];
   for (let c = 0; c < cols; c++) {
     for (let i = c; i < items.length; i += cols) out.push(items[i]);
@@ -93,18 +94,42 @@ function reorderForColumns<T extends EnhancedPublicacion>(items: T[], cols: numb
 }
 
 const FeedPublicaciones = memo(function FeedPublicaciones({
-  publicaciones: initialPublicaciones = [],  // Fallback a [] para robustez SSR
+  publicaciones: initialPublicaciones = [],
   productosDestacados = [],
   widgets = [],
 }: FeedPublicacionesProps) {
-  const [filtro, setFiltro] = useState<"Recientes" | "Videos" | "Carruseles" | "Populares">("Recientes");  // Agregado "Populares" para engagement
+  const [filtro, setFiltro] = useState<"Recientes" | "Videos" | "Carruseles" | "Populares">("Recientes");
   const [dynamicPublicaciones, setDynamicPublicaciones] = useState<EnhancedPublicacion[]>([]);
   const observerRef = useRef<HTMLDivElement>(null);
   const hasReachedEndRef = useRef(false);
   const [hasReachedEndLocal, setHasReachedEndLocal] = useState(false);
   const observer = useRef<IntersectionObserver | null>(null);
+  const masonryWrapperRef = useRef<HTMLDivElement | null>(null);
+  const resizeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [isLayoutReady, setIsLayoutReady] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
-  // Log inicial para verificar initialPublicaciones (mejora: solo en dev)
+  useEffect(() => setMounted(true), []);
+
+  // Force relayout (adaptado de FeedRenderer)
+  const forceRelayout = useCallback((delay = 0) => {
+    if (resizeTimeoutRef.current) clearTimeout(resizeTimeoutRef.current);
+    
+    resizeTimeoutRef.current = setTimeout(() => {
+      window.dispatchEvent(new Event("resize"));
+      
+      if (masonryWrapperRef.current) {
+        const wrapper = masonryWrapperRef.current;
+        const currentDisplay = wrapper.style.display;
+        wrapper.style.display = 'none';
+        void wrapper.offsetHeight; // Forzar reflow
+        wrapper.style.display = currentDisplay || '';
+      }
+      
+      setTimeout(() => window.dispatchEvent(new Event("resize")), 100);
+    }, delay);
+  }, []);
+
   useEffect(() => {
     if (process.env.NODE_ENV === "development") {
       console.log(
@@ -144,7 +169,7 @@ const FeedPublicaciones = memo(function FeedPublicaciones({
     }
     const data = await res.json();
     console.log("Fetched data:", data);
-    return data;
+    return data as PublicacionesResult;
   };
 
   const { data, size, setSize, isLoading, isValidating, error } = useSWRInfinite<PublicacionesResult>(
@@ -162,10 +187,9 @@ const FeedPublicaciones = memo(function FeedPublicaciones({
     }
   );
 
-  // Almacenar publicaciones dinámicas en el estado local (mejora: type guard para data)
   useEffect(() => {
-    if (data && Array.isArray(data)) {  // Type guard: evita flatMap en undefined
-      const newDynamicPublicaciones = data.flatMap((page) => page.publicaciones || []);
+    if (data && Array.isArray(data)) {
+      const newDynamicPublicaciones = data.flatMap((page) => page?.publicaciones || []);
       if (process.env.NODE_ENV === "development") {
         console.log("Updating dynamic publicaciones:", newDynamicPublicaciones.length);
         console.log(
@@ -176,7 +200,7 @@ const FeedPublicaciones = memo(function FeedPublicaciones({
       setDynamicPublicaciones((prev) => {
         const publicationMap = new Map<string, EnhancedPublicacion>();
         prev.forEach((pub) => publicationMap.set(pub.id, pub));
-        newDynamicPublicaciones.forEach((pub) => publicationMap.set(pub.id, pub));  // Merge unique por ID, preservando userReaction
+        newDynamicPublicaciones.forEach((pub) => publicationMap.set(pub.id, pub));
         const updated = Array.from(publicationMap.values());
         if (process.env.NODE_ENV === "development") {
           console.log(
@@ -193,27 +217,27 @@ const FeedPublicaciones = memo(function FeedPublicaciones({
     const publicationMap = new Map<string, EnhancedPublicacion>();
     initialPublicaciones.forEach((pub) => publicationMap.set(pub.id, pub));
     dynamicPublicaciones.forEach((pub) => publicationMap.set(pub.id, pub));
-    return Array.from(publicationMap.values());  // Flujo intacto: Array completo de EnhancedPublicacion
+    return Array.from(publicationMap.values());
   }, [initialPublicaciones, dynamicPublicaciones]);
 
-  const publicacionesFiltradas = useMemo(() => {
-    let filtered = [...publicaciones];
+  const publicacionesFiltradas = useMemo((): EnhancedPublicacion[] => {  // Tipo explícito para evitar void
+    let filtered: EnhancedPublicacion[] = [...publicaciones];
     switch (filtro) {
       case "Videos":
         filtered = filtered.filter((pub) =>
           pub.multimedia.some((media: Media) => media.tipo === "VIDEO")
         );
-        break;
+        return filtered;
       case "Carruseles":
         filtered = filtered.filter((pub) => pub.tipo === "CARRUSEL_IMAGENES");
-        break;
-      case "Populares":  // Nuevo filtro: Sort por engagement (numLikes + numComentarios)
+        return filtered;
+      case "Populares":
         filtered.sort((a, b) => ((b.numLikes || 0) + (b.numComentarios || 0)) - ((a.numLikes || 0) + (a.numComentarios || 0)));
-        break;
-      default:  // "Recientes"
+        return filtered;
+      default:
         filtered.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        return filtered;
     }
-    return filtered;
   }, [filtro, publicaciones]);
 
   const [cols, setCols] = useState(3);
@@ -221,7 +245,7 @@ const FeedPublicaciones = memo(function FeedPublicaciones({
   useEffect(() => {
     const update = () => {
       const w = window.innerWidth;
-      setCols(w <= 768 ? 1 : w <= 1100 ? 2 : 3);  // Responsive masonry: 1 col mobile, 3 desktop
+      setCols(w <= 768 ? 1 : w <= 1100 ? 2 : 3);
     };
     update();
     window.addEventListener("resize", update);
@@ -242,7 +266,6 @@ const FeedPublicaciones = memo(function FeedPublicaciones({
     [noFijadas, cols]
   );
 
-  // Cleanup observer (mejora: previene leaks en unmount para performance en SPA)
   useEffect(() => {
     return () => {
       if (observer.current) {
@@ -281,14 +304,28 @@ const FeedPublicaciones = memo(function FeedPublicaciones({
     };
   }, [isLoading, isValidating, setSize, size]);
 
-  const renderPublicacion = (publicacion: EnhancedPublicacion) => {
-    // Type guard para tipo válido (mejora: TS strict, fallback a ShowTestimonio si tipo inválido)
+  const renderPublicacion = (publicacion: EnhancedPublicacion, index: number) => {  // Tipos explícitos
     const Component = componentMap[publicacion.tipo as keyof typeof componentMap] || ShowTestimonioPublicacion;
-    return <Component key={publicacion.id} publicacion={publicacion} />;  // Flujo intacto: publicacion completa para Interactions (numLikes, userReaction, etc.)
+    return (
+      <motion.div
+        key={publicacion.id}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: index * 0.05, ease: "easeOut" }}
+        className="mb-3 rounded-xl bg-white shadow-sm hover:shadow-md transition-shadow duration-200"
+        onAnimationComplete={() => {
+          if (index === Math.min(4, reorderedNoFijadas.length - 1)) {
+            forceRelayout(100);
+          }
+        }}
+      >
+        <Component publicacion={publicacion} />
+      </motion.div>
+    );
   };
 
   const Loader = () => (
-    <motion.div  // Mejora: Animación con motion para elegancia
+    <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className="flex justify-center items-center h-24"
@@ -311,12 +348,85 @@ const FeedPublicaciones = memo(function FeedPublicaciones({
     }
   `;
 
+  // Relayout en cambios (filtro/mount)
+  useEffect(() => {
+    if (!mounted) return;
+    
+    const handleChange = async () => {
+      setIsLayoutReady(false);
+      await new Promise(resolve => setTimeout(resolve, 100));
+      forceRelayout(0);
+      await new Promise(resolve => setTimeout(resolve, 300));
+      setIsLayoutReady(true);
+      forceRelayout(100);
+    };
+    
+    handleChange();
+  }, [filtro, mounted, forceRelayout]);
+
+  // Image load handling
+  useEffect(() => {
+    if (!masonryWrapperRef.current || !isLayoutReady) return;
+    
+    let loaded = 0;
+    const imgs = Array.from(masonryWrapperRef.current.querySelectorAll("img"));
+    
+    if (imgs.length === 0) {
+      forceRelayout(100);
+      return;
+    }
+    
+    const checkAllLoaded = () => {
+      loaded += 1;
+      if (loaded >= imgs.length) {
+        forceRelayout(50);
+        setTimeout(() => {
+          const newImgs = Array.from(masonryWrapperRef.current?.querySelectorAll("img") || []);
+          if (newImgs.every(img => img.complete)) {
+            forceRelayout(0);
+          }
+        }, 200);
+      }
+    };
+    
+    imgs.forEach((img) => {
+      if (img.complete) checkAllLoaded();
+      else {
+        img.addEventListener("load", checkAllLoaded);
+        img.addEventListener("error", checkAllLoaded);
+      }
+    });
+    
+    return () => {
+      imgs.forEach((img) => {
+        img.removeEventListener("load", checkAllLoaded);
+        img.removeEventListener("error", checkAllLoaded);
+      });
+    };
+  }, [publicacionesFiltradas, isLayoutReady, forceRelayout]);
+
+  useEffect(() => {
+    return () => {
+      if (resizeTimeoutRef.current) clearTimeout(resizeTimeoutRef.current);
+    };
+  }, []);
+
+  // Breakpoints responsive
+  const breakpointCols = {
+    default: 3,
+    1100: 2,
+    768: 1,
+  };
+
+  // Hash para key en Masonry
+  const itemsHash = useMemo(() => publicacionesFiltradas.map(pub => pub.id).join(','), [publicacionesFiltradas]);
+
   return (
     <div className="w-full px-4 sm:px-6 lg:px-8 py-6 min-h-screen overflow-y-auto">
       <style>{styles}</style>
       <div className="flex justify-between items-center mb-6">
         <div className="flex gap-2 flex-wrap">
-          {["Recientes", "Populares", "Videos", "Carruseles"].map((f) => (  // Agregado "Populares" al filtro
+          {["Recientes", "Populares", "Videos", "Carruseles"].map((f) => (
             <button
               key={f}
               onClick={() => setFiltro(f as typeof filtro)}
@@ -335,45 +445,60 @@ const FeedPublicaciones = memo(function FeedPublicaciones({
         <FaFilter className="text-gray-500 text-lg" aria-hidden="true" />
       </div>
 
-      <div className="flex-1 masonry-container">  {/* Masonry responsive ya con cols */}
-        {fijadas.map((pub) => (
-          <motion.div
-            key={pub.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-            className="w-full bg-yellow-50 border-2 border-yellow-400 rounded-2xl shadow-md overflow-hidden mb-6"
+      <div ref={masonryWrapperRef} className="flex-1">
+        {!mounted ? (
+          <div className="text-center py-4 text-gray-400">Cargando…</div>
+        ) : publicacionesFiltradas.length === 0 && !isLoading && !isValidating ? (
+          <div className="text-center py-4 text-gray-500 font-light">
+            No hay publicaciones disponibles.
+          </div>
+        ) : (
+          <Masonry
+            key={`masonry-${filtro}-${itemsHash}-${isLayoutReady ? 'ready' : 'loading'}`}
+            breakpointCols={breakpointCols}
+            className="masonry-container flex w-auto -ml-0 lg:-ml-2"
+            columnClassName="masonry-column pl-0 md:px-2 bg-clip-padding"
           >
-            <div className="p-2 text-sm font-medium text-yellow-700">
-              Publicación Fijada
-            </div>
-            {renderPublicacion(pub)}
-          </motion.div>
-        ))}
+            {fijadas.map((pub, index) => (
+              <motion.div
+                key={pub.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: index * 0.05 }}
+                className="bg-yellow-50 border-2 border-yellow-400 rounded-2xl shadow-md overflow-hidden"
+              >
+                <div className="p-2 text-sm font-medium text-yellow-700">
+                  Publicación Fijada
+                </div>
+                {renderPublicacion(pub, index)}
+              </motion.div>
+            ))}
 
-        {reorderedNoFijadas.map((pub) => renderPublicacion(pub))}
+            {reorderedNoFijadas.map((pub, index) => renderPublicacion(pub, index + fijadas.length))}
 
-        {widgets.map((widget) => (
-          <WidgetCard
-            key={widget.id}
-            titulo={widget.titulo}
-            contenido={widget.contenido}
-          />
-        ))}
+            {widgets.map((widget) => (
+              <WidgetCard
+                key={widget.id}
+                titulo={widget.titulo}
+                contenido={widget.contenido}
+              />
+            ))}
 
-        {productosDestacados.length > 0 && (
-          <ProductosDestacados productos={productosDestacados} />
+            {productosDestacados.length > 0 && (
+              <ProductosDestacados productos={productosDestacados} />
+            )}
+          </Masonry>
         )}
+      </div>
 
-        <div ref={observerRef} className="mt-4">
-          {(isLoading || isValidating) && <Loader />}
-          {hasReachedEndLocal && (
-            <p className="text-center text-gray-600 py-8">No hay más publicaciones que mostrar.</p>
-          )}
-          {error && (
-            <p className="text-center text-red-600 py-8">Error al cargar publicaciones: {error.message}</p>
-          )}
-        </div>
+      <div ref={observerRef} className="mt-4">
+        {(isLoading || isValidating) && <Loader />}
+        {hasReachedEndLocal && (
+          <p className="text-center text-gray-600 py-8">No hay más publicaciones que mostrar.</p>
+        )}
+        {error && (
+          <p className="text-center text-red-600 py-8">Error al cargar publicaciones: {error?.message ?? 'Desconocido'}</p>
+        )}
       </div>
     </div>
   );

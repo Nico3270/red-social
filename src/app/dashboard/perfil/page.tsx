@@ -1,5 +1,5 @@
 import { auth } from "@/auth.config";
-import FeedComponent from "@/feed/componentes/FeedComponent";
+
 
 
 export default async function PerfilPage() {
@@ -13,8 +13,6 @@ export default async function PerfilPage() {
     return (
         <div className="mt-0  flex sm:flex-col items-center justify-center">
             <pre>{JSON.stringify(session.user, null, 2)}</pre>     
-            <FeedComponent />
-
         </div>
     );
 }

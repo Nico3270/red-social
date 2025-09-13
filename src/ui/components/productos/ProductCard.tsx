@@ -109,7 +109,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         />
 
         {/* Botón de favoritos premium */}
-        <div className="z-20">
+        <div className="ml-2 z-20">
           <AddFavorites
             id={product.id}
             title={product.nombre}
@@ -176,17 +176,17 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                 href={`https://wa.me/57${product.telefonoContacto}?text=${whatsappMessage}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="bg-gradient-to-r from-green-500 to-green-600 p-2 rounded-full hover:from-green-600 hover:to-green-700 flex items-center justify-center transition-all duration-300"
+                className="bg-gradient-to-r from-green-500 to-green-600 p-3 rounded-full hover:from-green-600 hover:to-green-700 flex items-center justify-center transition-all duration-300"
               >
-                <BsWhatsapp className="text-white text-xl" />
+                <BsWhatsapp className="text-white text-2xl" />
               </Link>
 
               {/* Botón de Carrito */}
               <button
                 onClick={() => setIsModalOpen(true)}
-                className="bg-gradient-to-r from-blue-500 to-blue-600 p-2 rounded-full hover:from-blue-600 hover:to-blue-700 flex items-center justify-center transition-all duration-300"
+                className="bg-gradient-to-r from-blue-500 to-blue-600 p-3 rounded-full hover:from-blue-600 hover:to-blue-700 flex items-center justify-center transition-all duration-300"
               >
-                <FaShoppingCart className="text-white text-xl" />
+                <FaShoppingCart className="text-white text-2xl" />
               </button>
             </div>
           </div>

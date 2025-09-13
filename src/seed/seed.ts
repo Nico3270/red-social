@@ -27,7 +27,7 @@ export const initialData: SeedData = {
     { id: '2', nombre: 'Comida', iconName: 'comidas.png', slug: 'comida', isActive: true },
     { id: '11', nombre: 'Bebidas', iconName: 'drinks.png', slug: 'bebidas', isActive: true },
     { id: '1', nombre: 'Moda y Accesorios', iconName: 'moda.png', slug: 'moda', isActive: true },
-    { id: '3', nombre: 'Tecnología', iconName: 'tecnología.png', slug: 'tecnologia', isActive: true },
+    { id: '3', nombre: 'Tecnología', iconName: 'tecnologia.png', slug: 'tecnologia', isActive: true },
     { id: '4', nombre: 'Hogar y Decoración', iconName: 'hogar.png', slug: 'hogar', isActive: true },
     { id: '5', nombre: 'Belleza y Cuidado', iconName: 'belleza.png', slug: 'belleza', isActive: true },
     { id: '6', nombre: 'Salud y Bienestar', iconName: 'salud.png', slug: 'salud', isActive: true },

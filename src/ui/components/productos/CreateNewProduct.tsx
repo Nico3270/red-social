@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useState,} from "react";
+import React, { useCallback, useState, } from "react";
 import { useForm, Controller } from "react-hook-form";
 
 import {
@@ -291,6 +291,9 @@ export default function CreateNewProduct() {
 
                 <FormControl fullWidth margin="normal">
                     <FormLabel sx={{ mb: 1, color: 'info.main', fontWeight: "bold" }}>Categoría</FormLabel>
+                    <Typography variant="body2" sx={{ color: "text.secondary", fontWeight: 400, mb: 2 }}>
+                        Selecciona la categoría que mejor se relacione con tu producto.
+                    </Typography>
                     <Controller
                         name="categoriaId"
                         control={control}
@@ -348,6 +351,9 @@ export default function CreateNewProduct() {
 
                 <FormControl fullWidth margin="normal">
                     <FormLabel sx={{ mb: 1, color: 'info.main', fontWeight: "bold" }}>Secciones</FormLabel>
+                    <Typography variant="body2" sx={{ color: "text.secondary", fontWeight: 400, mb: 2 }}>
+                        Selecciona una o mas secciones asociadas a tu producto.
+                    </Typography>
                     {selectedCategorySlug === "" ? (
                         <Typography color="textSecondary">
                             Selecciona una categoría para ver las secciones disponibles.
@@ -399,17 +405,27 @@ export default function CreateNewProduct() {
 
                 <Divider />
 
-                <FormControl>
-                    <FormLabel sx={{ mb: 1, color: 'info.main', fontWeight: "bold", }}>Imagenes del producto</FormLabel>
+                <FormControl
+                    fullWidth
+                    sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center", // centra horizontal
+                        textAlign: "center",
+                    }}
+                >
+                    <FormLabel sx={{ mb: 1, color: 'info.main', fontWeight: "bold" }}>
+                        Imágenes del producto
+                    </FormLabel>
                     <AutoUploadMedia
-
                         multiple={multiple}
-                        onChange={handleMediaChange} // Usamos la versión memoizada
+                        onChange={handleMediaChange}
                         onError={(message) => setAlert({ type: "error", message })}
                         onLoading={setLoading}
                         mediaType="image"
                     />
                 </FormControl>
+
 
 
                 <Divider />

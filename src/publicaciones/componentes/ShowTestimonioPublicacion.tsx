@@ -13,6 +13,7 @@ import { motion } from "framer-motion";
 import { FollowButton } from "@/feed/componentes/FollowButton";
 import { EnhancedPublicacion } from "../interfaces/enhancedPublicacion.interface";
 
+
 interface Productos {
   id: string;
   nombre: string;
@@ -26,6 +27,8 @@ interface ShowTestimonioPublicacionProps {
   productos?: Productos[];
   isInModal?: boolean;
 }
+
+
 
 // Hook personalizado para obtener dimensiones de medios (optimizado con fallback responsive)
 const useMediaDimensions = (url: string, tipo: "IMAGEN" | "VIDEO" | undefined) => {
@@ -93,6 +96,8 @@ export const ShowTestimonioPublicacion = ({ publicacion, productos, isInModal = 
   const mediaTipo = media?.tipo;
   const aspectRatio = useMediaDimensions(mediaUrl, mediaTipo);
   const timeAgo = formatDistanceToNow(new Date(publicacion.createdAt), { addSuffix: true, locale: es });
+
+  
 
   const handleOpenModal = useCallback(() => {
     if (!isInModal) {
@@ -193,7 +198,7 @@ export const ShowTestimonioPublicacion = ({ publicacion, productos, isInModal = 
               className="w-full h-full object-contain rounded-b-xl" // Contain para no distorsionar
               controls
               preload="metadata"
-              poster="/placeholder-video-poster.jpg" // Opcional para thumbnail
+              
             />
           ) : (
             <Image

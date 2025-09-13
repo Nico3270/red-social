@@ -140,12 +140,13 @@ const RespuestaEncuestaNegocio: React.FC<RespuestaEncuestaNegocioProps> = ({ pre
                             </p>
 
                             <textarea
-                                className="w-full p-3 border border-gray-200 rounded-lg resize-none focus:outline-none focus:border-gray-400"
+                                className="w-full p-3 border border-gray-200 rounded-lg resize-none focus:outline-none focus:border-gray-400 text-gray-800 placeholder-gray-400"
                                 rows={3}
                                 value={respuestas[pregunta.id] as string || ""}
                                 onChange={(e) => handleTexto(pregunta.id, e.target.value)}
                                 style={{ minHeight: "80px", overflow: "hidden" }} // Autosize básico con CSS
                             />
+
                         </div>
                     ))}
                 </div>

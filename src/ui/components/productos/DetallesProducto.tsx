@@ -194,7 +194,7 @@ export const DetallesProducto: React.FC<AddToCartProps> = ({ product, telefonoNe
       {/* Nuevo botón para dejar reseña */}
       <div className="w-full flex justify-center mt-0">
         <button
-          onClick={() => setIsReviewModalOpen(true)}
+          // onClick={() => setIsReviewModalOpen(true)}
           className="flex items-center justify-center gap-2 bg-[#274494] hover:bg-[#2c5282] text-white font-semibold py-3 px-6 rounded-lg shadow-md transition-all"
           aria-label="Deja una reseña de este producto"
         >

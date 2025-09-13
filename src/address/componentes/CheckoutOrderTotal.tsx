@@ -160,12 +160,19 @@ const CheckoutOrderTotal: React.FC = () => {
         );
       })}
       <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mt: 2, p: 2, bgcolor: "background.paper", borderRadius: 3 }}>
-        <Typography variant="h6" sx={{ fontWeight: 600 }}>
-          Total Global:
-        </Typography>
-        <Typography variant="h6" sx={{ fontWeight: 600 }}>
-          ${totalGlobal.toFixed(2)}
-        </Typography>
+        <Typography 
+  variant="h6" 
+  sx={{ fontWeight: 600, color: "text.primary" }}
+>
+  Total Global:
+</Typography>
+
+<Typography 
+  variant="h6" 
+  sx={{ fontWeight: 700, color: "grey.900" }}
+>
+  ${totalGlobal.toFixed(2)}
+</Typography>
       </Box>
     </>
   );
@@ -237,7 +244,7 @@ const CheckoutOrderTotal: React.FC = () => {
           </Grid>
         </Grid>
 
-        <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 4 }}>
+        <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
           <Button
             variant="contained"
             size="large"
@@ -260,65 +267,87 @@ const CheckoutOrderTotal: React.FC = () => {
 
         {/* Modal con AnimatePresence */}
         <AnimatePresence>
-          {modalOpen && (
-            <Modal
-              open={modalOpen}
-              onClose={() => setModalOpen(false)}
-              closeAfterTransition
-              slots={{ backdrop: Backdrop }}
-              slotProps={{
-                backdrop: {
-                  timeout: 500,
-                  TransitionComponent: MuiFade, // si quieres efecto Fade en el backdrop
+  {modalOpen && (
+    <Modal
+      open={modalOpen}
+      onClose={() => setModalOpen(false)}
+      closeAfterTransition
+      slots={{ backdrop: Backdrop }}
+      slotProps={{
+        backdrop: {
+          timeout: 500,
+          TransitionComponent: MuiFade,
+          sx: {
+            backgroundColor: "transparent"
+          },
+        },
+      }}
+    >
+      {/* Contenedor centrador */}
+      <Box
+        sx={{
+          height: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          p: 2,
+        }}
+      >
+        <MotionBox
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.95 }}
+          transition={{ duration: 0.3 }}
+          sx={{
+            bgcolor: "white",
+            border: `2px solid ${isSuccess ? "success.main" : "error.main"}`,
+            borderRadius: 3,
+            boxShadow: 24,
+            p: { xs: 2, sm: 4 },
+            textAlign: "center",
+            width: { xs: "100%", sm: "400px" },
+            maxHeight: "90vh",
+            overflowY: "auto",
+          }}
+        >
+          {isSubmitting ? (
+            <CircularProgress sx={{ mb: 2 }} />
+          ) : isSuccess ? (
+            <CheckCircleOutline sx={{ fontSize: 60, color: "success.main", mb: 2 }} />
+          ) : (
+            <ErrorOutline sx={{ fontSize: 60, color: "error.main", mb: 2 }} />
+          )}
+
+          <Typography
+            variant="h6"
+            sx={{ mb: 2, fontWeight: 600, color: "grey.900" }}
+          >
+            {modalMessage}
+          </Typography>
+
+          {!isSubmitting && (
+            <Button
+              onClick={() => setModalOpen(false)}
+              variant="contained"
+              sx={{
+                bgcolor: isSuccess ? "success.main" : "error.main",
+                color: "#fff",
+                "&:hover": {
+                  bgcolor: isSuccess ? "success.dark" : "error.dark",
                 },
               }}
             >
-              <MotionBox
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.3 }}
-                sx={{
-                  position: "absolute",
-                  top: "50%",
-                  left: "50%",
-                  transform: "translate(-50%, -50%)",
-                  bgcolor: "background.paper",
-                  border: `2px solid ${isSuccess ? "success.main" : "error.main"}`,
-                  borderRadius: 3,
-                  boxShadow: 24,
-                  p: 4,
-                  textAlign: "center",
-                  whiteSpace: "pre-line", // Para manejar \n en mensajes
-                }}
-              >
-                {isSubmitting ? (
-                  <CircularProgress sx={{ mb: 2 }} />
-                ) : isSuccess ? (
-                  <CheckCircleOutline sx={{ fontSize: 60, color: "success.main", mb: 2 }} />
-                ) : (
-                  <ErrorOutline sx={{ fontSize: 60, color: "error.main", mb: 2 }} />
-                )}
-                <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
-                  {modalMessage}
-                </Typography>
-                {!isSubmitting && (
-                  <Button
-                    onClick={() => setModalOpen(false)}
-                    variant="contained"
-                    sx={{
-                      bgcolor: isSuccess ? "success.main" : "error.main",
-                      color: "white",
-                      "&:hover": { bgcolor: isSuccess ? "success.dark" : "error.dark" },
-                    }}
-                  >
-                    Cerrar
-                  </Button>
-                )}
-              </MotionBox>
-            </Modal>
+              Cerrar
+            </Button>
           )}
-        </AnimatePresence>
+        </MotionBox>
+      </Box>
+    </Modal>
+  )}
+</AnimatePresence>
+
+
+
       </Container>
     </MuiFade>
   );

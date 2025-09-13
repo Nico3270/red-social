@@ -234,7 +234,7 @@ export const TopMenuMobile = () => {
                   placeholder="Buscar..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full bg-transparent outline-none ml-2 text-sm"
+                  className="w-full bg-transparent outline-none ml-2 text-sm text-gray-800 placeholder-gray-400"
                 />
               </div>
               {filteredProducts.length > 0 && (
@@ -265,12 +265,12 @@ export const TopMenuMobile = () => {
 
       {/* Barra inferior de navegación fija */}
       <nav className="bg-white fixed bottom-0 w-full z-50 border-t shadow-md">
-        <div className="flex justify-around items-center py-2">
+        <div className="flex justify-around items-center py-0">
           <Link
             href="/"
             className="
               group relative flex flex-col items-center justify-center 
-              w-12 h-12 md:w-14 md:h-14 
+              w-18 h-18 md:w-14 md:h-14 
               transition-all duration-300
             "
           >
@@ -278,16 +278,16 @@ export const TopMenuMobile = () => {
               src="/imgs/iconos/home.png"
               alt="Inicio"
               unoptimized
-              width={24}
-              height={24}
+              width={28}
+              height={28}
               className="
-                w-5 h-5 md:w-6 md:h-6 text-gray-600 
-                transform transition-all duration-300 
-                group-hover:scale-110 group-hover:-translate-y-0.5 
-                group-hover:rotate-3
-              "
+    w-7 h-7 md:w-8 md:h-8 text-gray-600 
+    transform transition-all duration-300 
+    group-hover:scale-110 group-hover:-translate-y-0.5 
+    group-hover:rotate-3
+  "
             />
-            <span className="text-[10px] md:text-[11px] font-medium mt-1 text-gray-500 group-hover:text-blue-600">
+            <span className="text-[13px] md:text-[11px] font-medium mt-1 text-gray-500 group-hover:text-blue-600">
               Inicio
             </span>
           </Link>
@@ -304,15 +304,15 @@ export const TopMenuMobile = () => {
             <Image
               src="/imgs/iconos/cart.png"
               alt="Carro"
-              width={24}
-              height={24}
               unoptimized
+              width={28}
+              height={28}
               className="
-                w-5 h-5 md:w-6 md:h-6 text-gray-600 
-                transform transition-all duration-300 
-                group-hover:scale-110 group-hover:-translate-y-0.5 
-                group-hover:rotate-3
-              "
+    w-8 h-8 md:w-8 md:h-8 text-gray-600 
+    transform transition-all duration-300 
+    group-hover:scale-110 group-hover:-translate-y-0.5 
+    group-hover:rotate-3
+  "
             />
 
             {/* 👇 Evita mismatch usando mounted */}
@@ -322,7 +322,7 @@ export const TopMenuMobile = () => {
               </span>
             )}
 
-            <span className="text-[10px] md:text-[11px] font-medium mt-1 text-gray-500 group-hover:text-emerald-600">
+            <span className="text-[13px] md:text-[11px] font-medium mt-1 text-gray-500 group-hover:text-emerald-600">
               Carro
             </span>
           </Link>
@@ -339,22 +339,24 @@ export const TopMenuMobile = () => {
             <Image
               src="/imgs/iconos/heart.png"
               alt="Favoritos"
-              width={24}
-              height={24}
+
+
               unoptimized
+              width={28}
+              height={28}
               className="
-                w-5 h-5 md:w-6 md:h-6 text-gray-600 
-                transform transition-all duration-300 
-                group-hover:scale-110 group-hover:-translate-y-0.5 
-                group-hover:rotate-3
-              "
+    w-7 h-7 md:w-8 md:h-8 text-gray-600 
+    transform transition-all duration-300 
+    group-hover:scale-110 group-hover:-translate-y-0.5 
+    group-hover:rotate-3
+  "
             />
             {mounted && totalFavorites > 0 && (
               <span className="absolute -top-1 -right-1 bg-red-500 text-white font-bold rounded-full text-[10px] min-w-[18px] h-[18px] flex items-center justify-center shadow-md">
                 {totalFavorites}
               </span>
             )}
-            <span className="text-[10px] md:text-[11px] font-medium mt-1 text-gray-500 group-hover:text-red-500">
+            <span className="text-[13px] md:text-[11px] font-medium mt-1 text-gray-500 group-hover:text-red-500">
               Favoritos
             </span>
           </Link>
@@ -372,17 +374,17 @@ export const TopMenuMobile = () => {
               <Image
                 src="/imgs/iconos/plus.png"
                 alt="Crear"
-                width={24}
-                height={24}
                 unoptimized
+                width={28}
+                height={28}
                 className="
-                  w-5 h-5 md:w-6 md:h-6 text-gray-600 
-                  transform transition-all duration-300 
-                  group-hover:scale-110 group-hover:-translate-y-0.5 
-                  group-hover:rotate-3
-                "
+    w-7 h-7 md:w-8 md:h-8 text-gray-600 
+    transform transition-all duration-300 
+    group-hover:scale-110 group-hover:-translate-y-0.5 
+    group-hover:rotate-3
+  "
               />
-              <span className="text-[10px] md:text-[11px] font-medium mt-1 text-gray-500 group-hover:text-purple-600">
+              <span className="text-[13px] md:text-[11px] font-medium mt-1 text-gray-500 group-hover:text-purple-600">
                 Crear
               </span>
             </button>
@@ -393,24 +395,24 @@ export const TopMenuMobile = () => {
             onClick={() => setIsDrawerOpen(true)}
             className="
               group relative flex flex-col items-center justify-center 
-              w-12 h-12 md:w-14 md:h-14 
+              w-16 h-16 md:w-14 md:h-14 
               transition-all duration-300
             "
           >
             <Image
               src="/imgs/iconos/profile.png"
               alt="Perfil"
-              width={24}
-              height={24}
               unoptimized
+              width={28}
+              height={28}
               className="
-                w-5 h-5 md:w-6 md:h-6 text-gray-600 
-                transform transition-all duration-300 
-                group-hover:scale-110 group-hover:-translate-y-0.5 
-                group-hover:rotate-3
-              "
+    w-7 h-7 md:w-8 md:h-8 text-gray-600 
+    transform transition-all duration-300 
+    group-hover:scale-110 group-hover:-translate-y-0.5 
+    group-hover:rotate-3
+  "
             />
-            <span className="text-[10px] md:text-[11px] font-medium mt-1 text-gray-500 group-hover:text-indigo-600">
+            <span className="text-[13px] md:text-[14px] font-medium mt-0 text-gray-500 group-hover:text-indigo-600">
               Perfil
             </span>
           </button>

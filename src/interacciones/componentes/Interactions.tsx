@@ -157,6 +157,45 @@ const Interactions: React.FC<InteractionsProps> = ({
     return () => observer.disconnect();
   }, [isInModal, hasMore, infiniteIsLoadingComments, infiniteSetSize]);
 
+  // Sincronizar store con estados locales incluso fuera del modal (para updates post-modal)
+  useEffect(() => {
+    if (!isInModal) {
+      if (updatedLikesForId !== undefined && updatedLikesForId !== localLikes) {
+        setLocalLikes(updatedLikesForId);
+      }
+      if (updatedNumComentariosForId !== undefined && updatedNumComentariosForId !== localComentarios) {
+        setLocalComentarios(updatedNumComentariosForId);
+      }
+      if (updatedUserReactionForId !== undefined && updatedUserReactionForId !== localReaction) {
+        setLocalReaction(updatedUserReactionForId);
+      }
+      if (updatedCommentsForId && updatedCommentsForId.length > 0) {
+        // Mergear comentarios del store con locales, similar al effect de merge en modal
+        const allComments = [...localComments, ...updatedCommentsForId];
+        const uniqueComments = Array.from(new Map(allComments.map((c) => [c.id, c])).values())
+          .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        // Opcional: Comparar si cambió (simple check de longitud y primer/último id)
+        if (uniqueComments.length !== localComments.length ||
+            (uniqueComments.length > 0 && uniqueComments[0].id !== localComments[0]?.id)) {
+          setLocalComments(uniqueComments);
+        }
+      }
+      // Opcional: Limpiar el store después de sincronizar, si no quieres persistir indefinidamente
+      // Por ejemplo, si el store tiene métodos para reset:
+      // updateLikes(publicacionId, undefined);
+      // updateNumComentarios(publicacionId, undefined);
+      // updateUserReaction(publicacionId, undefined);
+      // updatedComments[publicacionId] = []; // o usa un setter si existe
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    isInModal,
+    updatedLikesForId,
+    updatedNumComentariosForId,
+    updatedUserReactionForId,
+    updatedCommentsForId,
+  ]);
+
   // Handle Like (SIMPLIFICADO: Removido mutateSummary, ya que no hay SWR)
   const handleLike = useCallback(async () => {
     if (!isAuthenticated) return;
@@ -403,8 +442,9 @@ const Interactions: React.FC<InteractionsProps> = ({
         <form onSubmit={handleCommentSubmit} className="flex gap-2 mb-4">
           <div className="relative w-8 h-8 rounded-full overflow-hidden">
             <Image
-              src={session?.user?.image || "/default-profile.png"}
-              alt="Tu perfil"
+              src={ "default-profile.png"}
+              alt="Tu foto de perfil"
+              unoptimized={true}
               fill
               className="object-cover"
             />
@@ -438,36 +478,43 @@ const Interactions: React.FC<InteractionsProps> = ({
           </>
         ) : localComments.length > 0 ? (
           localComments.slice(0, isInModal ? undefined : 1).map((comment) => (
-            <div key={comment.id} className="flex gap-3 mb-1">
-              <div className="relative w-8 h-8 rounded-full overflow-hidden">
+            <motion.div
+              key={comment.id}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              className="flex gap-3 mb-4 last:mb-0"
+            >
+              <div className="relative w-10 h-10 rounded-full overflow-hidden ring-1 ring-gray-200 ring-opacity-50 hover:ring-gray-300 transition-all">
                 <Image
                   src={comment.usuario.fotoPerfil || "/default-profile.png"}
                   alt={`${comment.usuario.nombre} ${comment.usuario.apellido}`}
                   fill
                   className="object-cover"
+                  unoptimized={true}
                 />
               </div>
               <div className="flex-1">
-                <div className="bg-gray-100 rounded-lg p-2">
+                <div className="bg-white rounded-2xl p-3 shadow-sm border border-gray-100">
                   <Link
                     href={`/perfil/${comment.usuario.id}`}
-                    className="text-sm font-medium text-gray-900 hover:underline"
+                    className="text-sm font-semibold text-gray-900 hover:text-blue-600 transition-colors"
                   >
                     {comment.usuario.nombre} {comment.usuario.apellido}
                   </Link>
-                  <p className="text-sm text-gray-700 mt-1">{comment.contenido}</p>
+                  <p className="text-sm text-gray-700 mt-1 leading-relaxed">{comment.contenido}</p>
                 </div>
-                <span className="text-xs text-gray-500 block mt-1">
+                <span className="text-xs text-gray-400 block mt-2 font-light">
                   {formatDistanceToNow(new Date(comment.createdAt), { locale: es, addSuffix: true })}
                 </span>
               </div>
-            </div>
+            </motion.div>
           ))
         ) : null}
         {!isInModal && effectiveComentarios > 1 && (
           <button
             onClick={onOpenModal}
-            className="text-sm text-blue-500 hover:underline mt-2"
+            className="text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors mt-2"
             aria-label="Ver todos los comentarios"
           >
             Ver más comentarios ({effectiveComentarios - 1})
@@ -475,7 +522,7 @@ const Interactions: React.FC<InteractionsProps> = ({
         )}
         {isInModal && hasMore && (
           <div ref={observerRef} className="mt-4">
-            {infiniteIsLoadingComments && <p className="text-sm text-gray-500">Cargando más comentarios...</p>}
+            {infiniteIsLoadingComments && <p className="text-sm text-gray-400 font-light">Cargando más comentarios...</p>}
           </div>
         )}
       </div>

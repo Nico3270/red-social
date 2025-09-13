@@ -158,43 +158,46 @@ const AddressNegocio: React.FC<AddressNegocioProps> = ({ slug }) => {
           ${total.toFixed(2)}
         </Typography>
       </Box>
-      <Button
-        startIcon={<ArrowBack />}
-        onClick={handleBackToCart}
-        sx={{
-          mt: 2,
-          px: 3,
-          py: 1.2,
-          textTransform: "none",
-          fontWeight: 600,
-          fontSize: "0.95rem",
-          borderRadius: 3,
-          bgcolor: "grey.900", // gris oscuro elegante
-          color: "#fff", // texto blanco
-          transition: "all 0.3s ease",
-          "&:hover": {
-            bgcolor: "grey.800", // un poco más claro en hover
-            boxShadow: "0 6px 16px rgba(0,0,0,0.25)", // sombra premium
-          },
-          "& .MuiButton-startIcon": {
-            mr: 1,
-            fontSize: "1.1rem",
-            color: "#fff",
-          },
-        }}
-      >
-        Volver al carrito
-      </Button>
+      <Box sx={{ display: "flex", justifyContent: "center" }}>
+  <Button
+    startIcon={<ArrowBack />}
+    onClick={handleBackToCart}
+    sx={{
+      mt: 2,
+      px: 3,
+      py: 1.2,
+      textTransform: "none",
+      fontWeight: 600,
+      fontSize: "0.95rem",
+      borderRadius: 3,
+      bgcolor: "grey.900", // gris oscuro elegante
+      color: "#fff", // texto blanco
+      transition: "all 0.3s ease",
+      "&:hover": {
+        bgcolor: "grey.800", // un poco más claro en hover
+        boxShadow: "0 6px 16px rgba(0,0,0,0.25)", // sombra premium
+      },
+      "& .MuiButton-startIcon": {
+        mr: 1,
+        fontSize: "1.1rem",
+        color: "#fff",
+      },
+    }}
+  >
+    Volver al carrito
+  </Button>
+</Box>
+
     </Paper>
   );
 
   return (
     <Fade in timeout={600}>
-      <Container maxWidth="lg" sx={{ mt: 6, mb: 8 }}>
+      <Container maxWidth="lg" sx={{ mt: 4, mb: 8 }}>
         <Typography
           variant="h3"
           sx={{
-            mb: 6,
+            mb: 2,
             fontWeight: 700,
             textAlign: "center",
             color: "text.primary",
@@ -395,7 +398,7 @@ const AddressNegocio: React.FC<AddressNegocioProps> = ({ slug }) => {
                       )}
                     />
                   </Grid>
-                  <Grid item xs={12}>
+                  <Grid item xs={12} sx={{ display: 'none' }}>
                     <Controller
                       name="deliveryDate"
                       control={control}
@@ -452,7 +455,7 @@ const AddressNegocio: React.FC<AddressNegocioProps> = ({ slug }) => {
                     />
                   </Grid>
                 </Grid>
-                <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
+                <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
                   <Button
                     type="submit"
                     variant="contained"
@@ -468,7 +471,7 @@ const AddressNegocio: React.FC<AddressNegocioProps> = ({ slug }) => {
                       transition: "all 0.2s ease",
                     }}
                   >
-                    Continuar al pago
+                    Continuar con el pedido
                   </Button>
                 </Box>
               </form>

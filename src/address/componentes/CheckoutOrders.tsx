@@ -114,6 +114,7 @@ const CheckoutOrder: React.FC<CheckoutOrderProps> = ({ slug }) => {
   // Componente de resumen del carrito
   const CartSummary = () => (
     <Paper elevation={1} sx={{ p: { xs: 2, sm: 3 }, borderRadius: 3, bgcolor: "background.paper" }}>
+
       <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "text.primary" }}>
         Resumen de tu pedido
       </Typography>
@@ -183,7 +184,7 @@ const CheckoutOrder: React.FC<CheckoutOrderProps> = ({ slug }) => {
 
   return (
     <MuiFade in timeout={600}>
-      <Container maxWidth="lg" sx={{ mt: 6, mb: 8 }}>
+      <Container maxWidth="lg" sx={{ mt: 2, mb: 8 }}>
         <Typography
           variant="h3"
           sx={{
@@ -192,7 +193,7 @@ const CheckoutOrder: React.FC<CheckoutOrderProps> = ({ slug }) => {
             textAlign: "center",
             color: "text.primary",
             letterSpacing: "-0.5px",
-            fontSize: { xs: "2rem", sm: "2.5rem", md: "3rem" },
+            fontSize: { xs: "2rem", sm: "1.5rem", md: "2rem" },
             fontFamily: "'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
           }}
         >
@@ -211,7 +212,7 @@ const CheckoutOrder: React.FC<CheckoutOrderProps> = ({ slug }) => {
           </Grid>
         </Grid>
 
-        <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 4 }}>
+        <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
           <Button
             variant="contained"
             size="large"
@@ -234,64 +235,87 @@ const CheckoutOrder: React.FC<CheckoutOrderProps> = ({ slug }) => {
 
         {/* Modal con AnimatePresence */}
         <AnimatePresence>
-          {modalOpen && (
-            <Modal
-              open={modalOpen}
-              onClose={() => setModalOpen(false)}
-              closeAfterTransition
-              slots={{ backdrop: Backdrop }}
-              slotProps={{
-                backdrop: {
-                  timeout: 500,
-                  TransitionComponent: MuiFade, // si quieres efecto Fade en el backdrop
+  {modalOpen && (
+    <Modal
+      open={modalOpen}
+      onClose={() => setModalOpen(false)}
+      closeAfterTransition
+      slots={{ backdrop: Backdrop }}
+      slotProps={{
+        backdrop: {
+          timeout: 500,
+          TransitionComponent: MuiFade,
+          sx: {
+            backgroundColor: "transparent"
+          },
+        },
+      }}
+    >
+      {/* Contenedor centrador */}
+      <Box
+        sx={{
+          height: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          p: 2,
+        }}
+      >
+        <MotionBox
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.95 }}
+          transition={{ duration: 0.3 }}
+          sx={{
+            bgcolor: "white",
+            border: `2px solid ${isSuccess ? "success.main" : "error.main"}`,
+            borderRadius: 3,
+            boxShadow: 24,
+            p: { xs: 2, sm: 4 },
+            textAlign: "center",
+            width: { xs: "100%", sm: "400px" },
+            maxHeight: "90vh",
+            overflowY: "auto",
+          }}
+        >
+          {isSubmitting ? (
+            <CircularProgress sx={{ mb: 2 }} />
+          ) : isSuccess ? (
+            <CheckCircleOutline sx={{ fontSize: 60, color: "success.main", mb: 2 }} />
+          ) : (
+            <ErrorOutline sx={{ fontSize: 60, color: "error.main", mb: 2 }} />
+          )}
+
+          <Typography
+            variant="h6"
+            sx={{ mb: 2, fontWeight: 600, color: "grey.900" }}
+          >
+            {modalMessage}
+          </Typography>
+
+          {!isSubmitting && (
+            <Button
+              onClick={() => setModalOpen(false)}
+              variant="contained"
+              sx={{
+                bgcolor: isSuccess ? "success.main" : "error.main",
+                color: "#fff",
+                "&:hover": {
+                  bgcolor: isSuccess ? "success.dark" : "error.dark",
                 },
               }}
             >
-              <MotionBox
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.3 }}
-                sx={{
-                  position: "absolute",
-                  top: "50%",
-                  left: "50%",
-                  transform: "translate(-50%, -50%)",
-                  bgcolor: "background.paper",
-                  border: `2px solid ${isSuccess ? "success.main" : "error.main"}`,
-                  borderRadius: 3,
-                  boxShadow: 24, // ahora sí funciona
-                  p: 4,
-                  textAlign: "center",
-                }}
-              >
-                {isSubmitting ? (
-                  <CircularProgress sx={{ mb: 2 }} />
-                ) : isSuccess ? (
-                  <CheckCircleOutline sx={{ fontSize: 60, color: "success.main", mb: 2 }} />
-                ) : (
-                  <ErrorOutline sx={{ fontSize: 60, color: "error.main", mb: 2 }} />
-                )}
-                <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
-                  {modalMessage}
-                </Typography>
-                {!isSubmitting && (
-                  <Button
-                    onClick={() => setModalOpen(false)}
-                    variant="contained"
-                    sx={{
-                      bgcolor: isSuccess ? "success.main" : "error.main",
-                      color: "white",
-                      "&:hover": { bgcolor: isSuccess ? "success.dark" : "error.dark" },
-                    }}
-                  >
-                    Cerrar
-                  </Button>
-                )}
-              </MotionBox>
-            </Modal>
+              Cerrar
+            </Button>
           )}
-        </AnimatePresence>
+        </MotionBox>
+      </Box>
+    </Modal>
+  )}
+</AnimatePresence>
+
+
+
       </Container>
     </MuiFade>
   );

@@ -25,22 +25,43 @@
   }
 }
 
-/* Masonry premium */
+/* Masonry premium - MEJORADO PARA ESTABILIDAD */
 .masonry-container {
   display: flex;
   margin-left: calc(-1 * var(--gap-column));
-  width: auto;
+  width: 100%;
+  min-width: 100%;
+  /* Nuevas propiedades para estabilidad */
+  contain: layout style;
+  will-change: auto;
 }
 
-
-
-.masonry-column > div {
-  margin-bottom: clamp(12px, var(--gap-vertical), 20px); /* Aumentar vertical para más aire */
+.masonry-column {
+  padding-left: var(--gap-column);
   background-clip: padding-box;
+  /* Prevenir shrinking durante transiciones */
+  flex-shrink: 0;
+  /* Asegurar que las columnas mantengan su estructura */
+  min-height: 1px;
 }
 
 .masonry-column > div {
-  margin-bottom: clamp(12px, var(--gap-vertical), 16px);
+  margin-bottom: clamp(12px, var(--gap-vertical), 20px);
+  background-clip: padding-box;
+  /* Asegurar que los items mantengan su posición */
+  position: relative;
+  /* Prevenir colapsos durante transiciones */
+  min-height: 1px;
+}
+
+/* Forzar recálculo de layout después de cambios de contenido */
+.masonry-container.layout-change {
+  animation: masonry-relayout 0.1ms;
+}
+
+@keyframes masonry-relayout {
+  0% { opacity: 0.999; }
+  100% { opacity: 1; }
 }
 
 /* Responsive fine-tuning */
@@ -66,7 +87,7 @@
 
 @media (min-width: 1280px) {
   :root {
-    --gap-column: 8px; /* Más estrecho en pantallas grandes */
+    --gap-column: 8px;
   }
 }
 
@@ -82,10 +103,12 @@
 
 /* Animations y shadows premium */
 @media (prefers-reduced-motion: no-preference) {
-  motion.div {
-    transition: opacity var(--transition-duration) ease-out, transform var(--transition-duration) ease-out;
+  .motion-transition {
+    transition: opacity var(--transition-duration) ease-out,
+                transform var(--transition-duration) ease-out;
   }
 }
+
 
 /* Ajustes para mini-navbar de categorías */
 .flex.overflow-x-auto.justify-around {
@@ -100,15 +123,41 @@
 /* Gaps para 4 columnas en grandes pantallas */
 @media (min-width: 1400px) {
   :root {
-    --gap-column: 10px; /* Más espacio para 4 cols */
+    --gap-column: 10px;
   }
 }
 
-motion.div {
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: var(--shadow-sm);
+/* NUEVAS REGLAS PARA PREVENIR PROBLEMAS DE LAYOUT */
+
+/* Asegurar que las imágenes no rompan el layout */
+.masonry-column img {
+  max-width: 100%;
+  height: auto;
+  display: block;
 }
+
+/* Prevenir overflow en contenido de cards */
+/* Después — aplica solo al contenido interno */
+.masonry-column .bg-white .card-content,
+.masonry-column .bg-white p,
+.masonry-column .bg-white span {
+  overflow: hidden;
+  word-wrap: break-word;
+}
+
+/* Estabilizar altura mínima durante transiciones */
+.masonry-column[style*="width"] {
+  min-height: 200px;
+}
+
+/* Forzar GPU acceleration en elementos críticos */
+.masonry-container,
+.masonry-column {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+
 
 /* General */
 body {

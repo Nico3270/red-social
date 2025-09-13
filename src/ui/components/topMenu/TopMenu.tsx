@@ -18,7 +18,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Alert, Box, Button, CircularProgress, FormControl, InputLabel, MenuItem, Select, Typography } from "@mui/material";
 import colombia from "@/config/colombia.json"; // Tu JSON de Colombia
 import { updateUserPreferences } from "@/preferences/actions/updateUserPreferences"; // Ajusta la ruta según sea necesario
-import { LogoFont } from "@/config/fonts";
+import {  titleFont } from "@/config/fonts";
+
 
 interface ColombiaDepartment {
   id: number;
@@ -226,9 +227,9 @@ export const TopMenu = () => {
   />
   <span
     className={`
-      text-3xl font-bold text-gray-900 
+      text-2xl font-bold text-gray-900 
       tracking-tight relative
-      ${LogoFont.className}
+      ${titleFont.className}
     `}
     style={{
       textShadow: "1px 1px 2px rgba(0,0,0,0.15)", // sombra sutil
