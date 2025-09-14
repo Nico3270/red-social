@@ -440,7 +440,7 @@ const Interactions: React.FC<InteractionsProps> = ({
       {/* Form Comment */}
       {isAuthenticated && (
         <form onSubmit={handleCommentSubmit} className="flex gap-2 mb-4">
-          <div className="relative w-8 h-8 rounded-full overflow-hidden">
+          {/* <div className="relative w-8 h-8 rounded-full overflow-hidden">
             <Image
               src={ "default-profile.png"}
               alt="Tu foto de perfil"
@@ -448,7 +448,7 @@ const Interactions: React.FC<InteractionsProps> = ({
               fill
               className="object-cover"
             />
-          </div>
+          </div> */}
           <input
             type="text"
             value={newComment}

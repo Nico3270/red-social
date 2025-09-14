@@ -9,6 +9,8 @@ import { RiCustomerService2Fill } from "react-icons/ri";
 import { FiPlusSquare } from "react-icons/fi";
 import { IoMdDocument } from "react-icons/io";
 import DashboardSections from "@/dashboard/componentes/DashboardSections";
+import { auth } from "@/auth.config";
+import CrearNegocioInfo from "@/dashboard/componentes/CrearNegocioInfo";
 
 const dashboardSections = [
     {
@@ -130,12 +132,14 @@ const dashboardSections = [
     },
 ];
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+    const session = await auth();
+    const userType = session?.user?.role; // 'admin', 'negocio', 'user'
     return (
         <main className="max-w-7xl mx-auto p-6">
-            <h1 className="text-4xl font-bold text-center mb-12">
-                Panel Administrativo
-            </h1>
+
+            <CrearNegocioInfo userId={session?.user?.id || ""} />
+            
 
             {/* Renderizar el componente DashboardSections con las secciones */}
             <DashboardSections sections={dashboardSections} />

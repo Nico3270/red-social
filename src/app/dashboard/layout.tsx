@@ -20,7 +20,7 @@ export default function DashboardtLayout({
 
     if (status === "unauthenticated" || !session?.user) {
       router.push("/"); // Redirige a la página principal
-    } else if (session.user.role !== "admin" && session.user.role !== "negocio") {
+    } else if (session.user.role !== "admin" && session.user.role !== "negocio" && session.user.role !== "user") {
   router.push("/not_authorized");
 }
   }, [session, status, router]);
