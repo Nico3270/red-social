@@ -8,8 +8,6 @@ import bcryptjs from "bcryptjs";
 import { randomBytes } from "crypto";
 import { Role } from "@prisma/client";
 
-
-
 export const authConfig: NextAuthConfig = {
   pages: {
     signIn: "/auth/login",
@@ -53,16 +51,21 @@ export const authConfig: NextAuthConfig = {
 
     async jwt({ token, user, trigger, session }) {
       // Al iniciar sesión
-      if (user && "id" in user) {
-
+      if (user) { // Solo en sign-in inicial
+        // Fetch por email en lugar de id (funciona para ambos providers)
         const usuarioConNegocio = await prisma.usuario.findUnique({
-          where: { id: user.id },
+          where: { email: user.email! },
           include: {
             negocio: {
               select: { id: true, slug: true, nombre: true },
             },
           },
         });
+
+        if (!usuarioConNegocio) {
+          // Esto no debería pasar si signIn crea el user, pero maneja error
+          throw new Error("Usuario no encontrado en DB después de signIn");
+        }
 
         // Verificar si el negocio tiene módulo de reservas activo
         let configReservation = false;
@@ -81,15 +84,15 @@ export const authConfig: NextAuthConfig = {
           configEncuestas = availabilityCount > 0;
         }
 
-
-        token.id = user.id;
-        token.name = user.name;
-        token.apellido = user.apellido ?? "";
-        token.email = user.email!;
-        token.role = (user as { role: Role }).role;
-        token.emailVerified = (user as { emailVerified?: Date | null }).emailVerified ?? null;
-        token.ciudad = (user as { ciudad?: string }).ciudad ?? null;
-        token.fotoPerfil = user.image || "/imgs/usuario-sin-foto.png";
+        // Asigna desde DB para consistencia
+        token.id = usuarioConNegocio.id; // ¡Aquí el ID correcto de DB!
+        token.name = usuarioConNegocio.nombre;
+        token.apellido = usuarioConNegocio.apellido ?? "";
+        token.email = usuarioConNegocio.email;
+        token.role = usuarioConNegocio.role;
+        token.emailVerified = usuarioConNegocio.emailVerified ?? null;
+        token.ciudad = usuarioConNegocio.ciudad ?? null;
+        token.fotoPerfil = user.image || usuarioConNegocio.fotoPerfil || "/imgs/usuario-sin-foto.png"; // Prioriza image de Google si existe
         
         // Nuevos campos
         token.negocioId = usuarioConNegocio?.negocio?.id ?? null;

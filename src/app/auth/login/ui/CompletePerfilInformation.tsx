@@ -110,7 +110,7 @@ export const CompletePerfilInformation = ({ userId }: { userId: string }) => {
         ¡Bienvenido! Para personalizar tu experiencia y conectar mejor con la comunidad, por favor completa estos detalles. Es rápido y sencillo.
       </p>
       <p>{userId}</p>
-      <pre>{JSON.stringify(session?.user, null, 2)}</pre>
+      <pre className="text-red-500">{JSON.stringify(session?.user, null, 2)}</pre>
       
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* Campo hidden para ciudad completa */}
