@@ -124,7 +124,7 @@ export const CompletePerfilInformation = ({ userId }: { userId: string }) => {
             value={selectedDepartamento}
             onChange={(e) => setSelectedDepartamento(e.target.value)}
             className={clsx(
-              "w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-red-600 transition",
+              "w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-red-600 transition text-gray-900", // Agregado text-gray-900 para texto visible (gris oscuro/negro)
               { "border-red-500": errors.ciudad && !selectedDepartamento }
             )}
           >
@@ -149,7 +149,7 @@ export const CompletePerfilInformation = ({ userId }: { userId: string }) => {
             onChange={(e) => setSelectedCity(e.target.value)}
             disabled={!selectedDepartamento}
             className={clsx(
-              "w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-red-600 transition",
+              "w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-red-600 transition text-gray-900", // Agregado text-gray-900 para texto visible
               { "border-red-500": errors.ciudad }
             )}
           >
@@ -170,7 +170,7 @@ export const CompletePerfilInformation = ({ userId }: { userId: string }) => {
           <select
             {...register("genero", { required: "El género es requerido" })}
             className={clsx(
-              "w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-red-600 transition",
+              "w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-red-600 transition text-gray-900", // Agregado text-gray-900 para texto visible
               { "border-red-500": errors.genero }
             )}
           >
@@ -202,7 +202,7 @@ export const CompletePerfilInformation = ({ userId }: { userId: string }) => {
             minDate={new Date("1900-01-01")}
             dateFormat="dd/MM/yyyy"
             className={clsx(
-              "w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-red-600 transition",
+              "w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-red-600 transition text-gray-900", // Agregado text-gray-900 para texto visible en el input de fecha
               { "border-red-500": errors.fechaNacimiento }
             )}
             placeholderText="Selecciona tu fecha de nacimiento"

@@ -124,7 +124,7 @@ export default async function DashboardPage() {
   const userType = session?.user?.role; // 'admin', 'negocio', 'user' u otros roles
 
   return (
-    <main className="max-w-7xl mx-auto p-6">
+    <main className="max-w-7xl mx-auto p-0 sm:p-2">
       {userType === 'negocio' ? (
         // Mostrar DashboardSections si es 'negocio' - Dashboard completo y modular
         <DashboardSections sections={dashboardSections} />

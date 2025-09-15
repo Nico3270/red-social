@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 
-import { FaUser, FaBox, FaHome, FaUserEdit, FaBook, FaListUl, FaShoppingCart } from "react-icons/fa";
+import { FaUser, FaBox, FaHome, FaUserEdit, FaBook, FaListUl, FaShoppingCart, FaStore } from "react-icons/fa";
 import { useSidebarStore } from "@/store/sideBar/sideBar-store";
 import { IoMdAddCircle } from "react-icons/io";
 import { FaFilePen, FaMoneyBillTransfer } from "react-icons/fa6";
@@ -24,9 +24,11 @@ const SideBarDashboard: React.FC = () => {
   const { data: session } = useSession();
   const nombreNegocio = session?.user.negocioNombre || "";
   const slug = session?.user?.negocioSlug || null;
+  const role = session?.user?.role || "user"; // 'user' | 'negocio' | 'admin' - Default a 'user' para seguridad
 
-  const navItems: NavItem[] = [
-    { name: "Inicio", path: "/dashboard", icon: <FaHome /> },
+  // Array para roles 'negocio' - Opciones completas y premium
+  const navItemsNegocio: NavItem[] = [
+    { name: "Inicio", path: "/", icon: <FaHome /> },
     { name: "Perfil", path: "/dashboard/perfil", icon: <FaUser /> },
     { name: `${nombreNegocio}`, path: `/perfil/${slug}`, icon: <FaUser /> },
     { name: "Nuevo producto", path: "/dashboard/productos/nuevo_producto", icon: <IoMdAddCircle /> },
@@ -40,9 +42,19 @@ const SideBarDashboard: React.FC = () => {
     { name: "Editar Perfil", path: "/dashboard/editar-perfil", icon: <FaUserEdit /> },
   ];
 
+  // Array para otros roles - Opciones básicas para onboarding elegante
+  const navItems: NavItem[] = [
+    { name: "Inicio", path: "/", icon: <FaHome /> },
+    { name: "Perfil", path: "/dashboard/perfil", icon: <FaUser /> },
+    { name: "Crear Negocio", path: `/crear_negocio/${session?.user.id}`, icon: <FaStore /> },
+  ];
+
+  // Lógica condicional moderna: Selecciona items según rol para UX personalizada
+  const items = role === 'negocio' ? navItemsNegocio : navItems;
+
   return (
     <div className="flex flex-col h-full bg-gray-800 text-white">
-      {/* Logo y nombre de la aplicación */}
+      {/* Logo y nombre de la aplicación - Centrado y responsive */}
       <div className="flex items-center justify-center sm:mt-0 mt-10 pt-5 sm:pt-3 sm:p-3 border-b bg-white border-gray-700">
         <Link href="/" className="flex items-center space-x-2">
           <Image
@@ -53,7 +65,7 @@ const SideBarDashboard: React.FC = () => {
             unoptimized
             className="rounded-full"
           />
-          {/* Mostrar nombre si el sidebar está abierto o si estamos en móviles */}
+          {/* Mostrar nombre si el sidebar está abierto o en móviles - Con shadow sutil para elegancia */}
           {(isSidebarOpen || typeof window !== "undefined" && window.innerWidth < 640) && (
             <span
               className="text-lg font-bold tracking-tight relative text-gray-900"
@@ -65,10 +77,10 @@ const SideBarDashboard: React.FC = () => {
         </Link>
       </div>
 
-      {/* Menú de navegación */}
-      <nav className="flex-1 p-4">
+      {/* Menú de navegación - Flexible y con scroll si excede altura */}
+      <nav className="flex-1 p-4 overflow-y-auto">
         <ul className="space-y-2">
-          {navItems.map((item) => (
+          {items.map((item) => (
             <li key={item.path}>
               <Link
                 href={item.path}
@@ -77,10 +89,10 @@ const SideBarDashboard: React.FC = () => {
                     ? "bg-gray-700 text-white"
                     : "text-gray-300 hover:bg-gray-700 hover:text-white"
                 }`}
-                aria-label={item.name}
+                aria-label={item.name} // Accesibilidad premium, como en LinkedIn
               >
                 <span className="text-xl">{item.icon}</span>
-                {/* Mostrar nombres si el sidebar está abierto o si estamos en móvil */}
+                {/* Mostrar nombres si sidebar abierto o mobile - Responsive y elegante */}
                 {(isSidebarOpen || typeof window !== "undefined" && window.innerWidth < 640) && (
                   <span className="ml-3 text-sm">{item.name}</span>
                 )}

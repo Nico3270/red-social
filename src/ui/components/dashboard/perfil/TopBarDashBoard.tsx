@@ -26,7 +26,7 @@ export const TopBarDashBoard: React.FC = () => {
           <FaBars className="text-2xl" />
         </button>
         <div className="flex-1 text-center">
-          <h2 className="text-lg font-semibold text-gray-800">Usuario</h2>
+          <h2 className="text-lg font-semibold text-gray-800">{`Hola ${session?.user.name}, bienvenido a tu dashboard`}</h2>
         </div>
         <div className="flex items-center space-x-4">
           <Image

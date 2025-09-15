@@ -27,20 +27,20 @@ import Image from "next/image";
 
 // Estilos premium: contenedor responsive con sombras suaves, usando @media puro
 const StyledContainer = styled(Box)({
-    display: "flex",
-    flexDirection: "column", // Mobile: vertical
-    alignItems: "center",
-    backgroundColor: "#FAFAFA", // Fondo neutro elegante
-    borderRadius: "20px",
-    boxShadow: "0 6px 18px rgba(0, 0, 0, 0.06)", // Sombra sutil como en iOS
-    overflow: "hidden",
-    maxWidth: "1200px",
-    margin: "0 auto",
-    padding: "24px",
-    "@media (min-width: 900px)": { // Equivalente a md breakpoint
-        flexDirection: "row", // Desktop: horizontal, imagen izquierda
-        padding: "0",
-    },
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  backgroundColor: "#FAFAFA",
+  borderRadius: "20px",
+  boxShadow: "0 6px 18px rgba(0, 0, 0, 0.06)",
+  overflow: "hidden",
+  maxWidth: "1200px",
+  margin: "0 auto",
+  padding: "12px", // 👈 menos padding por defecto (móvil)
+  "@media (min-width: 900px)": {
+    flexDirection: "row",
+    padding: "0", // 👈 en desktop ya no necesitas margen interno
+  },
 });
 
 const ImageContainer = styled(Box)({
@@ -118,7 +118,7 @@ const CrearNegocioInfo: React.FC<Props> = ({ userId }) => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: "easeOut" }}
         >
-            <StyledContainer>
+            <StyledContainer className="px-2 md:px-6 lg:px-8">
                 {/* Imagen representativa */}
                 <ImageContainer>
                     <Image

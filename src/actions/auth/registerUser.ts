@@ -107,7 +107,7 @@ export const registerUser = async (
         ciudad,
         departamento,
         preferencias: [], // Array vacío por defecto
-        username
+        username, perfilCompleto: true, // Nuevo campo para completar perfil
       },
       select: {
         id: true,
