@@ -91,7 +91,7 @@ const UpdateLocationModal: React.FC<{ isOpen: boolean; onClose: () => void }> = 
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: 'spring', damping: 25, stiffness: 400, duration: 0.3 }}
-            className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl shadow-lg overflow-hidden p-6 md:p-8 max-h-[80vh] overflow-y-auto"
+            className="relative w-full max-w-md bg-white rounded-3xl shadow-lg overflow-hidden p-6 md:p-8 max-h-[80vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <button onClick={onClose} className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition-colors">
