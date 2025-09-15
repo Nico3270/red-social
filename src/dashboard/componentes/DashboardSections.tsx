@@ -29,7 +29,7 @@ interface Props {
 }
 
 // Estilo de card premium: minimalista, como Apple (sombras suaves, bordes redondeados, fondo neutro)
-const StyledCard = styled(Card)(({ theme }) => ({
+const StyledCard = styled(Card)(() => ({
   borderRadius: "16px", // Bordes suaves y modernos
   boxShadow: "0 4px 12px rgba(0, 0, 0, 0.05)", // Sombra sutil para profundidad premium
   backgroundColor: "#FFFFFF", // Blanco puro para elegancia

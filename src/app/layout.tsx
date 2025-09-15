@@ -6,6 +6,7 @@ import PreferencesModalWrapper from "@/preferences/componentes/PreferencesModalW
 import ReactQueryProvider from "@/feed/componentes/ReactQueryProvider";
 
 
+
 export const metadata: Metadata = {
   metadataBase: new URL(empresa.linkWebProduccion),
   title: empresa.titulo,
@@ -28,11 +29,14 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+
+
+
   return (
     <html lang="es">
       <head>

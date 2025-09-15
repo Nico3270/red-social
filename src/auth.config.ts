@@ -42,6 +42,7 @@ export const authConfig: NextAuthConfig = {
               pais: "Colombia",
               genero: "otro",
               fechaNacimiento: new Date("1990-01-01"),
+              perfilCompleto: false,
             },
           });
         }
@@ -96,6 +97,7 @@ export const authConfig: NextAuthConfig = {
         token.negocioNombre = usuarioConNegocio?.negocio?.nombre ?? null;
         token.configReservation = configReservation; // Nuevo campo agregado
         token.configEncuestas = configEncuestas; // Nuevo campo agregado
+        token.perfilCompleto = usuarioConNegocio?.perfilCompleto ?? false;
 
       }
 
@@ -108,6 +110,7 @@ export const authConfig: NextAuthConfig = {
         if (session?.configReservation !== undefined) token.configReservation = session.configReservation; // Permitir actualización
         if (session?.configEncuestas !== undefined) token.configEncuestas = session.configEncuestas; // Permitir actualización
         if (session?.fotoPerfil) token.fotoPerfil = session.fotoPerfil;
+        if (session?.perfilCompleto !== undefined) token.perfilCompleto = session.perfilCompleto;
       }
 
       return token;
@@ -128,6 +131,7 @@ export const authConfig: NextAuthConfig = {
         configReservation: token.configReservation as boolean, // Nuevo campo agregado
         configEncuestas: token.configEncuestas as boolean, // Nuevo campo agregado
         fotoPerfil : token.fotoPerfil as string,
+        perfilCompleto: token.perfilCompleto as boolean,
       };
       return session;
     },

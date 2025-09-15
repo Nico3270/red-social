@@ -10,6 +10,7 @@ import { signIn } from "next-auth/react";
 import { authenticate } from "@/actions/auth/login";
 import { useSearchParams } from "next/navigation";
 
+
 export const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false); // 👈 estado para visibilidad
   const [state, setState] = useState<
@@ -38,6 +39,7 @@ export const LoginForm = () => {
 
     try {
       const result = await authenticate(undefined, formData);
+
       // Posibles estados que se pueden presentar al intentar hacer la autenticación
       setState(result); // "Success" | "CredentialsSignin" | "UnknownError"
     } catch {

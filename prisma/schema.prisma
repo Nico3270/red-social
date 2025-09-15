@@ -44,6 +44,7 @@ model Usuario {
   reservations    Reservation[]
   respuestas      Respuesta[]   @relation("UsuarioRespuestas")
   Transaction     Transaction[]
+  perfilCompleto  Boolean       @default(false)
 
   @@index([username])
   @@index([email])
@@ -365,7 +366,7 @@ model Negocio {
   usuario          Usuario               @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
   categorias       NegocioCategory[]
   secciones        NegocioSection[]
-   orden                  Float                 @default(8.0)
+  orden            Float                 @default(8.0)
   orders           Order[]
   preguntas        Pregunta[]            @relation("NegocioPreguntas")
   Product          Product[]
@@ -395,7 +396,8 @@ model Servicio {
   negocioId   String
   multimedia  Media[]
   negocio     Negocio        @relation(fields: [negocioId], references: [id], onDelete: Cascade)
-  orden                  Float                 @default(8.0)
+  orden       Float          @default(8.0)
+
   @@index([negocioId])
   @@index([status])
   @@index([negocioId, status])
@@ -437,8 +439,6 @@ model Category {
 
   @@index([slug])
 }
-
-
 
 model Pregunta {
   id         String             @id @default(cuid())

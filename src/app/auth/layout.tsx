@@ -1,6 +1,7 @@
 import { auth } from "@/auth.config";
 import { redirect } from "next/navigation";
 
+
 export default async function AuthLayout({
  children
 }: {

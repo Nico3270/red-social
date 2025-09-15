@@ -10,7 +10,7 @@ import colombia from "@/config/colombia.json";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { registerUser } from "@/actions/auth/registerUser";
-import { signIn, SignInResponse } from "next-auth/react";
+import { signIn, SignInResponse, useSession } from "next-auth/react";
 import { Alert } from "@mui/material";
 import { useSearchParams, useRouter } from "next/navigation"; // Agregado useRouter para redirecciones elegantes
 
@@ -46,6 +46,7 @@ export const RegisterForm = ({ negocio }: TipoUsuario) => {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/";
   const router = useRouter(); // Para redirecciones SPA-modernas
+  const { update} = useSession();
 
   const {
     register,
@@ -119,6 +120,8 @@ export const RegisterForm = ({ negocio }: TipoUsuario) => {
         setIsPending(false);
         return;
       }
+
+      await update({perfilCompleto: true})
 
       // Redirección manual (elegante y sin errores en consola)
       if (negocio) {

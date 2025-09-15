@@ -1,53 +1,36 @@
-"use client"
-
+import { auth } from "@/auth.config";
+import { redirect } from "next/navigation";
+import { Inter } from "next/font/google"; // Ejemplo; ajusta a tu font si usas
 import { TopMenu, TopMenuMobile } from "@/ui";
 
-import React, { useState, useEffect } from "react";
+const inter = Inter({ subsets: ["latin"] }); // Opcional; quita si no usas
 
+export default async function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const session = await auth();
 
-
-
-export default function CatalogoLayout({ children }: { children: React.ReactNode }) {
-  const [isMobile, setIsMobile] = useState(false);
-
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-
-    handleResize();
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollY = window.scrollY;
-      const windowHeight = window.innerHeight;
-      const documentHeight = document.documentElement.scrollHeight;
-
-      if (scrollY + windowHeight >= documentHeight - 200) {
- 
-        window.removeEventListener("scroll", handleScroll);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  // Chequeo post-login: Redirigir si perfil incompleto (server-side, seamless)
+  if (session?.user && !session.user.perfilCompleto) {
+    redirect('/dashboard/completePerfil');
+  }
 
   return (
-    <main className="bg-white min-h-screen flex flex-col relative">
-      
-        <>
-          {isMobile ? <TopMenuMobile /> : <TopMenu />}
+    <html lang="es">
+      <body className={inter.className}>
+        <main className="bg-white min-h-screen flex flex-col relative">
+          {/* Responsive elegante con CSS media queries (mobile-first) */}
+          <div className="block md:hidden"> {/* Visible solo en mobile (<=768px) */}
+            <TopMenuMobile />
+          </div>
+          <div className="hidden md:block"> {/* Visible solo en desktop (>768px) */}
+            <TopMenu />
+          </div>
           <div className="flex-grow mt-0">{children}</div>
-        </>
-      
-    </main>
+        </main>
+      </body>
+    </html>
   );
 }

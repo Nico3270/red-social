@@ -20,6 +20,7 @@ declare module "next-auth" {
     configReservation?: boolean; // Nuevo campo para indicar si hay módulo de reservas activo
     configEncuestas?: boolean; // Nuevo campo para indicar si hay módulo de reservas activo
     fotoPerfil?: string | "/default-profile.png"; // Nuevo campo para la foto de perfil  
+    perfilCompleto?: boolean; // Nuevo campo para indicar si el perfil está completo
   }
 
   interface Session extends DefaultSession {
@@ -40,6 +41,7 @@ declare module "next-auth" {
     configReservation?: boolean; // Nuevo campo para indicar si hay módulo de reservas activo
     configEncuestas?: boolean; // Nuevo campo para indicar si hay módulo de reservas activo
     fotoPerfil?: string | "/default-profile.png"; // Nuevo campo para la foto de perfil 
+    perfilCompleto?: boolean; // Nuevo campo para indicar si el perfil está completo
   }
 
   interface CustomUser {
@@ -55,5 +57,6 @@ declare module "next-auth" {
     configReservation?: boolean; // Nuevo campo para indicar si hay módulo de reservas activo
     configEncuestas?: boolean; // Nuevo campo para indicar si hay módulo de reservas activo
     fotoPerfil?: string | "/default-profile.png"; // Nuevo campo para la foto de perfil 
+    perfilCompleto?: boolean; // Nuevo campo para indicar si el perfil está completo
   }
 }
