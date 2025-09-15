@@ -109,6 +109,17 @@ export const CompletePerfilInformation = ({ userId }: { userId: string }) => {
       <p className="text-center text-gray-600 mb-8">
         ¡Bienvenido! Para personalizar tu experiencia y conectar mejor con la comunidad, por favor completa estos detalles. Es rápido y sencillo.
       </p>
+      <p>{userId}</p>
+      <p>{userId}</p>
+      <p>{userId}</p>
+      <p>{userId}</p>
+      <p>{userId}</p>
+      <p>{userId}</p>
+      <p>{userId}</p>
+      <p>{userId}</p>
+      <p>{userId}</p>
+      <p>{userId}</p>
+      <p>{userId}</p>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* Campo hidden para ciudad completa */}
         <input
