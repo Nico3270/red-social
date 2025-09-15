@@ -14,7 +14,7 @@ export default async function RootLayout({
 
   // Chequeo post-login: Redirigir si perfil incompleto (server-side, seamless)
   if (session?.user && !session.user.perfilCompleto) {
-    redirect('/dashboard/completePerfil');
+    redirect('/completePerfil');
   }
 
   return (
