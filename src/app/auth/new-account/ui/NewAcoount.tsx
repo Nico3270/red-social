@@ -314,7 +314,10 @@ export const RegisterForm = ({ negocio }: TipoUsuario) => {
               onChange={(date: Date | null) => {
                 setSelectedDate(date);
                 if (date) {
-                  setValue("fechaNacimiento", date); // No hagas .toISOString(), pasa el Date directamente
+                  setValue("fechaNacimiento", date, { shouldValidate: true }); // Asegura validación inmediata
+                } else {
+                  setValue("fechaNacimiento", new Date("1990-01-01")); 
+
                 }
               }}
               peekNextMonth
@@ -334,6 +337,25 @@ export const RegisterForm = ({ negocio }: TipoUsuario) => {
               <span className="text-red-500 text-sm">{errors.fechaNacimiento.message}</span>
             )}
           </div>
+
+          {/* Campo hidden para fechaNacimiento con validación de edad */}
+          <input
+            type="hidden"
+            {...register("fechaNacimiento", {
+              required: "La fecha de nacimiento es requerida",
+              validate: (value: Date | null) => {
+                if (!value) return "La fecha de nacimiento es requerida";
+                const today = new Date();
+                const birthDate = new Date(value);
+                let age = today.getFullYear() - birthDate.getFullYear();
+                const monthDiff = today.getMonth() - birthDate.getMonth();
+                if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                  age--;
+                }
+                return age >= 18 || "Debes ser mayor de 18 años";
+              },
+            })}
+          />
 
           {errorMessage && <span className="text-red-500 text-sm">{errorMessage}</span>}
 

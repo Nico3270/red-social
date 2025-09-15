@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState, useCallback, useRef, useEffect, useMemo } from "react";
-import { motion } from "framer-motion";
-import { FaHeart, FaComment,  } from "react-icons/fa";
+import { motion, AnimatePresence } from "framer-motion";
+import { FaHeart, FaComment, FaSignInAlt } from "react-icons/fa";
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
 import Image from "next/image";
@@ -12,6 +12,8 @@ import Link from "next/link";
 import useSWRInfinite, { SWRInfiniteKeyLoader } from "swr/infinite";
 import { ReaccionTipo } from "@prisma/client";
 import { usePublicacionModalStore } from "@/store/publicacionModal/publicacionModalStore";
+import { useRouter } from "next/navigation";
+import { createPortal } from "react-dom";
 
 interface CommentsPage {
   ok: boolean;
@@ -83,6 +85,13 @@ const Interactions: React.FC<InteractionsProps> = ({
   const [newComment, setNewComment] = useState("");
   const [hasMore, setHasMore] = useState(initialComentarios > initialComments.length);
   const observerRef = useRef<HTMLDivElement>(null);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const router = useRouter();
+  const [mounted, setMounted] = useState(false);
+
+useEffect(() => {
+  setMounted(true);
+}, []);
 
   // REMOVIDO: SWR para summary (redundante ahora con props de EnhancedPublicacion)
   // En su lugar, effective values usan solo props + store (más simple y eficiente)
@@ -104,7 +113,7 @@ const Interactions: React.FC<InteractionsProps> = ({
     [isInModal, updatedNumComentariosForId, localComentarios]
   );
   // const effectiveCompartidos = useMemo(
-  //   () => isInModal ? (updatedCompartidosForId ?? localCompartidos) : localCompartidos,
+  //   => isInModal ? (updatedCompartidosForId ?? localCompartidos) : localCompartidos,
   //   [isInModal, updatedCompartidosForId, localCompartidos]
   // );
   const effectiveReaction = useMemo(
@@ -198,7 +207,10 @@ const Interactions: React.FC<InteractionsProps> = ({
 
   // Handle Like (SIMPLIFICADO: Removido mutateSummary, ya que no hay SWR)
   const handleLike = useCallback(async () => {
-    if (!isAuthenticated) return;
+    if (!isAuthenticated) {
+      setShowAuthModal(true);
+      return;
+    }
     const hasLiked = effectiveReaction === ReaccionTipo.LIKE;
     const optimisticLikes = hasLiked ? effectiveLikes - 1 : effectiveLikes + 1;
     const optimisticReaction = hasLiked ? null : ReaccionTipo.LIKE;
@@ -243,7 +255,11 @@ const Interactions: React.FC<InteractionsProps> = ({
   const handleCommentSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
-      if (!isAuthenticated || !newComment.trim()) return;
+      if (!isAuthenticated) {
+        setShowAuthModal(true);
+        return;
+      }
+      if (!newComment.trim()) return;
 
       const optimisticId = `temp-${Date.now()}`;
       const optimisticComment: Comment = {
@@ -289,7 +305,7 @@ const Interactions: React.FC<InteractionsProps> = ({
           },
         };
 
-        setLocalComments((prev) =>
+        setLocalComments((prev) => 
           prev
             .map((c) => (c.id === optimisticId ? realComment : c))
             .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
@@ -415,7 +431,13 @@ const Interactions: React.FC<InteractionsProps> = ({
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            onClick={!isInModal ? onOpenModal : undefined}
+            onClick={() => {
+              if (!isAuthenticated) {
+                setShowAuthModal(true);
+                return;
+              }
+              if (!isInModal) onOpenModal();
+            }}
             className="flex items-center gap-2 text-gray-600 hover:text-blue-500"
             aria-label="Comentar"
             disabled={isInModal}
@@ -453,7 +475,13 @@ const Interactions: React.FC<InteractionsProps> = ({
             type="text"
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
-            onFocus={!isInModal ? onOpenModal : undefined}
+            onFocus={() => {
+              if (!isAuthenticated) {
+                setShowAuthModal(true);
+                return;
+              }
+              if (!isInModal) onOpenModal();
+            }}
             placeholder="Escribe un comentario..."
             className="flex-1 p-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
             aria-label="Escribe un comentario"
@@ -470,62 +498,128 @@ const Interactions: React.FC<InteractionsProps> = ({
       )}
 
       {/* Lista Comments */}
-      <div className="mb-2">
-        {infiniteIsLoadingComments ? (
-          <>
-            <CommentSkeleton />
-            <CommentSkeleton />
-          </>
-        ) : localComments.length > 0 ? (
-          localComments.slice(0, isInModal ? undefined : 1).map((comment) => (
-            <motion.div
-              key={comment.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-              className="flex gap-3 mb-4 last:mb-0"
-            >
-              <div className="relative w-10 h-10 rounded-full overflow-hidden ring-1 ring-gray-200 ring-opacity-50 hover:ring-gray-300 transition-all">
-                <Image
-                  src={comment.usuario.fotoPerfil || "/default-profile.png"}
-                  alt={`${comment.usuario.nombre} ${comment.usuario.apellido}`}
-                  fill
-                  className="object-cover"
-                  unoptimized={true}
-                />
-              </div>
-              <div className="flex-1">
-                <div className="bg-white rounded-2xl p-3 shadow-sm border border-gray-100">
-                  <Link
-                    href={`/perfil/${comment.usuario.id}`}
-                    className="text-sm font-semibold text-gray-900 hover:text-blue-600 transition-colors"
-                  >
-                    {comment.usuario.nombre} {comment.usuario.apellido}
-                  </Link>
-                  <p className="text-sm text-gray-700 mt-1 leading-relaxed">{comment.contenido}</p>
-                </div>
-                <span className="text-xs text-gray-400 block mt-2 font-light">
-                  {formatDistanceToNow(new Date(comment.createdAt), { locale: es, addSuffix: true })}
-                </span>
-              </div>
-            </motion.div>
-          ))
-        ) : null}
-        {!isInModal && effectiveComentarios > 1 && (
-          <button
-            onClick={onOpenModal}
-            className="text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors mt-2"
-            aria-label="Ver todos los comentarios"
-          >
-            Ver más comentarios ({effectiveComentarios - 1})
-          </button>
-        )}
-        {isInModal && hasMore && (
-          <div ref={observerRef} className="mt-4">
-            {infiniteIsLoadingComments && <p className="text-sm text-gray-400 font-light">Cargando más comentarios...</p>}
+      {/* Lista Comments */}
+<div className="mb-0">
+  {infiniteIsLoadingComments ? (
+    <>
+      <CommentSkeleton />
+      <CommentSkeleton />
+    </>
+  ) : localComments.length > 0 ? (
+    <div className="divide-y divide-gray-100 border border-gray-100 rounded-xl bg-white shadow-sm">
+      {localComments.slice(0, isInModal ? undefined : 1).map((comment) => (
+        <motion.div
+          key={comment.id}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className="flex gap-2 p-2"
+        >
+          {/* Avatar */}
+          <div className="relative w-10 h-10 rounded-full overflow-hidden ring-1 ring-gray-200 hover:ring-gray-300 transition-all">
+            <Image
+              src={comment.usuario.fotoPerfil || "/default-profile.png"}
+              alt={`${comment.usuario.nombre} ${comment.usuario.apellido}`}
+              fill
+              className="object-cover"
+              unoptimized
+            />
           </div>
-        )}
-      </div>
+
+          {/* Contenido comentario */}
+          <div className="flex-1">
+            <Link
+              href={`/perfil/${comment.usuario.id}`}
+              className="text-sm font-semibold text-gray-900 hover:text-blue-600 transition-colors"
+            >
+              {comment.usuario.nombre} {comment.usuario.apellido}
+            </Link>
+            <p className="text-sm text-gray-700 mt-1 leading-relaxed">
+              {comment.contenido}
+            </p>
+            <span className="text-xs text-gray-600 block mt-2 font-light">
+              {formatDistanceToNow(new Date(comment.createdAt), {
+                locale: es,
+                addSuffix: true,
+              })}
+            </span>
+          </div>
+        </motion.div>
+      ))}
+    </div>
+  ) : null}
+
+  {/* Ver más comentarios */}
+  {!isInModal && effectiveComentarios > 1 && (
+    <button
+      onClick={onOpenModal}
+      className="text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors mt-3"
+      aria-label="Ver todos los comentarios"
+    >
+      Ver más comentarios ({effectiveComentarios - 1})
+    </button>
+  )}
+
+  {/* Carga infinita en modal */}
+  {isInModal && hasMore && (
+    <div ref={observerRef} className="mt-4">
+      {infiniteIsLoadingComments && (
+        <p className="text-sm text-gray-400 font-light">
+          Cargando más comentarios...
+        </p>
+      )}
+    </div>
+  )}
+</div>
+
+
+      {/* Modal de autenticación */}
+      {mounted && createPortal(
+  <AnimatePresence>
+    {showAuthModal && (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]"
+        onClick={() => setShowAuthModal(false)}
+      >
+        <motion.div
+          initial={{ scale: 0.95, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.95, opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          className="bg-white rounded-xl p-6 max-w-sm w-full mx-4 shadow-xl"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <h2 className="text-xl font-bold mb-4 text-center text-gray-800">
+            Inicia sesión para interactuar
+          </h2>
+          <p className="text-gray-600 mb-6">
+            Para reaccionar o comentar en una publicación, debes estar autenticado. ¡Es un proceso sencillo y rápido!
+          </p>
+          <div className="flex justify-center gap-4">
+            <button
+              onClick={() => setShowAuthModal(false)}
+              className="px-4 py-2 bg-red-800 text-gray-100 rounded-lg hover:bg-red-500 transition-colors"
+            >
+              Cancelar
+            </button>
+            <button
+              onClick={() => router.push("/auth/login")}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-md"
+            >
+              <FaSignInAlt />
+              Iniciar sesión
+            </button>
+          </div>
+        </motion.div>
+      </motion.div>
+    )}
+  </AnimatePresence>,
+  document.body
+)}
+
     </div>
   );
 };

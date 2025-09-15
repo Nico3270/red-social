@@ -91,7 +91,7 @@ const UpdateLocationModal: React.FC<{ isOpen: boolean; onClose: () => void }> = 
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: 'spring', damping: 25, stiffness: 400, duration: 0.3 }}
-            className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden p-6 md:p-8 max-h-[80vh] overflow-y-auto"
+            className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl shadow-lg overflow-hidden p-6 md:p-8 max-h-[80vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <button onClick={onClose} className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition-colors">
@@ -269,10 +269,10 @@ export const TopMenuMobile = () => {
           <Link
             href="/"
             className="
-              group relative flex flex-col items-center justify-center 
-              w-18 h-18 md:w-14 md:h-14 
-              transition-all duration-300
-            "
+  group relative flex flex-col items-center justify-center 
+  w-14 h-14 
+  transition-all duration-300
+"
           >
             <Image
               src="/imgs/iconos/home.png"
@@ -296,10 +296,10 @@ export const TopMenuMobile = () => {
           <Link
             href={mounted && totalItemsInCart > 0 ? "/carro" : "/empty"}
             className="
-              group relative flex flex-col items-center justify-center 
-              w-12 h-12 md:w-14 md:h-14 
-              transition-all duration-300
-            "
+  group relative flex flex-col items-center justify-center 
+  w-14 h-14 
+  transition-all duration-300
+"
           >
             <Image
               src="/imgs/iconos/cart.png"
@@ -331,10 +331,10 @@ export const TopMenuMobile = () => {
           <Link
             href="/favoritos"
             className="
-              group relative flex flex-col items-center justify-center 
-              w-12 h-12 md:w-14 md:h-14 
-              transition-all duration-300
-            "
+  group relative flex flex-col items-center justify-center 
+  w-14 h-14 
+  transition-all duration-300
+"
           >
             <Image
               src="/imgs/iconos/heart.png"
@@ -361,8 +361,8 @@ export const TopMenuMobile = () => {
             </span>
           </Link>
 
-          {/* Crear */}
-          {isNegocio && (
+          {/* Crear o Crear Negocio */}
+          {isNegocio ? (
             <button
               onClick={() => setIsCrearModalOpen(true)}
               className="
@@ -378,16 +378,41 @@ export const TopMenuMobile = () => {
                 width={28}
                 height={28}
                 className="
-    w-7 h-7 md:w-8 md:h-8 text-gray-600 
-    transform transition-all duration-300 
-    group-hover:scale-110 group-hover:-translate-y-0.5 
-    group-hover:rotate-3
-  "
+  group relative flex flex-col items-center justify-center 
+  w-14 h-14 
+  transition-all duration-300
+"
               />
               <span className="text-[13px] md:text-[11px] font-medium mt-1 text-gray-500 group-hover:text-purple-600">
                 Crear
               </span>
             </button>
+          ) : (
+            <Link
+              href="/dashboard"
+              className="
+                group relative flex flex-col items-center justify-center 
+                w-16 h-16 md:w-14 md:h-14 
+                transition-all duration-300
+              "
+            >
+              <Image
+                src="/imgs/iconos/shop.png"
+                alt="Crear Negocio"
+                unoptimized
+                width={28}
+                height={28}
+                className=" ml-2
+    w-9 h-8 md:w-8 md:h-8 text-gray-600 
+    transform transition-all duration-300 
+    group-hover:scale-110 group-hover:-translate-y-0.5 
+    group-hover:rotate-3
+  "
+              />
+              <span className="whitespace-nowrap text-[12px] md:text-[11px] ml-4 font-medium mt-1 text-gray-500 group-hover:text-purple-600">
+                Mi Negocio
+              </span>
+            </Link>
           )}
 
           {/* Perfil */}

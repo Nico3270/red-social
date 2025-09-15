@@ -213,7 +213,7 @@ export const SocialMediaCarousel: React.FC<Props> = ({ publicacion, isInModal = 
 
         {/* Descripción */}
         {publicacion.descripcion && (
-          <div className="px-4 pt-2 pb-4 text-[18px] text-gray-800 leading-snug">
+          <div className="px-4 pt-2 pb-4  text-gray-800 leading-snug">
             <div
               className={`transition-all duration-300 ease-in-out overflow-hidden 
                 ${isInModal ? "max-h-[999px]" : "max-h-[4.8em]"} relative`}

@@ -29,8 +29,8 @@ export const authConfig: NextAuthConfig = {
 
           await prisma.usuario.create({
             data: {
-              nombre: user.name || profile?.name || "Usuario sin nombre",
-              apellido: "Google",
+              nombre: profile?.given_name || "Usuario",  // Usa given_name para el nombre (first name)
+              apellido: profile?.family_name || "Sin apellido",  // Usa family_name para el apellido (last name)
               username: (user.email?.split("@")[0] ?? "usuario") + Date.now(),
               email: user.email!,
               contraseña: hashedPassword,
@@ -93,7 +93,7 @@ export const authConfig: NextAuthConfig = {
         token.emailVerified = usuarioConNegocio.emailVerified ?? null;
         token.ciudad = usuarioConNegocio.ciudad ?? null;
         token.fotoPerfil = user.image || usuarioConNegocio.fotoPerfil || "/imgs/usuario-sin-foto.png"; // Prioriza image de Google si existe
-        
+
         // Nuevos campos
         token.negocioId = usuarioConNegocio?.negocio?.id ?? null;
         token.negocioSlug = usuarioConNegocio?.negocio?.slug ?? null;
@@ -133,7 +133,7 @@ export const authConfig: NextAuthConfig = {
         negocioNombre: token.negocioNombre as string | null,
         configReservation: token.configReservation as boolean, // Nuevo campo agregado
         configEncuestas: token.configEncuestas as boolean, // Nuevo campo agregado
-        fotoPerfil : token.fotoPerfil as string,
+        fotoPerfil: token.fotoPerfil as string,
         perfilCompleto: token.perfilCompleto as boolean,
       };
       return session;

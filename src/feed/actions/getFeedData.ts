@@ -407,10 +407,10 @@ export async function getFeedDataByType(
     console.log(`🔎 Detectando tipo de raw con keys:`, Object.keys(raw));
 
     if (isRawProduct(raw)) {
-      console.log("🛒 mapToFeedItem con PRODUCT", raw.id);
+      // console.log("🛒 mapToFeedItem con PRODUCT", raw.id);
       item = mapToFeedItem(raw, "product");
     } else if (isRawPublication(raw)) {
-      console.log("📰 mapToFeedItem con PUBLICATION", raw.id);
+      // console.log("📰 mapToFeedItem con PUBLICATION", raw.id);
       item = mapToFeedItem(raw, "publication");
       const enhancedData = item.data as EnhancedPublicacion;
       enhancedData.userReaction = userReactionsMap[raw.id] ?? null;
@@ -429,7 +429,7 @@ export async function getFeedDataByType(
       }));
       enhancedData.isAuthenticated = !!params.userId;
     } else if (isRawService(raw)) {
-      console.log("🛠️ mapToFeedItem con SERVICE", raw.id);
+      // console.log("🛠️ mapToFeedItem con SERVICE", raw.id);
       item = mapToFeedItem(raw, "service");
       console.log("✅ Item mapeado SERVICE:", item);
     } else if (isRawBusiness(raw)) {
@@ -466,12 +466,12 @@ export async function getFeedDataByType(
     if (type === "publications" && params.userId) {
       console.log(`User reactions: ${Object.keys(userReactionsMap).length} pubs`);
     }
-    console.log("📊 orderedItems detalle:", orderedItems.map(i => ({
-  id: i.id,
-  type: i.type,
-  negocioId: (i.data as { negocioId?: string }).negocioId,
-  isFollowed: i.isFollowed
-})));
+//     console.log("📊 orderedItems detalle:", orderedItems.map(i => ({
+//   id: i.id,
+//   type: i.type,
+//   negocioId: (i.data as { negocioId?: string }).negocioId,
+//   isFollowed: i.isFollowed
+// })));
   }
 
   return { items: orderedItems.slice(0, params.limit), nextCursor };

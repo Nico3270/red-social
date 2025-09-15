@@ -1,16 +1,17 @@
 // src/components/follow/FollowButton.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaCheck, FaTimes, FaUserPlus, FaUserCheck, FaUserTimes } from "react-icons/fa";
+import { FaCheck, FaTimes, FaUserPlus, FaUserCheck, FaUserTimes, FaSignInAlt } from "react-icons/fa";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 import clsx from "clsx";
-import Link from "next/link";
 import { checkIsFollowing, toggleFollow } from "../actions/toggleFollow";
+import { createPortal } from "react-dom";
+import { useRouter } from "next/navigation";
 
 interface FollowButtonProps {
   followedId: string; // ID del negocio o usuario a seguir
@@ -25,6 +26,12 @@ export const FollowButton: React.FC<FollowButtonProps> = ({ followedId, type, cl
   const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [hoverUnfollow, setHoverUnfollow] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Query para verificar si el usuario sigue al target
   const { data: isFollowing = false, isLoading } = useQuery({
@@ -76,15 +83,15 @@ export const FollowButton: React.FC<FollowButtonProps> = ({ followedId, type, cl
         onTouchEnd={handleTouchEnd}
         disabled={isLoading || mutation.isPending}
         className={clsx(
-  "rounded-full font-medium text-sm transition-all duration-300 flex items-center justify-center shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2",
-  version === 1 ? "px-4 py-2 min-w-[120px]" : "p-2 w-8 h-8",
-  isFollowing
-    ? hoverUnfollow
-      ? "bg-red-100 text-red-600 hover:bg-red-200"
-      : "bg-green-500 text-white hover:bg-green-600"
-    : "bg-blue-600 text-white hover:bg-blue-700",
-  className
-)}
+          "rounded-full font-medium text-sm transition-all duration-300 flex items-center justify-center shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2",
+          version === 1 ? "px-4 py-2 min-w-[120px]" : "p-2 w-8 h-8",
+          isFollowing
+            ? hoverUnfollow
+              ? "bg-red-100 text-red-600 hover:bg-red-200"
+              : "bg-green-500 text-white hover:bg-green-600"
+            : "bg-blue-600 text-white hover:bg-blue-700",
+          className
+        )}
         aria-label={isFollowing ? (hoverUnfollow ? "Dejar de seguir" : "Siguiendo") : "Seguir"}
       >
         <AnimatePresence mode="wait">
@@ -159,48 +166,49 @@ export const FollowButton: React.FC<FollowButtonProps> = ({ followedId, type, cl
       </button>
 
       {/* Modal para no autenticados (mismo que antes, pero con estilos responsivos) */}
-      <AnimatePresence>
-        {isModalOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
-            onClick={() => setIsModalOpen(false)}
-          >
+      {mounted && createPortal(
+        <AnimatePresence>
+          {isModalOpen && (
             <motion.div
-              initial={{ scale: 0.95, y: 50 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.95, y: 50 }}
-              transition={{ type: "spring", damping: 20 }}
-              className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl relative mx-4" // Responsive: mx-4 para mobile
-              onClick={(e) => e.stopPropagation()}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]"
+              onClick={() => setIsModalOpen(false)}
             >
-              <h3 className="text-lg font-bold text-gray-900 mb-4 text-center">
-                ¡Para seguir, inicia sesión!
-              </h3>
-              <p className="text-sm text-gray-600 mb-6 text-center">
-                Regístrate o inicia sesión para seguir perfiles y personalizar tu feed.
-              </p>
-              <div className="flex gap-4">
-                <button
-                  onClick={() => setIsModalOpen(false)}
-                  className="flex-1 bg-gray-200 text-gray-800 py-2 rounded-lg hover:bg-gray-300 transition"
-                >
-                  Cancelar
-                </button>
-                <Link
-                  href={`/auth/login?callbackUrl=${encodeURIComponent(pathname)}`}
-                  className="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition text-center"
-                >
-                  Iniciar Sesión
-                </Link>
-              </div>
+              <motion.div
+                initial={{ scale: 0.95, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.95, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="bg-white rounded-xl p-6 max-w-sm w-full mx-4 shadow-xl"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <h2 className="text-xl font-bold mb-4 text-gray-800 text-center">Inicia sesión para interactuar</h2>
+                <p className="text-gray-800 mb-4">
+                  Para seguir un perfil, debes estar autenticado. ¡Es un proceso sencillo y rápido!
+                </p>
+                <div className="flex justify-center gap-4">
+                  <button
+                    onClick={() => setIsModalOpen(false)}
+                    className="px-4 py-2 bg-red-800 text-gray-200 rounded-lg hover:bg-red-500 transition-colors"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    onClick={() => router.push(`/auth/login?callbackUrl=${encodeURIComponent(pathname)}`)}
+                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-md"
+                  >
+                    <FaSignInAlt />
+                    Iniciar sesión
+                  </button>
+                </div>
+              </motion.div>
             </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </>
   );
 };

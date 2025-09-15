@@ -33,7 +33,7 @@ export const CompletePerfilInformation = ({ userId }: { userId: string }) => {
   const [selectedCity, setSelectedCity] = useState("");
   const [cities, setCities] = useState<string[]>([]);
   const router = useRouter();
-  const { update, data:session } = useSession(); // Para actualizar sesión en tiempo real
+  const { update} = useSession(); // Para actualizar sesión en tiempo real
 
   const {
     register,
@@ -93,7 +93,7 @@ export const CompletePerfilInformation = ({ userId }: { userId: string }) => {
     await update({ perfilCompleto: true });
 
     // Redirección SPA elegante
-    router.push("/dashboard");
+    router.push("/");
   };
 
   return (
@@ -109,8 +109,8 @@ export const CompletePerfilInformation = ({ userId }: { userId: string }) => {
       <p className="text-center text-gray-600 mb-8">
         ¡Bienvenido! Para personalizar tu experiencia y conectar mejor con la comunidad, por favor completa estos detalles. Es rápido y sencillo.
       </p>
-      <p>{userId}</p>
-      <pre className="text-red-500">{JSON.stringify(session?.user, null, 2)}</pre>
+      {/* <p>{userId}</p>
+      <pre className="text-red-500">{JSON.stringify(session?.user, null, 2)}</pre> */}
       
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* Campo hidden para ciudad completa */}
@@ -194,7 +194,10 @@ export const CompletePerfilInformation = ({ userId }: { userId: string }) => {
             onChange={(date: Date | null) => {
               setSelectedDate(date);
               if (date) {
-                setValue("fechaNacimiento", date);
+                setValue("fechaNacimiento", date, { shouldValidate: true });
+              } else {
+                setValue("fechaNacimiento", new Date("1990-01-01")); 
+
               }
             }}
             peekNextMonth
@@ -214,6 +217,25 @@ export const CompletePerfilInformation = ({ userId }: { userId: string }) => {
             <span className="text-red-500 text-sm mt-1">{errors.fechaNacimiento.message}</span>
           )}
         </div>
+
+        {/* Campo hidden para fechaNacimiento con validación de edad */}
+        <input
+          type="hidden"
+          {...register("fechaNacimiento", {
+            required: "La fecha de nacimiento es requerida",
+            validate: (value: Date | null) => {
+              if (!value) return "La fecha de nacimiento es requerida";
+              const today = new Date("2025-09-15");
+              const birthDate = new Date(value);
+              let age = today.getFullYear() - birthDate.getFullYear();
+              const monthDiff = today.getMonth() - birthDate.getMonth();
+              if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+              }
+              return age >= 18 || "Debes ser mayor de 18 años";
+            },
+          })}
+        />
 
         {errorMessage && <span className="text-red-500 text-sm block text-center">{errorMessage}</span>}
 

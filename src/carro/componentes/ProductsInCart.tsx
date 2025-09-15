@@ -88,19 +88,42 @@ export const ProductsInCart = () => {
   };
 
   if (numNegocios === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center h-[50vh] bg-gray-50 rounded-2xl shadow-sm">
-        <h2 className="text-2xl font-light text-gray-600 mb-4">Tu carrito está vacío</h2>
-        <p className="text-gray-500 mb-6">Explora productos premium y agrega tus favoritos.</p>
+  return (
+    <div className="flex  items-center justify-center min-h-[70vh] p-0">
+      <div className="bg-white backdrop-blur-sm border border-gray-200 rounded-3xl shadow-md p-2 flex flex-col items-center text-center  w-full">  
+        {/* Imagen principal */}
+        <div className="relative w-48 h-48 sm:w-48 sm:h-48 mb-2">
+          <Image
+            src="/imgs/emptyCar.png"
+            alt="Carrito vacío"
+            fill
+            className="object-contain drop-shadow-lg"
+            unoptimized
+          />
+        </div>
+
+        {/* Texto */}
+        <h2 className="text-2xl sm:text-3xl font-semibold text-gray-800 mb-2">
+          Tu carrito está vacío
+        </h2>
+        <p className="text-gray-500 text-base sm:text-lg mb-6 max-w-sm">
+          Explora productos <span className="text-gray-700 font-medium">premium</span> y agrega tus favoritos.
+        </p>
+
+        {/* Botón */}
         <Link
           href="/"
-          className="bg-blue-600 text-white px-6 py-3 rounded-full font-medium hover:bg-blue-700 transition-all duration-300 shadow-sm"
+          className="bg-blue-600 text-white px-8 py-3 rounded-full font-medium hover:bg-blue-700 
+                     transition-all duration-300 shadow-md"
         >
           Volver al catálogo
         </Link>
       </div>
-    );
-  }
+    </div>
+  );
+}
+
+
 
   if (isLoading) {
     return (

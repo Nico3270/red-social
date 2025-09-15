@@ -60,15 +60,15 @@ const SideBarDashboard: React.FC = () => {
           <Image
             src="/imgs/Logo Final (1).png"
             alt="Logo Myckeo"
-            width={40}
-            height={40}
+            width={50}
+            height={50}
             unoptimized
             className="rounded-full"
           />
           {/* Mostrar nombre si el sidebar está abierto o en móviles - Con shadow sutil para elegancia */}
           {(isSidebarOpen || typeof window !== "undefined" && window.innerWidth < 640) && (
             <span
-              className="text-lg font-bold tracking-tight relative text-gray-900"
+              className="text-xl font-bold tracking-tight relative text-gray-900"
               style={{ textShadow: "1px 1px 2px rgba(0,0,0,0.15)" }}
             >
               Myckeo
@@ -79,22 +79,22 @@ const SideBarDashboard: React.FC = () => {
 
       {/* Menú de navegación - Flexible y con scroll si excede altura */}
       <nav className="flex-1 p-4 overflow-y-auto">
-        <ul className="space-y-2">
+        <ul className="space-y-3">
           {items.map((item) => (
             <li key={item.path}>
               <Link
                 href={item.path}
-                className={`flex items-center p-2 rounded-lg transition-colors duration-200 ${
+                className={`flex items-center p-3 rounded-lg transition-colors duration-200 ${
                   pathname === item.path
                     ? "bg-gray-700 text-white"
                     : "text-gray-300 hover:bg-gray-700 hover:text-white"
                 }`}
                 aria-label={item.name} // Accesibilidad premium, como en LinkedIn
               >
-                <span className="text-xl">{item.icon}</span>
+                <span className="text-3xl sm:text-xl">{item.icon}</span>
                 {/* Mostrar nombres si sidebar abierto o mobile - Responsive y elegante */}
                 {(isSidebarOpen || typeof window !== "undefined" && window.innerWidth < 640) && (
-                  <span className="ml-3 text-sm">{item.name}</span>
+                  <span className="ml-3 text-base">{item.name}</span>
                 )}
               </Link>
             </li>

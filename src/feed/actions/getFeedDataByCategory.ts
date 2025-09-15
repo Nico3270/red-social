@@ -473,18 +473,18 @@ export async function getFeedDataByCategory(
   nextCursor = rawItems[rawItems.length - 1].id;
 }
 
-  if (process.env.NODE_ENV === "development") {
-    console.log(`getFeedDataByCategory(${type}, '${params.categoriaSlug}'): Fetched ${rawItems.length} raw (ciudad > depto > nacional) -> ${orderedItems.length} items`);
-    if (type === "publications" && params.userId) {
-      console.log(`User reactions: ${Object.keys(userReactionsMap).length} pubs`);
-    }
-    console.log("📊 orderedItems detalle:", orderedItems.map(i => ({
-      id: i.id,
-      type: i.type,
-      negocioId: (i.data as { negocioId?: string }).negocioId,
-      isFollowed: i.isFollowed
-    })));
-  }
+  // if (process.env.NODE_ENV === "development") {
+  //   console.log(`getFeedDataByCategory(${type}, '${params.categoriaSlug}'): Fetched ${rawItems.length} raw (ciudad > depto > nacional) -> ${orderedItems.length} items`);
+  //   if (type === "publications" && params.userId) {
+  //     console.log(`User reactions: ${Object.keys(userReactionsMap).length} pubs`);
+  //   }
+  //   console.log("📊 orderedItems detalle:", orderedItems.map(i => ({
+  //     id: i.id,
+  //     type: i.type,
+  //     negocioId: (i.data as { negocioId?: string }).negocioId,
+  //     isFollowed: i.isFollowed
+  //   })));
+  // }
 
   return { items: orderedItems.slice(0, params.limit), nextCursor };
 }

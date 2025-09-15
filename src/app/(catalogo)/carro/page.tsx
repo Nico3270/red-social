@@ -7,22 +7,13 @@ import { titulosPrincipales } from "@/config/fonts";
 
 export default function CarroPage() {
   return (
-    <div className="container mx-auto p-4">
+    <div className="w-full p-4 sm:mt-40 ">
       <h1
-        className={`text-3xl font-bold mb-4 text-center pt-2 ${titulosPrincipales.className} text-gray-800`}
+        className={`text-3xl font-bold my-4 text-center pt-2 ${titulosPrincipales.className} text-gray-800`}
       >
-        <span className="  pb-1 drop-shadow-sm">
           Tu Carrito de Compras
-        </span>
       </h1>
-
-
-      <div className="flex flex-col lg:flex-row gap-8">
-        {/* Columna principal para los productos */}
-        <div className="w-full sm:mt-40 mb-20 sm:mb-0">
-          <ProductsInCart />
-        </div>
-      </div>
+      <ProductsInCart />
     </div>
   );
 }

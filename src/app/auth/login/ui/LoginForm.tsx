@@ -9,6 +9,8 @@ import clsx from "clsx";
 import { signIn } from "next-auth/react";
 import { authenticate } from "@/actions/auth/login";
 import { useSearchParams } from "next/navigation";
+import Image from "next/image";
+import { titleFont } from "@/config/fonts";
 
 
 export const LoginForm = () => {
@@ -61,30 +63,40 @@ export const LoginForm = () => {
   return (
     <div className="md:w-1/2 bg-white flex flex-col justify-center p-8">
       <div className="max-w-md w-full mx-auto">
+        <div className="flex justify-center items-center mb-4">
+          <Image
+            src="/imgs/Logo Final (1).png" // Reemplaza con la ruta real de tu logo
+            alt="Myckeo Logo"
+            width={100}
+            height={100}
+            className="mr-2"
+          />
+          <h1 className={`text-3xl font-bold text-gray-800 ${titleFont.className}`}>Bienvenido a Myckeo</h1>
+        </div>
         <h1 className="text-4xl font-bold mb-4 text-center">Iniciar Sesión</h1>
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
-            <label htmlFor="email" className="block font-bold">
+            <label htmlFor="email" className="block font-bold text-gray-800">
               Correo Electrónico
             </label>
             <input
               type="email"
               name="email"
-              className="w-full border rounded-lg p-2 mt-2 focus:outline-none focus:ring-2 focus:ring-red-600"
+              className="w-full border rounded-lg p-2 mt-2 focus:outline-none focus:ring-2 text-gray-800 focus:ring-red-600"
               placeholder="Ingresa tu correo"
               required
             />
           </div>
           {/* Campo contraseña con botón para mostrar/ocultar */}
           <div>
-            <label htmlFor="password" className="block font-bold">
+            <label htmlFor="password" className="block font-bold text-gray-800">
               Contraseña
             </label>
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
                 name="password"
-                className="w-full border rounded-lg p-2 mt-2 pr-10 focus:outline-none focus:ring-2 focus:ring-red-600"
+                className="w-full border rounded-lg text-gray-800 p-2 mt-2 pr-10 focus:outline-none focus:ring-2 focus:ring-red-600"
                 placeholder="Ingresa tu contraseña"
                 required
               />
@@ -99,7 +111,7 @@ export const LoginForm = () => {
           </div>
           
           <div className="flex items-center justify-between">
-            <label className="flex items-center">
+            <label className="flex items-center text-gray-800">
               <input type="checkbox" className="mr-2" />
               <span>Recuérdame</span>
             </label>
