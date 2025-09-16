@@ -83,7 +83,7 @@ const ResumeReservations: React.FC<ResumeReservationsProps> = ({
     setResponseMessage({ message: res.message, isError: !res.ok });
 
     if (res.ok) {
-      console.log("Eliminación exitosa, llamando onSuccess y cerrando modal en 1.5s");
+      // console.log("Eliminación exitosa, llamando onSuccess y cerrando modal en 1.5s");
       onSuccess(); // Notifica al padre para refrescar global (sync DB)
       setConfirmDeleteId(null);
       // Cierre automático con delay para ver mensaje
@@ -116,7 +116,7 @@ const ResumeReservations: React.FC<ResumeReservationsProps> = ({
     setResponseMessage({ message: res.message, isError: !res.ok });
 
     if (res.ok) {
-      console.log("Cambio de estado exitoso, llamando onSuccess y cerrando modal en 1.5s");
+      // console.log("Cambio de estado exitoso, llamando onSuccess y cerrando modal en 1.5s");
       onSuccess(); // Notifica al padre para refrescar global
       setConfirmChange(null);
       // Cierre automático con delay
@@ -335,7 +335,7 @@ const ResumeReservations: React.FC<ResumeReservationsProps> = ({
               negocioId={negocioId}
               onClose={() => setShowEditSlotModal(false)}
               onSuccess={() => {
-                console.log("Edición exitosa desde EditReservationSlotSelector, llamando onSuccess y cerrando ResumeReservations en 1.5s");
+                // console.log("Edición exitosa desde EditReservationSlotSelector, llamando onSuccess y cerrando ResumeReservations en 1.5s");
                 onSuccess(); // Refresca dashboard
                 // Cierre automático con delay
                 setTimeout(() => {

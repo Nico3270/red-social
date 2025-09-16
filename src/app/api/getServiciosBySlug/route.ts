@@ -30,15 +30,15 @@ export async function GET(req: Request) {
 }
 
 
-    const idNegocio= negocioId?.id;
-    console.log(idNegocio);
+  
+    // console.log(idNegocio);
 
     const servicios = await prisma.servicio.findMany({
       where: { negocioId: negocioId?.id },
       orderBy: { createdAt: "desc" },
       include: { multimedia: { orderBy: { orden: "asc" } } },
     });
-    console.log({servicios});
+    // console.log({servicios});
 
     return NextResponse.json({
       ok: true,

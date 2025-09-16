@@ -70,7 +70,7 @@ export async function getInformacionReserva(idReserva:string):Promise<ReservaInf
             }
         })
 
-        console.log({infoReserva}, "getInfoNegocioWhatsapp");
+        // console.log({infoReserva}, "getInfoNegocioWhatsapp");
         
         if(infoReserva){
             return {

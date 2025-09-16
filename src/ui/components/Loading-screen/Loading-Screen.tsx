@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { SeccionesFont } from "@/config/fonts";
+import {  titulosPrincipales } from "@/config/fonts";
 
 interface LoadingScreenProps {
   isLoading: boolean;
@@ -12,8 +12,8 @@ interface LoadingScreenProps {
 
 export default function LoadingScreen({
   isLoading,
-  imageUrl = "https://res.cloudinary.com/dkfsejtx9/image/upload/v1741196902/magicSurprise_images/Bienvenida_ixf7k2.png",
-  message = " Bienvenido a MagiSurprise Tunja",
+  imageUrl = "/imgs/tienda_contacto.png",
+  message = " Bienvenido a Myckeo",
 }: LoadingScreenProps) {
   return (
     <AnimatePresence>
@@ -34,7 +34,7 @@ export default function LoadingScreen({
               className="object-contain"
             />
           </div>
-          <p className={`mt-4 text-center color-principal text-2xl font-semibold ${SeccionesFont.className}`}>{message}</p>
+          <p className={`mt-4 text-center color-principal text-2xl font-semibold ${titulosPrincipales.className}`}>{message}</p>
         </motion.div>
       )}
     </AnimatePresence>

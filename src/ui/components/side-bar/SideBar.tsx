@@ -33,7 +33,7 @@ type MenuItem = {
 const menuConfig: Record<"admin" | "user" | "negocio", MenuItem[]> = {
   user: [
     { name: "Dashboard", link: "/dashboard", icon: <DashboardIcon /> },
-    { name: "Perfil", link: "/dashboard/perfil", icon: <FaMoneyBillTransfer /> },
+    // { name: "Perfil", link: "/dashboard/perfil", icon: <FaMoneyBillTransfer /> },
   ],
   admin: [
     { name: "Perfil", link: "/dashboard/perfil", icon: <FaMoneyBillTransfer /> },

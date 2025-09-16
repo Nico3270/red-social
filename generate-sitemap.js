@@ -5,11 +5,11 @@ const { PrismaClient } = require("@prisma/client");
 const fs = require("fs");
 
 const prisma = new PrismaClient();
-const siteUrl = "https://magisurprise.com";
+const siteUrl = "https://myckeo.com";
 
 (async () => {
   try {
-    console.log("🔍 Fetching dynamic product slugs...");
+    // console.log("🔍 Fetching dynamic product slugs...");
     const products = await prisma.product.findMany({ select: { slug: true } });
 
     const urls = products.map((product) => {
@@ -33,7 +33,7 @@ const siteUrl = "https://magisurprise.com";
       </urlset>`;
 
     fs.writeFileSync("public/sitemap-dynamic.xml", sitemapContent.trim());
-    console.log("✅ Dynamic sitemap generated successfully!");
+    // console.log("✅ Dynamic sitemap generated successfully!");
 
     await prisma.$disconnect();
   } catch (error) {

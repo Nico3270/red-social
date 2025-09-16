@@ -37,7 +37,7 @@ export async function createProduct(formData: FormData): Promise<CreacionProduct
         }
 
 
-        console.log("Extrayendo datos del formData...");
+        // console.log("Extrayendo datos del formData...");
         const nombre = formData.get("nombre") as string;
         const precio = parseFloat(formData.get("precio") as string);
         const descripcion = formData.get("descripcion") as string;
@@ -51,21 +51,21 @@ export async function createProduct(formData: FormData): Promise<CreacionProduct
         const componentes = formData.getAll("componentes") as string[];
         const categoryId = formData.get("categoriaId") as string;
 
-        console.log("Datos extraídos:", {
-            nombre,
-            precio,
-            descripcion,
-            descripcionCorta,
-            slug,
-            prioridad,
-            status,
-            tags,
-            seccionIds,
-            imageUrls,
-            componentes,
-            categoryId,
-            usuarioId,
-        });
+        // console.log("Datos extraídos:", {
+        //     nombre,
+        //     precio,
+        //     descripcion,
+        //     descripcionCorta,
+        //     slug,
+        //     prioridad,
+        //     status,
+        //     tags,
+        //     seccionIds,
+        //     imageUrls,
+        //     componentes,
+        //     categoryId,
+        //     usuarioId,
+        // });
 
         // Validaciones
         if (!nombre || !descripcion || isNaN(precio) || imageUrls.length === 0 || !categoryId) {
@@ -110,20 +110,20 @@ export async function createProduct(formData: FormData): Promise<CreacionProduct
             }
         }
 
-        console.log("Datos enviados a tx.product.create:", {
-            nombre,
-            precio,
-            descripcion,
-            descripcionCorta: descripcionCorta || undefined,
-            slug,
-            prioridad,
-            status,
-            componentes,
-            negocioId: negocio.id,
-            categoryId,
-            imagenes: imageUrls.map((url) => ({ url })),
-            tags,
-        });
+        // console.log("Datos enviados a tx.product.create:", {
+        //     nombre,
+        //     precio,
+        //     descripcion,
+        //     descripcionCorta: descripcionCorta || undefined,
+        //     slug,
+        //     prioridad,
+        //     status,
+        //     componentes,
+        //     negocioId: negocio.id,
+        //     categoryId,
+        //     imagenes: imageUrls.map((url) => ({ url })),
+        //     tags,
+        // });
         const product = await prisma.$transaction(async (tx) => {
             const newProduct = await tx.product.create({
                 data: {
@@ -143,7 +143,7 @@ export async function createProduct(formData: FormData): Promise<CreacionProduct
                     tags,
                 },
             });
-            console.log("Validando secciones...");
+            // console.log("Validando secciones...");
             // Relacionar el producto con las secciones si existen
             if (seccionIds.length > 0) {
                 const sectionsExist = await tx.section.findMany({
@@ -153,7 +153,7 @@ export async function createProduct(formData: FormData): Promise<CreacionProduct
                     throw new Error("Una o más secciones especificadas no existen.");
                 }
 
-                console.log("Creando relaciones con secciones...");
+                // console.log("Creando relaciones con secciones...");
                 await tx.productSection.createMany({
                     data: seccionIds.map((sectionId) => ({
                         productId: newProduct.id,
@@ -164,13 +164,13 @@ export async function createProduct(formData: FormData): Promise<CreacionProduct
 
             return newProduct;
         });
-        console.log("Producto creado exitosamente:", product);
+        // console.log("Producto creado exitosamente:", product);
         revalidateTag(`negocio-products-${negocio.slug}`);
         return { ok: true, product, message: "Producto creado exitosamente." };
     } catch (error) {
         // Verificar si el error es de Prisma
         if (error instanceof Prisma.PrismaClientKnownRequestError) {
-            console.log("Error capturado en createProduct:", error);
+            // console.log("Error capturado en createProduct:", error);
             if (error.code === "P2002") {
                 return { ok: false, message: "El slug ya está en uso." };
             }

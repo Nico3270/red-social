@@ -62,7 +62,7 @@ export async function sendWhatsAppMessage({
   };
 
   try {
-    console.log('Body enviado a WhatsApp API:', JSON.stringify(body, null, 2)); // Log formateado elegante
+    // console.log('Body enviado a WhatsApp API:', JSON.stringify(body, null, 2)); // Log formateado elegante
     const response = await fetch(url, {
       method: 'POST',
       headers: {
@@ -80,7 +80,7 @@ export async function sendWhatsAppMessage({
     }
 
     const data = await response.json();
-    console.log('Notificación enviada exitosamente:', data); // Log de éxito para monitoreo
+    // console.log('Notificación enviada exitosamente:', data); // Log de éxito para monitoreo
     return { ok: true, data };
   } catch (error) {
     console.error('Error enviando mensaje WhatsApp:', error);

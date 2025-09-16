@@ -433,58 +433,66 @@ export default function PerfilUsuarioHeader({
         <div className="border-b border-gray-200 my-6"></div>
 
         {/* Tabs: Mejora responsive - scrollable en mobile */}
-        <div className="flex justify-center sm:justify-between gap-2 sm:gap-3 border-b border-blue-400 pb-2 px-4 sm:px-0 overflow-x-auto whitespace-nowrap">
-          {tabs.map((tab) => {
-            const isActive = activeTab === tab;
-            const icon =
-              tab === "Publicaciones" ? (
-                <FaRegNewspaper
-                  className={clsx(
-                    "text-lg",
-                    isActive ? "text-blue-600" : "text-gray-500"
-                  )}
-                />
-              ) : tab === "Productos" ? (
-                <FaStore
-                  className={clsx(
-                    "text-lg",
-                    isActive ? "text-green-600" : "text-gray-500"
-                  )}
-                />
-              ) : (
-                <FaBriefcase
-                  className={clsx(
-                    "text-lg",
-                    isActive ? "text-yellow-600" : "text-gray-500"
-                  )}
-                />
-              );
+        <div className="flex justify-center sm:justify-between gap-2 sm:gap-3 
+                px-2 sm:px-0 py-2 border-b border-gray-200 
+                overflow-x-auto whitespace-nowrap bg-white/80 backdrop-blur-md rounded-2xl shadow-sm">
+  {tabs.map((tab) => {
+    const isActive = activeTab === tab;
+    const icon =
+      tab === "Publicaciones" ? (
+        <FaRegNewspaper
+          className={clsx(
+            "text-lg",
+            isActive ? "text-blue-600" : "text-gray-400 group-hover:text-blue-500"
+          )}
+        />
+      ) : tab === "Productos" ? (
+        <FaStore
+          className={clsx(
+            "text-lg",
+            isActive ? "text-green-600" : "text-gray-400 group-hover:text-green-500"
+          )}
+        />
+      ) : (
+        <FaBriefcase
+          className={clsx(
+            "text-lg",
+            isActive ? "text-yellow-600" : "text-gray-400 group-hover:text-yellow-500"
+          )}
+        />
+      );
 
-            return (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={clsx(
-                  "flex items-center gap-2 py-2 px-4 sm:px-6 rounded-xl transition-all duration-200 font-medium min-w-max",  // min-w-max para no wrap en mobile
-                  isActive
-                    ? "bg-gray-100 shadow-sm text-gray-900"
-                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-                )}
-                aria-current={isActive ? "page" : undefined}
-                aria-expanded={isActive}  // Mejora: Accesibilidad para screen readers
-              >
-                {icon}
-                <span>{tab}</span>
-              </button>
-            );
-          })}
-        </div>
+    return (
+      <button
+        key={tab}
+        onClick={() => setActiveTab(tab)}
+        className={clsx(
+          "relative group flex items-center gap-2 py-2 px-4 sm:px-6 font-medium text-sm sm:text-base  rounded-xl transition-all duration-200 min-w-max focus:outline-none",
+          isActive
+            ? "text-gray-900 bg-gray-100 shadow-sm"
+            : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+        )}
+        aria-current={isActive ? "page" : undefined}
+        aria-expanded={isActive}
+      >
+        {icon}
+        <span>{tab}</span>
+
+        {/* Indicador debajo de la tab activa */}
+        {isActive && (
+          <span className="absolute bottom-0 left-0 right-0 h-[3px] bg-gray-800 rounded-t-full"></span>
+        )}
+      </button>
+    );
+  })}
+</div>
+
 
         {/* Tab Content */}
         <div className="mt-6 transition-opacity duration-300 ease-in-out space-y-6">
           {activeTab === "Publicaciones" && (
             <div className="flex flex-col items-center gap-3 text-gray-700 text-base sm:text-lg">
-              <FaRegNewspaper className="text-blue-600 text-xl" />
+              
               {/* Nuevo: Error Boundary local para graceful UX */}
               <TabErrorBoundary fallback={
                 <div className="text-center text-gray-500 p-8 rounded-lg bg-gray-50">
@@ -500,18 +508,7 @@ export default function PerfilUsuarioHeader({
                 {publicaciones && publicaciones.length > 0 ? (
                   <FeedPublicaciones
                     publicaciones={publicaciones}  // Flujo intacto: EnhancedPublicacion[] pasa directo para userReaction en Interactions
-                    widgets={[
-                      {
-                        id: "widget-1",
-                        titulo: "Oferta Especial",
-                        contenido: "¡Descubre nuestras promociones!",
-                      },
-                      {
-                        id: "widget-2",
-                        titulo: "Publicidad",
-                        contenido: "Espacio para anuncios.",
-                      },
-                    ]}
+                    
                   />
                 ) : (
                   <p className="text-gray-600 text-sm sm:text-base">

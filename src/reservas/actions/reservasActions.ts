@@ -214,12 +214,12 @@ export async function blockSlot(data: unknown): Promise<ActionResponse> {
   if (!parsed.success) return { ok: false, message: "Datos inválidos" };
 
   const { negocioId, fechaHoraInicio, fechaHoraFin } = parsed.data;
-  console.log({ negocioId, fechaHoraInicio, fechaHoraFin });
+  // console.log({ negocioId, fechaHoraInicio, fechaHoraFin });
 
   try {
     // Verificación de ownership
     const negocio = await prisma.negocio.findUnique({ where: { id: negocioId } });
-    console.log("Negocio encontrado:", negocio);
+    // console.log("Negocio encontrado:", negocio);
     if (!negocio || negocio.id !== session.user.negocioId) {
       return { ok: false, message: "No tienes permiso para bloquear en este negocio" };
     }
@@ -236,7 +236,7 @@ export async function blockSlot(data: unknown): Promise<ActionResponse> {
       usuarioId: session.user.id || null,
     };
     reservaSchema.parse(reservaData);  // Validación opcional con Zod
-    console.log("Intentando crear reserva con data:", reservaData);
+    // console.log("Intentando crear reserva con data:", reservaData);
 
     // Crea reserva
     const createdReserva = await prisma.reservation.create({

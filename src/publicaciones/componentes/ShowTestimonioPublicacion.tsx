@@ -6,12 +6,12 @@ import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
 import { Typography } from "@mui/material";
-import { titulo1 } from "@/config/fonts";
 import Interactions from "@/interacciones/componentes/Interactions";
 import PublicationModal from "./PublicationModal";
 import { motion } from "framer-motion";
 import { FollowButton } from "@/feed/componentes/FollowButton";
 import { EnhancedPublicacion } from "../interfaces/enhancedPublicacion.interface";
+import { titleFont } from "@/config/fonts";
 
 
 interface Productos {
@@ -141,12 +141,13 @@ export const ShowTestimonioPublicacion = ({ publicacion, productos, isInModal = 
               alt="Avatar del negocio"
               fill
               className="object-cover"
+              unoptimized={true} // Evita problemas con imágenes externas
             />
           </div>
           <div className="flex-1 min-w-0"> {/* min-w-0 para truncate en móviles */}
             <Link
               href={`/perfil/${publicacion.negocio.slug}`}
-              className={`font-semibold text-red-800 hover:text-blue-600 transition-colors duration-200 truncate ${titulo1.className}`}
+              className={`font-semibold text-red-800 hover:text-blue-600 transition-colors duration-200 truncate ${titleFont.className}`}
             >
               {publicacion.negocio?.nombre || "Negocio Desconocido"}
             </Link>

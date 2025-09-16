@@ -20,7 +20,7 @@ export const getNegocioProductsBySlug = async (
     if (!slug) {
       return { ok: false, message: "El slug del negocio es obligatorio." };
     }
-    console.log("slug del negocio", { slug });
+    // console.log("slug del negocio", { slug });
 
     const products = await prisma.product.findMany({
       where: { negocio: { slug } },
@@ -72,7 +72,7 @@ export const getNegocioProductsBySlug = async (
         },
       },
     });
-    console.log({ products });
+    // console.log({ products });
 
     if (!products || products.length === 0) {
       return { ok: true, products: [], message: "No hay más productos." }; // Cambio clave aquí

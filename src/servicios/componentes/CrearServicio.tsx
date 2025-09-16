@@ -119,7 +119,7 @@ const CrearServicio: React.FC<Props> = ({ servicio, onCancel, onSuccess }) => {
       negocioFotoPerfil: "", // Rellenado en backend
     };
 
-    console.log({ submissionData });
+    // console.log({ submissionData });
 
     const result = await createUpdateServicio(submissionData);
     setAlert({ type: result.ok ? "success" : "error", message: result.message });

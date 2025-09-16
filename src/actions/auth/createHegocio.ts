@@ -44,7 +44,7 @@ const generateSlug = async (nombre: string, ciudad: string): Promise<string> => 
 
 export async function createNegocio(formData: FormData): Promise<CreacionNegocio> {
 
-    console.log("Extracción de datos del formulario...");
+    // console.log("Extracción de datos del formulario...");
     try {
         const nombre = formData.get("nombre") as string;
         const descripcion = formData.get("descripcion") as string;
@@ -57,19 +57,19 @@ export async function createNegocio(formData: FormData): Promise<CreacionNegocio
         const seccionesIds = formData.getAll("seccionIds") as string[];
 
         // Validaciones
-        console.log("Validando datos obligatorios...");
-        console.log({ nombre, descripcion, ciudad, categoriaIds, seccionesIds, departamento, direccion, telefonoContacto, usuarioId });
+        // console.log("Validando datos obligatorios...");
+        // console.log({ nombre, descripcion, ciudad, categoriaIds, seccionesIds, departamento, direccion, telefonoContacto, usuarioId });
         if (!nombre || !descripcion || !ciudad || categoriaIds.length === 0 || seccionesIds.length === 0 || !departamento ) {
             return { ok: false, message: "Faltan datos obligatorios.", negocioId: "", slugNegocio: "" };
         }
 
-        console.log("Validación de ID de usuario...");
+        // console.log("Validación de ID de usuario...");
 
         if (!usuarioId) {
             return { ok: false, message: "El ID del usuario es obligatorio.", negocioId: "", slugNegocio: "" };
         }
 
-        console.log("Validando usuario...");
+        // console.log("Validando usuario...");
         // Validar que el usuario existe
         const usuarioExists = await prisma.usuario.findUnique({
             where: { id: usuarioId },
@@ -151,7 +151,7 @@ export async function createNegocio(formData: FormData): Promise<CreacionNegocio
             return nuevoNegocio;
         });
 
-        console.log("Negocio creado exitosamente:", negocio);
+        // console.log("Negocio creado exitosamente:", negocio);
         return {
             ok: true,
             message: "Negocio creado exitosamente.",

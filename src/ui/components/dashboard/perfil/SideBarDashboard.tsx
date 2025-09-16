@@ -29,7 +29,7 @@ const SideBarDashboard: React.FC = () => {
   // Array para roles 'negocio' - Opciones completas y premium
   const navItemsNegocio: NavItem[] = [
     { name: "Inicio", path: "/", icon: <FaHome /> },
-    { name: "Perfil", path: "/dashboard/perfil", icon: <FaUser /> },
+    { name: "Perfil", path: "/dashboard", icon: <FaUser /> },
     { name: `${nombreNegocio}`, path: `/perfil/${slug}`, icon: <FaUser /> },
     { name: "Nuevo producto", path: "/dashboard/productos/nuevo_producto", icon: <IoMdAddCircle /> },
     { name: "Productos", path: "/dashboard/productos", icon: <FaBox /> },
@@ -45,7 +45,7 @@ const SideBarDashboard: React.FC = () => {
   // Array para otros roles - Opciones básicas para onboarding elegante
   const navItems: NavItem[] = [
     { name: "Inicio", path: "/", icon: <FaHome /> },
-    { name: "Perfil", path: "/dashboard/perfil", icon: <FaUser /> },
+    { name: "Perfil", path: "/dashboard", icon: <FaUser /> },
     { name: "Crear Negocio", path: `/crear_negocio/${session?.user.id}`, icon: <FaStore /> },
   ];
 
@@ -53,9 +53,9 @@ const SideBarDashboard: React.FC = () => {
   const items = role === 'negocio' ? navItemsNegocio : navItems;
 
   return (
-    <div className="flex flex-col h-full bg-gray-800 text-white">
+    <div className="flex flex-col h-full bg-gray-900 text-white z-50">
       {/* Logo y nombre de la aplicación - Centrado y responsive */}
-      <div className="flex items-center justify-center sm:mt-0 mt-10 pt-5 sm:pt-3 sm:p-3 border-b bg-white border-gray-700">
+      <div className="flex items-center justify-center sm:mt-0 mt-10 pt-5 sm:pt-0.5 sm:p-3 border-b bg-white border-gray-700 ">
         <Link href="/" className="flex items-center space-x-2">
           <Image
             src="/imgs/Logo Final (1).png"
@@ -78,7 +78,7 @@ const SideBarDashboard: React.FC = () => {
       </div>
 
       {/* Menú de navegación - Flexible y con scroll si excede altura */}
-      <nav className="flex-1 p-4 overflow-y-auto">
+      <nav className="flex-1 p-4 overflow-y-auto z-50">
         <ul className="space-y-3">
           {items.map((item) => (
             <li key={item.path}>

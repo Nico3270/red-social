@@ -10,13 +10,13 @@ interface UserReaction {
   id: string;
 }
 
-interface PublicacionesNegocioProps {
-  slug: string;
-  tipo?: PublicacionTipo;
-  skip?: number;
-  take?: number;
-  userId?: string;
-}
+// interface PublicacionesNegocioProps {
+//   slug: string;
+//   tipo?: PublicacionTipo;
+//   skip?: number;
+//   take?: number;
+//   userId?: string;
+// }
 
 interface PublicacionesResult {
   ok: boolean;
@@ -37,8 +37,8 @@ export async function GET(
   const tipo = (url.searchParams.get("tipo") as PublicacionTipo) || undefined;
   const userId = url.searchParams.get("userId") || undefined;
 
-  const props: PublicacionesNegocioProps = { slug, tipo, skip, take, userId };
-  console.log("API: Request params:", props);
+  // const props: PublicacionesNegocioProps = { slug, tipo, skip, take, userId };
+  // console.log("API: Request params:", props);
 
   if (!slug || !/^[a-z0-9-]+$/i.test(slug)) {
     return NextResponse.json<PublicacionesResult>(
@@ -129,15 +129,15 @@ export async function GET(
       take,
     });
 
-    console.log("API: Fetched publicaciones:", publicaciones.length);
-    console.log(
-      "API: Publicaciones details:",
-      publicaciones.map((pub) => ({
-        id: pub.id,
-        tipo: pub.tipo,
-        createdAt: pub.createdAt.toISOString(),
-      }))
-    );
+    // console.log("API: Fetched publicaciones:", publicaciones.length);
+    // console.log(
+    //   "API: Publicaciones details:",
+    //   publicaciones.map((pub) => ({
+    //     id: pub.id,
+    //     tipo: pub.tipo,
+    //     createdAt: pub.createdAt.toISOString(),
+    //   }))
+    // );
 
     let userReactions: UserReaction[] = [];
     if (userId) {
@@ -218,7 +218,7 @@ export async function GET(
       };
     });
 
-    console.log("API: Returning publicaciones:", formattedPublicaciones.length);
+    // console.log("API: Returning publicaciones:", formattedPublicaciones.length);
     return NextResponse.json<PublicacionesResult>(
       {
         ok: true,

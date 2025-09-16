@@ -64,7 +64,7 @@ const FormCrearCarruselImagenes = ({ infoPublicacion, onCancel, onSuccess }: Pro
 
     useEffect(() => {
         const parsedInfo = infoPublicacionJson ? JSON.parse(infoPublicacionJson) : undefined;
-        console.log('Form_Carrusel_imagenes mounted/updated, infoPublicacion:', parsedInfo);
+        // console.log('Form_Carrusel_imagenes mounted/updated, infoPublicacion:', parsedInfo);
         if (parsedInfo) {
             reset({
                 descripcion: parsedInfo.descripcion || "",

@@ -50,7 +50,7 @@ async function fetchWithPriority<T extends SortableItem>(
     items = [...items, ...sortGroup(cityItems)];
     remaining -= cityItems.length;
     if (process.env.NODE_ENV === "development") {
-      console.log(`🔍 ${type} ciudad: ${cityItems.length} items (ciudad: ${params.ciudad})`);
+      // console.log(`🔍 ${type} ciudad: ${cityItems.length} items (ciudad: ${params.ciudad})`);
     }
   } catch (e) {
     console.error(`Error en ${type} ciudad:`, e);
@@ -63,7 +63,7 @@ async function fetchWithPriority<T extends SortableItem>(
       items = [...items, ...sortGroup(deptItems)];
       remaining -= deptItems.length;
       if (process.env.NODE_ENV === "development") {
-        console.log(`🔍 ${type} depto excluyendo ciudad: +${deptItems.length} (depto: ${params.departamento})`);
+        // console.log(`🔍 ${type} depto excluyendo ciudad: +${deptItems.length} (depto: ${params.departamento})`);
       }
     } catch (e) {
       console.error(`Error en ${type} depto:`, e);
@@ -328,7 +328,7 @@ export async function getFeedDataByType(
           break;
       case "services":
         rawItems = await fetchWithPriority<RawService>(fetchServicesCity, fetchServicesDept, fetchServicesNational, params, "services");
-        console.log({ rawItems }, "Servicios");
+        // console.log({ rawItems }, "Servicios");
         break;
       case "businesses":
         rawItems = await fetchWithPriority<RawBusiness>(fetchBusinessesCity, fetchBusinessesDept, fetchBusinessesNational, params, "businesses");
@@ -431,7 +431,7 @@ export async function getFeedDataByType(
     } else if (isRawService(raw)) {
       // console.log("🛠️ mapToFeedItem con SERVICE", raw.id);
       item = mapToFeedItem(raw, "service");
-      console.log("✅ Item mapeado SERVICE:", item);
+      // console.log("✅ Item mapeado SERVICE:", item);
     } else if (isRawBusiness(raw)) {
       item = mapToFeedItem(raw, "business");
     } else {

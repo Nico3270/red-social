@@ -57,13 +57,13 @@ export const actualizarPerfilNegocio = async (
   //   return { ok: false, message: "No tienes permiso para actualizar el perfil de este usuario." };
   // }
 
-  console.log("Validando que el negocio existe para el usuario:", usuarioId);
+  // console.log("Validando que el negocio existe para el usuario:", usuarioId);
   // Verificar si el negocio existe
   const negocio = await prisma.negocio.findUnique({
     where: { usuarioId },
     select: { id: true, slug: true },
   });
-  console.log("Negocio encontrado:", negocio);
+  // console.log("Negocio encontrado:", negocio);
 
   if (!negocio) {
     return { ok: false, message: "El usuario no tiene ningún negocio asociado." };
@@ -73,7 +73,7 @@ export const actualizarPerfilNegocio = async (
 
   try {
     // Validaciones adicionales
-    console.log("Validación del slug del negocio, coordenadas y categorías...");
+    // console.log("Validación del slug del negocio, coordenadas y categorías...");
 
 
     // 1. Verificar que el slug no esté en uso por otro negocio
@@ -119,7 +119,7 @@ export const actualizarPerfilNegocio = async (
       }
     }
 
-    console.log("Validaciones pasadas, procediendo a actualizar el perfil del negocio...  ");
+    // console.log("Validaciones pasadas, procediendo a actualizar el perfil del negocio...  ");
 
 
     const tieneUbicacion = !!(data.latitudNegocio && data.longitudNegocio);
@@ -150,7 +150,7 @@ export const actualizarPerfilNegocio = async (
       tiktok: data.tiktok ?? null,
       youtube: data.youtube ?? null,
     };
-    console.log("Ejecutando la transacción para actualizar el negocio...");
+    // console.log("Ejecutando la transacción para actualizar el negocio...");
 
     // Ejecutar la transacción
     const updatedNegocio = await prisma.$transaction(async (tx) => {
@@ -194,7 +194,7 @@ export const actualizarPerfilNegocio = async (
         },
       });
 
-      console.log("Ejecutando la transacción para actualizar el usuario...");
+      // console.log("Ejecutando la transacción para actualizar el usuario...");
 
       // Actualizar el usuario
       await tx.usuario.update({
@@ -206,7 +206,7 @@ export const actualizarPerfilNegocio = async (
     });
 
 
-    console.log("Perfil del negocio actualizado correctamente:", updatedNegocio);
+    // console.log("Perfil del negocio actualizado correctamente:", updatedNegocio);
     // Formatear el negocio actualizado para el frontend
     const negocioFormateado: InformacionInicialNegocio = {
       nombreNegocio: updatedNegocio.nombre,

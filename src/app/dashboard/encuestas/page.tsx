@@ -25,9 +25,7 @@ export default async function ReservasPage() {
   const slugNegocio = session.user.negocioSlug || ""; // Para revalidación
   const preguntas = await getPreguntasNegocio(slugNegocio)
 
-  console.log({preguntas});
-
- 
+  // console.log({preguntas});
 
   // Si es false (o undefined por seguridad), redirigir a la ruta de creación
   if (!session.user.configEncuestas || !preguntas.preguntas) {

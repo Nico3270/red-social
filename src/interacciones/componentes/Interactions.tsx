@@ -14,6 +14,7 @@ import { ReaccionTipo } from "@prisma/client";
 import { usePublicacionModalStore } from "@/store/publicacionModal/publicacionModalStore";
 import { useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
+import {  inter } from "@/config/fonts";
 
 interface CommentsPage {
   ok: boolean;
@@ -530,7 +531,7 @@ useEffect(() => {
           <div className="flex-1">
             <Link
               href={`/perfil/${comment.usuario.id}`}
-              className="text-sm font-semibold text-gray-900 hover:text-blue-600 transition-colors"
+              className={`text-sm font-semibold text-gray-900 hover:text-blue-600 transition-colors ${inter.className}`}
             >
               {comment.usuario.nombre} {comment.usuario.apellido}
             </Link>

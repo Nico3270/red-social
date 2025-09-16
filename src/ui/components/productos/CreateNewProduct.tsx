@@ -235,7 +235,7 @@ export default function CreateNewProduct() {
 
         try {
             const result = await generateDescriptionFromText(nombreProducto, caracteristicas, componentes);
-            console.log({ result });
+            // console.log({ result });
 
             if (result.ok) {
                 setValue("descripcion", result.description || "");

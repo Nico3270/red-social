@@ -11,7 +11,6 @@ export default async function PerfilPage() {
     }
     return (
         <div className="mt-0 sm:mt-40 flex flex-col items-center justify-center">
-            <pre>{JSON.stringify(session.user, null, 2)}</pre>
             <PerfilUsuarioHeader activeTabComponent="Productos"/>
 
         </div>

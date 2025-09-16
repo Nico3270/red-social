@@ -35,16 +35,17 @@ export async function notifyReservaConfirmadaCliente({
     template,
     descripcion,
     negocioId,
-    datos_pedido, 
+    datos_pedido,
     valor_compra,
     direccion,
     ciudad
 }: NotifyReservaConfirmadaClienteProps) {
     // Validaciones modernas: Asegura que los datos sean válidos para evitar envíos fallidos
-    console.log({negocioId}, "en notifyReservas");
-   const negocioInfo = await getInfoNegocioWhatsapp(negocioId);
+    // console.log({negocioId}, "en notifyReservas");
+    const negocioInfo = await getInfoNegocioWhatsapp(negocioId);
     if (!negocioInfo) {
-        throw new Error("Información del negocio no encontrada para enviar notificaciones");}
+        throw new Error("Información del negocio no encontrada para enviar notificaciones");
+    }
 
     const slugNegocio = negocioInfo?.slugNegocio
     const reservas_negocio = `http://localhost:3000/reservas/${slugNegocio}`; // Ajusta según tu dominio real
@@ -62,7 +63,7 @@ export async function notifyReservaConfirmadaCliente({
     // const variables = [nombreCliente, nombreNegocio, fechaHora, enlaceCancelar];
     let variables: string[] = [];
     let placeholderNames: string[] = [];
-    let languageCode =""
+    let languageCode = ""
 
     switch (template) {
         case PlantillaWhatsApp.CONFIRMACION_RESERVA_CLIENTE:
@@ -70,7 +71,7 @@ export async function notifyReservaConfirmadaCliente({
                 throw new Error("Faltan datos para la plantilla de confirmación de reserva al cliente");
             }
             variables = [nombre_cliente, nombre_negocio, fechaHora, enlace_cancelar, descripcion || ''];
-            console.log({variables});
+            // console.log({variables});
             placeholderNames = ['nombre_cliente', 'nombre_negocio', 'fecha_hora', 'enlace_cancelar', 'descripcion'];
             languageCode = "es_CO"
             break;
@@ -79,8 +80,8 @@ export async function notifyReservaConfirmadaCliente({
             if (!nombre_cliente || !telefono_cliente || !fechaHora) {
                 throw new Error("Faltan datos para la plantilla de confirmación de reserva al negocio");
             }
-            variables = [nombre_negocio, nombre_cliente, telefono_cliente, fechaHora,   enlace_reserva];
-            placeholderNames = ['nombre_negocio', 'nombre_cliente','telefono_cliente' , 'fecha_hora',  'enlace_reserva'];
+            variables = [nombre_negocio, nombre_cliente, telefono_cliente, fechaHora, enlace_reserva];
+            placeholderNames = ['nombre_negocio', 'nombre_cliente', 'telefono_cliente', 'fecha_hora', 'enlace_reserva'];
             languageCode = "es_CO"
             break;
 
@@ -89,7 +90,7 @@ export async function notifyReservaConfirmadaCliente({
                 throw new Error("Faltan datos para la plantilla de reserva cancelada por el usuario");
             }
             variables = [nombre_cliente, nombre_negocio, fechaHora, reservas_negocio];
-            placeholderNames = ['nombre_cliente','nombre_negocio', 'fecha_hora' ,'reservas_negocio'];
+            placeholderNames = ['nombre_cliente', 'nombre_negocio', 'fecha_hora', 'reservas_negocio'];
             languageCode = "es"
             break;
 
@@ -98,7 +99,7 @@ export async function notifyReservaConfirmadaCliente({
                 throw new Error("Faltan datos para la plantilla de reserva cancelada por el negocio");
             }
             variables = [nombre_cliente, nombre_negocio, fechaHora, telefono_cliente, enlace_reserva];
-            placeholderNames = ['nombre_cliente', 'nombre_negocio', 'fecha_hora', 'telefono_cliente' , 'enlace_reserva'];
+            placeholderNames = ['nombre_cliente', 'nombre_negocio', 'fecha_hora', 'telefono_cliente', 'enlace_reserva'];
             languageCode = "es"
             break;
 
@@ -107,39 +108,39 @@ export async function notifyReservaConfirmadaCliente({
                 throw new Error("Faltan datos para la plantilla de reserva reprogramada por el usuario");
             }
             variables = [nombre_cliente, nombre_negocio, fecha_anterior, fecha_nueva, enlace_cancelar];
-            placeholderNames = ['nombre_cliente','nombre_negocio', 'fecha_anterior' , 'fecha_nueva',  'enlace_cancelar'];
+            placeholderNames = ['nombre_cliente', 'nombre_negocio', 'fecha_anterior', 'fecha_nueva', 'enlace_cancelar'];
             languageCode = "es"
             break;
 
         case PlantillaWhatsApp.PEDIDO_CREADO_NEGOCIO:
-            if(!valor_compra || !datos_pedido || !nombre_cliente || !telefono_cliente ||!descripcion || !direccion){
+            if (!valor_compra || !datos_pedido || !nombre_cliente || !telefono_cliente || !descripcion || !direccion) {
                 throw new Error("Faltan datos para la plantilla de confirmación de pedido al negocio");
             }
-            variables = [ nombre_negocio, datos_pedido, valor_compra, nombre_cliente, telefono_cliente, direccion, descripcion];
-            placeholderNames = ['nombre_negocio',"datos_pedido", "valor_compra" ,'nombre_cliente', "telefono_cliente", "direccion", "descripcion"];
+            variables = [nombre_negocio, datos_pedido, valor_compra, nombre_cliente, telefono_cliente, direccion, descripcion];
+            placeholderNames = ['nombre_negocio', "datos_pedido", "valor_compra", 'nombre_cliente', "telefono_cliente", "direccion", "descripcion"];
             languageCode = "es"
             break;
 
         case PlantillaWhatsApp.PEDIDO_CREADO_USUARIO_USUARIO:
-            if(!valor_compra || !datos_pedido || !nombre_cliente || !direccion ||!ciudad){
+            if (!valor_compra || !datos_pedido || !nombre_cliente || !direccion || !ciudad) {
                 throw new Error("Faltan datos para la plantilla de confirmación de pedido creado por el usuario al usuario");
             }
-            variables = [ nombre_cliente, nombre_negocio, datos_pedido, valor_compra, direccion, ciudad];
-            placeholderNames = ['nombre_cliente', 'nombre_negocio',"datos_pedido", "valor_compra" , "direccion", "ciudad"];
+            variables = [nombre_cliente, nombre_negocio, datos_pedido, valor_compra, direccion, ciudad];
+            placeholderNames = ['nombre_cliente', 'nombre_negocio', "datos_pedido", "valor_compra", "direccion", "ciudad"];
             languageCode = "es"
             break;
 
         case PlantillaWhatsApp.PEDIDO_CREADO_NEGOCIO_USUARIO:
-            if(!nombre_cliente || !datos_pedido || !valor_compra || !direccion){
+            if (!nombre_cliente || !datos_pedido || !valor_compra || !direccion) {
                 throw new Error("Faltan datos para la plantilla de confirmación de pedido creado por el negocio al usuario");
             }
             variables = [nombre_cliente, nombre_negocio, datos_pedido, valor_compra, direccion];
-            placeholderNames = ['nombre_cliente', 'nombre_negocio',"datos_pedido", "valor_compra" , "direccion"];
+            placeholderNames = ['nombre_cliente', 'nombre_negocio', "datos_pedido", "valor_compra", "direccion"];
             languageCode = "es"
             break;
-        
+
         case PlantillaWhatsApp.PEDIDO_CANCELADO_NEGOCIO:
-            if(!nombre_cliente || !datos_pedido || !valor_compra){
+            if (!nombre_cliente || !datos_pedido || !valor_compra) {
                 throw new Error("Faltan datos para la plantilla de cancelación de pedido creado por el negocio al usuario");
             }
             variables = [nombre_cliente, nombre_negocio, datos_pedido, valor_compra];
@@ -152,12 +153,12 @@ export async function notifyReservaConfirmadaCliente({
     }
 
     // Llama a la genérica con ttl de 30 min (1800 seg) para notificaciones urgentes
-    console.log(`Enviando notificación WhatsApp a ${to} con plantilla ${templateName}`);
+    // console.log(`Enviando notificación WhatsApp a ${to} con plantilla ${templateName}`);
     if (variables.some(v => !v || v.trim() === '')) {
         throw new Error('Una o más variables de plantilla están vacías o inválidas');
     }
-    console.log('Placeholders esperados en plantilla (orden): {{1}}=nombre_cliente, {{2}}=nombre_negocio, {{3}}=fecha_hora, {{4}}=enlace_cancelar');
-console.log('Variables enviadas en orden:', variables);
+    //     console.log('Placeholders esperados en plantilla (orden): {{1}}=nombre_cliente, {{2}}=nombre_negocio, {{3}}=fecha_hora, {{4}}=enlace_cancelar');
+    // console.log('Variables enviadas en orden:', variables);
     return await sendWhatsAppMessage({
         to,
         templateName,

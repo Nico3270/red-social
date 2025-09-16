@@ -5,6 +5,7 @@ import Link from "next/link";
 import { motion } from "framer-motion"; // 🔥 Para animaciones
 import { initialData } from "@/seed/seed";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa"; // Icons elegantes para botones
+import { titleFont } from "@/config/fonts";
 
 export const MenuSectionsBar = () => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -79,7 +80,7 @@ export const MenuSectionsBar = () => {
                     transition={{ type: "spring", stiffness: 300, damping: 15 }}
                   />
                   <span
-                    className="text-xs md:text-sm mt-1 text-center leading-tight color-iconos"
+                    className={`text-xs md:text-sm mt-1 text-center leading-tight color-iconos ${titleFont.className}`}
                     style={{
                       wordBreak: "break-word",
                       whiteSpace: "normal",

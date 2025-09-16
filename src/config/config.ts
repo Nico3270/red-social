@@ -24,18 +24,18 @@ export const InfoEmpresa = {
   descripcion: "Myckeo: Red social-comercial para negocios locales, con perfiles profesionales, publicaciones multimedia y mapa de ubicación. Gestiona catálogo productos fácilmente y recibe reseñas que impulsan ventas. Crea tu tienda ahora.", // Entre 120 - 160 caracteres
   keywords: "Myckeo plataforma, tienda online gratis, crear tienda online, catálogo productos emprendedores, red social negocios locales, reseñas multimedia productos, perfil profesional independiente, QR negocio digital, feed publicaciones comerciales, agenda citas profesionales, tiendas online para pymes, conectar clientes WhatsApp, vitrina virtual emprendedores, reseñas clientes reales, plataforma social comercial",
   imagenesPlaceholder: {
-    domicilio: "/imgs/domicilio.webp",
-    emptyCart : "/imgs/empty_cart.webp",
-    notfound: "/imgs/image_not_found.webp",
-    imagenRepresentativa:"/imgs/logo final-1.png",
-    loginPage: "/imgs/logo final-1.png",
-    logoEmpresa : "/imgs/logo final-1.png",
-    noAutorizado: "/imgs/no_autorizado.webp",
-    registerPage: "/imgs/logo final-1.png",
-    imagenCarroVacio: "/imgs/empty_cart.webp",
-    imagenTiendaContacto: "/imgs/tienda_contacto.webp",
+    domicilio: "/imgs/domicilio.png",
+    emptyCart : "/imgs/emptyCar.png",
+    notfound: "/imgs/image_not_found.png",
+    imagenRepresentativa:"/imgs/Logo Final (1).png",
+    loginPage: "/imgs/Logo Final (1).png",
+    logoEmpresa : "/imgs/Logo Final (1).png",
+    noAutorizado: "/imgs/no_autorizado.wpng",
+    registerPage: "/imgs/Logo Final (1).png",
+    imagenCarroVacio: "/imgs/emptyCar.png",
+    imagenTiendaContacto: "/imgs/tienda_contacto.png",
   },
-  linkWebProduccion: "https://red-social-codex.vercel.app/"
+  linkWebProduccion: "https://myckeo.com"
 }
 
 

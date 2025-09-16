@@ -74,7 +74,7 @@ export const TestimonioCrearEditar = ({ infoPublicacion, onCancel, productos, on
 
   useEffect(() => {
     const parsedInfo = infoPublicacionJson ? JSON.parse(infoPublicacionJson) : undefined;
-    console.log('TestimonioCrearEditar mounted/updated, infoPublicacion:', parsedInfo);
+    // console.log('TestimonioCrearEditar mounted/updated, infoPublicacion:', parsedInfo);
     if (parsedInfo) {
       reset({
         descripcion: parsedInfo.descripcion || "",
@@ -102,7 +102,7 @@ export const TestimonioCrearEditar = ({ infoPublicacion, onCancel, productos, on
         publicacionId: infoPublicacion?.publicacionId,
       };
 
-      console.log({ submissionData });
+      // console.log({ submissionData });
 
       if (submissionData.contexto === "producto" && !submissionData.productoId) {
         throw new Error("Debes seleccionar un producto en este contexto.");

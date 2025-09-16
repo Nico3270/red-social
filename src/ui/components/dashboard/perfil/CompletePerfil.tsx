@@ -288,7 +288,7 @@ export const CompletePerfil = ({ informacionNegocio }: Props) => {
     try {
       // Verificar que la sesión y el ID del usuario existan
       if (!session || !session.user?.id) {
-        console.log("Sesión no válida:", session);
+        // console.log("Sesión no válida:", session);
         setResponseType("error");
         setMessage("No estás autenticado. Por favor, inicia sesión.");
         setLoading(false);
@@ -367,12 +367,12 @@ export const CompletePerfil = ({ informacionNegocio }: Props) => {
         estadoNegocio: data.estadoNegocio || EstadoNegocio.activo,
       };
 
-      console.log("Enviando datos a actualizarPerfilNegocio:", submitData);
+      // console.log("Enviando datos a actualizarPerfilNegocio:", submitData);
       // Llamar a la server action
       const response = await actualizarPerfilNegocio(session.user.id, submitData);
 
       if (!response.ok) {
-        console.log("Error en la server action:", response.message);
+        // console.log("Error en la server action:", response.message);
         setResponseType("error");
         setMessage(response.message || "Error al guardar la información.");
         setLoading(false);
@@ -381,12 +381,12 @@ export const CompletePerfil = ({ informacionNegocio }: Props) => {
 
       // Actualizar el rol si es un nuevo negocio
       if (!informacionNegocio) {
-        console.log("Actualizando rol a 'negocio'");
+        // console.log("Actualizando rol a 'negocio'");
         await update({ role: "negocio" });
       }
 
       if (!informacionNegocio) {
-        console.log("Actualizando rol y datos de negocio en sesión");
+        // console.log("Actualizando rol y datos de negocio en sesión");
         await update({
           role: "negocio",
           negocioId: response.negocio?.idNegocio,

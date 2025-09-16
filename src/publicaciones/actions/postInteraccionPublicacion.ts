@@ -77,7 +77,7 @@ export const postInteraccionPublicacion = async ({
 
     const revalidatePublications = (negocioSlug?: string | null) => {
   if (negocioSlug) {
-    console.log(`Revalidating tag for publications: negocio-publications-${negocioSlug}`);
+    // console.log(`Revalidating tag for publications: negocio-publications-${negocioSlug}`);
     revalidateTag(`negocio-publications-${negocioSlug}`);  // Ahora per-slug
   }
 };

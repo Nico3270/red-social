@@ -40,7 +40,7 @@ const LayoutDashboardComponent: React.FC<LayoutDashboardComponentProps> = ({ chi
   }
 
   return (
-    <Box sx={{ display: "flex", minHeight: "100vh", overflowX: "hidden" }}>
+    <Box sx={{ display: "flex", minHeight: "100vh", overflowX: "hidden", zIndex: 30 }}>
       <Box
         sx={{
           position: "fixed",
@@ -50,8 +50,9 @@ const LayoutDashboardComponent: React.FC<LayoutDashboardComponentProps> = ({ chi
           transition: "width 0.3s ease-in-out",
           bgcolor: "grey.800",
           zIndex: 11, // Increased zIndex to stack above the overlay
-          width: isSidebarOpen ? { xs: "80%", sm: "200px" } : "4rem",
+          width: isSidebarOpen ? { xs: "60%", sm: "250px" } : "4rem",
           display: isMobile && !isSidebarOpen ? "none" : "block",
+          
         }}
       >
         <SideBarDashboard />

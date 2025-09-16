@@ -67,10 +67,7 @@ export const getProductBySlug = async (slug: string): Promise<GetProductBySlug> 
         if (!product) {
             return { ok: false, message: "Producto no encontrado.", userId: "", productosSimilares: [], telefonoNegocio: "", nombreNegocio: "" };
         }
-        console.log("Producto encontrado:", product.id);
-
-
-
+        // console.log("Producto encontrado:", product.id);
         // Búsqueda de datos del negocio
         const negocio = await prisma.negocio.findUnique({
             where: { id: product.negocioId },
@@ -110,9 +107,7 @@ export const getProductBySlug = async (slug: string): Promise<GetProductBySlug> 
 
         //Busqueda de productos similares por negocio
 
-
-
-        console.log("Consultando productos similares...");
+        // console.log("Consultando productos similares...");
         const productosSimilares = await prisma.product.findMany({
             where: {
                 negocioId: product.negocioId,
@@ -158,7 +153,7 @@ export const getProductBySlug = async (slug: string): Promise<GetProductBySlug> 
         if (!productosSimilares) {
             return { ok: true, message: "Sin productos similares", userId: product.negocioId, productosSimilares: [], telefonoNegocio: negocio.telefonoContacto || "", nombreNegocio: negocio.nombre, product: productFormatted };
         }
-        console.log("Productos similares encontrados:", productosSimilares.length);
+        // console.log("Productos similares encontrados:", productosSimilares.length);
 
         const formattedProductosSimilares: ProductRedSocial[] = productosSimilares.map((p) => ({
             id: p.id,

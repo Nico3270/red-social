@@ -157,13 +157,13 @@ export const ProductGridWithSectionFilter = ({ initialProducts, slug, take = 10 
               onClick={() => setSelectedSectionId(isSelected ? null : sec.id)}
               className={clsx(
                 "flex flex-col items-center justify-center px-3 py-0 rounded-xl transition-colors",
-                isSelected ? "bg-gray-700 text-gray-100" : "hover:bg-gray-100 text-gray-600"
+                isSelected ? "bg-gray-500 text-gray-100" : "hover:bg-gray-100 text-gray-600"
               )}
             >
               <div
                 className={clsx(
                   "w-8 h-8 rounded-full flex items-center justify-center mb-1 overflow-hidden",
-                  isSelected ? "bg-gray-600 text-white" : "bg-gray-100"
+                  isSelected ? "bg-gray-500 text-white" : "bg-gray-100"
                 )}
               >
                 <Image

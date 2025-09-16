@@ -157,7 +157,7 @@ export const CreateNegocioForm = ({ id }: IdUsuario) => {
             formData.append("usuarioId", id);
 
             // Log para depuración
-            console.log("Enviando datos al servidor:", Object.fromEntries(formData));
+            // console.log("Enviando datos al servidor:", Object.fromEntries(formData));
 
             // Llamar a la server action
             const response = await createNegocio(formData);
@@ -169,7 +169,7 @@ export const CreateNegocioForm = ({ id }: IdUsuario) => {
             }
 
             // ✅ Paso 1: Refrescar la sesión desde el backend
-            console.log("Actualizando sesión con role: negocio");
+            // console.log("Actualizando sesión con role: negocio");
             await update({ role: "negocio" });
             await update({ negocioNombre: data.nombre || "" });
             await update({ negocioSlug: response.slugNegocio});

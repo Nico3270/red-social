@@ -5,12 +5,12 @@ import { BsWhatsapp } from "react-icons/bs";
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
-import { descripcionCard, titulo1, tituloCard } from "@/config/fonts";
+import { descripcionCard, tituloCard } from "@/config/fonts";
 import { InfoEmpresa as empresa } from "@/config/config";
 import { AddFavorites } from "./AddFavorites";
 import { Precio } from "./Precio";
 import { ProductRedSocial } from "@/interfaces/productRedSocial.interface";
-import { initialData, Section } from "@/seed/seed";
+// import { initialData, Section } from "@/seed/seed";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCartCatalogoStore } from "@/store/carro/carro-store";
 import { FollowButton } from "@/feed/componentes/FollowButton";
@@ -36,12 +36,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     `Precio: $${product.precio.toFixed(2)}\n\n` +
     `Puedes ver más detalles aquí: ${urlWebProduccion}/producto/${product.slug}`
   );
-  const productSections = product.sections
-    .map((id) => initialData.secciones.find((s) => s.id === id))
-    .filter((s): s is Section => !!s);
-  const category = initialData.categorias.find((c) => c.id === product.categoriaId);
-  const categorySlug = category?.slug || "categoria";
-  const sectionSlug = productSections[0]?.slug || "sin-seccion";
+  // const productSections = product.sections
+  //   .map((id) => initialData.secciones.find((s) => s.id === id))
+  //   .filter((s): s is Section => !!s);
+  // const category = initialData.categorias.find((c) => c.id === product.categoriaId);
+  // const categorySlug = category?.slug || "categoria";
+  // const sectionSlug = productSections[0]?.slug || "sin-seccion";
 
   const handleAddToCart = () => {
     if (!product.slugNegocio) {
@@ -86,6 +86,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
               alt={`Perfil de ${product.nombreNegocio}`}
               fill
               className="object-cover"
+              unoptimized
             />
           </div>
 
@@ -93,41 +94,45 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           {product.nombreNegocio && product.slugNegocio && (
             <Link
               href={`/perfil/${product.slugNegocio}`}
-              className={`font-semibold text-gray-800 hover:text-blue-700 text-md transition-colors duration-200 ${titulo1.className}`}
+              className={`font-semibold text-gray-800 hover:text-blue-700 text-md sm:text-sm transition-colors duration-200 ${tituloCard.className}`}
             >
               {product.nombreNegocio}
             </Link>
           )}
         </div>
 
-        {/* Botón de seguir */}
-        <FollowButton
-          followedId={product.negocioId}
-          version={2}
-          type="USER_TO_BUSINESS"
-          className="text-sm"
-        />
+        <div className="flex items-center flex-row">
 
-        {/* Botón de favoritos premium */}
-        <div className="ml-2 z-20">
-          <AddFavorites
-            id={product.id}
-            title={product.nombre}
-            price={product.precio}
-            description={product.descripcion}
-            slug={product.slug}
-            images={product.imagenes}
-            descripcionCorta={product.descripcionCorta}
-            sections={product.sections}
-            slugNegocio={product.slugNegocio || ""}
+          {/* Botón de seguir */}
+          <FollowButton
+            followedId={product.negocioId}
+            version={2}
+            type="USER_TO_BUSINESS"
+            className="text-sm"
           />
+
+          {/* Botón de favoritos premium */}
+          <div className="ml-2 z-20">
+            <AddFavorites
+              id={product.id}
+              title={product.nombre}
+              price={product.precio}
+              description={product.descripcion}
+              slug={product.slug}
+              images={product.imagenes}
+              descripcionCorta={product.descripcionCorta}
+              sections={product.sections}
+              slugNegocio={product.slugNegocio || ""}
+            />
+          </div>
         </div>
+
+
       </div>
 
 
-
       {/* Imagen con enlace */}
-      <Link href={`/${categorySlug}/${sectionSlug}/${product.slug}`} className="block relative">
+      <Link href={`/producto/${product.slug}`} className="block relative">
         <div className="relative h-64 w-full cursor-pointer rounded-lg overflow-hidden"
           onMouseEnter={() => {
             if (product.imagenes.length > 1) {
@@ -151,7 +156,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       {/* Información del producto */}
       <div className="mt-2 flex flex-col flex-grow justify-between">
         <div>
-          <Link href={`/${categorySlug}/${sectionSlug}/${product.slug}`} className="block">
+          <Link href={`/producto/${product.slug}`} className="block">
             <h3
               className={`text-lg font-extrabold text-gray-800 ${tituloCard.className} transition duration-300 hover:text-blue-700`}
               style={{ textShadow: "0.5px 0.5px 1px rgba(0, 0, 0, 0.1)" }}
@@ -178,7 +183,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                 rel="noopener noreferrer"
                 className="bg-gradient-to-r from-green-500 to-green-600 p-3 rounded-full hover:from-green-600 hover:to-green-700 flex items-center justify-center transition-all duration-300"
               >
-                <BsWhatsapp className="text-white text-2xl" />
+                <BsWhatsapp className="text-white text-2xl sm:text-xl" />
               </Link>
 
               {/* Botón de Carrito */}

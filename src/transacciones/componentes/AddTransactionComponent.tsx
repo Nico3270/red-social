@@ -193,7 +193,7 @@ const localDateStr = todayLocal.toLocaleDateString('sv-SE'); // formato YYYY-MM-
         response = await editTransaction({ ...submitData, transactionId: initialData?.transactionId });
       } else {
         // Modo add
-        console.log('Fecha enviada:', fullDate.toISOString());
+        // console.log('Fecha enviada:', fullDate.toISOString());
         response = await addTransaction(submitData);
       }
 

@@ -52,7 +52,7 @@ export const PostInteractions = ({
   const [isLiking, setIsLiking] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  console.log({ publicacionId, slug });
+  // console.log({ publicacionId, slug });
 
   const handleLike = useCallback(async () => {
     if (!session?.user?.id) {

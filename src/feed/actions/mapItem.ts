@@ -117,7 +117,7 @@ export function mapToFeedItem(raw: RawData, type: FeedItemType): FeedItem {
         numLikes: raw.numLikes,
       };
     case 'service':
-  console.log("🛠️ Entrando a case 'service' con raw:", raw);
+  // console.log("🛠️ Entrando a case 'service' con raw:", raw);
 
   if (!isRawService(raw)) {
     console.error("❌ raw NO matcha Service:", raw);
@@ -170,7 +170,7 @@ export function mapToFeedItem(raw: RawData, type: FeedItemType): FeedItem {
     status: raw.status,
   };
 
-  console.log("✅ mapToFeedItem service ->", serviceItem);
+  // console.log("✅ mapToFeedItem service ->", serviceItem);
 
   return serviceItem;
 

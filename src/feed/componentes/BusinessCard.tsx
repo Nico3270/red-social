@@ -5,7 +5,7 @@ import { SiGooglemaps } from "react-icons/si"; // Para Maps
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
-import { descripcionCard, titulo1, } from "@/config/fonts";
+import { descripcionCard, titleFont, } from "@/config/fonts";
 import { BusinessCardData } from "../feed.interfaces";
 import { FollowButton } from "./FollowButton";
 import { motion, AnimatePresence } from "framer-motion";
@@ -57,7 +57,7 @@ export const BusinessCard: React.FC<BusinessCardProps> = ({ business }) => {
           <div className="flex items-center gap-2">
             <Link
               href={`/perfil/${business.slug}`}
-              className={`font-semibold text-red-800 hover:text-blue-700 text-md transition-colors duration-200 ${titulo1.className}`}
+              className={`font-semibold text-red-800 hover:text-blue-700 text-md transition-colors duration-200 ${titleFont.className}`}
             >
               {business.nombre}
             </Link>
@@ -190,7 +190,7 @@ export const BusinessCard: React.FC<BusinessCardProps> = ({ business }) => {
                   <div className="flex items-center gap-2">
                     <Link
                       href={`/perfil/${business.slug}`}
-                      className={`text-xl font-semibold text-gray-900 hover:text-blue-700 ${titulo1.className}`}
+                      className={`text-xl font-semibold text-gray-900 hover:text-blue-700 ${titleFont.className}`}
                     >
                       {business.nombre}
                     </Link>

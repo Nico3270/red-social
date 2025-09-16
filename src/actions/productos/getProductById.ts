@@ -14,9 +14,9 @@ interface GetProductById {
 }
 
 export async function getProductById(id: string): Promise<GetProductById> {
-  console.log("Iniciando getProductById con id:", id);
+  // console.log("Iniciando getProductById con id:", id);
   try {
-    console.log("Validando ID del producto...");
+    // console.log("Validando ID del producto...");
     if (!id) {
       return { ok: false, message: "El ID del producto es obligatorio.", userId:"Error" };
     }

@@ -89,7 +89,7 @@ export default function CrearReservasForm({ data, negocioId }: CrearReservasForm
     setLoading(false); // Desactiva loading
 
     if (result.ok) {
-      console.log("Éxito:", result.message, result.informacionReserva); // Maneja UI success (e.g., toast futuro)
+      // console.log("Éxito:", result.message, result.informacionReserva); // Maneja UI success (e.g., toast futuro)
       reset(); // Resetea form para limpieza
       await update({ configReservation: true }); // Actualiza solo el campo necesario
       router.push("/dashboard/reservas"); // Redirige con useRouter (suave y client-side)

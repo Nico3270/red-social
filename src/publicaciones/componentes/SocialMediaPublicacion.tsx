@@ -18,10 +18,9 @@ import "./socialMediaCarousel.css";
 import Interactions from "@/interacciones/componentes/Interactions";
 import PublicationModal from "./PublicationModal";
 import Link from "next/link";
-import { titulo1 } from "@/config/fonts";
-
 import { FollowButton } from "@/feed/componentes/FollowButton";
 import { EnhancedPublicacion } from "../interfaces/enhancedPublicacion.interface";
+import { titleFont } from "@/config/fonts";
 
 // Hook personalizado para obtener dimensiones de medios (sin cambios, optimizado)
 const useMediaDimensions = (url: string, tipo: "IMAGEN" | "VIDEO") => {
@@ -194,12 +193,13 @@ export const SocialMediaCarousel: React.FC<Props> = ({ publicacion, isInModal = 
               alt={`Foto de perfil de ${publicacion.negocio?.nombre || `${publicacion.usuario.nombre} ${publicacion.usuario.apellido}`}`}
               fill
               className="object-cover"
+              unoptimized
             />
           </div>
           <div className="flex-1">
             <Link
               href={`/perfil/${publicacion.negocio?.slug || publicacion.usuario.id}`}
-              className={`font-semibold text-red-800 hover:text-blue-600 transition-colors duration-200 cursor-pointer ${titulo1.className}`}
+              className={`font-semibold text-red-800 hover:text-blue-600 transition-colors duration-200 cursor-pointer ${titleFont.className}`}
             >
               {publicacion.negocio?.nombre || `${publicacion.usuario.nombre} ${publicacion.usuario.apellido}`}
             </Link>

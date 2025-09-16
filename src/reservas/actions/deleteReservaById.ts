@@ -29,7 +29,7 @@ export const deleteReservaById = async (id: string, nombre_cliente: string, fech
             }
         }
 
-        console.log({negocioId}," en deleReservaById");
+        // console.log({negocioId}," en deleReservaById");
 
 
         const notificacionCambio = await notifyReservaConfirmadaCliente(

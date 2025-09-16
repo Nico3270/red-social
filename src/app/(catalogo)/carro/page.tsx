@@ -7,7 +7,7 @@ import { titulosPrincipales } from "@/config/fonts";
 
 export default function CarroPage() {
   return (
-    <div className="w-full p-4 sm:mt-40 ">
+    <div className="w-full p-4 sm:mt-40 mb-20">
       <h1
         className={`text-3xl font-bold my-4 text-center pt-2 ${titulosPrincipales.className} text-gray-800`}
       >

@@ -6,7 +6,8 @@ import { IconButton, CircularProgress } from "@mui/material";
 import { FaTrashAlt } from "react-icons/fa";
 import { MdAddAPhoto } from "react-icons/md";
 import Image from "next/image";
-import { titulo1 } from "@/config/fonts";
+import { titleFont } from "@/config/fonts";
+
 
 interface Media {
   id: string;
@@ -171,7 +172,7 @@ const AutoUploadMedia: React.FC<AutoUploadMediaProps> = ({
     const uploadFile = async (mediaItem: Media) => {
       const fileId = mediaItem.id;
       if (uploadingFiles.has(fileId)) {
-        console.log("File already uploading, skipping:", fileId);
+        // console.log("File already uploading, skipping:", fileId);
         return;
       }
 
@@ -299,12 +300,12 @@ const AutoUploadMedia: React.FC<AutoUploadMediaProps> = ({
   return (
     <div className="mb-6">
       {titulo && (
-        <h1 className={`text-xl font-semibold shadow-md border border-gray-400 py-1 rounded-lg text-center text-gray-600 mb-4 ${titulo1.className}`}>
+        <h1 className={`text-xl font-semibold shadow-md border border-gray-400 py-1 rounded-lg text-center text-gray-600 mb-4 ${titleFont.className}`}>
           {titulo}
         </h1>
       )}
 
-      <h3 className={`text-xl font-semibold text-center text-indigo-600 mb-4 ${titulo1.className}`}>
+      <h3 className={`text-xl font-semibold text-center text-indigo-600 mb-4 ${titleFont.className}`}>
         {getTitleText()}
       </h3>
 

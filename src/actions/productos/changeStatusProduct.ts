@@ -28,7 +28,7 @@ export const changeStatusProduct = async (id: string, status: ProductStatus): Pr
     return { ok: true, message: "Estado del producto actualizado correctamente." };
 
   } catch (error: unknown) {
-    console.error("Error en changeStatusProduct:", error);
+    // console.error("Error en changeStatusProduct:", error);
     return {
       ok: false,
       message: error instanceof Error ? error.message : "Error inesperado al cambiar estado del producto.",

@@ -14,7 +14,7 @@ export default function CatalogoLayout({ children }: { children: React.ReactNode
 
   useEffect(() => {
     if (session?.user && !session.user.perfilCompleto) {
-      console.log(session.user.perfilCompleto);
+      // console.log(session.user.perfilCompleto);
       router.replace("/config/completePerfil"); // 👈 redirige sin dejar historial
     }
   }, [session, router]);

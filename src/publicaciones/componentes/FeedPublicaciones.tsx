@@ -5,14 +5,15 @@ import { motion } from "framer-motion";
 import Masonry from 'react-masonry-css';  // Para masonry estable y responsive
 import Image from "next/image";
 import Link from "next/link";
-import { FaFilter, FaStar } from "react-icons/fa";
+import { FaStar } from "react-icons/fa";
 import useSWRInfinite from "swr/infinite";
 import { ShowTestimonioPublicacion } from "@/publicaciones/componentes/ShowTestimonioPublicacion";
 import { SocialMediaCarousel } from "@/publicaciones/componentes/SocialMediaPublicacion";
-import clsx from "clsx";
+
 import "./FeedPublicaciones.css";
 import { PublicacionesResult } from "@/actions/perfil/getInfoPerfilSlugNegocio";
 import { EnhancedPublicacion, Media } from "../interfaces/enhancedPublicacion.interface";
+import clsx from "clsx";
 
 interface ProductDestacado {
   id: string;
@@ -141,7 +142,7 @@ const FeedPublicaciones = memo(function FeedPublicaciones({
 
   const getKey = (pageIndex: number, previousPageData: PublicacionesResult | null) => {
     if (hasReachedEndRef.current) {
-      console.log("getKey: Reached end, no more requests");
+      // console.log("getKey: Reached end, no more requests");
       return null;
     }
     const slug = initialPublicaciones[0]?.negocio?.slug;
@@ -151,7 +152,7 @@ const FeedPublicaciones = memo(function FeedPublicaciones({
     }
     const skip = initialPublicaciones.length + pageIndex * 10;
     const url = `/api/publicaciones/${slug}?skip=${skip}&take=10`;
-    console.log("getKey: pageIndex=", pageIndex, "skip=", skip, "url=", url);
+    // console.log("getKey: pageIndex=", pageIndex, "skip=", skip, "url=", url);
     if (previousPageData && (!previousPageData.publicaciones || previousPageData.publicaciones.length === 0)) {
       console.log("getKey: No more data, pageIndex=", pageIndex);
       hasReachedEndRef.current = true;
@@ -162,13 +163,13 @@ const FeedPublicaciones = memo(function FeedPublicaciones({
   };
 
   const fetcher = async (url: string) => {
-    console.log("Fetching URL:", url);
+    // console.log("Fetching URL:", url);
     const res = await fetch(url);
     if (!res.ok) {
       throw new Error(`HTTP error! status: ${res.status}`);
     }
     const data = await res.json();
-    console.log("Fetched data:", data);
+    // console.log("Fetched data:", data);
     return data as PublicacionesResult;
   };
 
@@ -285,7 +286,7 @@ const FeedPublicaciones = memo(function FeedPublicaciones({
     observer.current = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting && !isLoading && !isValidating && !hasReachedEndRef.current) {
-          console.log("Loading more publications, size:", size);
+          // console.log("Loading more publications, size:", size);
           setSize((prev) => prev + 1);
         }
       },
@@ -422,8 +423,8 @@ const FeedPublicaciones = memo(function FeedPublicaciones({
   const itemsHash = useMemo(() => publicacionesFiltradas.map(pub => pub.id).join(','), [publicacionesFiltradas]);
 
   return (
-    <div className="w-full px-4 sm:px-6 lg:px-8 py-6 min-h-screen overflow-y-auto">
-      <style>{styles}</style>
+    <div className="w-full px-1 sm:px-6 lg:px-8 py-2 min-h-screen overflow-y-auto">
+      <style>{styles}</style> 
       <div className="flex justify-between items-center mb-6">
         <div className="flex gap-2 flex-wrap">
           {["Recientes", "Populares", "Videos", "Carruseles"].map((f) => (
@@ -442,8 +443,8 @@ const FeedPublicaciones = memo(function FeedPublicaciones({
             </button>
           ))}
         </div>
-        <FaFilter className="text-gray-500 text-lg" aria-hidden="true" />
-      </div>
+
+      </div> 
 
       <div ref={masonryWrapperRef} className="flex-1">
         {!mounted ? (

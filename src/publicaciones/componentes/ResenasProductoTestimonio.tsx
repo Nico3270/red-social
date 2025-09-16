@@ -4,8 +4,8 @@ import React, { useState, useRef, useEffect } from "react";
 import { Button, Modal, Box } from "@mui/material";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import { MultimediaTipo } from "@prisma/client";
-import {  sansFont } from "@/config/fonts";
 import Image from "next/image";
+import { titleFont } from "@/config/fonts";
 
 interface ResenaProductoTestimonio {
     descripcion?: string;
@@ -116,7 +116,7 @@ export const ResenasProducto: React.FC<ResenasProductoProps> = ({ resenas }) => 
                                     )}
                                     <div className="mt-4 flex-grow">
                                         {hasMedia && (
-                                            <p className={`text-lg sm:text-xl text-gray-600 ${sansFont.className}`}>{truncateText(resena.descripcion, 150)}</p>
+                                            <p className={`text-lg sm:text-xl text-gray-600 ${titleFont.className}`}>{truncateText(resena.descripcion, 150)}</p>
                                         )}
                                     </div>
                                 </div>
@@ -183,7 +183,7 @@ export const ResenasProducto: React.FC<ResenasProductoProps> = ({ resenas }) => 
                                     )}
                                 </div>
                             )}
-                            <p className={`text-gray-700 ${sansFont.className}`}>{selectedResena.descripcion || "Sin descripción"}</p>
+                            <p className={`text-gray-700 ${titleFont.className}`}>{selectedResena.descripcion || "Sin descripción"}</p>
                             <p className="text-sm text-gray-500 mt-2">{formatDate(selectedResena.fechaCreacion)}</p>
                             <Button
                                 variant="outlined"

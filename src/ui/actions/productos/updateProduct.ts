@@ -30,7 +30,7 @@ export async function updateProduct(productId: string, formData: FormData): Prom
   const userSessionId = session.user.id;
 
   try {
-    console.log("Extrayendo datos del formData...");
+    // console.log("Extrayendo datos del formData...");
     const nombre = formData.get("nombre") as string;
     const precio = parseFloat(formData.get("precio") as string);
     const descripcion = formData.get("descripcion") as string;
@@ -65,20 +65,20 @@ export async function updateProduct(productId: string, formData: FormData): Prom
       return { ok: false, message: "El producto no pertenece al negocio del usuario." };
     }
 
-    console.log("Datos extraídos:", {
-      nombre,
-      precio,
-      descripcion,
-      slug,
-      usuarioId,
-      categoryId,
-      seccionIds,
-      imageUrls,
-      componentes,
-    });
+    // console.log("Datos extraídos:", {
+    //   nombre,
+    //   precio,
+    //   descripcion,
+    //   slug,
+    //   usuarioId,
+    //   categoryId,
+    //   seccionIds,
+    //   imageUrls,
+    //   componentes,
+    // });
 
     // Validations
-    console.log("Validando datos de entrada...");
+    // console.log("Validando datos de entrada...");
     if (!nombre || !descripcion || !precio || imageUrls.length === 0) {
       return { ok: false, message: "Faltan datos obligatorios: nombre, descripción, precio o imágenes." };
     }
@@ -131,7 +131,7 @@ export async function updateProduct(productId: string, formData: FormData): Prom
     //   return { ok: false, message: "Una o más URLs de imágenes no son válidas." };
     // }
 
-    console.log("Actualizando producto en transacción...");
+    // console.log("Actualizando producto en transacción...");
     const updatedProduct = await prisma.$transaction(async (tx) => {
       // Update product
       const product = await tx.product.update({
@@ -165,12 +165,12 @@ export async function updateProduct(productId: string, formData: FormData): Prom
       });
 
       // Validate and update sections
-      console.log("Validando secciones...");
+      // console.log("Validando secciones...");
       if (seccionIds.length > 0) {
         const sectionsExist = await tx.section.findMany({
           where: { id: { in: seccionIds } },
         });
-        console.log("Secciones encontradas:", sectionsExist);
+        // console.log("Secciones encontradas:", sectionsExist);
         if (sectionsExist.length !== seccionIds.length) {
           throw new Error("Una o más secciones especificadas no existen.");
         }
@@ -181,7 +181,7 @@ export async function updateProduct(productId: string, formData: FormData): Prom
         });
 
         // Create new product-section relations
-        console.log("Creando relaciones con secciones...");
+        // console.log("Creando relaciones con secciones...");
         await tx.productSection.createMany({
           data: seccionIds.map((sectionId) => ({
             productId,
@@ -198,7 +198,7 @@ export async function updateProduct(productId: string, formData: FormData): Prom
       return product;
     });
 
-    console.log("Producto actualizado exitosamente:", updatedProduct);
+    // console.log("Producto actualizado exitosamente:", updatedProduct);
     return {
       ok: true,
       product: { id: updatedProduct.id, slug: updatedProduct.slug },

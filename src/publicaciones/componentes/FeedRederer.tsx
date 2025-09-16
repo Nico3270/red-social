@@ -47,31 +47,31 @@ const PUBLICACIONES_SERVICIOS_BREAKPOINTS = {
   768: 1,
 } as const;
 
-const FeedRenderer: React.FC<FeedRendererProps> = ({ 
-  items, 
-  hasMore, 
-  isLoadingNext, 
-  sentinelRef, 
-  activeTab, 
-  onTabChange 
+const FeedRenderer: React.FC<FeedRendererProps> = ({
+  items,
+  hasMore,
+  isLoadingNext,
+  sentinelRef,
+  activeTab,
+  onTabChange
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
   const [isLayoutReady, setIsLayoutReady] = useState(false);
-  
+
   const masonryWrapperRef = useRef<HTMLDivElement | null>(null);
   const resizeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  
+
   useEffect(() => setMounted(true), []);
 
   // Función mejorada para forzar relayout
   const forceRelayout = useCallback((delay = 0) => {
     if (resizeTimeoutRef.current) clearTimeout(resizeTimeoutRef.current);
-    
+
     resizeTimeoutRef.current = setTimeout(() => {
       // Múltiples estrategias para forzar relayout
       window.dispatchEvent(new Event("resize"));
-      
+
       // Forzar recálculo de dimensiones del contenedor
       if (masonryWrapperRef.current) {
         const wrapper = masonryWrapperRef.current;
@@ -80,7 +80,7 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
         void wrapper.offsetHeight; // Forzar reflow sin expresión no usada
         wrapper.style.display = currentDisplay || '';
       }
-      
+
       // Segundo resize después de un breve delay
       setTimeout(() => window.dispatchEvent(new Event("resize")), 100);
     }, delay);
@@ -94,10 +94,6 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
       if (activeTab === "Publicaciones" && !isPublicationItem(item)) return false;
       return true;
     });
-
-    console.log("🌀 activeTab:", activeTab);
-    console.log("📦 items originales:", items);
-    console.log("✅ items filtrados:", filtrados);
 
     return filtrados;
   }, [items, activeTab]);
@@ -132,40 +128,40 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
   // Efecto principal para manejar cambios de tab y relayout
   useEffect(() => {
     if (!mounted) return;
-    
+
     const handleTabChange = async () => {
       setIsLayoutReady(false);
-      
+
       // Forzar re-mount del componente Masonry
       await new Promise(resolve => setTimeout(resolve, 100));
-      
+
       forceRelayout(0);
-      
+
       await new Promise(resolve => setTimeout(resolve, 300));
       setIsLayoutReady(true);
       forceRelayout(100);
     };
-    
+
     handleTabChange();
   }, [activeTab, mounted, forceRelayout]);
 
   // Efecto específico para manejar imágenes
   useEffect(() => {
     if (!masonryWrapperRef.current || !isLayoutReady) return;
-    
+
     let loaded = 0;
     const imgs = Array.from(masonryWrapperRef.current.querySelectorAll("img"));
-    
+
     if (imgs.length === 0) {
       forceRelayout(100);
       return;
     }
-    
+
     const checkAllLoaded = () => {
       loaded += 1;
       if (loaded >= imgs.length) {
         forceRelayout(50);
-        
+
         // Verificación adicional después de que todas las imágenes se carguen
         setTimeout(() => {
           const newImgs = Array.from(masonryWrapperRef.current?.querySelectorAll("img") || []);
@@ -176,7 +172,7 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
         }, 200);
       }
     };
-    
+
     imgs.forEach((img) => {
       if (img.complete) {
         checkAllLoaded();
@@ -185,7 +181,7 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
         img.addEventListener("error", checkAllLoaded);
       }
     });
-    
+
     return () => {
       imgs.forEach((img) => {
         img.removeEventListener("load", checkAllLoaded);
@@ -320,25 +316,30 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
-        className="flex justify-between lg:justify-around w-full px-1 mx-auto my-2 sm:mt-8 bg-white rounded-xl shadow-md border border-gray-100 overflow-x-auto lg:overflow-visible"
+        className="flex justify-between lg:justify-around w-full px-2 mx-auto my-2 sm:mt-8 
+             bg-white/80 backdrop-blur-md rounded-2xl shadow-sm border-b-2 border-gray-200 
+             overflow-x-auto lg:overflow-visible sticky top-0 z-10"
       >
-        {tabs.map((tab, index) => (
+        {tabs.map((tab) => (
           <button
             key={tab.label}
             onClick={() => onTabChange(tab.label)}
-            className={`flex-1 lg:flex-none flex items-center justify-center gap-1 lg:gap-2 px-2 lg:px-4 py-3 lg:py-4 font-semibold text-sm lg:text-base transition-all duration-200 hover:shadow-sm min-w-fit ${activeTab === tab.label
-              ? 'bg-blue-50 text-blue-600 border-b-2 border-blue-600'
-              : 'text-gray-600 hover:bg-gray-50'
-              } ${index < tabs.length - 1 ? 'border-r border-gray-100' : ''} focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-opacity-50`}
+            className={`relative flex-1 lg:flex-none flex items-center justify-center gap-2 
+                  px-3 lg:px-5 py-3 lg:py-4 font-medium text-sm lg:text-base transition-all 
+                  duration-300 rounded-xl
+                  ${activeTab === tab.label
+                ? "text-gray-600 bg-gray-70/90 shadow-sm border-b-4 border-gray-500"
+                : "text-gray-700 hover:text-gray-900 hover:bg-blue-300"
+              } 
+                  focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-opacity-50`}
             aria-label={`Cambiar a pestaña ${tab.label}`}
           >
             {tab.icon}
-            <span className={activeTab === tab.label ? 'inline' : 'inline'}>
-              {tab.label}
-            </span>
+            <span>{tab.label}</span>
           </button>
         ))}
       </motion.div>
+
 
       {renderCategoryFilter()}
 

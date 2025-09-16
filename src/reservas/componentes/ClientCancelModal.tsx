@@ -30,9 +30,8 @@ export function ClientCancelModal({ id, nombreCliente, fecha_hora, telefonoClien
     router.push("/");
   };
 
-  console.log(negocioId, "Client");
-  const idNegocio = negocioId
-  console.log({idNegocio});
+  // console.log(negocioId, "Client");
+  
 
   
 

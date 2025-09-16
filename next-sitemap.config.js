@@ -1,6 +1,6 @@
 /** @type {import('next-sitemap').IConfig} */
 module.exports = {
-  siteUrl: "https://magisurprise.com",
+  siteUrl: "https://myckeo.com",
   generateRobotsTxt: false,
   sitemapSize: 5000,
   exclude: [
@@ -14,6 +14,6 @@ module.exports = {
   ],
   generateIndexSitemap: false, // Asegura que genere un índice de sitemaps
   additionalSitemaps: [
-    "https://magisurprise.com/sitemap-dynamic.xml" // Agregamos el sitemap de productos dinámicos
+    "https://myckeo.com/sitemap-dynamic.xml" // Agregamos el sitemap de productos dinámicos
   ]
 };

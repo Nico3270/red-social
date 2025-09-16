@@ -34,7 +34,7 @@ function formatearFecha(fechaInput?: string | Date): string {
 export default async function EliminarReservaUsuarioPage({ params }: Props) {
   const { id } = await params;
   const infoReserva = await getInformacionReserva(id);
-  console.log(infoReserva);
+  // console.log(infoReserva);
 
   if (!infoReserva.ok) {
     return (

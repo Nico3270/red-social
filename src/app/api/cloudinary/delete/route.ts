@@ -43,7 +43,7 @@ export async function POST(req: Request) {
     const result = await cloudinary.uploader.destroy(publicId, {
       resource_type: resourceType || "image",
     });
-    console.log("Cloudinary delete result:", result);
+    // console.log("Cloudinary delete result:", result);
 
     if (result.result === "ok") {
       return NextResponse.json({ success: true });

@@ -35,6 +35,7 @@ export const TopBarDashBoard: React.FC = () => {
             width={32}
             height={32}
             className="rounded-full"
+            unoptimized
           />
           <button
             className="flex items-center space-x-2 text-gray-800 hover:text-gray-900 hover:bg-gray-100 p-2 rounded-md transition-colors duration-200"

@@ -37,7 +37,7 @@ export const MapPicker = ({ onLocationSelect, initialLocation }: Props) => {
         const lng = event.latLng.lng();
         setPosition({ lat, lng });
         onLocationSelect(lat, lng);
-        console.log("Coordenadas al hacer clic:", { lat, lng }); // Log para depuración
+        // console.log("Coordenadas al hacer clic:", { lat, lng }); // Log para depuración
       }
     },
     [onLocationSelect]
@@ -56,7 +56,7 @@ export const MapPicker = ({ onLocationSelect, initialLocation }: Props) => {
             map.panTo({ lat, lng });
             map.setZoom(15);
           }
-          console.log("Coordenadas de ubicación actual:", { lat, lng }); // Log para depuración
+          // console.log("Coordenadas de ubicación actual:", { lat, lng }); // Log para depuración
         },
         (error) => {
           let errorMessage = "No se pudo obtener la ubicación.";
@@ -124,7 +124,7 @@ export const MapPicker = ({ onLocationSelect, initialLocation }: Props) => {
             const lng = e.latLng?.lng() || position.lng;
             setPosition({ lat, lng });
             onLocationSelect(lat, lng);
-            console.log("Coordenadas al arrastrar marcador:", { lat, lng }); // Log para depuración
+            // console.log("Coordenadas al arrastrar marcador:", { lat, lng }); // Log para depuración
           }}
         />
       </GoogleMap>

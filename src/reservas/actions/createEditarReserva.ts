@@ -148,7 +148,7 @@ export async function createEditarReserva(data: unknown): Promise<Response> {
         console.warn('Notificación WhatsApp fallida, pero reserva creada:', notificacion.message);
         // Opcional: Envía fallback por email o log a un servicio como Sentry para monitoreo pro
       }
-      console.log("Notificación enviada al negocio");
+      // console.log("Notificación enviada al negocio");
 
       // Reserva creada por el usuario - Aviso al usuario
       const notificacionUsuario = await notifyReservaConfirmadaCliente(
@@ -166,7 +166,7 @@ export async function createEditarReserva(data: unknown): Promise<Response> {
         console.warn('Notificación WhatsApp fallida, pero reserva creada:', notificacion.message);
         // Opcional: Envía fallback por email o log a un servicio como Sentry para monitoreo pro
       }
-      console.log("Notificación enviada al cliente");
+      // console.log("Notificación enviada al cliente");
     }
 
     //todo: Reserca editada - Aviso al cliente 

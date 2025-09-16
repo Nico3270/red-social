@@ -83,7 +83,7 @@ export const ModalPublicaciones: React.FC<ModalPublicacionesProps> = ({
 
   // Debug log para mount
   useEffect(() => {
-    console.log('Modal mounted, showSuccess:', showSuccess, 'userId:', userId);
+    // console.log('Modal mounted, showSuccess:', showSuccess, 'userId:', userId);
   }, [showSuccess, userId]);
 
   return (

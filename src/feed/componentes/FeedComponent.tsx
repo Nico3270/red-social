@@ -39,7 +39,7 @@ export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedCo
   const [activeTab, setActiveTab] = useState<"Publicaciones" | "Productos" | "Servicios" | "Negocios">("Publicaciones");
   const [prevItemsLength, setPrevItemsLength] = useState(0); // Track para marking lazy de nuevos items
 
-  console.log({ categoriaSlug });
+  // console.log({ categoriaSlug });
 
   // Params simplificados: Solo ciudad/depto + essentials (sin preferencias/secciones)
   const params = useMemo<ExtendedFeedQueryParams | null>(() => {

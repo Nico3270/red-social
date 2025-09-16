@@ -13,9 +13,9 @@ import Link from "next/link";
 import { FollowButton } from "@/feed/componentes/FollowButton";
 import { InfoEmpresa as empresa } from "@/config/config";
 import { BsWhatsapp } from "react-icons/bs";
-import { titulo1 } from "@/config/fonts";
 import { FaTimes } from "react-icons/fa";
 import { Precio } from "@/ui/components/productos/Precio";
+import { titleFont } from "@/config/fonts";
 
 interface Props {
   servicio: ServicioData;
@@ -182,7 +182,7 @@ const ServicioViewer: React.FC<Props> = ({ servicio, version = 1 }) => {
             <div className="flex-1">
               <Link
                 href={`/perfil/${negocioSlug || ''}`}
-                className={`font-semibold text-red-800 hover:text-blue-600 transition-colors duration-200 cursor-pointer ${titulo1.className}`}
+                className={`font-semibold text-red-800 hover:text-blue-600 transition-colors duration-200 cursor-pointer ${titleFont.className}`}
               >
                 {nombreNegocio || "Negocio Desconocido"}
               </Link>
@@ -322,7 +322,7 @@ const ServicioViewer: React.FC<Props> = ({ servicio, version = 1 }) => {
                     <div className="flex-1">
                       <Link
                         href={`/perfil/${negocioSlug || ''}`}
-                        className={`font-semibold text-red-800 hover:text-blue-600 transition-colors duration-200 cursor-pointer ${titulo1.className}`}
+                        className={`font-semibold text-red-800 hover:text-blue-600 transition-colors duration-200 cursor-pointer ${titleFont.className}`}
                       >
                         {nombreNegocio || "Negocio Desconocido"}
                       </Link>

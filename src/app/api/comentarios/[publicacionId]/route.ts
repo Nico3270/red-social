@@ -48,14 +48,14 @@ export async function GET(
     );
   }
 
-  console.log(
-    "API: Request params - publicacionId:",
-    publicacionId,
-    "skip:",
-    skip,
-    "take:",
-    take
-  );
+  // console.log(
+  //   "API: Request params - publicacionId:",
+  //   publicacionId,
+  //   "skip:",
+  //   skip,
+  //   "take:",
+  //   take
+  // );
 
   if (!publicacionId || !/^[a-z0-9-]+$/.test(publicacionId)) {
     return NextResponse.json<ComentariosResult>(
@@ -141,7 +141,7 @@ export async function GET(
       },
     }));
 
-    console.log("API: Fetched comentarios:", formattedComentarios.length, "total:", total);
+    // console.log("API: Fetched comentarios:", formattedComentarios.length, "total:", total);
 
     return NextResponse.json<ComentariosResult>(
       {

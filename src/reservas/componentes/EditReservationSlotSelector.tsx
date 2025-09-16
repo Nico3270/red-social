@@ -281,10 +281,10 @@ export const EditReservationSlotSelector = ({ reservaData, negocioId, onClose, o
               data={updatedData} // Usa el mapeado corregido
               onClose={() => {
                 setShowAddModal(false); // Cierra solo Add inmediatamente (elegante y responsive)
-                console.log("Cerrando AddReservationModal, el cierre de superiores se maneja en onSuccess");
+                // console.log("Cerrando AddReservationModal, el cierre de superiores se maneja en onSuccess");
               }}
               onSuccess={() => {
-                console.log("Éxito propagado desde Add a EditReservationSlotSelector, llamando props.onSuccess para cierre de ResumeReservations");
+                // console.log("Éxito propagado desde Add a EditReservationSlotSelector, llamando props.onSuccess para cierre de ResumeReservations");
                 if (onSuccess) onSuccess(); // Propaga a ResumeReservations para refresh y cierre con delay
               }}
             />

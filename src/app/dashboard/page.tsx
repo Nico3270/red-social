@@ -1,12 +1,6 @@
-import { FaBox, FaClipboardList, FaUsers, FaImages, FaChartLine, FaUserCog } from "react-icons/fa";
-import { TfiGallery } from "react-icons/tfi";
-import { FcGallery } from "react-icons/fc";
-import { TbNewSection } from "react-icons/tb";
+import {  FaClipboardList, FaChartLine, FaPlus,  FaCalendarCheck, FaTools, FaPoll, FaUserEdit,  } from "react-icons/fa";
 import { AiFillProduct } from "react-icons/ai";
-import { MdCategory } from "react-icons/md";
-import { RiCustomerService2Fill } from "react-icons/ri";
 import { FiPlusSquare } from "react-icons/fi";
-import { IoMdDocument } from "react-icons/io";
 import DashboardSections from "@/dashboard/componentes/DashboardSections";
 import { auth } from "@/auth.config";
 import CrearNegocioInfo from "@/dashboard/componentes/CrearNegocioInfo";
@@ -23,7 +17,7 @@ const dashboardSections = [
     titulo: "Nuevo Producto",
     descripcion: "Añade un nuevo producto a tu catálogo. Sube imágenes, establece precios, define categorías y proporciona descripciones detalladas para captar la atención de tus clientes desde el primer vistazo.",
     icono: <FiPlusSquare className="text-5xl text-[#38B2AC]" />,
-    url: "/dashboard/productos/newProduct",
+    url: "/dashboard/productos/nuevo_producto",
     habilitado: true,
   },
   {
@@ -40,81 +34,41 @@ const dashboardSections = [
     url: "/dashboard/transacciones",
     habilitado: true,
   },
+  // Nuevas secciones agregadas a continuación
   {
-    titulo: "Nueva Sección de Productos",
-    descripcion: "Crea y administra categorías de productos que aparecerán en la barra de navegación principal. Estas secciones ayudarán a organizar y presentar tus productos de manera atractiva y accesible para los clientes. Los iconos personalizados se seleccionan desde react-icons para reflejar mejor cada categoría.",
-    icono: <TbNewSection className="text-5xl text-[#5f161c]" />,
-    url: "/dashboard/newSection",
+    titulo: "Nueva Publicación",
+    descripcion: "Crea una nueva publicación para tu red social o catálogo. Sube multimedia como imágenes o videos, agrega descripciones atractivas y selecciona productos o servicios relacionados para aumentar el engagement con tu audiencia.",
+    icono: <FaPlus className="text-5xl text-[#ED64A6]" />, // Color rosado vibrante para creatividad
+    url: "/dashboard/crear-publicacion",
+    habilitado: true,
+  },
+
+  {
+    titulo: "Módulo de Reservas",
+    descripcion: "Administra las reservas y citas de tus clientes. Configura horarios disponibles, confirma o cancela reservas, y sincroniza con calendarios externos para una gestión organizada y sin conflictos.",
+    icono: <FaCalendarCheck className="text-5xl text-[#4299E1]" />, // Color azul claro para organización temporal
+    url: "/dashboard/reservas",
     habilitado: true,
   },
   {
-    titulo: "Gestión de Secciones",
-    descripcion: "Administra las secciones de productos que aparecen en la barra de navegación principal. Reordena, edita y personaliza cada sección para mejorar la experiencia de tus clientes y resaltar tus productos destacados.",
-    icono: <MdCategory className="text-5xl text-[#173168]" />,
-    url: "/dashboard/seccionesCarrusel",
-    habilitado: true,
-  },
-  {
-    titulo: "Carrusel de Imágenes Principal",
-    descripcion: "Destaca productos en promoción o secciones especiales con imágenes atractivas y enlaces directos. Crea carruseles temáticos para eventos, temporadas o fechas importantes que capturen la atención de tus clientes.",
-    icono: <FaImages className="text-5xl text-[#ED8936]" />,
-    url: "/dashboard/seccionesCarrusel",
-    habilitado: true,
-  },
-  {
-    titulo: "Galería de Imágenes",
-    descripcion: "Gestiona y actualiza la galería de imágenes en la sección Galería para captar la atención de tus clientes . Añade fotos llamativas y de alta calidad con descripciones que transmitan emociones y reflejen la esencia de tu marca.",
-    icono: <TfiGallery className="text-5xl text-[#D91656]" />,
-    url: "/dashboard/galleryImages",
-    habilitado: true,
-  },
-  {
-    titulo: "Galería de Videos",
-    descripcion: "Gestiona y organiza los videos promocionales y testimoniales. Añade contenido visual impactante que destaque tus productos y servicios, capturando la atención de tus clientes con historias y experiencias en movimiento.",
-    icono: <FcGallery className="text-5xl text-[#501428]" />,
-    url: "/dashboard/galleryVideos",
-    habilitado: true,
-  },
-  {
-    titulo: "Blog",
-    descripcion: "Crea y gestiona artículos que destacan en la página principal. Publica contenido relevante y optimizado para mejorar el posicionamiento SEO y atraer más visitantes mediante búsquedas y palabras clave estratégicas.",
-    icono: <FaBox className="text-5xl text-[#17494d]" />,
-    url: "/dashboard/blog",
-    habilitado: true,
-  },
-  {
-    titulo: "Nuevo Blog",
-    descripcion: "Crear un nuevo blog",
-    icono: <IoMdDocument className="text-5xl text-[#17494d]" />,
-    url: "/dashboard/blog/newBlog",
-    habilitado: true,
-  },
-  {
-    titulo: "Quiénes Somos",
-    descripcion: "Comparte la historia de tu negocio, su misión, visión y valores. Añade imágenes que resalten el crecimiento, la cultura y los logros de tu empresa, brindando a los clientes una conexión más cercana con tu marca.",
-    icono: <FaUsers className="text-5xl text-[#38A169]" />,
-    url: "/dashboard/quienesSomos",
-    habilitado: true,
-  },
-  {
-    titulo: "Gestión de Servicios",
-    descripcion: "Administra y actualiza los servicios y productos destacados que ofreces a tus clientes. Agrega, edita o elimina servicios fácilmente para mantener la sección siempre actualizada y alineada con las necesidades del negocio.",
-    icono: <RiCustomerService2Fill className="text-5xl text-[#e63535]" />,
+    titulo: "Servicios",
+    descripcion: "Gestiona y actualiza los servicios que ofrece tu negocio. Define precios, descripciones, duración y requisitos para atraer clientes y facilitar la programación de citas o consultas.",
+    icono: <FaTools className="text-5xl text-[#ECC94B]" />, // Color amarillo para herramientas/servicios
     url: "/dashboard/servicios",
     habilitado: true,
   },
   {
-    titulo: "Testimonios y Clientes",
-    descripcion: "Comparte las experiencias de tus clientes con imágenes, testimonios y entregas exitosas. Aumenta la confianza y credibilidad mostrando reseñas y fotos de clientes satisfechos con tus productos o servicios.",
-    icono: <FaUsers className="text-5xl text-[#e63535]" />,
-    url: "/dashboard/testimonials",
+    titulo: "Módulo de Encuestas",
+    descripcion: "Crea y analiza encuestas para recopilar feedback de clientes. Diseña preguntas personalizadas, envía encuestas vía email o redes sociales, y visualiza resultados con gráficos para mejorar tu negocio basado en datos reales.",
+    icono: <FaPoll className="text-5xl text-[#9F7AEA]" />, // Color morado para análisis y opiniones
+    url: "/dashboard/encuestas",
     habilitado: true,
   },
   {
-    titulo: "Gestión de Usuarios",
-    descripcion: "Administra los usuarios registrados en la plataforma. Modifica roles, otorga permisos y gestiona el acceso de colaboradores o administradores.",
-    icono: <FaUserCog className="text-5xl text-[#2D3748]" />,
-    url: "/dashboard/usuarios",
+    titulo: "Editar Perfil",
+    descripcion: "Actualiza la información de tu perfil de negocio. Cambia imágenes de portada y logo, edita descripciones, datos de contacto y enlaces a redes sociales para mantener una presencia profesional y atractiva.",
+    icono: <FaUserEdit className="text-5xl text-[#48BB78]" />, // Color verde esmeralda para edición personal
+    url: "/dashboard/editar-perfil",
     habilitado: true,
   },
 ];

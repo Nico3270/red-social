@@ -88,7 +88,7 @@ const DashboardSections: React.FC<Props> = ({ sections }) => {
                   position: "absolute",
                   top: 8,
                   right: 8,
-                  zIndex: 20, // Z-index más alto para prioridad absoluta sobre la card
+                  
                   backgroundColor: section.habilitado ? "rgba(76, 175, 80, 0.15)" : "rgba(0, 0, 0, 0.1)", // Fondo verde sutil semi-transparente para visibilidad
                   color: section.habilitado ? "#4CAF50" : "#9E9E9E", // Verde premium para icono
                   width: 36, // Agrandado ligeramente para mejor touch-target
