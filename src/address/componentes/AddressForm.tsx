@@ -159,34 +159,34 @@ const AddressNegocio: React.FC<AddressNegocioProps> = ({ slug }) => {
         </Typography>
       </Box>
       <Box sx={{ display: "flex", justifyContent: "center" }}>
-  <Button
-    startIcon={<ArrowBack />}
-    onClick={handleBackToCart}
-    sx={{
-      mt: 2,
-      px: 3,
-      py: 1.2,
-      textTransform: "none",
-      fontWeight: 600,
-      fontSize: "0.95rem",
-      borderRadius: 3,
-      bgcolor: "grey.900", // gris oscuro elegante
-      color: "#fff", // texto blanco
-      transition: "all 0.3s ease",
-      "&:hover": {
-        bgcolor: "grey.800", // un poco más claro en hover
-        boxShadow: "0 6px 16px rgba(0,0,0,0.25)", // sombra premium
-      },
-      "& .MuiButton-startIcon": {
-        mr: 1,
-        fontSize: "1.1rem",
-        color: "#fff",
-      },
-    }}
-  >
-    Volver al carrito
-  </Button>
-</Box>
+        <Button
+          startIcon={<ArrowBack />}
+          onClick={handleBackToCart}
+          sx={{
+            mt: 2,
+            px: 3,
+            py: 1.2,
+            textTransform: "none",
+            fontWeight: 600,
+            fontSize: "0.95rem",
+            borderRadius: 3,
+            bgcolor: "grey.900", // gris oscuro elegante
+            color: "#fff", // texto blanco
+            transition: "all 0.3s ease",
+            "&:hover": {
+              bgcolor: "grey.800", // un poco más claro en hover
+              boxShadow: "0 6px 16px rgba(0,0,0,0.25)", // sombra premium
+            },
+            "& .MuiButton-startIcon": {
+              mr: 1,
+              fontSize: "1.1rem",
+              color: "#fff",
+            },
+          }}
+        >
+          Volver al carrito
+        </Button>
+      </Box>
 
     </Paper>
   );
@@ -198,6 +198,7 @@ const AddressNegocio: React.FC<AddressNegocioProps> = ({ slug }) => {
           variant="h3"
           sx={{
             mb: 2,
+
             fontWeight: 700,
             textAlign: "center",
             color: "text.primary",

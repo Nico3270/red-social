@@ -156,10 +156,10 @@ export const createNewPedido = async (input: PedidoInput): Promise<{
                     {
                         to: "+573182293083",
                         template: PlantillaWhatsApp.PEDIDO_CREADO_NEGOCIO_USUARIO,
-                        datos_pedido: datosPedido,
-                        valor_compra: valorCompra,
-                        nombre_cliente: nombreCliente,
-                        direccion: direccionCompra,
+                        datos_pedido: sanitizeParam(datosPedido),
+                        valor_compra: sanitizeParam(valorCompra),
+                        nombre_cliente: sanitizeParam(nombreCliente),
+                        direccion: sanitizeParam(direccionCompra),
                         negocioId: negocioId || "", // Incluye negocioId para contexto
                     }
                 )
@@ -174,12 +174,12 @@ export const createNewPedido = async (input: PedidoInput): Promise<{
                     {
                         to: "+573132390868",
                         template: PlantillaWhatsApp.PEDIDO_CREADO_NEGOCIO,
-                        datos_pedido: datosPedido,
-                        valor_compra: valorCompra,
-                        nombre_cliente: nombreCliente,
+                        datos_pedido: sanitizeParam(datosPedido),
+                        valor_compra: sanitizeParam(valorCompra),
+                        nombre_cliente: sanitizeParam(nombreCliente),
                         telefono_cliente: telefonoCliente,
-                        direccion: direccionCliente,
-                        descripcion: descripcionCompra,
+                        direccion: sanitizeParam(direccionCliente),
+                        descripcion: sanitizeParam(descripcionCompra),
                         negocioId: negocioId || "", // Incluye negocioId para contexto
                     }
                 )
@@ -213,3 +213,11 @@ export const createNewPedido = async (input: PedidoInput): Promise<{
         return { ok: false, message: "Error al crear el pedido." };
     }
 };
+
+function sanitizeParam(text: string): string {
+  if (!text) return "";
+  return text
+    .replace(/\n|\r|\t/g, " ")   // quita saltos de línea y tabs
+    .replace(/ {5,}/g, " ")      // evita más de 4 espacios seguidos
+    .trim();                     // elimina espacios al inicio/fin
+}

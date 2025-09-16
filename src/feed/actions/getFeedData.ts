@@ -340,18 +340,18 @@ export async function getFeedDataByType(
   }
 
   // Log seenIds filtrados para debug (solo dev)
-  if (process.env.NODE_ENV === "development") {
-    const filteredSeen = params.seenIds.filter(id => {
-      switch (type) {
-        case "products": return id.startsWith("product-");
-        case "publications": return id.startsWith("pub-");
-        case "services": return id.startsWith("serv-");
-        case "businesses": return id.startsWith("bus-");
-        default: return false;
-      }
-    }).length;
-    console.log(`🔍 ${type} seenIds filtrados: ${filteredSeen}/${params.seenIds.length} (total)`);
-  }
+  // if (process.env.NODE_ENV === "development") {
+  //   const filteredSeen = params.seenIds.filter(id => {
+  //     switch (type) {
+  //       case "products": return id.startsWith("product-");
+  //       case "publications": return id.startsWith("pub-");
+  //       case "services": return id.startsWith("serv-");
+  //       case "businesses": return id.startsWith("bus-");
+  //       default: return false;
+  //     }
+  //   }).length;
+  //   // console.log(`🔍 ${type} seenIds filtrados: ${filteredSeen}/${params.seenIds.length} (total)`);
+  // }
 
   // Fetch batch de reacciones para publications si aplica
   let userReactionsMap: Record<string, { id: string; tipo: ReaccionTipo } | null> = {};
@@ -402,9 +402,9 @@ export async function getFeedDataByType(
   // Mapeo simplificado (orden ya por grupos + interno)
   const items: FeedItem[] = rawItems.map((raw) => {
     let item: FeedItem;
-    console.log(`📦 Raw ${type} item antes de map:`, raw.id, raw);
+    // console.log(`📦 Raw ${type} item antes de map:`, raw.id, raw);
 
-    console.log(`🔎 Detectando tipo de raw con keys:`, Object.keys(raw));
+    // console.log(`🔎 Detectando tipo de raw con keys:`, Object.keys(raw));
 
     if (isRawProduct(raw)) {
       // console.log("🛒 mapToFeedItem con PRODUCT", raw.id);
@@ -440,14 +440,14 @@ export async function getFeedDataByType(
 
     let negocioId: string;
     if (isRawProduct(raw) || isRawPublication(raw) || isRawService(raw)) {
-      console.log("🔗 Negocio asociado al item", raw.id, "→ negocioId:", raw.negocio?.id);
+      // console.log("🔗 Negocio asociado al item", raw.id, "→ negocioId:", raw.negocio?.id);
       negocioId = raw.negocio?.id ?? "";
     } else {
       console.log("🏢 Item es BUSINESS directo", raw.id);
       negocioId = raw.id;
     }
     (item.data as { negocioId?: string }).negocioId = negocioId;
-    console.log("🔗 negocioId asignado:", negocioId, "isFollowed:", item.isFollowed);
+    // console.log("🔗 negocioId asignado:", negocioId, "isFollowed:", item.isFollowed);
 
 
     item.isFollowed = params.followedBusinessIds?.includes(negocioId) ?? false;
@@ -461,18 +461,18 @@ export async function getFeedDataByType(
   nextCursor = rawItems[rawItems.length - 1].id;
 }
 
-  if (process.env.NODE_ENV === "development") {
-    console.log(`getFeedDataByType(${type}): Fetched ${rawItems.length} raw (ciudad > depto > nacional) -> ${orderedItems.length} items`);
-    if (type === "publications" && params.userId) {
-      console.log(`User reactions: ${Object.keys(userReactionsMap).length} pubs`);
-    }
-//     console.log("📊 orderedItems detalle:", orderedItems.map(i => ({
-//   id: i.id,
-//   type: i.type,
-//   negocioId: (i.data as { negocioId?: string }).negocioId,
-//   isFollowed: i.isFollowed
-// })));
-  }
+//   if (process.env.NODE_ENV === "development") {
+//     console.log(`getFeedDataByType(${type}): Fetched ${rawItems.length} raw (ciudad > depto > nacional) -> ${orderedItems.length} items`);
+//     if (type === "publications" && params.userId) {
+//       console.log(`User reactions: ${Object.keys(userReactionsMap).length} pubs`);
+//     }
+// //     console.log("📊 orderedItems detalle:", orderedItems.map(i => ({
+// //   id: i.id,
+// //   type: i.type,
+// //   negocioId: (i.data as { negocioId?: string }).negocioId,
+// //   isFollowed: i.isFollowed
+// // })));
+//   }
 
   return { items: orderedItems.slice(0, params.limit), nextCursor };
 }

@@ -176,7 +176,7 @@ const ReservasUserDashboard = ({ config }: ReservasUserDashboardProps) => {
             value={format(currentDate, "yyyy-MM-dd")}
             onChange={handleDateChange}
             min={format(today, "yyyy-MM-dd")} // Previene selección de fechas pasadas en el input
-            className="p-2 border border-gray-300 rounded-md focus:ring-blue-500 w-full sm:w-auto"
+            className="p-2 border border-gray-300 rounded-md focus:ring-blue-500 w-full sm:w-auto text-gray-900"
           />
           <p className="text-sm text-gray-600 mt-1">{format(currentDate, "EEEE, dd 'de' MMMM 'de' yyyy", { locale: es })}</p>
         </div>
@@ -226,7 +226,7 @@ const ReservasUserDashboard = ({ config }: ReservasUserDashboardProps) => {
                   className={`p-4 rounded-md shadow-sm cursor-pointer transition-all duration-200 ${colorClass} ${isAvailable ? 'hover:shadow-md' : ''}`}
                   onClick={() => isAvailable && openAddModal(slot)} // Solo abre si disponible
                 >
-                  <h3 className="text-lg font-medium text-center">{slot}</h3>
+                  <h3 className="text-lg font-medium text-center text-gray-900">{slot}</h3>
                   <p className="text-sm text-gray-600 text-center mt-2">
                     {isAvailable ? "Disponible" : "No disponible"}
                   </p>

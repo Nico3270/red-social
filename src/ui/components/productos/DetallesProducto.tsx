@@ -82,7 +82,8 @@ export const DetallesProducto: React.FC<AddToCartProps> = ({ product, telefonoNe
     setTimeout(() => setShowSuccess(false), 3000); // Ocultar mensaje después de 3 segundos
   };
 
-  const whatsappUrl = `https://wa.me/${telefonoNegocio}?text=${whatsappMessage}`;
+  const telefonoLimpio = telefonoNegocio?.replace("+", "") ?? "";
+  const whatsappUrl = `https://wa.me/${telefonoLimpio}?text=${whatsappMessage}`;
   const infoCrearPublicacion: InformacionPublicacion = {
     usuarioId: userId,
     productoId: product.id,
@@ -161,7 +162,11 @@ export const DetallesProducto: React.FC<AddToCartProps> = ({ product, telefonoNe
 
       {/* Botones */}
       <div className="flex gap-4">
-        <Link
+
+        
+
+        {product.telefonoContacto && (
+<Link
           href={whatsappUrl}
           target="_blank"
           rel="noopener noreferrer"
@@ -170,6 +175,7 @@ export const DetallesProducto: React.FC<AddToCartProps> = ({ product, telefonoNe
           <BsWhatsapp className="text-lg" />
           WhatsApp
         </Link>
+        )}
         <AddFavorites
           id={product.id}
           title={product.nombre}

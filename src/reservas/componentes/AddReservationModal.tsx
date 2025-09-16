@@ -152,7 +152,7 @@ export default function AddReservationModal({ negocioId, horaInicio, horaFin, da
             <input
               type="text"
               {...register("nombre")}
-              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
             />
             {errors.nombre && <p className="text-red-500 text-xs mt-1">{errors.nombre.message}</p>}
           </div>
@@ -161,7 +161,7 @@ export default function AddReservationModal({ negocioId, horaInicio, horaFin, da
             <input
               type="tel"
               {...register("telefono")}
-              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
             />
             {errors.telefono && <p className="text-red-500 text-xs mt-1">{errors.telefono.message}</p>}
           </div>
@@ -171,7 +171,7 @@ export default function AddReservationModal({ negocioId, horaInicio, horaFin, da
               <label className="block text-sm font-medium text-gray-700 mb-1">Estado</label>
               <select
                 {...register("estado")}
-                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500" // Ring verde para estados positivos
+                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-900" // Ring verde para estados positivos
               >
                 <option value="PENDIENTE">Pendiente</option>
                 <option value="CONFIRMADA">Confirmada</option>
@@ -188,7 +188,7 @@ export default function AddReservationModal({ negocioId, horaInicio, horaFin, da
             <label className="block text-sm font-medium text-gray-700 mb-1">Notas (opcional)</label>
             <textarea
               {...register("notas")}
-              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
               rows={3}
             />
           </div>

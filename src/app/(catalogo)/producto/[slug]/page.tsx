@@ -18,14 +18,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!result.ok || !result.product) {
     return {
-      title: "Producto no encontrado | Plataforma Moderna",
+      title: "Producto no encontrado | Myckeo",
       description: "Lo sentimos, el producto solicitado no está disponible. Explora otros productos en nuestra plataforma.",
       robots: "noindex, nofollow",
     };
   }
 
   const { product, nombreNegocio } = result;
-  const title = `${product.nombre} - ${nombreNegocio || "Negocio"} | Plataforma Moderna`;
+  const title = `${product.nombre} - ${nombreNegocio || "Negocio"} | Myckeo`;
   const description = product.descripcionCorta || product.descripcion?.slice(0, 150) || "Descubre este producto moderno y de alta calidad en nuestra plataforma social-comercial.";
   const image = product.imagenes[0] || "/placeholder-image.jpg"; // Fallback moderno
   const url = `https://tudominio.com/producto/${slug}`; // Reemplaza con tu dominio real

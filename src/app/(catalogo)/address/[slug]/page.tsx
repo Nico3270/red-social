@@ -11,7 +11,7 @@ interface Props {
 export default async function CarroPage({ params }: Props) {
     const { slug } = await params;
   return (
-    <div className="w-full mx-auto p-0 sm:mt-40">
+    <div className="w-full mx-auto p-0 sm:mt-60">
      <AddressNegocio slug={slug}/>
     </div>
   );
