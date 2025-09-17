@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 
-import { FaUser, FaBox, FaHome, FaUserEdit, FaBook, FaListUl, FaShoppingCart, FaStore } from "react-icons/fa";
+import { FaUser, FaBox, FaHome, FaUserEdit, FaBook, FaListUl, FaShoppingCart, FaStore, FaQrcode } from "react-icons/fa";
 import { useSidebarStore } from "@/store/sideBar/sideBar-store";
 import { IoMdAddCircle } from "react-icons/io";
 import { FaFilePen, FaMoneyBillTransfer } from "react-icons/fa6";
@@ -41,6 +41,7 @@ const SideBarDashboard: React.FC = () => {
     { name: "Servicios", path: "/dashboard/servicios", icon: <MdHomeRepairService /> },
     { name: "Encuestas", path: "/dashboard/encuestas", icon: <FaListUl /> },
     { name: "Editar Perfil", path: "/dashboard/editar-perfil", icon: <FaUserEdit /> },
+    { name: "QR de tu negocio", path: "/dashboard/qr", icon: <FaQrcode /> },
   ];
 
   // Array para otros roles - Opciones básicas para onboarding elegante

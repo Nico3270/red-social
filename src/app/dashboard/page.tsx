@@ -1,4 +1,4 @@
-import {  FaClipboardList, FaChartLine, FaPlus,  FaCalendarCheck, FaTools, FaPoll, FaUserEdit,  } from "react-icons/fa";
+import {  FaClipboardList, FaChartLine, FaPlus,  FaCalendarCheck, FaTools, FaPoll, FaUserEdit, FaQrcode,  } from "react-icons/fa";
 import { AiFillProduct } from "react-icons/ai";
 import { FiPlusSquare } from "react-icons/fi";
 import DashboardSections from "@/dashboard/componentes/DashboardSections";
@@ -64,6 +64,14 @@ const dashboardSections = [
     url: "/dashboard/encuestas",
     habilitado: true,
   },
+ {
+  "titulo": "Código QR de tu negocio",
+  "descripcion": "¡Crea tu código QR personalizado en segundos y comparte tu perfil, productos, servicios y todo lo que hace único a tu negocio! Imagina que tus clientes escaneen fácilmente desde su teléfono y descubran tus ofertas al instante.",
+  "icono": <FaQrcode className="text-5xl text-[#303a41]" />, // Azul cielo para un toque fresco y tecnológico, inspirado en elementos interactivos de redes sociales
+  "url": "/dashboard/qr",
+  "habilitado": true
+},
+
   {
     titulo: "Editar Perfil",
     descripcion: "Actualiza la información de tu perfil de negocio. Cambia imágenes de portada y logo, edita descripciones, datos de contacto y enlaces a redes sociales para mantener una presencia profesional y atractiva.",

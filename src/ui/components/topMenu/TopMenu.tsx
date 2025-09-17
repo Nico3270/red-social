@@ -18,7 +18,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Alert, Box, Button, CircularProgress, FormControl, InputLabel, MenuItem, Select, Typography } from "@mui/material";
 import colombia from "@/config/colombia.json"; // Tu JSON de Colombia
 import { updateUserPreferences } from "@/preferences/actions/updateUserPreferences"; // Ajusta la ruta según sea necesario
-import {  titleFont } from "@/config/fonts";
+import { titleFont } from "@/config/fonts";
 
 
 interface ColombiaDepartment {
@@ -217,28 +217,28 @@ export const TopMenu = () => {
       <div className="max-w-7xl mx-auto px-4 flex justify-between items-center h-20">
         {/* Logo a la izquierda */}
         <Link href="/" className="flex items-center space-x-1">
-  <Image
-    src="/imgs/Logo Final (1).png"
-    alt="Logo Myckeo"
-    width={100}
-    height={100}
-  
-    className="rounded-full"
-    priority
-  />
-  <span
-    className={`
+          <Image
+            src="/imgs/Logo Final (1).png"
+            alt="Logo Myckeo"
+            width={100}
+            height={100}
+
+            className="rounded-full"
+            priority
+          />
+          <span
+            className={`
       text-2xl font-bold text-gray-900 
       tracking-tight relative
       ${titleFont.className}
     `}
-    style={{
-      textShadow: "1px 1px 2px rgba(0,0,0,0.15)", // sombra sutil
-    }}
-  >
-    Myckeo
-  </span>
-</Link>
+            style={{
+              textShadow: "1px 1px 2px rgba(0,0,0,0.15)", // sombra sutil
+            }}
+          >
+            Myckeo
+          </span>
+        </Link>
 
 
         {/* Barra de búsqueda centrada con botón de ubicación al lado */}
