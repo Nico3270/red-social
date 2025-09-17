@@ -48,9 +48,9 @@ export async function notifyReservaConfirmadaCliente({
     }
 
     const slugNegocio = negocioInfo?.slugNegocio
-    const reservas_negocio = `http://localhost:3000/reservas/${slugNegocio}`; // Ajusta según tu dominio real
+    const reservas_negocio = `https://myckeo.com/reservas/${slugNegocio}`; 
     const nombre_negocio = negocioInfo?.nombreNegocio || "Negocio Desconocido";
-    const enlace_reserva = "http://localhost:3000/dashboard/reservas"
+    const enlace_reserva = "https://myckeo.com/dashboard/reservas"
 
 
 

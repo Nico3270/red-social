@@ -1,5 +1,3 @@
-
-
 import { getInformacionReserva } from "@/reservas/actions/getInfoNegocioWhatsapp";
 import { ClientCancelModal } from "@/reservas/componentes/ClientCancelModal";
 import Link from "next/link";
@@ -14,19 +12,26 @@ function formatearFecha(fechaInput?: string | Date): string {
   if (!fechaInput) {
     return "La fecha no está disponible";
   }
+  
   const fechaObj = new Date(fechaInput);
 
-  const fechaStr = fechaObj.toLocaleDateString("es-ES", {
+  // Usar Intl.DateTimeFormat con zona horaria específica (America/Bogota para Colombia, UTC-5)
+  const optionsDate: Intl.DateTimeFormatOptions = {
     day: "numeric",
     month: "long",
     year: "numeric",
-  });
+    timeZone: "America/Bogota",
+  };
 
-  const horaStr = fechaObj.toLocaleTimeString("es-ES", {
+  const optionsTime: Intl.DateTimeFormatOptions = {
     hour: "numeric",
     minute: "2-digit",
     hour12: true,
-  });
+    timeZone: "America/Bogota",
+  };
+
+  const fechaStr = fechaObj.toLocaleDateString("es-ES", optionsDate);
+  const horaStr = fechaObj.toLocaleTimeString("es-ES", optionsTime);
 
   return `${fechaStr} a las ${horaStr}`;
 }
@@ -62,4 +67,3 @@ export default async function EliminarReservaUsuarioPage({ params }: Props) {
 // Componente cliente para manejar modales y animaciones
 // Coloca esto en un archivo separado si lo prefieres, como components/ClientCancelModal.tsx
 // Asegúrate de instalar framer-motion y react-hot-toast: npm install framer-motion react-hot-toast
-

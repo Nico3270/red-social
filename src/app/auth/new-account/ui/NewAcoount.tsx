@@ -13,7 +13,7 @@ import { registerUser } from "@/actions/auth/registerUser";
 import { signIn, SignInResponse, useSession } from "next-auth/react";
 import { Alert } from "@mui/material";
 import { useSearchParams, useRouter } from "next/navigation"; // Agregado useRouter para redirecciones elegantes
-
+import { es } from "date-fns/locale";
 
 type FormInputs = {
   nombre: string;
@@ -327,6 +327,7 @@ export const RegisterForm = ({ negocio }: TipoUsuario) => {
               maxDate={new Date()}
               minDate={new Date("1900-01-01")}
               dateFormat="dd/MM/yyyy"
+              locale={es}   // 👈 clave para español
               className={clsx(
                 "w-full border rounded-lg p-2 mt-2 focus:outline-none focus:ring-2 focus:ring-red-600",
                 { "border-red-500": errors.fechaNacimiento }

@@ -152,7 +152,7 @@ export default async function ProductPage({ params }: Props) {
       </div>
       <Divider />
       {/* Productos similares */}
-      <div className="mt-2">
+      <div className="mt-2 px-1">
         {productosConvertidos.length > 0 ? (
           <h2 className={`text-2xl font-bold mb-2 ${titulosPrincipales.className} text-gray-800`}>
             Productos Similares

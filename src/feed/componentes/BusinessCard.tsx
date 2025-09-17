@@ -5,7 +5,7 @@ import { SiGooglemaps } from "react-icons/si"; // Para Maps
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
-import { descripcionCard, titleFont, } from "@/config/fonts";
+import { textosFont, titleFont, } from "@/config/fonts";
 import { BusinessCardData } from "../feed.interfaces";
 import { FollowButton } from "./FollowButton";
 import { motion, AnimatePresence } from "framer-motion";
@@ -89,7 +89,7 @@ export const BusinessCard: React.FC<BusinessCardProps> = ({ business }) => {
         {/* Información del negocio (descripción truncada con botón "Ver más") */}
         <div className="mt-2 flex flex-col flex-grow justify-between">
           <div>
-            <p className={`text-lg text-gray-600 ${descripcionCard.className} mt-1 line-clamp-2`}>
+            <p className={`text-lg text-gray-600 ${textosFont.className} mt-1 line-clamp-2`}>
               {business.descripcion || "Explora este negocio en tu área."}
             </p>
             {isLongDescription && (
@@ -202,7 +202,7 @@ export const BusinessCard: React.FC<BusinessCardProps> = ({ business }) => {
                 </div>
 
                 {/* Descripción completa */}
-                <p className={`text-gray-600 text-base leading-relaxed ${descripcionCard.className}`}>
+                <p className={`text-gray-600 text-base leading-relaxed ${textosFont.className}`}>
                   {business.descripcion || "Explora este negocio en tu área."}
                 </p>
 

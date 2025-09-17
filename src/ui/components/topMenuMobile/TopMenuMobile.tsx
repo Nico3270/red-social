@@ -219,8 +219,9 @@ export const TopMenuMobile = () => {
               alt="Logo Myckeo"
               width={100}
               height={100}
-              unoptimized
+              
               className="rounded-xl"
+              priority
             />
           </Link>
 

@@ -185,7 +185,7 @@ export default function AddReservationModal({ negocioId, horaInicio, horaFin, da
           {/* Input hidden para estado si no es negocio (forzado a PENDIENTE) */}
           {!roleUser && <input type="hidden" {...register("estado")} value="PENDIENTE" />}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Notas (opcional)</label>
+            <label className="block text-sm font-medium text-gray-800 mb-1">Notas (opcional)</label>
             <textarea
               {...register("notas")}
               className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"

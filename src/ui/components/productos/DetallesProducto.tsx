@@ -17,7 +17,7 @@ import { TestimonioProductoCrearEditar } from "@/publicaciones/componentes/Testi
 import { AddFavorites } from "./AddFavorites";
 import { useCartCatalogoStore } from "@/store/carro/carro-store";
 import { motion, AnimatePresence } from "framer-motion";
-import { titulosPrincipales } from "@/config/fonts";
+import { textosFont } from "@/config/fonts";
 
 
 interface AddToCartProps {
@@ -98,7 +98,7 @@ export const DetallesProducto: React.FC<AddToCartProps> = ({ product, telefonoNe
       {/* Información del producto */}
       <div className="text-center">
         <h1
-          className={`text-2xl sm:text-3xl md:text-4xl font-semibold text-gray-900 text-center leading-snug break-words ${titulosPrincipales.className}`}
+          className={`text-2xl sm:text-3xl md:text-4xl font-semibold text-gray-900 text-center leading-snug break-words ${textosFont.className}`}
         >
           {product.nombre}
         </h1>
@@ -123,7 +123,7 @@ export const DetallesProducto: React.FC<AddToCartProps> = ({ product, telefonoNe
             Especificaciones del Producto
           </button>
         </div>
-        <p className={`color-descripcion-tarjeta text-md mt-2 ${titulosPrincipales.className}`}>{product.descripcion}</p>
+        <p className={`color-descripcion-tarjeta text-md mt-2 ${textosFont.className}`}>{product.descripcion}</p>
       </div>
 
       {/* Modal de Componentes */}

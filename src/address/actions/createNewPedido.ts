@@ -192,11 +192,11 @@ export const createNewPedido = async (input: PedidoInput): Promise<{
                     {
                         to: "+573182293083",
                         template: PlantillaWhatsApp.PEDIDO_CREADO_USUARIO_USUARIO,
-                        datos_pedido: datosPedido,
-                        valor_compra: valorCompra,
-                        nombre_cliente: nombreCliente,
-                        direccion: direccionCompra,
-                        ciudad: ciudadCompra,
+                        datos_pedido: sanitizeParam(datosPedido),
+                        valor_compra: sanitizeParam(valorCompra),
+                        nombre_cliente: sanitizeParam(nombreCliente),
+                        direccion: sanitizeParam(direccionCompra),
+                        ciudad: sanitizeParam(ciudadCompra),
                         negocioId: negocioId || "", // Incluye negocioId para contexto
                     }
                 )

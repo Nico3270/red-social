@@ -222,8 +222,9 @@ export const TopMenu = () => {
     alt="Logo Myckeo"
     width={100}
     height={100}
-    unoptimized
+  
     className="rounded-full"
+    priority
   />
   <span
     className={`

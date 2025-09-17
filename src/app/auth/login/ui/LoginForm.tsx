@@ -64,6 +64,8 @@ export const LoginForm = () => {
     <div className="md:w-1/2 bg-white flex flex-col justify-center p-8">
       <div className="max-w-md w-full mx-auto">
         <div className="flex justify-center items-center mb-4">
+          <Link
+          href={"/"}>
           <Image
             src="/imgs/Logo Final (1).png" // Reemplaza con la ruta real de tu logo
             alt="Myckeo Logo"
@@ -71,6 +73,8 @@ export const LoginForm = () => {
             height={100}
             className="mr-2"
           />
+          </Link>
+          
           <h1 className={`text-3xl font-bold text-gray-800 ${titleFont.className}`}>Bienvenido a Myckeo</h1>
         </div>
         <h1 className="text-4xl font-bold mb-4 text-center">Iniciar Sesión</h1>
@@ -151,10 +155,10 @@ export const LoginForm = () => {
           className="w-full flex items-center justify-center bg-blue-600 text-white py-2 rounded-lg mt-4 hover:bg-blue-700 transition"
         >
           <FaGoogle className="mr-2" />
-          Iniciar con Google
+          Iniciar sesión con Google
         </button>
         <div className="text-center mt-4">
-          <span>¿No tienes cuenta?</span>
+          <span className="text-gray-900">¿No tienes cuenta?</span>
           <Link href="/auth/new-account" className="text-red-600 hover:underline ml-1">
             Regístrate
           </Link>

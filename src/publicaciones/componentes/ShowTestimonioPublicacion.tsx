@@ -11,7 +11,7 @@ import PublicationModal from "./PublicationModal";
 import { motion } from "framer-motion";
 import { FollowButton } from "@/feed/componentes/FollowButton";
 import { EnhancedPublicacion } from "../interfaces/enhancedPublicacion.interface";
-import { titleFont } from "@/config/fonts";
+import { textosFont, titleFont } from "@/config/fonts";
 
 
 interface Productos {
@@ -165,7 +165,7 @@ export const ShowTestimonioPublicacion = ({ publicacion, productos, isInModal = 
               className={`transition-all duration-300 ease-in-out overflow-hidden 
                 ${isInModal ? "max-h-[999px]" : "max-h-[4.8em]"} relative`}
             >
-              <p className="whitespace-pre-wrap break-words text-md">
+              <p className={`whitespace-pre-wrap break-words text-md ${textosFont.className}`}>
                 {publicacion.descripcion}
               </p>
               {!isInModal && publicacion.descripcion.length > 100 && (

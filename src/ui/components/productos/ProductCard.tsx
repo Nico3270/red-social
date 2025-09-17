@@ -5,7 +5,7 @@ import { BsWhatsapp } from "react-icons/bs";
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect } from "react";
-import { descripcionCard, tituloCard } from "@/config/fonts";
+import {  textosFont, tituloCard } from "@/config/fonts";
 import { InfoEmpresa as empresa } from "@/config/config";
 import { AddFavorites } from "./AddFavorites";
 import { Precio } from "./Precio";
@@ -103,7 +103,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.95, opacity: 0 }}
             transition={{ type: "spring", stiffness: 300, damping: 25 }} // Animación suave y bouncy
-            className="relative bg-white rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.2)] p-6 w-full max-w-md max-h-[80vh] overflow-y-auto" // Scroll interno, centrado premium
+            className="relative bg-white rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.2)] p-6 w-full max-w-md max-h-[80vh] overflow-y-auto p-2" // Scroll interno, centrado premium
             onClick={(e) => e.stopPropagation()} // Evitar cierre al clic dentro
           >
             {/* Encabezado */}
@@ -190,7 +190,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="relative bg-white border-2 border-gray-100 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-[480px] w-full max-w-[380px] mx-auto overflow-hidden p-2"
+      className="relative bg-white border-2 border-gray-100 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-[480px] w-full  mx-auto overflow-hidden p-2"
     >
       {/* Header con nombre del negocio */}
       <div className="flex items-center justify-between px-3 mb-3">
@@ -202,7 +202,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
               alt={`Perfil de ${product.nombreNegocio}`}
               fill
               className="object-cover"
-              unoptimized
             />
           </div>
 
@@ -274,7 +273,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             </h3>
           </Link>
 
-          <p className={`text-lg text-gray-600 ${descripcionCard.className} mt-1 line-clamp-2`}>
+          <p className={`text-lg text-gray-600 ${textosFont.className} mt-1 line-clamp-2`}>
             {product.descripcionCorta || "Sin descripción disponible"}
           </p>
         </div>

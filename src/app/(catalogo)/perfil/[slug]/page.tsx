@@ -67,7 +67,7 @@ export default async function NegocioPage({ params }: Props) {
   }
 
   return (
-    <div className="sm:mt-40">  {/* Tu contenedor responsive */}
+    <div className="sm:mt-40 mb-20">  {/* Tu contenedor responsive */}
       <Suspense fallback={<div className="loading-skeleton">Cargando perfil...</div>}>  {/* Skeleton moderno para loading */}
         <PerfilUsuarioHeader
           activeTabComponent="Productos"

@@ -222,7 +222,7 @@ export const CreateNegocioForm = ({ id }: IdUsuario) => {
     return (
         <div className="bg-white flex flex-col justify-center p-8">
             <div className="px-2 sm:px-8 w-full mx-auto">
-                <h1 className="text-4xl font-bold mb-4 text-center">Crear un negocio</h1>
+                <h1 className="text-4xl font-bold mb-4 text-center text-gray-800">Crear un negocio</h1>
 
                 {alert && (
                     <Alert severity={alert.type} onClose={() => setAlert(null)}>
@@ -354,14 +354,14 @@ export const CreateNegocioForm = ({ id }: IdUsuario) => {
                     <Divider />
 
                     <div>
-                        <label htmlFor="nombre" className="block font-bold">
+                        <label htmlFor="nombre" className="block font-bold text-gray-800">
                             Nombre del negocio
                         </label>
                         <input
                             type="text"
                             {...register("nombre", { required: "El nombre es requerido" })}
                             className={clsx(
-                                "w-full border rounded-lg p-2 mt-2 focus:outline-none focus:ring-2 focus:ring-red-600",
+                                "w-full border rounded-lg p-2 mt-2 focus:outline-none focus:ring-2 focus:ring-red-600 text-gray-800",
                                 { "border-red-500": errors.nombre }
                             )}
                             placeholder="Nombre del negocio"
@@ -370,14 +370,14 @@ export const CreateNegocioForm = ({ id }: IdUsuario) => {
                     </div>
 
                     <div>
-                        <label htmlFor="descripcion" className="block font-bold">
+                        <label htmlFor="descripcion" className="block font-bold text-gray-800">
                             Descripción del negocio
                         </label>
                         <input
                             type="text"
                             {...register("descripcion", { required: "La descripción es requerida" })}
                             className={clsx(
-                                "w-full border rounded-lg p-2 mt-2 focus:outline-none focus:ring-2 focus:ring-red-600",
+                                "w-full border rounded-lg p-2 mt-2 focus:outline-none focus:ring-2 focus:ring-red-600 text-gray-800",
                                 { "border-red-500": errors.descripcion }
                             )}
                             placeholder="Descripción del negocio"
@@ -388,7 +388,7 @@ export const CreateNegocioForm = ({ id }: IdUsuario) => {
                     <input type="hidden" {...register("ciudad", { required: "La ciudad es requerida - verifica el formato (Ciudad - Departamento)" })} />
 
                     <FormControl fullWidth variant="outlined" error={!!errors.ciudad && !selectedDepartamento}>
-                        <InputLabel id="departamento-label">Departamento</InputLabel>
+                        <InputLabel id="departamento-label" className="text-gray-800">Departamento</InputLabel>
                         <Select
                             value={selectedDepartamento}
                             onChange={(e) => {
@@ -400,7 +400,7 @@ export const CreateNegocioForm = ({ id }: IdUsuario) => {
                         >
                             <MenuItem value="">Selecciona un departamento</MenuItem>
                             {(colombia as ColombiaDepartment[]).map((dept) => (
-                                <MenuItem key={dept.id} value={dept.departamento}>
+                                <MenuItem key={dept.id} className="text-gray-800" value={dept.departamento}>
                                     {dept.departamento}
                                 </MenuItem>
                             ))}
@@ -409,7 +409,7 @@ export const CreateNegocioForm = ({ id }: IdUsuario) => {
                     </FormControl>
 
                     <FormControl fullWidth variant="outlined" error={!!errors.ciudad} disabled={!selectedDepartamento}>
-                        <InputLabel id="ciudad-label">Ciudad</InputLabel>
+                        <InputLabel id="ciudad-label" className="text-gray-800">Ciudad</InputLabel>
                         <Select
                             value={selectedCity}
                             onChange={(e) => setSelectedCity(e.target.value as string)}
@@ -418,7 +418,7 @@ export const CreateNegocioForm = ({ id }: IdUsuario) => {
                         >
                             <MenuItem value="">Selecciona una ciudad</MenuItem>
                             {cities.map((city, index) => (
-                                <MenuItem key={index} value={city}>
+                                <MenuItem key={index} className="text-gray-800" value={city}>
                                     {city}
                                 </MenuItem>
                             ))}
@@ -427,14 +427,14 @@ export const CreateNegocioForm = ({ id }: IdUsuario) => {
                     </FormControl>
 
                     <div>
-                        <label htmlFor="direccion" className="block font-bold">
+                        <label htmlFor="direccion" className="block font-bold text-gray-800">
                             Dirección (opcional)
                         </label>
                         <input
                             type="text"
                             {...register("direccion")}
                             className={clsx(
-                                "w-full border rounded-lg p-2 mt-2 focus:outline-none focus:ring-2 focus:ring-red-600",
+                                "w-full border rounded-lg p-2 mt-2 focus:outline-none focus:ring-2 focus:ring-red-600 text-gray-800",
                                 { "border-red-500": errors.direccion }
                             )}
                             placeholder="Ej. Calle 123 #45-67"
@@ -443,12 +443,12 @@ export const CreateNegocioForm = ({ id }: IdUsuario) => {
                     </div>
 
                     <div>
-                        <label htmlFor="telefonoContacto" className="block font-bold">
+                        <label htmlFor="telefonoContacto" className="block font-bold text-gray-800">
                             Teléfono de contacto (opcional)
                         </label>
                         <div className="flex items-center border rounded-lg mt-2 focus-within:ring-2 focus-within:ring-red-600">
-                            <span className="flex items-center bg-gray-100 px-3 py-2 border-r border-gray-300">
-                                <GiColombia className="mr-2" />
+                            <span className="flex items-center bg-gray-100 px-3 py-2 border-r border-gray-300 text-gray-800">
+                                <GiColombia className="mr-2 text-gray-800" />
                                 {selectedCountryCode}
                             </span>
                             <input
@@ -461,7 +461,7 @@ export const CreateNegocioForm = ({ id }: IdUsuario) => {
                                     },
                                 })}
                                 className={clsx(
-                                    "w-full border-none p-2 focus:outline-none",
+                                    "w-full border-none p-2 focus:outline-none text-gray-800",
                                     { "border-red-500": errors.telefonoContacto }
                                 )}
                                 placeholder="Ej. 3123456789"

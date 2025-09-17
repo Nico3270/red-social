@@ -258,6 +258,13 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
     setSelectedCategory(null);
   }, [activeTab]);
 
+  const placeholderImages: Record<"Publicaciones" | "Productos" | "Servicios" | "Negocios", string> = {
+    "Publicaciones": "/imgs/no_publicaciones.png",
+    "Productos": "/imgs/no_productos.png",
+    "Servicios": "/imgs/no_servicios.png",
+    "Negocios": "/imgs/no_negocios.png",
+  };
+
   const renderCategoryFilter = () => {
     if (activeTab === "Publicaciones" || categoriasDisponibles.length === 0) return null;
 
@@ -353,14 +360,26 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
         {!mounted ? (
           <div className="text-center py-4 text-gray-400">Cargando…</div>
         ) : filteredItems.length === 0 && !isLoadingNext ? (
-          <div className="text-center py-4 text-gray-500 font-light">
-            No hay {activeTab.toLowerCase()} disponibles
-            {selectedCategory
-              ? ` en la categoría "${categoriasDisponibles.find(cat => cat.id === selectedCategory)
-                ?.nombre || "seleccionada"
-              }"`
-              : ""}
-            .
+          <div className="flex flex-col items-center justify-center py-8">
+            <p className="text-center text-gray-800 font-bold mb-4 text-lg sm:text-2xl">
+              No hay {activeTab.toLowerCase()} disponibles
+              {selectedCategory
+                ? ` en la categoría "${categoriasDisponibles.find(cat => cat.id === selectedCategory)
+                  ?.nombre || "seleccionada"
+                }"`
+                : ""}
+              .
+            </p>
+            <Image
+              src={placeholderImages[activeTab]}
+              alt={`No hay ${activeTab.toLowerCase()} disponibles`}
+              width={500}
+              height={500}
+              className="max-w-xs md:max-w-md lg:max-w-lg w-full h-auto object-contain mb-4"
+              loading="lazy"
+              quality={75}
+            />
+            
           </div>
         ) : (
           <div ref={masonryWrapperRef} className="w-full">
@@ -383,8 +402,19 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
       )}
 
       {!hasMore && !isLoadingNext && filteredItems.length > 0 && (
-        <div className="text-center py-8 text-gray-500 font-light">
-          No hay más {activeTab.toLowerCase()}.
+        <div className="flex flex-col items-center justify-center py-8">
+          <Image
+            src={placeholderImages[activeTab]}
+            alt={`No hay más ${activeTab.toLowerCase()}`}
+            width={300}
+            height={300}
+            className="max-w-xs md:max-w-md lg:max-w-lg w-full h-auto object-contain mb-4"
+            loading="lazy"
+            quality={75}
+          />
+          <p className="text-center text-gray-500 font-light">
+            No hay más {activeTab.toLowerCase()}.
+          </p>
         </div>
       )}
 

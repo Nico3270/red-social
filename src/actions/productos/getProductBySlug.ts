@@ -128,6 +128,10 @@ export const getProductBySlug = async (slug: string): Promise<GetProductBySlug> 
                 categoryId: true,
                 componentes: true,
                 negocioId: true,
+                negocio: {
+                    select: {
+                        fotoPerfil: true
+                    }},
                 imagenes: {
                     select: {
                         id: true,
@@ -174,7 +178,7 @@ export const getProductBySlug = async (slug: string): Promise<GetProductBySlug> 
             slugNegocio: negocio.slug || "",
             nombreNegocio: negocio.nombre || "",  
             negocioId: p.negocioId,
-            negocioFotoPerfil: "", // No es necesario para productos similares  
+            negocioFotoPerfil: p.negocio.fotoPerfil || "", // No es necesario para productos similares  
         }));
 
 

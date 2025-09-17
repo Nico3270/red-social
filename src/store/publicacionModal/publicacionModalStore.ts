@@ -19,10 +19,10 @@ interface PublicacionModalState {
   isModalOpen: boolean;
   modalPublicacionId: string | null;
   updatedComments: Record<string, Comment[]>;
-  updatedNumComentarios: Record<string, number>;
-  updatedLikes: Record<string, number>;
-  updatedUserReaction: Record<string, ReaccionTipo | null>;
-  updatedCompartidos: Record<string, number>; // Para completitud con numCompartidos
+  updatedNumComentarios: Record<string, number | undefined>; // Añadido | undefined para overrides
+  updatedLikes: Record<string, number | undefined>; // Añadido | undefined
+  updatedUserReaction: Record<string, ReaccionTipo | null | undefined>; // Añadido | undefined
+  updatedCompartidos: Record<string, number | undefined>; // Añadido | undefined para consistencia
   openModal: (publicacionId: string) => void;
   closeModal: () => void;
   addComment: (publicacionId: string, comment: Comment) => void;
@@ -33,6 +33,10 @@ interface PublicacionModalState {
   updateLikes: (publicacionId: string, newLikes: number) => void;
   updateUserReaction: (publicacionId: string, reaction: ReaccionTipo | null) => void;
   updateCompartidos: (publicacionId: string, newCount: number) => void;
+  resetLikes: (publicacionId: string) => void;
+  resetUserReaction: (publicacionId: string) => void;
+  resetNumComentarios: (publicacionId: string) => void;
+  clearUpdatedComments: (publicacionId: string) => void;
 }
 
 export const usePublicacionModalStore = create<PublicacionModalState>()(
@@ -92,13 +96,13 @@ export const usePublicacionModalStore = create<PublicacionModalState>()(
         set((state) => ({
           updatedNumComentarios: {
             ...state.updatedNumComentarios,
-            [publicacionId]: (state.updatedNumComentarios[publicacionId] || 0) + 1,
+            [publicacionId]: (state.updatedNumComentarios[publicacionId] ?? 0) + 1,
           },
         })),
 
       decrementNumComentarios: (publicacionId) =>
         set((state) => {
-          const currentCount = state.updatedNumComentarios[publicacionId] || 0;
+          const currentCount = state.updatedNumComentarios[publicacionId] ?? 0;
           return {
             updatedNumComentarios: {
               ...state.updatedNumComentarios,
@@ -129,6 +133,27 @@ export const usePublicacionModalStore = create<PublicacionModalState>()(
             ...state.updatedCompartidos,
             [publicacionId]: newCount,
           },
+        })),
+
+      // NUEVAS ACCIONES PARA RESET/SYNC (evita double-counting en reaperturas de modal)
+      resetLikes: (publicacionId) =>
+        set((state) => ({
+          updatedLikes: { ...state.updatedLikes, [publicacionId]: undefined },
+        })),
+
+      resetUserReaction: (publicacionId) =>
+        set((state) => ({
+          updatedUserReaction: { ...state.updatedUserReaction, [publicacionId]: undefined },
+        })),
+
+      resetNumComentarios: (publicacionId) =>
+        set((state) => ({
+          updatedNumComentarios: { ...state.updatedNumComentarios, [publicacionId]: undefined },
+        })),
+
+      clearUpdatedComments: (publicacionId) =>
+        set((state) => ({
+          updatedComments: { ...state.updatedComments, [publicacionId]: [] },
         })),
     }),
     {

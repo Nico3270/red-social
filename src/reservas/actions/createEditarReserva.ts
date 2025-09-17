@@ -8,26 +8,32 @@ import { notifyReservaConfirmadaCliente } from "../helpers/notifyReserva";
 import { PlantillaWhatsApp } from "../interfaces/interfaces.whatsapp";
 
 function formatearFecha(fechaInput?: string | Date): string {
-  if (!fechaInput){
-    return "La fecha no esta disponible"
+  if (!fechaInput) {
+    return "La fecha no esta disponible";
   }
+  
   const fechaObj = new Date(fechaInput);
 
-  const fechaStr = fechaObj.toLocaleDateString("es-ES", {
+  // Usar Intl.DateTimeFormat con zona horaria específica (America/Bogota para Colombia, UTC-5)
+  const optionsDate: Intl.DateTimeFormatOptions = {
     day: "numeric",
     month: "long",
-    year: "numeric"
-  });
+    year: "numeric",
+    timeZone: "America/Bogota",
+  };
 
-  const horaStr = fechaObj.toLocaleTimeString("es-ES", {
+  const optionsTime: Intl.DateTimeFormatOptions = {
     hour: "numeric",
     minute: "2-digit",
-    hour12: true
-  });
+    hour12: true,
+    timeZone: "America/Bogota",
+  };
+
+  const fechaStr = fechaObj.toLocaleDateString("es-ES", optionsDate);
+  const horaStr = fechaObj.toLocaleTimeString("es-ES", optionsTime);
 
   return `${fechaStr} a las ${horaStr}`;
 }
-
 
 // Schema para validación
 const schema = z.object({
@@ -120,7 +126,7 @@ export async function createEditarReserva(data: unknown): Promise<Response> {
           nombre_cliente: resData.nombre,
           fechaHora: fecha || "Error en fecha",
           template: PlantillaWhatsApp.CONFIRMACION_RESERVA_CLIENTE,
-          enlace_cancelar: `http://localhost:3000/reservas/eliminar/${result.id}`, // Ajusta según tu dominio real
+          enlace_cancelar: `https://myckeo.com/reservas/eliminar/${result.id}`, // Ajusta según tu dominio real
           descripcion: resData.notas || '',
           negocioId: negocioId || "", // Incluye negocioId para contexto
         }
@@ -131,7 +137,7 @@ export async function createEditarReserva(data: unknown): Promise<Response> {
       }
     }
 
-    // todo: Reserva creada por el usuario - Aviso al negocio y cliente
+    // todo: Reserva creada por el usuario - Aviso al aviso al negocio y cliente
 
     if (!session || session.user.role !== "negocio") {
       const notificacion = await notifyReservaConfirmadaCliente(
@@ -157,7 +163,7 @@ export async function createEditarReserva(data: unknown): Promise<Response> {
           nombre_cliente: resData.nombre,
           fechaHora: fecha || "Error en fecha",
           template: PlantillaWhatsApp.CONFIRMACION_RESERVA_CLIENTE,
-          enlace_cancelar: `http://localhost:3000/reservas/eliminar/${result.id}`, // Ajusta según tu dominio real
+          enlace_cancelar: `https://myckeo.com/reservas/eliminar/${result.id}`, // Ajusta según tu dominio real
           descripcion: resData.notas || '',
           negocioId: negocioId || "", // Incluye negocioId para contexto
         }
@@ -179,7 +185,7 @@ export async function createEditarReserva(data: unknown): Promise<Response> {
           fecha_nueva, 
           nombre_cliente: resData.nombre,
           template: PlantillaWhatsApp.RESERVA_REPROGRAMADA_USUARIO,
-          enlace_cancelar: `http://localhost:3000/reservas/eliminar/${result.id}`, // Ajusta según tu dominio real
+          enlace_cancelar: `https://myckeo.com/reservas/eliminar/${result.id}`, // Ajusta según tu dominio real
           negocioId: negocioId || "", // Incluye negocioId para contexto
         }
       )

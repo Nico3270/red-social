@@ -120,7 +120,7 @@ export default function CrearReservasForm({ data, negocioId }: CrearReservasForm
             id="selectAll"
             checked={diasAtencion.length === diasSemana.length}
             onChange={(e) => handleSelectAll(e.target.checked)}
-            className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+            className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 "
             disabled={loading} // Deshabilita durante loading
           />
           <label htmlFor="selectAll" className="ml-2 text-sm text-gray-600">Seleccionar todos</label>

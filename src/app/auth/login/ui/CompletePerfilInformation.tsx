@@ -12,6 +12,8 @@ import { Alert } from "@mui/material";
 import { motion } from "framer-motion"; // Para animaciones premium y elegantes
 import { updatePerfilInformation } from "@/actions/auth/updatePerfilInformation";
 import { Genero } from "@prisma/client"; // Importa el enum para tipado elegante
+import { es } from "date-fns/locale";
+
 
 type FormInputs = {
   ciudad: string;
@@ -207,6 +209,7 @@ export const CompletePerfilInformation = ({ userId }: { userId: string }) => {
             maxDate={new Date()}
             minDate={new Date("1900-01-01")}
             dateFormat="dd/MM/yyyy"
+            locale={es} 
             className={clsx(
               "w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-red-600 transition text-gray-900", // Agregado text-gray-900 para texto visible en el input de fecha
               { "border-red-500": errors.fechaNacimiento }

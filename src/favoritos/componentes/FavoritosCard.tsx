@@ -85,7 +85,9 @@ export const FavoritesCard: React.FC<FavoritesCardProps> = ({ product }) => {
 
       {/* Información del producto */}
       <div className="mt-4">
-        <h3 className="text-lg font-bold">{product.nombre}</h3> {/* Actualizado */}
+        <Link href={`/producto/${product.slug}`}>
+        <h3 className="text-lg font-bold text-gray-800">{product.nombre}</h3> {/* Actualizado */}
+        </Link>
         <p className="text-sm text-gray-600">
           {product.descripcion?.length > 80
             ? `${product.descripcion.substring(0, 80)}...`

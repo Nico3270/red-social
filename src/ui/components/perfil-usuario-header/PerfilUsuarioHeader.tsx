@@ -511,9 +511,21 @@ export default function PerfilUsuarioHeader({
                     
                   />
                 ) : (
-                  <p className="text-gray-600 text-sm sm:text-base">
-                    No hay publicaciones disponibles.
-                  </p>
+                  <div className="flex flex-col items-center justify-center pb-8 ">
+                  <p className="text-center text-gray-800 font-bold mb-2 text-lg">
+                      No hay publicaciones disponibles.
+                    </p>
+                    <Image
+                      src="/imgs/no_publicaciones.png"
+                      alt="No hay publicaciones disponibles"
+                      width={500}
+                    height={500}
+                      className="max-w-xs md:max-w-md lg:max-w-lg w-full h-auto object-contain mb-4"
+                      loading="lazy"
+                      quality={75}
+                    />
+                    
+                  </div>
                 )}
               </TabErrorBoundary>
             </div>
@@ -521,9 +533,21 @@ export default function PerfilUsuarioHeader({
           {activeTab === "Productos" && (
             <div className="flex flex-col items-center gap-4 text-gray-700">
               {!productos || productos.length === 0 ? (
-                <p className="text-gray-600 text-sm sm:text-base">
-                  No hay productos disponibles.
-                </p>
+                <div className="flex flex-col items-center justify-center pb-8 ">
+                  <p className="text-center text-gray-800 font-bold mb-2 text-lg">
+                    No hay productos disponibles.
+                  </p>
+                  <Image
+                    src="/imgs/no_productos.png"
+                    alt="No hay productos disponibles"
+                    width={500}
+                    height={500}
+                    className="max-w-xs md:max-w-md lg:max-w-lg w-full h-auto object-contain mb-4"
+                    loading="lazy"
+                    quality={75}
+                  />
+                  
+                </div>
               ) : (
                 <ProductGridWithSectionFilter
                   initialProducts={productos}
@@ -557,9 +581,21 @@ export default function PerfilUsuarioHeader({
                   ))}
                 </div>
               ) : (
-                <p className="text-gray-600 text-sm sm:text-base">
-                  No hay servicios disponibles para este negocio.
-                </p>
+                <div className="flex flex-col items-center justify-center pb-8 ">
+                  <p className="text-center text-gray-800 font-bold mb-2 text-lg">
+                    No hay servicios disponibles para este negocio.
+                  </p>
+                  <Image
+                    src="/imgs/no_servicios.png"
+                    alt="No hay servicios disponibles"
+                    width={500}
+                    height={500}
+                    className="max-w-xs md:max-w-md lg:max-w-lg w-full h-auto object-contain mb-4"
+                    loading="lazy"
+                    quality={75}
+                  />
+                  
+                </div>
               )}
             </div>
           )}

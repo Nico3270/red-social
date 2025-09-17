@@ -14,7 +14,7 @@ import { ReaccionTipo } from "@prisma/client";
 import { usePublicacionModalStore } from "@/store/publicacionModal/publicacionModalStore";
 import { useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
-import {  inter } from "@/config/fonts";
+import {  inter, textosFont } from "@/config/fonts";
 
 interface CommentsPage {
   ok: boolean;
@@ -75,6 +75,11 @@ const Interactions: React.FC<InteractionsProps> = ({
     updateUserReaction,
     // updatedCompartidos,
     // updateCompartidos,
+    // Nota: Asumimos que has añadido estas actions al store (ver nota al final)
+    resetLikes,
+    resetUserReaction,
+    resetNumComentarios,
+    clearUpdatedComments,
   } = usePublicacionModalStore();
 
   // Estados locales inicializados con SSR (SIN CAMBIOS)
@@ -90,36 +95,38 @@ const Interactions: React.FC<InteractionsProps> = ({
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
 
-useEffect(() => {
-  setMounted(true);
-}, []);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // REMOVIDO: SWR para summary (redundante ahora con props de EnhancedPublicacion)
   // En su lugar, effective values usan solo props + store (más simple y eficiente)
 
   // Extraer expresiones complejas para dependencias estáticas
   const updatedLikesForId = updatedLikes[publicacionId];
-  const updatedNumComentariosForId = updatedNumComentarios[publicacionId];
+  const updatedNumComentariosForId = updatedNumComentarios[publicacionId] ?? 0; // Delta, default 0
   // const updatedCompartidosForId = updatedCompartidos[publicacionId];
   const updatedUserReactionForId = updatedUserReaction[publicacionId];
   const updatedCommentsForId = updatedComments[publicacionId];
 
   // Effective values simplificados: Props + store override en modal (SIN SWR)
+  // Para likes y reaction: override con updated si existe
+  // Para comentarios count: aditivo (local + delta)
   const effectiveLikes = useMemo(
-    () => isInModal ? (updatedLikesForId ?? localLikes) : localLikes,
-    [isInModal, updatedLikesForId, localLikes]
+    () => updatedLikesForId ?? localLikes,
+    [updatedLikesForId, localLikes]
   );
   const effectiveComentarios = useMemo(
-    () => isInModal ? (updatedNumComentariosForId ?? localComentarios) : localComentarios,
-    [isInModal, updatedNumComentariosForId, localComentarios]
+    () => localComentarios + updatedNumComentariosForId,
+    [localComentarios, updatedNumComentariosForId]
   );
   // const effectiveCompartidos = useMemo(
   //   => isInModal ? (updatedCompartidosForId ?? localCompartidos) : localCompartidos,
   //   [isInModal, updatedCompartidosForId, localCompartidos]
   // );
   const effectiveReaction = useMemo(
-    () => isInModal ? (updatedUserReactionForId ?? localReaction) : localReaction,
-    [isInModal, updatedUserReactionForId, localReaction]
+    () => updatedUserReactionForId ?? localReaction,
+    [updatedUserReactionForId, localReaction]
   );
 
   // SWRInfinite para comentarios en modal (MANTENIDO: Solo para paginación lazy)
@@ -170,32 +177,45 @@ useEffect(() => {
   // Sincronizar store con estados locales incluso fuera del modal (para updates post-modal)
   useEffect(() => {
     if (!isInModal) {
+      let needsReset = false;
+
+      // Sync likes
       if (updatedLikesForId !== undefined && updatedLikesForId !== localLikes) {
         setLocalLikes(updatedLikesForId);
+        needsReset = true;
       }
-      if (updatedNumComentariosForId !== undefined && updatedNumComentariosForId !== localComentarios) {
-        setLocalComentarios(updatedNumComentariosForId);
-      }
+
+      // Sync reaction
       if (updatedUserReactionForId !== undefined && updatedUserReactionForId !== localReaction) {
         setLocalReaction(updatedUserReactionForId);
+        needsReset = true;
       }
+
+      // Sync comentarios count (aditivo con delta)
+      if (updatedNumComentariosForId > 0) {
+        setLocalComentarios((prev) => prev + updatedNumComentariosForId);
+        needsReset = true;
+      }
+
+      // Sync comments array (merge unique)
       if (updatedCommentsForId && updatedCommentsForId.length > 0) {
-        // Mergear comentarios del store con locales, similar al effect de merge en modal
         const allComments = [...localComments, ...updatedCommentsForId];
         const uniqueComments = Array.from(new Map(allComments.map((c) => [c.id, c])).values())
           .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-        // Opcional: Comparar si cambió (simple check de longitud y primer/último id)
         if (uniqueComments.length !== localComments.length ||
             (uniqueComments.length > 0 && uniqueComments[0].id !== localComments[0]?.id)) {
           setLocalComments(uniqueComments);
+          needsReset = true;
         }
       }
-      // Opcional: Limpiar el store después de sincronizar, si no quieres persistir indefinidamente
-      // Por ejemplo, si el store tiene métodos para reset:
-      // updateLikes(publicacionId, undefined);
-      // updateNumComentarios(publicacionId, undefined);
-      // updateUserReaction(publicacionId, undefined);
-      // updatedComments[publicacionId] = []; // o usa un setter si existe
+
+      // Reset store después de sync para evitar double-count en re-apertura
+      if (needsReset) {
+        resetLikes(publicacionId);
+        resetUserReaction(publicacionId);
+        resetNumComentarios(publicacionId);
+        clearUpdatedComments(publicacionId);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
@@ -204,9 +224,10 @@ useEffect(() => {
     updatedNumComentariosForId,
     updatedUserReactionForId,
     updatedCommentsForId,
+    publicacionId,
   ]);
 
-  // Handle Like (SIMPLIFICADO: Removido mutateSummary, ya que no hay SWR)
+  // Handle Like (ACTUALIZADO: Update store también en !isInModal para sync con modal)
   const handleLike = useCallback(async () => {
     if (!isAuthenticated) {
       setShowAuthModal(true);
@@ -218,10 +239,8 @@ useEffect(() => {
 
     setLocalLikes(optimisticLikes);
     setLocalReaction(optimisticReaction);
-    if (isInModal) {
-      updateLikes(publicacionId, optimisticLikes);
-      updateUserReaction(publicacionId, optimisticReaction);
-    }
+    updateLikes(publicacionId, optimisticLikes);
+    updateUserReaction(publicacionId, optimisticReaction);
 
     try {
       const result = await postInteraccionPublicacion({
@@ -235,10 +254,8 @@ useEffect(() => {
     } catch (error) {
       setLocalLikes(effectiveLikes);
       setLocalReaction(effectiveReaction);
-      if (isInModal) {
-        updateLikes(publicacionId, effectiveLikes);
-        updateUserReaction(publicacionId, effectiveReaction);
-      }
+      updateLikes(publicacionId, effectiveLikes); // Reset optimista fallido usando el valor anterior
+      updateUserReaction(publicacionId, effectiveReaction);
       console.warn("Error en like:", error);
     }
   }, [
@@ -247,7 +264,6 @@ useEffect(() => {
     slug,
     effectiveLikes,
     effectiveReaction,
-    isInModal,
     updateLikes,
     updateUserReaction,
   ]);
@@ -535,7 +551,7 @@ useEffect(() => {
             >
               {comment.usuario.nombre} {comment.usuario.apellido}
             </Link>
-            <p className="text-sm text-gray-700 mt-1 leading-relaxed">
+            <p className={`text-sm text-gray-700 mt-1 leading-relaxed ${textosFont.className}`}>
               {comment.contenido}
             </p>
             <span className="text-xs text-gray-600 block mt-2 font-light">

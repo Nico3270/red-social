@@ -93,7 +93,7 @@ const RespuestaEncuestaNegocio: React.FC<RespuestaEncuestaNegocioProps> = ({ pre
     return (
         <div className="min-h-screen bg-white p-6 md:p-12 flex flex-col items-center mb-20">
             <h1 className="text-3xl md:text-4xl font-light text-gray-900 tracking-tight text-center mb-10">
-                Tu opinión sobre <span className="font-semibold">{nombreNegocio}</span>
+                Tu opinión sobre <span className="font-semibold text-blue-800">{nombreNegocio}</span>
             </h1>
             <Divider />
 
@@ -161,7 +161,7 @@ const RespuestaEncuestaNegocio: React.FC<RespuestaEncuestaNegocioProps> = ({ pre
                     <p className="text-gray-800 mb-2">Nombre (opcional)</p>
                     <input
                         type="text"
-                        className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400"
+                        className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 text-gray-900"
                         value={nombre}
                         onChange={(e) => setNombre(e.target.value)}
                     />
@@ -170,7 +170,7 @@ const RespuestaEncuestaNegocio: React.FC<RespuestaEncuestaNegocioProps> = ({ pre
                     <p className="text-gray-800 mb-2">Teléfono (opcional)</p>
                     <input
                         type="tel"
-                        className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400"
+                        className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 text-gray-900"
                         value={telefono}
                         onChange={(e) => setTelefono(e.target.value)}
                     />
