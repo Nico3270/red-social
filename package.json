@@ -19,6 +19,7 @@
     "updateNegocioScores": "ts-node src/seed/updateBusinessScores.ts",
     "updateServiciosScores": "ts-node src/seed/updateServiceScores.ts",
     "CalculateScore": "pnpm run updateScores && pnpm run updateProductScores && pnpm run updateNegocioScores && pnpm run updateServiciosScores",
+    "aleatorioScore": "ts-node src/seed/aleatorioScore.ts",
     "index": "ts-node src/seed/index.ts",
     "test": "jest",
     "test:watch": "jest --watch"

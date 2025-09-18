@@ -18,7 +18,7 @@ import { AddFavorites } from "./AddFavorites";
 import { useCartCatalogoStore } from "@/store/carro/carro-store";
 import { motion, AnimatePresence } from "framer-motion";
 import { textosFont, titleFont, titulosPrincipales } from "@/config/fonts";
-import Image from "next/image";
+
 
 
 interface AddToCartProps {
@@ -96,7 +96,7 @@ export const DetallesProducto: React.FC<AddToCartProps> = ({ product, telefonoNe
 
   return (
     <div className="sm:mt-10 flex flex-col items-center gap-6 bg-white p-4 mb-10 mb:20 rounded-lg shadow-md">
-      <Link href={`/perfil/${product.slugNegocio}`} target="_blank" rel="noopener noreferrer">
+      {/* <Link href={`/perfil/${product.slugNegocio}`} target="_blank" rel="noopener noreferrer">
         <button
           // onClick={() => setIsReviewModalOpen(true)}
           className="flex items-center justify-center gap-2 bg-[#] hover:bg-gray-500  bg-red-500 text-white font-semibold p-2 rounded-lg shadow-md transition-all"
@@ -112,7 +112,7 @@ export const DetallesProducto: React.FC<AddToCartProps> = ({ product, telefonoNe
           </div>
           {product.nombreNegocio}
         </button>
-        </Link>
+        </Link> */}
       {/* Información del producto */}
       <div className="text-center">
         
