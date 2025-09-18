@@ -362,6 +362,11 @@ export default function CreateOrUpdateProduct({ product }: Props) {
         <TextField label="Nombre" {...register("nombre", { required: true })} fullWidth />
       </FormControl>
 
+      <FormControl>
+        <FormLabel sx={{ mb: 1, color: "info.main", fontWeight: "bold" }}>Precio</FormLabel>
+        <TextField label="Precio" type="number" {...register("precio", { required: true })} fullWidth />
+      </FormControl>
+
       <FormControl fullWidth margin="normal">
         <FormLabel sx={{ mb: 1, color: "info.main", fontWeight: "bold" }}>Categoría</FormLabel>
         <Controller
@@ -528,7 +533,7 @@ export default function CreateOrUpdateProduct({ product }: Props) {
         />
       </FormControl>
 
-      <Button variant="contained" color="primary" onClick={handleGenerateComponentes} fullWidth>
+      <Button variant="contained" color="primary" sx={{textTransform: "none", fontSize: "0.95rem"}} onClick={handleGenerateComponentes} fullWidth>
         Agregar
       </Button>
       <Divider />
@@ -570,6 +575,7 @@ export default function CreateOrUpdateProduct({ product }: Props) {
           onClick={handleGenerateDescription}
           disabled={generating}
           className="mt-4"
+          sx={{textTransform: "none", fontSize: "0.95rem"}}
         >
           {generating ? <CircularProgress size={24} /> : "Generar Descripciones con IA"}
         </Button>
@@ -582,10 +588,7 @@ export default function CreateOrUpdateProduct({ product }: Props) {
       </FormControl>
       <Divider />
 
-      <FormControl>
-        <FormLabel sx={{ mb: 1, color: "info.main", fontWeight: "bold" }}>Precio</FormLabel>
-        <TextField label="Precio" type="number" {...register("precio", { required: true })} fullWidth />
-      </FormControl>
+      
       <Divider />
 
       <div className="bg-gray-100 border-l-4 border-blue-600 p-4 rounded-lg shadow-sm">
@@ -719,7 +722,7 @@ export default function CreateOrUpdateProduct({ product }: Props) {
               {modalState === 'loading' && (
                 <>
                   <CircularProgress size={40} className="mb-4" />
-                  <Typography variant="h6">{modalMessage}</Typography>
+                  <Typography variant="h6" sx={{ color: "black" }}>{modalMessage}</Typography>
                 </>
               )}
               {modalState === 'success' && (

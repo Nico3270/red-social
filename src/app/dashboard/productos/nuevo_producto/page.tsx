@@ -4,7 +4,7 @@ import { TituloPrincipal } from "@/ui/components/titulos/Titulos";
 export const dynamic = "force-dynamic"; // Asegura que la acción no use caché
 export default async function NewProductPage() {
   return (
-    <div className="w-full bg-white">
+    <div className="w-full sm:p-6 bg-white">
       <TituloPrincipal>
   Crear Nuevo Producto
 </TituloPrincipal>

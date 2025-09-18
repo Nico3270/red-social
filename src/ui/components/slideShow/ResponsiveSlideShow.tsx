@@ -45,7 +45,7 @@ export const ResponsiveSlideShow: React.FC<Props> = ({ images, title }) => {
                                     alt={title}
                                     fill
                                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                                    className="object-cover rounded-xl shadow-xl border border-gray-400 "
+                                    className="object-cover rounded-xl shadow-xl border border-gray-100 "
                                 />
                             </div>
                         </SwiperSlide>

@@ -30,7 +30,7 @@ export async function createProduct(formData: FormData): Promise<CreacionProduct
 
         const negocio = await prisma.negocio.findUnique({
             where: { usuarioId },
-            select: { id: true, slug:true },
+            select: { id: true, slug: true },
         });
         if (!negocio) {
             return { ok: false, message: "El usuario no tiene un negocio asociado." };

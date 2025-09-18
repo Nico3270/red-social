@@ -30,14 +30,14 @@ export const QRPersonalizado: React.FC<QRPersonalizadoProps> = ({
     >
       {/* Header: logo más pequeño + nombre */}
       <div className="flex items-center gap-3 mb-2 w-full">
-        <div className="relative w-10 h-10 rounded-full overflow-hidden border border-gray-200 shadow-sm">
-          <Image
-            src={imagenPerfil}
-            alt={`Perfil de ${nombreNegocio}`}
-            fill
-            className="object-cover"
-          />
-        </div>
+        <div className="relative w-12 h-12 rounded-full overflow-hidden border border-blue-600 shadow-md ring-1 ring-gray-300/40">
+  <Image
+    src={imagenPerfil}
+    alt={`Perfil de ${nombreNegocio}`}
+    fill
+    className="object-cover"
+  />
+</div>
         <h2 className={`text-base sm:text-lg font-semibold text-gray-900 tracking-tight ${titleFont.className}`}>
           {nombreNegocio}
         </h2>

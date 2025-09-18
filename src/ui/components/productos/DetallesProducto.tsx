@@ -17,7 +17,8 @@ import { TestimonioProductoCrearEditar } from "@/publicaciones/componentes/Testi
 import { AddFavorites } from "./AddFavorites";
 import { useCartCatalogoStore } from "@/store/carro/carro-store";
 import { motion, AnimatePresence } from "framer-motion";
-import { textosFont } from "@/config/fonts";
+import { textosFont, titleFont, titulosPrincipales } from "@/config/fonts";
+import Image from "next/image";
 
 
 interface AddToCartProps {
@@ -95,16 +96,34 @@ export const DetallesProducto: React.FC<AddToCartProps> = ({ product, telefonoNe
 
   return (
     <div className="sm:mt-10 flex flex-col items-center gap-6 bg-white p-4 mb-10 mb:20 rounded-lg shadow-md">
+      <Link href={`/perfil/${product.slugNegocio}`} target="_blank" rel="noopener noreferrer">
+        <button
+          // onClick={() => setIsReviewModalOpen(true)}
+          className="flex items-center justify-center gap-2 bg-[#] hover:bg-gray-500  bg-red-500 text-white font-semibold p-2 rounded-lg shadow-md transition-all"
+          aria-label="Deja una reseña de este producto"
+        >
+          <div className="relative w-8 h-8 rounded-full overflow-hidden border border-gray-200 shadow-md ring-1 ring-gray-300/40">
+            <Image
+              src={product.negocioFotoPerfil}
+              alt={`Perfil de ${product.nombreNegocio}`}
+              fill
+              className="object-cover"
+            />
+          </div>
+          {product.nombreNegocio}
+        </button>
+        </Link>
       {/* Información del producto */}
       <div className="text-center">
+        
         <h1
-          className={`text-2xl sm:text-3xl md:text-4xl font-semibold text-gray-900 text-center leading-snug break-words ${textosFont.className}`}
+          className={`text-2xl sm:text-3xl md:text-4xl font-semibold text-gray-800 text-center leading-snug break-words ${titleFont.className}`}
         >
           {product.nombre}
         </h1>
         <Divider />
         <div className="mt-0">
-          <span className="text-sm text-gray-500">Precio:</span>
+          <span className={`text-md text-gray-800 font-semibold ${titulosPrincipales.className}`}>Precio:</span>
           <div className="text-4xl font-extrabold text-gray-800 tracking-tight mt-1">
             {new Intl.NumberFormat("es-CO", {
               style: "currency",
@@ -198,7 +217,8 @@ export const DetallesProducto: React.FC<AddToCartProps> = ({ product, telefonoNe
       </div>
 
       {/* Nuevo botón para dejar reseña */}
-      <div className="w-full flex justify-center mt-0">
+      <div className="w-full flex justify-center mt-0 gap-4">
+        
         <button
           // onClick={() => setIsReviewModalOpen(true)}
           className="flex items-center justify-center gap-2 bg-[#274494] hover:bg-[#2c5282] text-white font-semibold py-3 px-6 rounded-lg shadow-md transition-all"

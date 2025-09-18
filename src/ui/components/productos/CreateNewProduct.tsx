@@ -288,6 +288,10 @@ export default function CreateNewProduct() {
                     <FormLabel sx={{ mb: 1, color: 'info.main', fontWeight: "bold", }}>Ingresa el nombre de tus producto</FormLabel>
                     <TextField label="Nombre" {...register("nombre", { required: true })} fullWidth />
                 </FormControl>
+                <FormControl>
+                    <FormLabel sx={{ mb: 1, color: 'info.main', fontWeight: "bold", }}>Precio</FormLabel>
+                    <TextField label="Precio" type="number" {...register("precio", { required: true })} fullWidth />
+                </FormControl>
 
                 <FormControl fullWidth margin="normal">
                     <FormLabel sx={{ mb: 1, color: 'info.main', fontWeight: "bold" }}>Categoría</FormLabel>
@@ -455,10 +459,11 @@ export default function CreateNewProduct() {
                         fullWidth
                     />
                 </FormControl>
-
-                <Button variant="contained" color="primary" onClick={handleGenerateComponentes} fullWidth>
-                    Agregar
-                </Button>
+                <Box sx={{ display: "flex", justifyContent: "center" }}>
+                    <Button variant="contained" color="primary" sx={{ textTransform: "none", fontSize: "0.95rem", width: { xs: "100%", sm: "300px" } }} onClick={handleGenerateComponentes} fullWidth>
+                        Agregar
+                    </Button>
+                </Box>
                 <Divider />
 
                 {componentes.length > 0 && (
@@ -489,18 +494,20 @@ export default function CreateNewProduct() {
                         rows={3}
                         helperText="Ejemplo: Bandeja decorada con jugo natural, sandwiches, queso, frutas como kiwi, fresas y duraznos."
                     />
-
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        fullWidth
-                        startIcon={<AiOutlineCloudUpload />}
-                        onClick={handleGenerateDescription}
-                        disabled={generating}
-                        className="mt-4"
-                    >
-                        {generating ? <CircularProgress size={24} /> : "Generar Descripciones con IA"}
-                    </Button>
+                    <Box sx={{ display: "flex", justifyContent: "center" , marginTop: 2}}>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            fullWidth
+                            startIcon={<AiOutlineCloudUpload />}
+                            onClick={handleGenerateDescription}
+                            disabled={generating}
+                            className="mt-4"
+                            sx={{ textTransform: "none", fontSize: "0.95rem", width: { xs: "100%", sm: "300px" } }}
+                        >
+                            {generating ? <CircularProgress size={24} /> : "Generar Descripciones con IA"}
+                        </Button>
+                    </Box>
 
                     {alert && (
                         <Alert severity={alert.type} onClose={() => setAlert(null)}>
@@ -510,11 +517,8 @@ export default function CreateNewProduct() {
                 </FormControl>
                 <Divider />
 
-                <FormControl>
-                    <FormLabel sx={{ mb: 1, color: 'info.main', fontWeight: "bold", }}>Precio</FormLabel>
-                    <TextField label="Precio" type="number" {...register("precio", { required: true })} fullWidth />
-                </FormControl>
-                <Divider />
+
+
 
                 <div className="bg-gray-100 border-l-4 border-blue-600 p-4 rounded-lg shadow-sm">
                     <h5 className="text-blue-600 font-semibold">Descripción completa</h5>
@@ -603,26 +607,28 @@ export default function CreateNewProduct() {
                         control={control}
                         render={({ field }) => (
                             <RadioGroup {...field} row>
-                                <FormControlLabel value="disponible" control={<Radio />} label="Disponible" />
-                                <FormControlLabel value="agotado" control={<Radio />} label="Agotado" />
-                                <FormControlLabel value="oculto" control={<Radio />} label="Oculto" />
-                                <FormControlLabel value="descontinuado" control={<Radio />} label="Descontinuado" />
+                                <FormControlLabel sx={{ color: "black" }} value="disponible" control={<Radio />} label="Disponible" />
+                                <FormControlLabel sx={{ color: "black" }} value="descontinuado" control={<Radio />} label="Descontinuado" />
+                                <FormControlLabel sx={{ color: "black" }} value="agotado" control={<Radio />} label="Agotado" />
+                                <FormControlLabel sx={{ color: "black" }} value="oculto" control={<Radio />} label="Oculto" />
                             </RadioGroup>
                         )}
                     />
                 </FormControl>
 
 
-
+<Box sx={{ display: "flex", justifyContent: "center" , marginTop: 2}}>
                 <Button
                     type="submit"
                     variant="contained"
                     color="primary"
                     fullWidth
                     disabled={loading || submitted}
+                    sx={{ textTransform: "none", fontSize: "0.95rem", width: { xs: "100%", sm: "300px" } }}
                 >
                     {loading ? <CircularProgress size={24} color="inherit" /> : "Crear Producto"}
                 </Button>
+                </Box>
 
                 {alert && (
                     <Alert severity={alert.type} onClose={() => setAlert(null)}>
@@ -660,7 +666,7 @@ export default function CreateNewProduct() {
                                 {modalState === 'loading' && (
                                     <>
                                         <CircularProgress size={40} className="mb-4" />
-                                        <Typography variant="h6">{modalMessage}</Typography>
+                                        <Typography sx={{ color: "black" }} variant="h6">{modalMessage}</Typography>
                                     </>
                                 )}
                                 {modalState === 'success' && (
