@@ -193,7 +193,7 @@ export const SocialMediaCarousel: React.FC<Props> = ({ publicacion, isInModal = 
               alt={`Foto de perfil de ${publicacion.negocio?.nombre || `${publicacion.usuario.nombre} ${publicacion.usuario.apellido}`}`}
               fill
               className="object-cover"
-              unoptimized
+              
             />
           </div>
           <div className="flex-1">

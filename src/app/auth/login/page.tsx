@@ -19,7 +19,6 @@ export default function LoginPage() {
             alt="Negocio vibrante con clientes"
             width={600}
             height={400}
-            unoptimized
             className="object-cover"
             priority
           />

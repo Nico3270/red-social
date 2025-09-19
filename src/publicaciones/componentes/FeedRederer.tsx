@@ -303,7 +303,6 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
                   height={24}
                   className="w-full h-full object-contain"
                   loading="lazy"
-                  unoptimized
                   onError={(e) => {
                     (e.currentTarget as HTMLImageElement).src = "/imgs/iconos/placeholder.png";
                   }}

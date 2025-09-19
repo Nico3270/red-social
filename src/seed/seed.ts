@@ -91,12 +91,15 @@ export const initialData: SeedData = {
     { id: 's79', nombre: 'Especiales', iconName: 'comidaEspecial.png', slug: 'especiales', href: '/productos/comida/desayunos', order: 17, isActive: true, categorySlug: 'comida' },
     { id: 's80', nombre: 'Perros calientes', iconName: 'hotDog.png', slug: 'perros-calientes', href: '/productos/comida/perros-calientes', order: 18, isActive: true, categorySlug: 'comida' },
     { id: 's91', nombre: 'Ensaladas', iconName: 'ensaladas.png', slug: 'ensaladas', href: '/productos/comida/ensaladas', order: 19, isActive: true, categorySlug: 'comida' },
-    { id: 's92', nombre: 'Sopas', iconName: 'sopas.png', slug: 'sopas', href: '/productos/comida/sopas', order: 20, isActive: true, categorySlug: 'comida' },
+    { id: 's92', nombre: 'Sopas', iconName: 'sopas.webp', slug: 'sopas', href: '/productos/comida/sopas', order: 20, isActive: true, categorySlug: 'comida' },
     { id: 's93', nombre: 'Pastas', iconName: 'pastas.png', slug: 'pastas', href: '/productos/comida/pastas', order: 21, isActive: true, categorySlug: 'comida' },
     { id: 's99', nombre: 'Panadería', iconName: 'panaderia.png', slug: 'panaderia', href: '/productos/comida/panaderia', order: 27, isActive: true, categorySlug: 'comida' },
     { id: 's100', nombre: 'Empanadas', iconName: 'empanadas.png', slug: 'empanadas', href: '/productos/comida/empanadas', order: 28, isActive: true, categorySlug: 'comida' },
     { id: 's101', nombre: 'Tacos', iconName: 'tacos.png', slug: 'tacos', href: '/productos/comida/tacos', order: 29, isActive: true, categorySlug: 'comida' },
     { id: 's102', nombre: 'Helados', iconName: 'helados.png', slug: 'helados', href: '/productos/comida/helados', order: 30, isActive: true, categorySlug: 'comida' },
+    { id: 's125', nombre: 'Entradas', iconName: 'entradas.webp', slug: 'entradas', href: '/productos/comida/entradas', order: 30, isActive: true, categorySlug: 'comida' },
+    { id: 's126', nombre: 'Wraps', iconName: 'wraps.webp', slug: 'wraps', href: '/productos/comida/wraps', order: 30, isActive: true, categorySlug: 'comida' },
+    { id: 's127', nombre: 'Adicionales', iconName: 'adicionales.webp', slug: 'wraps', href: '/productos/comida/adicionales', order: 30, isActive: true, categorySlug: 'comida' },
 
 
 
@@ -166,7 +169,6 @@ export const initialData: SeedData = {
     { id: 's66', nombre: 'Granizados', iconName: 'granizados.png', slug: 'granizados', href: '/productos/bebidas/granizados', order: 6, isActive: true, categorySlug: 'bebidas' },
     { id: 's67', nombre: 'Bebidas frías', iconName: 'bebidaFria.png', slug: 'bebidas-frias', href: '/productos/bebidas/bebidas-frias', order: 9, isActive: true, categorySlug: 'bebidas' },
     { id: 's68', nombre: 'Bebidas calientes', iconName: 'bebidascalientes.png', slug: 'benidas-calientes', href: '/productos/bebidas/bebidas-calientes', order: 10, isActive: true, categorySlug: 'bebidas' },
-
     { id: 's103', nombre: 'Té', iconName: 'tes.png', slug: 'tes', href: '/productos/bebidas/tes', order: 7, isActive: true, categorySlug: 'bebidas' },
     { id: 's104', nombre: 'Vinos', iconName: 'vinos.png', slug: 'vinos', href: '/productos/bebidas/vinos', order: 8, isActive: true, categorySlug: 'bebidas' },
     { id: 's105', nombre: 'Limonadas', iconName: 'limonadas.png', slug: 'limonadas', href: '/productos/bebidas/limonadas', order: 11, isActive: true, categorySlug: 'bebidas' },
@@ -174,6 +176,7 @@ export const initialData: SeedData = {
     { id: 's107', nombre: 'Cocteles', iconName: 'cocteles.png', slug: 'cocteles', href: '/productos/bebidas/cocteles', order: 13, isActive: true, categorySlug: 'bebidas' },
     { id: 's110', nombre: 'Agua', iconName: 'agua.png', slug: 'agua', href: '/productos/bebidas/agua', order: 16, isActive: true, categorySlug: 'bebidas' },
     { id: 's111', nombre: 'Otras bebidas ', iconName: 'otrasBebidas.png', slug: 'ron', href: '/productos/bebidas/ron', order: 17, isActive: true, categorySlug: 'bebidas' },
+    { id: 's128', nombre: 'Smothies', iconName: 'smothies.webp', slug: 'smothies', href: '/productos/bebidas/smothies', order: 18, isActive: true, categorySlug: 'bebidas' },
 
 
 

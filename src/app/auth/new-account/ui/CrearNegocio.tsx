@@ -36,9 +36,9 @@ type IdUsuario = {
 };
 
 interface ColombiaDepartment {
-  id: number;
-  departamento: string;
-  ciudades: string[];
+    id: number;
+    departamento: string;
+    ciudades: string[];
 }
 
 export const CreateNegocioForm = ({ id }: IdUsuario) => {
@@ -49,7 +49,7 @@ export const CreateNegocioForm = ({ id }: IdUsuario) => {
     const [selectedCategorySlugs, setSelectedCategorySlugs] = useState<Set<string>>(new Set());
     const [selectedSections, setSelectedSections] = useState<Set<string>>(new Set());
     const [alert, setAlert] = useState<{ type: "success" | "error" | "info"; message: string } | null>(null);
-    const { update,} = useSession();
+    const { update, } = useSession();
 
     const {
         register,
@@ -81,22 +81,22 @@ export const CreateNegocioForm = ({ id }: IdUsuario) => {
 
     useEffect(() => {
         if (selectedDepartamento) {
-          const departmentData = (colombia as ColombiaDepartment[]).find(
-            (dept) => dept.departamento === selectedDepartamento
-          );
-          setCities(departmentData ? departmentData.ciudades : []);
+            const departmentData = (colombia as ColombiaDepartment[]).find(
+                (dept) => dept.departamento === selectedDepartamento
+            );
+            setCities(departmentData ? departmentData.ciudades : []);
         } else {
-          setCities([]);
+            setCities([]);
         }
-      }, [selectedDepartamento]);
+    }, [selectedDepartamento]);
 
     useEffect(() => {
         if (selectedCity && selectedDepartamento) {
-          setValue("ciudad", `${selectedCity} - ${selectedDepartamento}`);
+            setValue("ciudad", `${selectedCity} - ${selectedDepartamento}`);
         } else {
-          setValue("ciudad", "");
+            setValue("ciudad", "");
         }
-      }, [selectedCity, selectedDepartamento, setValue]);
+    }, [selectedCity, selectedDepartamento, setValue]);
 
     const onSubmit: SubmitHandler<FormInputs> = async (data) => {
         setIsPending(true);
@@ -172,8 +172,8 @@ export const CreateNegocioForm = ({ id }: IdUsuario) => {
             // console.log("Actualizando sesión con role: negocio");
             await update({ role: "negocio" });
             await update({ negocioNombre: data.nombre || "" });
-            await update({ negocioSlug: response.slugNegocio});
-            await update({negocioId: response.negocioId})
+            await update({ negocioSlug: response.slugNegocio });
+            await update({ negocioId: response.negocioId })
 
 
             // ✅ Paso 3: Mostrar mensaje de éxito
@@ -273,11 +273,11 @@ export const CreateNegocioForm = ({ id }: IdUsuario) => {
                                                 }}
                                             >
                                                 <Image
-                                                    src={`/imgs/iconos/${category.iconName}`} 
-                                                    alt={category.nombre} 
-                                                    width={18} 
-                                                    height={18} 
-                                                    style={{ marginRight: 8 }} 
+                                                    src={`/imgs/iconos/${category.iconName}`}
+                                                    alt={category.nombre}
+                                                    width={18}
+                                                    height={18}
+                                                    style={{ marginRight: 8 }}
                                                 />
                                                 <Typography variant="body2" sx={{ fontWeight: 500 }}>
                                                     {category.nombre}
@@ -335,12 +335,12 @@ export const CreateNegocioForm = ({ id }: IdUsuario) => {
                                                 },
                                             }}
                                         >
-                                            <Image 
-                                                src={`/imgs/iconos/${section.iconName}`} 
-                                                alt={section.nombre} 
-                                                width={18} 
-                                                height={18} 
-                                                style={{ marginRight: 8 }} 
+                                            <Image
+                                                src={`/imgs/iconos/${section.iconName}`}
+                                                alt={section.nombre}
+                                                width={18}
+                                                height={18}
+                                                style={{ marginRight: 8 }}
                                             />
                                             <Typography variant="body2" sx={{ fontWeight: 500 }}>
                                                 {section.nombre}
@@ -370,20 +370,30 @@ export const CreateNegocioForm = ({ id }: IdUsuario) => {
                     </div>
 
                     <div>
-                        <label htmlFor="descripcion" className="block font-bold text-gray-800">
+                        <label
+                            htmlFor="descripcion"
+                            className="block font-bold text-gray-800"
+                        >
                             Descripción del negocio
                         </label>
-                        <input
-                            type="text"
+
+                        <textarea
                             {...register("descripcion", { required: "La descripción es requerida" })}
+                            rows={4} // número de líneas visibles
                             className={clsx(
                                 "w-full border rounded-lg p-2 mt-2 focus:outline-none focus:ring-2 focus:ring-red-600 text-gray-800",
                                 { "border-red-500": errors.descripcion }
                             )}
-                            placeholder="Descripción del negocio"
+                            placeholder="Escribe aquí la descripción del negocio"
                         />
-                        {errors.descripcion && <span className="text-red-500 text-sm">{errors.descripcion.message}</span>}
+
+                        {errors.descripcion && (
+                            <span className="text-red-500 text-sm">
+                                {errors.descripcion.message}
+                            </span>
+                        )}
                     </div>
+
 
                     <input type="hidden" {...register("ciudad", { required: "La ciudad es requerida - verifica el formato (Ciudad - Departamento)" })} />
 

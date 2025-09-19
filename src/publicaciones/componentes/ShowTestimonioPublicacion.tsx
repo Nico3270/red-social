@@ -141,7 +141,7 @@ export const ShowTestimonioPublicacion = ({ publicacion, productos, isInModal = 
               alt="Avatar del negocio"
               fill
               className="object-cover"
-              unoptimized={true} // Evita problemas con imágenes externas
+              // unoptimized={true} // Evita problemas con imágenes externas
             />
           </div>
           <div className="flex-1 min-w-0"> {/* min-w-0 para truncate en móviles */}
