@@ -30,6 +30,26 @@ async function main() {
       });
     }
 
+    // Validación de IDs duplicados en secciones (nueva sección)
+    console.log("🔍 Validando IDs únicos en secciones...");
+    const idSet = new Set<string>(); // Set para IDs únicos
+    const duplicates: string[] = []; // Array para IDs repetidos
+    for (const seccion of initialData.secciones) {
+      if (idSet.has(seccion.id)) {
+        duplicates.push(seccion.id); // Registra duplicado
+      } else {
+        idSet.add(seccion.id); // Agrega si es único
+      }
+    }
+
+    if (duplicates.length > 0) {
+      console.warn(`⚠️ IDs duplicados encontrados: ${duplicates.join(', ')}. Corrige antes de continuar.`);
+      // Opcional: Detén la ejecución si quieres forzar corrección
+      // throw new Error("Duplicados detectados en IDs de secciones.");
+    } else {
+      console.log("✅ Todos los IDs de secciones son únicos.");
+    }
+
     // Insertar secciones con verificación de categoría
     console.log("📁 Insertando secciones...");
     for (const seccion of initialData.secciones) {
@@ -38,7 +58,7 @@ async function main() {
       });
 
       if (!categoria) {
-        console.warn(`⚠️ Categoría no encontrada para la sección: ${seccion.nombre}`);
+        console.warn(`⚠️ Categoría no encontrada para la sección: ${seccion.nombre} (ID: ${seccion.id}, Slug: ${seccion.slug})`);
         continue;
       }
 
@@ -50,18 +70,24 @@ async function main() {
       });
 
       if (!seccionExistente) {
-        await prisma.section.create({
-          data: {
-            id: seccion.id,
-            nombre: seccion.nombre,
-            slug: seccion.slug,
-            iconName: seccion.iconName,
-            order: seccion.order, // <- solo Section tiene "order"
-            isActive: seccion.isActive,
-            categoryId: categoria.id,
-          },
-        });
-        console.log(`➕ Sección creada: ${seccion.nombre}`);
+        try {
+          console.log(`🛠️ Intentando crear sección: ${seccion.nombre} (ID: ${seccion.id}, Slug: ${seccion.slug})`);
+          await prisma.section.create({
+            data: {
+              id: seccion.id,
+              nombre: seccion.nombre,
+              slug: seccion.slug,
+              iconName: seccion.iconName,
+              order: seccion.order, // <- solo Section tiene "order"
+              isActive: seccion.isActive,
+              categoryId: categoria.id,
+            },
+          });
+          console.log(`➕ Sección creada: ${seccion.nombre}`);
+        } catch (createError) {
+          console.error(`❌ Error al crear sección ${seccion.nombre} (ID: ${seccion.id}, Slug: ${seccion.slug}):`, createError);
+          // Continúa con la siguiente sección sin detener el script
+        }
       } else {
         console.log(`✔️ Sección ya existe: ${seccion.nombre}`);
       }
