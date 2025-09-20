@@ -10,7 +10,7 @@ interface Props {
 export default async function CategoryPage({ params }: Props) {
     const { categoria } = await params;
   return (
-    <div className="mt-1 sm:mt-50 w-full">
+    <div className="mt-1 sm:mt-10 w-full">
       <FeedComponent categoriaSlug={categoria} />
     </div>
   );

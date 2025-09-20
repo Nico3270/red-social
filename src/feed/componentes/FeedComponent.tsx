@@ -298,7 +298,7 @@ export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedCo
   }
 
   return (
-    <div className="p-0 w-full mx-auto sm:mt-40">
+    <div className="p-0 w-full mx-auto ">
       <FeedRenderer
         items={items}
         hasMore={currentQuery.hasNextPage ?? false}
