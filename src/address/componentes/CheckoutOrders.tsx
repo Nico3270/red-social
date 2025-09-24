@@ -30,6 +30,7 @@ import { createNewPedido } from "../actions/createNewPedido";
 interface CheckoutOrderProps {
   slug: string;
 }
+
 const MotionBox = motion(Box);
 
 const CheckoutOrder: React.FC<CheckoutOrderProps> = ({ slug }) => {
@@ -97,8 +98,7 @@ const CheckoutOrder: React.FC<CheckoutOrderProps> = ({ slug }) => {
       console.error("Error en handleCreatePedido:", error);
       setModalMessage("Error inesperado al crear los pedidos.");
       setIsSuccess(false);
-    }
-    finally {
+    } finally {
       setIsSubmitting(false);
     }
   };
@@ -114,7 +114,6 @@ const CheckoutOrder: React.FC<CheckoutOrderProps> = ({ slug }) => {
   // Componente de resumen del carrito
   const CartSummary = () => (
     <Paper elevation={1} sx={{ p: { xs: 2, sm: 3 }, borderRadius: 3, bgcolor: "background.paper" }}>
-
       <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "text.primary" }}>
         Resumen de tu pedido
       </Typography>
@@ -149,33 +148,95 @@ const CheckoutOrder: React.FC<CheckoutOrderProps> = ({ slug }) => {
   const DeliveryDataSummary = () => (
     <Paper elevation={1} sx={{ p: { xs: 2, sm: 3 }, borderRadius: 3, bgcolor: "background.paper" }}>
       <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "text.primary" }}>
-        Datos de entrega
+        {address.orderType === "DELIVERY" ? "Datos de entrega" : "Datos del pedido en sitio"}
       </Typography>
       <List disablePadding>
         <ListItem sx={{ py: 0.5, px: 0 }}>
-          <ListItemText primary="País" secondary={address.country} />
+          <ListItemText
+            primary="Tipo de pedido"
+            secondary={address.orderType === "DELIVERY" ? "Entrega a domicilio" : "Consumo en sitio"}
+            primaryTypographyProps={{ fontWeight: 500 }}
+            secondaryTypographyProps={{ color: "text.secondary" }}
+          />
         </ListItem>
         <ListItem sx={{ py: 0.5, px: 0 }}>
-          <ListItemText primary="Departamento" secondary={address.departamento} />
+          <ListItemText
+            primary="Nombre del cliente"
+            secondary={address.clientName || "No especificado"}
+            primaryTypographyProps={{ fontWeight: 500 }}
+            secondaryTypographyProps={{ color: "text.secondary" }}
+          />
         </ListItem>
         <ListItem sx={{ py: 0.5, px: 0 }}>
-          <ListItemText primary="Ciudad" secondary={address.ciudad} />
+          <ListItemText
+            primary="Teléfono"
+            secondary={address.clientPhone || "No especificado"}
+            primaryTypographyProps={{ fontWeight: 500 }}
+            secondaryTypographyProps={{ color: "text.secondary" }}
+          />
         </ListItem>
+        {address.orderType === "DELIVERY" && (
+          <>
+            <ListItem sx={{ py: 0.5, px: 0 }}>
+              <ListItemText
+                primary="País"
+                secondary={address.country || "No especificado"}
+                primaryTypographyProps={{ fontWeight: 500 }}
+                secondaryTypographyProps={{ color: "text.secondary" }}
+              />
+            </ListItem>
+            <ListItem sx={{ py: 0.5, px: 0 }}>
+              <ListItemText
+                primary="Departamento"
+                secondary={address.departamento || "No especificado"}
+                primaryTypographyProps={{ fontWeight: 500 }}
+                secondaryTypographyProps={{ color: "text.secondary" }}
+              />
+            </ListItem>
+            <ListItem sx={{ py: 0.5, px: 0 }}>
+              <ListItemText
+                primary="Ciudad"
+                secondary={address.ciudad || "No especificado"}
+                primaryTypographyProps={{ fontWeight: 500 }}
+                secondaryTypographyProps={{ color: "text.secondary" }}
+              />
+            </ListItem>
+            <ListItem sx={{ py: 0.5, px: 0 }}>
+              <ListItemText
+                primary="Dirección de entrega"
+                secondary={address.deliveryAddress || "No especificado"}
+                primaryTypographyProps={{ fontWeight: 500 }}
+                secondaryTypographyProps={{ color: "text.secondary" }}
+              />
+            </ListItem>
+          </>
+        )}
+        {address.orderType === "ON_SITE" && (
+          <ListItem sx={{ py: 0.5, px: 0 }}>
+            <ListItemText
+              primary="Ubicación en sitio"
+              secondary={address.onSiteLocation || "No especificado"}
+              primaryTypographyProps={{ fontWeight: 500 }}
+              secondaryTypographyProps={{ color: "text.secondary" }}
+            />
+          </ListItem>
+        )}
         <ListItem sx={{ py: 0.5, px: 0 }}>
-          <ListItemText primary="Nombre del cliente" secondary={address.clientName} />
-        </ListItem>
-        <ListItem sx={{ py: 0.5, px: 0 }}>
-          <ListItemText primary="Teléfono" secondary={address.clientPhone} />
-        </ListItem>
-        <ListItem sx={{ py: 0.5, px: 0 }}>
-          <ListItemText primary="Dirección de entrega" secondary={address.deliveryAddress} />
-        </ListItem>
-        <ListItem sx={{ py: 0.5, px: 0 }}>
-          <ListItemText primary="Fecha de entrega" secondary={new Date(address.deliveryDate).toLocaleDateString()} />
+          <ListItemText
+            primary="Fecha de entrega"
+            secondary={address.deliveryDate ? new Date(address.deliveryDate).toLocaleDateString() : "No especificado"}
+            primaryTypographyProps={{ fontWeight: 500 }}
+            secondaryTypographyProps={{ color: "text.secondary" }}
+          />
         </ListItem>
         {address.additionalComments && (
           <ListItem sx={{ py: 0.5, px: 0 }}>
-            <ListItemText primary="Comentarios adicionales" secondary={address.additionalComments} />
+            <ListItemText
+              primary="Comentarios adicionales"
+              secondary={address.additionalComments}
+              primaryTypographyProps={{ fontWeight: 500 }}
+              secondaryTypographyProps={{ color: "text.secondary" }}
+            />
           </ListItem>
         )}
       </List>
@@ -235,87 +296,83 @@ const CheckoutOrder: React.FC<CheckoutOrderProps> = ({ slug }) => {
 
         {/* Modal con AnimatePresence */}
         <AnimatePresence>
-  {modalOpen && (
-    <Modal
-      open={modalOpen}
-      onClose={() => setModalOpen(false)}
-      closeAfterTransition
-      slots={{ backdrop: Backdrop }}
-      slotProps={{
-        backdrop: {
-          timeout: 500,
-          TransitionComponent: MuiFade,
-          sx: {
-            backgroundColor: "transparent"
-          },
-        },
-      }}
-    >
-      {/* Contenedor centrador */}
-      <Box
-        sx={{
-          height: "100vh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          p: 2,
-        }}
-      >
-        <MotionBox
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.95 }}
-          transition={{ duration: 0.3 }}
-          sx={{
-            bgcolor: "white",
-            border: `2px solid ${isSuccess ? "success.main" : "error.main"}`,
-            borderRadius: 3,
-            boxShadow: 24,
-            p: { xs: 2, sm: 4 },
-            textAlign: "center",
-            width: { xs: "100%", sm: "400px" },
-            maxHeight: "90vh",
-            overflowY: "auto",
-          }}
-        >
-          {isSubmitting ? (
-            <CircularProgress sx={{ mb: 2 }} />
-          ) : isSuccess ? (
-            <CheckCircleOutline sx={{ fontSize: 60, color: "success.main", mb: 2 }} />
-          ) : (
-            <ErrorOutline sx={{ fontSize: 60, color: "error.main", mb: 2 }} />
-          )}
-
-          <Typography
-            variant="h6"
-            sx={{ mb: 2, fontWeight: 600, color: "grey.900" }}
-          >
-            {modalMessage}
-          </Typography>
-
-          {!isSubmitting && (
-            <Button
-              onClick={() => setModalOpen(false)}
-              variant="contained"
-              sx={{
-                bgcolor: isSuccess ? "success.main" : "error.main",
-                color: "#fff",
-                "&:hover": {
-                  bgcolor: isSuccess ? "success.dark" : "error.dark",
+          {modalOpen && (
+            <Modal
+              open={modalOpen}
+              onClose={() => setModalOpen(false)}
+              closeAfterTransition
+              slots={{ backdrop: Backdrop }}
+              slotProps={{
+                backdrop: {
+                  timeout: 500,
+                  TransitionComponent: MuiFade,
+                  sx: {
+                    backgroundColor: "transparent",
+                  },
                 },
               }}
             >
-              Cerrar
-            </Button>
+              <Box
+                sx={{
+                  height: "100vh",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  p: 2,
+                }}
+              >
+                <MotionBox
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.3 }}
+                  sx={{
+                    bgcolor: "white",
+                    border: `2px solid ${isSuccess ? "success.main" : "error.main"}`,
+                    borderRadius: 3,
+                    boxShadow: 24,
+                    p: { xs: 2, sm: 4 },
+                    textAlign: "center",
+                    width: { xs: "100%", sm: "400px" },
+                    maxHeight: "90vh",
+                    overflowY: "auto",
+                  }}
+                >
+                  {isSubmitting ? (
+                    <CircularProgress sx={{ mb: 2 }} />
+                  ) : isSuccess ? (
+                    <CheckCircleOutline sx={{ fontSize: 60, color: "success.main", mb: 2 }} />
+                  ) : (
+                    <ErrorOutline sx={{ fontSize: 60, color: "error.main", mb: 2 }} />
+                  )}
+
+                  <Typography
+                    variant="h6"
+                    sx={{ mb: 2, fontWeight: 600, color: "grey.900" }}
+                  >
+                    {modalMessage}
+                  </Typography>
+
+                  {!isSubmitting && (
+                    <Button
+                      onClick={() => setModalOpen(false)}
+                      variant="contained"
+                      sx={{
+                        bgcolor: isSuccess ? "success.main" : "error.main",
+                        color: "#fff",
+                        "&:hover": {
+                          bgcolor: isSuccess ? "success.dark" : "error.dark",
+                        },
+                      }}
+                    >
+                      Cerrar
+                    </Button>
+                  )}
+                </MotionBox>
+              </Box>
+            </Modal>
           )}
-        </MotionBox>
-      </Box>
-    </Modal>
-  )}
-</AnimatePresence>
-
-
-
+        </AnimatePresence>
       </Container>
     </MuiFade>
   );

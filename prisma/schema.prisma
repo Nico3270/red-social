@@ -132,10 +132,12 @@ model Order {
   user           Usuario?             @relation(fields: [userId], references: [id])
   items          OrderItem[]
   statusHistory  OrderStatusHistory[]
+  orderType      OrderType            @default(DELIVERY)
 
   @@index([negocioId, date])
   @@index([userId])
   @@index([status])
+  @@index([orderType])
 }
 
 model OrderItem {
@@ -153,6 +155,11 @@ model OrderItem {
   @@index([productId])
 }
 
+enum OrderType {
+  DELIVERY
+  ON_SITE
+}
+
 model OrderStatusHistory {
   id            String   @id @default(uuid())
   orderId       String
@@ -167,11 +174,12 @@ model DeliveryData {
   id                 String    @id @default(uuid())
   clientName         String
   clientPhone        String
-  deliveryAddress    String
+  deliveryAddress    String? // Opcional para pedidos en sitio
+  onSiteLocation     String? // Referencia para pedidos en sitio (e.g., "Mesa 4")
   deliveryDate       DateTime?
-  ciudad             String
-  country            String    @default("Colombia")
-  departamento       String
+  ciudad             String? // Ahora opcional
+  country            String?   @default("Colombia") // Opcional con valor por defecto
+  departamento       String? // Ahora opcional
   additionalComments String?
   order              Order?
 }

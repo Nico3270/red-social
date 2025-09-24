@@ -26,8 +26,6 @@ import {
 import colombia from "@/config/colombia.json";
 import clsx from "clsx";
 import { GiColombia } from "react-icons/gi";
-import * as RiIcons from "react-icons/ri";
-import { IconType } from "react-icons";
 import Divider from "../../divider/Divider";
 import { initialData } from "@/seed/seed";
 import { MapPicker } from "../../map-picker/MapPicker";
@@ -66,11 +64,7 @@ interface Props {
   informacionNegocio?: InformacionInicialNegocio;
 }
 
-type IconMap = { [key: string]: IconType };
 
-const iconMap: IconMap = {
-  ...RiIcons,
-};
 
 type SocialMediaKeys = "facebook" | "instagram" | "twitter" | "tiktok" | "youtube";
 

@@ -1,6 +1,6 @@
 import { auth } from "@/auth.config";
 import prisma from "@/lib/prisma";
-import {  NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { OrderState } from "@prisma/client";
 
 interface OrderDetails {
@@ -9,36 +9,37 @@ interface OrderDetails {
   updatedAt: Date;
   date: Date;
   status: OrderState;
-  type: string; // TransactionType
-  TipoUsuario: string; // TipoUsuario
+  type: string;
+  TipoUsuario: string;
   category: string;
   description: string | null;
-  totalAmount: number; // Convertido a number
-  paymentMethod: string | null; // PaymentMethod
+  totalAmount: number;
+  paymentMethod: string | null;
+  orderType: string; // Added orderType
   items: {
     id: string;
     description: string;
     quantity: number;
-    price: number; // Convertido a number
-    subtotal: number; // Convertido a number
+    price: number;
+    subtotal: number;
     productId: string | null;
   }[];
   datosDeEntrega: {
     id: string;
-    country: string;
-    departamento: string;
-    ciudad: string;
+    country?: string | null;
+    departamento?: string | null;
+    ciudad?: string | null;
     clientName: string;
     clientPhone: string;
-    deliveryAddress: string;
+    deliveryAddress?: string | null;
+    onSiteLocation?: string | null; // Added onSiteLocation
     deliveryDate: Date | null;
     additionalComments: string | null;
   } | null;
-  // Otros campos si son necesarios, e.g., statusHistory, etc.
 }
 
 export async function GET(req: Request, context: { params: Promise<{ id: string }> }) {
-    const {id} = await context.params
+  const { id } = await context.params;
   const session = await auth();
   if (!session || !session.user.negocioId) {
     return NextResponse.json(
@@ -56,7 +57,6 @@ export async function GET(req: Request, context: { params: Promise<{ id: string 
       include: {
         items: true,
         datosDeEntrega: true,
-        // Incluir más relaciones si es necesario, e.g., statusHistory: true
       },
     });
 
@@ -67,7 +67,6 @@ export async function GET(req: Request, context: { params: Promise<{ id: string 
       );
     }
 
-    // Verificar que la orden pertenece al negocio del usuario
     if (order.negocioId !== negocioId) {
       return NextResponse.json(
         { ok: false, message: "No autorizado: Esta orden no pertenece a tu negocio" },
@@ -75,7 +74,6 @@ export async function GET(req: Request, context: { params: Promise<{ id: string 
       );
     }
 
-    // Convertir Decimal a number
     const convertedOrder: OrderDetails = {
       id: order.id,
       createdAt: order.createdAt,
@@ -88,6 +86,7 @@ export async function GET(req: Request, context: { params: Promise<{ id: string 
       description: order.description,
       totalAmount: Number(order.totalAmount),
       paymentMethod: order.paymentMethod,
+      orderType: order.orderType, // Include orderType
       items: order.items.map((item) => ({
         id: item.id,
         description: item.description,
@@ -105,6 +104,7 @@ export async function GET(req: Request, context: { params: Promise<{ id: string 
             clientName: order.datosDeEntrega.clientName,
             clientPhone: order.datosDeEntrega.clientPhone,
             deliveryAddress: order.datosDeEntrega.deliveryAddress,
+            onSiteLocation: order.datosDeEntrega.onSiteLocation, // Include onSiteLocation
             deliveryDate: order.datosDeEntrega.deliveryDate,
             additionalComments: order.datosDeEntrega.additionalComments,
           }
@@ -123,4 +123,4 @@ export async function GET(req: Request, context: { params: Promise<{ id: string 
       { status: 500 }
     );
   }
-};
+}

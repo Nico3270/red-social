@@ -90,7 +90,7 @@ const ListOrders: React.FC<ListOrdersProps> = ({ initialOrders, total }) => {
     };
 
     return (
-        <Box sx={{ maxWidth: "100%", overflowX: "auto", mt: 4 }}>
+        <Box sx={{ maxWidth: "100%", overflowX: "auto", mt: 4, ml:4 }}>
             <TableContainer
                 component={Paper}
                 elevation={0}

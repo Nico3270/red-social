@@ -21,25 +21,32 @@ import {
     FormControl,
     InputLabel,
     FormHelperText,
+    ToggleButtonGroup,
+    ToggleButton,
 } from "@mui/material";
 import { Add, Delete, Remove, Close } from "@mui/icons-material";
 import { AnimatePresence, HTMLMotionProps, motion } from "framer-motion";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
-import { CartProduct } from "@/store/carro-negocio/carro-negocio-store"; // Ajusta según tu interfaz
+import { CartProduct } from "@/store/carro-negocio/carro-negocio-store";
 import colombiaData from "@/config/colombia.json";
 import { updateOrder } from "../actions/updateOrder";
-import { Orders } from "../actions/getOrders"; // Importa el tipo Orders para usarlo en el callback
-import { OrderState } from '@prisma/client'; // Asume que importas el enum desde Prisma
+import { Orders } from "../actions/getOrders";
+import { OrderState } from "@prisma/client";
+import { FiMapPin, FiTruck } from "react-icons/fi";
+
+type OrderType = "DELIVERY" | "ON_SITE";
 
 interface Address {
-    country: string;
-    departamento: string;
-    ciudad: string;
+    orderType: OrderType;
+    country?: string | null;
+    departamento?: string | null;
+    ciudad?: string | null;
     clientName: string;
     clientPhone: string;
-    deliveryAddress: string;
-    deliveryDate: string;
-    additionalComments?: string;
+    deliveryAddress?: string | null;
+    onSiteLocation?: string | null;
+    deliveryDate?: string | null;
+    additionalComments?: string | null;
 }
 
 interface ColombiaDepartment {
@@ -51,8 +58,7 @@ interface ColombiaDepartment {
 interface OrderData {
     products: CartProduct[];
     address: Address;
-    status: OrderState; // Cambiado a OrderState
-    // Otros campos si es necesario
+    status: OrderState;
 }
 
 interface EditOrderModalProps {
@@ -61,22 +67,6 @@ interface EditOrderModalProps {
     onClose: () => void;
     onUpdateSuccess: (updatedOrder: Partial<Orders> & { id: string }) => void;
 }
-
-type AnimatedBackdropProps = HTMLMotionProps<"div">; // 👈 Removido ownerState (no se usa)
-
-const AnimatedBackdrop = React.forwardRef<HTMLDivElement, AnimatedBackdropProps>(
-  (props, ref) => ( // 👈 Removido ownerState de los params
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      {...props} // ya no pasa ownerState
-    />
-  )
-);
-
-AnimatedBackdrop.displayName = "AnimatedBackdrop";
 
 interface Product {
     id: string;
@@ -87,40 +77,65 @@ interface Product {
     seccionIds: string[];
     descripcionCorta: string;
 }
+interface BackdropProps extends HTMLMotionProps<"div"> {
+    ownerState?: unknown;
+}
+
+const AnimatedBackdrop = React.forwardRef<HTMLDivElement, BackdropProps>(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    ({ ownerState, ...motionProps }, ref) => {
+        return (
+            <motion.div
+                ref={ref}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                {...motionProps}
+            />
+        );
+    }
+);
+
+AnimatedBackdrop.displayName = "AnimatedBackdrop";
 
 const EditOrderModal: React.FC<EditOrderModalProps> = ({ orderId, open, onClose, onUpdateSuccess }) => {
-    const defaultAddressValues = useMemo<Address>(() => ({
-        country: "Colombia",
-        departamento: "",
-        ciudad: "",
-        clientName: "",
-        clientPhone: "",
-        deliveryAddress: "",
-        deliveryDate: new Date().toISOString().substring(0, 10),
-        additionalComments: "",
-    }), []);
+    const defaultAddressValues = useMemo<Address>(
+        () => ({
+            orderType: "DELIVERY",
+            country: "Colombia",
+            departamento: "",
+            ciudad: "",
+            clientName: "",
+            clientPhone: "",
+            deliveryAddress: "",
+            onSiteLocation: "",
+            deliveryDate: "",
+            additionalComments: "",
+        }),
+        []
+    );
 
     const [localCart, setLocalCart] = useState<CartProduct[]>([]);
-    const [products, setProducts] = useState<Product[]>([]); // Productos disponibles
+    const [products, setProducts] = useState<Product[]>([]);
     const [isLoadingProducts, setIsLoadingProducts] = useState(false);
     const [showAddForm, setShowAddForm] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
     const [quantity, setQuantity] = useState(1);
-    const [status, setStatus] = useState<OrderState>(OrderState.Recibida); // Cambiado a OrderState, con valor inicial del enum
+    const [status, setStatus] = useState<OrderState>(OrderState.Recibida);
     const [isFetching, setIsFetching] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState("");
     const [snackbarSeverity, setSnackbarSeverity] = useState<"info" | "success" | "error">("info");
 
-    const { control, handleSubmit, reset, watch, setValue, formState: { errors } } = useForm<Address>({
+    const { control, handleSubmit, reset, watch, setValue, trigger, formState: { errors } } = useForm<Address>({
         defaultValues: defaultAddressValues,
     });
 
     const [cities, setCities] = useState<string[]>([]);
     const selectedDepartamento = watch("departamento");
+    const orderType = watch("orderType");
 
-    // Memoizado con useCallback para referencia estable
     const revertWithFreshData = useCallback(async () => {
         try {
             const response = await fetch(`/api/editarOrder/${orderId}`);
@@ -148,9 +163,8 @@ const EditOrderModal: React.FC<EditOrderModalProps> = ({ orderId, open, onClose,
         }
     }, [orderId, onUpdateSuccess]);
 
-    // Fetch productos disponibles
     useEffect(() => {
-        setIsLoadingProducts(true); // Feedback visual
+        setIsLoadingProducts(true);
         const fetchProducts = async () => {
             try {
                 const response = await fetch("/api/productosNegocio");
@@ -159,16 +173,15 @@ const EditOrderModal: React.FC<EditOrderModalProps> = ({ orderId, open, onClose,
                 setProducts(data);
             } catch (error) {
                 console.error(error);
-                showSnackbar("Error inesperado al actualizar la orden.", "error");
+                showSnackbar("Error inesperado al cargar productos.", "error");
                 await revertWithFreshData();
             } finally {
-                setIsLoadingProducts(false); // 👈 Siempre cerrar el loading
+                setIsLoadingProducts(false);
             }
         };
         fetchProducts();
-    }, [revertWithFreshData]); // 👈 Agregada la dependencia para eliminar el warning (estable, no causa loop)
+    }, [revertWithFreshData]);
 
-    // Fetch datos de la orden
     useEffect(() => {
         if (open) {
             const fetchOrder = async () => {
@@ -178,8 +191,19 @@ const EditOrderModal: React.FC<EditOrderModalProps> = ({ orderId, open, onClose,
                     if (!response.ok) throw new Error("Error al obtener la orden");
                     const data: OrderData = await response.json();
                     setLocalCart(data.products.map((p) => ({ ...p, cartItemId: crypto.randomUUID() })));
-                    setStatus(data.status ?? OrderState.Recibida); // Fallback si undefined
-                    reset({ ...defaultAddressValues, ...data.address });
+                    setStatus(data.status ?? OrderState.Recibida);
+                    // Ensure null values are converted to empty strings for form compatibility
+                    reset({
+                        ...defaultAddressValues,
+                        ...data.address,
+                        country: data.address.country ?? "Colombia",
+                        departamento: data.address.departamento ?? "",
+                        ciudad: data.address.ciudad ?? "",
+                        deliveryAddress: data.address.deliveryAddress ?? "",
+                        onSiteLocation: data.address.onSiteLocation ?? "",
+                        deliveryDate: data.address.deliveryDate ?? "",
+                        additionalComments: data.address.additionalComments ?? "",
+                    });
                 } catch (error) {
                     console.error("Error fetching order:", error);
                     showSnackbar("Error al cargar la orden", "error");
@@ -191,9 +215,8 @@ const EditOrderModal: React.FC<EditOrderModalProps> = ({ orderId, open, onClose,
         }
     }, [open, orderId, reset, defaultAddressValues]);
 
-    // Actualizar ciudades y reset ciudad si necesario
     useEffect(() => {
-        if (selectedDepartamento) {
+        if (selectedDepartamento && orderType === "DELIVERY") {
             const departmentData = (colombiaData as ColombiaDepartment[]).find(
                 (dept) => dept.departamento === selectedDepartamento
             );
@@ -201,13 +224,17 @@ const EditOrderModal: React.FC<EditOrderModalProps> = ({ orderId, open, onClose,
             setCities(newCities);
             const currentCiudad = watch("ciudad");
             if (newCities.length > 0 && currentCiudad && !newCities.includes(currentCiudad)) {
-                setValue("ciudad", ""); // Reset si no coincide con nuevas ciudades
+                setValue("ciudad", "");
             }
         } else {
             setCities([]);
             setValue("ciudad", "");
         }
-    }, [selectedDepartamento, setValue, watch]);
+    }, [selectedDepartamento, orderType, setValue, watch]);
+
+    useEffect(() => {
+        trigger();
+    }, [orderType, trigger]);
 
     const getTotalPrice = () => localCart.reduce((sum, item) => sum + item.precio * item.cantidad, 0);
 
@@ -263,7 +290,6 @@ const EditOrderModal: React.FC<EditOrderModalProps> = ({ orderId, open, onClose,
         setIsSubmitting(true);
         showSnackbar("Actualizando orden...", "info");
 
-        // Preparar los items actualizados para la actualización optimista
         const newItems = localCart.map((item) => ({
             id: crypto.randomUUID(),
             orderId: orderId,
@@ -276,12 +302,11 @@ const EditOrderModal: React.FC<EditOrderModalProps> = ({ orderId, open, onClose,
 
         const newTotal = getTotalPrice();
 
-        // Actualización optimista: Llama al callback antes de la llamada al servidor
         onUpdateSuccess({
             id: orderId,
             items: newItems,
             totalAmount: newTotal,
-            status, // Incluye el status actualizado, ahora OrderState
+            status,
         });
 
         try {
@@ -296,24 +321,21 @@ const EditOrderModal: React.FC<EditOrderModalProps> = ({ orderId, open, onClose,
                 })),
                 deliveryData,
                 totalAmount: newTotal,
-                status, // Asumiendo que updateOrder ahora acepta status; modifícalo en tu acción server si es necesario
+                status,
             });
 
             if (response.ok) {
                 showSnackbar(response.message || "Orden actualizada exitosamente.", "success");
-
                 setTimeout(() => {
                     onClose();
                 }, 3000);
             } else {
                 showSnackbar(response.message || "Error al actualizar la orden.", "error");
-                // Revertir con fetch fresco
                 await revertWithFreshData();
             }
         } catch (error) {
-            console.error(error); // Usamos error aquí
+            console.error(error);
             showSnackbar("Error inesperado al actualizar la orden.", "error");
-            // Revertir con fetch fresco
             await revertWithFreshData();
         } finally {
             setIsSubmitting(false);
@@ -364,13 +386,26 @@ const EditOrderModal: React.FC<EditOrderModalProps> = ({ orderId, open, onClose,
                                 maxHeight: "90vh",
                             }}
                         >
-
-                            <IconButton onClick={onClose} sx={{ position: "absolute", top: 8, right: 8 }}>
+                            <IconButton
+                                onClick={onClose}
+                                sx={{
+                                    position: "absolute",
+                                    top: 8,
+                                    right: 8,
+                                    bgcolor: "#333",      // fondo gris oscuro
+                                    color: "#f5f5f5",     // ícono gris claro/blanco
+                                    "&:hover": {
+                                        bgcolor: "#d32f2f", // fondo rojo al pasar
+                                        color: "#fff",      // ícono blanco en hover
+                                    },
+                                }}
+                            >
                                 <Close />
                             </IconButton>
 
+
                             <Typography variant="h4" sx={{ mb: 4, textAlign: "center" }}>
-                                Editar Orden #{orderId}
+                                Editar Orden
                             </Typography>
 
                             {/* Sección de Estado */}
@@ -391,9 +426,8 @@ const EditOrderModal: React.FC<EditOrderModalProps> = ({ orderId, open, onClose,
                                         "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "primary.light" },
                                     }}
                                 >
-                                    {/* Usar valores del enum OrderState */}
                                     <MenuItem value={OrderState.Recibida}>Recibida</MenuItem>
-                                    <MenuItem value={OrderState.Preparacion}>Preparacion</MenuItem>
+                                    <MenuItem value={OrderState.Preparacion}>Preparación</MenuItem>
                                     <MenuItem value={OrderState.Entregada}>Entregada</MenuItem>
                                     <MenuItem value={OrderState.Pagada}>Pagada</MenuItem>
                                     <MenuItem value={OrderState.Cancelada}>Cancelada</MenuItem>
@@ -404,7 +438,7 @@ const EditOrderModal: React.FC<EditOrderModalProps> = ({ orderId, open, onClose,
                             <Typography variant="h5" sx={{ mb: 2 }}>
                                 Productos
                             </Typography>
-                            {isLoadingProducts ? ( // 👈 Uso de isLoadingProducts: CircularProgress responsive y elegante
+                            {isLoadingProducts ? (
                                 <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", mb: 4, height: 100 }}>
                                     <CircularProgress size={24} color="primary" />
                                     <Typography variant="body2" sx={{ ml: 2, color: "text.secondary" }}>
@@ -415,7 +449,7 @@ const EditOrderModal: React.FC<EditOrderModalProps> = ({ orderId, open, onClose,
                                 <>
                                     {!showAddForm ? (
                                         <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
-                                            <Button variant="contained" startIcon={<Add />} onClick={handleAddClick}>
+                                            <Button variant="contained" sx={{ textTransform: "none" }} startIcon={<Add />} onClick={handleAddClick}>
                                                 Añadir Producto
                                             </Button>
                                         </Box>
@@ -425,12 +459,27 @@ const EditOrderModal: React.FC<EditOrderModalProps> = ({ orderId, open, onClose,
                                                 options={products}
                                                 getOptionLabel={(option) => option.nombre}
                                                 onChange={(event, value) => setSelectedProduct(value)}
-                                                renderInput={(params) => <TextField {...params} label="Buscar producto" />}
+                                                renderInput={(params) => (
+                                                    <TextField
+                                                        {...params}
+                                                        label="Buscar producto"
+                                                        fullWidth
+                                                        sx={{
+                                                            "& .MuiOutlinedInput-root": {
+                                                                borderRadius: 3,
+                                                                bgcolor: "background.default",
+                                                                "& fieldset": { borderColor: "divider" },
+                                                                "&:hover fieldset": { borderColor: "primary.light" },
+                                                            },
+                                                            "& .MuiInputLabel-root": { color: "text.secondary" },
+                                                        }}
+                                                    />
+                                                )}
                                             />
                                             {selectedProduct && (
                                                 <>
-                                                    <Typography>Precio: ${selectedProduct.precio.toFixed(2)}</Typography>
-                                                    <Box sx={{ display: "flex", alignItems: "center" }}>
+                                                    <Typography sx={{ mt: 2 }}>Precio: ${selectedProduct.precio.toFixed(2)}</Typography>
+                                                    <Box sx={{ display: "flex", alignItems: "center", mt: 2 }}>
                                                         <IconButton onClick={handleDecrement} disabled={quantity <= 1}>
                                                             <Remove />
                                                         </IconButton>
@@ -478,98 +527,245 @@ const EditOrderModal: React.FC<EditOrderModalProps> = ({ orderId, open, onClose,
 
                             {/* Sección de Dirección */}
                             <Typography variant="h5" sx={{ mt: 4, mb: 2 }}>
-                                Información de Entrega
+                                {orderType === "DELIVERY" ? "Información de Entrega" : "Información del Pedido en Sitio"}
                             </Typography>
+                            <Box sx={{ display: "flex", justifyContent: "center", mb: 4 }}>
+                                <ToggleButtonGroup
+                                    value={orderType}
+                                    exclusive
+                                    onChange={(e, newType) => {
+                                        if (newType) {
+                                            reset({
+                                                ...watch(),
+                                                orderType: newType,
+                                                ciudad: "",
+                                                departamento: "",
+                                                deliveryAddress: "",
+                                                onSiteLocation: "",
+                                            });
+                                        }
+                                    }}
+                                    aria-label="tipo de pedido"
+                                    sx={{
+                                        gap: 2,
+                                    }}
+                                >
+                                    <ToggleButton
+                                        value="DELIVERY"
+                                        sx={{
+                                            px: 4,
+                                            py: 2,
+                                            textTransform: "none",
+                                            fontWeight: 600,
+                                            borderRadius: 3,
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: 1.5,
+                                            bgcolor: "background.paper",
+                                            boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+                                            transition: "all 0.25s ease",
+                                            "&:hover": {
+                                                boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
+                                                transform: "translateY(-1px)",
+                                            },
+                                            "&.Mui-selected": {
+                                                bgcolor: "primary.main",
+                                                color: "#fff",
+                                                boxShadow: "0 6px 16px rgba(0,0,0,0.15)",
+                                            },
+                                        }}
+                                    >
+                                        <FiTruck size={20} />
+                                        A domicilio
+                                    </ToggleButton>
+                                    <ToggleButton
+                                        value="ON_SITE"
+                                        sx={{
+                                            px: 4,
+                                            py: 2,
+                                            textTransform: "none",
+                                            fontWeight: 600,
+                                            borderRadius: 3,
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: 1.5,
+                                            bgcolor: "background.paper",
+                                            boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+                                            transition: "all 0.25s ease",
+                                            "&:hover": {
+                                                boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
+                                                transform: "translateY(-1px)",
+                                            },
+                                            "&.Mui-selected": {
+                                                bgcolor: "primary.main",
+                                                color: "#fff",
+                                                boxShadow: "0 6px 16px rgba(0,0,0,0.15)",
+                                            },
+                                        }}
+                                    >
+                                        <FiMapPin size={20} />
+                                        En sitio
+                                    </ToggleButton>
+                                </ToggleButtonGroup>
+                            </Box>
+
                             <form onSubmit={handleSubmit(onSubmit)}>
                                 <Grid container spacing={3}>
-                                    <Grid item xs={12}>
-                                        <Controller
-                                            name="country"
-                                            control={control}
-                                            rules={{ required: "País requerido" }}
-                                            render={({ field }) => (
-                                                <TextField
-                                                    {...field}
-                                                    label="País"
-                                                    fullWidth
-                                                    variant="outlined"
-                                                    disabled // Fijo en Colombia
-                                                    error={!!errors.country}
-                                                    helperText={errors.country?.message}
-                                                    sx={{
-                                                        "& .MuiOutlinedInput-root": {
-                                                            borderRadius: 3,
-                                                            bgcolor: "background.default",
-                                                            "& fieldset": { borderColor: "divider" },
-                                                            "&:hover fieldset": { borderColor: "primary.light" },
-                                                        },
-                                                        "& .MuiInputLabel-root": { color: "text.secondary" },
-                                                    }}
+                                    {orderType === "DELIVERY" && (
+                                        <>
+                                            <Grid item xs={12}>
+                                                <Controller
+                                                    name="country"
+                                                    control={control}
+                                                    rules={{ required: orderType === "DELIVERY" ? "País requerido" : false }}
+                                                    render={({ field }) => (
+                                                        <TextField
+                                                            {...field}
+                                                            label="País"
+                                                            fullWidth
+                                                            variant="outlined"
+                                                            disabled
+                                                            error={!!errors.country}
+                                                            helperText={errors.country?.message}
+                                                            sx={{
+                                                                "& .MuiOutlinedInput-root": {
+                                                                    borderRadius: 3,
+                                                                    bgcolor: "background.default",
+                                                                    "& fieldset": { borderColor: "divider" },
+                                                                    "&:hover fieldset": { borderColor: "primary.light" },
+                                                                },
+                                                                "& .MuiInputLabel-root": { color: "text.secondary" },
+                                                            }}
+                                                            value={field.value ?? "Colombia"}
+                                                        />
+                                                    )}
                                                 />
-                                            )}
-                                        />
-                                    </Grid>
-                                    {/* ... (el resto del Grid y form permanece igual, sin cambios) */}
-                                     <Grid item xs={12} sm={6}>
-                                        <Controller
-                                            name="departamento"
-                                            control={control}
-                                            rules={{ required: "Departamento requerido" }}
-                                            render={({ field }) => (
-                                                <FormControl fullWidth variant="outlined" error={!!errors.departamento}>
-                                                    <InputLabel id="departamento-label">Departamento</InputLabel>
-                                                    <Select
+                                            </Grid>
+                                            <Grid item xs={12} sm={6}>
+                                                <Controller
+                                                    name="departamento"
+                                                    control={control}
+                                                    rules={{ required: orderType === "DELIVERY" ? "Departamento requerido" : false }}
+                                                    render={({ field }) => (
+                                                        <FormControl fullWidth variant="outlined" error={!!errors.departamento}>
+                                                            <InputLabel id="departamento-label">Departamento</InputLabel>
+                                                            <Select
+                                                                {...field}
+                                                                labelId="departamento-label"
+                                                                label="Departamento"
+                                                                sx={{
+                                                                    borderRadius: 3,
+                                                                    bgcolor: "background.default",
+                                                                    "& .MuiOutlinedInput-notchedOutline": { borderColor: "divider" },
+                                                                    "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "primary.light" },
+                                                                }}
+                                                                value={field.value ?? ""}
+                                                            >
+                                                                {(colombiaData as ColombiaDepartment[]).map((dept) => (
+                                                                    <MenuItem key={dept.id} value={dept.departamento}>
+                                                                        {dept.departamento}
+                                                                    </MenuItem>
+                                                                ))}
+                                                            </Select>
+                                                            {errors.departamento && <FormHelperText>{errors.departamento.message}</FormHelperText>}
+                                                        </FormControl>
+                                                    )}
+                                                />
+                                            </Grid>
+                                            <Grid item xs={12} sm={6}>
+                                                <Controller
+                                                    name="ciudad"
+                                                    control={control}
+                                                    rules={{ required: orderType === "DELIVERY" ? "Ciudad requerida" : false }}
+                                                    render={({ field }) => (
+                                                        <FormControl fullWidth variant="outlined" error={!!errors.ciudad} disabled={!selectedDepartamento}>
+                                                            <InputLabel id="ciudad-label">Ciudad</InputLabel>
+                                                            <Select
+                                                                {...field}
+                                                                labelId="ciudad-label"
+                                                                label="Ciudad"
+                                                                sx={{
+                                                                    borderRadius: 3,
+                                                                    bgcolor: "background.default",
+                                                                    "& .MuiOutlinedInput-notchedOutline": { borderColor: "divider" },
+                                                                    "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "primary.light" },
+                                                                }}
+                                                                value={field.value ?? ""}
+                                                            >
+                                                                {cities.map((city, index) => (
+                                                                    <MenuItem key={index} value={city}>
+                                                                        {city}
+                                                                    </MenuItem>
+                                                                ))}
+                                                            </Select>
+                                                            {errors.ciudad && <FormHelperText>{errors.ciudad.message}</FormHelperText>}
+                                                        </FormControl>
+                                                    )}
+                                                />
+                                            </Grid>
+                                            <Grid item xs={12}>
+                                                <Controller
+                                                    name="deliveryAddress"
+                                                    control={control}
+                                                    rules={{ required: orderType === "DELIVERY" ? "Dirección de entrega requerida" : false }}
+                                                    render={({ field }) => (
+                                                        <TextField
+                                                            {...field}
+                                                            label="Dirección de entrega"
+                                                            fullWidth
+                                                            variant="outlined"
+                                                            multiline
+                                                            rows={2}
+                                                            error={!!errors.deliveryAddress}
+                                                            helperText={errors.deliveryAddress?.message}
+                                                            sx={{
+                                                                "& .MuiOutlinedInput-root": {
+                                                                    borderRadius: 3,
+                                                                    bgcolor: "background.default",
+                                                                    "& fieldset": { borderColor: "divider" },
+                                                                    "&:hover fieldset": { borderColor: "primary.light" },
+                                                                },
+                                                                "& .MuiInputLabel-root": { color: "text.secondary" },
+                                                            }}
+                                                            value={field.value ?? ""}
+                                                        />
+                                                    )}
+                                                />
+                                            </Grid>
+                                        </>
+                                    )}
+                                    {orderType === "ON_SITE" && (
+                                        <Grid item xs={12}>
+                                            <Controller
+                                                name="onSiteLocation"
+                                                control={control}
+                                                rules={{ required: orderType === "ON_SITE" ? "Referencia de ubicación requerida" : false }}
+                                                render={({ field }) => (
+                                                    <TextField
                                                         {...field}
-                                                        labelId="departamento-label"
-                                                        label="Departamento"
+                                                        label="Referencia de ubicación (e.g., Mesa 4)"
+                                                        fullWidth
+                                                        variant="outlined"
+                                                        error={!!errors.onSiteLocation}
+                                                        helperText={errors.onSiteLocation?.message}
                                                         sx={{
-                                                            borderRadius: 3,
-                                                            bgcolor: "background.default",
-                                                            "& .MuiOutlinedInput-notchedOutline": { borderColor: "divider" },
-                                                            "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "primary.light" },
+                                                            "& .MuiOutlinedInput-root": {
+                                                                borderRadius: 3,
+                                                                bgcolor: "background.default",
+                                                                "& fieldset": { borderColor: "divider" },
+                                                                "&:hover fieldset": { borderColor: "primary.light" },
+                                                                "& .MuiInputBase-input": {
+                                                                    fontSize: "1rem",
+                                                                },
+                                                            },
+                                                            "& .MuiInputLabel-root": { color: "text.secondary" },
                                                         }}
-                                                    >
-                                                        {(colombiaData as ColombiaDepartment[]).map((dept) => (
-                                                            <MenuItem key={dept.id} value={dept.departamento}>
-                                                                {dept.departamento}
-                                                            </MenuItem>
-                                                        ))}
-                                                    </Select>
-                                                    {errors.departamento && <FormHelperText>{errors.departamento.message}</FormHelperText>}
-                                                </FormControl>
-                                            )}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={12} sm={6}>
-                                        <Controller
-                                            name="ciudad"
-                                            control={control}
-                                            rules={{ required: "Ciudad requerida" }}
-                                            render={({ field }) => (
-                                                <FormControl fullWidth variant="outlined" error={!!errors.ciudad} disabled={!selectedDepartamento}>
-                                                    <InputLabel id="ciudad-label">Ciudad</InputLabel>
-                                                    <Select
-                                                        {...field}
-                                                        labelId="ciudad-label"
-                                                        label="Ciudad"
-                                                        sx={{
-                                                            borderRadius: 3,
-                                                            bgcolor: "background.default",
-                                                            "& .MuiOutlinedInput-notchedOutline": { borderColor: "divider" },
-                                                            "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "primary.light" },
-                                                        }}
-                                                    >
-                                                        {cities.map((city, index) => (
-                                                            <MenuItem key={index} value={city}>
-                                                                {city}
-                                                            </MenuItem>
-                                                        ))}
-                                                    </Select>
-                                                    {errors.ciudad && <FormHelperText>{errors.ciudad.message}</FormHelperText>}
-                                                </FormControl>
-                                            )}
-                                        />
-                                    </Grid>
+                                                        value={field.value ?? ""}
+                                                    />
+                                                )}
+                                            />
+                                        </Grid>
+                                    )}
                                     <Grid item xs={12}>
                                         <Controller
                                             name="clientName"
@@ -592,6 +788,7 @@ const EditOrderModal: React.FC<EditOrderModalProps> = ({ orderId, open, onClose,
                                                         },
                                                         "& .MuiInputLabel-root": { color: "text.secondary" },
                                                     }}
+                                                    value={field.value ?? ""}
                                                 />
                                             )}
                                         />
@@ -618,43 +815,16 @@ const EditOrderModal: React.FC<EditOrderModalProps> = ({ orderId, open, onClose,
                                                         },
                                                         "& .MuiInputLabel-root": { color: "text.secondary" },
                                                     }}
+                                                    value={field.value ?? ""}
                                                 />
                                             )}
                                         />
                                     </Grid>
-                                    <Grid item xs={12}>
-                                        <Controller
-                                            name="deliveryAddress"
-                                            control={control}
-                                            rules={{ required: "Dirección de entrega requerida" }}
-                                            render={({ field }) => (
-                                                <TextField
-                                                    {...field}
-                                                    label="Dirección de entrega"
-                                                    fullWidth
-                                                    variant="outlined"
-                                                    multiline
-                                                    rows={2}
-                                                    error={!!errors.deliveryAddress}
-                                                    helperText={errors.deliveryAddress?.message}
-                                                    sx={{
-                                                        "& .MuiOutlinedInput-root": {
-                                                            borderRadius: 3,
-                                                            bgcolor: "background.default",
-                                                            "& fieldset": { borderColor: "divider" },
-                                                            "&:hover fieldset": { borderColor: "primary.light" },
-                                                        },
-                                                        "& .MuiInputLabel-root": { color: "text.secondary" },
-                                                    }}
-                                                />
-                                            )}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={12}>
+                                    <Grid item xs={12} sx={{ display: "none" }}>
                                         <Controller
                                             name="deliveryDate"
                                             control={control}
-                                            rules={{ required: "Fecha de entrega requerida" }}
+                                            rules={{ required: false }}
                                             render={({ field }) => (
                                                 <TextField
                                                     {...field}
@@ -666,7 +836,7 @@ const EditOrderModal: React.FC<EditOrderModalProps> = ({ orderId, open, onClose,
                                                     error={!!errors.deliveryDate}
                                                     helperText={errors.deliveryDate?.message}
                                                     inputProps={{
-                                                        min: new Date().toISOString().split("T")[0], // fecha mínima = hoy
+                                                        min: new Date().toISOString().split("T")[0],
                                                     }}
                                                     sx={{
                                                         "& .MuiOutlinedInput-root": {
@@ -677,6 +847,7 @@ const EditOrderModal: React.FC<EditOrderModalProps> = ({ orderId, open, onClose,
                                                         },
                                                         "& .MuiInputLabel-root": { color: "text.secondary" },
                                                     }}
+                                                    value={field.value ?? ""}
                                                 />
                                             )}
                                         />
@@ -685,6 +856,7 @@ const EditOrderModal: React.FC<EditOrderModalProps> = ({ orderId, open, onClose,
                                         <Controller
                                             name="additionalComments"
                                             control={control}
+                                            rules={{ required: false }}
                                             render={({ field }) => (
                                                 <TextField
                                                     {...field}
@@ -702,13 +874,19 @@ const EditOrderModal: React.FC<EditOrderModalProps> = ({ orderId, open, onClose,
                                                         },
                                                         "& .MuiInputLabel-root": { color: "text.secondary" },
                                                     }}
+                                                    value={field.value ?? ""}
                                                 />
                                             )}
                                         />
                                     </Grid>
                                 </Grid>
-                                <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
-                                    <Button type="submit" variant="contained" disabled={isSubmitting}>
+                                <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+                                    <Button
+                                        type="submit"
+                                        variant="contained"
+                                        disabled={isSubmitting}
+                                        sx={{ textTransform: "none" }}
+                                    >
                                         Actualizar Orden
                                     </Button>
                                 </Box>
@@ -724,7 +902,11 @@ const EditOrderModal: React.FC<EditOrderModalProps> = ({ orderId, open, onClose,
                 onClose={handleSnackbarClose}
                 action={snackbarSeverity !== "info" && <IconButton onClick={handleSnackbarClose}><Close /></IconButton>}
             >
-                <Alert severity={snackbarSeverity} icon={snackbarSeverity === "info" ? <CircularProgress size={20} /> : undefined}>
+                <Alert
+                    severity={snackbarSeverity}
+                    icon={snackbarSeverity === "info" ? <CircularProgress size={20} /> : undefined}
+                    sx={{ width: "100%", borderRadius: 2, boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}
+                >
                     {snackbarMessage}
                 </Alert>
             </Snackbar>

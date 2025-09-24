@@ -23,7 +23,7 @@ export default async function OrdenesNegocioPage() {
   return (
     <div className="w-full mx-auto">
       {/* Botón Crear nuevo pedido */}
-      <div className="flex justify-start mb-6">
+      <div className="flex justify-center mb-6">
         <Button
           component={Link}
           href="/dashboard/orders/crear"

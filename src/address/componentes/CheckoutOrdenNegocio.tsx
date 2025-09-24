@@ -19,7 +19,7 @@ import {
   Snackbar,
   Alert,
 } from "@mui/material";
-import { CheckCircleOutline, ErrorOutline } from "@mui/icons-material"; // Corregí a CheckCircleOutline y ErrorOutline (sin Outline duplicado)
+import { CheckCircleOutline, ErrorOutline } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { useCartNegocioStore } from "@/store/carro-negocio/carro-negocio-store";
@@ -38,16 +38,16 @@ const CheckoutOrdenNegocio: React.FC = () => {
   const [modalMessage, setModalMessage] = useState("");
   const [isSuccess, setIsSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [toastOpen, setToastOpen] = useState(false); // Estado para toast
-  const [toastMessage, setToastMessage] = useState("Procesando orden..."); // Mensaje inicial toast
-  const [toastSeverity, setToastSeverity] = useState<"info" | "success" | "error">("info"); // Severidad toast
+  const [toastOpen, setToastOpen] = useState(false);
+  const [toastMessage, setToastMessage] = useState("Procesando orden...");
+  const [toastSeverity, setToastSeverity] = useState<"info" | "success" | "error">("info");
 
   const total = getTotalPrice();
 
   const handleCreatePedido = async () => {
     setIsSubmitting(true);
-    setIsLoading(true); // Activa loader global
-    setToastOpen(true); // Muestra toast de carga
+    setIsLoading(true);
+    setToastOpen(true);
     setToastMessage("Procesando orden...");
     setToastSeverity("info");
     setModalOpen(true);
@@ -88,14 +88,14 @@ const CheckoutOrdenNegocio: React.FC = () => {
         setToastSeverity("error");
       }
     } catch (error) {
-      console.error("Error en creación de pedido:", error); // Manejo de error
+      console.error("Error en creación de pedido:", error);
       setModalMessage(error instanceof Error ? error.message : "Error inesperado al crear la orden.");
       setIsSuccess(false);
       setToastMessage("Error inesperado");
       setToastSeverity("error");
     } finally {
       setIsSubmitting(false);
-      setIsLoading(false); // Desactiva loader
+      setIsLoading(false);
       // Auto-cierre toast después de 3s, pero modal queda para cierre manual
       setTimeout(() => setToastOpen(false), 3000);
     }
@@ -146,33 +146,95 @@ const CheckoutOrdenNegocio: React.FC = () => {
   const DeliveryDataSummary = () => (
     <Paper elevation={1} sx={{ p: { xs: 2, sm: 3 }, borderRadius: 3, bgcolor: "background.paper" }}>
       <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "text.primary" }}>
-        Datos de entrega
+        {address.orderType === "DELIVERY" ? "Datos de entrega" : "Datos del pedido en sitio"}
       </Typography>
       <List disablePadding>
         <ListItem sx={{ py: 0.5, px: 0 }}>
-          <ListItemText primary="País" secondary={address.country} />
+          <ListItemText
+            primary="Tipo de pedido"
+            secondary={address.orderType === "DELIVERY" ? "Entrega a domicilio" : "Consumo en sitio"}
+            primaryTypographyProps={{ fontWeight: 500 }}
+            secondaryTypographyProps={{ color: "text.secondary" }}
+          />
         </ListItem>
         <ListItem sx={{ py: 0.5, px: 0 }}>
-          <ListItemText primary="Departamento" secondary={address.departamento} />
+          <ListItemText
+            primary="Nombre del cliente"
+            secondary={address.clientName || "No especificado"}
+            primaryTypographyProps={{ fontWeight: 500 }}
+            secondaryTypographyProps={{ color: "text.secondary" }}
+          />
         </ListItem>
         <ListItem sx={{ py: 0.5, px: 0 }}>
-          <ListItemText primary="Ciudad" secondary={address.ciudad} />
+          <ListItemText
+            primary="Teléfono"
+            secondary={address.clientPhone || "No especificado"}
+            primaryTypographyProps={{ fontWeight: 500 }}
+            secondaryTypographyProps={{ color: "text.secondary" }}
+          />
         </ListItem>
+        {address.orderType === "DELIVERY" && (
+          <>
+            <ListItem sx={{ py: 0.5, px: 0 }}>
+              <ListItemText
+                primary="País"
+                secondary={address.country || "No especificado"}
+                primaryTypographyProps={{ fontWeight: 500 }}
+                secondaryTypographyProps={{ color: "text.secondary" }}
+              />
+            </ListItem>
+            <ListItem sx={{ py: 0.5, px: 0 }}>
+              <ListItemText
+                primary="Departamento"
+                secondary={address.departamento || "No especificado"}
+                primaryTypographyProps={{ fontWeight: 500 }}
+                secondaryTypographyProps={{ color: "text.secondary" }}
+              />
+            </ListItem>
+            <ListItem sx={{ py: 0.5, px: 0 }}>
+              <ListItemText
+                primary="Ciudad"
+                secondary={address.ciudad || "No especificado"}
+                primaryTypographyProps={{ fontWeight: 500 }}
+                secondaryTypographyProps={{ color: "text.secondary" }}
+              />
+            </ListItem>
+            <ListItem sx={{ py: 0.5, px: 0 }}>
+              <ListItemText
+                primary="Dirección de entrega"
+                secondary={address.deliveryAddress || "No especificado"}
+                primaryTypographyProps={{ fontWeight: 500 }}
+                secondaryTypographyProps={{ color: "text.secondary" }}
+              />
+            </ListItem>
+          </>
+        )}
+        {address.orderType === "ON_SITE" && (
+          <ListItem sx={{ py: 0.5, px: 0 }}>
+            <ListItemText
+              primary="Ubicación en sitio"
+              secondary={address.onSiteLocation || "No especificado"}
+              primaryTypographyProps={{ fontWeight: 500 }}
+              secondaryTypographyProps={{ color: "text.secondary" }}
+            />
+          </ListItem>
+        )}
         <ListItem sx={{ py: 0.5, px: 0 }}>
-          <ListItemText primary="Nombre del cliente" secondary={address.clientName} />
-        </ListItem>
-        <ListItem sx={{ py: 0.5, px: 0 }}>
-          <ListItemText primary="Teléfono" secondary={address.clientPhone} />
-        </ListItem>
-        <ListItem sx={{ py: 0.5, px: 0 }}>
-          <ListItemText primary="Dirección de entrega" secondary={address.deliveryAddress} />
-        </ListItem>
-        <ListItem sx={{ py: 0.5, px: 0 }}>
-          <ListItemText primary="Fecha de entrega" secondary={new Date(address.deliveryDate).toLocaleDateString()} />
+          <ListItemText
+            primary="Fecha de entrega"
+            secondary={address.deliveryDate ? new Date(address.deliveryDate).toLocaleDateString() : "No especificado"}
+            primaryTypographyProps={{ fontWeight: 500 }}
+            secondaryTypographyProps={{ color: "text.secondary" }}
+          />
         </ListItem>
         {address.additionalComments && (
           <ListItem sx={{ py: 0.5, px: 0 }}>
-            <ListItemText primary="Comentarios adicionales" secondary={address.additionalComments} />
+            <ListItemText
+              primary="Comentarios adicionales"
+              secondary={address.additionalComments}
+              primaryTypographyProps={{ fontWeight: 500 }}
+              secondaryTypographyProps={{ color: "text.secondary" }}
+            />
           </ListItem>
         )}
       </List>
@@ -241,7 +303,7 @@ const CheckoutOrdenNegocio: React.FC = () => {
               slotProps={{
                 backdrop: {
                   timeout: 500,
-                  TransitionComponent: MuiFade, // si quieres efecto Fade en el backdrop
+                  TransitionComponent: MuiFade,
                 },
               }}
             >

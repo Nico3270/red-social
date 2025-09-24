@@ -203,8 +203,11 @@ const CheckoutOrderTotal: React.FC = () => {
           <ListItemText primary="Dirección de entrega" secondary={address.deliveryAddress} />
         </ListItem>
         <ListItem sx={{ py: 0.5, px: 0 }}>
-          <ListItemText primary="Fecha de entrega" secondary={new Date(address.deliveryDate).toLocaleDateString()} />
-        </ListItem>
+  <ListItemText 
+    primary="Fecha de entrega" 
+    secondary={address.deliveryDate ? new Date(address.deliveryDate).toLocaleDateString() : "No especificada"} 
+  />
+</ListItem>
         {address.additionalComments && (
           <ListItem sx={{ py: 0.5, px: 0 }}>
             <ListItemText primary="Comentarios adicionales" secondary={address.additionalComments} />

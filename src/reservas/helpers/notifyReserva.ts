@@ -123,6 +123,7 @@ export async function notifyReservaConfirmadaCliente({
 
         case PlantillaWhatsApp.PEDIDO_CREADO_USUARIO_USUARIO:
             if (!valor_compra || !datos_pedido || !nombre_cliente || !direccion || !ciudad) {
+                
                 throw new Error("Faltan datos para la plantilla de confirmación de pedido creado por el usuario al usuario");
             }
             variables = [nombre_cliente, nombre_negocio, datos_pedido, valor_compra, direccion, ciudad];
