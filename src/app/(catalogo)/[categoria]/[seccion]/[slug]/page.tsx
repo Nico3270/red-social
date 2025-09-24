@@ -77,7 +77,7 @@ export default async function ProductPage({ params }: Props) {
         </div>
 
         {/* Detalles del producto */}
-        <div className="flex flex-col space-y-6 md:space-y-4 md:flex-grow">
+        <div className="flex flex-col sm:mt-10 space-y-6 md:space-y-4 md:flex-grow">
           <DetallesProducto product={product} telefonoNegocio={telefonoNegocio} />
         </div>
       </div>

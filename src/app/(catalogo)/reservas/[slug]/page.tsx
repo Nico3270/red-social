@@ -53,7 +53,7 @@ export default async function ReservasPage({ params }: Props) {
   if (errorOccurred || !configReservation?.config) {
     // Mensaje de error: Elegante, moderno y premium (centrado, con icono, sombra suave y botón retry)
     return (
-      <div className="sm:mt-40 flex min-h-screen items-center justify-center bg-gray-50 px-4">
+      <div className="sm:mt-60 flex min-h-screen items-center justify-center bg-gray-50 px-4">
         <div className="max-w-md w-full bg-white rounded-lg shadow-md p-6 text-center space-y-4 transform transition-all duration-300 hover:shadow-lg">
           <FaExclamationTriangle className="mx-auto text-yellow-500 text-5xl mb-2" aria-hidden="true" />
           <h2 className="text-xl font-semibold text-gray-800">Error al obtener la configuración de reservas</h2>
@@ -74,7 +74,7 @@ export default async function ReservasPage({ params }: Props) {
 
   if (!session) {
     return (
-      <div className="sm:mt-40 flex min-h-screen items-center justify-center bg-gray-50 px-4">
+      <div className="sm:mt-60 flex min-h-screen items-center justify-center bg-gray-50 px-4">
         <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-6 text-center space-y-4">
           <FaExclamationTriangle className="mx-auto text-red-500 text-5xl mb-2" />
           <h2 className="text-xl font-semibold text-gray-800">
@@ -96,7 +96,7 @@ export default async function ReservasPage({ params }: Props) {
 
   // Si éxito, renderiza el dashboard con config (elegante y responsive wrapper)
   return (
-    <div className="sm:mt-40 p-4 sm:p-8 bg-gray-50 min-h-screen">
+    <div className="sm:mt-60 p-4 sm:p-8 bg-gray-50 min-h-screen">
       <ReservasUserDashboard config={configReservation.config}  />
     </div>
   );

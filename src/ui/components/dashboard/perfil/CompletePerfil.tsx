@@ -35,6 +35,7 @@ import { actualizarPerfilNegocio } from "@/actions/perfil/actualizarPerfil";
 import AutoUploadMedia from "../../autoUpload/AutoUploadMedia";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaCheckCircle, FaTimesCircle, FaTimes } from "react-icons/fa";
+import Image from "next/image";
 
 interface InformacionInicialNegocio {
   nombreNegocio: string;
@@ -492,7 +493,6 @@ export const CompletePerfil = ({ informacionNegocio }: Props) => {
             render={() => (
               <Stack direction="row" spacing={1} flexWrap="wrap" rowGap={1}>
                 {initialData.categorias.map((category) => {
-                  const IconComponent = iconMap[category.iconName] || RiIcons.RiQuestionLine;
                   const isSelected = selectedCategorySlugs.has(category.slug);
                   return (
                     <Box
@@ -519,7 +519,13 @@ export const CompletePerfil = ({ informacionNegocio }: Props) => {
                         },
                       }}
                     >
-                      <IconComponent size={18} style={{ marginRight: 8 }} />
+                      <Image
+                        src={`/imgs/iconos/${category.iconName}`}
+                        alt={category.nombre}
+                        width={18}
+                        height={18}
+                        style={{ marginRight: 8 }}
+                      />
                       <Typography variant="body2" sx={{ fontWeight: 500 }}>
                         {category.nombre}
                       </Typography>
@@ -576,6 +582,13 @@ export const CompletePerfil = ({ informacionNegocio }: Props) => {
                       },
                     }}
                   >
+                    <Image
+                      src={`/imgs/iconos/${section.iconName}`}
+                      alt={section.nombre}
+                      width={18}
+                      height={18}
+                      style={{ marginRight: 8 }}
+                    />
                     <Typography variant="body2" sx={{ fontWeight: 500 }}>
                       {section.nombre}
                     </Typography>

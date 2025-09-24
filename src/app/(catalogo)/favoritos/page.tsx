@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic"; // Asegura que la acción no use caché
 
 export default function FavoritePage() {
   return (
-    <div className="container mx-auto p-2 sm:mt-10 mb-10">
+    <div className="container mx-auto p-2 sm:mt-20 mb-10">
       {/* Título con Icono */}
       <div className="flex items-center justify-center sm:mt-40">
         <FaHeart className="text-red-500 text-4xl mr-3" />

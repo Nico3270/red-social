@@ -41,6 +41,7 @@ export const initialData: SeedData = {
     { id: '15', nombre: 'Inmuebles - Propiedades', iconName: 'inmuebles.png', slug: 'inmuebles', isActive: true },
     { id: '16', nombre: 'Hospedaje y turismo', iconName: 'hospedaje.png', slug: 'hospedaje', isActive: true },
     { id: '17', nombre: 'Servicios profesionales', iconName: 'servicios-profesionales.png', slug: 'servicios', isActive: true },
+    { id: '18', nombre: 'Negocios', iconName: 'negocios.png', slug: 'negocios', isActive: true },
   ],
   secciones: [
     // Moda y Accesorios
@@ -130,6 +131,7 @@ export const initialData: SeedData = {
     { id: 's37', nombre: 'Cuidado Facial', iconName: 'skincare.png', slug: 'cuidado-facial', href: '/productos/belleza/cuidado-facial', order: 2, isActive: true, categorySlug: 'belleza' },
     { id: 's36', nombre: 'Maquillaje', iconName: 'maquillaje.png', slug: 'maquillaje', href: '/productos/belleza/maquillaje', order: 1, isActive: true, categorySlug: 'belleza' },
     { id: 's39', nombre: 'Perfumes', iconName: 'perfumes.png', slug: 'perfumes', href: '/productos/belleza/perfumes', order: 4, isActive: true, categorySlug: 'belleza' },
+    { id: 's159', nombre: 'Uñas', iconName: 'unas.png', slug: 'unas', href: '/productos/belleza/unas', order: 4, isActive: true, categorySlug: 'belleza' },
 
     // Salud y Bienestar
     { id: 's43', nombre: 'Botiquín', iconName: 'botiquin.png', slug: 'botiquin', href: '/productos/salud/botiquin', order: 3, isActive: true, categorySlug: 'salud' },
@@ -181,7 +183,7 @@ export const initialData: SeedData = {
     { id: 's105', nombre: 'Limonadas', iconName: 'limonadas.png', slug: 'limonadas', href: '/productos/bebidas/limonadas', order: 11, isActive: true, categorySlug: 'bebidas' },
     { id: 's106', nombre: 'Malteadas', iconName: 'malteadas.png', slug: 'malteadas', href: '/productos/bebidas/malteadas', order: 12, isActive: true, categorySlug: 'bebidas' },
     { id: 's111', nombre: 'Otras bebidas ', iconName: 'otrasBebidas.png', slug: 'ron', href: '/productos/bebidas/ron', order: 17, isActive: true, categorySlug: 'bebidas' },
-    { id: 's128', nombre: 'Smothies', iconName: 'smothies.webp', slug: 'smothies', href: '/productos/bebidas/smothies', order: 18, isActive: true, categorySlug: 'bebidas' },
+    { id: 's128', nombre: 'Smothies', iconName: 'postres.png', slug: 'smothies', href: '/productos/bebidas/smothies', order: 18, isActive: true, categorySlug: 'bebidas' },
     { id: 's103', nombre: 'Té', iconName: 'tes.png', slug: 'tes', href: '/productos/bebidas/tes', order: 7, isActive: true, categorySlug: 'bebidas' },
     { id: 's104', nombre: 'Vinos', iconName: 'vinos.png', slug: 'vinos', href: '/productos/bebidas/vinos', order: 8, isActive: true, categorySlug: 'bebidas' },
     { id: 's65', nombre: 'Whiskies', iconName: 'whisky.png', slug: 'whiskies', href: '/productos/bebidas/whiskies', order: 5, isActive: true, categorySlug: 'bebidas' },
@@ -220,5 +222,20 @@ export const initialData: SeedData = {
     { id: 's148', nombre: 'Otros Servicios', iconName: 'servicios.png', slug: 'otros-servicios', href: '/productos/servicios/otros-servicios', order: 4, isActive: true, categorySlug: 'servicios' },
     { id: 's146', nombre: 'Reparaciones y Mantenimiento', iconName: 'reparaciones.png', slug: 'reparaciones-mantenimiento', href: '/productos/servicios/reparaciones-mantenimiento', order: 2, isActive: true, categorySlug: 'servicios' },
 
+    // Negocios
+    { id: 's160', nombre: 'Alimentos', iconName: 'alimentos.png', slug: 'alimentos', href: '/productos/negocios/alimentos', order: 1, isActive: true, categorySlug: 'negocios' },
+    { id: 's172', nombre: 'Bebidas Alcohólicas', iconName: 'bebidas.png', slug: 'bebidas-alcoholicas', href: '/productos/negocios/bebidas', order: 15, isActive: true, categorySlug: 'negocios' },
+    { id: 's170', nombre: 'Carnes y Embutidos', iconName: 'carnes-embutidos.png', slug: 'carnes-embutidos', href: '/productos/negocios/carnes-embutidos', order: 11, isActive: true, categorySlug: 'negocios' },
+    { id: 's162', nombre: 'Cuidado Personal', iconName: 'cuidado-personal.png', slug: 'cuidado-personal', href: '/productos/negocios/cuidado-personal', order: 3, isActive: true, categorySlug: 'negocios' },
+    { id: 's163', nombre: 'Frutas y Verduras', iconName: 'frutas-verduras.png', slug: 'frutas-verduras', href: '/productos/negocios/frutas-verduras', order: 4, isActive: true, categorySlug: 'negocios' },
+    { id: 's164', nombre: 'Hogar Básico', iconName: 'hogar-basico.png', slug: 'hogar-basico', href: '/productos/negocios/hogar-basico', order: 5, isActive: true, categorySlug: 'negocios' },
+    { id: 's165', nombre: 'Lácteos', iconName: 'lacteos.png', slug: 'lacteos', href: '/productos/negocios/lacteos', order: 6, isActive: true, categorySlug: 'negocios' },
+    { id: 's166', nombre: 'Limpieza', iconName: 'limpieza.png', slug: 'limpieza', href: '/productos/negocios/limpieza', order: 7, isActive: true, categorySlug: 'negocios' },
+    { id: 's171', nombre: 'Panadería y Pastelería', iconName: 'panaderia-pasteleria.png', slug: 'panaderia-pasteleria', href: '/productos/negocios/panaderia-pasteleria', order: 14, isActive: true, categorySlug: 'negocios' },
+    { id: 's167', nombre: 'Papelería y Miscelaneas', iconName: 'papeleria.png', slug: 'papeleria-miscelaneas', href: '/productos/negocios/papeleria', order: 8, isActive: true, categorySlug: 'negocios' },
+    { id: 's168', nombre: 'Regalos y detalles', iconName: 'regalos.png', slug: 'regalos', href: '/productos/negocios/regalos', order: 9, isActive: true, categorySlug: 'negocios' },
+    { id: 's169', nombre: 'Snacks y Dulces', iconName: 'snacks.png', slug: 'snacks-dulces', href: '/productos/negocios/snacks-dulces', order: 10, isActive: true, categorySlug: 'negocios' },
+    { id: 's173', nombre: 'Herramientas', iconName: 'herramientas.png', slug: 'herramientas', href: '/productos/negocios/snacks-dulces', order: 10, isActive: true, categorySlug: 'negocios' },
+    
   ],
 };

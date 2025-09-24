@@ -590,7 +590,7 @@ const localDateStr = todayLocal.toLocaleDateString('sv-SE'); // formato YYYY-MM-
                       opacity: isSubmitting ? 0.7 : 1,
                     }}
                   >
-                    {isSubmitting ? "Agregando..." : "Agregar"}
+                    {isSubmitting ? "Agregando..." : "Crear transacción"}
                   </Button>
                 </span>
               </Tooltip>

@@ -285,7 +285,7 @@ export const DetallesProducto: React.FC<AddToCartProps> = ({ product, telefonoNe
       
                       {/* Producto */}
                       <div className="text-center mb-6">
-                        <p className="text-2xl font-bold text-gray-00">{product.nombre}</p>
+                        <p className="text-2xl font-bold text-gray-900">{product.nombre}</p>
                         <p className="text-lg font-semibold text-gray-700 mt-1">
                           ${new Intl.NumberFormat("es-CO").format(product.precio)}
                         </p>
