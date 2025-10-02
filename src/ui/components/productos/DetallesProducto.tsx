@@ -3,47 +3,31 @@
 import React, { useState } from "react";
 import { BsWhatsapp } from "react-icons/bs";
 import { InfoEmpresa } from "@/config/config";
-import { IoMdClose } from "react-icons/io"; // Icono de cierre para el modal
-import { HiOutlineCube } from "react-icons/hi"; // Icono de componente
+import { IoMdClose } from "react-icons/io";
+import { HiOutlineCube } from "react-icons/hi";
 import Link from "next/link";
 import { ProductRedSocial } from "@/interfaces/productRedSocial.interface";
 import Divider from "../divider/Divider";
 import { useSession } from "next-auth/react";
 import { FaComment, FaShoppingCart } from "react-icons/fa";
 import { ModalPublicaciones } from "@/publicaciones/componentes/ModalPublicaciones";
-import { PublicacionTipo } from "@prisma/client";
-import { ContextoPublicacion } from "../autoUpload/UsoenForm";
-import { TestimonioProductoCrearEditar } from "@/publicaciones/componentes/TestimonioProductoCrearEditar";
 import { AddFavorites } from "./AddFavorites";
 import { useCartCatalogoStore } from "@/store/carro/carro-store";
 import { motion, AnimatePresence } from "framer-motion";
 import { textosFont, titleFont, titulosPrincipales } from "@/config/fonts";
-
-
+import FormCrearResenaProducto from "@/resenas/componentes/FormCrearResenaProducto";
 
 interface AddToCartProps {
   product: ProductRedSocial;
   telefonoNegocio?: string;
 }
 
-interface InformacionPublicacion {
-  usuarioId?: string;
-  publicacionId?: string;
-  productoId: string;
-  tipo: PublicacionTipo;
-  contexto: ContextoPublicacion;
-  nombreProducto: string;
-  imagenProducto: string;
-  descripcion?: string;
-  multimedia?: string[];
-}
-
 export const DetallesProducto: React.FC<AddToCartProps> = ({ product, telefonoNegocio }) => {
   const { data: session } = useSession();
   const userId = session?.user?.id;
 
-  const [isComponentsModalOpen, setIsComponentsModalOpen] = useState(false); // Estado para modal de componentes
-  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false); // Estado para modal de reseña
+  const [isComponentsModalOpen, setIsComponentsModalOpen] = useState(false);
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -65,7 +49,7 @@ export const DetallesProducto: React.FC<AddToCartProps> = ({ product, telefonoNe
     }
 
     const cartProduct = {
-      cartItemId: `${product.id}-${Date.now()}`, // ID único para el ítem en el carrito
+      cartItemId: `${product.id}-${Date.now()}`,
       id: product.id,
       slug: product.slug,
       nombre: product.nombre,
@@ -79,43 +63,24 @@ export const DetallesProducto: React.FC<AddToCartProps> = ({ product, telefonoNe
     addProductToCart(product.slugNegocio, cartProduct);
     setIsModalOpen(false);
     setShowSuccess(true);
-    setQuantity(1); // Resetear cantidad
-    setTimeout(() => setShowSuccess(false), 3000); // Ocultar mensaje después de 3 segundos
+    setQuantity(1);
+    setTimeout(() => setShowSuccess(false), 3000);
   };
 
   const telefonoLimpio = telefonoNegocio?.replace("+", "") ?? "";
   const whatsappUrl = `https://wa.me/${telefonoLimpio}?text=${whatsappMessage}`;
-  const infoCrearPublicacion: InformacionPublicacion = {
-    usuarioId: userId,
-    productoId: product.id,
-    tipo: PublicacionTipo.TESTIMONIO,
-    contexto: "producto",
-    nombreProducto: product.nombre || "",
-    imagenProducto: product.imagenes[0] || ""
-  }
+
+  // Manejar éxito de la reseña
+  const handleReviewSuccess = (message?: string) => {
+    setIsReviewModalOpen(false);
+    setShowSuccess(true);
+    setTimeout(() => setShowSuccess(false), 3000);
+  };
 
   return (
     <div className="sm:mt-10 flex flex-col items-center gap-6 bg-white p-4 mb-10 mb:20 rounded-lg shadow-md">
-      {/* <Link href={`/perfil/${product.slugNegocio}`} target="_blank" rel="noopener noreferrer">
-        <button
-          // onClick={() => setIsReviewModalOpen(true)}
-          className="flex items-center justify-center gap-2 bg-[#] hover:bg-gray-500  bg-red-500 text-white font-semibold p-2 rounded-lg shadow-md transition-all"
-          aria-label="Deja una reseña de este producto"
-        >
-          <div className="relative w-8 h-8 rounded-full overflow-hidden border border-gray-200 shadow-md ring-1 ring-gray-300/40">
-            <Image
-              src={product.negocioFotoPerfil}
-              alt={`Perfil de ${product.nombreNegocio}`}
-              fill
-              className="object-cover"
-            />
-          </div>
-          {product.nombreNegocio}
-        </button>
-        </Link> */}
       {/* Información del producto */}
       <div className="text-center">
-        
         <h1
           className={`text-2xl sm:text-3xl md:text-4xl font-semibold text-gray-800 text-center leading-snug break-words ${titleFont.className}`}
         >
@@ -155,7 +120,6 @@ export const DetallesProducto: React.FC<AddToCartProps> = ({ product, telefonoNe
                 <IoMdClose className="text-2xl" />
               </button>
             </div>
-
             <ul className="space-y-3">
               {product.componentes && product.componentes.length > 0 ? (
                 product.componentes.map((componente, index) => (
@@ -168,7 +132,6 @@ export const DetallesProducto: React.FC<AddToCartProps> = ({ product, telefonoNe
                 <p className="text-gray-500">No hay componentes disponibles para este producto.</p>
               )}
             </ul>
-
             <button
               onClick={() => setIsComponentsModalOpen(false)}
               className="mt-4 w-full py-3 bg-gray-900 hover:bg-gray-800 text-white font-bold rounded-lg transition-all"
@@ -181,19 +144,16 @@ export const DetallesProducto: React.FC<AddToCartProps> = ({ product, telefonoNe
 
       {/* Botones */}
       <div className="flex gap-4">
-
-        
-
         {product.telefonoContacto && (
-<Link
-          href={whatsappUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg shadow-md transition-all"
-        >
-          <BsWhatsapp className="text-lg" />
-          WhatsApp
-        </Link>
+          <Link
+            href={whatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg shadow-md transition-all"
+          >
+            <BsWhatsapp className="text-lg" />
+            WhatsApp
+          </Link>
         )}
         <AddFavorites
           id={product.id}
@@ -205,9 +165,7 @@ export const DetallesProducto: React.FC<AddToCartProps> = ({ product, telefonoNe
           description={product.descripcion}
           sections={product.sections}
           slugNegocio={product.slugNegocio || ""}
-
         />
-        {/* Botón de Carrito */}
         <button
           onClick={() => setIsModalOpen(true)}
           className="bg-gradient-to-r from-blue-500 to-blue-600 p-2 rounded-full hover:from-blue-600 hover:to-blue-700 flex items-center justify-center transition-all duration-300"
@@ -216,146 +174,122 @@ export const DetallesProducto: React.FC<AddToCartProps> = ({ product, telefonoNe
         </button>
       </div>
 
-      {/* Nuevo botón para dejar reseña */}
-      <div className="w-full flex justify-center mt-0 gap-4">
-        
-        <button
-          // onClick={() => setIsReviewModalOpen(true)}
-          className="flex items-center justify-center gap-2 bg-[#274494] hover:bg-[#2c5282] text-white font-semibold py-3 px-6 rounded-lg shadow-md transition-all"
-          aria-label="Deja una reseña de este producto"
-        >
-          <FaComment className="text-lg" />
-          Deja una reseña de este producto
-        </button>
-      </div>
-
-      {/* Modal de reseña */}
-      {isReviewModalOpen && (
-        // <PublicacionModalProducto
-        //   userId={session?.user?.id}
-        //   productId={product.id}
-        //   contexto="producto"
-        //   nombreProducto={product.nombre}
-        //   urlImagenProducto={product.imagenes[0] || undefined}
-        //   onClose={() => setIsReviewModalOpen(false)}
-        // />
-        <ModalPublicaciones
-          onClose={() => setIsReviewModalOpen(false)} // ✅ Esto sí cierra el modal correcto
-          userId={userId}
-        >
-          <TestimonioProductoCrearEditar
-            infoPublicacion={
-              infoCrearPublicacion
-            }
-
-
-          />
-        </ModalPublicaciones>
+      {/* Botón para dejar reseña */}
+      {session && ( // Mostrar solo si el usuario está autenticado
+        <div className="w-full flex justify-center mt-0 gap-4">
+          <button
+            onClick={() => setIsReviewModalOpen(true)} // Habilitar el botón
+            className="flex items-center justify-center gap-2 bg-[#274494] hover:bg-[#2c5282] text-white font-semibold py-3 px-6 rounded-lg shadow-md transition-all"
+            aria-label="Deja una reseña de este producto"
+          >
+            <FaComment className="text-lg" />
+            Deja una reseña de este producto
+          </button>
+        </div>
       )}
 
-      {/* Mini Modal de Confirmación */}
-              <AnimatePresence>
-                {isModalOpen && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 px-4"
-                    onClick={() => setIsModalOpen(false)}
-                  >
-                    <motion.div
-                      initial={{ scale: 0.95, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      exit={{ scale: 0.95, opacity: 0 }}
-                      transition={{ duration: 0.25, ease: "easeInOut" }}
-                      className="bg-white rounded-3xl p-8 max-w-sm w-full relative 
-                  border-2 border-gray-200 
-                  shadow-[0_4px_30px_rgba(0,0,0,0.1)]"
-      
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      {/* Encabezado secundario */}
-                      <h5 className="text-lg font-semibold text-center mb-3 
-                     tracking-wider text-transparent bg-clip-text 
-                     bg-gradient-to-r from-gray-700 to-gray-700 
-                     drop-shadow-sm">
-                        Agregar al carrito
-                      </h5>
-      
-      
-                      {/* Producto */}
-                      <div className="text-center mb-6">
-                        <p className="text-2xl font-bold text-gray-900">{product.nombre}</p>
-                        <p className="text-lg font-semibold text-gray-700 mt-1">
-                          ${new Intl.NumberFormat("es-CO").format(product.precio)}
-                        </p>
-                      </div>
-      
-                      {/* Selector de cantidad */}
-                      <div className="flex items-center justify-center mb-8">
-                        <button
-                          onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                          className="bg-gray-600 hover:bg-gray-200 hover:text-gray-800 text-gray-100 font-bold px-4 py-2 rounded-l-full transition-colors duration-200 shadow-sm"
-                        >
-                          –
-                        </button>
-                        <input
-                          type="number"
-                          value={quantity}
-                          onChange={(e) =>
-                            setQuantity(Math.max(1, parseInt(e.target.value) || 1))
-                          }
-                          className="w-20 text-center border-t border-b border-gray-200 py-2 font-semibold text-gray-900 focus:outline-none text-lg"
-                          min="1"
-                        />
-                        <button
-                          onClick={() => setQuantity((q) => q + 1)}
-                          className="bg-gray-600 hover:bg-gray-200 hover:text-gray-800 text-gray-100 font-bold px-4 py-2 rounded-r-full transition-colors duration-200 shadow-sm"
-                        >
-                          +
-                        </button>
-                      </div>
-      
-                      {/* Botones */}
-                      <div className="flex justify-between gap-4">
-                        <button
-                          onClick={() => setIsModalOpen(false)}
-                          className="flex-1 bg-gray-100 hover:bg-red-600 hover:text-gray-100 border-gray-500 border text-gray-700 font-medium py-3 rounded-full transition-all duration-200 shadow-sm"
-                        >
-                          Cancelar
-                        </button>
-                        <button
-                          onClick={handleAddToCart}
-                          className="flex-1 bg-gray-800 hover:bg-green-600 hover:text-gray-100 border-gray-500 border text-gray-100 font-medium py-3 rounded-full transition-all duration-200 shadow-sm"
-                        >
-                          Confirmar
-                        </button>
-                      </div>
-                    </motion.div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-      
-      
-      
-              {/* Mensaje de confirmación (Toast moderno) */}
-              <AnimatePresence>
-                {showSuccess && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    transition={{ duration: 0.3, ease: "easeInOut" }}
-                    className="fixed inset-0 flex items-center justify-center z-50"
-                  >
-                    <div className="bg-white/90 backdrop-blur-md text-green-600 px-8 py-4 rounded-2xl shadow-[0_0_20px_rgba(34,197,94,0.4)] text-center text-lg font-semibold border-2 border-green-600">
-                      ✅ ¡Producto agregado al carrito!
-                    </div>
-      
-                  </motion.div>
-                )}
-              </AnimatePresence>
+      {/* Modal de reseña */}
+      <AnimatePresence>
+        {isReviewModalOpen && (
+          <ModalPublicaciones
+            onClose={() => setIsReviewModalOpen(false)}
+            userId={userId}
+          >
+            <FormCrearResenaProducto
+              productoId={product.id}
+              productoNombre={product.nombre}
+              productoDescripcion={product.descripcion}
+              resenaId={undefined} // No se pasa resenaId para creación; ajusta si implementas edición
+              onCancel={() => setIsReviewModalOpen(false)}
+              onSuccess={handleReviewSuccess}
+            />
+          </ModalPublicaciones>
+        )}
+      </AnimatePresence>
 
+      {/* Modal de Carrito */}
+      <AnimatePresence>
+        {isModalOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 px-4"
+            onClick={() => setIsModalOpen(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              transition={{ duration: 0.25, ease: "easeInOut" }}
+              className="bg-white rounded-3xl p-8 max-w-sm w-full relative border-2 border-gray-200 shadow-[0_4px_30px_rgba(0,0,0,0.1)]"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h5 className="text-lg font-semibold text-center mb-3 tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-gray-700 to-gray-700 drop-shadow-sm">
+                Agregar al carrito
+              </h5>
+              <div className="text-center mb-6">
+                <p className="text-2xl font-bold text-gray-900">{product.nombre}</p>
+                <p className="text-lg font-semibold text-gray-700 mt-1">
+                  ${new Intl.NumberFormat("es-CO").format(product.precio)}
+                </p>
+              </div>
+              <div className="flex items-center justify-center mb-8">
+                <button
+                  onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                  className="bg-gray-600 hover:bg-gray-200 hover:text-gray-800 text-gray-100 font-bold px-4 py-2 rounded-l-full transition-colors duration-200 shadow-sm"
+                >
+                  –
+                </button>
+                <input
+                  type="number"
+                  value={quantity}
+                  onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                  className="w-20 text-center border-t border-b border-gray-200 py-2 font-semibold text-gray-900 focus:outline-none text-lg"
+                  min="1"
+                />
+                <button
+                  onClick={() => setQuantity((q) => q + 1)}
+                  className="bg-gray-600 hover:bg-gray-200 hover:text-gray-800 text-gray-100 font-bold px-4 py-2 rounded-r-full transition-colors duration-200 shadow-sm"
+                >
+                  +
+                </button>
+              </div>
+              <div className="flex justify-between gap-4">
+                <button
+                  onClick={() => setIsModalOpen(false)}
+                  className="flex-1 bg-gray-100 hover:bg-red-600 hover:text-gray-100 border-gray-500 border text-gray-700 font-medium py-3 rounded-full transition-all duration-200 shadow-sm"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleAddToCart}
+                  className="flex-1 bg-gray-800 hover:bg-green-600 hover:text-gray-100 border-gray-500 border text-gray-100 font-medium py-3 rounded-full transition-all duration-200 shadow-sm"
+                >
+                  Confirmar
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Mensaje de confirmación (Toast moderno) */}
+      <AnimatePresence>
+        {showSuccess && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="fixed inset-0 flex items-center justify-center z-50"
+          >
+            <div className="bg-white/90 backdrop-blur-md text-green-600 px-8 py-4 rounded-2xl shadow-[0_0_20px_rgba(34,197,94,0.4)] text-center text-lg font-semibold border-2 border-green-600">
+              ✅ ¡{isReviewModalOpen ? "Reseña enviada exitosamente" : "Producto agregado al carrito"}!
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

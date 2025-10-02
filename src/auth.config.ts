@@ -31,15 +31,15 @@ export const authConfig: NextAuthConfig = {
             data: {
               nombre: profile?.given_name || "Usuario",  // Usa given_name para el nombre (first name)
               apellido: profile?.family_name || "Sin apellido",  // Usa family_name para el apellido (last name)
-              username: (user.email?.split("@")[0] ?? "usuario") + Date.now(),
               email: user.email!,
               contraseña: hashedPassword,
               role: "user",
+              username: (user.email?.split("@")[0] ?? "usuario") + Date.now(),
               ciudad: "Desconocida",
               departamento: "Desconocido",
               pais: "Colombia",
-              genero: "otro",
               fechaNacimiento: new Date("1990-01-01"),
+              genero: "otro",
               perfilCompleto: false,
             },
           });

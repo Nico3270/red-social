@@ -210,6 +210,8 @@ model Product {
   negocio                   Negocio                  @relation(fields: [negocioId], references: [id], onDelete: Cascade)
   secciones                 ProductSection[]
   publicacionesRelacionadas PublicacionProducto[]
+  ratingPromedio Float? // Calculado: promedio de calificaciones de reseñas asociadas
+  numResenas     Int    @default(0) // Contador de reseñas
 
   @@index([negocioId])
   @@index([categoryId])
@@ -292,6 +294,7 @@ model Publicacion {
   orden                  Float                 @default(8.0)
   interacciones          Interaccion[]         @relation("PublicacionInteracciones")
   multimedia             Media[]
+  calificacion Int? // Nueva: para estrellas (1-5)
   negocio                Negocio?              @relation(fields: [negocioId], references: [id], onDelete: Cascade)
   usuario                Usuario               @relation(fields: [usuarioId], references: [id])
   productosEnPublicacion PublicacionProducto[]
@@ -308,6 +311,7 @@ model PublicacionProducto {
   publicacionId String
   productoId    String
   orden         Int         @default(0)
+  esResena      Boolean  @default(false) // Nueva: indica si es reseña del producto
   producto      Product     @relation(fields: [productoId], references: [id], onDelete: Cascade)
   publicacion   Publicacion @relation(fields: [publicacionId], references: [id], onDelete: Cascade)
 
@@ -321,6 +325,7 @@ model Media {
   tipo          MultimediaTipo
   formato       String?
   orden         Int            @default(0)
+
   publicacionId String?
   servicioId    String?
   publicacion   Publicacion?   @relation(fields: [publicacionId], references: [id], onDelete: Cascade)

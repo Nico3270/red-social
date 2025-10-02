@@ -5,6 +5,7 @@ import prisma from "@/lib/prisma";
 import { notifyReservaConfirmadaCliente } from "@/reservas/helpers/notifyReserva";
 import { PlantillaWhatsApp } from "@/reservas/interfaces/interfaces.whatsapp";
 import { TipoUsuario } from "@prisma/client";
+import { Decimal } from "@prisma/client/runtime/library";
 
 interface ItemInput {
   description: string;
@@ -108,12 +109,12 @@ export const createNewPedido = async (input: PedidoInput): Promise<{
         .map((item) => `${item.description} x${item.quantity}`)
         .join(", ");
 
-      // Crear Order
+      // Crear Order (usar Decimal para totalAmount)
       const newOrder = await tx.order.create({
         data: {
           type: "ingreso",
           description: generatedDescription,
-          totalAmount: input.totalAmount,
+          totalAmount: new Decimal(input.totalAmount.toFixed(2)), // Limitar a 2 decimales
           category: "ventas",
           status: "Recibida",
           TipoUsuario: tipoUsuario,
@@ -123,13 +124,13 @@ export const createNewPedido = async (input: PedidoInput): Promise<{
         },
       });
 
-      // Crear OrderItems
+      // Crear OrderItems (usar Decimal para price y subtotal)
       await tx.orderItem.createMany({
         data: input.items.map((item) => ({
           description: item.description,
           quantity: item.quantity,
-          price: item.price,
-          subtotal: item.subtotal,
+          price: new Decimal(item.price.toFixed(2)), // Limitar a 2 decimales
+          subtotal: new Decimal(item.subtotal.toFixed(2)), // Limitar a 2 decimales
           orderId: newOrder.id,
           productId: item.productId || null,
         })),

@@ -94,6 +94,8 @@ export default async function DashboardPage() {
         // Mostrar CrearNegocioInfo para otros roles - Guía onboarding elegante
         <CrearNegocioInfo userId={session?.user?.id || ""} />
       )}
+
+
     </main>
   );
 }
