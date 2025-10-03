@@ -6,12 +6,15 @@ import { DetallesProducto } from "@/ui/components/productos/DetallesProducto";
 import { ProductGridProduct } from "@/ui/components/productos/ProductGridProduct";
 import { ResponsiveSlideShow } from "@/ui/components/slideShow/ResponsiveSlideShow";
 import { Metadata } from "next";
+import { getResenasProductoTestimonio } from "@/resenas/actions/getResenasProductoTestimonio";
+import FeedResenasProducto from "@/resenas/componentes/FeedResenasProducto";
 
 interface Props {
   params: Promise<{
     slug: string;
   }>;
 }
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const result = await getProductBySlug(slug);
@@ -27,30 +30,30 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { product, nombreNegocio } = result;
   const title = `${product.nombre} - ${nombreNegocio || "Negocio"} | Myckeo`;
   const description = product.descripcionCorta || product.descripcion?.slice(0, 150) || "Descubre este producto moderno y de alta calidad en nuestra plataforma social-comercial.";
-  const image = product.imagenes[0] || "/placeholder-image.jpg"; // Fallback moderno
-  const url = `https://tudominio.com/producto/${slug}`; // Reemplaza con tu dominio real
-  const keywords = product.tags?.join(", ") || "producto, compra, moderno, " + product.nombre + product.nombreNegocio;
+  const image = product.imagenes[0] || "/placeholder-image.jpg";
+  const url = `https://tudominio.com/producto/${slug}`;
+  const keywords = product.tags?.join(", ") || `producto, compra, moderno, ${product.nombre}, ${product.nombreNegocio}`;
 
   return {
     title,
     description,
     keywords,
     openGraph: {
-  title,
-  description,
-  url,
-  siteName: product.nombreNegocio || "Negocio",
-  images: [
-    {
-      url: image,
-      width: 1200,
-      height: 630,
-      alt: product.nombre,
+      title,
+      description,
+      url,
+      siteName: product.nombreNegocio || "Negocio",
+      images: [
+        {
+          url: image,
+          width: 1200,
+          height: 630,
+          alt: product.nombre,
+        },
+      ],
+      locale: "es_ES",
+      type: "website",
     },
-  ],
-  locale: "es_ES",
-  type: "website", // ✅ permitido por Metadata
-},
     twitter: {
       card: "summary_large_image",
       title,
@@ -109,7 +112,11 @@ export default async function ProductPage({ params }: Props) {
     negocioFotoPerfil: producto.negocioFotoPerfil || "",
   }));
 
-  // Structured Data para SEO (Schema.org/Product)
+  // Obtener reseñas
+  const resenasResult = await getResenasProductoTestimonio(slug);
+  const resenas = resenasResult.ok && resenasResult.resenas ? resenasResult.resenas : [];
+
+  // Structured Data para SEO
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -118,40 +125,37 @@ export default async function ProductPage({ params }: Props) {
     description: product.descripcion,
     offers: {
       "@type": "Offer",
-      priceCurrency: "COP", // Ajusta a tu moneda
+      priceCurrency: "COP",
       price: product.precio,
-      availability: "https://schema.org/InStock", // Asume disponible; ajusta dinámicamente si es necesario
+      availability: "https://schema.org/InStock",
     },
     brand: {
       "@type": "Brand",
       name: nombreNegocio || "Negocio",
     },
-    // Agrega reseñas si las tienes: aggregateRating, review
+    
   };
 
   return (
     <div className="sm:mt-40 mb-20 p-2">
-      {/* Structured Data Script */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
-        {/* Carrusel de imágenes */}
         <div className="flex justify-center">
           <div className="w-full h-[400px] md:h-[500px]">
             <ResponsiveSlideShow images={product.imagenes} title={product.nombre || ""} />
           </div>
         </div>
-
-        {/* Detalles del producto */}
         <div className="flex flex-col mt-10 space-y-6 md:space-y-4 md:flex-grow">
           <DetallesProducto product={product} telefonoNegocio={telefonoNegocio} />
         </div>
       </div>
       <Divider />
-      {/* Productos similares */}
+      <FeedResenasProducto resenas={resenas} productSlug={slug} />
+      <Divider />
       <div className="mt-2 px-1">
         {productosConvertidos.length > 0 ? (
           <h2 className={`text-2xl font-bold mb-2 ${titulosPrincipales.className} text-gray-800`}>
