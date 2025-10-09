@@ -1,4 +1,3 @@
-
 interface User {
   id: string;
   nombre: string;
@@ -46,4 +45,6 @@ export interface EnhancedPublicacion {
     type: "COMENTARIO" | "REACCION" | "COMPARTIDO",
     data: { reaction?: "LIKE" | "LOVE" | "WOW" | "SAD" | "ANGRY"; comment?: string }
   ) => void;
+  calificacion?: number; // Nuevo: para calificación de reseñas (1-5)
+  producto?: { id: string; nombre: string; slug: string }; // Nuevo: producto asociado si es reseña
 }

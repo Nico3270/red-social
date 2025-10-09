@@ -10,10 +10,12 @@ import useSWRInfinite from "swr/infinite";
 import { ShowTestimonioPublicacion } from "@/publicaciones/componentes/ShowTestimonioPublicacion";
 import { SocialMediaCarousel } from "@/publicaciones/componentes/SocialMediaPublicacion";
 
+
 import "./FeedPublicaciones.css";
 import { PublicacionesResult } from "@/actions/perfil/getInfoPerfilSlugNegocio";
 import { EnhancedPublicacion, Media } from "../interfaces/enhancedPublicacion.interface";
 import clsx from "clsx";
+import ResenaProductoCard from "@/resenas/componentes/ResenaProductoCard";
 
 interface ProductDestacado {
   id: string;
@@ -306,7 +308,6 @@ const FeedPublicaciones = memo(function FeedPublicaciones({
   }, [isLoading, isValidating, setSize, size]);
 
   const renderPublicacion = (publicacion: EnhancedPublicacion, index: number) => {  // Tipos explícitos
-    const Component = componentMap[publicacion.tipo as keyof typeof componentMap] || ShowTestimonioPublicacion;
     return (
       <motion.div
         key={publicacion.id}
@@ -320,7 +321,15 @@ const FeedPublicaciones = memo(function FeedPublicaciones({
           }
         }}
       >
-        <Component publicacion={publicacion} />
+        {publicacion.tipo === 'TESTIMONIO' && publicacion.producto && (
+          <ResenaProductoCard publicacion={publicacion} />
+        )}
+        {publicacion.tipo === 'TESTIMONIO' && !publicacion.producto && (
+          <ShowTestimonioPublicacion publicacion={publicacion} />
+        )}
+        {publicacion.tipo === 'CARRUSEL_IMAGENES' && (
+          <SocialMediaCarousel publicacion={publicacion} />
+        )}
       </motion.div>
     );
   };

@@ -121,6 +121,8 @@ export function isBusinessItem(item: FeedItem): item is FeedItem & { data: Busin
   return item.type === 'business';
 }
 
+
+
 // Helpers para narrowing (añade a interfaces.ts)
 export function isRawProduct(raw: RawData): raw is RawProduct {
   return (

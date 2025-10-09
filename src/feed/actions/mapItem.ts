@@ -100,11 +100,12 @@ export function mapToFeedItem(raw: RawData, type: FeedItemType): FeedItem {
             tipo: m.tipo || 'IMAGEN',
             formato: m.formato,
             orden: m.orden || 0,
-          })) : [], // Guard para map (evita crash en data)
+          })) : [],
           visibilidad: raw.visibilidad,
           createdAt: raw.createdAt instanceof Date ? raw.createdAt.toISOString() : raw.createdAt,
           numLikes: raw.numLikes,
           numComentarios: raw.numComentarios,
+          numCompartidos: raw.numCompartidos,
           negocio: raw.negocio ? {
             id: raw.negocio.id,
             nombre: raw.negocio.nombre || '',
@@ -113,70 +114,69 @@ export function mapToFeedItem(raw: RawData, type: FeedItemType): FeedItem {
             ciudad: raw.negocio.ciudad,
             departamento: raw.negocio.departamento,
           } : undefined,
+          calificacion: raw.calificacion, // Nuevo: para calificación de reseñas (1-5)
+          producto: raw.productosEnPublicacion?.length > 0 ? {
+            id: raw.productosEnPublicacion[0].producto.id,
+            nombre: raw.productosEnPublicacion[0].producto.nombre,
+            slug: raw.productosEnPublicacion[0].producto.slug,
+          } : undefined, // Nuevo: producto asociado si es reseña
         } as EnhancedPublicacion,
         numLikes: raw.numLikes,
       };
     case 'service':
-  // console.log("🛠️ Entrando a case 'service' con raw:", raw);
+      if (!isRawService(raw)) {
+        console.error("❌ raw NO matcha Service:", raw);
+        throw new Error("Raw no matcha Service");
+      }
 
-  if (!isRawService(raw)) {
-    console.error("❌ raw NO matcha Service:", raw);
-    throw new Error("Raw no matcha Service");
-  }
+      // Fix: Validación robusta para imageUrl (evita crash si multimedia es undefined/null)
+      let imageUrlService = '';
+      if (raw.multimedia && Array.isArray(raw.multimedia) && raw.multimedia.length > 0) {
+        imageUrlService = raw.multimedia[0].url || '';
+      } else {
+        imageUrlService = '/imgs/placeholder-servicio.png'; // Placeholder para servicios sin media
+      }
 
-  // Fix: Validación robusta para imageUrl (evita crash si multimedia es undefined/null)
-  let imageUrlService = '';
-  if (raw.multimedia && Array.isArray(raw.multimedia) && raw.multimedia.length > 0) {
-    imageUrlService = raw.multimedia[0].url || '';
-  } else {
-    imageUrlService = '/imgs/placeholder-servicio.png'; // Placeholder para servicios sin media
-  }
+      const serviceItem: FeedItem = {
+        id: raw.id || '',
+        type,
+        score: 0,
+        createdAt: raw.createdAt instanceof Date ? raw.createdAt : new Date(raw.createdAt ?? Date.now()),
+        title: raw.titulo,
+        descriptionShort: Array.isArray(raw.descripcion)
+          ? (raw.descripcion as string[])[0]?.slice(0, 100) || ''
+          : ((raw.descripcion as string)?.slice(0, 100) || ''),
+        imageUrl: imageUrlService,
+        businessSlug: raw.negocio?.slug || '',
+        isFollowed: false,
+        data: {
+          id: raw.id,
+          titulo: raw.titulo,
+          descripcion: raw.descripcion,
+          slug: raw.slug,
+          precio: raw.precio,
+          currency: raw.currency,
+          status: raw.status,
+          tags: raw.tags,
+          multimedia: raw.multimedia
+            ? raw.multimedia.map(m => ({
+              url: m.url,
+              orden: m.orden || 0,
+              tipo: m.tipo || 'IMAGEN',
+            }))
+            : [],
+          negocioId: raw.negocio.id,
+          negocioSlug: raw.negocio.slug,
+          nombreNegocio: raw.negocio.nombre,
+          telefonoNegocio: raw.negocio.telefonoContacto || '',
+          negocioFotoPerfil: raw.negocio.fotoPerfil || '/imgs/admin-avatar.webp',
+        } as ServicioData,
+        price: raw.precio || 0,
+        status: raw.status,
+      };
 
-  const serviceItem: FeedItem = {
-    id: raw.id || '',
-    type,
-    score: 0,
-    createdAt: raw.createdAt instanceof Date ? raw.createdAt : new Date(raw.createdAt ?? Date.now()),
-    title: raw.titulo,
-    descriptionShort: Array.isArray(raw.descripcion)
-  ? (raw.descripcion as string[])[0]?.slice(0, 100) || ''
-  : ((raw.descripcion as string)?.slice(0, 100) || ''),
-    imageUrl: imageUrlService,
-    businessSlug: raw.negocio?.slug || '',
-    isFollowed: false,
-    data: {
-      id: raw.id,
-      titulo: raw.titulo,
-      descripcion: raw.descripcion,
-      slug: raw.slug,
-      precio: raw.precio,
-      currency: raw.currency,
-      status: raw.status,
-      tags: raw.tags,
-      multimedia: raw.multimedia
-        ? raw.multimedia.map(m => ({
-          url: m.url,
-          orden: m.orden || 0,
-          tipo: m.tipo || 'IMAGEN',
-        }))
-        : [],
-      negocioId: raw.negocio.id,
-      negocioSlug: raw.negocio.slug,
-      nombreNegocio: raw.negocio.nombre,
-      telefonoNegocio: raw.negocio.telefonoContacto || '',
-      negocioFotoPerfil: raw.negocio.fotoPerfil || '/imgs/admin-avatar.webp',
-    } as ServicioData,
-    price: raw.precio || 0,
-    status: raw.status,
-  };
-
-  // console.log("✅ mapToFeedItem service ->", serviceItem);
-
-  return serviceItem;
-
-    
-    
-      case 'business':
+      return serviceItem;
+    case 'business':
       if (!isRawBusiness(raw)) throw new Error('Raw no matcha Business');
 
       // Para negocios: fotoPerfil es string directo, pero agregar guard opcional por consistencia
@@ -204,8 +204,8 @@ export function mapToFeedItem(raw: RawData, type: FeedItemType): FeedItem {
           imagenPortada: raw.fotoPortada,
           telefonoContacto: raw.telefonoContacto,
           urlGoogleMaps: raw.urlGoogleMaps,
-          categorias: raw.categorias ? raw.categorias.map(c => c.category.slug) : [], // Guard para map
-          secciones: raw.secciones ? raw.secciones.map(s => s.section.id) : [], // Similar
+          categorias: raw.categorias ? raw.categorias.map(c => c.category.slug) : [],
+          secciones: raw.secciones ? raw.secciones.map(s => s.section.id) : [],
           estado: raw.estado,
           createdAt: raw.createdAt instanceof Date ? raw.createdAt : new Date(raw.createdAt),
         } as BusinessCardData,

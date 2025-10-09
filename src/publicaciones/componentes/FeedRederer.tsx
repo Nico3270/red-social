@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useMemo, useEffect, useRef, useCallback } from "react";
@@ -7,6 +8,7 @@ import { FeedItem, isBusinessItem, isProductItem, isPublicationItem, isServiceIt
 import { ProductCard } from "@/ui/components/productos/ProductCard";
 import ServicioViewer from "@/servicios/componentes/ServicioViewer";
 import ShowTestimonioPublicacion from "@/publicaciones/componentes/ShowTestimonioPublicacion";
+
 import { BusinessCard } from "@/feed/componentes/BusinessCard";
 import SocialMediaCarousel from "@/publicaciones/componentes/SocialMediaPublicacion";
 import { FaNewspaper, FaShoppingBag, FaTools, FaBuilding } from "react-icons/fa";
@@ -14,6 +16,7 @@ import Image from "next/image";
 import { initialData } from "@/seed/seed";
 
 import "./FeedRenderer.css";
+import ResenaProductoCard from "@/resenas/componentes/ResenaProductoCard";
 
 interface FeedRendererProps {
   items: FeedItem[];
@@ -248,8 +251,15 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
         {isProductItem(item) && <ProductCard product={item.data} />}
         {isServiceItem(item) && <ServicioViewer version={2} servicio={item.data} />}
         {isBusinessItem(item) && <BusinessCard business={item.data} />}
-        {isPublicationItem(item) && item.data.tipo === 'TESTIMONIO' && <ShowTestimonioPublicacion publicacion={item.data} />}
-        {isPublicationItem(item) && item.data.tipo === 'CARRUSEL_IMAGENES' && <SocialMediaCarousel publicacion={item.data} />}
+        {isPublicationItem(item) && item.data.tipo === 'TESTIMONIO' && item.data.producto && (
+          <ResenaProductoCard publicacion={item.data} />
+        )}
+        {isPublicationItem(item) && item.data.tipo === 'TESTIMONIO' && !item.data.producto && (
+          <ShowTestimonioPublicacion publicacion={item.data} />
+        )}
+        {isPublicationItem(item) && item.data.tipo === 'CARRUSEL_IMAGENES' && (
+          <SocialMediaCarousel publicacion={item.data} />
+        )}
       </motion.div>
     );
   };
@@ -345,7 +355,6 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
           </button>
         ))}
       </motion.div>
-
 
       {renderCategoryFilter()}
 

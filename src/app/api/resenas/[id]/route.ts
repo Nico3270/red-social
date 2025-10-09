@@ -2,12 +2,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
-export async function GET(
-  req: NextRequest,
-  context: { params: Promise<{ id: string }> }
-) {
-  const params = await context.params;
-  const { id} = params;
+export async function GET(req: Request, context: { params: Promise<{ id: string }> }) {
+  const { id } = await context.params;
 
   // Validar ID
   if (!id || !/^c[0-9a-z]{24}$/.test(id)) {

@@ -73,7 +73,7 @@ export const getPublicacionesNegocio = async ({
       };
     }
 
-    // Fetch publications for the business with counters and limited comments
+    // Fetch publications for the business with counters, comments, and review data
     const publicaciones = await prisma.publicacion.findMany({
       where: {
         negocioId: negocio.id,
@@ -90,6 +90,20 @@ export const getPublicacionesNegocio = async ({
         numLikes: true,
         numComentarios: true,
         numCompartidos: true,
+        calificacion: true, // Nuevo: para calificación de reseñas (1-5)
+        productosEnPublicacion: { // Nuevo: para asociar producto en reseñas
+          where: { esResena: true }, // Solo reseñas
+          select: {
+            producto: {
+              select: {
+                id: true,
+                nombre: true,
+                slug: true,
+              },
+            },
+          },
+          take: 1, // Solo un producto por publicación (reseña)
+        },
         usuario: {
           select: {
             id: true,
@@ -99,7 +113,6 @@ export const getPublicacionesNegocio = async ({
             fotoPerfil: true,
           },
         },
-        // Limited comments: Top 3 por pub para preview SSR (con select explícito para tipado)
         interacciones: {
           where: { tipo: "COMENTARIO" },
           take: 3,
@@ -107,7 +120,7 @@ export const getPublicacionesNegocio = async ({
           select: {
             id: true,
             createdAt: true,
-            contenido: true,  // Asumiendo que existe en schema para COMENTARIO
+            contenido: true,
             usuario: {
               select: {
                 id: true,
@@ -119,7 +132,6 @@ export const getPublicacionesNegocio = async ({
             },
           },
         },
-        // Multimedia
         multimedia: {
           select: {
             id: true,
@@ -228,10 +240,16 @@ export const getPublicacionesNegocio = async ({
         numLikes: pub.numLikes ?? 0,
         numComentarios: pub.numComentarios ?? 0,
         numCompartidos: pub.numCompartidos ?? 0,
-        userReaction: userReactionsMap[pub.id] ?? null,  // TS acepta: coincide con { id: string; tipo: ReaccionTipo } | null
+        userReaction: userReactionsMap[pub.id] ?? null,
         comments,
         isAuthenticated: !!userId,
         onInteraction: undefined,
+        calificacion: pub.calificacion ?? undefined, // Corregido: Convertir null a undefined para EnhancedPublicacion
+        producto: pub.productosEnPublicacion?.length > 0 ? { // Nuevo: producto asociado si es reseña
+          id: pub.productosEnPublicacion[0].producto.id,
+          nombre: pub.productosEnPublicacion[0].producto.nombre,
+          slug: pub.productosEnPublicacion[0].producto.slug,
+        } : undefined,
       };
     });
 

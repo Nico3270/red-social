@@ -54,7 +54,7 @@ export const publicationSelect = Prisma.validator<Prisma.PublicacionSelect>()({
   },
   numLikes: true,
   numComentarios: true,
-  numCompartidos: true,  // CAMBIO: Agregado explícitamente para EnhancedPublicacion (denormalizado)
+  numCompartidos: true,
   usuario: { 
     select: { 
       id: true, 
@@ -67,8 +67,20 @@ export const publicationSelect = Prisma.validator<Prisma.PublicacionSelect>()({
   tipo: true,
   visibilidad: true,
   createdAt: true,
-  // CORREGIDO: Reemplazado 'comments' por 'interacciones' filtrado por tipo 'COMENTARIO' (como en referencia)
-  // Limitado a 3 para previews en feed; solo campos de EnhancedPublicacion.comments
+  calificacion: true, // Nuevo: para calificación de reseñas (1-5)
+  productosEnPublicacion: { // Nuevo: para asociar producto en reseñas
+    where: { esResena: true }, // Solo reseñas
+    select: {
+      producto: {
+        select: {
+          id: true,
+          nombre: true,
+          slug: true,
+        },
+      },
+    },
+    take: 1, // Solo un producto por publicación (reseña)
+  },
   interacciones: {
     where: { 
       tipo: 'COMENTARIO'  // Filtra solo comentarios (discriminador)
@@ -90,8 +102,6 @@ export const publicationSelect = Prisma.validator<Prisma.PublicacionSelect>()({
       },
     },
   },
-  // NOTA: No incluimos interacciones para REACCION aquí (user-specific); se maneja con batch query en server action
-  // Si quieres preview genérico (e.g., total reacciones), agrega un count: { where: { tipo: 'REACCION' }, _count: true }
 });
 
 export type RawPublication = Prisma.PublicacionGetPayload<{ select: typeof publicationSelect }>;
@@ -128,7 +138,7 @@ export const businessSelect = Prisma.validator<Prisma.NegocioSelect>()({
   nombre: true,
   descripcion: true,
   fotoPerfil: true,
-  fotoPortada: true, // Asegúrate que coincida con tu esquema. Si tu campo real es "fotoPortada", cámbialo aquí y en el mapper.
+  fotoPortada: true,
   slug: true,
   ciudad: true,
   departamento: true,

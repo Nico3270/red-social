@@ -86,6 +86,65 @@ async function fetchWithPriority<T extends SortableItem>(
   return items.slice(0, params.limit + buffer);
 }
 
+// Fetch para Publications - Ciudad
+async function fetchPublicationsCity(params: ExtendedParams): Promise<RawPublication[]> {
+  const where: Prisma.PublicacionWhereInput = {
+    tipo: { in: ["TESTIMONIO", "CARRUSEL_IMAGENES"] },
+    visibilidad: "PUBLICA",
+    id: { notIn: params.seenIds.filter((id: string) => id.startsWith("pub-")) },
+    negocio: { ciudad: params.ciudad },
+    // Opcional: Filtrar solo reseñas (descomentar si quieres priorizar reseñas)
+    // productosEnPublicacion: { some: { esResena: true } },
+  };
+  return prisma.publicacion.findMany({
+    where,
+    select: publicationSelect,
+    orderBy: [{ orden: "desc" }],
+    take: params.limit,
+    cursor: params.cursor ? { id: params.cursor } : undefined,
+    skip: params.cursor ? 1 : 0,
+  });
+}
+
+// Fetch para Publications - Depto excluyendo ciudad
+async function fetchPublicationsDept(params: ExtendedParams): Promise<RawPublication[]> {
+  const where: Prisma.PublicacionWhereInput = {
+    tipo: { in: ["TESTIMONIO", "CARRUSEL_IMAGENES"] },
+    visibilidad: "PUBLICA",
+    id: { notIn: params.seenIds.filter((id: string) => id.startsWith("pub-")) },
+    negocio: { departamento: params.departamento, ciudad: { not: params.ciudad } },
+    // Opcional: Filtrar solo reseñas
+    // productosEnPublicacion: { some: { esResena: true } },
+  };
+  return prisma.publicacion.findMany({
+    where,
+    select: publicationSelect,
+    orderBy: [{ orden: "desc" }],
+    take: params.limit,
+    cursor: params.cursor ? { id: params.cursor } : undefined,
+    skip: params.cursor ? 1 : 0,
+  });
+}
+
+// Fetch para Publications - Nacional
+async function fetchPublicationsNational(params: ExtendedParams): Promise<RawPublication[]> {
+  const where: Prisma.PublicacionWhereInput = {
+    tipo: { in: ["TESTIMONIO", "CARRUSEL_IMAGENES"] },
+    visibilidad: "PUBLICA",
+    id: { notIn: params.seenIds.filter((id: string) => id.startsWith("pub-")) },
+    // Opcional: Filtrar solo reseñas
+    // productosEnPublicacion: { some: { esResena: true } },
+  };
+  return prisma.publicacion.findMany({
+    where,
+    select: publicationSelect,
+    orderBy: [{ orden: "desc" }],
+    take: params.limit,
+    cursor: params.cursor ? { id: params.cursor } : undefined,
+    skip: params.cursor ? 1 : 0,
+  });
+}
+
 // Fetch para Products - Ciudad
 async function fetchProductsCity(params: ExtendedParams): Promise<RawProduct[]> {
   const where: Prisma.ProductWhereInput = {
@@ -243,54 +302,6 @@ async function fetchBusinessesNational(params: ExtendedParams): Promise<RawBusin
   });
 }
 
-
-async function fetchPublicationsCity(params: ExtendedParams): Promise<RawPublication[]> {
-  return prisma.publicacion.findMany({
-    where: {
-      tipo: { in: ["TESTIMONIO", "CARRUSEL_IMAGENES"] },
-      visibilidad: "PUBLICA",
-      id: { notIn: params.seenIds.filter((id: string) => id.startsWith("pub-")) },
-      negocio: { ciudad: params.ciudad },
-    },
-    select: publicationSelect,
-    orderBy: [{ orden: "desc" }],
-    take: params.limit,
-    cursor: params.cursor ? { id: params.cursor } : undefined,
-    skip: params.cursor ? 1 : 0,
-  });
-}
-
-async function fetchPublicationsDept(params: ExtendedParams): Promise<RawPublication[]> {
-  return prisma.publicacion.findMany({
-    where: {
-      tipo: { in: ["TESTIMONIO", "CARRUSEL_IMAGENES"] },
-      visibilidad: "PUBLICA",
-      id: { notIn: params.seenIds.filter((id: string) => id.startsWith("pub-")) },
-      negocio: { departamento: params.departamento, ciudad: { not: params.ciudad } },
-    },
-    select: publicationSelect,
-    orderBy: [{ orden: "desc" }],
-    take: params.limit,
-    cursor: params.cursor ? { id: params.cursor } : undefined,
-    skip: params.cursor ? 1 : 0,
-  });
-}
-
-async function fetchPublicationsNational(params: ExtendedParams): Promise<RawPublication[]> {
-  return prisma.publicacion.findMany({
-    where: {
-      tipo: { in: ["TESTIMONIO", "CARRUSEL_IMAGENES"] },
-      visibilidad: "PUBLICA",
-      id: { notIn: params.seenIds.filter((id: string) => id.startsWith("pub-")) },
-    },
-    select: publicationSelect,
-    orderBy: [{ orden: "desc" }],
-    take: params.limit,
-    cursor: params.cursor ? { id: params.cursor } : undefined,
-    skip: params.cursor ? 1 : 0,
-  });
-}
-
 export async function getFeedDataByType(
   type: "products" | "publications" | "services" | "businesses",
   params: ExtendedParams
@@ -317,18 +328,17 @@ export async function getFeedDataByType(
       case "products":
         rawItems = await fetchWithPriority<RawProduct>(fetchProductsCity, fetchProductsDept, fetchProductsNational, params, "products");
         break;
-        case "publications":
-          rawItems = await fetchWithPriority<RawPublication>(
-            fetchPublicationsCity,
-            fetchPublicationsDept,
-            fetchPublicationsNational,
-            params,
-            "publications"
-          );
-          break;
+      case "publications":
+        rawItems = await fetchWithPriority<RawPublication>(
+          fetchPublicationsCity,
+          fetchPublicationsDept,
+          fetchPublicationsNational,
+          params,
+          "publications"
+        );
+        break;
       case "services":
         rawItems = await fetchWithPriority<RawService>(fetchServicesCity, fetchServicesDept, fetchServicesNational, params, "services");
-        // console.log({ rawItems }, "Servicios");
         break;
       case "businesses":
         rawItems = await fetchWithPriority<RawBusiness>(fetchBusinessesCity, fetchBusinessesDept, fetchBusinessesNational, params, "businesses");
@@ -338,20 +348,6 @@ export async function getFeedDataByType(
     console.error(`Error fetching ${type}:`, error);
     rawItems = []; // Resiliency
   }
-
-  // Log seenIds filtrados para debug (solo dev)
-  // if (process.env.NODE_ENV === "development") {
-  //   const filteredSeen = params.seenIds.filter(id => {
-  //     switch (type) {
-  //       case "products": return id.startsWith("product-");
-  //       case "publications": return id.startsWith("pub-");
-  //       case "services": return id.startsWith("serv-");
-  //       case "businesses": return id.startsWith("bus-");
-  //       default: return false;
-  //     }
-  //   }).length;
-  //   // console.log(`🔍 ${type} seenIds filtrados: ${filteredSeen}/${params.seenIds.length} (total)`);
-  // }
 
   // Fetch batch de reacciones para publications si aplica
   let userReactionsMap: Record<string, { id: string; tipo: ReaccionTipo } | null> = {};
@@ -402,15 +398,9 @@ export async function getFeedDataByType(
   // Mapeo simplificado (orden ya por grupos + interno)
   const items: FeedItem[] = rawItems.map((raw) => {
     let item: FeedItem;
-    // console.log(`📦 Raw ${type} item antes de map:`, raw.id, raw);
-
-    // console.log(`🔎 Detectando tipo de raw con keys:`, Object.keys(raw));
-
     if (isRawProduct(raw)) {
-      // console.log("🛒 mapToFeedItem con PRODUCT", raw.id);
       item = mapToFeedItem(raw, "product");
     } else if (isRawPublication(raw)) {
-      // console.log("📰 mapToFeedItem con PUBLICATION", raw.id);
       item = mapToFeedItem(raw, "publication");
       const enhancedData = item.data as EnhancedPublicacion;
       enhancedData.userReaction = userReactionsMap[raw.id] ?? null;
@@ -429,9 +419,7 @@ export async function getFeedDataByType(
       }));
       enhancedData.isAuthenticated = !!params.userId;
     } else if (isRawService(raw)) {
-      // console.log("🛠️ mapToFeedItem con SERVICE", raw.id);
       item = mapToFeedItem(raw, "service");
-      // console.log("✅ Item mapeado SERVICE:", item);
     } else if (isRawBusiness(raw)) {
       item = mapToFeedItem(raw, "business");
     } else {
@@ -440,39 +428,22 @@ export async function getFeedDataByType(
 
     let negocioId: string;
     if (isRawProduct(raw) || isRawPublication(raw) || isRawService(raw)) {
-      // console.log("🔗 Negocio asociado al item", raw.id, "→ negocioId:", raw.negocio?.id);
       negocioId = raw.negocio?.id ?? "";
     } else {
-      console.log("🏢 Item es BUSINESS directo", raw.id);
       negocioId = raw.id;
     }
     (item.data as { negocioId?: string }).negocioId = negocioId;
-    // console.log("🔗 negocioId asignado:", negocioId, "isFollowed:", item.isFollowed);
-
 
     item.isFollowed = params.followedBusinessIds?.includes(negocioId) ?? false;
 
     return item;
   });
 
-  const orderedItems = items;  // Orden ya priorizado por geo + grupo interno
+  const orderedItems = items;
 
- if (rawItems.length >= params.limit) {
-  nextCursor = rawItems[rawItems.length - 1].id;
-}
-
-//   if (process.env.NODE_ENV === "development") {
-//     console.log(`getFeedDataByType(${type}): Fetched ${rawItems.length} raw (ciudad > depto > nacional) -> ${orderedItems.length} items`);
-//     if (type === "publications" && params.userId) {
-//       console.log(`User reactions: ${Object.keys(userReactionsMap).length} pubs`);
-//     }
-// //     console.log("📊 orderedItems detalle:", orderedItems.map(i => ({
-// //   id: i.id,
-// //   type: i.type,
-// //   negocioId: (i.data as { negocioId?: string }).negocioId,
-// //   isFollowed: i.isFollowed
-// // })));
-//   }
+  if (rawItems.length >= params.limit) {
+    nextCursor = rawItems[rawItems.length - 1].id;
+  }
 
   return { items: orderedItems.slice(0, params.limit), nextCursor };
 }

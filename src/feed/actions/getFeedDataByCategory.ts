@@ -267,6 +267,8 @@ async function fetchPublicationsCity(params: ExtendedParams): Promise<RawPublica
       ciudad: params.ciudad,
       categorias: { some: { category: { slug: params.categoriaSlug } } },
     },
+    // Opcional: Filtrar solo reseñas (descomentar si quieres priorizar reseñas)
+    // productosEnPublicacion: { some: { esResena: true } },
   };
   return prisma.publicacion.findMany({
     where,
@@ -289,6 +291,8 @@ async function fetchPublicationsDept(params: ExtendedParams): Promise<RawPublica
       ciudad: { not: params.ciudad },
       categorias: { some: { category: { slug: params.categoriaSlug } } },
     },
+    // Opcional: Filtrar solo reseñas
+    // productosEnPublicacion: { some: { esResena: true } },
   };
   return prisma.publicacion.findMany({
     where,
@@ -309,6 +313,8 @@ async function fetchPublicationsNational(params: ExtendedParams): Promise<RawPub
     negocio: {
       categorias: { some: { category: { slug: params.categoriaSlug } } },
     },
+    // Opcional: Filtrar solo reseñas
+    // productosEnPublicacion: { some: { esResena: true } },
   };
   return prisma.publicacion.findMany({
     where,
@@ -376,6 +382,7 @@ export async function getFeedDataByCategory(
     console.log(`🔍 ${type} seenIds filtrados para '${params.categoriaSlug}': ${filteredSeen}/${params.seenIds.length} (total)`);
   }
 
+
   // Fetch batch de reacciones para publications si aplica
   let userReactionsMap: Record<string, { id: string; tipo: ReaccionTipo } | null> = {};
   if (type === "publications" && params.userId && rawItems.length > 0) {
@@ -423,8 +430,7 @@ export async function getFeedDataByCategory(
   }
 
   // Mapeo simplificado (orden ya por grupos + interno)
-  const items: FeedItem[] = rawItems.map((raw) => {
-    
+const items: FeedItem[] = rawItems.map((raw) => {
     let item: FeedItem;
 
     if (isRawProduct(raw)) {
@@ -470,21 +476,8 @@ export async function getFeedDataByCategory(
   const orderedItems = items;  // Orden ya priorizado por geo + grupo interno
 
   if (rawItems.length >= params.limit) {
-  nextCursor = rawItems[rawItems.length - 1].id;
-}
-
-  // if (process.env.NODE_ENV === "development") {
-  //   console.log(`getFeedDataByCategory(${type}, '${params.categoriaSlug}'): Fetched ${rawItems.length} raw (ciudad > depto > nacional) -> ${orderedItems.length} items`);
-  //   if (type === "publications" && params.userId) {
-  //     console.log(`User reactions: ${Object.keys(userReactionsMap).length} pubs`);
-  //   }
-  //   console.log("📊 orderedItems detalle:", orderedItems.map(i => ({
-  //     id: i.id,
-  //     type: i.type,
-  //     negocioId: (i.data as { negocioId?: string }).negocioId,
-  //     isFollowed: i.isFollowed
-  //   })));
-  // }
+    nextCursor = rawItems[rawItems.length - 1].id;
+  }
 
   return { items: orderedItems.slice(0, params.limit), nextCursor };
 }

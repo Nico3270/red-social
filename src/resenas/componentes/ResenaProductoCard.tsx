@@ -196,7 +196,6 @@ const formatDescription = (text: string) => {
 };
 
 const ResenaProductoCard: React.FC<Props> = ({ publicacion, isInModal = false }) => {
-  const { data: session } = useSession();
   const [isModalOpenLocal, setIsModalOpenLocal] = useState(false);
   const [extendedData, setExtendedData] = useState<ExtendedResenaData | null>(null);
   const [loadingData, setLoadingData] = useState(true);
@@ -329,7 +328,9 @@ const ResenaProductoCard: React.FC<Props> = ({ publicacion, isInModal = false })
           </div>
         </div>
 
-        {/* Calificación */}
+        <div className="flex justify-center items-center">
+          <p className="text-gray-900 font-bold">Calificación:</p>
+{/* Calificación */}
         {extendedData?.calificacion != null && (
           <div className="px-4 py-2 flex justify-center items-center gap-1">
             {[...Array(5)].map((_, i) => (
@@ -341,6 +342,7 @@ const ResenaProductoCard: React.FC<Props> = ({ publicacion, isInModal = false })
             ))}
           </div>
         )}
+        </div>
 
         {/* Contenido */}
         {multimedia.length > 0 ? (
