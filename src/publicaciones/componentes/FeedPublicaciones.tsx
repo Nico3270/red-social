@@ -15,7 +15,7 @@ import "./FeedPublicaciones.css";
 import { PublicacionesResult } from "@/actions/perfil/getInfoPerfilSlugNegocio";
 import { EnhancedPublicacion, Media } from "../interfaces/enhancedPublicacion.interface";
 import clsx from "clsx";
-import ResenaProductoCard from "@/resenas/componentes/ResenaProductoCard";
+
 
 interface ProductDestacado {
   id: string;
@@ -31,10 +31,7 @@ interface FeedPublicacionesProps {
   widgets?: { id: string; titulo: string; contenido?: string }[];
 }
 
-const componentMap: Record<string, React.FC<{ publicacion: EnhancedPublicacion }>> = {
-  TESTIMONIO: ShowTestimonioPublicacion,
-  CARRUSEL_IMAGENES: SocialMediaCarousel,
-};
+
 
 const WidgetCard: React.FC<{ titulo: string; contenido?: string }> = ({
   titulo,
@@ -321,9 +318,7 @@ const FeedPublicaciones = memo(function FeedPublicaciones({
           }
         }}
       >
-        {publicacion.tipo === 'TESTIMONIO' && publicacion.producto && (
-          <ResenaProductoCard publicacion={publicacion} />
-        )}
+        
         {publicacion.tipo === 'TESTIMONIO' && !publicacion.producto && (
           <ShowTestimonioPublicacion publicacion={publicacion} />
         )}

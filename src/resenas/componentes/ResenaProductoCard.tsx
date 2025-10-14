@@ -4,12 +4,11 @@ import React, { useState, useEffect, useCallback, useMemo, useRef } from "react"
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Navigation, Autoplay } from "swiper/modules";
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion} from "framer-motion";
 import { FaStar, FaGlobe, FaLock, FaUserFriends } from "react-icons/fa";
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
 import Link from "next/link";
-import { useSession } from "next-auth/react";
 import { Swiper as SwiperType } from "swiper";
 import "swiper/css";
 import "swiper/css/navigation";
@@ -91,7 +90,7 @@ const useMediaDimensions = (url: string, tipo: "IMAGEN" | "VIDEO") => {
           });
           video.remove();
         }
-      } catch (error) {
+      } catch {
         setAspectRatio(tipo === "VIDEO" ? 9 / 16 : 1);
       }
     };
@@ -145,7 +144,7 @@ const MediaSlide: React.FC<{
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="relative w-full h-full rounded-xl overflow-hidden shadow-sm"
+      className="relative w-full h-full rounded-3xl overflow-hidden shadow-md group"
       style={{ aspectRatio: aspectRatio || 1 }}
       onClick={!isInModal ? onClick : undefined}
       role={!isInModal ? "button" : undefined}
@@ -159,7 +158,7 @@ const MediaSlide: React.FC<{
           preload="metadata"
           playsInline
           muted={false}
-          className="w-full h-full object-contain bg-gray-50"
+          className="w-full h-full object-cover bg-gray-50 transition-transform duration-700 group-hover:scale-105"
           aria-label={`Video ${index + 1} de ${multimediaLength}`}
         />
       ) : (
@@ -168,21 +167,19 @@ const MediaSlide: React.FC<{
           alt={`Imagen ${index + 1}`}
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          className="object-cover bg-gray-50"
+          className="object-cover bg-gray-50 transition-transform duration-700 group-hover:scale-105"
           loading="lazy"
+          quality={80}
         />
       )}
       {descripcion && (
-        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4 rounded-b-xl">
-          <div className="bg-white/95 rounded-xl p-4 shadow-xl max-h-40 overflow-y-auto">
-  <p
-    className="text-gray-900 text-base sm:text-lg leading-relaxed italic"
-    dangerouslySetInnerHTML={{
-      __html: isInModal ? formattedDescription : formattedDescription.slice(0, maxDescriptionLength),
-    }}
-  />
-</div>
-
+        <div className="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-sm p-4 rounded-b-3xl">
+          <p
+            className="text-white text-sm sm:text-base leading-relaxed italic line-clamp-3"
+            dangerouslySetInnerHTML={{
+              __html: isInModal ? formattedDescription : formattedDescription.slice(0, maxDescriptionLength),
+            }}
+          />
         </div>
       )}
     </motion.div>
@@ -191,8 +188,8 @@ const MediaSlide: React.FC<{
 
 const formatDescription = (text: string) => {
   return text
-    .replace(/#(\w+)/g, '<a href="/search?q=$1" class="text-blue-500 hover:underline">#$1</a>')
-    .replace(/@(\w+)/g, '<a href="/profile/$1" class="text-blue-500 hover:underline">@$1</a>');
+    .replace(/#(\w+)/g, '<a href="/search?q=$1" class="text-indigo-300 hover:underline">#$1</a>')
+    .replace(/@(\w+)/g, '<a href="/profile/$1" class="text-indigo-300 hover:underline">@$1</a>');
 };
 
 const ResenaProductoCard: React.FC<Props> = ({ publicacion, isInModal = false }) => {
@@ -218,7 +215,7 @@ const ResenaProductoCard: React.FC<Props> = ({ publicacion, isInModal = false })
         } else {
           setError(data.message || "Error al cargar datos adicionales de la reseña");
         }
-      } catch (err) {
+      } catch  {
         setError("Error al cargar datos adicionales de la reseña");
       } finally {
         setLoadingData(false);
@@ -233,11 +230,11 @@ const ResenaProductoCard: React.FC<Props> = ({ publicacion, isInModal = false })
   const getVisibilityIcon = useCallback(() => {
     switch (publicacion.visibilidad) {
       case "PUBLICA":
-        return <FaGlobe className="text-gray-500" aria-label="Pública" />;
+        return <FaGlobe className="text-gray-400" aria-label="Pública" />;
       case "PRIVADA":
-        return <FaLock className="text-gray-500" aria-label="Privada" />;
+        return <FaLock className="text-gray-400" aria-label="Privada" />;
       case "AMIGOS":
-        return <FaUserFriends className="text-gray-500" aria-label="Amigos" />;
+        return <FaUserFriends className="text-gray-400" aria-label="Amigos" />;
       default:
         return null;
     }
@@ -256,23 +253,21 @@ const ResenaProductoCard: React.FC<Props> = ({ publicacion, isInModal = false })
   if (loadingData) {
     return (
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-        className="w-full h-full bg-white rounded-2xl shadow-md overflow-hidden p-4 text-center text-gray-500"
-      >
-        Cargando reseña...
-      </motion.div>
+        transition={{ duration: 0.6 }}
+        className="w-full h-[280px] bg-gray-200 rounded-3xl shadow-md animate-pulse"
+      />
     );
   }
 
   if (error) {
     return (
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-        className="w-full h-full bg-white rounded-2xl shadow-md overflow-hidden p-4 text-center text-red-500"
+        transition={{ duration: 0.6 }}
+        className="w-full h-[280px] bg-white rounded-3xl shadow-md p-4 text-center text-red-500"
       >
         {error}
       </motion.div>
@@ -282,14 +277,18 @@ const ResenaProductoCard: React.FC<Props> = ({ publicacion, isInModal = false })
   return (
     <>
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-        className="w-full h-full bg-white rounded-2xl shadow-md overflow-hidden border border-gray-100"
+        whileHover={{ scale: 1.03 }}
+        transition={{ duration: 0.4 }}
+        className="group relative w-full bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden border border-gray-100"
       >
+        {/* Fondo decorativo animado */}
+      
+
         {/* Cabecera: Usuario/Negocio */}
-        <div className="flex items-start p-4 border-b border-gray-100">
-          <div className="relative w-12 h-12 rounded-full overflow-hidden mr-4 shadow-sm">
+        <div className="relative z-10 flex items-center p-4 border-b border-gray-100">
+          <div className="relative w-10 h-10 rounded-full overflow-hidden mr-3 shadow-sm">
             <Image
               src={publicacion.usuario.fotoPerfil || "/default-profile.png"}
               alt={`Foto de perfil de ${publicacion.usuario.nombre} ${publicacion.usuario.apellido}`}
@@ -300,22 +299,22 @@ const ResenaProductoCard: React.FC<Props> = ({ publicacion, isInModal = false })
           <div className="flex-1">
             <Link
               href={`/perfil/${publicacion.usuario.id}`}
-              className="font-semibold text-gray-900 hover:text-blue-600 transition-colors duration-200 cursor-pointer text-sm"
+              className="font-semibold text-gray-900 hover:text-indigo-600 transition-colors duration-200 text-sm sm:text-base"
             >
               {publicacion.usuario.nombre} {publicacion.usuario.apellido}
             </Link>
-            <p className="text-sm text-gray-700 mt-0.5">
+            <p className="text-xs sm:text-sm text-gray-600 mt-0.5">
               reseñó{" "}
               <Link
                 href={`/producto/${extendedData?.producto?.slug || "#"}`}
-                className="font-medium text-blue-600 hover:underline"
+                className="font-medium text-indigo-600 hover:underline"
               >
                 {extendedData?.producto?.nombre || "este producto"}
               </Link>{" "}
               en{" "}
               <Link
                 href={`/perfil/${extendedData?.negocio?.slug || "#"}`}
-                className="font-medium text-blue-600 hover:underline"
+                className="font-medium text-indigo-600 hover:underline"
               >
                 {extendedData?.negocio?.nombre || "este negocio"}
               </Link>
@@ -328,25 +327,22 @@ const ResenaProductoCard: React.FC<Props> = ({ publicacion, isInModal = false })
           </div>
         </div>
 
-        <div className="flex justify-center items-center">
-          <p className="text-gray-900 font-bold">Calificación:</p>
-{/* Calificación */}
+        {/* Calificación */}
         {extendedData?.calificacion != null && (
-          <div className="px-4 py-2 flex justify-center items-center gap-1">
+          <div className="relative z-10 flex justify-center items-center gap-2 p-3">
             {[...Array(5)].map((_, i) => (
               <FaStar
                 key={i}
-                size={18}
+                size={16}
                 className={i < (extendedData?.calificacion ?? 0) ? "text-yellow-400" : "text-gray-300"}
               />
             ))}
           </div>
         )}
-        </div>
 
         {/* Contenido */}
         {multimedia.length > 0 ? (
-          <div className="relative w-full h-[350px] sm:h-[450px]">
+          <div className="relative z-10 w-full h-[350px] sm:h-[400px]">
             <Swiper
               onSwiper={(swiper) => (swiperRef.current = swiper)}
               onSlideChange={() => {
@@ -366,7 +362,7 @@ const ResenaProductoCard: React.FC<Props> = ({ publicacion, isInModal = false })
                   : false
               }
               modules={[Pagination, Navigation, Autoplay]}
-              className="w-full h-full"
+              className="w-full h-full rounded-3xl"
               aria-label={`Carrusel de reseña ${publicacion.id}`}
             >
               {multimedia.map((media, index) => (
@@ -418,16 +414,16 @@ const ResenaProductoCard: React.FC<Props> = ({ publicacion, isInModal = false })
             )}
           </div>
         ) : (
-          <div className="px-4 py-6 bg-gradient-to-b from-gray-50 to-white rounded-xl mx-4 my-4 shadow-inner h-[350px] sm:h-[450px] flex items-center justify-center">
+          <div className="relative z-10 px-4 py-6 bg-gradient-to-br from-indigo-700 via-purple-800 to-indigo-900 rounded-3xl mx-4 my-4 shadow-inner h-[350px] sm:h-[400px] flex items-center justify-center">
             <div className="text-center">
               <p
-                className="text-gray-800 leading-relaxed whitespace-pre-wrap break-words italic text-md"
+                className="text-white text-base sm:text-lg italic leading-relaxed line-clamp-5"
                 dangerouslySetInnerHTML={{ __html: formatDescription(publicacion.descripcion || "Sin descripción") }}
               />
               {publicacion.descripcion && publicacion.descripcion.length > 100 && !isInModal && (
                 <button
                   onClick={handleOpenModal}
-                  className="mt-2 text-indigo-600 hover:text-indigo-800 font-medium text-sm focus:outline-none"
+                  className="mt-3 text-indigo-300 hover:text-indigo-100 font-medium text-sm focus:outline-none"
                   aria-label="Ver más de la reseña"
                 >
                   Ver más
@@ -437,7 +433,21 @@ const ResenaProductoCard: React.FC<Props> = ({ publicacion, isInModal = false })
           </div>
         )}
 
-    
+        {/* Interacciones */}
+        <div className="relative z-10 p-4 border-t border-gray-100">
+          <Interactions
+          key={publicacion.id} // Para React reconciliation en feeds múltiples
+          publicacionId={publicacion.id}
+          slug={publicacion.negocio?.slug}
+          onOpenModal={handleOpenModal}
+          isInModal={isInModal}
+          numLikes={publicacion.numLikes}
+          numComentarios={publicacion.numComentarios}
+          numCompartidos={publicacion.numCompartidos}
+          userReaction={publicacion.userReaction?.tipo ?? null} // Fix: Extrae solo 'tipo' (enum ReaccionTipo | null)
+          initialComments={publicacion.comments?.slice(0, 3) || []}
+        />
+        </div>
       </motion.div>
 
       {!isInModal && (

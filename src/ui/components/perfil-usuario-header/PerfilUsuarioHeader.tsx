@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo, useRef } from "react";
 import {
   FaMapMarkerAlt,
   FaLink,
@@ -16,6 +16,8 @@ import {
   FaRegCommentDots,
   FaPencilAlt,
   FaTimes,
+  FaHome,
+  FaStar,
 } from "react-icons/fa";
 import { Button } from "../button/Button";
 import clsx from "clsx";
@@ -27,11 +29,15 @@ import Link from "next/link";
 import { SiGooglemaps } from "react-icons/si";
 import FeedPublicaciones from "@/publicaciones/componentes/FeedPublicaciones";
 import ServicioViewer from "@/servicios/componentes/ServicioViewer";
+import ResenaProductoCard from "@/resenas/componentes/ResenaProductoCard";
 import { ServicioData } from "@/servicios/interfaces/servicios.interface";
 import { useSession } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FollowButton } from "@/feed/componentes/FollowButton";
 import { EnhancedPublicacion } from "@/publicaciones/interfaces/enhancedPublicacion.interface";
+import { ResumenPerfil } from "@/perfil/interfaces/resumenPerfil.interface";
+import LandingPage from "@/perfil/componentes/ PerfilLanding";
+
 
 interface TabErrorBoundaryState {
   hasError: boolean;
@@ -58,7 +64,6 @@ class TabErrorBoundary extends React.Component<
     return this.state.hasError ? this.props.fallback : this.props.children;
   }
 }
-
 
 export interface InformacionInicialNegocio {
   nombreNegocio: string;
@@ -106,34 +111,58 @@ export interface Product {
 }
 
 interface Props {
-  activeTabComponent: "Publicaciones" | "Productos" | "Negocio";
+  activeTabComponent: "Inicio" | "Publicaciones" | "Productos" | "Negocio" | "Reseñas";
   productos?: ProductRedSocial[];
-  publicaciones?: EnhancedPublicacion[];  // Confirmado: Array de EnhancedPublicacion para flujo intacto
+  publicaciones?: EnhancedPublicacion[];
   informacionNegocio?: InformacionInicialNegocio;
   seccionesProductos?: { id: string; nombre: string; slug: string };
+  resumenPerfil?: ResumenPerfil;
+  resenas?: EnhancedPublicacion[]; // Añadido
+  servicios?: ServicioData[]; // Añadido
 }
 
+function pickRandom<T>(arr: T[], count: number): T[] {
+  // Evita errores si el array es vacío o menor que count
+  if (!arr || arr.length === 0) return [];
+  const shuffled = [...arr].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, count);
+}
+
+
 export default function PerfilUsuarioHeader({
-  productos,
+  productos = [],
+  publicaciones = [],
   activeTabComponent,
   informacionNegocio,
-  publicaciones = [],  // Fallback a [] para evitar undefined en flujo SSR (nuevo: robustez)
+  resumenPerfil,
 }: Props) {
-  const [activeTab, setActiveTab] = useState<"Publicaciones" | "Productos" | "Negocio">(
-    activeTabComponent || "Publicaciones"
+  const [activeTab, setActiveTab] = useState<"Inicio" | "Publicaciones" | "Productos" | "Negocio" | "Reseñas">(
+    activeTabComponent || "Inicio"
   );
   const [servicios, setServicios] = useState<ServicioData[]>([]);
   const [loadingServicios, setLoadingServicios] = useState(false);
   const [isDescriptionModalOpen, setIsDescriptionModalOpen] = useState(false);
   const { data: session } = useSession();
   const isNegocio = session?.user.negocioSlug === informacionNegocio?.slugNegocio;
+  const landingTeasersRef = useRef<ProductRedSocial[]>([]);
 
-  // Manejo de escape en modal (mejora: añade focus trap para accesibilidad)
+  if (!landingTeasersRef.current.length && productos?.length) {
+    landingTeasersRef.current = pickRandom(productos, Math.min(4, productos.length));
+  }
+
+  const landingTeasers = landingTeasersRef.current;
+
+  // Filtrar reseñas de publicaciones
+  const resenas = useMemo(() => {
+    return publicaciones.filter(pub => pub.tipo === 'TESTIMONIO' && pub.producto);
+  }, [publicaciones]);
+
+  // Manejo de escape en modal
   useEffect(() => {
     if (isDescriptionModalOpen) {
-      const modalElement = document.querySelector('[role="dialog"]');  // Asume role en modal
+      const modalElement = document.querySelector('[role="dialog"]');
       if (modalElement) {
-        (modalElement as HTMLElement).focus();  // Focus inicial para UX inmersiva
+        (modalElement as HTMLElement).focus();
       }
     }
 
@@ -146,10 +175,10 @@ export default function PerfilUsuarioHeader({
     return () => window.removeEventListener("keydown", handleEsc);
   }, [isDescriptionModalOpen]);
 
-  // Fetch servicios con skeleton optimista (mejora: reduce perceived latency)
+  // Fetch servicios
   useEffect(() => {
     const fetchServicios = async () => {
-      if (activeTab === "Negocio" && informacionNegocio?.slugNegocio) {
+      if (informacionNegocio?.slugNegocio) {
         try {
           setLoadingServicios(true);
           const res = await fetch(`/api/getServiciosBySlug?slug=${informacionNegocio.slugNegocio}`);
@@ -207,13 +236,18 @@ export default function PerfilUsuarioHeader({
     },
   ];
 
-  const tabs: Array<"Publicaciones" | "Productos" | "Negocio"> = [
-    "Publicaciones",
-    "Productos",
-    "Negocio",
-  ];
+  // Pestañas dinámicas basadas en resumenPerfil
+  const tabs = [
+    { name: "Inicio", isActive: true },
+    { name: "Publicaciones", isActive: (resumenPerfil?.publicaciones ?? 0) > 0 },
+    { name: "Productos", isActive: (resumenPerfil?.productos ?? 0) > 0 },
+    { name: "Negocio", isActive: (resumenPerfil?.servicios ?? 0) > 0 },
+    { name: "Reseñas", isActive: (resumenPerfil?.reseñas ?? 0) > 0 },
+  ].filter(tab => tab.isActive) as Array<{
+    name: "Inicio" | "Publicaciones" | "Productos" | "Negocio" | "Reseñas";
+    isActive: boolean;
+  }>;
 
-  // Función para truncar la descripción (mejora: añade ellipsis suave)
   const truncateDescription = (description: string, maxLength: number) => {
     if (description.length <= maxLength) return description;
     return description.substring(0, maxLength).trim() + "...";
@@ -299,9 +333,9 @@ export default function PerfilUsuarioHeader({
               <p className="text-gray-700 text-base sm:text-lg leading-relaxed">
                 {informacionNegocio?.descripcionNegocio
                   ? truncateDescription(
-                      informacionNegocio.descripcionNegocio,
-                      200
-                    )
+                    informacionNegocio.descripcionNegocio,
+                    200
+                  )
                   : "Explora nuestros productos y servicios, diseñados para ofrecerte la mejor experiencia."}
               </p>
               {informacionNegocio?.descripcionNegocio &&
@@ -363,7 +397,7 @@ export default function PerfilUsuarioHeader({
                 className="mt-2"
               />
 
-              {/* Botón de Solicitar Reserva (condicional, premium y responsive) */}
+              {/* Botón de Solicitar Reserva */}
               {informacionNegocio?.configReservation && (
                 <Link
                   href={`/reservas/${informacionNegocio.slugNegocio}`}
@@ -380,7 +414,7 @@ export default function PerfilUsuarioHeader({
                 </Link>
               )}
 
-              {/* Botón de Encuesta (condicional, premium y responsive) */}
+              {/* Botón de Encuesta */}
               {informacionNegocio?.configEncuestas && (
                 <Link
                   href={`/encuestas/${informacionNegocio.slugNegocio}`}
@@ -432,73 +466,96 @@ export default function PerfilUsuarioHeader({
         {/* Divider */}
         <div className="border-b border-gray-200 my-6"></div>
 
-        {/* Tabs: Mejora responsive - scrollable en mobile */}
-        <div className="flex justify-center sm:justify-between gap-2 sm:gap-3 
-                px-2 sm:px-0 py-2 border-b border-gray-200 
-                overflow-x-auto whitespace-nowrap bg-white/80 backdrop-blur-md rounded-2xl shadow-sm">
-  {tabs.map((tab) => {
-    const isActive = activeTab === tab;
-    const icon =
-      tab === "Publicaciones" ? (
-        <FaRegNewspaper
-          className={clsx(
-            "text-lg",
-            isActive ? "text-blue-600" : "text-gray-400 group-hover:text-blue-500"
-          )}
-        />
-      ) : tab === "Productos" ? (
-        <FaStore
-          className={clsx(
-            "text-lg",
-            isActive ? "text-green-600" : "text-gray-400 group-hover:text-green-500"
-          )}
-        />
-      ) : (
-        <FaBriefcase
-          className={clsx(
-            "text-lg",
-            isActive ? "text-yellow-600" : "text-gray-400 group-hover:text-yellow-500"
-          )}
-        />
-      );
+        {/* Tabs */}
+        <div className="flex justify-center sm:justify-between gap-2 sm:gap-3 px-3 sm:px-4 py-2 border-b border-gray-200 overflow-x-auto whitespace-nowrap bg-white/80 backdrop-blur-md rounded-2xl shadow-sm">
+          {tabs.map((tab) => {
+            const isActive = activeTab === tab.name;
+            const icon =
+              tab.name === "Inicio" ? (
+                <FaHome
+                  className={clsx(
+                    "text-lg",
+                    isActive ? "text-white" : "text-gray-400 group-hover:text-gray-700"
+                  )}
+                />
+              ) : tab.name === "Publicaciones" ? (
+                <FaRegNewspaper
+                  className={clsx(
+                    "text-lg",
+                    isActive ? "text-white" : "text-gray-400 group-hover:text-gray-700"
+                  )}
+                />
+              ) : tab.name === "Productos" ? (
+                <FaStore
+                  className={clsx(
+                    "text-lg",
+                    isActive ? "text-white" : "text-gray-400 group-hover:text-gray-700"
+                  )}
+                />
+              ) : tab.name === "Negocio" ? (
+                <FaBriefcase
+                  className={clsx(
+                    "text-lg",
+                    isActive ? "text-white" : "text-gray-400 group-hover:text-gray-700"
+                  )}
+                />
+              ) : (
+                <FaStar
+                  className={clsx(
+                    "text-lg",
+                    isActive ? "text-white" : "text-gray-400 group-hover:text-gray-700"
+                  )}
+                />
+              );
 
-    return (
-      <button
-        key={tab}
-        onClick={() => setActiveTab(tab)}
-        className={clsx(
-          "relative group flex items-center gap-2 py-2 px-4 sm:px-6 font-medium text-sm sm:text-base  rounded-xl transition-all duration-200 min-w-max focus:outline-none",
-          isActive
-            ? "text-gray-900 bg-gray-100 shadow-sm"
-            : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-        )}
-        aria-current={isActive ? "page" : undefined}
-        aria-expanded={isActive}
-      >
-        {icon}
-        <span>{tab}</span>
+            return (
+              <button
+                key={tab.name}
+                onClick={() => setActiveTab(tab.name)}
+                className={clsx(
+                  "relative group flex items-center gap-2 py-2 px-5 sm:px-7 font-semibold text-sm sm:text-base rounded-xl transition-all duration-300 min-w-max focus:outline-none",
+                  isActive
+                    ? "text-white bg-gray-800 shadow-md scale-105" // 👈 Color base aquí
+                    : "text-gray-700 hover:text-gray-900 hover:bg-gray-100"
+                )}
+                aria-current={isActive ? "page" : undefined}
+                aria-expanded={isActive}
+              >
+                {icon}
+                <span>{tab.name}</span>
 
-        {/* Indicador debajo de la tab activa */}
-        {isActive && (
-          <span className="absolute bottom-0 left-0 right-0 h-[3px] bg-gray-800 rounded-t-full"></span>
-        )}
-      </button>
-    );
-  })}
-</div>
+                <span
+                  className={clsx(
+                    "absolute bottom-0 left-1/2 -translate-x-1/2 h-[3px] rounded-full transition-all duration-300",
+                    isActive ? "w-3/4 bg-white/70" : "w-0 bg-transparent group-hover:w-1/2 group-hover:bg-gray-300"
+                  )}
+                ></span>
+              </button>
+            );
+          })}
+        </div>
 
 
         {/* Tab Content */}
         <div className="mt-6 transition-opacity duration-300 ease-in-out space-y-6">
+          {activeTab === "Inicio" && (
+            <LandingPage
+              informacionNegocio={informacionNegocio!}
+              productos={landingTeasers || []}  // Fallback para tipos opcionales
+              publicaciones={publicaciones || []} // Fallback para tipos opcionales
+              resenas={resenas}
+              servicios={servicios}
+              resumenPerfil={resumenPerfil!}
+              onSelectTab={setActiveTab}
+            />
+          )}
           {activeTab === "Publicaciones" && (
             <div className="flex flex-col items-center gap-3 text-gray-700 text-base sm:text-lg">
-              
-              {/* Nuevo: Error Boundary local para graceful UX */}
               <TabErrorBoundary fallback={
                 <div className="text-center text-gray-500 p-8 rounded-lg bg-gray-50">
                   <p className="mb-2">Error al cargar publicaciones.</p>
-                  <button 
-                    onClick={() => window.location.reload()} 
+                  <button
+                    onClick={() => window.location.reload()}
                     className="text-blue-600 underline hover:text-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     Recargar página
@@ -506,25 +563,22 @@ export default function PerfilUsuarioHeader({
                 </div>
               }>
                 {publicaciones && publicaciones.length > 0 ? (
-                  <FeedPublicaciones
-                    publicaciones={publicaciones}  // Flujo intacto: EnhancedPublicacion[] pasa directo para userReaction en Interactions
-                    
-                  />
+                  <FeedPublicaciones publicaciones={publicaciones} />
                 ) : (
                   <div className="flex flex-col items-center justify-center pb-8 ">
-                  <p className="text-center text-gray-800 font-bold mb-2 text-lg">
+                    <p className="text-center text-gray-800 font-bold mb-2 text-lg">
                       No hay publicaciones disponibles.
                     </p>
                     <Image
                       src="/imgs/no_publicaciones.png"
                       alt="No hay publicaciones disponibles"
                       width={500}
-                    height={500}
+                      height={500}
                       className="max-w-xs md:max-w-md lg:max-w-lg w-full h-auto object-contain mb-4"
                       loading="lazy"
                       quality={75}
                     />
-                    
+
                   </div>
                 )}
               </TabErrorBoundary>
@@ -546,7 +600,7 @@ export default function PerfilUsuarioHeader({
                     loading="lazy"
                     quality={75}
                   />
-                  
+
                 </div>
               ) : (
                 <ProductGridWithSectionFilter
@@ -556,8 +610,6 @@ export default function PerfilUsuarioHeader({
               )}
             </div>
           )}
-
-          {/* Información del Negocio: Mejora con skeleton para loading */}
           {activeTab === "Negocio" && (
             <div className="flex flex-col gap-4 text-gray-700">
               <h2 className="flex items-center justify-center gap-2 font-semibold text-gray-900 text-lg sm:text-3xl">
@@ -594,11 +646,52 @@ export default function PerfilUsuarioHeader({
                     loading="lazy"
                     quality={75}
                   />
-                  
+
                 </div>
               )}
             </div>
           )}
+          {activeTab === "Reseñas" && (
+            <div className="flex flex-col gap-4 text-gray-700">
+              <h2 className="flex items-center justify-center gap-2 font-semibold text-gray-900 text-lg sm:text-3xl">
+                <FaStar className="text-indigo-600 text-xl sm:text-3xl" />
+                Reseñas del Negocio
+              </h2>
+
+              {resenas.length > 0 ? (
+                <div
+                  className="
+          grid 
+          grid-cols-1           /* 🟢 1 por fila en móviles */
+          sm:grid-cols-2        /* 🟢 2 por fila en pantallas medianas */
+          lg:grid-cols-3        /* 🟢 4 por fila en pantallas grandes */
+          gap-6                 /* Espaciado entre tarjetas */
+          px-2 sm:px-4 md:px-8  /* Margen lateral adaptable */
+        "
+                >
+                  {resenas.map((resena, idx) => (
+                    <ResenaProductoCard key={resena.id || idx} publicacion={resena} />
+                  ))}
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center pb-8">
+                  <p className="text-center text-gray-800 font-bold mb-2 text-lg">
+                    No hay reseñas disponibles para este negocio.
+                  </p>
+                  <Image
+                    src="/imgs/no_resenas.png"
+                    alt="No hay reseñas disponibles"
+                    width={500}
+                    height={500}
+                    className="max-w-xs md:max-w-md lg:max-w-lg w-full h-auto object-contain mb-4"
+                    loading="lazy"
+                    quality={75}
+                  />
+                </div>
+              )}
+            </div>
+          )}
+
         </div>
       </div>
 
@@ -620,7 +713,7 @@ export default function PerfilUsuarioHeader({
               transition={{ type: "spring", damping: 20, stiffness: 300 }}
               className="relative w-full max-w-2xl bg-white rounded-xl shadow-2xl overflow-hidden transform transition-all duration-300 mx-4"
               onClick={(e) => e.stopPropagation()}
-              role="dialog"  // Mejora: Accesibilidad ARIA
+              role="dialog"
               aria-modal="true"
               aria-labelledby="description-title"
             >

@@ -75,7 +75,7 @@ const FormCrearResenaProducto = ({ productoId, productoNombre, productoDescripci
           } else {
             setAlert({ type: "error", message: data.message || "Error al cargar la reseña." });
           }
-        } catch (error) {
+        } catch {
           setAlert({ type: "error", message: "Error al cargar la reseña." });
         } finally {
           setLoading(false);

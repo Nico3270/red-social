@@ -24,7 +24,7 @@ export default function Divider() {
         sx={{
           px: 2,
           fontSize: 18,
-          color: "grey.500",
+          color: "grey.800",
           fontWeight: 500,
           userSelect: "none",
         }}

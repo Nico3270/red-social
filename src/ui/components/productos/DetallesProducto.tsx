@@ -71,7 +71,7 @@ export const DetallesProducto: React.FC<AddToCartProps> = ({ product, telefonoNe
   const whatsappUrl = `https://wa.me/${telefonoLimpio}?text=${whatsappMessage}`;
 
   // Manejar éxito de la reseña
-  const handleReviewSuccess = (message?: string) => {
+  const handleReviewSuccess = () => {
     setIsReviewModalOpen(false);
     setShowSuccess(true);
     setTimeout(() => setShowSuccess(false), 3000);

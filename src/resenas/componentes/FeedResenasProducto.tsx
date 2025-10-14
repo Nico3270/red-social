@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion} from "framer-motion";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation } from "swiper/modules";
+import { Navigation, Pagination } from "swiper/modules";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { titulosPrincipales } from "@/config/fonts";
 import ResenaProductoCard from "./ResenaProductoCard";
@@ -12,6 +12,7 @@ import { getMejoresResenasProducto } from "../actions/getMejoresResenasProducto"
 import { getPeoresResenasProducto } from "../actions/getPeoresResenasProducto";
 import "swiper/css";
 import "swiper/css/navigation";
+import type { Swiper as SwiperType } from "swiper";
 
 interface Props {
   resenas: ResenaProducto[];
@@ -22,7 +23,8 @@ const FeedResenasProducto: React.FC<Props> = ({ resenas: initialResenas, product
   const [resenas, setResenas] = useState<ResenaProducto[]>(initialResenas);
   const [filter, setFilter] = useState<"mejores" | "peores">("mejores");
   const [loading, setLoading] = useState(false);
-  const swiperRef = useRef<any>(null);
+  const swiperRef = useRef<SwiperType | null>(null);
+
 
   // Cargar reseñas según el filtro
   useEffect(() => {
@@ -119,11 +121,12 @@ const FeedResenasProducto: React.FC<Props> = ({ resenas: initialResenas, product
       {/* Contenedor del carrusel con espacio para botones */}
       <div className="relative w-full lg:px-6">
         <Swiper
-          modules={[Navigation]}
+          modules={[Navigation, Pagination]}
+          pagination={{ clickable: true }}
           spaceBetween={16}
-          slidesPerView={1}
+          slidesPerView={1.2} // 👈 muestra un poquito del siguiente slide
           breakpoints={{
-            640: { slidesPerView: 1, spaceBetween: 16 },
+            640: { slidesPerView: 1.2, spaceBetween: 16 },
             768: { slidesPerView: 2, spaceBetween: 20 },
             1024: { slidesPerView: 3, spaceBetween: 24 },
           }}
@@ -136,7 +139,7 @@ const FeedResenasProducto: React.FC<Props> = ({ resenas: initialResenas, product
         >
           {resenas.map((resena) => (
             <SwiperSlide key={resena.id}>
-              <div className="w-full h-[500px] sm:h-[600px] flex items-center justify-center">
+              <div className="w-full h-fit sm:h-[900px] flex items-center justify-center">
                 <ResenaProductoCard
                   publicacion={{
                     id: resena.id,
@@ -156,7 +159,9 @@ const FeedResenasProducto: React.FC<Props> = ({ resenas: initialResenas, product
                     isAuthenticated: !!resena.userReaction,
                   }}
                 />
+                
               </div>
+             
             </SwiperSlide>
           ))}
         </Swiper>
