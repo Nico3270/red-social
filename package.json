@@ -37,7 +37,6 @@
     "@mui/system": "^6.4.6",
     "@mui/x-date-pickers": "^8.10.0",
     "@neondatabase/serverless": "^0.10.4",
-    "@next/bundle-analyzer": "^15.2.0",
     "@prisma/client": "^6.4.0",
     "@radix-ui/react-alert-dialog": "^1.1.5",
     "@radix-ui/react-slot": "^1.1.1",
@@ -96,6 +95,7 @@
     "zustand": "^5.0.7"
   },
   "devDependencies": {
+    "@next/bundle-analyzer": "^15.2.0",
     "@types/bcryptjs": "^2.4.6",
     "@types/jest": "^30.0.0",
     "@types/lodash": "^4.17.20",
