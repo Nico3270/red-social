@@ -18,6 +18,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Alert, Box, Button, CircularProgress, FormControl, InputLabel, MenuItem, Select, Typography } from "@mui/material";
 import colombia from "@/config/colombia.json"; // Tu JSON de Colombia
 import { updateUserPreferences } from "@/preferences/actions/updateUserPreferences"; // Ajusta la ruta según sea necesario
+import SearchBar from "@/busqueda/componentes/SearchBar";
 
 interface ColombiaDepartment {
   id: number;
@@ -228,16 +229,7 @@ export const TopMenuMobile = () => {
           {/* Barra de búsqueda en el centro con botón de ubicación al lado */}
           <div className="flex items-center flex-1 mx-4">
             <div className="relative flex-1">
-              <div className="flex items-center bg-white rounded-full shadow-md border border-gray-600 px-3 py-1">
-                <FaSearch className="text-gray-600" />
-                <input
-                  type="text"
-                  placeholder="Buscar..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full bg-transparent outline-none ml-2 text-sm text-gray-800 placeholder-gray-400"
-                />
-              </div>
+              <SearchBar />
               {filteredProducts.length > 0 && (
                 <div className="absolute z-10 bg-white shadow-lg rounded-lg w-full mt-2 max-h-60 overflow-auto border border-gray-200">
                   {filteredProducts.map((product) => (

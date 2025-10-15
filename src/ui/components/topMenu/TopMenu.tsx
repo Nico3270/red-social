@@ -19,6 +19,7 @@ import { Alert, Box, Button, CircularProgress, FormControl, InputLabel, MenuItem
 import colombia from "@/config/colombia.json"; // Tu JSON de Colombia
 import { updateUserPreferences } from "@/preferences/actions/updateUserPreferences"; // Ajusta la ruta según sea necesario
 import { titleFont } from "@/config/fonts";
+import SearchBar from "@/busqueda/componentes/SearchBar";
 
 
 interface ColombiaDepartment {
@@ -244,16 +245,7 @@ export const TopMenu = () => {
         {/* Barra de búsqueda centrada con botón de ubicación al lado */}
         <div className="flex items-center w-full max-w-md mx-4">
           <div className="relative flex-1">
-            <div className="flex items-center bg-white rounded-full shadow-md border border-gray-300 px-4 py-2">
-              <FaSearch className="text-gray-500" />
-              <input
-                type="text"
-                placeholder="Buscar productos..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-transparent outline-none ml-3 text-gray-800"
-              />
-            </div>
+            <SearchBar />
           </div>
           <button
             onClick={() => setIsLocationModalOpen(true)}

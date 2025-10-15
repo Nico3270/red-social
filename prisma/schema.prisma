@@ -49,6 +49,7 @@ model Usuario {
   @@index([username])
   @@index([email])
   @@index([role])
+  @@index([preferencias], type: Gin)
 }
 
 model BusinessAvailability {
@@ -222,6 +223,9 @@ model Product {
   @@index([negocioId, status])
   @@index([negocioId, createdAt])
   @@index([orden(sort: Desc), createdAt(sort: Desc)])
+  @@index([tags], type: Gin)
+  @@index([componentes], type: Gin)
+
 }
 
 model ProductSection {
@@ -386,6 +390,7 @@ model Negocio {
   publicaciones    Publicacion[]
   reservations     Reservation[]
   Servicio         Servicio[]
+  tipo             TipoNegocio              @default(NEGOCIO)
 
   @@index([ciudad])
   @@index([departamento])
@@ -393,7 +398,14 @@ model Negocio {
   @@index([usuarioId])
   @@index([estado, createdAt])
   @@index([orden(sort: Desc), createdAt(sort: Desc)])
+  @@index([nombre])
 }
+
+enum TipoNegocio {
+  NEGOCIO
+  PROFESIONAL
+}
+
 
 model Servicio {
   id          String         @id @default(uuid())
@@ -415,6 +427,9 @@ model Servicio {
   @@index([status])
   @@index([negocioId, status])
   @@index([orden(sort: Desc), createdAt(sort: Desc)])
+  @@index([tags], type: Gin)
+  @@index([descripcion], type: Gin)
+
 }
 
 model NegocioCategory {
