@@ -4,7 +4,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import {
-  FaSearch,
   FaMapMarkerAlt,
 } from "react-icons/fa";
 import { SideBar } from "../side-bar/SideBar";
@@ -195,7 +194,6 @@ const UpdateLocationModal: React.FC<{ isOpen: boolean; onClose: () => void }> = 
 
 export const TopMenuMobile = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
   const [isCrearModalOpen, setIsCrearModalOpen] = useState(false);
   const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
   const filteredProducts: { id: number; slug: string; nombre: string }[] = []; // Placeholder
