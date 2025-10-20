@@ -12,7 +12,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { registerUser } from "@/actions/auth/registerUser";
 import { signIn, SignInResponse, useSession } from "next-auth/react";
 import { Alert } from "@mui/material";
-import { useSearchParams, useRouter } from "next/navigation"; // Agregado useRouter para redirecciones elegantes
+import { useSearchParams, useRouter } from "next/navigation";
 import { es } from "date-fns/locale";
 
 type FormInputs = {
@@ -23,6 +23,7 @@ type FormInputs = {
   ciudad: string;
   genero: string;
   fechaNacimiento: Date;
+  acceptedPolicies?: boolean; // Campo para aceptar políticas
 };
 
 type TipoUsuario = {
@@ -43,16 +44,18 @@ export const RegisterForm = ({ negocio }: TipoUsuario) => {
   const [selectedDepartamento, setSelectedDepartamento] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
   const [cities, setCities] = useState<string[]>([]);
+  const [acceptedPolicies, setAcceptedPolicies] = useState(false); // Estado para checkbox
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/";
-  const router = useRouter(); // Para redirecciones SPA-modernas
-  const { update} = useSession();
+  const router = useRouter();
+  const { update } = useSession();
 
   const {
     register,
     handleSubmit,
     formState: { errors },
     setValue,
+    watch,
   } = useForm<FormInputs>();
 
   const departments = (colombia as ColombiaDepartment[]).map((dept) => dept.departamento);
@@ -63,8 +66,8 @@ export const RegisterForm = ({ negocio }: TipoUsuario) => {
         (dept) => dept.departamento === selectedDepartamento
       );
       setCities(departmentData ? departmentData.ciudades : []);
-      setSelectedCity(""); // Reset city when department changes
-      setValue("ciudad", ""); // Clear ciudad value
+      setSelectedCity("");
+      setValue("ciudad", "");
     } else {
       setCities([]);
       setSelectedCity("");
@@ -83,6 +86,7 @@ export const RegisterForm = ({ negocio }: TipoUsuario) => {
   const onSubmit: SubmitHandler<FormInputs> = async (data) => {
     setErrorMessage("");
     setIsPending(true);
+
     const { nombre, email, contraseña, genero, fechaNacimiento, ciudad, apellido } = data;
 
     const response = await registerUser(
@@ -107,12 +111,11 @@ export const RegisterForm = ({ negocio }: TipoUsuario) => {
       return;
     }
 
-    // Iniciar sesión directamente en cliente con signIn (evita server action y NEXT_REDIRECT)
     try {
       const signInResponse: SignInResponse | undefined = await signIn("credentials", {
         email: email.toLowerCase(),
         password: contraseña,
-        redirect: false, // Evita redirect automático
+        redirect: false,
       });
 
       if (signInResponse?.error) {
@@ -121,16 +124,15 @@ export const RegisterForm = ({ negocio }: TipoUsuario) => {
         return;
       }
 
-      await update({perfilCompleto: true})
+      await update({ perfilCompleto: true });
 
-      // Redirección manual (elegante y sin errores en consola)
       if (negocio) {
-        router.push(`/crear_negocio/${response.user.id}`); // Usa router.push para SPA-feel
+        router.push(`/crear_negocio/${response.user.id}`);
       } else {
         router.push(callbackUrl);
       }
     } catch (error) {
-      console.error("Error en signIn cliente:", error); // Log solo si es error real, no NEXT_REDIRECT
+      console.error("Error en signIn cliente:", error);
       setErrorMessage("Error inesperado al iniciar sesión.");
       setIsPending(false);
     }
@@ -139,7 +141,6 @@ export const RegisterForm = ({ negocio }: TipoUsuario) => {
   const handleGoogleRegister = async () => {
     try {
       setIsPending(true);
-      // Autenticación con Google (ya es cliente, no cambia)
       const response: SignInResponse | undefined = await signIn("google", {
         callbackUrl: callbackUrl,
         redirect: false,
@@ -149,7 +150,6 @@ export const RegisterForm = ({ negocio }: TipoUsuario) => {
         setErrorMessage("No se pudo completar el inicio de sesión con Google");
         setIsPending(false);
       } else {
-        // Maneja redirección manual si es necesario
         router.push(callbackUrl);
       }
     } catch {
@@ -161,8 +161,8 @@ export const RegisterForm = ({ negocio }: TipoUsuario) => {
   return (
     <div className="md:w-1/2 bg-white flex flex-col justify-center p-8">
       <div className="max-w-md w-full mx-auto">
-        <h1 className="text-4xl font-bold mb-4 text-center">Crear una cuenta</h1>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <h1 className="text-3xl font-bold mb-6 text-center text-blue-700">Crear una cuenta en Myckeo</h1>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div>
             <label htmlFor="nombre" className="block font-bold">Nombre del administrador</label>
             <input
@@ -173,6 +173,7 @@ export const RegisterForm = ({ negocio }: TipoUsuario) => {
                 { "border-red-500": errors.nombre }
               )}
               placeholder="Tu nombre"
+              aria-label="Nombre del administrador"
             />
             {errors.nombre && <span className="text-red-500 text-sm">{errors.nombre.message}</span>}
           </div>
@@ -187,6 +188,7 @@ export const RegisterForm = ({ negocio }: TipoUsuario) => {
                 { "border-red-500": errors.apellido }
               )}
               placeholder="Tu apellido"
+              aria-label="Apellido del administrador"
             />
             {errors.apellido && <span className="text-red-500 text-sm">{errors.apellido.message}</span>}
           </div>
@@ -207,6 +209,7 @@ export const RegisterForm = ({ negocio }: TipoUsuario) => {
                 { "border-red-500": errors.email }
               )}
               placeholder="ejemplo@correo.com"
+              aria-label="Correo Electrónico"
             />
             {errors.email && <span className="text-red-500 text-sm">{errors.email.message}</span>}
           </div>
@@ -229,11 +232,13 @@ export const RegisterForm = ({ negocio }: TipoUsuario) => {
                   { "border-red-500": errors.contraseña }
                 )}
                 placeholder="••••••••"
+                aria-label="Contraseña"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword((prev) => !prev)}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
               >
                 {showPassword ? <IoEyeOffOutline size={20} /> : <IoEyeOutline size={20} />}
               </button>
@@ -241,7 +246,6 @@ export const RegisterForm = ({ negocio }: TipoUsuario) => {
             {errors.contraseña && <span className="text-red-500 text-sm">{errors.contraseña.message}</span>}
           </div>
 
-          {/* Campo hidden para ciudad */}
           <input
             type="hidden"
             {...register("ciudad", { required: "La ciudad es requerida - verifica el formato (Ciudad - Departamento)" })}
@@ -256,6 +260,7 @@ export const RegisterForm = ({ negocio }: TipoUsuario) => {
                 "w-full border rounded-lg p-2 mt-2 focus:outline-none focus:ring-2 focus:ring-red-600",
                 { "border-red-500": errors.ciudad && !selectedDepartamento }
               )}
+              aria-label="Selecciona un departamento"
             >
               <option value="">Selecciona un departamento</option>
               {departments.map((dept) => (
@@ -279,6 +284,7 @@ export const RegisterForm = ({ negocio }: TipoUsuario) => {
                 "w-full border rounded-lg p-2 mt-2 focus:outline-none focus:ring-2 focus:ring-red-600",
                 { "border-red-500": errors.ciudad }
               )}
+              aria-label="Selecciona una ciudad"
             >
               <option value="">Selecciona una ciudad</option>
               {cities.map((city) => (
@@ -298,6 +304,7 @@ export const RegisterForm = ({ negocio }: TipoUsuario) => {
                 "w-full border rounded-lg p-2 mt-2 focus:outline-none focus:ring-2 focus:ring-red-600",
                 { "border-red-500": errors.genero }
               )}
+              aria-label="Selecciona tu género"
             >
               <option value="">Selecciona una opción</option>
               <option value="masculino">Masculino</option>
@@ -314,10 +321,9 @@ export const RegisterForm = ({ negocio }: TipoUsuario) => {
               onChange={(date: Date | null) => {
                 setSelectedDate(date);
                 if (date) {
-                  setValue("fechaNacimiento", date, { shouldValidate: true }); // Asegura validación inmediata
+                  setValue("fechaNacimiento", date, { shouldValidate: true });
                 } else {
-                  setValue("fechaNacimiento", new Date("1990-01-01")); 
-
+                  setValue("fechaNacimiento", new Date("1990-01-01"));
                 }
               }}
               peekNextMonth
@@ -327,19 +333,19 @@ export const RegisterForm = ({ negocio }: TipoUsuario) => {
               maxDate={new Date()}
               minDate={new Date("1900-01-01")}
               dateFormat="dd/MM/yyyy"
-              locale={es}   // 👈 clave para español
+              locale={es}
               className={clsx(
                 "w-full border rounded-lg p-2 mt-2 focus:outline-none focus:ring-2 focus:ring-red-600",
                 { "border-red-500": errors.fechaNacimiento }
               )}
               placeholderText="Selecciona tu fecha de nacimiento"
+              aria-label="Selecciona tu fecha de nacimiento"
             />
             {errors.fechaNacimiento && (
               <span className="text-red-500 text-sm">{errors.fechaNacimiento.message}</span>
             )}
           </div>
 
-          {/* Campo hidden para fechaNacimiento con validación de edad */}
           <input
             type="hidden"
             {...register("fechaNacimiento", {
@@ -358,14 +364,38 @@ export const RegisterForm = ({ negocio }: TipoUsuario) => {
             })}
           />
 
+          {/* Checkbox para aceptar políticas */}
+          <div className="flex items-center mt-4">
+            <input
+              type="checkbox"
+              {...register("acceptedPolicies", { required: "Debes aceptar las políticas para continuar" })}
+              checked={acceptedPolicies}
+              onChange={(e) => setAcceptedPolicies(e.target.checked)}
+              className={clsx(
+                "h-5 w-5 text-red-600 focus:ring-red-500 border-gray-300 rounded",
+                { "border-red-500": errors.acceptedPolicies }
+              )}
+              aria-label="Aceptar Políticas de Privacidad y Cookies"
+              aria-describedby="policy-info"
+            />
+            <label htmlFor="acceptedPolicies" className="ml-2 block text-sm text-gray-900">
+              Acepto la <Link href="/politica-privacidad" className="text-blue-600 underline">Política de Privacidad</Link> y la <Link href="/politica-cookies" className="text-blue-600 underline">Política de Cookies</Link>.
+            </label>
+            {errors.acceptedPolicies && (
+              <span id="policy-info" className="text-red-500 text-sm ml-2">{errors.acceptedPolicies.message}</span>
+            )}
+          </div>
+
           {errorMessage && <span className="text-red-500 text-sm">{errorMessage}</span>}
 
           <button
             type="submit"
-            disabled={isPending}
+            disabled={isPending || !watch("acceptedPolicies")}
             className={clsx(
               "w-full py-2 rounded-lg transition",
-              isPending ? "bg-gray-400 text-gray-200 cursor-not-allowed" : "bg-red-600 text-white hover:bg-red-700"
+              isPending || !watch("acceptedPolicies")
+                ? "bg-gray-400 text-gray-200 cursor-not-allowed"
+                : "bg-red-600 text-white hover:bg-red-700"
             )}
           >
             {isPending ? "Cargando..." : "Crear cuenta"}
@@ -380,10 +410,10 @@ export const RegisterForm = ({ negocio }: TipoUsuario) => {
 
         <button
           onClick={handleGoogleRegister}
-          disabled={isPending}
+          disabled={isPending || !watch("acceptedPolicies")}
           className={clsx(
             "w-full flex items-center justify-center bg-blue-600 text-white py-2 rounded-lg mt-4",
-            isPending ? "bg-gray-400 cursor-not-allowed" : "hover:bg-blue-700 transition"
+            isPending || !watch("acceptedPolicies") ? "bg-gray-400 cursor-not-allowed" : "hover:bg-blue-700 transition"
           )}
         >
           <FaGoogle className="mr-2" />
