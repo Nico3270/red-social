@@ -24,6 +24,8 @@ const siteUrl = "https://myckeo.com";
       { loc: `${siteUrl}/carrusel`, lastmod: new Date().toISOString(), changefreq: "daily", priority: 0.7 },
     ];
 
+    
+
     // URLs dinámicas para perfiles/negocios
     const perfilUrls = negocios
       .filter((negocio) => negocio.slug) // Solo si tiene slug válido
