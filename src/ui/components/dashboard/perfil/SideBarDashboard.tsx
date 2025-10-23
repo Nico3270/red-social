@@ -51,8 +51,22 @@ const SideBarDashboard: React.FC = () => {
     { name: "Crear Negocio", path: `/crear_negocio/${session?.user.id}`, icon: <FaStore /> },
   ];
 
+  // Array para otros roles - Opciones básicas para onboarding elegante
+  const navItemsAdmin: NavItem[] = [
+    { name: "Inicio", path: "/", icon: <FaHome /> },
+    { name: "Clientes", path: "/dashboard", icon: <FaUser /> },
+  ];
+
   // Lógica condicional moderna: Selecciona items según rol para UX personalizada
-  const items = role === 'negocio' ? navItemsNegocio : navItems;
+  let items: NavItem[];
+
+if (role === "admin") {
+  items = navItemsAdmin;
+} else if (role === "negocio") {
+  items = navItemsNegocio;
+} else {
+  items = navItems;
+}
 
   return (
     <div className="flex flex-col h-full bg-gray-900 text-white z-50">

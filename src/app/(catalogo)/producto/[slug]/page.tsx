@@ -137,7 +137,7 @@ export default async function ProductPage({ params }: Props) {
   };
 
   return (
-    <div className="sm:mt-40 mb-20 p-2">
+    <div className="sm:mt-40 p-2">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
@@ -149,7 +149,7 @@ export default async function ProductPage({ params }: Props) {
             <ResponsiveSlideShow images={product.imagenes} title={product.nombre || ""} />
           </div>
         </div>
-        <div className="flex flex-col mt-10 space-y-6 md:space-y-4 md:flex-grow">
+        <div className="flex flex-col space-y-6 md:space-y-4 md:flex-grow">
           <DetallesProducto product={product} telefonoNegocio={telefonoNegocio} />
         </div>
       </div>

@@ -27,7 +27,7 @@ export async function sendWhatsAppMessage({
 
   const WHATSAPP_TOKEN = process.env.WHATSAPP_TOKEN;
   const PHONE_NUMBER_ID = process.env.PHONE_NUMBER_ID;
-  const API_VERSION = 'v22.0'; // Versión actual; verifica en docs de Meta si cambia
+  const API_VERSION = 'v23.0'; // Versión actual; verifica en docs de Meta si cambia
 
   if (!WHATSAPP_TOKEN || !PHONE_NUMBER_ID) {
     throw new Error("Configuración de WhatsApp no encontrada en variables de entorno");

@@ -83,10 +83,10 @@ const FeedResenasProducto: React.FC<Props> = ({ resenas: initialResenas, product
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="max-w-screen-xl mx-auto px-4 sm:px-0 py-4 sm:py-6"
+      className="max-w-screen-xl mx-auto px-4 sm:px-0 py-4 sm:py-2"
     >
       {/* Botones de filtro */}
-      <div className="flex flex-col sm:flex-row justify-around items-center mb-6 gap-4">
+      <div className="flex flex-col sm:flex-row justify-center items-center mb-0 gap-4">
         <h2
           className={`text-2xl sm:text-3xl font-bold text-gray-800 ${titulosPrincipales.className}`}
         >

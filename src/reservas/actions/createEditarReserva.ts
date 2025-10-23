@@ -72,6 +72,12 @@ export async function createEditarReserva(data: unknown): Promise<Response> {
   }
 
   const { id, negocioId, ...resData } = parsed.data;
+  const negocio = await prisma.negocio.findUnique({
+  where: { id: negocioId || "" },
+  select: { telefonoContacto: true },
+});
+
+const telefonoNegocio = negocio?.telefonoContacto || "+573132390868";
 
   try {
     let result;
@@ -122,7 +128,7 @@ export async function createEditarReserva(data: unknown): Promise<Response> {
     if (session?.user.role === "negocio" && session.user.negocioId === negocioId && !id) {
       const notificacion = await notifyReservaConfirmadaCliente(
         {
-          to: "+573182293083",
+          to: parsed.data.telefono || "+573182293083",
           nombre_cliente: resData.nombre,
           fechaHora: fecha || "Error en fecha",
           template: PlantillaWhatsApp.CONFIRMACION_RESERVA_CLIENTE,
@@ -142,7 +148,7 @@ export async function createEditarReserva(data: unknown): Promise<Response> {
     if (!session || session.user.role !== "negocio") {
       const notificacion = await notifyReservaConfirmadaCliente(
         {
-          to: "+573132390868",
+          to: telefonoNegocio || "+573132390868",
           nombre_cliente: resData.nombre,
           telefono_cliente: resData.telefono,
           fechaHora: fecha || "Error en fecha",
@@ -159,7 +165,7 @@ export async function createEditarReserva(data: unknown): Promise<Response> {
       // Reserva creada por el usuario - Aviso al usuario
       const notificacionUsuario = await notifyReservaConfirmadaCliente(
         {
-          to: "+573182293083",
+          to: parsed.data.telefono || "+573182293083",
           nombre_cliente: resData.nombre,
           fechaHora: fecha || "Error en fecha",
           template: PlantillaWhatsApp.CONFIRMACION_RESERVA_CLIENTE,
@@ -180,7 +186,7 @@ export async function createEditarReserva(data: unknown): Promise<Response> {
     if (id) {
       const notificacionCambio = await notifyReservaConfirmadaCliente(
         {
-          to: "+573182293083",
+          to: parsed.data.telefono || "+573182293083",
           fecha_anterior,
           fecha_nueva, 
           nombre_cliente: resData.nombre,

@@ -3,10 +3,10 @@
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth.config";
 import * as z from "zod";
-import { ReservationStatus } from "@prisma/client";
 import { getInformacionReserva } from "./getInfoNegocioWhatsapp";
 import { notifyReservaConfirmadaCliente } from "../helpers/notifyReserva";
 import { PlantillaWhatsApp } from "../interfaces/interfaces.whatsapp";
+import { ReservationStatus } from "@prisma/client";
 
 
 // Interface compartida para respuestas estandarizadas (elegante y reusable)
@@ -97,7 +97,7 @@ export async function deleteReserva(data: unknown): Promise<ActionResponse> {
 
     const notificacionUsuario = await notifyReservaConfirmadaCliente(
       {
-        to: "+573182293083",
+        to: info.telefono_cliente || "+573182293083",
         nombre_cliente,
         fechaHora: fecha_hora,
         template: PlantillaWhatsApp.RESERVA_CANCELADA_USUARIO,
@@ -162,7 +162,7 @@ export async function changeStatusReservations(data: unknown): Promise<ActionRes
       const fechaHora = formatearFecha(reserva.fechaHoraInicio)
       const notificacionUsuario = await notifyReservaConfirmadaCliente(
       {
-        to: "+573182293083",
+        to: reserva.telefono || "+573182293083",
         nombre_cliente: reserva.nombre,
         fechaHora ,
         template: PlantillaWhatsApp.RESERVA_CANCELADA_USUARIO,

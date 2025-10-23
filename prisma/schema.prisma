@@ -52,6 +52,58 @@ model Usuario {
   @@index([preferencias], type: Gin)
 }
 
+
+
+// Enums para estructurar datos categóricos
+enum TipoContacto {
+  CLIENTE
+  LEAD
+  PROVEEDOR
+  OTRO
+}
+
+enum EstadoContacto {
+  ACTIVO
+  INACTIVO
+  PENDIENTE
+}
+
+// Modelo Contactos
+model Contactos {
+  id                 Int            @id @default(autoincrement())
+  nombre             String
+  departamento       String
+  municipio          String
+  direccion          String
+  correo             String         @unique
+  identificacion     String         @unique
+  telefono           String?
+  categoria          String? 
+
+  promocionalEnviado   Boolean        @default(false)
+  brevoMessageId       String?        // ID único del correo en Brevo
+  emailEstado          String?        // Ej: "enviado", "entregado", "abierto", "clic", "rebotado"
+  entregadoEn          DateTime?
+  abiertoEn            DateTime?
+  clicEn               DateTime?
+  reboteRazon          String?
+  ultimoEventoBrevo  DateTime?      // Fecha del último evento recibido de Brevo
+  
+
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+  notas              String?
+  tipoContacto       TipoContacto?  @default(OTRO)
+  estado             EstadoContacto @default(ACTIVO)
+  negocioId          String?        // 👈 debe coincidir con el tipo de id de Negocio
+  Negocio            Negocio?       @relation(fields: [negocioId], references: [id], onDelete: SetNull)
+  @@index([correo])
+  @@index([identificacion])
+  @@index([negocioId])
+}
+
+
+
 model BusinessAvailability {
   id                       String   @id @default(cuid())
   negocioId                String   @unique
@@ -391,6 +443,7 @@ model Negocio {
   reservations     Reservation[]
   Servicio         Servicio[]
   tipo             TipoNegocio              @default(NEGOCIO)
+  contactos Contactos[]
 
   @@index([ciudad])
   @@index([departamento])

@@ -91,26 +91,34 @@ export default function CatalogoLayout({ children }: { children: React.ReactNode
         </CookieConsent>
 
         {/* Footer con enlaces legales */}
-        <footer className="bg-gray-800 text-white p-4 text-center">
-          <div className="flex justify-center space-x-4">
-            <Link href="/politica-privacidad" className="text-blue-400 hover:underline" aria-label="Política de Privacidad">
+        <footer className="bg-gray-900 text-gray-300 py-6 px-4 text-center border-t border-gray-700">
+          <div className="flex flex-wrap justify-center gap-4 mb-4">
+            <Link href="/politica-privacidad" className="text-blue-400 hover:text-blue-300 transition-colors duration-200" aria-label="Política de Privacidad">
               Política de Privacidad
             </Link>
-            <Link href="/politica-cookies" className="text-blue-400 hover:underline" aria-label="Política de Cookies">
+            <Link href="/politica-cookies" className="text-blue-400 hover:text-blue-300 transition-colors duration-200" aria-label="Política de Cookies">
               Política de Cookies
             </Link>
-            <Link href="/terminos-servicio" className="text-blue-400 hover:underline" aria-label="Términos de Servicio">
+            <Link href="/terminos-servicio" className="text-blue-400 hover:text-blue-300 transition-colors duration-200" aria-label="Términos de Servicio">
               Términos de Servicio
             </Link>
-            <Link href="/politica-publicidad" className="text-blue-400 hover:underline" aria-label="Política de Publicidad">
+            <Link href="/politica-publicidad" className="text-blue-400 hover:text-blue-300 transition-colors duration-200" aria-label="Política de Publicidad">
               Política de Publicidad
             </Link>
-            <Link href="/contacto" className="text-blue-400 hover:underline" aria-label="Contacto">
+            <Link href="/contacto" className="text-blue-400 hover:text-blue-300 transition-colors duration-200" aria-label="Contacto">
               Contacto
             </Link>
           </div>
-          <p className="mt-2 text-sm">Myckeo S.A.S. &copy; 2025</p>
+
+          <div className="text-sm space-y-1">
+            <p>
+              &copy; {new Date().getFullYear()} <span className="font-semibold text-white">Myckeo</span> by <span className="font-semibold text-white">CÓDEX SOLUTIONS S.A.S.</span>
+            </p>
+            <p>Empresa registrada en la Cámara de Comercio de Bogotá, NIT 901.912.004-1.</p>
+            <p>Todos los derechos reservados.</p>
+          </div>
         </footer>
+
       </body>
     </html>
   );

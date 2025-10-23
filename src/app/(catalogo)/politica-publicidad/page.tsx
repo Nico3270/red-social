@@ -74,7 +74,7 @@ export default function PoliticaPublicidad() {
           6. Contacto
         </h2>
         <p className="text-gray-700">
-          Para preguntas, contacta a <a href="mailto:soporte@myckeo.com" className="text-blue-600 underline" aria-label="Contactar soporte">soporte@myckeo.com</a>. Responsable: CÓDEX SOLUTIONS S.A.S., Bogotá D.C., Colombia, NIT: 901.912.004-1.
+          Para preguntas, contacta a <Link href="mailto:soporte@myckeo.com" className="text-blue-600 underline">soporte@myckeo.com</Link> <br />. Responsable: CÓDEX SOLUTIONS S.A.S., Bogotá D.C., Colombia, NIT: 901.912.004-1.
         </p>
 
         <footer className="mt-12 border-t pt-6 text-center text-sm text-gray-500">

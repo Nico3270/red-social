@@ -77,7 +77,7 @@ export default function PoliticaCookies() {
             <strong>Consentimiento:</strong> Al usar Myckeo, aceptas el uso de almacenamiento local esencial. Puedes desactivar cookies no esenciales (si las implementamos) en nuestro banner de consentimiento.
           </li>
           <li>
-            <strong>Opt-out:</strong> Contacta a <a href="mailto:soporte@myckeo.com" className="text-blue-600 underline" aria-label="Contactar soporte">soporte@myckeo.com</a> para limitar el uso de datos no esenciales.
+            <strong>Opt-out:</strong> Contacta a <Link href="mailto:soporte@myckeo.com" className="text-blue-600 underline">soporte@myckeo.com</Link> <br /> para limitar el uso de datos no esenciales.
           </li>
         </ul>
 
@@ -92,7 +92,7 @@ export default function PoliticaCookies() {
           6. Contacto
         </h2>
         <p className="text-gray-700">
-          Para preguntas, contacta a <a href="mailto:soporte@myckeo.com" className="text-blue-600 underline" aria-label="Contactar soporte">soporte@myckeo.com</a>. Responsable: CÓDEX SOLUTIONS S.A.S., Bogotá D.C., Colombia, NIT: 901.912.004-1.
+          Para preguntas, contacta a <Link href="mailto:soporte@myckeo.com" className="text-blue-600 underline">soporte@myckeo.com</Link> <br />. Responsable: CÓDEX SOLUTIONS S.A.S., Bogotá D.C., Colombia, NIT: 901.912.004-1.
         </p>
 
         <footer className="mt-12 border-t pt-6 text-center text-sm text-gray-500">

@@ -132,9 +132,7 @@ export default function PoliticaPrivacidad() {
         </ul>
         <p className="text-gray-700 mt-2">
           Puedes ejercer estos derechos escribiendo a{" "}
-          <a href="mailto:soporte@myckeo.com" className="text-blue-600 underline">
-            soporte@myckeo.com
-          </a>.
+          <Link href="mailto:soporte@myckeo.com" className="text-blue-600 underline">soporte@myckeo.com</Link> <br />
         </p>
 
         {/* 8. Seguridad de la información */}
@@ -155,7 +153,7 @@ export default function PoliticaPrivacidad() {
         <p className="text-gray-700 mb-4">
           Responsable: <strong>CÓDEX SOLUTIONS S.A.S.</strong> <br />
           NIT: 901.912.004-1 <br />
-          Email: <a href="mailto:soporte@myckeo.com" className="text-blue-600 underline">myckeo.web@gmail.com</a> <br />
+          Email: <Link href="mailto:soporte@myckeo.com" className="text-blue-600 underline">soporte@myckeo.com</Link> <br />
           Teléfono: 3182293083 <br />
           Dirección: Cl 71 No. 55 42, Bogotá D.C., Colombia
         </p>

@@ -128,7 +128,7 @@ export const updateOrder = async (input: UpdatePedidoInput): Promise<{
 
         if (session?.user.role === "negocio") {
           const notificacionUsuario = await notifyReservaConfirmadaCliente({
-            to: "+573182293083", // Adjust as needed
+            to: clientPhone || "+573182293083", // Adjust as needed
             template: PlantillaWhatsApp.PEDIDO_CANCELADO_NEGOCIO,
             datos_pedido: datosPedido,
             valor_compra: valorCompra,

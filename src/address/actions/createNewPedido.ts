@@ -43,13 +43,14 @@ export const createNewPedido = async (input: PedidoInput): Promise<{
     const session = await auth();
     let negocioId = "";
     let tipoUsuario: TipoUsuario = TipoUsuario.negocio;
+    let telefonoNegocio = "";
 
     // Validar negocioId basado en slug o sesión
     if (input.slug) {
       // Caso: usuario crea la orden
       const negocio = await prisma.negocio.findUnique({
         where: { slug: input.slug },
-        select: { id: true },
+        select: { id: true, telefonoContacto: true },
       });
 
       if (!negocio) {
@@ -58,6 +59,8 @@ export const createNewPedido = async (input: PedidoInput): Promise<{
 
       negocioId = negocio.id;
       tipoUsuario = TipoUsuario.usuario;
+      telefonoNegocio = negocio.telefonoContacto || "+573132390868"; // Número por defecto si no hay contacto
+      
     } else {
       // Caso: negocio crea la orden (desde sesión)
       negocioId = session?.user.negocioId || "";
@@ -164,7 +167,7 @@ export const createNewPedido = async (input: PedidoInput): Promise<{
       // Notificaciones según el rol del usuario
       if (session?.user.role === "negocio") {
         const notificacionUsuario = await notifyReservaConfirmadaCliente({
-          to: "+573182293083", // Ajustar según configuración
+          to: telefonoCliente, // Ajustar según configuración
           template: PlantillaWhatsApp.PEDIDO_CREADO_NEGOCIO_USUARIO,
           datos_pedido: sanitizeParam(datosPedido),
           valor_compra: sanitizeParam(valorCompra),
@@ -179,7 +182,7 @@ export const createNewPedido = async (input: PedidoInput): Promise<{
 
       if (session?.user.role !== "negocio" || !session.user) {
         const notificacionNegocio = await notifyReservaConfirmadaCliente({
-          to: "+573132390868", // Ajustar según configuración
+          to: telefonoNegocio, // Ajustar según configuración
           template: PlantillaWhatsApp.PEDIDO_CREADO_NEGOCIO,
           datos_pedido: sanitizeParam(datosPedido),
           valor_compra: sanitizeParam(valorCompra),
@@ -194,7 +197,7 @@ export const createNewPedido = async (input: PedidoInput): Promise<{
         }
 
         const notificacionUsuario = await notifyReservaConfirmadaCliente({
-          to: "+573182293083", // Ajustar según configuración
+          to: telefonoCliente, // Ajustar según configuración
           template: PlantillaWhatsApp.PEDIDO_CREADO_USUARIO_USUARIO,
           datos_pedido: sanitizeParam(datosPedido),
           valor_compra: sanitizeParam(valorCompra),

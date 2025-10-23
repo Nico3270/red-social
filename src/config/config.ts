@@ -13,7 +13,7 @@ export const InfoEmpresa = {
     parte2: ""
   },
   telefono:"3132390868",
-  email: "myckeo@gmail.com", 
+  email: "soporte@myckeo.com", 
   website: "https://myckeo.com",
   horarios: {lunes_viernes: "8:00 - 12:00 y de 2:00 - 6:00", sabados: "9:00 - 12:00 y de 2:00 - 5:00", domingos:" No atendemos"},
   nit: "900123456-7",

@@ -31,10 +31,15 @@ export const deleteReservaById = async (id: string, nombre_cliente: string, fech
 
         // console.log({negocioId}," en deleReservaById");
 
+        const telefonoNegocio = await prisma.negocio.findUnique({
+            where: { id: negocioId || "" },
+            select: { telefonoContacto: true },
+        });
+
 
         const notificacionCambio = await notifyReservaConfirmadaCliente(
             {
-                to: "+573132390868",
+                to: telefonoNegocio?.telefonoContacto || "+573132390868",
                 nombre_cliente: nombre_cliente,
                 fechaHora: fecha_hora,
                 telefono_cliente: telefono_cliente,
