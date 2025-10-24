@@ -1,3 +1,4 @@
+// /components/dashboard/reservas/AddressNegocioTotal.tsx
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -22,6 +23,7 @@ import {
   FormControl,
   InputLabel,
   FormHelperText,
+  InputAdornment,
 } from "@mui/material";
 import { ArrowBack, Delete } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
@@ -29,6 +31,7 @@ import { useCartCatalogoStore } from "@/store/carro/carro-store";
 import { useAddressStore } from "@/store/address/address-store";
 import { fetchNegocioName } from "@/carro/componentes/ProductsInCart";
 import colombiaData from "@/config/colombia.json";
+import { FaFlag } from "react-icons/fa";
 
 interface Address {
   country: string;
@@ -49,62 +52,71 @@ interface ColombiaDepartment {
 
 const AddressNegocioTotal: React.FC = () => {
   const router = useRouter();
-  const {
-    carts,
-    removeProduct,
-    getTotalPrice,
-  } = useCartCatalogoStore();
+  const { carts, removeProduct, getTotalPrice } = useCartCatalogoStore();
   const { address, setAddress } = useAddressStore();
 
-  const { control, handleSubmit, reset, watch, formState: { errors } } = useForm<Address>({
+  const {
+    control,
+    handleSubmit,
+    reset,
+    watch,
+    setValue,
+    trigger,
+    formState: { errors, isSubmitting },
+  } = useForm<Address>({
+    mode: "onChange", // Validar en tiempo real
     defaultValues: {
-      country: "Colombia", // Default fijo para Colombia
+      country: "Colombia",
       departamento: "",
       ciudad: "",
       clientName: "",
       clientPhone: "",
       deliveryAddress: "",
-      deliveryDate: new Date().toISOString().substring(0, 10), // Fecha actual por default
+      deliveryDate: new Date().toISOString().substring(0, 10),
       additionalComments: "",
     },
   });
 
   const [negocioNames, setNegocioNames] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(true);
-
-  // Estado para las ciudades basadas en el departamento seleccionado
   const [cities, setCities] = useState<string[]>([]);
+  const [submitAttempted, setSubmitAttempted] = useState(false); // Para forzar mostrar errores
 
-  // Observar el valor del departamento
   const selectedDepartamento = watch("departamento");
 
-  // Fetch nombres de todos los negocios en carts y prellenar form si hay datos en store
+  // -------------------------------------------------
+  // Carga inicial
+  // -------------------------------------------------
   useEffect(() => {
-    const loadData = async () => {
+    console.log("[AddressNegocioTotal] Iniciando carga...");
+    const load = async () => {
       const slugs = Object.keys(carts);
       const names: Record<string, string> = {};
-      for (const slug of slugs) {
-        const name = await fetchNegocioName(slug);
-        names[slug] = name;
+      for (const s of slugs) {
+        names[s] = await fetchNegocioName(s);
       }
       setNegocioNames(names);
       setIsLoading(false);
     };
-    loadData();
+    load();
 
-    // Prellenar form con datos del store si existen
-    if (address && address.country) {
-      reset(address);
+    if (address?.country) {
+      const localPhone = address.clientPhone?.startsWith("+57")
+        ? address.clientPhone.slice(3)
+        : address.clientPhone;
+      reset({ ...address, clientPhone: localPhone });
     }
   }, [carts, reset, address]);
 
-  // Actualizar las ciudades cuando cambie el departamento
+  // -------------------------------------------------
+  // Ciudades
+  // -------------------------------------------------
   useEffect(() => {
     if (selectedDepartamento) {
-      const departmentData = (colombiaData as ColombiaDepartment[]).find(
-        (dept) => dept.departamento === selectedDepartamento
+      const dept = (colombiaData as ColombiaDepartment[]).find(
+        (d) => d.departamento === selectedDepartamento
       );
-      setCities(departmentData ? departmentData.ciudades : []);
+      setCities(dept ? dept.ciudades : []);
     } else {
       setCities([]);
     }
@@ -112,14 +124,41 @@ const AddressNegocioTotal: React.FC = () => {
 
   const totalGlobal = getTotalPrice();
 
-  const onSubmit = (data: Address) => {
-    setAddress(data); // Guardar en el store
-    router.push("/checkout"); // Redirigir a checkout total
+  // -------------------------------------------------
+  // Submit con validación forzada
+  // -------------------------------------------------
+  const onSubmit = async (data: Address) => {
+    console.log("[onSubmit] Datos recibidos:", data);
+
+    // Forzar validación completa
+    const isValid = await trigger();
+    if (!isValid) {
+      console.error("[onSubmit] Validación fallida:", errors);
+      setSubmitAttempted(true);
+      return;
+    }
+
+    const formatted: Address = {
+      ...data,
+      clientPhone: `+57${data.clientPhone}`,
+    };
+
+    console.log("[onSubmit] Guardando en store:", formatted);
+    setAddress(formatted);
+
+    console.log("[onSubmit] Redirigiendo a /checkout...");
+    router.push("/checkout");
   };
 
-  const handleBackToCart = () => {
-    router.push("/carro");
+  const handleFormSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("[FORM] Submit intentado");
+    setSubmitAttempted(true);
+    await trigger(); // Forzar validación
+    handleSubmit(onSubmit)(e);
   };
+
+  const handleBackToCart = () => router.push("/carro");
 
   if (isLoading) {
     return (
@@ -129,16 +168,20 @@ const AddressNegocioTotal: React.FC = () => {
     );
   }
 
-  // Componente de resumen de carritos por negocio
   const CartSummary = () => (
     <>
       {Object.entries(carts).map(([slug, items]) => {
-        const subtotal = items.reduce((sum, item) => sum + item.precio * item.cantidad, 0);
+        const subtotal = items.reduce((s, i) => s + i.precio * i.cantidad, 0);
         return (
-          <Paper key={slug} elevation={1} sx={{ p: { xs: 2, sm: 3 }, borderRadius: 3, bgcolor: "background.paper", mb: 3 }}>
+          <Paper
+            key={slug}
+            elevation={1}
+            sx={{ p: { xs: 2, sm: 3 }, borderRadius: 3, bgcolor: "background.paper", mb: 3 }}
+          >
             <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
               {negocioNames[slug] || "Negocio Desconocido"}
             </Typography>
+
             <List disablePadding>
               {items.map((item) => (
                 <ListItem key={item.id} sx={{ py: 1, px: 0 }}>
@@ -151,12 +194,18 @@ const AddressNegocioTotal: React.FC = () => {
                   <Typography variant="body1" sx={{ fontWeight: 600, ml: 2, flexShrink: 0 }}>
                     ${(item.precio * item.cantidad).toFixed(2)}
                   </Typography>
-                  <IconButton edge="end" aria-label="delete" onClick={() => removeProduct(slug, item.id)} sx={{ ml: 1 }}>
+                  <IconButton
+                    edge="end"
+                    aria-label="delete"
+                    onClick={() => removeProduct(slug, item.id)}
+                    sx={{ ml: 1 }}
+                  >
                     <Delete fontSize="small" />
                   </IconButton>
                 </ListItem>
               ))}
             </List>
+
             <Divider sx={{ my: 2 }} />
             <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
@@ -169,51 +218,55 @@ const AddressNegocioTotal: React.FC = () => {
           </Paper>
         );
       })}
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mt: 2, p: 2, bgcolor: "background.paper", borderRadius: 3 }}>
-        <Typography 
-  variant="h6" 
-  sx={{ fontWeight: 600, color: "text.primary" }}
->
-  Total Global:
-</Typography>
 
-<Typography 
-  variant="h6" 
-  sx={{ fontWeight: 700, color: "grey.900" }} // más oscuro para el precio
->
-  ${totalGlobal.toFixed(2)}
-</Typography>
-      </Box>
-      <Box sx={{ display: "flex", justifyContent: "center" }}>
-<Button
-        startIcon={<ArrowBack />}
-        onClick={handleBackToCart}
+      <Box
         sx={{
-      mt: 2,
-      px: 3,
-      py: 1.2,
-      textTransform: "none",
-      fontWeight: 600,
-      fontSize: "0.95rem",
-      borderRadius: 3,
-      bgcolor: "grey.900", // gris oscuro elegante
-      color: "#fff", // texto blanco
-      transition: "all 0.3s ease",
-      "&:hover": {
-        bgcolor: "grey.800", // un poco más claro en hover
-        boxShadow: "0 6px 16px rgba(0,0,0,0.25)", // sombra premium
-      },
-      "& .MuiButton-startIcon": {
-        mr: 1,
-        fontSize: "1.1rem",
-        color: "#fff",
-      },
-    }}
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          mt: 2,
+          p: 2,
+          bgcolor: "background.paper",
+          borderRadius: 3,
+        }}
       >
-        Volver al carrito
-      </Button>
+        <Typography variant="h6" sx={{ fontWeight: 600, color: "text.primary" }}>
+          Total Global:
+        </Typography>
+        <Typography variant="h6" sx={{ fontWeight: 700, color: "grey.900" }}>
+          ${totalGlobal.toFixed(2)}
+        </Typography>
       </Box>
-      
+
+      <Box sx={{ display: "flex", justifyContent: "center" }}>
+        <Button
+          startIcon={<ArrowBack />}
+          onClick={handleBackToCart}
+          sx={{
+            mt: 2,
+            px: 3,
+            py: 1.2,
+            textTransform: "none",
+            fontWeight: 600,
+            fontSize: "0.95rem",
+            borderRadius: 3,
+            bgcolor: "grey.900",
+            color: "#fff",
+            transition: "all 0.3s ease",
+            "&:hover": {
+              bgcolor: "grey.800",
+              boxShadow: "0 6px 16px rgba(0,0,0,0.25)",
+            },
+            "& .MuiButton-startIcon": {
+              mr: 1,
+              fontSize: "1.1rem",
+              color: "#fff",
+            },
+          }}
+        >
+          Volver al carrito
+        </Button>
+      </Box>
     </>
   );
 
@@ -229,17 +282,18 @@ const AddressNegocioTotal: React.FC = () => {
             color: "text.primary",
             letterSpacing: "-0.5px",
             fontSize: { xs: "2rem", sm: "2.5rem", md: "3rem" },
-            fontFamily: "'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+            fontFamily:
+              "'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
           }}
         >
           Envío para todos los negocios
         </Typography>
 
         <Grid container spacing={4}>
-          {/* Formulario a la izquierda (en desktop), full width en mobile */}
           <Grid item xs={12} md={7}>
-            <form onSubmit={handleSubmit(onSubmit)}>
+            <form onSubmit={handleFormSubmit} noValidate>
               <Grid container spacing={3}>
+                {/* País */}
                 <Grid item xs={12}>
                   <Controller
                     name="country"
@@ -251,82 +305,77 @@ const AddressNegocioTotal: React.FC = () => {
                         label="País"
                         fullWidth
                         variant="outlined"
-                        disabled // Fijo en Colombia
-                        error={!!errors.country}
-                        helperText={errors.country?.message}
-                        sx={{
-                          "& .MuiOutlinedInput-root": {
-                            borderRadius: 3,
-                            bgcolor: "background.default",
-                            "& fieldset": { borderColor: "divider" },
-                            "&:hover fieldset": { borderColor: "primary.light" },
-                          },
-                          "& .MuiInputLabel-root": { color: "text.secondary" },
-                        }}
+                        disabled
+                        error={submitAttempted && !!errors.country}
+                        helperText={submitAttempted && errors.country?.message}
+                        sx={textFieldStyle}
                       />
                     )}
                   />
                 </Grid>
+
+                {/* Departamento */}
                 <Grid item xs={12} sm={6}>
                   <Controller
                     name="departamento"
                     control={control}
                     rules={{ required: "Departamento requerido" }}
                     render={({ field }) => (
-                      <FormControl fullWidth variant="outlined" error={!!errors.departamento}>
+                      <FormControl fullWidth variant="outlined" error={submitAttempted && !!errors.departamento}>
                         <InputLabel id="departamento-label">Departamento</InputLabel>
                         <Select
                           {...field}
                           labelId="departamento-label"
                           label="Departamento"
-                          sx={{
-                            borderRadius: 3,
-                            bgcolor: "background.default",
-                            "& .MuiOutlinedInput-notchedOutline": { borderColor: "divider" },
-                            "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "primary.light" },
-                          }}
+                          sx={selectStyle}
                         >
-                          {(colombiaData as ColombiaDepartment[]).map((dept) => (
-                            <MenuItem key={dept.id} value={dept.departamento}>
-                              {dept.departamento}
+                          {(colombiaData as ColombiaDepartment[]).map((d) => (
+                            <MenuItem key={d.id} value={d.departamento}>
+                              {d.departamento}
                             </MenuItem>
                           ))}
                         </Select>
-                        {errors.departamento && <FormHelperText>{errors.departamento.message}</FormHelperText>}
+                        {submitAttempted && errors.departamento && (
+                          <FormHelperText>{errors.departamento.message}</FormHelperText>
+                        )}
                       </FormControl>
                     )}
                   />
                 </Grid>
+
+                {/* Ciudad */}
                 <Grid item xs={12} sm={6}>
                   <Controller
                     name="ciudad"
                     control={control}
                     rules={{ required: "Ciudad requerida" }}
                     render={({ field }) => (
-                      <FormControl fullWidth variant="outlined" error={!!errors.ciudad} disabled={!selectedDepartamento}>
+                      <FormControl
+                        fullWidth
+                        variant="outlined"
+                        error={submitAttempted && !!errors.ciudad}
+                        disabled={!selectedDepartamento}
+                      >
                         <InputLabel id="ciudad-label">Ciudad</InputLabel>
                         <Select
                           {...field}
                           labelId="ciudad-label"
                           label="Ciudad"
-                          sx={{
-                            borderRadius: 3,
-                            bgcolor: "background.default",
-                            "& .MuiOutlinedInput-notchedOutline": { borderColor: "divider" },
-                            "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "primary.light" },
-                          }}
+                          sx={selectStyle}
                         >
-                          {cities.map((city, index) => (
-                            <MenuItem key={index} value={city}>
-                              {city}
+                          {cities.map((c, i) => (
+                            <MenuItem key={i} value={c}>
+                              {c}
                             </MenuItem>
                           ))}
                         </Select>
-                        {errors.ciudad && <FormHelperText>{errors.ciudad.message}</FormHelperText>}
+                        {submitAttempted && errors.ciudad && <FormHelperText>{errors.ciudad.message}</FormHelperText>}
                       </FormControl>
                     )}
                   />
                 </Grid>
+
+                {/* Nombre */}
                 <Grid item xs={12}>
                   <Controller
                     name="clientName"
@@ -338,47 +387,61 @@ const AddressNegocioTotal: React.FC = () => {
                         label="Nombre del cliente"
                         fullWidth
                         variant="outlined"
-                        error={!!errors.clientName}
-                        helperText={errors.clientName?.message}
-                        sx={{
-                          "& .MuiOutlinedInput-root": {
-                            borderRadius: 3,
-                            bgcolor: "background.default",
-                            "& fieldset": { borderColor: "divider" },
-                            "&:hover fieldset": { borderColor: "primary.light" },
-                          },
-                          "& .MuiInputLabel-root": { color: "text.secondary" },
-                        }}
+                        error={submitAttempted && !!errors.clientName}
+                        helperText={submitAttempted && errors.clientName?.message}
+                        sx={textFieldStyle}
                       />
                     )}
                   />
                 </Grid>
+
+                {/* Teléfono */}
                 <Grid item xs={12}>
                   <Controller
                     name="clientPhone"
                     control={control}
-                    rules={{ required: "Teléfono requerido" }}
+                    rules={{
+                      required: "Teléfono requerido",
+                      pattern: {
+                        value: /^\d{10}$/,
+                        message: "El número debe tener exactamente 10 dígitos",
+                      },
+                    }}
                     render={({ field }) => (
                       <TextField
                         {...field}
                         label="Teléfono del cliente"
                         fullWidth
                         variant="outlined"
-                        error={!!errors.clientPhone}
-                        helperText={errors.clientPhone?.message}
+                        placeholder="3182258523"
+                        error={submitAttempted && !!errors.clientPhone}
+                        helperText={submitAttempted && errors.clientPhone?.message}
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <FaFlag className="text-gray-500" size={16} />
+                              <span className="ml-2 text-gray-600 text-sm">+57</span>
+                            </InputAdornment>
+                          ),
+                        }}
                         sx={{
+                          ...textFieldStyle,
                           "& .MuiOutlinedInput-root": {
-                            borderRadius: 3,
-                            bgcolor: "background.default",
-                            "& fieldset": { borderColor: "divider" },
-                            "&:hover fieldset": { borderColor: "primary.light" },
+                            pl: 1.5,
+                            "& .MuiInputAdornment-root": { pointerEvents: "none" },
                           },
-                          "& .MuiInputLabel-root": { color: "text.secondary" },
+                        }}
+                        inputProps={{ maxLength: 10 }}
+                        onChange={(e) => {
+                          const v = e.target.value.replace(/\D/g, "");
+                          setValue("clientPhone", v);
                         }}
                       />
                     )}
                   />
                 </Grid>
+
+                {/* Dirección */}
                 <Grid item xs={12}>
                   <Controller
                     name="deliveryAddress"
@@ -392,26 +455,19 @@ const AddressNegocioTotal: React.FC = () => {
                         variant="outlined"
                         multiline
                         rows={2}
-                        error={!!errors.deliveryAddress}
-                        helperText={errors.deliveryAddress?.message}
-                        sx={{
-                          "& .MuiOutlinedInput-root": {
-                            borderRadius: 3,
-                            bgcolor: "background.default",
-                            "& fieldset": { borderColor: "divider" },
-                            "&:hover fieldset": { borderColor: "primary.light" },
-                          },
-                          "& .MuiInputLabel-root": { color: "text.secondary" },
-                        }}
+                        error={submitAttempted && !!errors.deliveryAddress}
+                        helperText={submitAttempted && errors.deliveryAddress?.message}
+                        sx={textFieldStyle}
                       />
                     )}
                   />
                 </Grid>
-                <Grid item xs={12} sx={{ display: 'none' }}>
+
+                {/* Fecha (oculta) */}
+                <Grid item xs={12} sx={{ display: "none" }}>
                   <Controller
                     name="deliveryDate"
                     control={control}
-                    rules={{ required: "Fecha de entrega requerida" }}
                     render={({ field }) => (
                       <TextField
                         {...field}
@@ -420,21 +476,13 @@ const AddressNegocioTotal: React.FC = () => {
                         fullWidth
                         variant="outlined"
                         InputLabelProps={{ shrink: true }}
-                        error={!!errors.deliveryDate}
-                        helperText={errors.deliveryDate?.message}
-                        sx={{
-                          "& .MuiOutlinedInput-root": {
-                            borderRadius: 3,
-                            bgcolor: "background.default",
-                            "& fieldset": { borderColor: "divider" },
-                            "&:hover fieldset": { borderColor: "primary.light" },
-                          },
-                          "& .MuiInputLabel-root": { color: "text.secondary" },
-                        }}
+                        sx={textFieldStyle}
                       />
                     )}
                   />
                 </Grid>
+
+                {/* Comentarios */}
                 <Grid item xs={12}>
                   <Controller
                     name="additionalComments"
@@ -447,25 +495,19 @@ const AddressNegocioTotal: React.FC = () => {
                         variant="outlined"
                         multiline
                         rows={3}
-                        sx={{
-                          "& .MuiOutlinedInput-root": {
-                            borderRadius: 3,
-                            bgcolor: "background.default",
-                            "& fieldset": { borderColor: "divider" },
-                            "&:hover fieldset": { borderColor: "primary.light" },
-                          },
-                          "& .MuiInputLabel-root": { color: "text.secondary" },
-                        }}
+                        sx={textFieldStyle}
                       />
                     )}
                   />
                 </Grid>
               </Grid>
+
               <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
                 <Button
                   type="submit"
                   variant="contained"
                   size="large"
+                  disabled={isSubmitting}
                   sx={{
                     px: 6,
                     py: 1.5,
@@ -473,17 +515,15 @@ const AddressNegocioTotal: React.FC = () => {
                     textTransform: "none",
                     fontWeight: 600,
                     bgcolor: "primary.main",
-                    "&:hover": { bgcolor: "primary.dark", boxShadow: "0 4px 12px rgba(0,0,0,0.1)" },
-                    transition: "all 0.2s ease",
+                    "&:hover": { bgcolor: "primary.dark" },
                   }}
                 >
-                  Continuar al pago
+                  {isSubmitting ? "Procesando…" : "Continuar al pago"}
                 </Button>
               </Box>
             </form>
           </Grid>
 
-          {/* Resumen a la derecha (en desktop), debajo en mobile */}
           <Grid item xs={12} md={5}>
             <Box sx={{ position: { md: "sticky" }, top: { md: 100 } }}>
               {CartSummary()}
@@ -493,6 +533,23 @@ const AddressNegocioTotal: React.FC = () => {
       </Container>
     </Fade>
   );
+};
+
+const textFieldStyle = {
+  "& .MuiOutlinedInput-root": {
+    borderRadius: 3,
+    bgcolor: "background.default",
+    "& fieldset": { borderColor: "divider" },
+    "&:hover fieldset": { borderColor: "primary.light" },
+  },
+  "& .MuiInputLabel-root": { color: "text.secondary" },
+};
+
+const selectStyle = {
+  borderRadius: 3,
+  bgcolor: "background.default",
+  "& .MuiOutlinedInput-notchedOutline": { borderColor: "divider" },
+  "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "primary.light" },
 };
 
 export default AddressNegocioTotal;

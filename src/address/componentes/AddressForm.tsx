@@ -1,3 +1,4 @@
+// /components/dashboard/reservas/AddressNegocio.tsx
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -25,6 +26,7 @@ import {
   ToggleButton,
   ToggleButtonGroup,
   Alert,
+  InputAdornment,
 } from "@mui/material";
 import { ArrowBack, Delete } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
@@ -33,6 +35,7 @@ import { useAddressStore } from "@/store/address/address-store";
 import { fetchNegocioName } from "@/carro/componentes/ProductsInCart";
 import colombiaData from "@/config/colombia.json";
 import { FiMapPin, FiTruck } from "react-icons/fi";
+import { FaFlag } from "react-icons/fa"; // Icono de bandera
 
 type OrderType = "DELIVERY" | "ON_SITE";
 
@@ -42,7 +45,7 @@ interface Address {
   departamento?: string;
   ciudad?: string;
   clientName: string;
-  clientPhone: string;
+  clientPhone: string; // Número local (10 dígitos)
   deliveryAddress?: string;
   onSiteLocation?: string;
   deliveryDate?: string;
@@ -64,7 +67,7 @@ const AddressNegocio: React.FC<AddressNegocioProps> = ({ slug }) => {
   const { removeProduct, getCartForNegocio } = useCartCatalogoStore();
   const { address, setAddress } = useAddressStore();
 
-  const { control, handleSubmit, reset, watch, trigger, formState: { errors } } = useForm<Address>({
+  const { control, handleSubmit, reset, watch, trigger, formState: { errors }, setValue } = useForm<Address>({
     defaultValues: {
       orderType: "DELIVERY",
       country: "Colombia",
@@ -74,7 +77,7 @@ const AddressNegocio: React.FC<AddressNegocioProps> = ({ slug }) => {
       clientPhone: "",
       deliveryAddress: "",
       onSiteLocation: "",
-      deliveryDate: "", // No seteamos por defecto, ya que está oculto
+      deliveryDate: "",
       additionalComments: "",
     },
   });
@@ -82,15 +85,13 @@ const AddressNegocio: React.FC<AddressNegocioProps> = ({ slug }) => {
   const [negocioName, setNegocioName] = useState<string>("Cargando...");
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-  // Estado para las ciudades basadas en el departamento seleccionado
   const [cities, setCities] = useState<string[]>([]);
 
-  // Observar el valor del departamento y orderType
   const selectedDepartamento = watch("departamento");
   const orderType = watch("orderType");
 
-  // Fetch nombre del negocio y prellenar form si hay datos en store
+
+  // Fetch negocio y prellenar
   useEffect(() => {
     const loadData = async () => {
       const name = await fetchNegocioName(slug);
@@ -99,13 +100,14 @@ const AddressNegocio: React.FC<AddressNegocioProps> = ({ slug }) => {
     };
     loadData();
 
-    // Prellenar form con datos del store si existen
     if (address && address.orderType) {
-      reset(address);
+      // Si el teléfono viene con +57, removerlo para mostrar solo el número local
+      const localPhone = address.clientPhone?.startsWith("+57") ? address.clientPhone.slice(3) : address.clientPhone;
+      reset({ ...address, clientPhone: localPhone });
     }
   }, [slug, reset, address]);
 
-  // Actualizar las ciudades cuando cambie el departamento
+  // Actualizar ciudades
   useEffect(() => {
     if (selectedDepartamento && orderType === "DELIVERY") {
       const departmentData = (colombiaData as ColombiaDepartment[]).find(
@@ -117,9 +119,9 @@ const AddressNegocio: React.FC<AddressNegocioProps> = ({ slug }) => {
     }
   }, [selectedDepartamento, orderType]);
 
-  // Revalidar campos cuando cambie el orderType
+  // Revalidar al cambiar tipo de pedido
   useEffect(() => {
-    trigger(); // Revalidar todo el form
+    trigger();
   }, [orderType, trigger]);
 
   const cartItems = getCartForNegocio(slug) || [];
@@ -127,9 +129,14 @@ const AddressNegocio: React.FC<AddressNegocioProps> = ({ slug }) => {
 
   const onSubmit = (data: Address) => {
     try {
-      setErrorMessage(null); // Limpiar mensaje de error
-      setAddress(data); // Guardar en el store
-      router.push(`/checkout/${slug}`); // Redirigir a checkout
+      setErrorMessage(null);
+      // Concatenar +57 al teléfono antes de guardar
+      const formattedData = {
+        ...data,
+        clientPhone: `+57${data.clientPhone}`,
+      };
+      setAddress(formattedData);
+      router.push(`/checkout/${slug}`);
     } catch (error) {
       setErrorMessage("Error al guardar los datos. Por favor, intenta de nuevo.");
       console.error("Error al guardar la dirección:", error);
@@ -148,7 +155,6 @@ const AddressNegocio: React.FC<AddressNegocioProps> = ({ slug }) => {
     );
   }
 
-  // Componente de resumen del carrito (para reutilizar en mobile y desktop)
   const CartSummary = () => (
     <Paper elevation={1} sx={{ p: { xs: 2, sm: 3 }, borderRadius: 3, bgcolor: "background.paper" }}>
       <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "text.primary" }}>
@@ -244,7 +250,6 @@ const AddressNegocio: React.FC<AddressNegocioProps> = ({ slug }) => {
         )}
 
         <Grid container spacing={4}>
-          {/* Formulario a la izquierda (en desktop), full width en mobile */}
           <Grid item xs={12} md={7}>
             <Paper
               elevation={3}
@@ -257,7 +262,6 @@ const AddressNegocio: React.FC<AddressNegocioProps> = ({ slug }) => {
                 bgcolor: "background.paper",
               }}
             >
-              {/* Selector de tipo de pedido */}
               <Box sx={{ display: "flex", justifyContent: "center", mb: 4 }}>
                 <ToggleButtonGroup
                   value={orderType}
@@ -268,63 +272,13 @@ const AddressNegocio: React.FC<AddressNegocioProps> = ({ slug }) => {
                     }
                   }}
                   aria-label="tipo de pedido"
-                  sx={{
-                    gap: 2,
-                  }}
+                  sx={{ gap: 2 }}
                 >
-                  <ToggleButton
-                    value="DELIVERY"
-                    sx={{
-                      px: 4,
-                      py: 2,
-                      textTransform: "none",
-                      fontWeight: 600,
-                      borderRadius: 3,
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 1.5,
-                      bgcolor: "background.paper",
-                      boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
-                      transition: "all 0.25s ease",
-                      "&:hover": {
-                        boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
-                        transform: "translateY(-1px)",
-                      },
-                      "&.Mui-selected": {
-                        bgcolor: "primary.main",
-                        color: "#fff",
-                        boxShadow: "0 6px 16px rgba(0,0,0,0.15)",
-                      },
-                    }}
-                  >
+                  <ToggleButton value="DELIVERY" sx={toggleButtonStyle}>
                     <FiTruck size={20} />
                     A domicilio
                   </ToggleButton>
-                  <ToggleButton
-                    value="ON_SITE"
-                    sx={{
-                      px: 4,
-                      py: 2,
-                      textTransform: "none",
-                      fontWeight: 600,
-                      borderRadius: 3,
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 1.5,
-                      bgcolor: "background.paper",
-                      boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
-                      transition: "all 0.25s ease",
-                      "&:hover": {
-                        boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
-                        transform: "translateY(-1px)",
-                      },
-                      "&.Mui-selected": {
-                        bgcolor: "primary.main",
-                        color: "#fff",
-                        boxShadow: "0 6px 16px rgba(0,0,0,0.15)",
-                      },
-                    }}
-                  >
+                  <ToggleButton value="ON_SITE" sx={toggleButtonStyle}>
                     <FiMapPin size={20} />
                     En sitio
                   </ToggleButton>
@@ -349,15 +303,7 @@ const AddressNegocio: React.FC<AddressNegocioProps> = ({ slug }) => {
                               disabled
                               error={!!errors.country}
                               helperText={errors.country?.message}
-                              sx={{
-                                "& .MuiOutlinedInput-root": {
-                                  borderRadius: 3,
-                                  bgcolor: "background.default",
-                                  "& fieldset": { borderColor: "divider" },
-                                  "&:hover fieldset": { borderColor: "primary.light" },
-                                },
-                                "& .MuiInputLabel-root": { color: "text.secondary" },
-                              }}
+                              sx={textFieldStyle}
                             />
                           )}
                         />
@@ -374,12 +320,7 @@ const AddressNegocio: React.FC<AddressNegocioProps> = ({ slug }) => {
                                 {...field}
                                 labelId="departamento-label"
                                 label="Departamento"
-                                sx={{
-                                  borderRadius: 3,
-                                  bgcolor: "background.default",
-                                  "& .MuiOutlinedInput-notchedOutline": { borderColor: "divider" },
-                                  "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "primary.light" },
-                                }}
+                                sx={selectStyle}
                               >
                                 {(colombiaData as ColombiaDepartment[]).map((dept) => (
                                   <MenuItem key={dept.id} value={dept.departamento}>
@@ -404,12 +345,7 @@ const AddressNegocio: React.FC<AddressNegocioProps> = ({ slug }) => {
                                 {...field}
                                 labelId="ciudad-label"
                                 label="Ciudad"
-                                sx={{
-                                  borderRadius: 3,
-                                  bgcolor: "background.default",
-                                  "& .MuiOutlinedInput-notchedOutline": { borderColor: "divider" },
-                                  "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "primary.light" },
-                                }}
+                                sx={selectStyle}
                               >
                                 {cities.map((city, index) => (
                                   <MenuItem key={index} value={city}>
@@ -437,15 +373,7 @@ const AddressNegocio: React.FC<AddressNegocioProps> = ({ slug }) => {
                               rows={2}
                               error={!!errors.deliveryAddress}
                               helperText={errors.deliveryAddress?.message}
-                              sx={{
-                                "& .MuiOutlinedInput-root": {
-                                  borderRadius: 3,
-                                  bgcolor: "background.default",
-                                  "& fieldset": { borderColor: "divider" },
-                                  "&:hover fieldset": { borderColor: "primary.light" },
-                                },
-                                "& .MuiInputLabel-root": { color: "text.secondary" },
-                              }}
+                              sx={textFieldStyle}
                             />
                           )}
                         />
@@ -466,18 +394,7 @@ const AddressNegocio: React.FC<AddressNegocioProps> = ({ slug }) => {
                             variant="outlined"
                             error={!!errors.onSiteLocation}
                             helperText={errors.onSiteLocation?.message}
-                            sx={{
-                              "& .MuiOutlinedInput-root": {
-                                borderRadius: 3,
-                                bgcolor: "background.default",
-                                "& fieldset": { borderColor: "divider" },
-                                "&:hover fieldset": { borderColor: "primary.light" },
-                                "& .MuiInputBase-input": {
-                                  fontSize: "1rem",
-                                },
-                              },
-                              "& .MuiInputLabel-root": { color: "text.secondary" },
-                            }}
+                            sx={textFieldStyle}
                           />
                         )}
                       />
@@ -496,50 +413,67 @@ const AddressNegocio: React.FC<AddressNegocioProps> = ({ slug }) => {
                           variant="outlined"
                           error={!!errors.clientName}
                           helperText={errors.clientName?.message}
-                          sx={{
-                            "& .MuiOutlinedInput-root": {
-                              borderRadius: 3,
-                              bgcolor: "background.default",
-                              "& fieldset": { borderColor: "divider" },
-                              "&:hover fieldset": { borderColor: "primary.light" },
-                            },
-                            "& .MuiInputLabel-root": { color: "text.secondary" },
-                          }}
+                          sx={textFieldStyle}
                         />
                       )}
                     />
                   </Grid>
+
+                  {/* Campo de Teléfono con +57 y bandera */}
                   <Grid item xs={12}>
                     <Controller
                       name="clientPhone"
                       control={control}
-                      rules={{ required: "Teléfono requerido" }}
+                      rules={{
+                        required: "Teléfono requerido",
+                        pattern: {
+                          value: /^\d{10}$/,
+                          message: "El número debe tener exactamente 10 dígitos",
+                        },
+                      }}
                       render={({ field }) => (
                         <TextField
                           {...field}
                           label="Teléfono del cliente"
                           fullWidth
                           variant="outlined"
+                          placeholder="3182258523"
                           error={!!errors.clientPhone}
                           helperText={errors.clientPhone?.message}
-                          sx={{
-                            "& .MuiOutlinedInput-root": {
-                              borderRadius: 3,
-                              bgcolor: "background.default",
-                              "& fieldset": { borderColor: "divider" },
-                              "&:hover fieldset": { borderColor: "primary.light" },
-                            },
-                            "& .MuiInputLabel-root": { color: "text.secondary" },
+                          InputProps={{
+                            startAdornment: (
+                              <InputAdornment position="start">
+                                <FaFlag className="text-gray-500" size={16} />
+                                <span className="ml-2 text-gray-600 text-sm">+57</span>
+                              </InputAdornment>
+                            ),
                           }}
+                          sx={{
+                            ...textFieldStyle,
+                            "& .MuiOutlinedInput-root": {
+                              pl: 1.5,
+                              "& .MuiInputAdornment-root": {
+                                pointerEvents: "none",
+                              },
+                            },
+                          }}
+                          inputProps={{
+                            maxLength: 10,
+                          }}
+                          onChange={(e) => {
+                            const value = e.target.value.replace(/\D/g, "");
+                            setValue("clientPhone", value);
+                          }}
+                          aria-label="Teléfono del cliente (10 dígitos)"
                         />
                       )}
                     />
                   </Grid>
+
                   <Grid item xs={12} sx={{ display: "none" }}>
                     <Controller
                       name="deliveryDate"
                       control={control}
-                      rules={{ required: false }} // No requerido, ya que está oculto
                       render={({ field }) => (
                         <TextField
                           {...field}
@@ -548,20 +482,10 @@ const AddressNegocio: React.FC<AddressNegocioProps> = ({ slug }) => {
                           fullWidth
                           variant="outlined"
                           InputLabelProps={{ shrink: true }}
-                          error={!!errors.deliveryDate}
-                          helperText={errors.deliveryDate?.message}
                           inputProps={{
                             min: new Date().toISOString().split("T")[0],
                           }}
-                          sx={{
-                            "& .MuiOutlinedInput-root": {
-                              borderRadius: 3,
-                              bgcolor: "background.default",
-                              "& fieldset": { borderColor: "divider" },
-                              "&:hover fieldset": { borderColor: "primary.light" },
-                            },
-                            "& .MuiInputLabel-root": { color: "text.secondary" },
-                          }}
+                          sx={textFieldStyle}
                         />
                       )}
                     />
@@ -570,7 +494,6 @@ const AddressNegocio: React.FC<AddressNegocioProps> = ({ slug }) => {
                     <Controller
                       name="additionalComments"
                       control={control}
-                      rules={{ required: false }}
                       render={({ field }) => (
                         <TextField
                           {...field}
@@ -579,15 +502,7 @@ const AddressNegocio: React.FC<AddressNegocioProps> = ({ slug }) => {
                           variant="outlined"
                           multiline
                           rows={3}
-                          sx={{
-                            "& .MuiOutlinedInput-root": {
-                              borderRadius: 3,
-                              bgcolor: "background.default",
-                              "& fieldset": { borderColor: "divider" },
-                              "&:hover fieldset": { borderColor: "primary.light" },
-                            },
-                            "& .MuiInputLabel-root": { color: "text.secondary" },
-                          }}
+                          sx={textFieldStyle}
                         />
                       )}
                     />
@@ -616,7 +531,6 @@ const AddressNegocio: React.FC<AddressNegocioProps> = ({ slug }) => {
             </Paper>
           </Grid>
 
-          {/* Resumen a la derecha (en desktop), debajo en mobile */}
           <Grid item xs={12} md={5}>
             <Box sx={{ position: { md: "sticky" }, top: { md: 100 } }}>
               {CartSummary()}
@@ -626,6 +540,47 @@ const AddressNegocio: React.FC<AddressNegocioProps> = ({ slug }) => {
       </Container>
     </Fade>
   );
+};
+
+// Estilos reutilizables
+const textFieldStyle = {
+  "& .MuiOutlinedInput-root": {
+    borderRadius: 3,
+    bgcolor: "background.default",
+    "& fieldset": { borderColor: "divider" },
+    "&:hover fieldset": { borderColor: "primary.light" },
+  },
+  "& .MuiInputLabel-root": { color: "text.secondary" },
+};
+
+const selectStyle = {
+  borderRadius: 3,
+  bgcolor: "background.default",
+  "& .MuiOutlinedInput-notchedOutline": { borderColor: "divider" },
+  "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "primary.light" },
+};
+
+const toggleButtonStyle = {
+  px: 4,
+  py: 2,
+  textTransform: "none",
+  fontWeight: 600,
+  borderRadius: 3,
+  display: "flex",
+  alignItems: "center",
+  gap: 1.5,
+  bgcolor: "background.paper",
+  boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+  transition: "all 0.25s ease",
+  "&:hover": {
+    boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
+    transform: "translateY(-1px)",
+  },
+  "&.Mui-selected": {
+    bgcolor: "primary.main",
+    color: "#fff",
+    boxShadow: "0 6px 16px rgba(0,0,0,0.15)",
+  },
 };
 
 export default AddressNegocio;

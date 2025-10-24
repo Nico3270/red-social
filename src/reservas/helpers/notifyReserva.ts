@@ -73,7 +73,7 @@ export async function notifyReservaConfirmadaCliente({
             variables = [nombre_cliente, nombre_negocio, fechaHora, enlace_cancelar, descripcion || ''];
             // console.log({variables});
             placeholderNames = ['nombre_cliente', 'nombre_negocio', 'fecha_hora', 'enlace_cancelar', 'descripcion'];
-            languageCode = "es_CO"
+            languageCode = "es"
             break;
 
         case PlantillaWhatsApp.CONFIRMAR_NEGOCIO_RESERVA:
