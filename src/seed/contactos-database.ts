@@ -29,7 +29,7 @@ export async function sendEmail({
     sendSmtpEmail.params = params;
 
     const response = await apiInstance.sendTransacEmail(sendSmtpEmail);
-    // console.log("✅ Correo enviado correctamente:", response);
+    console.log("✅ Correo enviado correctamente:", response);
     return response;
   } catch (error) {
     // console.error("❌ Error al enviar correo:", error);
@@ -94,7 +94,7 @@ const prisma = new PrismaClient();
       });
 
       if (existingContact) {
-        // console.log(`⚠️ Contacto con correo ${correo} o NIT ${nit} ya existe. Saltando...`);
+        console.log(`⚠️ Contacto con correo ${correo} o NIT ${nit} ya existe. Saltando...`);
         continue;
       }
 
@@ -140,6 +140,7 @@ const prisma = new PrismaClient();
     console.error("❌ Error general en importContacts:", error instanceof Error ? error.message : String(error));
     process.exit(1);
   } finally {
+    console.log("Proceso finalizado con exito");
     await prisma.$disconnect();
   }
 })();

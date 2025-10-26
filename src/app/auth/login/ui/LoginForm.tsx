@@ -77,7 +77,7 @@ export const LoginForm = () => {
           
           <h1 className={`text-3xl font-bold text-gray-800 ${titleFont.className}`}>Bienvenido a Myckeo</h1>
         </div>
-        <h1 className="text-4xl font-bold mb-4 text-center">Iniciar Sesión</h1>
+        <h1 className="text-4xl font-bold mb-4 text-center text-gray-900">Iniciar Sesión</h1>
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
             <label htmlFor="email" className="block font-bold text-gray-800">
@@ -119,7 +119,7 @@ export const LoginForm = () => {
               <input type="checkbox" className="mr-2" />
               <span>Recuérdame</span>
             </label>
-            <Link href="/forgot-password" className="text-red-600 hover:underline">
+            <Link href="/auth/forgot-password" className="text-red-600 hover:underline">
               Olvidé mi contraseña
             </Link>
           </div>
