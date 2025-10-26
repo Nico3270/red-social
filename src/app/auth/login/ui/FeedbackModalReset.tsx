@@ -40,13 +40,12 @@ export default function FeedbackModal({
           )}
 
           <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-            {success ? 'Enlace enviado' : 'Error'}
+            {success ? 'Éxito' : 'Error'}
           </h3>
 
-          <div
-            className="text-sm text-gray-600 dark:text-gray-300 prose prose-sm max-w-none"
-            dangerouslySetInnerHTML={{ __html: message }}
-          />
+          <p className="text-sm text-gray-600 dark:text-gray-300">
+            {message}
+          </p>
 
           <button
             onClick={onClose}
@@ -58,7 +57,7 @@ export default function FeedbackModal({
               success ? 'focus:ring-blue-500' : 'focus:ring-gray-500'
             }`}
           >
-            {success ? 'Entendido' : 'Cerrar'}
+            {success ? 'Ir a inicio de sesión' : 'Cerrar'}
           </button>
         </div>
       </motion.div>
