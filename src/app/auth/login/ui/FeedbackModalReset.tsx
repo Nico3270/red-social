@@ -11,7 +11,6 @@ interface FeedbackModalProps {
 }
 
 export default function FeedbackModal({
-  isOpen,
   success,
   message,
   onClose,

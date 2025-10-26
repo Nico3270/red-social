@@ -53,7 +53,7 @@ export default function ForgotPasswordForm() {
           message: result.message || 'Ocurrió un error. Intenta de nuevo.',
         });
       }
-    } catch (error) {
+    } catch  {
       setModal({
         open: true,
         success: false,
