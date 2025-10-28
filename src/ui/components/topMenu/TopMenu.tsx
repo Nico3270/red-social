@@ -3,10 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import {
-
-  FaMapMarkerAlt,
-} from "react-icons/fa";
+import { FaMapMarkerAlt } from "react-icons/fa";
 import { SideBar } from "../side-bar/SideBar";
 import { MenuSectionsBar } from "../menu-section-bar/MenuSectionBar";
 import { useCartCatalogoStore } from "@/store/carro/carro-store";
@@ -16,11 +13,10 @@ import { useSession } from "next-auth/react";
 import { usePreferencesStore } from "@/store/preferences/preferences-store";
 import { motion, AnimatePresence } from "framer-motion";
 import { Alert, Box, Button, CircularProgress, FormControl, InputLabel, MenuItem, Select, Typography } from "@mui/material";
-import colombia from "@/config/colombia.json"; // Tu JSON de Colombia
-import { updateUserPreferences } from "@/preferences/actions/updateUserPreferences"; // Ajusta la ruta según sea necesario
+import colombia from "@/config/colombia.json";
+import { updateUserPreferences } from "@/preferences/actions/updateUserPreferences";
 import { titleFont } from "@/config/fonts";
 import SearchBar from "@/busqueda/componentes/SearchBar";
-
 
 interface ColombiaDepartment {
   id: number;
@@ -30,13 +26,13 @@ interface ColombiaDepartment {
 
 const UpdateLocationModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
   const { data: session } = useSession();
-  const { ciudad, departamento, setUbicacion } = usePreferencesStore();
+  const { ciudad, departamento, setUbicacion, setGeo } = usePreferencesStore(); // ← setGeo agregado
   const [selectedDepartamento, setSelectedDepartamento] = useState(departamento);
   const [selectedCity, setSelectedCity] = useState(ciudad);
   const [cities, setCities] = useState<string[]>([]);
   const [alert, setAlert] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const [isSaving, setIsSaving] = useState(false);
-  const [showThankYou, setShowThankYou] = useState(false); // Estado para mensaje de agradecimiento
+  const [showThankYou, setShowThankYou] = useState(false);
 
   useEffect(() => {
     if (selectedDepartamento) {
@@ -58,13 +54,14 @@ const UpdateLocationModal: React.FC<{ isOpen: boolean; onClose: () => void }> = 
 
     // Actualizar store
     setUbicacion(selectedCity, selectedDepartamento);
+    setGeo(null, null); // ← Limpia GPS para forzar feed por ciudad (viaje)
 
     // Si autenticado, guardar en DB
     if (session?.user) {
       const response = await updateUserPreferences({
         ciudad: selectedCity,
         departamento: selectedDepartamento,
-        preferencias: [], // Pasar array vacío para cumplir con el tipo
+        preferencias: [],
       });
       if (!response.ok) {
         setAlert({ type: 'error', message: response.message });
@@ -74,8 +71,8 @@ const UpdateLocationModal: React.FC<{ isOpen: boolean; onClose: () => void }> = 
     }
 
     setIsSaving(false);
-    setShowThankYou(true); // Mostrar mensaje de agradecimiento
-    setTimeout(onClose, 3000); // Cierra modal tras 3 segundos
+    setShowThankYou(true);
+    setTimeout(onClose, 3000);
   };
 
   return (
@@ -134,7 +131,6 @@ const UpdateLocationModal: React.FC<{ isOpen: boolean; onClose: () => void }> = 
 
                   {alert && <Alert severity={alert.type} sx={{ mb: 2, borderRadius: '12px' }}>{alert.message}</Alert>}
 
-                  {/* Selector Ubicación */}
                   <FormControl fullWidth variant="outlined" sx={{ mb: 2 }}>
                     <InputLabel shrink>Departamento</InputLabel>
                     <Select
@@ -199,18 +195,17 @@ export const TopMenu = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isCrearModalOpen, setIsCrearModalOpen] = useState(false);
   const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
-  const totalItemsInCart = useCartCatalogoStore((state) =>
-    state.getTotalItems()
-  );
-  const totalFavorites = useFavoritesCatalogoStore((state) =>
-    state.getTotalItems()
-  );
+  const totalItemsInCart = useCartCatalogoStore((state) => state.getTotalItems());
+  const totalFavorites = useFavoritesCatalogoStore((state) => state.getTotalItems());
   const { data: session } = useSession();
-  const isNegocio = session?.user.role === "negocio";
-  const { ciudad } = usePreferencesStore();
+  const isNegocio = session?.user?.role === "negocio";
+  const { ciudad, userLat, userLong } = usePreferencesStore();
 
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
+
+  // Mostrar ícono GPS si hay coordenadas
+  const showGpsIcon = userLat != null && userLong != null;
 
   return (
     <header className="fixed top-0 w-full z-50 bg-white shadow-md border-b">
@@ -222,24 +217,16 @@ export const TopMenu = () => {
             alt="Logo Myckeo"
             width={100}
             height={100}
-
             className="rounded-full"
             priority
           />
           <span
-            className={`
-      text-2xl font-bold text-gray-900 
-      tracking-tight relative
-      ${titleFont.className}
-    `}
-            style={{
-              textShadow: "1px 1px 2px rgba(0,0,0,0.15)", // sombra sutil
-            }}
+            className={`text-2xl font-bold text-gray-900 tracking-tight relative ${titleFont.className}`}
+            style={{ textShadow: "1px 1px 2px rgba(0,0,0,0.15)" }}
           >
             Myckeo
           </span>
         </Link>
-
 
         {/* Barra de búsqueda centrada con botón de ubicación al lado */}
         <div className="flex items-center w-full max-w-md mx-4">
@@ -250,8 +237,9 @@ export const TopMenu = () => {
             onClick={() => setIsLocationModalOpen(true)}
             className="ml-4 flex items-center bg-white rounded-full shadow-md border border-gray-300 px-4 py-2 text-gray-800 hover:bg-gray-100 transition-colors"
           >
-            <FaMapMarkerAlt className="text-gray-500 mr-2" />
-            <span className="font-medium">{ciudad || 'Seleccionar Ciudad'}</span>
+            <FaMapMarkerAlt className={`mr-2 ${showGpsIcon ? 'text-green-600' : 'text-gray-500'}`} />
+            <span className="font-medium truncate max-w-[120px]">{ciudad || 'Seleccionar Ciudad'}</span>
+            {showGpsIcon && <span className="ml-1 text-xs text-green-600">GPS</span>}
           </button>
         </div>
 
@@ -261,13 +249,13 @@ export const TopMenu = () => {
           <Link
             href="/"
             className="
-      group relative flex flex-col items-center justify-center 
-      w-12 h-12 md:w-14 md:h-14 
-      rounded-xl border border-gray-200 
-      bg-white shadow-md 
-      hover:shadow-lg hover:border-blue-200
-      transition-all duration-300
-    "
+              group relative flex flex-col items-center justify-center 
+              w-12 h-12 md:w-14 md:h-14 
+              rounded-xl border border-gray-200 
+              bg-white shadow-md 
+              hover:shadow-lg hover:border-blue-200
+              transition-all duration-300
+            "
           >
             <Image
               src="/imgs/iconos/home.png"
@@ -276,11 +264,11 @@ export const TopMenu = () => {
               height={24}
               unoptimized
               className="
-        w-5 h-5 md:w-6 md:h-6 text-gray-600 
-        transform transition-all duration-300 
-        group-hover:scale-110 group-hover:-translate-y-0.5 
-        group-hover:rotate-3
-      "
+                w-5 h-5 md:w-6 md:h-6 text-gray-600 
+                transform transition-all duration-300 
+                group-hover:scale-110 group-hover:-translate-y-0.5 
+                group-hover:rotate-3
+              "
             />
             <span className="text-[10px] md:text-[11px] font-medium mt-1 text-gray-500 group-hover:text-blue-600">
               Inicio
@@ -291,35 +279,32 @@ export const TopMenu = () => {
           <Link
             href={mounted && totalItemsInCart > 0 ? "/carro" : "/empty"}
             className="
-      group relative flex flex-col items-center justify-center 
-      w-12 h-12 md:w-14 md:h-14 
-      rounded-xl border border-gray-200 
-      bg-white shadow-md 
-      hover:shadow-lg hover:border-blue-200
-      transition-all duration-300
-    "
+              group relative flex flex-col items-center justify-center 
+              w-12 h-12 md:w-14 md:h-14 
+              rounded-xl border border-gray-200 
+              bg-white shadow-md 
+              hover:shadow-lg hover:border-blue-200
+              transition-all duration-300
+            "
           >
             <Image
               src="/imgs/iconos/cart.png"
-              alt="Inicio"
+              alt="Carrito"
               width={24}
               height={24}
               unoptimized
               className="
-        w-5 h-5 md:w-6 md:h-6 text-gray-600 
-        transform transition-all duration-300 
-        group-hover:scale-110 group-hover:-translate-y-0.5 
-        group-hover:rotate-3
-      "
+                w-5 h-5 md:w-6 md:h-6 text-gray-600 
+                transform transition-all duration-300 
+                group-hover:scale-110 group-hover:-translate-y-0.5 
+                group-hover:rotate-3
+              "
             />
-
-            {/* 👇 Evita mismatch usando mounted */}
             {mounted && totalItemsInCart > 0 && (
               <span className="absolute -top-1 -right-1 bg-emerald-600 text-white font-bold rounded-full text-[10px] min-w-[18px] h-[18px] flex items-center justify-center shadow-md">
                 {totalItemsInCart}
               </span>
             )}
-
             <span className="text-[10px] md:text-[11px] font-medium mt-1 text-gray-500 group-hover:text-emerald-600">
               Carro
             </span>
@@ -329,26 +314,26 @@ export const TopMenu = () => {
           <Link
             href="/favoritos"
             className="
-      group relative flex flex-col items-center justify-center 
-      w-12 h-12 md:w-14 md:h-14 
-      rounded-xl border border-gray-200 
-      bg-white shadow-md 
-      hover:shadow-lg hover:border-blue-200
-      transition-all duration-300
-    "
+              group relative flex flex-col items-center justify-center 
+              w-12 h-12 md:w-14 md:h-14 
+              rounded-xl border border-gray-200 
+              bg-white shadow-md 
+              hover:shadow-lg hover:border-blue-200
+              transition-all duration-300
+            "
           >
             <Image
               src="/imgs/iconos/heart.png"
-              alt="Inicio"
+              alt="Favoritos"
               width={24}
               height={24}
               unoptimized
               className="
-        w-5 h-5 md:w-6 md:h-6 text-gray-600 
-        transform transition-all duration-300 
-        group-hover:scale-110 group-hover:-translate-y-0.5 
-        group-hover:rotate-3
-      "
+                w-5 h-5 md:w-6 md:h-6 text-gray-600 
+                transform transition-all duration-300 
+                group-hover:scale-110 group-hover:-translate-y-0.5 
+                group-hover:rotate-3
+              "
             />
             {mounted && totalFavorites > 0 && (
               <span className="absolute -top-1 -right-1 bg-red-500 text-white font-bold rounded-full text-[10px] min-w-[18px] h-[18px] flex items-center justify-center shadow-md">
@@ -364,26 +349,26 @@ export const TopMenu = () => {
             <button
               onClick={() => setIsCrearModalOpen(true)}
               className="
-      group relative flex flex-col items-center justify-center 
-      w-12 h-12 md:w-14 md:h-14 
-      rounded-xl border border-gray-200 
-      bg-white shadow-md 
-      hover:shadow-lg hover:border-blue-200
-      transition-all duration-300
-    "
+                group relative flex flex-col items-center justify-center 
+                w-12 h-12 md:w-14 md:h-14 
+                rounded-xl border border-gray-200 
+                bg-white shadow-md 
+                hover:shadow-lg hover:border-blue-200
+                transition-all duration-300
+              "
             >
               <Image
                 src="/imgs/iconos/plus.png"
-                alt="Inicio"
+                alt="Crear"
                 width={24}
                 height={24}
                 unoptimized
                 className="
-        w-5 h-5 md:w-6 md:h-6 text-gray-600 
-        transform transition-all duration-300 
-        group-hover:scale-110 group-hover:-translate-y-0.5 
-        group-hover:rotate-3
-      "
+                  w-5 h-5 md:w-6 md:h-6 text-gray-600 
+                  transform transition-all duration-300 
+                  group-hover:scale-110 group-hover:-translate-y-0.5 
+                  group-hover:rotate-3
+                "
               />
               <span className="text-[10px] md:text-[11px] font-medium mt-1 text-gray-500 group-hover:text-purple-600">
                 Crear
@@ -395,26 +380,26 @@ export const TopMenu = () => {
           <button
             onClick={() => setIsDrawerOpen(true)}
             className="
-      group relative flex flex-col items-center justify-center 
-      w-12 h-12 md:w-14 md:h-14 
-      rounded-xl border border-gray-200 
-      bg-white shadow-md 
-      hover:shadow-lg hover:border-blue-200
-      transition-all duration-300
-    "
+              group relative flex flex-col items-center justify-center 
+              w-12 h-12 md:w-14 md:h-14 
+              rounded-xl border border-gray-200 
+              bg-white shadow-md 
+              hover:shadow-lg hover:border-blue-200
+              transition-all duration-300
+            "
           >
             <Image
               src="/imgs/iconos/profile.png"
-              alt="Inicio"
+              alt="Perfil"
               width={24}
               height={24}
               unoptimized
               className="
-        w-5 h-5 md:w-6 md:h-6 text-gray-600 
-        transform transition-all duration-300 
-        group-hover:scale-110 group-hover:-translate-y-0.5 
-        group-hover:rotate-3
-      "
+                w-5 h-5 md:w-6 md:h-6 text-gray-600 
+                transform transition-all duration-300 
+                group-hover:scale-110 group-hover:-translate-y-0.5 
+                group-hover:rotate-3
+              "
             />
             <span className="text-[10px] md:text-[11px] font-medium mt-1 text-gray-500 group-hover:text-indigo-600">
               Perfil
@@ -426,14 +411,8 @@ export const TopMenu = () => {
       {/* Drawer lateral */}
       <SideBar open={isDrawerOpen} toggleDrawer={setIsDrawerOpen} />
       <MenuSectionsBar />
-      <CrearModal
-        isOpen={isCrearModalOpen}
-        onClose={() => setIsCrearModalOpen(false)}
-      />
-      <UpdateLocationModal
-        isOpen={isLocationModalOpen}
-        onClose={() => setIsLocationModalOpen(false)}
-      />
+      <CrearModal isOpen={isCrearModalOpen} onClose={() => setIsCrearModalOpen(false)} />
+      <UpdateLocationModal isOpen={isLocationModalOpen} onClose={() => setIsLocationModalOpen(false)} />
     </header>
   );
 };

@@ -26,6 +26,8 @@ export const productSelect = Prisma.validator<Prisma.ProductSelect>()({
       fotoPerfil: true,
       ciudad: true,
       departamento: true,
+      latitud: true,     // ← AÑADIDO
+      longitud: true,
     },
   },
   createdAt: true,
@@ -49,7 +51,9 @@ export const publicationSelect = Prisma.validator<Prisma.PublicacionSelect>()({
       nombre: true, 
       fotoPerfil: true, 
       ciudad: true, 
-      departamento: true  // Útil para filtros locales en feed
+      departamento: true,  // Útil para filtros locales en feed
+      latitud: true,     // ← AÑADIDO
+      longitud: true,
     } 
   },
   numLikes: true,
@@ -98,6 +102,7 @@ export const publicationSelect = Prisma.validator<Prisma.PublicacionSelect>()({
           apellido: true,
           fotoPerfil: true,
           username: true,
+          
         },
       },
     },
@@ -126,6 +131,8 @@ export const serviceSelect = Prisma.validator<Prisma.ServicioSelect>()({
       fotoPerfil: true,
       ciudad: true,
       departamento: true,
+      latitud: true,     // ← AÑADIDO
+      longitud: true,
     },
   },
   createdAt: true,
@@ -148,6 +155,8 @@ export const businessSelect = Prisma.validator<Prisma.NegocioSelect>()({
   secciones: { select: { section: { select: { id: true, slug: true } } } },
   estado: true,
   createdAt: true,
+  latitud: true,     // ← AÑADIDO
+  longitud: true,
 });
 export type RawBusiness = Prisma.NegocioGetPayload<{ select: typeof businessSelect }>;
 

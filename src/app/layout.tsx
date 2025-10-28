@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Provider } from "@/providers/Provider";
 import { InfoEmpresa as empresa } from "@/config/config";
-import PreferencesModalWrapper from "@/preferences/componentes/PreferencesModalWrapper";
 import ReactQueryProvider from "@/feed/componentes/ReactQueryProvider";
 
 
@@ -71,9 +70,7 @@ export default async function RootLayout({
       </head>
       <body className="bg-white">
         <Provider>
-          <PreferencesModalWrapper>
             <ReactQueryProvider>{children}</ReactQueryProvider>
-          </PreferencesModalWrapper>
         </Provider>
       </body>
     </html>

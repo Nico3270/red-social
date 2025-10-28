@@ -13,37 +13,40 @@ import { useInView } from 'react-intersection-observer';
 import { toast } from 'sonner';
 import FeedRenderer from "@/publicaciones/componentes/FeedRederer";
 import { CircularProgress } from "@mui/material";
+import { useUserLocation } from "@/hooks/useUserLocation"; // ← NUEVO: Hook de ubicación
 
 // EXTENSIÓN: Agrega categoriaSlug a params (para temático futuro)
 interface ExtendedFeedQueryParams extends FeedQueryParams {
   userId?: string | null;
-  categoriaSlug?: string;  // Para filtrado temático
+  categoriaSlug?: string;
+  userLat?: number | null;   // ← NUEVO
+  userLong?: number | null;  // ← NUEVO
 }
 
 // Props opcionales (default vacío para compatibilidad global)
 interface FeedComponentProps {
   categoriaSlug?: string;
-  categoriaNombre?: string;  // Para UX en loaders/toasts
+  categoriaNombre?: string;
 }
 
-// Tipo local mirror de backend ExtendedParams (para aserción segura)
 type BackendExtendedParams = ExtendedFeedQueryParams & {
-  categoriaSlug: string;  // Requerido para temático
+  categoriaSlug: string;
   cursor?: string;
 };
 
 export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedComponentProps = {}) {
   const { data: session } = useSession();
-  const { ciudad, departamento, seenIds, addSeenId } = usePreferencesStore();  // Simplificado: solo ciudad/depto/seen
+  const { ciudad, departamento, userLat, userLong, seenIds, addSeenId } = usePreferencesStore();
   const [followedBusinessIds, setFollowedBusinessIds] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState<"Publicaciones" | "Productos" | "Servicios" | "Negocios">("Publicaciones");
-  const [prevItemsLength, setPrevItemsLength] = useState(0); // Track para marking lazy de nuevos items
+  const [prevItemsLength, setPrevItemsLength] = useState(0);
 
-  // console.log({ categoriaSlug });
+  // ← NUEVO: Ejecuta detección de ubicación en background
+  useUserLocation();
 
-  // Params simplificados: Solo ciudad/depto + essentials (sin preferencias/secciones)
+  // Params: Incluye lat/long si disponibles
   const params = useMemo<ExtendedFeedQueryParams | null>(() => {
-    if (!ciudad) return null;  // Si no ciudad, no fetch
+    if (!ciudad) return null;
     const baseParams: ExtendedFeedQueryParams = {
       ciudad,
       departamento,
@@ -51,9 +54,11 @@ export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedCo
       limit: 20,
       seenIds,
       userId: session?.user?.id || null,
+      userLat: userLat ?? undefined,
+      userLong: userLong ?? undefined,
     };
     return categoriaSlug ? { ...baseParams, categoriaSlug } : baseParams;
-  }, [ciudad, departamento, followedBusinessIds, seenIds, session?.user?.id, categoriaSlug]);  // Dependencias limpias
+  }, [ciudad, departamento, followedBusinessIds, seenIds, session?.user?.id, categoriaSlug, userLat, userLong]);
 
   // Carga follows
   useEffect(() => {
@@ -71,20 +76,19 @@ export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedCo
     loadFollows();
   }, [session]);
 
-  // Si no ciudad, toast y loader (UX elegante)
+  // Toast si no hay ciudad (fallback Bogotá ya manejado en hook)
   useEffect(() => {
     if (!ciudad && params === null) {
       toast.info('Configura tu ciudad en preferencias para ver feeds locales.');
     }
   }, [ciudad, params]);
 
-  // Helper para queryKey flexible
+  // Helpers (sin cambios)
   const getQueryKey = useCallback((type: string): readonly (string | ExtendedFeedQueryParams | null)[] => {
     const key = ['feed-' + type, categoriaSlug || 'global', params];
     return key;
   }, [categoriaSlug, params]);
 
-  // Helper para queryFn condicional (con log debug)
   const getQueryFn = useCallback((type: "publications" | "products" | "services" | "businesses") => 
     async ({ pageParam }: { pageParam?: string }) => {
       if (!params) throw new Error("Params no listos");
@@ -98,19 +102,12 @@ export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedCo
     }, [params, categoriaSlug]
   );
 
-  // Genérico flexible para queryKey
   type FlexibleQueryKey = readonly (string | ExtendedFeedQueryParams | null)[];
 
-  const publicationsQuery = useInfiniteQuery<
-    FeedResponse, 
-    Error, 
-    InfiniteData<FeedResponse>, 
-    FlexibleQueryKey, 
-    string | undefined
-  >({
+  const publicationsQuery = useInfiniteQuery<FeedResponse, Error, InfiniteData<FeedResponse>, FlexibleQueryKey, string | undefined>({
     queryKey: getQueryKey('publicaciones'),
     queryFn: getQueryFn('publications'),
-    enabled: !!params,  // Solo si params listos (ciudad)
+    enabled: !!params,
     getNextPageParam: (lastPage) => lastPage.nextCursor,
     initialPageParam: undefined,
     staleTime: categoriaSlug ? 2 * 60 * 1000 : 5 * 60 * 1000,
@@ -120,13 +117,7 @@ export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedCo
     structuralSharing: false,
   });
 
-  const productsQuery = useInfiniteQuery<
-    FeedResponse, 
-    Error, 
-    InfiniteData<FeedResponse>, 
-    FlexibleQueryKey, 
-    string | undefined
-  >({
+  const productsQuery = useInfiniteQuery<FeedResponse, Error, InfiniteData<FeedResponse>, FlexibleQueryKey, string | undefined>({
     queryKey: getQueryKey('productos'),
     queryFn: getQueryFn('products'),
     enabled: !!params && activeTab === "Productos",
@@ -135,18 +126,12 @@ export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedCo
     staleTime: 2 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
     refetchOnWindowFocus: false,
-    refetchOnMount: true,  // Refresca al activar tab
+    refetchOnMount: true,
     retry: 3,
     structuralSharing: false,
   });
 
-  const servicesQuery = useInfiniteQuery<
-    FeedResponse, 
-    Error, 
-    InfiniteData<FeedResponse>, 
-    FlexibleQueryKey, 
-    string | undefined
-  >({
+  const servicesQuery = useInfiniteQuery<FeedResponse, Error, InfiniteData<FeedResponse>, FlexibleQueryKey, string | undefined>({
     queryKey: getQueryKey('servicios'),
     queryFn: getQueryFn('services'),
     enabled: !!params && activeTab === "Servicios",
@@ -160,13 +145,7 @@ export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedCo
     structuralSharing: false,
   });
 
-  const businessesQuery = useInfiniteQuery<
-    FeedResponse, 
-    Error, 
-    InfiniteData<FeedResponse>, 
-    FlexibleQueryKey, 
-    string | undefined
-  >({
+  const businessesQuery = useInfiniteQuery<FeedResponse, Error, InfiniteData<FeedResponse>, FlexibleQueryKey, string | undefined>({
     queryKey: getQueryKey('negocios'),
     queryFn: getQueryFn('businesses'),
     enabled: !!params && activeTab === "Negocios",
@@ -180,7 +159,6 @@ export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedCo
     structuralSharing: false,
   });
 
-  // Queries mapeadas: Memoizado para evitar recreación en cada render y estabilizar dependencias
   const queries = useMemo(() => ({
     Publicaciones: publicationsQuery,
     Productos: productsQuery,
@@ -188,10 +166,9 @@ export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedCo
     Negocios: businessesQuery,
   }), [publicationsQuery, productsQuery, servicesQuery, businessesQuery]);
 
-  // Sentinel para infinite scroll (pre-fetch suave)
   const { ref: sentinelRef, inView } = useInView({
     threshold: 0,
-    rootMargin: '200px', // Pre-carga antes de llegar al fondo
+    rootMargin: '200px',
   });
 
   useEffect(() => {
@@ -201,7 +178,6 @@ export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedCo
     }
   }, [inView, activeTab, queries]);
 
-  // Manejo de errores con retry manual
   useEffect(() => {
     const currentQuery = queries[activeTab];
     if (currentQuery.error) {
@@ -218,7 +194,6 @@ export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedCo
     }
   }, [activeTab, queries, categoriaNombre]);
 
-  // Items por tab: FlatMap + dedup (sin sort para preservar orden geo + grupo del backend)
   const getItemsForTab = useCallback((tab: typeof activeTab): FeedItem[] => {
     const query = queries[tab];
     const allItems = query.data?.pages.flatMap((page) => page.items) || [];
@@ -227,7 +202,6 @@ export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedCo
       console.log(`📊 getItemsForTab(${tab}): FlatMap ${allItems.length} items from ${query.data?.pages.length || 0} pages`);
     }
     
-    // Deduplica: Prefixed solo si categoriaSlug (global: id puro para dinamismo)
     const uniqueMap = new Map<string, FeedItem>();
     allItems.forEach((item) => {
       const prefixedId = categoriaSlug ? `${categoriaSlug}-${item.id}` : item.id;
@@ -245,7 +219,6 @@ export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedCo
     return uniqueItems;
   }, [queries, categoriaSlug]);
 
-  // Mark as seen lazy: Solo nuevos items (delta con prevLength; no satura seenIds)
   const markAsSeen = useCallback(() => {
     const currentItems = getItemsForTab(activeTab);
     const currentLength = currentItems.length;
@@ -265,7 +238,6 @@ export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedCo
     }
   }, [activeTab, getItemsForTab, categoriaSlug, addSeenId, seenIds, prevItemsLength]);
 
-  // Lazy marking: Post-fetch success y solo si hay datos nuevos
   useEffect(() => {
     const currentQuery = queries[activeTab];
     if (currentQuery.isSuccess && currentQuery.data?.pages.length > 0) {
@@ -273,15 +245,10 @@ export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedCo
     }
   }, [activeTab, queries, markAsSeen]);
 
-  // Estado de loading: Si no params (sin ciudad), loader específico
   const currentQuery = queries[activeTab];
   const items = getItemsForTab(activeTab);
-  const isLoading =
-  !params || // <- mientras no haya ciudad definida
-  currentQuery.isPending ||
-  (currentQuery.isFetching && items.length === 0);
+  const isLoading = !params || currentQuery.isPending || (currentQuery.isFetching && items.length === 0);
 
-  // Loader: Spinner elegante, contextual (incluye si no ciudad)
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen">
