@@ -65,7 +65,8 @@ export default function NewAccountPage() {
                   Explora catálogos, sigue negocios, deja reseñas multimedia y conecta con comunidades locales.
                 </p>
                 <div className="relative w-full h-64 sm:h-80 mt-2 sm:mt-4 rounded-2xl overflow-hidden">
-                  <Image src="/imgs/perfil-usuario.png" alt="Perfil Personal" fill className="object-cover" />
+                  <Image src="/imgs/perfil-usuario.png" alt="Perfil Personal" fill className="object-contain"
+  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px" />
                 </div>
               </motion.div>
 
@@ -82,11 +83,12 @@ export default function NewAccountPage() {
                 </p>
                 <div className="relative w-full h-64 sm:h-80 mt-2 sm:mt-4 rounded-2xl overflow-hidden">
                   <Image
-                    src="/imgs/perfil-negocio2.png"
-                    alt="Perfil Negocio"
-                    fill
-                    className="object-cover"
-                  />
+  src="/imgs/perfil-negocio2.png"
+  alt="Perfil Negocio"
+  fill
+  className="object-cover"
+  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px"
+/>
                 </div>
               </motion.div>
             </div>
@@ -105,11 +107,12 @@ export default function NewAccountPage() {
 
             <div className="relative w-full sm:w-3/4 h-72 sm:h-96 mt-4 rounded-2xl overflow-hidden justify-start">
               <Image
-                src="/imgs/cuenta-negocio.png"
-                alt="Perfil Negocio"
-                fill
-                className="object-contain"
-              />
+  src="/imgs/cuenta-negocio.png"
+  alt="Perfil Negocio"
+  fill
+  className="object-contain"
+  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px"
+/>
             </div>
 
 

@@ -257,7 +257,7 @@ export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedCo
           {categoriaNombre 
             ? `Cargando ${activeTab.toLowerCase()} en ${categoriaNombre}...` 
             : !ciudad 
-            ? 'Configura tu ciudad para ver feeds locales...' 
+            ? 'Estamos preparando un feed personalizado para ti...' 
             : `Cargando tu feed de ${activeTab.toLowerCase()}...`}
         </p>
       </div>

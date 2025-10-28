@@ -6,9 +6,9 @@ import { InfoEmpresa as empresa } from "@/config/config";
 
 export default function EmptyPage() {
   return (
-    <div className="container mx-auto p-6 text-center">
+    <div className="container mx-auto p-6 text-center sm:mt-40 mb-20">
       {/* Título */}
-      <h1 className="text-4xl font-bold mb-6">Tu carrito está vacío</h1>
+      <h1 className="text-4xl font-bold mb-6 sm:mt-5">Tu carrito está vacío</h1>
       
       {/* Imagen del carrito vacío */}
       <Image

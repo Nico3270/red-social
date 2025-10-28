@@ -18,9 +18,8 @@ import { mapToFeedItem } from "./mapItem";
 import { isRawProduct, isRawPublication, isRawService, isRawBusiness } from "../feed.interfaces";
 import { EnhancedPublicacion } from "@/publicaciones/interfaces/enhancedPublicacion.interface";
 
-// === 1. TODAS LAS FUNCIONES FETCH PRIMERO ===
+// === 1. FUNCIONES FETCH ===
 
-// Fetch para Products - Ciudad
 async function fetchProductsCity(params: ExtendedParams): Promise<RawProduct[]> {
   const where: Prisma.ProductWhereInput = {
     status: "disponible",
@@ -38,16 +37,12 @@ async function fetchProductsCity(params: ExtendedParams): Promise<RawProduct[]> 
   });
 }
 
-// Fetch para Products - Depto excluyendo ciudad
 async function fetchProductsDept(params: ExtendedParams): Promise<RawProduct[]> {
   const where: Prisma.ProductWhereInput = {
     status: "disponible",
     id: { notIn: params.seenIds.filter((id: string) => id.startsWith("product-")) },
     category: { slug: params.categoriaSlug },
-    negocio: {
-      departamento: params.departamento,
-      ciudad: { not: params.ciudad },
-    },
+    negocio: { departamento: params.departamento, ciudad: { not: params.ciudad } },
   };
   return prisma.product.findMany({
     where,
@@ -59,7 +54,6 @@ async function fetchProductsDept(params: ExtendedParams): Promise<RawProduct[]> 
   });
 }
 
-// Fetch para Products - Nacional
 async function fetchProductsNational(params: ExtendedParams): Promise<RawProduct[]> {
   const where: Prisma.ProductWhereInput = {
     status: "disponible",
@@ -76,15 +70,11 @@ async function fetchProductsNational(params: ExtendedParams): Promise<RawProduct
   });
 }
 
-// Fetch para Services - Ciudad
 async function fetchServicesCity(params: ExtendedParams): Promise<RawService[]> {
   const where: Prisma.ServicioWhereInput = {
     status: "disponible",
     id: { notIn: params.seenIds.filter((id: string) => id.startsWith("serv-")) },
-    negocio: {
-      ciudad: params.ciudad,
-      categorias: { some: { category: { slug: params.categoriaSlug } } },
-    },
+    negocio: { ciudad: params.ciudad, categorias: { some: { category: { slug: params.categoriaSlug } } } },
   };
   return prisma.servicio.findMany({
     where,
@@ -96,7 +86,6 @@ async function fetchServicesCity(params: ExtendedParams): Promise<RawService[]> 
   });
 }
 
-// Fetch para Services - Depto excluyendo ciudad
 async function fetchServicesDept(params: ExtendedParams): Promise<RawService[]> {
   const where: Prisma.ServicioWhereInput = {
     status: "disponible",
@@ -117,14 +106,11 @@ async function fetchServicesDept(params: ExtendedParams): Promise<RawService[]> 
   });
 }
 
-// Fetch para Services - Nacional
 async function fetchServicesNational(params: ExtendedParams): Promise<RawService[]> {
   const where: Prisma.ServicioWhereInput = {
     status: "disponible",
     id: { notIn: params.seenIds.filter((id: string) => id.startsWith("serv-")) },
-    negocio: {
-      categorias: { some: { category: { slug: params.categoriaSlug } } },
-    },
+    negocio: { categorias: { some: { category: { slug: params.categoriaSlug } } } },
   };
   return prisma.servicio.findMany({
     where,
@@ -136,7 +122,6 @@ async function fetchServicesNational(params: ExtendedParams): Promise<RawService
   });
 }
 
-// Fetch para Businesses - Ciudad
 async function fetchBusinessesCity(params: ExtendedParams): Promise<RawBusiness[]> {
   const where: Prisma.NegocioWhereInput = {
     estado: "activo",
@@ -154,7 +139,6 @@ async function fetchBusinessesCity(params: ExtendedParams): Promise<RawBusiness[
   });
 }
 
-// Fetch para Businesses - Depto excluyendo ciudad
 async function fetchBusinessesDept(params: ExtendedParams): Promise<RawBusiness[]> {
   const where: Prisma.NegocioWhereInput = {
     estado: "activo",
@@ -173,7 +157,6 @@ async function fetchBusinessesDept(params: ExtendedParams): Promise<RawBusiness[
   });
 }
 
-// Fetch para Businesses - Nacional
 async function fetchBusinessesNational(params: ExtendedParams): Promise<RawBusiness[]> {
   const where: Prisma.NegocioWhereInput = {
     estado: "activo",
@@ -190,16 +173,12 @@ async function fetchBusinessesNational(params: ExtendedParams): Promise<RawBusin
   });
 }
 
-// Fetch para Publications - Ciudad
 async function fetchPublicationsCity(params: ExtendedParams): Promise<RawPublication[]> {
   const where: Prisma.PublicacionWhereInput = {
     tipo: { in: ["TESTIMONIO", "CARRUSEL_IMAGENES"] },
     visibilidad: "PUBLICA",
     id: { notIn: params.seenIds.filter((id: string) => id.startsWith("pub-")) },
-    negocio: {
-      ciudad: params.ciudad,
-      categorias: { some: { category: { slug: params.categoriaSlug } } },
-    },
+    negocio: { ciudad: params.ciudad, categorias: { some: { category: { slug: params.categoriaSlug } } } },
   };
   return prisma.publicacion.findMany({
     where,
@@ -211,7 +190,6 @@ async function fetchPublicationsCity(params: ExtendedParams): Promise<RawPublica
   });
 }
 
-// Fetch para Publications - Depto excluyendo ciudad
 async function fetchPublicationsDept(params: ExtendedParams): Promise<RawPublication[]> {
   const where: Prisma.PublicacionWhereInput = {
     tipo: { in: ["TESTIMONIO", "CARRUSEL_IMAGENES"] },
@@ -233,15 +211,12 @@ async function fetchPublicationsDept(params: ExtendedParams): Promise<RawPublica
   });
 }
 
-// Fetch para Publications - Nacional
 async function fetchPublicationsNational(params: ExtendedParams): Promise<RawPublication[]> {
   const where: Prisma.PublicacionWhereInput = {
     tipo: { in: ["TESTIMONIO", "CARRUSEL_IMAGENES"] },
     visibilidad: "PUBLICA",
     id: { notIn: params.seenIds.filter((id: string) => id.startsWith("pub-")) },
-    negocio: {
-      categorias: { some: { category: { slug: params.categoriaSlug } } },
-    },
+    negocio: { categorias: { some: { category: { slug: params.categoriaSlug } } } },
   };
   return prisma.publicacion.findMany({
     where,
@@ -254,6 +229,7 @@ async function fetchPublicationsNational(params: ExtendedParams): Promise<RawPub
 }
 
 // === 2. INTERFACES Y HELPERS ===
+
 interface SortableItem {
   orden?: number;
   createdAt: Date;
@@ -269,8 +245,8 @@ interface ExtendedParams extends FeedQueryParams {
 
 const sortGroup = <T extends SortableItem>(items: T[]): T[] => {
   return items.sort((a, b) => {
-    const orderA = a.orden || 0;
-    const orderB = b.orden || 0;
+    const orderA = a.orden ?? 0;
+    const orderB = b.orden ?? 0;
     if (orderB !== orderA) return orderB - orderA;
     return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
   });
@@ -318,7 +294,7 @@ async function fetchWithPriority<T extends SortableItem>(
   return items.slice(0, params.limit + buffer);
 }
 
-// Haversine
+// === 3. Haversine ===
 const haversine = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
   const R = 6371;
   const toRad = (n: number) => (n * Math.PI) / 180;
@@ -331,7 +307,7 @@ const haversine = (lat1: number, lon1: number, lat2: number, lon2: number): numb
   return R * c;
 };
 
-// === 3. getFeedDataByCategory (con sorting por distancia) ===
+// === 4. getFeedDataByCategory ===
 export async function getFeedDataByCategory(
   type: "products" | "publications" | "services" | "businesses",
   params: ExtendedParams
@@ -370,33 +346,36 @@ export async function getFeedDataByCategory(
 
   // === SORTING POR DISTANCIA ===
   if (params.userLat != null && params.userLong != null) {
-    rawItems = rawItems
+    const itemsWithDistance = rawItems
       .map((item) => {
         let negocioLat: number | null = null;
         let negocioLong: number | null = null;
 
-        if ('negocio' in item && item.negocio) {
+        if ("negocio" in item && item.negocio) {
           negocioLat = item.negocio.latitud ?? null;
           negocioLong = item.negocio.longitud ?? null;
-        } else if ('latitud' in item && 'longitud' in item) {
-          negocioLat = (item as any).latitud ?? null;
-          negocioLong = (item as any).longitud ?? null;
+        } else if ("latitud" in item && "longitud" in item) {
+          const business = item as RawBusiness;
+          negocioLat = business.latitud ?? null;
+          negocioLong = business.longitud ?? null;
         }
 
         if (negocioLat != null && negocioLong != null) {
           const distance = haversine(params.userLat!, params.userLong!, negocioLat, negocioLong);
-          return { ...item, _distance: distance };
+          return { item, distance };
         }
-        return { ...item, _distance: Infinity };
+        return { item, distance: Infinity };
       })
       .sort((a, b) => {
-        if (a._distance !== b._distance) return a._distance - b._distance;
-        const orderA = (a as any).orden || 0;
-        const orderB = (b as any).orden || 0;
+        if (a.distance !== b.distance) return a.distance - b.distance;
+        const orderA = (a.item as SortableItem).orden ?? 0;
+        const orderB = (b.item as SortableItem).orden ?? 0;
         if (orderB !== orderA) return orderB - orderA;
-        return new Date((b as any).createdAt).getTime() - new Date((a as any).createdAt).getTime();
+        return new Date((b.item as SortableItem).createdAt).getTime() - new Date((a.item as SortableItem).createdAt).getTime();
       })
-      .map(({ _distance, ...item }) => item);
+      .map(({ item }) => item);
+
+    rawItems = itemsWithDistance;
   }
 
   // === Reacciones ===

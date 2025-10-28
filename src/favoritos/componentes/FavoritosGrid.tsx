@@ -30,7 +30,7 @@ export const FavoritesGrid = () => {
             No tienes productos en tus favoritos
           </p>
           <Image
-            src="/imgs/no_favorites.webp"
+            src="/imgs/no_favorites.png"
             alt="No hay favoritos"
             width={300}
             height={300}
