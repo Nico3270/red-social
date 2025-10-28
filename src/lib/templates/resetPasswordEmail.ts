@@ -27,15 +27,15 @@ export function getResetPasswordEmail({ name, resetUrl }: { name: string; resetU
       border: 1px solid rgba(0,0,0,0.05);
     }
     .header {
-      background: linear-gradient(135deg, #007AFF, #0A84FF);
-      padding: 28px 24px;
-      text-align: center;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-    }
+  background: linear-gradient(135deg, #007AFF, #0A84FF);
+  padding: 28px 24px;
+  text-align: center;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
     .header img {
       width: 34px;
       height: 34px;
@@ -109,9 +109,15 @@ export function getResetPasswordEmail({ name, resetUrl }: { name: string; resetU
 <body>
   <div class="container">
     <div class="header">
-      <img src="https://res.cloudinary.com/dkwosk8qd/image/upload/v1761104289/Logo_Final_oywvic.png" alt="Myckeo Logo" />
-      <div class="logo-text">Myckeo</div>
-    </div>
+  <img
+    src="https://res.cloudinary.com/dkwosk8qd/image/upload/v1761104289/Logo_Final_oywvic.png"
+    alt="Myckeo Logo"
+    style="width:34px;height:34px;border-radius:8px;object-fit:contain;margin-right:8px;"
+  />
+  <div class="logo-text" style="font-weight:700;font-size:22px;letter-spacing:-0.4px;">
+    Myckeo
+  </div>
+</div>
     <div class="content">
       <h1 class="greeting">Hola${name ? `, ${name}` : ''}</h1>
       <p class="message">

@@ -78,11 +78,11 @@ export async function sendEmail({
       statusCode: rawResponse.response?.statusCode,
     };
 
-    console.log("Correo enviado correctamente:", {
-      to: toEmail,
-      messageId,
-      status: response.statusCode,
-    });
+    // console.log("Correo enviado correctamente:", {
+    //   to: toEmail,
+    //   messageId,
+    //   status: response.statusCode,
+    // });
 
     return response;
   } catch (error: unknown) {
