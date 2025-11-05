@@ -1,0 +1,28 @@
+# robots.txt para Myckeo - Plataforma social-comercial
+# Optimizado para SEO moderno, privacidad y rendimiento
+
+
+User-agent: *
+
+# 1. Bloqueos generales (siempre primero)
+Disallow: /admin/      # Paneles internos de gestión
+Disallow: /api/        # Endpoints privados (Prisma, NextAuth, etc.)
+Disallow: /auth/       # Login, registro, recuperación
+Disallow: /dashboard/  # Si tienes panel de usuario/negocio
+Disallow: /config/  # Configuraciones
+Disallow: /_next/      # Archivos estáticos de Next.js (no indexables)
+Disallow: /*?          # Evita indexar URLs con parámetros de tracking/filtros
+Disallow: /*.json$     # Archivos de datos internos
+
+# 2. Permisos explícitos para contenido público (sobrescribe lo anterior si coincide)
+Allow: /perfil/        # Perfiles de negocios (URL pública + QR)
+Allow: /productos/     # Catálogos, secciones y páginas de producto
+Allow: /publicaciones/ # Feed social, reseñas multimedia, interacciones
+Allow: /catalogo/      # Si usas rutas alternativas para secciones
+Allow: /                   # Raíz y páginas estáticas (home, categorías)
+
+# 3. Sitemap (crucial para descubrimiento automático)
+Sitemap: https://myckeo.com/sitemap.xml
+
+# 4. Crawl-delay opcional (solo si ves sobrecarga en bots pequeños)
+# Crawl-delay: 2

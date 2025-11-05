@@ -53,10 +53,16 @@ export const RegisterForm = ({ negocio }: TipoUsuario) => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isValid },
     setValue,
     watch,
-  } = useForm<FormInputs>();
+    trigger,
+  } = useForm<FormInputs>({
+    mode: "onChange", // Validar en tiempo real para habilitar botón dinámicamente
+    defaultValues: {
+      fechaNacimiento: new Date("1990-01-01"), // Valor inicial para evitar undefined
+    },
+  });
 
   const departments = (colombia as ColombiaDepartment[]).map((dept) => dept.departamento);
 
@@ -68,20 +74,24 @@ export const RegisterForm = ({ negocio }: TipoUsuario) => {
       setCities(departmentData ? departmentData.ciudades : []);
       setSelectedCity("");
       setValue("ciudad", "");
+      trigger("ciudad"); // Revalidar ciudad al cambiar departamento
     } else {
       setCities([]);
       setSelectedCity("");
       setValue("ciudad", "");
+      trigger("ciudad");
     }
-  }, [selectedDepartamento, setValue]);
+  }, [selectedDepartamento, setValue, trigger]);
 
   useEffect(() => {
     if (selectedCity && selectedDepartamento) {
-      setValue("ciudad", `${selectedCity} - ${selectedDepartamento}`);
+      setValue("ciudad", `${selectedCity} - ${selectedDepartamento}`, { shouldValidate: true });
+      trigger("ciudad"); // Revalidar al seleccionar ciudad
     } else {
-      setValue("ciudad", "");
+      setValue("ciudad", "", { shouldValidate: true });
+      trigger("ciudad");
     }
-  }, [selectedCity, selectedDepartamento, setValue]);
+  }, [selectedCity, selectedDepartamento, setValue, trigger]);
 
   const onSubmit: SubmitHandler<FormInputs> = async (data) => {
     setErrorMessage("");
@@ -215,36 +225,45 @@ export const RegisterForm = ({ negocio }: TipoUsuario) => {
           </div>
 
           <div>
-            <label htmlFor="password" className="block font-bold">Contraseña</label>
-            <div className="relative">
-              <input
-                type={showPassword ? "text" : "password"}
-                {...register("contraseña", {
-                  required: "La contraseña es requerida",
-                  minLength: { value: 8, message: "Debe tener al menos 8 caracteres" },
-                  pattern: {
-                    value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/,
-                    message: "Debe incluir mayúsculas, minúsculas, número y símbolo",
-                  },
-                })}
-                className={clsx(
-                  "w-full border rounded-lg p-2 mt-2 focus:outline-none focus:ring-2 focus:ring-red-600",
-                  { "border-red-500": errors.contraseña }
-                )}
-                placeholder="••••••••"
-                aria-label="Contraseña"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword((prev) => !prev)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
-                aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
-              >
-                {showPassword ? <IoEyeOffOutline size={20} /> : <IoEyeOutline size={20} />}
-              </button>
-            </div>
-            {errors.contraseña && <span className="text-red-500 text-sm">{errors.contraseña.message}</span>}
-          </div>
+  <label htmlFor="password" className="block font-bold">Contraseña</label>
+  <div className="relative">
+    <input
+      type={showPassword ? "text" : "password"}
+      {...register("contraseña", {
+        required: "La contraseña es requerida",
+        minLength: { value: 8, message: "Debe tener al menos 8 caracteres" },
+        pattern: {
+          value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/,
+          message: "Debe incluir mayúsculas, minúsculas, número y símbolo",
+        },
+      })}
+      className={clsx(
+        "w-full border rounded-lg p-2 mt-2 focus:outline-none focus:ring-2 focus:ring-red-600",
+        { "border-red-500": errors.contraseña }
+      )}
+      placeholder="••••••••"
+      aria-label="Contraseña"
+      onChange={(e) => setValue("contraseña", e.target.value, { shouldValidate: true })}
+    />
+    <button
+      type="button"
+      onClick={() => setShowPassword((prev) => !prev)}
+      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+      aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+    >
+      {showPassword ? <IoEyeOffOutline size={20} /> : <IoEyeOutline size={20} />}
+    </button>
+  </div>
+
+  {/* Mostrar errores de validación si existen */}
+  {errors.contraseña && (
+    <span className="text-red-500 text-sm">{errors.contraseña.message}</span>
+  )}
+
+  {/* Indicador de requisitos dinámico */}
+  <PasswordRequirements password={watch("contraseña")} />
+</div>
+
 
           <input
             type="hidden"
@@ -269,11 +288,12 @@ export const RegisterForm = ({ negocio }: TipoUsuario) => {
                 </option>
               ))}
             </select>
+            {errors.ciudad && !selectedDepartamento && <span className="text-red-500 text-sm">Selecciona un departamento</span>}
           </div>
 
           <div className="relative">
             <label htmlFor="ciudad-select" className="block font-bold">Ciudad</label>
-            <Alert severity="info">
+            <Alert severity="info" className="mb-2">
               Por favor selecciona un departamento primero, luego una ciudad válida.
             </Alert>
             <select
@@ -316,31 +336,38 @@ export const RegisterForm = ({ negocio }: TipoUsuario) => {
 
           <div>
             <label htmlFor="fechaNacimiento" className="block font-bold">Fecha de nacimiento</label>
-            <DatePicker
-              selected={selectedDate}
-              onChange={(date: Date | null) => {
-                setSelectedDate(date);
-                if (date) {
-                  setValue("fechaNacimiento", date, { shouldValidate: true });
-                } else {
-                  setValue("fechaNacimiento", new Date("1990-01-01"));
-                }
-              }}
-              peekNextMonth
-              showMonthDropdown
-              showYearDropdown
-              dropdownMode="select"
-              maxDate={new Date()}
-              minDate={new Date("1900-01-01")}
-              dateFormat="dd/MM/yyyy"
-              locale={es}
-              className={clsx(
-                "w-full border rounded-lg p-2 mt-2 focus:outline-none focus:ring-2 focus:ring-red-600",
-                { "border-red-500": errors.fechaNacimiento }
-              )}
-              placeholderText="Selecciona tu fecha de nacimiento"
-              aria-label="Selecciona tu fecha de nacimiento"
-            />
+            <div className="flex justify-center items-center"> {/* Centrar el DatePicker */}
+              <DatePicker
+                selected={selectedDate}
+                onChange={(date: Date | null) => {
+                  setSelectedDate(date);
+                  if (date) {
+                    setValue("fechaNacimiento", date, { shouldValidate: true });
+                    trigger("fechaNacimiento"); // Revalidar explícitamente para limpiar errores
+                  } else {
+                    setValue("fechaNacimiento", new Date("1990-01-01"), { shouldValidate: true });
+                    trigger("fechaNacimiento");
+                  }
+                }}
+                peekNextMonth
+                showMonthDropdown
+                showYearDropdown
+                dropdownMode="select"
+                maxDate={new Date()}
+                minDate={new Date("1900-01-01")}
+                dateFormat="dd/MM/yyyy"
+                locale={es}
+                wrapperClassName="w-full" // Asegurar ancho completo
+                className={clsx(
+                  "w-full border rounded-lg p-2 mt-2 focus:outline-none focus:ring-2 focus:ring-red-600 text-center cursor-pointer", // Centrar texto y cursor pointer
+                  { "border-red-500": errors.fechaNacimiento }
+                )}
+                placeholderText="Selecciona tu fecha de nacimiento"
+                aria-label="Selecciona tu fecha de nacimiento"
+                popperClassName="react-datepicker-popper z-50" // Asegurar visibilidad en móviles
+                calendarClassName="border rounded-lg shadow-lg bg-white" // Estilos modernos para el calendario
+              />
+            </div>
             {errors.fechaNacimiento && (
               <span className="text-red-500 text-sm">{errors.fechaNacimiento.message}</span>
             )}
@@ -370,7 +397,10 @@ export const RegisterForm = ({ negocio }: TipoUsuario) => {
               type="checkbox"
               {...register("acceptedPolicies", { required: "Debes aceptar las políticas para continuar" })}
               checked={acceptedPolicies}
-              onChange={(e) => setAcceptedPolicies(e.target.checked)}
+              onChange={(e) => {
+                setAcceptedPolicies(e.target.checked);
+                setValue("acceptedPolicies", e.target.checked, { shouldValidate: true });
+              }}
               className={clsx(
                 "h-5 w-5 text-red-600 focus:ring-red-500 border-gray-300 rounded",
                 { "border-red-500": errors.acceptedPolicies }
@@ -390,10 +420,10 @@ export const RegisterForm = ({ negocio }: TipoUsuario) => {
 
           <button
             type="submit"
-            disabled={isPending || !watch("acceptedPolicies")}
+            disabled={isPending || !isValid}
             className={clsx(
               "w-full py-2 rounded-lg transition",
-              isPending || !watch("acceptedPolicies")
+              isPending || !isValid
                 ? "bg-gray-400 text-gray-200 cursor-not-allowed"
                 : "bg-red-600 text-white hover:bg-red-700"
             )}
@@ -410,10 +440,10 @@ export const RegisterForm = ({ negocio }: TipoUsuario) => {
 
         <button
           onClick={handleGoogleRegister}
-          disabled={isPending || !watch("acceptedPolicies")}
+          disabled={isPending || !isValid}
           className={clsx(
             "w-full flex items-center justify-center bg-blue-600 text-white py-2 rounded-lg mt-4",
-            isPending || !watch("acceptedPolicies") ? "bg-gray-400 cursor-not-allowed" : "hover:bg-blue-700 transition"
+            isPending || !isValid ? "bg-gray-400 cursor-not-allowed" : "hover:bg-blue-700 transition"
           )}
         >
           <FaGoogle className="mr-2" />
@@ -430,3 +460,42 @@ export const RegisterForm = ({ negocio }: TipoUsuario) => {
     </div>
   );
 }
+
+
+const PasswordRequirements = ({ password = "" }: { password: string }) => {
+  const requirements = [
+    { label: "Mínimo 8 caracteres", test: (pw: string) => pw.length >= 8 },
+    { label: "Al menos una letra mayúscula (A-Z)", test: (pw: string) => /[A-Z]/.test(pw) },
+    { label: "Al menos una letra minúscula (a-z)", test: (pw: string) => /[a-z]/.test(pw) },
+    { label: "Al menos un número (0-9)", test: (pw: string) => /\d/.test(pw) },
+    { label: "Al menos un símbolo (!@#$...)", test: (pw: string) => /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(pw) },
+  ];
+
+  return (
+    <div className="mt-3 bg-gray-50 border border-gray-200 rounded-lg p-3 text-sm text-gray-700">
+      <p className="font-semibold mb-2 text-gray-800">La contraseña debe contener:</p>
+      <ul className="space-y-1">
+        {requirements.map((req, i) => {
+          const passed = req.test(password);
+          return (
+            <li key={i} className="flex items-center">
+              <span
+                className={clsx(
+                  "mr-2 flex items-center justify-center w-4 h-4 rounded-full border",
+                  passed
+                    ? "bg-green-500 border-green-500 text-white"
+                    : "border-gray-400 text-gray-400"
+                )}
+              >
+                {passed ? "✓" : "•"}
+              </span>
+              <span className={passed ? "text-green-600" : "text-gray-600"}>
+                {req.label}
+              </span>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+};

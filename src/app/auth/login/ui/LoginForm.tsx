@@ -114,12 +114,12 @@ export const LoginForm = () => {
             </div>
           </div>
           
-          <div className="flex items-center justify-between">
-            <label className="flex items-center text-gray-800">
+          <div className="flex items-center justify-end">
+            {/* <label className="flex items-center text-gray-800">
               <input type="checkbox" className="mr-2" />
               <span>Recuérdame</span>
-            </label>
-            <Link href="/auth/forgot-password" className="text-red-600 hover:underline">
+            </label> */}
+            <Link href="/auth/forgot-password" className="text-red-600 hover:underline text-lg">
               Olvidé mi contraseña
             </Link>
           </div>
@@ -158,8 +158,8 @@ export const LoginForm = () => {
           Iniciar sesión con Google
         </button>
         <div className="text-center mt-4">
-          <span className="text-gray-900">¿No tienes cuenta?</span>
-          <Link href="/auth/new-account" className="text-red-600 hover:underline ml-1">
+          <span className="text-gray-900 text-lg">¿No tienes cuenta?</span>
+          <Link href="/auth/new-account" className="text-red-600 hover:underline ml-1 text-xl">
             Regístrate
           </Link>
         </div>

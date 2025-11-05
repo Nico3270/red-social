@@ -19,6 +19,7 @@ interface Props {
   }>;
 }
 
+// Genera rutas estáticas iniciales
 export async function generateStaticParams() {
   const slugs = await prisma.negocio.findMany({
     select: { slug: true },
@@ -27,21 +28,21 @@ export async function generateStaticParams() {
   return slugs.map((negocio) => ({ slug: negocio.slug }));
 }
 
+// Página principal del perfil de negocio
 export default async function NegocioPage({ params }: Props) {
   const { slug } = await params;
 
-  // Obtener sesión dinámica
+  // Sesión del usuario autenticado (si existe)
   const session = await auth();
   const userId = session?.user?.id || null;
 
-  // Cache para productos
+  // === CACHE: mejora el rendimiento y evita consultas repetidas ===
   const getCachedProducts = unstable_cache(
     async (slug: string, take: number) => getNegocioProductsBySlug(slug, take),
     ["negocio-products"],
     { revalidate: 3600, tags: [`negocio-products-${slug}`] }
   );
 
-  // Cache para publicaciones
   const getCachedPublications = unstable_cache(
     async (slug: string, take: number, userId: string | null) =>
       getPublicacionesNegocio({ slug, take, userId }),
@@ -49,33 +50,42 @@ export default async function NegocioPage({ params }: Props) {
     { revalidate: 60, tags: [`negocio-publications-${slug}`] }
   );
 
-  // Cache para perfil
   const getCachedProfile = unstable_cache(
     async (slug: string) => getInfoPerfilBySlugNegocio(slug),
     ["negocio-profile"],
     { revalidate: 3600, tags: [`negocio-profile-${slug}`] }
   );
 
-  // Llamadas cacheadas
+  // === Llamadas cacheadas ===
   const result = await getCachedProducts(slug, 20);
   const { negocio } = await getCachedProfile(slug);
   const publicacionesIniciales = await getCachedPublications(slug, 20, userId);
-
-  // Obtener conteos de secciones (servicios, reseñas, publicaciones, productos)
   const conteos = await getConteosSecciones(slug);
 
-  // Verificar errores
+  // === Manejo de errores ===
   if (!result.ok) {
-    return <div className="error-container">Error al cargar productos: {result.message}</div>;
+    return (
+      <div className="error-container text-center sm:mt-40">
+        Error al cargar productos: {result.message}
+      </div>
+    );
   }
   if (!negocio) {
-    return <div className="error-container">Error al cargar el perfil del negocio</div>;
+    return (
+      <div className="error-container text-center sm:mt-40">
+        Error al cargar el perfil del negocio.
+      </div>
+    );
   }
   if (!conteos.ok) {
-    return <div className="error-container">Error al cargar conteos: {conteos.message}</div>;
+    return (
+      <div className="error-container text-center sm:mt-40">
+        Error al cargar conteos: {conteos.message}
+      </div>
+    );
   }
 
-  // Construir resumenPerfil
+  // === Construcción del resumen del perfil ===
   const resumenPerfil = {
     productos: conteos.productos,
     publicaciones: conteos.publicaciones,
@@ -83,55 +93,112 @@ export default async function NegocioPage({ params }: Props) {
     reseñas: conteos.resenas,
   };
 
-  // Listas vacías para servicios y reseñas (se llenarán dinámicamente en PerfilUsuarioHeader)
+  // Listas vacías iniciales (se cargan dinámicamente después)
   const servicios: ServicioData[] = [];
   const resenas: EnhancedPublicacion[] = [];
 
+  // === Render principal ===
   return (
     <div className="sm:mt-40 mb-20">
       <Suspense fallback={<div className="loading-skeleton">Cargando perfil...</div>}>
         <PerfilUsuarioHeader
-          activeTabComponent="Inicio" // Cambiar a "Inicio" por defecto
+          activeTabComponent="Inicio"
           productos={result.products || []}
           publicaciones={publicacionesIniciales.publicaciones || []}
           informacionNegocio={negocio}
-          resumenPerfil={resumenPerfil} // Nueva prop
-          resenas={resenas} // Lista vacía inicial
-          servicios={servicios} // Lista vacía inicial
+          resumenPerfil={resumenPerfil}
+          resenas={resenas}
+          servicios={servicios}
         />
       </Suspense>
     </div>
   );
 }
 
+// Revalidación ISR (cada minuto)
 export const revalidate = 60;
 
+// === METADATOS DINÁMICOS (SEO) ===
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
 
+  // Reutilizamos el cache del perfil
   const getCachedProfile = unstable_cache(
     async (slug: string) => getInfoPerfilBySlugNegocio(slug),
     ["negocio-profile"],
     { revalidate: 3600, tags: [`negocio-profile-${slug}`] }
   );
+
   const { negocio } = await getCachedProfile(slug);
 
+  const title = negocio
+    ? `${negocio.nombreNegocio} | Myckeo`
+    : "Perfil de Negocio | Myckeo";
+
+  const description =
+    negocio?.descripcionNegocio ||
+    "Descubre negocios locales y productos en Myckeo, la plataforma social-comercial.";
+
+  const image =
+    negocio?.imagenPortada ||
+    negocio?.imagenPerfil ||
+    "https://myckeo.com/images/placeholder_perfiles.png";
+
+  const canonicalUrl = `https://myckeo.com/perfil/${slug}`;
+
+  // === JSON-LD estructurado (para Google Rich Results) ===
+  const structuredData = negocio
+    ? {
+        "@context": "https://schema.org",
+        "@type": "LocalBusiness",
+        name: negocio.nombreNegocio,
+        description: description,
+        image: [image],
+        url: canonicalUrl,
+        address: {
+          "@type": "PostalAddress",
+          addressLocality: negocio.ciudadNegocio || "",
+          addressRegion: negocio.departamentoNegocio || "",
+          addressCountry: "CO",
+        },
+        telephone: negocio.telefonoNegocio || "",
+        sameAs: negocio.facebook || negocio.instagram || [],
+      }
+    : null;
+
   return {
-    title: negocio ? `${negocio.nombreNegocio} - Perfil` : "Perfil de Negocio",
-    description: negocio ? negocio.descripcionNegocio || "Explora el perfil de este negocio." : "Perfil de un negocio.",
+    title,
+    description,
     openGraph: {
-      title: negocio ? `${negocio.nombreNegocio} - Perfil` : "Perfil de Negocio",
-      description: negocio ? negocio.descripcionNegocio || "Explora el perfil de este negocio." : "Perfil de un negocio.",
-      images: negocio && negocio.imagenPortada ? [negocio.imagenPortada] : ["/default-og-image.jpg"],
-      url: `https://tu-dominio.com/perfil/${slug}`,
-      siteName: "Tu Red Social",
-      type: "website",
+      title,
+      description,
+      url: canonicalUrl,
+      siteName: "Myckeo",
+      images: [
+        {
+          url: image,
+          width: 1200,
+          height: 630,
+          alt: negocio?.nombreNegocio || "Perfil de negocio",
+        },
+      ],
+      locale: "es_ES",
+      type: "website", // ✅ tipo válido según Next.js
     },
     twitter: {
       card: "summary_large_image",
-      title: negocio ? `${negocio.nombreNegocio} - Perfil de Negocio` : "Perfil de Negocio",
-      description: negocio ? negocio.descripcionNegocio || "Explora el perfil de este negocio." : "Perfil de un negocio.",
-      images: negocio && negocio.imagenPortada ? [negocio.imagenPortada] : ["/default-og-image.jpg"],
+      title,
+      description,
+      images: [image],
     },
+    robots: "index, follow",
+    alternates: {
+      canonical: canonicalUrl,
+    },
+    other: structuredData
+      ? {
+          "script:ld+json": JSON.stringify(structuredData),
+        }
+      : undefined,
   };
 }

@@ -35,7 +35,7 @@ export default function NewAccountPage() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className="w-full md:w-1/2 flex flex-col items-center justify-center bg-white p-4 sm:p-8 space-y-6 md:space-y-8"
+        className="w-full md:w-1/2 flex flex-col items-center  bg-white p-4 sm:p-8 space-y-6 md:space-y-8"
       >
         {tipoUsuario === null ? (
           <>
@@ -61,12 +61,12 @@ export default function NewAccountPage() {
               >
                 <FaUser className="text-red-600 text-3xl sm:text-4xl mb-3 sm:mb-4 mx-auto" />
                 <h2 className="text-lg sm:text-xl font-semibold text-center text-red-700 mb-2">Cuenta de Usuario</h2>
-                <p className="text-xs sm:text-sm text-gray-900 text-center">
+                <p className="text-md  text-gray-900 text-center">
                   Explora catálogos, sigue negocios, deja reseñas multimedia y conecta con comunidades locales.
                 </p>
                 <div className="relative w-full h-64 sm:h-80 mt-2 sm:mt-4 rounded-2xl overflow-hidden">
                   <Image src="/imgs/perfil-usuario.png" alt="Perfil Personal" fill className="object-contain"
-  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px" />
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px" />
                 </div>
               </motion.div>
 
@@ -78,17 +78,17 @@ export default function NewAccountPage() {
               >
                 <FaStore className="text-blue-600 text-3xl sm:text-4xl mb-3 sm:mb-4 mx-auto" />
                 <h2 className="text-lg sm:text-xl font-semibold text-center text-red-700 mb-2">Cuenta de Negocio</h2>
-                <p className="text-xs sm:text-sm text-gray-900 text-center">
+                <p className="text-md text-gray-900 text-center">
                   Crea tiendas en minutos, publica contenido, gestiona catálogos y monetiza con reseñas y ads.
                 </p>
                 <div className="relative w-full h-64 sm:h-80 mt-2 sm:mt-4 rounded-2xl overflow-hidden">
                   <Image
-  src="/imgs/perfil-negocio2.png"
-  alt="Perfil Negocio"
-  fill
-  className="object-cover"
-  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px"
-/>
+                    src="/imgs/perfil-negocio2.png"
+                    alt="Perfil Negocio"
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px"
+                  />
                 </div>
               </motion.div>
             </div>
@@ -107,12 +107,12 @@ export default function NewAccountPage() {
 
             <div className="relative w-full sm:w-3/4 h-72 sm:h-96 mt-4 rounded-2xl overflow-hidden justify-start">
               <Image
-  src="/imgs/cuenta-negocio.png"
-  alt="Perfil Negocio"
-  fill
-  className="object-contain"
-  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px"
-/>
+                src="/imgs/cuenta-negocio.png"
+                alt="Perfil Negocio"
+                fill
+                className="object-contain"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px"
+              />
             </div>
 
 

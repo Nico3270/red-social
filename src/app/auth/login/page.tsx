@@ -31,30 +31,30 @@ export default function LoginPage() {
 
         {/* Lista de beneficios/características con iconos - Premium y concisa */}
         <ul className="space-y-4 mb-8 max-w-lg z-10">
-          <li className="flex items-center gap-3 text-gray-700">
+          <li className="flex items-center gap-2 text-gray-700">
             <FaShoppingBag className="text-blue-600 text-2xl" />
-            <span>Explora catálogos premium de negocios locales en un solo lugar.</span>
+            <span className="text-lg">Explora catálogos premium de negocios locales en un solo lugar.</span>
           </li>
-          <li className="flex items-center gap-3 text-gray-700">
+          <li className="flex items-center gap-2 text-gray-700">
             <FaUsers className="text-blue-600 text-2xl" />
-            <span>Conecta con comunidades y descubre recomendaciones reales de usuarios.</span>
+            <span className="text-lg">Conecta con comunidades y descubre recomendaciones reales de usuarios.</span>
           </li>
-          <li className="flex items-center gap-3 text-gray-700">
+          <li className="flex items-center gap-2 text-gray-700">
             <FaLock className="text-blue-600 text-2xl" />
-            <span>Transacciones seguras y privadas para una experiencia sin preocupaciones.</span>
+            <span className="text-lg">Transacciones seguras y privadas para una experiencia sin preocupaciones.</span>
           </li>
-          <li className="flex items-center gap-3 text-gray-700">
+          <li className="flex items-center gap-2 text-gray-700">
             <FaRocket className="text-blue-600 text-2xl" />
-            <span>Pedidos rápidos y personalizados, adaptados a tus necesidades.</span>
+            <span className="text-lg">Pedidos rápidos y personalizados, adaptados a tus necesidades.</span>
           </li>
-          <li className="flex items-center gap-3 text-gray-700">
+          <li className="flex items-center gap-2 text-gray-700">
             <FaGlobeAmericas className="text-blue-600 text-2xl" />
-            <span>Apoya el comercio local mientras disfrutas de una red global de oportunidades.</span>
+            <span className="text-lg">Apoya el comercio local mientras disfrutas de una red global de oportunidades.</span>
           </li>
         </ul>
 
         {/* Tip adicional - Como un "pro tip" elegante */}
-        <p className="text-sm text-gray-500 italic mb-6 text-center z-10">
+        <p className="text-lg text-red-500 italic mb-6 text-center z-10">
           Tip: Regístrate para acceder a ofertas exclusivas y gestionar tus pedidos con facilidad.
         </p>
 

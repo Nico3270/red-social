@@ -116,6 +116,7 @@ const MediaSlide: React.FC<{
           muted={false}
           className="w-full h-full object-contain rounded-xl"
           aria-label={`Video ${index + 1} de ${multimediaLength} en carrusel`}
+          
         />
       ) : (
         <Image
@@ -125,6 +126,7 @@ const MediaSlide: React.FC<{
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           className="object-cover rounded-xl"
           loading="lazy"
+          unoptimized
         />
       )}
     </motion.div>
@@ -193,6 +195,7 @@ export const SocialMediaCarousel: React.FC<Props> = ({ publicacion, isInModal = 
               alt={`Foto de perfil de ${publicacion.negocio?.nombre || `${publicacion.usuario.nombre} ${publicacion.usuario.apellido}`}`}
               fill
               className="object-cover"
+              unoptimized
               
             />
           </div>
