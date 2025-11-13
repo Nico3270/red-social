@@ -89,7 +89,7 @@ export const ProductsInCart = () => {
 
   if (numNegocios === 0) {
   return (
-    <div className="flex  items-center justify-center min-h-[70vh] p-0">
+    <div className="flex  items-center justify-center h-full p-0">
       <div className="bg-white backdrop-blur-sm border border-gray-200 rounded-3xl shadow-md p-2 flex flex-col items-center text-center  w-full">  
         {/* Imagen principal */}
         <div className="relative w-48 h-48 sm:w-48 sm:h-48 mb-2">

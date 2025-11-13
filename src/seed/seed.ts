@@ -27,6 +27,7 @@ export const initialData: SeedData = {
     { id: '2', nombre: 'Comida', iconName: 'comidas.png', slug: 'comida', isActive: true },
     { id: '11', nombre: 'Bebidas', iconName: 'drinks.png', slug: 'bebidas', isActive: true },
     { id: '1', nombre: 'Moda y Accesorios', iconName: 'moda.png', slug: 'moda', isActive: true },
+    { id: '19', nombre: 'Agora Mental', iconName: 'Agora_mental_logo.png', slug: 'agora_mental', isActive: true },
     { id: '3', nombre: 'Tecnología', iconName: 'tecnologia.png', slug: 'tecnologia', isActive: true },
     { id: '4', nombre: 'Hogar y Decoración', iconName: 'hogar.png', slug: 'hogar', isActive: true },
     { id: '5', nombre: 'Belleza y Cuidado', iconName: 'belleza.png', slug: 'belleza', isActive: true },
@@ -44,6 +45,15 @@ export const initialData: SeedData = {
     { id: '18', nombre: 'Negocios', iconName: 'negocios.png', slug: 'negocios', isActive: true },
   ],
   secciones: [
+    //Agora Mental
+    { id: 's174', nombre: 'Consultas profesionales', iconName: 'saludBienestar', slug: 'consultas_profesionales', href: '/productos/agora_mental/consultas_profesionales', order: 1, isActive: true, categorySlug: 'consultas_profesionales' },
+    { id: 's175', nombre: 'Seguimiento psicológico digital:', iconName: 'celulares.png', slug: 'seguimiento_psicologico', href: '/productos/agora_mental/seguimiento_psicologico', order: 2, isActive: true, categorySlug: 'seguimiento_psicologico' },
+    { id: 's176', nombre: 'Contenidos educativos y autoayuda', iconName: 'crear-encuesta.png', slug: 'contenidos_educativos', href: '/productos/agora_mental/contenidos_educativos', order: 3, isActive: true, categorySlug: 'contenidos_educativos' },
+    { id: 's177', nombre: 'Foros y comunidad digital', iconName: 'tecnologia.png', slug: 'foros_comunidad', href: '/productos/agora_mental/foros_comunidad', order: 1, isActive: true, categorySlug: 'foros_comunidad' },
+    { id: 's178', nombre: 'Orientación virtual y primeros auxilios emocionales', iconName: 'equipoMedico.png', slug: 'orientacion_virtual', href: '/productos/agora_mental/orientacion_virtual', order: 1, isActive: true, categorySlug: 'orientacion_virtual' },
+
+    
+
     // Moda y Accesorios
     { id: 's4', nombre: 'Accesorios', iconName: 'accesorios.png', slug: 'accesorios', href: '/productos/moda/accesorios', order: 4, isActive: true, categorySlug: 'moda' },
     { id: 's122', nombre: 'Billeteras', iconName: 'billeteras.png', slug: 'billeteras', href: '/productos/moda/billeteras', order: 1, isActive: true, categorySlug: 'moda' },

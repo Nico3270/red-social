@@ -30,7 +30,6 @@ const SideBarDashboard: React.FC = () => {
   const navItemsNegocio: NavItem[] = [
     { name: "Inicio", path: "/", icon: <FaHome /> },
     { name: "Perfil", path: "/dashboard", icon: <FaUser /> },
-    { name: "Perfil2", path: "/perfil", icon: <FaUser /> },
     { name: `${nombreNegocio}`, path: `/perfil/${slug}`, icon: <FaUser /> },
     { name: "Nuevo producto", path: "/dashboard/productos/nuevo_producto", icon: <IoMdAddCircle /> },
     { name: "Productos", path: "/dashboard/productos", icon: <FaBox /> },
