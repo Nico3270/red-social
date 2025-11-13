@@ -73,7 +73,7 @@ interface Response {
 /* -------------------------------------------------------------------------- */
 const isDev = process.env.NODE_ENV === "development";
 
-function devLog(...args: any[]) {
+function devLog(...args: unknown[]) {
   if (isDev) console.log("[createEditarReserva]", ...args);
 }
 

@@ -3,7 +3,7 @@
         
               <url>
                 <loc>https://myckeo.com/</loc>
-                <lastmod>2025-11-04T23:23:31.161Z</lastmod>
+                <lastmod>2025-11-13T22:39:48.333Z</lastmod>
                 <changefreq>daily</changefreq>
                 <priority>0.7</priority>
               </url>
@@ -11,7 +11,7 @@
 
               <url>
                 <loc>https://myckeo.com/inicio</loc>
-                <lastmod>2025-11-04T23:23:31.161Z</lastmod>
+                <lastmod>2025-11-13T22:39:48.334Z</lastmod>
                 <changefreq>daily</changefreq>
                 <priority>0.7</priority>
               </url>
@@ -19,7 +19,7 @@
 
               <url>
                 <loc>https://myckeo.com/carrusel</loc>
-                <lastmod>2025-11-04T23:23:31.161Z</lastmod>
+                <lastmod>2025-11-13T22:39:48.334Z</lastmod>
                 <changefreq>daily</changefreq>
                 <priority>0.7</priority>
               </url>
@@ -84,6 +84,14 @@
               <url>
                 <loc>https://myckeo.com/perfil/la-terraza-del-sabor-bogota-pl0k</loc>
                 <lastmod>2025-10-30T18:22:11.096Z</lastmod>
+                <changefreq>daily</changefreq>
+                <priority>0.8</priority>
+              </url>
+            
+
+              <url>
+                <loc>https://myckeo.com/perfil/la-terraza-del-sabor-tunja-v83e</loc>
+                <lastmod>2025-11-05T02:06:42.157Z</lastmod>
                 <changefreq>daily</changefreq>
                 <priority>0.8</priority>
               </url>
@@ -220,6 +228,14 @@
               <url>
                 <loc>https://myckeo.com/producto/zenhoodie-sweat-9sjw</loc>
                 <lastmod>2025-10-28T20:10:29.554Z</lastmod>
+                <changefreq>weekly</changefreq>
+                <priority>0.7</priority>
+              </url>
+            
+
+              <url>
+                <loc>https://myckeo.com/producto/ceviche-de-corvina-17vp</loc>
+                <lastmod>2025-11-06T21:48:44.868Z</lastmod>
                 <changefreq>weekly</changefreq>
                 <priority>0.7</priority>
               </url>
