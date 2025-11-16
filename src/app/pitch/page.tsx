@@ -14,6 +14,9 @@ import MomentoMyckeo from './componentes/MomentoMyckeo';
 import MercadoMyckeo from './componentes/MercadoMyckeo';
 import MonetizacionMyckeo from './componentes/MonetizacionMyckeo';
 import TraccionMyckeo from './componentes/TraccionMyckeo';
+import CompetenciaMyckeo from './componentes/CompetenciaMyckeo';
+import FinanzasMyckeo from './componentes/FinanzasMyckeo.tsx';
+
 
 // --------------------------------------------------------------------------
 // 1. ARRAY DE SECCIONES
@@ -33,6 +36,8 @@ const SECTIONS: Section[] = [
   { id: 'mercado', label: 'Tamaño del Mercado', component: () => <MercadoMyckeo /> },
   { id: 'monetizacion', label: 'Modelo de Negocio', component: () => <MonetizacionMyckeo /> },
   { id: 'traccion', label: 'Tracción', component: () => <TraccionMyckeo /> },
+  { id: 'competencia', label: 'Competencia', component: () => <CompetenciaMyckeo /> },
+  { id: 'finanzas', label: 'Finanzas', component: () => <FinanzasMyckeo /> },
 ];
 
 // --------------------------------------------------------------------------
