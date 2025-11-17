@@ -101,12 +101,13 @@ export default function PresentacionMyckeo() {
             <div className="relative aspect-video w-full max-w-none rounded-[32px] overflow-hidden 
                             shadow-2xl ring-1 ring-slate-200 bg-black group">
               <iframe
-                src="https://www.youtube.com/embed/uyb_H_Y9eCw?rel=0"
+                src="https://www.youtube.com/embed/HNvAAdyNxTc?rel=0"
                 title="Myckeo - Presentación"
                 allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
                 className="w-full h-full"
               />
+
 
               {/* Overlay visual */}
               <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none">
@@ -157,7 +158,7 @@ export default function PresentacionMyckeo() {
           <div className="px-8 py-3.5 rounded-full bg-white/80 backdrop-blur-md shadow-lg border border-slate-200 text-center">
             <p className="text-base md:text-lg font-semibold text-slate-700 whitespace-nowrap">
               Presentado por{' '}
-              <span className="font-bold text-slate-900">Nicolás Rodríguez</span>,  
+              <span className="font-bold text-slate-900">Nicolás Rodríguez</span>,
               Fundador y CEO de Myckeo
             </p>
           </div>
