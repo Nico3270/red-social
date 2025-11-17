@@ -13,7 +13,6 @@ import {
   BarChart3,
   PieChart,
   Activity,
-  DollarSignIcon,
   Percent
 } from 'lucide-react';
 import { 
@@ -32,6 +31,41 @@ import {
   Cell
 } from 'recharts';
 
+// === MISMAS CONSTANTES QUE EN TablaPL.tsx ===
+const fixedAnnual = 30 * 12 + 12 * 12 + 8 * 12 + 11 * 12 + 10 + 15; // $757/año
+
+// Compensación del fundador (exactamente la misma función que en TablaPL)
+const getFounderCompensation = (profit: number, year: number): number => {
+  if (year <= 2) return 1500 * 12;        // $18K/año
+  if (profit <= 0) return 1800 * 12;      // $21.6K/año
+  if (profit < 2_000_000) return 2500 * 12; // $30K/año
+  if (profit < 10_000_000) return 4000 * 12; // $48K/año
+  const base = 60000;
+  const bonus = profit * 0.01;
+  return Math.min(120000, base + bonus);   // tope $120K/año
+};
+
+// Equipo operativo (sin fundador)
+const getOperationalTeamCost = (totalUsers: number): number => {
+  if (totalUsers < 100000) return totalUsers * 1.5;
+  else if (totalUsers < 1000000) return 400000 + totalUsers * 0.8;
+  else if (totalUsers < 5000000) return 1500000 + totalUsers * 0.55;
+  else return 4000000 + totalUsers * 0.35;
+};
+
+// Infraestructura mensual (exactamente la misma que en TablaPL)
+const getInfraCostMonthly = (totalUsers: number, premiumUsers: number): number => {
+  const vercel = totalUsers < 10000 ? 25 : totalUsers < 100000 ? 200 + totalUsers * 0.004 : 500 + totalUsers * 0.0008;
+  const neon = totalUsers < 50000 ? 20 : totalUsers < 500000 ? 150 + totalUsers * 0.001 : 500 + (totalUsers - 500000) * 0.001;
+  const cloudinary = 89 + totalUsers * 0.004;
+  const whatsapp = premiumUsers * 1.8 * 0.4 * 0.0008;
+  const brevo = totalUsers < 100000 ? 0 : totalUsers * 0.0005;
+  const openai = totalUsers * 0.019;
+  return Math.round(vercel + neon + cloudinary + whatsapp + brevo + openai);
+};
+const getInfraCost = (totalUsers: number, premiumUsers: number) => getInfraCostMonthly(totalUsers, premiumUsers) * 12;
+
+// === MISMOS ESCENARIOS (solo agregamos LTV para mostrar en KPIs) ===
 type Scenario = 'pesimista' | 'intermedio' | 'optimista';
 
 interface ScenarioData {
@@ -98,65 +132,34 @@ const scenarioData: Record<Scenario, ScenarioData> = {
   }
 };
 
-// Costos fijos reales
-const fixedMonthly = 30 + 12 + 8 + 11;
-const fixedAnnual = 10 + 15;
-const fixedPerYear = fixedMonthly * 12 + fixedAnnual;
-
-// Infraestructura (mensual)
-const infraCosts = [
-  { users: 10, cost: 0 },
-  { users: 100, cost: 20 },
-  { users: 1000, cost: 75 },
-  { users: 10000, cost: 350 },
-  { users: 100000, cost: 3500 },
-  { users: 1000000, cost: 110000 },
-  { users: 5000000, cost: 500000 },
-  { users: 10000000, cost: 950000 }
-];
-
-const getInfraCost = (users: number): number => {
-  const sorted = [...infraCosts].sort((a, b) => a.users - b.users);
-  for (let i = 0; i < sorted.length - 1; i++) {
-    if (users >= sorted[i].users && users <= sorted[i + 1].users) {
-      const ratio = (users - sorted[i].users) / (sorted[i + 1].users - sorted[i].users);
-      return sorted[i].cost + ratio * (sorted[i + 1].cost - sorted[i].cost);
-    }
-  }
-  return users > 10000000 ? 950000 + (users - 10000000) * 0.09 : sorted[sorted.length - 1].cost;
-};
-
-const projectYear = (d: ScenarioData, year: number, prevUsers: number = 0, prevPremium: number = 0) => {
+// === PROYECCIÓN EXACTAMENTE IGUAL QUE EN TablaPL ===
+const projectYear = (d: ScenarioData, year: number, prevUsers = 0, prevPremium = 0) => {
   const annualGrowth = Math.pow(1 + d.monthlyGrowth, 12) - 1;
   const total = year === 1 ? 100 * (1 + annualGrowth) : prevUsers * (1 + annualGrowth);
 
   const newUsers = total - prevUsers;
   const paidUsers = newUsers * (1 - d.organicRatio);
-
   const newPremium = total * d.conversionRate;
   const retainedPremium = year > 1 ? prevPremium * (1 - d.churnRate) : 0;
   const premium = newPremium + retainedPremium;
 
-  const cac = Math.max(d.minCAC, d.initialCAC * (1 / (1 + total / 10000)));
-
-  const projectedRevenue = premium * d.arpu * 12;
-  const marketingBudget = projectedRevenue * d.maxMarketingPct;
+  const cac = d.minCAC + (d.initialCAC - d.minCAC) * Math.exp(-total / 300000);
+  const revenue = premium * d.arpu * 12;
+  const marketingBudget = revenue * d.maxMarketingPct;
   const marketing = Math.min(paidUsers * cac, marketingBudget);
 
-  const infra = getInfraCost(total) * 12;
-  const founderSalary = 1000 * 12;
-  const team = (
-  total < 1000 ? 3000 :                // etapa inicial
-  total < 10000 ? 10000 :              // semilla
-  total < 100000 ? 30000 :             // crecimiento temprano
-  Math.min(80000, 30000 + Math.log(total / 100000) * 25000)  // escala 100k–1M+
-) + founderSalary;
-  const fixed = fixedPerYear;
-  const cost = infra + team + marketing + fixed;
+  const infra = getInfraCost(total, premium);
+  const operationalTeam = getOperationalTeamCost(total);
+  const fixed = fixedAnnual;
 
-  const revenue = premium * d.arpu * 12;
+  const costTemp = infra + operationalTeam + marketing + fixed;
+  const profitTemp = revenue - costTemp;
+  const founderComp = getFounderCompensation(profitTemp, year);
+  const team = operationalTeam + founderComp;
+
+  const cost = costTemp + founderComp;
   const profit = revenue - cost;
-  const margin = revenue > 0 ? (profit / revenue) * 100 : 0;
+  const margin = revenue > 0 ? profit / revenue * 100 : 0;
 
   return {
     year: `Año ${year}`,
@@ -192,7 +195,8 @@ export default function DashboardFinanciero() {
   }
 
   const final = projections[4];
-  const ltvCacRatio = (d.ltv / d.initialCAC).toFixed(1);
+  const currentCAC = d.minCAC + (d.initialCAC - d.minCAC) * Math.exp(-final.users / 300000);
+  const ltvCacRatio = (d.ltv / currentCAC).toFixed(1);
 
   // Datos para gráficos
   const lineData = projections.map(p => ({
@@ -225,7 +229,7 @@ export default function DashboardFinanciero() {
             Dashboard Financiero Interactivo
           </h1>
           <p className="text-lg text-slate-600">
-            Proyecciones dinámicas basadas en benchmarks reales LATAM 2025
+            Proyecciones 100% alineadas con el P&L oficial
           </p>
         </div>
 
@@ -253,9 +257,6 @@ export default function DashboardFinanciero() {
           </div>
           <p className="text-center text-lg font-bold text-slate-600 italic mt-4">
             {d.description}
-          </p>
-          <p className="text-center text-sm text-slate-500 mt-2">
-            Crecimiento mensual combinado: <strong>{Math.round(d.organicRatio * 100)}% orgánico</strong> / <strong>{Math.round((1 - d.organicRatio) * 100)}% pagado</strong>
           </p>
         </div>
 
@@ -288,7 +289,9 @@ export default function DashboardFinanciero() {
           <div className="bg-gradient-to-br from-orange-50 to-amber-50 p-6 rounded-2xl border border-orange-200 shadow-lg">
             <div className="flex items-center justify-between mb-2">
               <Target className="w-8 h-8 text-orange-700" />
-              <span className="text-3xl font-bold text-orange-900">{projections.find(r => r.profit > 0)?.year || 'Año 5+'}</span>
+              <span className="text-3xl font-bold text-orange-900">
+                {projections.find(r => r.profit > 0)?.year || 'Año 5+'}
+              </span>
             </div>
             <p className="text-sm text-orange-700 font-medium">Break-even</p>
           </div>
@@ -298,15 +301,12 @@ export default function DashboardFinanciero() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="bg-gradient-to-br from-indigo-50 to-purple-50 p-6 rounded-2xl border border-indigo-200">
             <div className="flex items-center gap-3 mb-2">
-              <DollarSignIcon className="w-8 h-8 text-indigo-700" />
+              <DollarSign className="w-8 h-8 text-indigo-700" />
               <div>
-                <p className="text-sm text-indigo-700 font-medium">CAC Actual</p>
-                <p className="text-2xl font-bold text-indigo-900">
-                  ${Math.max(d.minCAC, d.initialCAC * (1 / (1 + final.users / 10000))).toFixed(1)}
-                </p>
+                <p className="text-sm text-indigo-700 font-medium">CAC Actual (Año 5)</p>
+                <p className="text-2xl font-bold text-indigo-900">${currentCAC.toFixed(1)}</p>
               </div>
             </div>
-            <p className="text-xs text-indigo-600">CAC decreciente con escala</p>
           </div>
 
           <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-6 rounded-2xl border border-green-200">
@@ -314,12 +314,9 @@ export default function DashboardFinanciero() {
               <Percent className="w-8 h-8 text-green-700" />
               <div>
                 <p className="text-sm text-green-700 font-medium">LTV/CAC Ratio</p>
-                <p className="text-2xl font-bold text-green-900">
-                  {ltvCacRatio}x
-                </p>
+                <p className="text-2xl font-bold text-green-900">{ltvCacRatio}x</p>
               </div>
             </div>
-            <p className="text-xs text-green-600">Relación saludable mayor a 3x</p>
           </div>
 
           <div className="bg-gradient-to-br from-orange-50 to-amber-50 p-6 rounded-2xl border border-orange-200">
@@ -327,22 +324,18 @@ export default function DashboardFinanciero() {
               <Zap className="w-8 h-8 text-orange-700" />
               <div>
                 <p className="text-sm text-orange-700 font-medium">Crecimiento Orgánico</p>
-                <p className="text-2xl font-bold text-orange-900">
-                  {Math.round(d.organicRatio * 100)}%
-                </p>
+                <p className="text-2xl font-bold text-orange-900">{Math.round(d.organicRatio * 100)}%</p>
               </div>
             </div>
-            <p className="text-xs text-orange-600">De nuevos usuarios</p>
           </div>
         </div>
 
         {/* Gráficos */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Ingresos vs Costos */}
           <div className="bg-white rounded-2xl shadow-xl border border-slate-200 p-6">
             <h3 className="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
               <TrendingUp className="w-6 h-6 text-green-600" />
-              Ingresos vs Costos
+              Ingresos vs Costos vs Profit
             </h3>
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={lineData}>
@@ -358,7 +351,6 @@ export default function DashboardFinanciero() {
             </ResponsiveContainer>
           </div>
 
-          {/* Desglose Año 5 */}
           <div className="bg-white rounded-2xl shadow-xl border border-slate-200 p-6">
             <h3 className="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
               <PieChart className="w-6 h-6 text-purple-600" />
@@ -386,7 +378,6 @@ export default function DashboardFinanciero() {
           </div>
         </div>
 
-        {/* Crecimiento Usuarios */}
         <div className="bg-white rounded-2xl shadow-xl border border-slate-200 p-6">
           <h3 className="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
             <Users className="w-6 h-6 text-blue-600" />
@@ -400,7 +391,7 @@ export default function DashboardFinanciero() {
               <Tooltip />
               <Legend />
               <Bar dataKey="usuarios" fill="#3b82f6" name="Usuarios Totales" />
-              <Bar dataKey="premium" fill="#10b981" name="Premium" />
+              <Bar dataKey="premium" fill="#10b981" name="Usuarios Premium" />
             </BarChart>
           </ResponsiveContainer>
         </div>

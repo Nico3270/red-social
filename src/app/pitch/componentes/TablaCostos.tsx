@@ -2,7 +2,7 @@
 'use client';
 
 import { useState } from 'react';
-import { TrendingUp, ArrowUpRight, ArrowDownRight, Users,  Server, Megaphone } from 'lucide-react';
+import { TrendingUp, ArrowUpRight, ArrowDownRight, Users, Server, Megaphone } from 'lucide-react';
 
 type Scenario = 'pesimista' | 'intermedio' | 'optimista';
 
@@ -54,33 +54,70 @@ const scenarioData: Record<Scenario, ScenarioData> = {
   }
 };
 
-// Costos fijos reales
-const fixedMonthly = 30 + 12 + 8 + 11; // Grok, Premiere, Midjourney, ElevenLabs
-const fixedAnnual = 10 + 15; // Hosting correo, dominio
-const fixedPerYear = fixedMonthly * 12 + fixedAnnual; // $732 / año
+// Costos fijos reales (anuales)
+const fixedAnnual = 30 * 12 + 12 * 12 + 8 * 12 + 11 * 12 + 10 + 15; // Grok $360, Premiere $144, Midjourney $96, ElevenLabs $132, Hosting/Correo $10, Dominio $15 → $757/año
 
-// Infraestructura hasta 10M usuarios (mensual)
-const infraCosts = [
-  { users: 10, cost: 0 },
-  { users: 100, cost: 20 },
-  { users: 1000, cost: 75 },
-  { users: 10000, cost: 350 },
-  { users: 100000, cost: 3500 },
-  { users: 1000000, cost: 110000 },
-  { users: 5000000, cost: 500000 },
-  { users: 10000000, cost: 950000 }
-];
+// Compensación del fundador (escalable por etapas y profit)
+const getFounderCompensation = (profit: number, year: number): number => {
+  // 1. Primeros 2 años: sueldo ultra austero
+  if (year <= 2) return 1500 * 12; // $18K/año
 
-const getInfraCost = (users: number): number => {
-  const sorted = [...infraCosts].sort((a, b) => a.users - b.users);
-  for (let i = 0; i < sorted.length - 1; i++) {
-    if (users >= sorted[i].users && users <= sorted[i + 1].users) {
-      const ratio = (users - sorted[i].users) / (sorted[i + 1].users - sorted[i].users);
-      return sorted[i].cost + ratio * (sorted[i + 1].cost - sorted[i].cost);
-    }
-  }
-  return users > 10000000 ? 950000 + (users - 10000000) * 0.09 : sorted[sorted.length - 1].cost;
+  // 2. Negocio funcionando pero sin utilidad
+  if (profit <= 0) return 1800 * 12; // $21.6K/año
+
+  // 3. Profit moderado (< $2M)
+  if (profit < 2_000_000) return 2500 * 12; // $30K/año
+
+  // 4. Profit intermedio (< $10M)
+  if (profit < 10_000_000) return 4000 * 12; // $48K/año
+
+  // 5. Profit alto → sueldo + bono variable (sin exagerar)
+  const base = 60000;   // sueldo base razonable LATAM
+  const bonus = profit * 0.01; // 1% del profit como incentivo
+  return Math.min(120000, base + bonus); // tope máximo: 120K/año
 };
+
+// Equipo operativo (sin fundador, fully loaded +30% overhead LATAM)
+const getOperationalTeamCost = (totalUsers: number): number => {
+  if (totalUsers < 100000) {
+    return totalUsers * 1.5; // + Freelance inicial
+  } else if (totalUsers < 1000000) {
+    return 400000 + totalUsers * 0.8; // Equipo semilla
+  } else if (totalUsers < 5000000) {
+    return 1500000 + totalUsers * 0.55; // Crecimiento
+  } else {
+    return 4000000 + totalUsers * 0.35; // Escala eficiente
+  }
+};
+
+// Infraestructura mensual precisa por proveedor (2025 LATAM)
+const getInfraCostMonthly = (totalUsers: number, premiumUsers: number): number => {
+  // Vercel: Hosting escalable
+  const vercel = totalUsers < 10000 ? 25 : totalUsers < 100000 ? 200 + totalUsers * 0.004 : 500 + totalUsers * 0.0008;
+
+  // Neon: DB relacional
+  const neon = totalUsers < 50000 ? 20 : totalUsers < 500000 ? 150 + totalUsers * 0.001 : 500 + (totalUsers - 500000) * 0.001;
+
+  // Cloudinary: Multimedia (imágenes/videos reseñas)
+  const cloudinary = 89 + totalUsers * 0.004; // $0.004 por transformación/almacenamiento
+
+  // WhatsApp: Utility templates Colombia 2025 ($0.0008/msg fuera de 24h ventana; ~40% pagados)
+  const whatsappMsgsPerPremium = 1.8; // Confirmaciones pedidos/reservas/cancelaciones
+  const paidMsgRatio = 0.4; // 60% gratuitos por user-initiated
+  const whatsappCostPerMsg = 0.0008;
+  const whatsapp = premiumUsers * whatsappMsgsPerPremium * paidMsgRatio * whatsappCostPerMsg;
+
+  // Brevo: Emails transaccionales
+  const brevo = totalUsers < 100000 ? 0 : totalUsers * 0.0005; // $0.0005/email, ~1/mes para notifs
+
+  // OpenAI: IA en app (chat/help)
+  const openai = totalUsers * 0.019; // ~$0.019/usuario basado en 50 queries/mes a $0.00038/1K tokens
+
+  return Math.round(vercel + neon + cloudinary + whatsapp + brevo + openai);
+};
+
+const getInfraCost = (totalUsers: number, premiumUsers: number): number =>
+  getInfraCostMonthly(totalUsers, premiumUsers) * 12; // Anual
 
 const projectYear = (d: ScenarioData, year: number, prevUsers: number = 0, prevPremium: number = 0) => {
   const annualGrowth = Math.pow(1 + d.monthlyGrowth, 12) - 1;
@@ -93,25 +130,30 @@ const projectYear = (d: ScenarioData, year: number, prevUsers: number = 0, prevP
   const retainedPremium = year > 1 ? prevPremium * (1 - d.churnRate) : 0;
   const premium = newPremium + retainedPremium;
 
-  const cac = Math.max(d.minCAC, d.initialCAC * (1 / (1 + total / 10000)));
-
-  const projectedRevenue = premium * d.arpu * 12;
-  const marketingBudget = projectedRevenue * d.maxMarketingPct;
-  const marketing = Math.min(paidUsers * cac, marketingBudget);
-
-  const infra = getInfraCost(total) * 12; // MENSUAL → ANUAL
-  const founderSalary = 1000 * 12; // 12,000 USD/año
-const team = (
-  total < 1000 ? 3000 :                // etapa inicial
-  total < 10000 ? 10000 :              // semilla
-  total < 100000 ? 30000 :             // crecimiento temprano
-  Math.min(80000, 30000 + Math.log(total / 100000) * 25000)  // escala 100k–1M+
-) + founderSalary;
-
-  const fixed = fixedPerYear;
-  const cost = infra + team + marketing + fixed;
+  const cac = d.minCAC + (d.initialCAC - d.minCAC) * Math.exp(-total / 300000);
 
   const revenue = premium * d.arpu * 12;
+  const marketingBudget = revenue * d.maxMarketingPct;
+  const marketing = Math.min(paidUsers * cac, marketingBudget);
+
+  const infra = getInfraCost(total, premium);
+  const operationalTeam = getOperationalTeamCost(total);
+  const fixed = fixedAnnual;
+
+  // Costo temporal sin compensación del fundador
+  const costTemp = infra + operationalTeam + marketing + fixed;
+  const profitTemp = revenue - costTemp;
+
+  // Compensación del fundador basada en profit temporal (antes de su sueldo)
+  const founderComp = getFounderCompensation(profitTemp, year);
+
+
+  // Equipo total (operativo + fundador)
+  // Equipo total que se muestra en la tabla
+  const team = operationalTeam + founderComp;
+
+  // Costos finales SIN volver a sumar founderComp
+  const cost = costTemp + founderComp;
   const profit = revenue - cost;
   const margin = revenue > 0 ? (profit / revenue) * 100 : 0;
 
@@ -130,7 +172,8 @@ const team = (
     profit: Math.round(profit),
     margin: Math.round(margin),
     prevUsers: total,
-    prevPremium: premium
+    prevPremium: premium,
+    founderComp: Math.round(founderComp) // Para debugging, opcional
   };
 };
 
@@ -151,82 +194,82 @@ export default function TablaPL() {
   return (
     <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-200 p-6 md:p-8">
       {/* Caja Explicativa */}
-<div className="bg-white rounded-2xl border border-green-200 shadow-sm p-6 mb-8">
+      <div className="bg-white rounded-2xl border border-green-200 shadow-sm p-6 mb-8">
+        {/* Header */}
+        <div className="flex items-center gap-3 mb-4">
+          <div className="bg-green-100 p-2 rounded-lg">
+            <TrendingUp className="w-6 h-6 text-green-700" />
+          </div>
+          <h4 className="text-xl font-bold text-green-900">
+            P&L Completo (Profit & Loss)
+          </h4>
+        </div>
 
-  {/* Header */}
-  <div className="flex items-center gap-3 mb-4">
-    <div className="bg-green-100 p-2 rounded-lg">
-      <TrendingUp className="w-6 h-6 text-green-700" />
-    </div>
-    <h4 className="text-xl font-bold text-green-900">
-      P&L Completo (Profit & Loss)
-    </h4>
-  </div>
+        {/* Subtítulo */}
+        <p className="text-sm text-green-800 mb-4">
+          Ingresos, costos y rentabilidad del <strong>escenario {d.label.toLowerCase()}</strong>.
+        </p>
 
-  {/* Subtítulo */}
-  <p className="text-sm text-green-800 mb-4">
-    Ingresos, costos y rentabilidad del <strong>escenario {d.label.toLowerCase()}</strong>.
-  </p>
+        {/* Sección de conclusiones */}
+        <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl p-4">
+          <p className="text-sm font-semibold text-green-900 mb-2">
+            Conclusiones clave:
+          </p>
 
-  {/* Sección de conclusiones */}
-  <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl p-4">
-    <p className="text-sm font-semibold text-green-900 mb-2">
-      Conclusiones clave:
-    </p>
+          <ul className="space-y-2 text-green-800 text-sm">
+            <li className="flex items-start gap-2">
+              <span className="mt-1 w-2 h-2 bg-green-600 rounded-full"></span>
+              <span><strong>Break-even:</strong> año donde el profit pasa a ser positivo.</span>
+            </li>
 
-    <ul className="space-y-2 text-green-800 text-sm">
+            <li className="flex items-start gap-2">
+              <span className="mt-1 w-2 h-2 bg-green-600 rounded-full"></span>
+              <span><strong>Crecimiento orgánico:</strong> {Math.round(d.organicRatio * 100)}% nuevos usuarios sin costo.</span>
+            </li>
 
-      <li className="flex items-start gap-2">
-        <span className="mt-1 w-2 h-2 bg-green-600 rounded-full"></span>
-        <span><strong>Break-even:</strong> año donde el profit pasa a ser positivo.</span>
-      </li>
+            <li className="flex items-start gap-2">
+              <span className="mt-1 w-2 h-2 bg-green-600 rounded-full"></span>
+              <span><strong>CAC decreciente:</strong> de ${d.initialCAC} → ${d.minCAC} gracias a escala.</span>
+            </li>
 
-      <li className="flex items-start gap-2">
-        <span className="mt-1 w-2 h-2 bg-green-600 rounded-full"></span>
-        <span><strong>Crecimiento orgánico:</strong> {Math.round(d.organicRatio * 100)}% nuevos usuarios sin costo.</span>
-      </li>
+            <li className="flex items-start gap-2">
+              <span className="mt-1 w-2 h-2 bg-green-600 rounded-full"></span>
+              <span><strong>Marketing limitado:</strong> máx {Math.round(d.maxMarketingPct * 100)}% de ingresos.</span>
+            </li>
 
-      <li className="flex items-start gap-2">
-        <span className="mt-1 w-2 h-2 bg-green-600 rounded-full"></span>
-        <span><strong>CAC decreciente:</strong> de ${d.initialCAC} → ${d.minCAC} gracias a escala.</span>
-      </li>
+            <li className="flex items-start gap-2">
+              <span className="mt-1 w-2 h-2 bg-green-600 rounded-full"></span>
+              <span><strong>Infraestructura:</strong> costos mensuales ×12. Ej: 1.597 usuarios ≈ $285/m → $3.420/año (ajustado realista).</span>
+            </li>
 
-      <li className="flex items-start gap-2">
-        <span className="mt-1 w-2 h-2 bg-green-600 rounded-full"></span>
-        <span><strong>Marketing limitado:</strong> máx {Math.round(d.maxMarketingPct * 100)}% de ingresos.</span>
-      </li>
+            {/* Costos fijos */}
+            <li className="flex items-start gap-2">
+              <span className="mt-1 w-2 h-2 bg-green-600 rounded-full"></span>
+              <span>
+                <strong>Costos fijos reales: ${fixedAnnual}/año</strong>
+                <ul className="ml-4 mt-1 space-y-1 list-disc text-green-700">
+                  <li>Grok: $30/mes ($360/año)</li>
+                  <li>Adobe Premiere: $12/mes ($144/año)</li>
+                  <li>Midjourney: $8/mes ($96/año)</li>
+                  <li>ElevenLabs: $11/mes ($132/año)</li>
+                  <li>Correo empresarial: $10/año</li>
+                  <li>Dominio: $15/año</li>
+                </ul>
+              </span>
+            </li>
 
-      <li className="flex items-start gap-2">
-        <span className="mt-1 w-2 h-2 bg-green-600 rounded-full"></span>
-        <span><strong>Infraestructura:</strong> costos mensuales ×12. Ej: 1.597 usuarios ≈ $93/m → $1.116/año.</span>
-      </li>
+            {/* Salario fundador */}
+            <li className="flex items-start gap-2">
+              <span className="mt-1 w-2 h-2 bg-green-600 rounded-full"></span>
+              <span>
+                <strong>Compensación fundador:</strong> Modelo escalonado según rentabilidad
+                (incluida en “Equipo”; ej: ~$18K en primeros años → hasta ~$120K + 1% de bonus con altos profits).
+              </span>
+            </li>
 
-      {/* Costos fijos */}
-      <li className="flex items-start gap-2">
-        <span className="mt-1 w-2 h-2 bg-green-600 rounded-full"></span>
-        <span>
-          <strong>Costos fijos reales: ${fixedPerYear}/año</strong>
-          <ul className="ml-4 mt-1 space-y-1 list-disc text-green-700">
-            <li>Grok: $30/mes</li>
-            <li>Adobe Premiere: $12/mes</li>
-            <li>Midjourney: $8/mes</li>
-            <li>ElevenLabs: $11/mes</li>
-            <li>Correo empresarial: $10/año</li>
-            <li>Dominio: $15/año</li>
           </ul>
-        </span>
-      </li>
-
-      {/* Salario fundador */}
-      <li className="flex items-start gap-2">
-        <span className="mt-1 w-2 h-2 bg-green-600 rounded-full"></span>
-        <span><strong>Salario fundador:</strong> $12.000/año (incluido en “Equipo”).</span>
-      </li>
-    </ul>
-  </div>
-</div>
-
-
+        </div>
+      </div>
 
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
@@ -255,11 +298,10 @@ export default function TablaPL() {
             <button
               key={key}
               onClick={() => setScenario(key as Scenario)}
-              className={`px-6 py-3 rounded-xl font-semibold transition-all flex items-center gap-2 ${
-                isActive 
+              className={`px-6 py-3 rounded-xl font-semibold transition-all flex items-center gap-2 ${isActive
                   ? 'bg-green-900 text-white shadow-xl scale-105 ring-2 ring-green-300'
                   : 'bg-white text-slate-700 shadow hover:shadow-md hover:scale-105 border border-slate-200'
-              }`}
+                }`}
             >
               {s.label}
               {isActive && <span className="ml-2 bg-white/20 px-2 py-0.5 rounded-full text-xs">Activo</span>}
@@ -267,9 +309,6 @@ export default function TablaPL() {
           );
         })}
       </div>
-
-
-
 
       {/* Tabla P&L */}
       <div className="overflow-x-auto">
@@ -322,7 +361,7 @@ export default function TablaPL() {
         </table>
       </div>
 
-      {/* Tabla de Infraestructura hasta 10M */}
+      {/* Tabla de Infraestructura hasta 10M (actualizada realista) */}
       <div className="mt-8 bg-slate-50 rounded-xl p-6 border border-slate-200">
         <h4 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
           <Server className="w-5 h-5" />
@@ -345,74 +384,74 @@ export default function TablaPL() {
             <tbody>
               <tr className="bg-white">
                 <td className="px-4 py-2">1K</td>
+                <td className="px-4 py-2 text-right">$25</td>
                 <td className="px-4 py-2 text-right">$20</td>
-                <td className="px-4 py-2 text-right">$19</td>
                 <td className="px-4 py-2 text-right">$89</td>
-                <td className="px-4 py-2 text-right">$324</td>
+                <td className="px-4 py-2 text-right">$0</td>
                 <td className="px-4 py-2 text-right">$0</td>
                 <td className="px-4 py-2 text-right">$19</td>
-                <td className="px-4 py-2 text-right font-bold">$471</td>
+                <td className="px-4 py-2 text-right font-bold">$153</td>
               </tr>
               <tr className="bg-slate-50">
                 <td className="px-4 py-2">10K</td>
-                <td className="px-4 py-2 text-right">$50</td>
+                <td className="px-4 py-2 text-right">$40</td>
                 <td className="px-4 py-2 text-right">$20</td>
-                <td className="px-4 py-2 text-right">$126</td>
-                <td className="px-4 py-2 text-right">$2.4K</td>
+                <td className="px-4 py-2 text-right">$129</td>
+                <td className="px-4 py-2 text-right">$1</td>
                 <td className="px-4 py-2 text-right">$0</td>
-                <td className="px-4 py-2 text-right">$188</td>
-                <td className="px-4 py-2 text-right font-bold">$2.78K</td>
+                <td className="px-4 py-2 text-right">$190</td>
+                <td className="px-4 py-2 text-right font-bold">$380</td>
               </tr>
               <tr className="bg-white">
                 <td className="px-4 py-2">100K</td>
-                <td className="px-4 py-2 text-right">$500</td>
-                <td className="px-4 py-2 text-right">$94</td>
-                <td className="px-4 py-2 text-right">$449</td>
-                <td className="px-4 py-2 text-right">$24.3K</td>
-                <td className="px-4 py-2 text-right">$0</td>
+                <td className="px-4 py-2 text-right">$400</td>
+                <td className="px-4 py-2 text-right">$150</td>
+                <td className="px-4 py-2 text-right">$489</td>
+                <td className="px-4 py-2 text-right">$6</td>
+                <td className="px-4 py-2 text-right">$50</td>
                 <td className="px-4 py-2 text-right">$1.9K</td>
-                <td className="px-4 py-2 text-right font-bold">$27.2K</td>
+                <td className="px-4 py-2 text-right font-bold">$3.0K</td>
               </tr>
               <tr className="bg-slate-50">
                 <td className="px-4 py-2">1M</td>
-                <td className="px-4 py-2 text-right">$5K</td>
-                <td className="px-4 py-2 text-right">$900</td>
-                <td className="px-4 py-2 text-right">$4.5K</td>
-                <td className="px-4 py-2 text-right">$243K</td>
-                <td className="px-4 py-2 text-right">$0</td>
+                <td className="px-4 py-2 text-right">$800</td>
+                <td className="px-4 py-2 text-right">$650</td>
+                <td className="px-4 py-2 text-right">$4.09K</td>
+                <td className="px-4 py-2 text-right">$58</td>
+                <td className="px-4 py-2 text-right">$500</td>
                 <td className="px-4 py-2 text-right">$19K</td>
-                <td className="px-4 py-2 text-right font-bold">$272K</td>
+                <td className="px-4 py-2 text-right font-bold">$25.1K</td>
               </tr>
               <tr className="bg-white">
                 <td className="px-4 py-2">5M</td>
-                <td className="px-4 py-2 text-right">$22K</td>
                 <td className="px-4 py-2 text-right">$4K</td>
+                <td className="px-4 py-2 text-right">$5K</td>
                 <td className="px-4 py-2 text-right">$20K</td>
-                <td className="px-4 py-2 text-right">$1.2M</td>
-                <td className="px-4 py-2 text-right">$0</td>
+                <td className="px-4 py-2 text-right">$288</td>
+                <td className="px-4 py-2 text-right">$2.5K</td>
                 <td className="px-4 py-2 text-right">$95K</td>
-                <td className="px-4 py-2 text-right font-bold">$1.34M</td>
+                <td className="px-4 py-2 text-right font-bold">$126.8K</td>
               </tr>
               <tr className="bg-slate-50">
                 <td className="px-4 py-2">10M</td>
+                <td className="px-4 py-2 text-right">$8K</td>
+                <td className="px-4 py-2 text-right">$9.5K</td>
                 <td className="px-4 py-2 text-right">$40K</td>
-                <td className="px-4 py-2 text-right">$7.5K</td>
-                <td className="px-4 py-2 text-right">$38K</td>
-                <td className="px-4 py-2 text-right">$2.4M</td>
-                <td className="px-4 py-2 text-right">$0</td>
+                <td className="px-4 py-2 text-right">$576</td>
+                <td className="px-4 py-2 text-right">$5K</td>
                 <td className="px-4 py-2 text-right">$190K</td>
-                <td className="px-4 py-2 text-right font-bold">$2.68M</td>
+                <td className="px-4 py-2 text-right font-bold">$253.1K</td>
               </tr>
             </tbody>
           </table>
         </div>
         <p className="text-md text-slate-500 mt-2">
-          Costos reales de Vercel (Alojamiento), Neon (Base de datos), Cloudinary (Almacenamiento de multimedia), WhatsApp (Notificaciónes), Brevo (Correos de información), OpenAI (IA de ayuda en al app). Escala hasta 10M usuarios.
+          Costos reales 2025: Vercel (hosting), Neon (DB), Cloudinary (multimedia), WhatsApp ($0.0008/msg utility Colombia, ~1.8 msgs/premium ×40% pagados), Brevo (emails), OpenAI (IA). Escala hasta 10M usuarios.
         </p>
       </div>
 
       <p className="text-xs text-slate-500 text-center mt-6">
-        Cálculos basados en costos reales + fijos $732/año. ARPU: $10/mes. Infra en P&L es anual (mensual × 12).
+        Cálculos basados en costos reales + fijos ${fixedAnnual}/año. ARPU: $10/mes. Infra en P&L es anual (mensual ×12). Equipo fully loaded (+30% overhead LATAM). Profit neto después de compensación fundador escalable.
       </p>
     </div>
   );

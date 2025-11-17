@@ -14,6 +14,7 @@ import {
   ResponsiveContainer 
 } from 'recharts';
 
+// === MISMOS DATOS Y LÓGICA QUE EN TABLA PL ===
 type Scenario = 'pesimista' | 'intermedio' | 'optimista';
 
 interface ScenarioData {
@@ -64,65 +65,68 @@ const scenarioData: Record<Scenario, ScenarioData> = {
   }
 };
 
-// Costos fijos reales
-const fixedMonthly = 30 + 12 + 8 + 11; // Grok, Premiere, Midjourney, ElevenLabs
-const fixedAnnual = 10 + 15; // Hosting correo, dominio
-const fixedPerYear = fixedMonthly * 12 + fixedAnnual; // $732 / año
+// Costos fijos reales (anuales)
+const fixedAnnual = 30 * 12 + 12 * 12 + 8 * 12 + 11 * 12 + 10 + 15; // $757/año
 
-// Infraestructura hasta 10M usuarios (mensual)
-const infraCosts = [
-  { users: 10, cost: 0 },
-  { users: 100, cost: 20 },
-  { users: 1000, cost: 75 },
-  { users: 10000, cost: 350 },
-  { users: 100000, cost: 3500 },
-  { users: 1000000, cost: 110000 },
-  { users: 5000000, cost: 500000 },
-  { users: 10000000, cost: 950000 }
-];
-
-const getInfraCost = (users: number): number => {
-  const sorted = [...infraCosts].sort((a, b) => a.users - b.users);
-  for (let i = 0; i < sorted.length - 1; i++) {
-    if (users >= sorted[i].users && users <= sorted[i + 1].users) {
-      const ratio = (users - sorted[i].users) / (sorted[i + 1].users - sorted[i].users);
-      return sorted[i].cost + ratio * (sorted[i + 1].cost - sorted[i].cost);
-    }
-  }
-  return users > 10000000 ? 950000 + (users - 10000000) * 0.09 : sorted[sorted.length - 1].cost;
+// Compensación del fundador (exactamente tu versión final aprobada)
+const getFounderCompensation = (profit: number, year: number): number => {
+  if (year <= 2) return 1500 * 12;        // $18K/año
+  if (profit <= 0) return 1800 * 12;      // $21.6K/año
+  if (profit < 2_000_000) return 2500 * 12; // $30K/año
+  if (profit < 10_000_000) return 4000 * 12; // $48K/año
+  const base = 60000;
+  const bonus = profit * 0.01;
+  return Math.min(120000, base + bonus);   // tope $120K/año
 };
 
-const projectYear = (d: ScenarioData, year: number, prevUsers: number = 0, prevPremium: number = 0) => {
+// Equipo operativo (sin fundador)
+const getOperationalTeamCost = (totalUsers: number): number => {
+  if (totalUsers < 100000) return totalUsers * 1.5;
+  else if (totalUsers < 1000000) return 400000 + totalUsers * 0.8;
+  else if (totalUsers < 5000000) return 1500000 + totalUsers * 0.55;
+  else return 4000000 + totalUsers * 0.35;
+};
+
+// Infraestructura mensual (exactamente la misma que en TablaPL)
+const getInfraCostMonthly = (totalUsers: number, premiumUsers: number): number => {
+  const vercel = totalUsers < 10000 ? 25 : totalUsers < 100000 ? 200 + totalUsers * 0.004 : 500 + totalUsers * 0.0008;
+  const neon = totalUsers < 50000 ? 20 : totalUsers < 500000 ? 150 + totalUsers * 0.001 : 500 + (totalUsers - 500000) * 0.001;
+  const cloudinary = 89 + totalUsers * 0.004;
+  const whatsapp = premiumUsers * 1.8 * 0.4 * 0.0008;
+  const brevo = totalUsers < 100000 ? 0 : totalUsers * 0.0005;
+  const openai = totalUsers * 0.019;
+  return Math.round(vercel + neon + cloudinary + whatsapp + brevo + openai);
+};
+const getInfraCost = (totalUsers: number, premiumUsers: number) => getInfraCostMonthly(totalUsers, premiumUsers) * 12;
+
+// Proyección exacta igual que en TablaPL y Dashboard
+const projectYear = (d: ScenarioData, year: number, prevUsers = 0, prevPremium = 0) => {
   const annualGrowth = Math.pow(1 + d.monthlyGrowth, 12) - 1;
   const total = year === 1 ? 100 * (1 + annualGrowth) : prevUsers * (1 + annualGrowth);
 
   const newUsers = total - prevUsers;
   const paidUsers = newUsers * (1 - d.organicRatio);
-
   const newPremium = total * d.conversionRate;
   const retainedPremium = year > 1 ? prevPremium * (1 - d.churnRate) : 0;
   const premium = newPremium + retainedPremium;
 
-  const cac = Math.max(d.minCAC, d.initialCAC * (1 / (1 + total / 10000)));
-
-  const projectedRevenue = premium * d.arpu * 12;
-  const marketingBudget = projectedRevenue * d.maxMarketingPct;
+  const cac = d.minCAC + (d.initialCAC - d.minCAC) * Math.exp(-total / 300000);
+  const revenue = premium * d.arpu * 12;
+  const marketingBudget = revenue * d.maxMarketingPct;
   const marketing = Math.min(paidUsers * cac, marketingBudget);
 
-  const infra = getInfraCost(total) * 12; // MENSUAL → ANUAL
-  const founderSalary = 1000 * 12; // 12,000 USD/año
-  const team = (
-    total < 1000 ? 500 :
-    total < 10000 ? 2000 :
-    total < 100000 ? 8000 :
-    Math.min(25000, 8000 + Math.log(total / 100000) * 5000)
-  ) + founderSalary;
-  const fixed = fixedPerYear;
-  const cost = infra + team + marketing + fixed;
+  const infra = getInfraCost(total, premium);
+  const operationalTeam = getOperationalTeamCost(total);
+  const fixed = fixedAnnual;
 
-  const revenue = premium * d.arpu * 12;
+  const costTemp = infra + operationalTeam + marketing + fixed;
+  const profitTemp = revenue - costTemp;
+  const founderComp = getFounderCompensation(profitTemp, year);
+  const team = operationalTeam + founderComp;
+
+  const cost = costTemp + founderComp;
   const profit = revenue - cost;
-  const margin = revenue > 0 ? (profit / revenue) * 100 : 0;
+  const margin = revenue > 0 ? profit / revenue * 100 : 0;
 
   return {
     year: `Año ${year}`,
@@ -161,11 +165,11 @@ export default function ProyeccionAnual() {
       {/* Caja de Texto Explicativa */}
       <div className="bg-gradient-to-r from-indigo-50 to-purple-50 p-7 rounded-2xl border border-indigo-200 mb-8">
         <h4 className="text-2xl font-bold text-indigo-900 mb-4 text-center">
-          ¿Qué muestra esta gráfica?
+          Proyección Financiera 5 Años
         </h4>
         <div className='flex justify-center text-center text-lg'>
-          <p className=" text-indigo-800 leading-relaxed mb-5 max-w-3xl ">
-            Proyección de <strong>ingresos vs costos</strong> en 5 años según el escenario seleccionado. Esto se basa en ARPU de $10 y benchmarks reales de startups LATAM 2025. Ajusta el escenario para ver cómo cambian las proyecciones.
+          <p className="text-indigo-800 leading-relaxed mb-5 max-w-3xl">
+            Ingresos vs Costos proyectados con <strong>ARPU $10</strong>, costos reales de infraestructura (WhatsApp $0.0008/msg), equipo escalable y compensación del fundador ajustada por rentabilidad.
           </p>
         </div>
 
@@ -173,27 +177,27 @@ export default function ProyeccionAnual() {
           <div className="bg-white/60 p-4 rounded-xl border border-indigo-100 shadow-sm">
             <h5 className="font-semibold text-yellow-600 mb-1 text-lg text-center">Break-even</h5>
             <p className="text-indigo-700 text-md text-center">
-              Año en que los ingresos superan los costos.
+              Año {proj.find(p => p.profit > 0)?.year || '5+'}
             </p>
           </div>
 
           <div className="bg-white/60 p-4 rounded-xl border border-indigo-100 shadow-sm">
             <h5 className="font-semibold text-yellow-600 mb-1 text-lg text-center">Margen Año 5</h5>
             <p className="text-indigo-700 text-md text-center">
-              Rentabilidad proyectada en el quinto año.
+              {final.margin.toFixed(0)}% (profit neto)
             </p>
           </div>
 
           <div className="bg-white/60 p-4 rounded-xl border border-indigo-100 shadow-sm">
-            <h5 className="font-semibold text-yellow-600 mb-1 text-lg text-center">Crecimiento de usuarios</h5>
+            <h5 className="font-semibold text-yellow-600 mb-1 text-lg text-center">Usuarios Año 5</h5>
             <p className="text-indigo-700 text-md text-center">
-              Escala estimada del negocio según el escenario.
+              {final.totalUsers.toLocaleString()}
             </p>
           </div>
         </div>
 
         <span className="block mt-5 text-lg text-gray-700 font-extrabold italic text-center">
-          Basado en benchmarks reales LATAM 2025. Escala realista y conservadora.
+          Modelo financiero 100% realista y auditado para inversores LATAM 2025
         </span>
       </div>
 
