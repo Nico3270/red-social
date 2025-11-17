@@ -122,7 +122,6 @@ const projectYear = (d: ScenarioData, year: number, prevUsers = 0, prevPremium =
   const costTemp = infra + operationalTeam + marketing + fixed;
   const profitTemp = revenue - costTemp;
   const founderComp = getFounderCompensation(profitTemp, year);
-  const team = operationalTeam + founderComp;
 
   const cost = costTemp + founderComp;
   const profit = revenue - cost;
