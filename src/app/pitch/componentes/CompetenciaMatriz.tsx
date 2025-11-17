@@ -3,7 +3,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { titleFont } from '@/config/fonts';
-import { X, MousePointerClick, Users, Users2, Pointer } from 'lucide-react';
+import { X, MousePointerClick, Users,  } from 'lucide-react';
 import { useState } from 'react';
 import Image from 'next/image';
 

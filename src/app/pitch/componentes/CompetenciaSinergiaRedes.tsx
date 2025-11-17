@@ -65,8 +65,15 @@ export default function CompetenciaSinergiaRedes() {
   );
 }
 
-const Card = ({ icon, title, items, accent }: any) => {
-  const accents: any = {
+interface CardProps {
+  icon: string;
+  title: string;
+  items: string[];
+  accent: 'rose' | 'blue' | 'emerald';
+}
+
+const Card = ({ icon, title, items, accent }: CardProps) => {
+  const accents: Record<'rose' | 'blue' | 'emerald', { bg: string; icon: string; ring: string }> = {
     rose: {
       bg: 'from-rose-50 to-rose-100/70',
       icon: 'text-rose-500',

@@ -16,6 +16,10 @@ import MonetizacionMyckeo from './componentes/MonetizacionMyckeo';
 import TraccionMyckeo from './componentes/TraccionMyckeo';
 import CompetenciaMyckeo from './componentes/CompetenciaMyckeo';
 import FinanzasMyckeo from './componentes/FinanzasMyckeo.tsx';
+import EquipoHibrido from './componentes/EquipoHibrido';
+import RoadMap from './componentes/RoadMap';
+import InversionSlide from './componentes/InversionSlide';
+import ContactoBanner from './componentes/ContactoBanner';
 
 
 // --------------------------------------------------------------------------
@@ -38,6 +42,10 @@ const SECTIONS: Section[] = [
   { id: 'traccion', label: 'Tracción', component: () => <TraccionMyckeo /> },
   { id: 'competencia', label: 'Competencia', component: () => <CompetenciaMyckeo /> },
   { id: 'finanzas', label: 'Finanzas', component: () => <FinanzasMyckeo /> },
+  { id: 'equipo', label: 'Equipo', component: () => <EquipoHibrido /> },
+  { id: 'roadmap', label: 'RoadMap', component: () => <RoadMap /> },
+  { id: 'fondos', label: 'Fondos', component: () => <InversionSlide /> },
+  { id: 'contacto', label: 'Contacto', component: () => <ContactoBanner /> },
 ];
 
 // --------------------------------------------------------------------------
