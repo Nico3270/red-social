@@ -31,10 +31,10 @@ import {
   Cell
 } from 'recharts';
 
-// === MISMAS CONSTANTES QUE EN TablaPL.tsx ===
+// === EXACTAMENTE IGUAL QUE EN TablaPL.tsx (versión definitiva) ===
 const fixedAnnual = 30 * 12 + 12 * 12 + 8 * 12 + 11 * 12 + 10 + 15; // $757/año
 
-// Compensación del fundador (exactamente la misma función que en TablaPL)
+// Compensación del fundador (100% igual)
 const getFounderCompensation = (profit: number, year: number): number => {
   if (year <= 2) return 1500 * 12;        // $18K/año
   if (profit <= 0) return 1800 * 12;      // $21.6K/año
@@ -45,7 +45,7 @@ const getFounderCompensation = (profit: number, year: number): number => {
   return Math.min(120000, base + bonus);   // tope $120K/año
 };
 
-// Equipo operativo (sin fundador)
+// Equipo operativo (100% igual)
 const getOperationalTeamCost = (totalUsers: number): number => {
   if (totalUsers < 100000) return totalUsers * 1.5;
   else if (totalUsers < 1000000) return 400000 + totalUsers * 0.8;
@@ -53,19 +53,48 @@ const getOperationalTeamCost = (totalUsers: number): number => {
   else return 4000000 + totalUsers * 0.35;
 };
 
-// Infraestructura mensual (exactamente la misma que en TablaPL)
+// Infraestructura mensual (100% igual que en TablaPL definitiva)
 const getInfraCostMonthly = (totalUsers: number, premiumUsers: number): number => {
-  const vercel = totalUsers < 10000 ? 25 : totalUsers < 100000 ? 200 + totalUsers * 0.004 : 500 + totalUsers * 0.0008;
+  const daus = totalUsers * 0.10;
+
+  const vercel =
+    daus < 50_000
+      ? 100 + daus * 0.01
+      : daus < 500_000
+        ? 500 + daus * 0.003
+        : 2000 + daus * 0.0015;
+
   const neon = totalUsers < 50000 ? 20 : totalUsers < 500000 ? 150 + totalUsers * 0.001 : 500 + (totalUsers - 500000) * 0.001;
-  const cloudinary = 89 + totalUsers * 0.004;
-  const whatsapp = premiumUsers * 1.8 * 0.4 * 0.0008;
+  const cloudinary = 89 + totalUsers * 0.005;
+
+  const salesPerPremium = 15;
+  const salesPerFreeBiz = 5;
+  const msgsPerTrans = 2.5;
+  const paidMsgRatio = 1.0;
+  const whatsappCostPerMsg = 0.0008;
+
+  const freeUsers = totalUsers - premiumUsers;
+  const totalTransactions = premiumUsers * salesPerPremium + freeUsers * salesPerFreeBiz * 0.1;
+  const totalMsgs = totalTransactions * msgsPerTrans;
+  const paidMsgs = totalMsgs * paidMsgRatio;
+  const whatsapp = paidMsgs * whatsappCostPerMsg;
+
   const brevo = totalUsers < 100000 ? 0 : totalUsers * 0.0005;
-  const openai = totalUsers * 0.019;
+
+  const productsPerPremiumBizMonthly = 2;
+  const productsPerFreeBizMonthly = 1;
+  const premiumBiz = premiumUsers;
+  const freeBiz = (totalUsers - premiumUsers) * 0.1;
+  const totalProductsMonth = premiumBiz * productsPerPremiumBizMonthly + freeBiz * productsPerFreeBizMonthly;
+  const costPerProduct = 0.003;
+  const openai = totalProductsMonth * costPerProduct;
+
   return Math.round(vercel + neon + cloudinary + whatsapp + brevo + openai);
 };
+
 const getInfraCost = (totalUsers: number, premiumUsers: number) => getInfraCostMonthly(totalUsers, premiumUsers) * 12;
 
-// === MISMOS ESCENARIOS (solo agregamos LTV para mostrar en KPIs) ===
+// Escenarios
 type Scenario = 'pesimista' | 'intermedio' | 'optimista';
 
 interface ScenarioData {
@@ -98,7 +127,7 @@ const scenarioData: Record<Scenario, ScenarioData> = {
     arpu: 10,
     organicRatio: 0.20,
     maxMarketingPct: 0.30,
-    ltv: 10 * 12 / 0.25 // $480
+    ltv: 10 * 12 / 0.25
   },
   intermedio: {
     label: "Escenario Intermedio",
@@ -113,7 +142,7 @@ const scenarioData: Record<Scenario, ScenarioData> = {
     arpu: 10,
     organicRatio: 0.40,
     maxMarketingPct: 0.25,
-    ltv: 10 * 12 / 0.15 // $800
+    ltv: 10 * 12 / 0.15
   },
   optimista: {
     label: "Escenario Optimista",
@@ -128,11 +157,11 @@ const scenarioData: Record<Scenario, ScenarioData> = {
     arpu: 10,
     organicRatio: 0.60,
     maxMarketingPct: 0.20,
-    ltv: 10 * 12 / 0.08 // $1,500
+    ltv: 10 * 12 / 0.08
   }
 };
 
-// === PROYECCIÓN EXACTAMENTE IGUAL QUE EN TablaPL ===
+// Proyección 100% igual que en TablaPL
 const projectYear = (d: ScenarioData, year: number, prevUsers = 0, prevPremium = 0) => {
   const annualGrowth = Math.pow(1 + d.monthlyGrowth, 12) - 1;
   const total = year === 1 ? 100 * (1 + annualGrowth) : prevUsers * (1 + annualGrowth);
@@ -229,7 +258,7 @@ export default function DashboardFinanciero() {
             Dashboard Financiero Interactivo
           </h1>
           <p className="text-lg text-slate-600">
-            Proyecciones 100% alineadas con el P&L oficial
+            Proyecciones 100% alineadas con el P&L oficial (cálculo realista 2025)
           </p>
         </div>
 

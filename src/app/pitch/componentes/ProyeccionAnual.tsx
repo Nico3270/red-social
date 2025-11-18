@@ -14,7 +14,7 @@ import {
   ResponsiveContainer 
 } from 'recharts';
 
-// === MISMOS DATOS Y LÓGICA QUE EN TABLA PL ===
+// === 100% IGUAL QUE EN TABLA PL (versión definitiva) ===
 type Scenario = 'pesimista' | 'intermedio' | 'optimista';
 
 interface ScenarioData {
@@ -68,7 +68,7 @@ const scenarioData: Record<Scenario, ScenarioData> = {
 // Costos fijos reales (anuales)
 const fixedAnnual = 30 * 12 + 12 * 12 + 8 * 12 + 11 * 12 + 10 + 15; // $757/año
 
-// Compensación del fundador (exactamente tu versión final aprobada)
+// Compensación del fundador (exactamente tu versión final)
 const getFounderCompensation = (profit: number, year: number): number => {
   if (year <= 2) return 1500 * 12;        // $18K/año
   if (profit <= 0) return 1800 * 12;      // $21.6K/año
@@ -87,19 +87,48 @@ const getOperationalTeamCost = (totalUsers: number): number => {
   else return 4000000 + totalUsers * 0.35;
 };
 
-// Infraestructura mensual (exactamente la misma que en TablaPL)
+// Infraestructura mensual (100% igual que en TablaPL definitiva)
 const getInfraCostMonthly = (totalUsers: number, premiumUsers: number): number => {
-  const vercel = totalUsers < 10000 ? 25 : totalUsers < 100000 ? 200 + totalUsers * 0.004 : 500 + totalUsers * 0.0008;
+  const daus = totalUsers * 0.10;
+
+  const vercel =
+    daus < 50_000
+      ? 100 + daus * 0.01
+      : daus < 500_000
+        ? 500 + daus * 0.003
+        : 2000 + daus * 0.0015;
+
   const neon = totalUsers < 50000 ? 20 : totalUsers < 500000 ? 150 + totalUsers * 0.001 : 500 + (totalUsers - 500000) * 0.001;
-  const cloudinary = 89 + totalUsers * 0.004;
-  const whatsapp = premiumUsers * 1.8 * 0.4 * 0.0008;
+  const cloudinary = 89 + totalUsers * 0.005;
+
+  const salesPerPremium = 15;
+  const salesPerFreeBiz = 5;
+  const msgsPerTrans = 2.5;
+  const paidMsgRatio = 1.0;
+  const whatsappCostPerMsg = 0.0008;
+
+  const freeUsers = totalUsers - premiumUsers;
+  const totalTransactions = premiumUsers * salesPerPremium + freeUsers * salesPerFreeBiz * 0.1;
+  const totalMsgs = totalTransactions * msgsPerTrans;
+  const paidMsgs = totalMsgs * paidMsgRatio;
+  const whatsapp = paidMsgs * whatsappCostPerMsg;
+
   const brevo = totalUsers < 100000 ? 0 : totalUsers * 0.0005;
-  const openai = totalUsers * 0.019;
+
+  const productsPerPremiumBizMonthly = 2;
+  const productsPerFreeBizMonthly = 1;
+  const premiumBiz = premiumUsers;
+  const freeBiz = (totalUsers - premiumUsers) * 0.1;
+  const totalProductsMonth = premiumBiz * productsPerPremiumBizMonthly + freeBiz * productsPerFreeBizMonthly;
+  const costPerProduct = 0.003;
+  const openai = totalProductsMonth * costPerProduct;
+
   return Math.round(vercel + neon + cloudinary + whatsapp + brevo + openai);
 };
+
 const getInfraCost = (totalUsers: number, premiumUsers: number) => getInfraCostMonthly(totalUsers, premiumUsers) * 12;
 
-// Proyección exacta igual que en TablaPL y Dashboard
+// Proyección 100% igual que en TablaPL y Dashboard
 const projectYear = (d: ScenarioData, year: number, prevUsers = 0, prevPremium = 0) => {
   const annualGrowth = Math.pow(1 + d.monthlyGrowth, 12) - 1;
   const total = year === 1 ? 100 * (1 + annualGrowth) : prevUsers * (1 + annualGrowth);
@@ -168,7 +197,7 @@ export default function ProyeccionAnual() {
         </h4>
         <div className='flex justify-center text-center text-lg'>
           <p className="text-indigo-800 leading-relaxed mb-5 max-w-3xl">
-            Ingresos vs Costos proyectados con <strong>ARPU $10</strong>, costos reales de infraestructura (WhatsApp $0.0008/msg), equipo escalable y compensación del fundador ajustada por rentabilidad.
+            Ingresos vs Costos con <strong>ARPU $10</strong>, infraestructura real (WhatsApp, OpenAI, DAUs), equipo escalable y compensación del fundador ajustada por rentabilidad.
           </p>
         </div>
 
@@ -196,7 +225,7 @@ export default function ProyeccionAnual() {
         </div>
 
         <span className="block mt-5 text-lg text-gray-700 font-extrabold italic text-center">
-          Modelo financiero 100% realista y auditado para inversores LATAM 2025
+          Modelo financiero definitivo 2025 — 100% coherente con P&L y Dashboard
         </span>
       </div>
 
