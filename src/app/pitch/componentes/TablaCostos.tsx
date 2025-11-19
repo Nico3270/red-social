@@ -148,12 +148,38 @@ const projectYear = (
   prevUsers: number = 0,
   prevPremium: number = 0
 ) => {
-  const annualGrowth = Math.pow(1 + d.monthlyGrowth, 12) - 1;
-  const total = year === 1 ? 100 * (1 + annualGrowth) : prevUsers * (1 + annualGrowth);
-  const newUsers = total - prevUsers;
-  const paidUsers = newUsers * (1 - d.organicRatio);
-  const newPremium = total * d.conversionRate;
-  const retainedPremium = year > 1 ? prevPremium * (1 - d.churnRate) : 0;
+  // Calcula el crecimiento anual compuesto a partir del crecimiento mensual
+const annualGrowth = Math.pow(1 + d.monthlyGrowth, 12) - 1;
+
+// Total de usuarios al final del año
+// Año 1: se parte de 100 usuarios iniciales
+// Años posteriores: se aplica crecimiento sobre usuarios del año anterior
+const total = year === 1 ? 100 * (1 + annualGrowth) : prevUsers * (1 + annualGrowth);
+
+// Nuevos usuarios adquiridos durante este año
+const newUsers = total - prevUsers;
+
+// Usuarios de pago adquiridos este año a través de marketing
+// Solo se considera la fracción de usuarios que no son orgánicos
+const paidUsers = newUsers * (1 - d.organicRatio);
+
+// NUEVOS PREMIUM
+// Se aplica la tasa de conversión al total de usuarios activos (no solo a los nuevos)
+// Esto refleja que algunos usuarios antiguos que no eran premium al principio pueden convertirse este año
+const newPremium = total * d.conversionRate;
+
+// PREMIUM RETENIDOS
+// Solo afecta a los usuarios que ya eran premium en años anteriores
+// Aplica churn (usuarios que cancelan su suscripción)
+// Año 1: no hay usuarios previos, por eso se asigna 0
+const retainedPremium = year > 1 ? prevPremium * (1 - d.churnRate) : 0;
+
+// PREMIUM TOTAL
+// Combina nuevos premium + premium retenidos del año anterior
+// Evita duplicación porque:
+// - Nuevos premium incluyen conversiones de usuarios antiguos que no eran premium
+// - Retained premium solo ajusta a los existentes por churn
+
   const premium = newPremium + retainedPremium;
 
   const cac = d.minCAC + (d.initialCAC - d.minCAC) * Math.exp(-total / 300_000);

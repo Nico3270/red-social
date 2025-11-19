@@ -20,6 +20,7 @@ import EquipoHibrido from './componentes/EquipoHibrido';
 import RoadMap from './componentes/RoadMap';
 import InversionSlide from './componentes/InversionSlide';
 import ContactoBanner from './componentes/ContactoBanner';
+import { Presentacion } from './componentes/Presentacion';
 
 
 // --------------------------------------------------------------------------
@@ -46,6 +47,8 @@ const SECTIONS: Section[] = [
   { id: 'roadmap', label: 'RoadMap', component: () => <RoadMap /> },
   { id: 'fondos', label: 'Fondos', component: () => <InversionSlide /> },
   { id: 'contacto', label: 'Contacto', component: () => <ContactoBanner /> },
+  { id: 'presentacionFinal', label: 'Slides', component: () => <Presentacion /> },
+  
 ];
 
 // --------------------------------------------------------------------------
