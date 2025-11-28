@@ -7,64 +7,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Usuario {
-  id              String        @id @default(uuid())
-  nombre          String
-  apellido        String
-  username        String        @unique
-  contraseña     String
-  email           String        @unique
-  ciudad          String
-  departamento    String
-  pais            String?       @default("Colombia")
-  genero          Genero
-  fechaNacimiento DateTime
-  fotoPerfil      String?
-  biografia       String?
-  role            Role          @default(user)
-  facebook        String?
-  instagram       String?
-  tiktok          String?
-  youtube         String?
-  twitter         String?
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-  ultimaActividad DateTime      @default(now())
-  estado          EstadoUsuario @default(activo)
-  emailVerified   DateTime?
-  preferencias    String[]
-  encuestas       Encuesta[]    @relation("UsuarioEncuestas")
-  followsOut      Follow[]      @relation("Follower")
-  followsIn       Follow[]      @relation("FollowedUser")
-  interacciones   Interaccion[] @relation("UsuarioInteracciones")
-  negocio         Negocio?
-  orders          Order[]
-  publicaciones   Publicacion[]
-  resenas         Resena[]
-  reservations    Reservation[]
-  respuestas      Respuesta[]   @relation("UsuarioRespuestas")
-  Transaction     Transaction[]
-  perfilCompleto  Boolean       @default(false)
-  passwordResetTokens PasswordResetToken[] @relation("UserPasswordResetTokens")
 
-  @@index([username])
-  @@index([email])
-  @@index([role])
-  @@index([preferencias], type: Gin)
-}
-
-model PasswordResetToken {
-  id        String   @id @default(uuid())
-  token     String   @unique
-  userId    String
-  user      Usuario  @relation("UserPasswordResetTokens", fields: [userId], references: [id], onDelete: Cascade)
-  expiresAt DateTime
-  createdAt DateTime @default(now())
-  used      Boolean  @default(false)
-
-  @@index([userId])
-  @@index([expiresAt])
-}
 
 
 // Enums para estructurar datos categóricos
@@ -421,6 +364,76 @@ model Interaccion {
   @@index([publicacionId, reaccionTipo])
 }
 
+
+model Usuario {
+  id              String        @id @default(uuid())
+  nombre          String
+  apellido        String
+  username        String        @unique
+  contraseña     String
+  email           String        @unique
+  ciudad          String
+  departamento    String
+  pais            String?       @default("Colombia")
+  genero          Genero
+  fechaNacimiento DateTime
+  fotoPerfil      String?
+  biografia       String?
+  role            Role          @default(user)
+  facebook        String?
+  instagram       String?
+  tiktok          String?
+  youtube         String?
+  twitter         String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  ultimaActividad DateTime      @default(now())
+  estado          EstadoUsuario @default(activo)
+  emailVerified   DateTime?
+  preferencias    String[]
+  encuestas       Encuesta[]    @relation("UsuarioEncuestas")
+  followsOut      Follow[]      @relation("Follower")
+  followsIn       Follow[]      @relation("FollowedUser")
+  interacciones   Interaccion[] @relation("UsuarioInteracciones")
+  negocio         Negocio?
+  orders          Order[]
+  publicaciones   Publicacion[]
+  resenas         Resena[]
+  reservations    Reservation[]
+  respuestas      Respuesta[]   @relation("UsuarioRespuestas")
+  Transaction     Transaction[]
+  perfilCompleto  Boolean       @default(false)
+  isPlaceholder   Boolean       @default(false)
+  passwordResetTokens PasswordResetToken[] @relation("UserPasswordResetTokens")
+
+  @@index([username])
+  @@index([email])
+  @@index([role])
+  @@index([preferencias], type: Gin)
+}
+
+enum Role {
+  admin
+  user
+  navegante
+  creador
+  negocio
+}
+
+
+model PasswordResetToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  user      Usuario  @relation("UserPasswordResetTokens", fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  used      Boolean  @default(false)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
 model Negocio {
   id               String                @id @default(uuid())
   usuarioId        String                @unique
@@ -442,6 +455,7 @@ model Negocio {
   fotoPortada      String?
   latitud          Float?
   longitud         Float?
+  palabrasClave    String[]  @default([])
   availability     BusinessAvailability?
   encuestas        Encuesta[]            @relation("NegocioEncuestas")
   followsIn        Follow[]              @relation("FollowedBusiness")
@@ -613,13 +627,6 @@ enum EstadoUsuario {
   eliminado
 }
 
-enum Role {
-  admin
-  user
-  navegante
-  creador
-  negocio
-}
 
 enum Genero {
   masculino

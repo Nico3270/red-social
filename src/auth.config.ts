@@ -101,6 +101,7 @@ export const authConfig: NextAuthConfig = {
         token.configReservation = configReservation; // Nuevo campo agregado
         token.configEncuestas = configEncuestas; // Nuevo campo agregado
         token.perfilCompleto = usuarioConNegocio?.perfilCompleto ?? false;
+        token.isPlaceholder = usuarioConNegocio.isPlaceholder ?? false;
 
       }
 
@@ -114,6 +115,7 @@ export const authConfig: NextAuthConfig = {
         if (session?.configEncuestas !== undefined) token.configEncuestas = session.configEncuestas; // Permitir actualización
         if (session?.fotoPerfil) token.fotoPerfil = session.fotoPerfil;
         if (session?.perfilCompleto !== undefined) token.perfilCompleto = session.perfilCompleto;
+        if (session?.isPlaceholder !== undefined) token.isPlaceholder = session.isPlaceholder
       }
 
       return token;
@@ -135,6 +137,7 @@ export const authConfig: NextAuthConfig = {
         configEncuestas: token.configEncuestas as boolean, // Nuevo campo agregado
         fotoPerfil: token.fotoPerfil as string,
         perfilCompleto: token.perfilCompleto as boolean,
+        isPlaceholder: token.isPlaceholder as boolean,
       };
       return session;
     },

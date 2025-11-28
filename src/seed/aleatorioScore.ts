@@ -1,4 +1,4 @@
-// scripts/updateRandomOrden.ts
+// src/seed/aleatorioScore.ts
 import { PrismaClient } from '@prisma/client';
 import { Visibilidad } from '@prisma/client'; // Importar si es necesario para filtros
 

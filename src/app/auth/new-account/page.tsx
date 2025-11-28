@@ -2,123 +2,146 @@
 
 import { useState } from "react";
 import { RegisterForm } from "./ui/NewAcoount";
-import { motion } from "framer-motion"; // Para animaciones premium
+import { motion } from "framer-motion";
 import Image from "next/image";
-import { FaUser, FaStore, } from "react-icons/fa";
+import { FaUser, FaStore } from "react-icons/fa";
+import { HelpTriggerModal } from "@/ui/components/helpModal/HelpTriggerModal";
+
+
 
 export default function NewAccountPage() {
   const [tipoUsuario, setTipoUsuario] = useState<null | boolean>(null);
+ 
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-gray-100">
-      {/* Sección izquierda: Selector inicial o Formulario */}
-      {tipoUsuario !== null ? (
-        <RegisterForm negocio={tipoUsuario} />
-      ) : (
-        <div className="md:w-1/2 flex flex-col items-center justify-center p-4 sm:p-8 bg-white">
-
-          <div className="relative w-full sm:w-2/3 h-60 sm:h-2/3 mt-2 sm:mt-4 rounded-2xl overflow-hidden">
-            <Image
-              src="/imgs/cuenta-negocio.png"
-              alt="Perfil Negocio"
-              fill
-              className="object-cover"
-            />
-          </div>
-
-          {/* Botones opcionales solo en móviles pequeños, pero los quito para priorizar tarjetas y evitar duplicados */}
-        </div>
-      )}
-
-      {/* Sección derecha: Bienvenida premium - Ahora visible en todas las pantallas */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-        className="w-full md:w-1/2 flex flex-col items-center  bg-white p-4 sm:p-8 space-y-6 md:space-y-8"
-      >
-        {tipoUsuario === null ? (
-          <>
-            <h1 className="text-2xl sm:text-3xl font-bold text-center text-gray-800">
-              Bienvenido
-            </h1>
-            <p className="text-base sm:text-lg text-gray-600 text-center max-w-md">
-              Fusionamos red social y comercio para conectar personas, negocios y profesionales de forma sencilla y elegante.
-            </p>
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-2xl font-bold mb-6 text-center text-gray-800"
-            >
-              ¿Qué tipo de cuenta deseas crear?
-            </motion.h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 w-full max-w-4xl">
-              {/* Card Personal - Clicable y responsive */}
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                className="bg-white rounded-2xl p-4 sm:p-6 border border-gray-200 shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer"
-                onClick={() => setTipoUsuario(false)}
-              >
-                <FaUser className="text-red-600 text-3xl sm:text-4xl mb-3 sm:mb-4 mx-auto" />
-                <h2 className="text-lg sm:text-xl font-semibold text-center text-red-700 mb-2">Cuenta de Usuario</h2>
-                <p className="text-md  text-gray-900 text-center">
-                  Explora catálogos, sigue negocios, deja reseñas multimedia y conecta con comunidades locales.
-                </p>
-                <div className="relative w-full h-64 sm:h-80 mt-2 sm:mt-4 rounded-2xl overflow-hidden">
-                  <Image src="/imgs/perfil-usuario.png" alt="Perfil Personal" fill className="object-contain"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px" />
-                </div>
-              </motion.div>
-
-              {/* Card Negocio - Clicable y responsive */}
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                className="bg-white rounded-2xl p-4 sm:p-6 border border-gray-200 shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer"
-                onClick={() => setTipoUsuario(true)}
-              >
-                <FaStore className="text-blue-600 text-3xl sm:text-4xl mb-3 sm:mb-4 mx-auto" />
-                <h2 className="text-lg sm:text-xl font-semibold text-center text-red-700 mb-2">Cuenta de Negocio</h2>
-                <p className="text-md text-gray-900 text-center">
-                  Crea tiendas en minutos, publica contenido, gestiona catálogos y monetiza con reseñas y ads.
-                </p>
-                <div className="relative w-full h-64 sm:h-80 mt-2 sm:mt-4 rounded-2xl overflow-hidden">
-                  <Image
-                    src="/imgs/perfil-negocio2.png"
-                    alt="Perfil Negocio"
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px"
-                  />
-                </div>
-              </motion.div>
-            </div>
-
-          </>
+    <>
+      <div className="flex flex-col md:flex-row min-h-screen bg-gray-100 relative">
+        {/* Sección izquierda: Selector o Formulario */}
+        {tipoUsuario !== null ? (
+          <RegisterForm negocio={tipoUsuario} />
         ) : (
-          <>
-            <h1 className="text-2xl sm:text-3xl font-bold text-center text-gray-800">
-              Crea tu Cuenta {tipoUsuario ? "de Negocio" : "Personal"}
-            </h1>
-            <p className="text-base sm:text-lg text-gray-600 text-center max-w-md">
-              {tipoUsuario
-                ? "Empieza a vender, publica promociones y construye tu comunidad con herramientas premium."
-                : "Descubre ofertas, interactúa y agenda servicios en una plataforma intuitiva."}
-            </p>
-
-            <div className="relative w-full sm:w-3/4 h-72 sm:h-96 mt-4 rounded-2xl overflow-hidden justify-start">
+          <div className="md:w-1/2 flex flex-col items-center justify-center p-4 sm:p-8 bg-white">
+            <div className="relative w-full sm:w-2/3 h-60 sm:h-2/3 mt-2 sm:mt-4 rounded-2xl overflow-hidden shadow-xl">
               <Image
                 src="/imgs/cuenta-negocio.png"
-                alt="Perfil Negocio"
+                alt="Bienvenido a Myckeo"
                 fill
-                className="object-contain"
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px"
+                className="object-cover"
+                priority
               />
             </div>
-
-
-          </>
+          </div>
         )}
-      </motion.div>
-    </div>
+
+        {/* Sección derecha: Bienvenida */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+          className="w-full md:w-1/2 flex flex-col items-center bg-white p-6 sm:p-8 space-y-6 md:space-y-8"
+        >
+          {tipoUsuario === null ? (
+            <>
+              <div className="text-center space-y-4">
+                <h1 className="text-3xl sm:text-4xl font-bold text-gray-800">
+                  Bienvenido a Myckeo
+                </h1>
+                <p className="text-lg text-gray-600 max-w-lg">
+                  Fusionamos red social y comercio para conectar personas, negocios y profesionales de forma sencilla y elegante.
+                </p>
+              </div>
+
+              <motion.h2
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-2xl sm:text-3xl font-bold text-center text-gray-800"
+              >
+                ¿Qué tipo de cuenta deseas crear?
+              </motion.h2>
+              {/* Video de ayuda premium */}
+              <HelpTriggerModal
+                text="Mira este video de ayuda y crea tu negocio"
+                title="Cómo crear tu cuenta de negocio en Myckeo"
+                youtubeUrl="https://www.youtube.com/embed/uyb_H_Y9eCw"
+                variant="dangerSolid"
+                size="lg"
+                icon="play"
+              />
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-5xl px-4">
+                {/* Cuenta Personal */}
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="bg-gradient-to-br from-white to-red-50 rounded-3xl p-6 sm:p-8 border-2 border-red-200 shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer group"
+                  onClick={() => setTipoUsuario(false)}
+                >
+                  <FaUser className="text-red-600 text-5xl mb-4 mx-auto group-hover:scale-110 transition-transform" />
+                  <h3 className="text-2xl font-bold text-center text-red-700 mb-3">Cuenta Personal</h3>
+                  <p className="text-gray-700 text-center leading-relaxed">
+                    Explora catálogos, sigue negocios favoritos, deja reseñas con fotos y videos, y conecta con tu comunidad local.
+                  </p>
+                  <div className="mt-6 relative h-64 rounded-2xl overflow-hidden border-4 border-red-100">
+                    <Image
+                      src="/imgs/perfil-usuario.png"
+                      alt="Cuenta Personal"
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                  </div>
+                </motion.div>
+
+                {/* Cuenta Negocio */}
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="bg-gradient-to-br from-white to-blue-50 rounded-3xl p-6 sm:p-8 border-2 border-blue-200 shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer group"
+                  onClick={() => setTipoUsuario(true)}
+                >
+                  <FaStore className="text-blue-600 text-5xl mb-4 mx-auto group-hover:scale-110 transition-transform" />
+                  <h3 className="text-2xl font-bold text-center text-blue-700 mb-3">Cuenta de Negocio</h3>
+                  <p className="text-gray-700 text-center leading-relaxed">
+                    Crea tu tienda en minutos, publica promociones, gestiona productos y recibe reseñas reales de clientes.
+                  </p>
+                  <div className="mt-6 relative h-64 rounded-2xl overflow-hidden border-4 border-blue-100">
+                    <Image
+                      src="/imgs/perfil-negocio2.png"
+                      alt="Cuenta de Negocio"
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                  </div>
+                </motion.div>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="text-center space-y-4 max-w-2xl">
+                <h1 className="text-3xl sm:text-4xl font-bold text-gray-800">
+                  Crea tu Cuenta {tipoUsuario ? "de Negocio" : "Personal"}
+                </h1>
+                <p className="text-lg text-gray-600">
+                  {tipoUsuario
+                    ? "Crea tu vitrina digital, publica contenido y empieza a vender en minutos."
+                    : "Únete a la comunidad, descubre negocios locales y comparte tus experiencias."}
+                </p>
+              </div>
+
+              <div className="relative w-full max-w-2xl h-80 rounded-3xl overflow-hidden shadow-2xl border-8 border-white">
+                <Image
+                  src={tipoUsuario ? "/imgs/cuenta-negocio.png" : "/imgs/perfil-usuario.png"}
+                  alt="Vista previa"
+                  fill
+                  className="object-cover"
+                  priority
+                />
+              </div>
+            </>
+          )}
+        </motion.div>
+
+
+      </div>
+    </>
   );
 }

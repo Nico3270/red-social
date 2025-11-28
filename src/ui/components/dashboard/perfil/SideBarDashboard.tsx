@@ -39,7 +39,8 @@ const SideBarDashboard: React.FC = () => {
     { name: "Reservas", path: "/dashboard/reservas", icon: <FaBook /> },
     { name: "Servicios", path: "/dashboard/servicios", icon: <MdHomeRepairService /> },
     { name: "Encuestas", path: "/dashboard/encuestas", icon: <FaListUl /> },
-    { name: "Editar Perfil", path: "/dashboard/editar-perfil", icon: <FaUserEdit /> },
+    { name: "Editar usuario", path: "/dashboard/editar-usuario", icon: <FaUserEdit /> },
+    { name: "Editar Negocio", path: "/dashboard/editar-perfil", icon: <FaUserEdit /> },
     { name: "QR de tu negocio", path: "/dashboard/qr", icon: <FaQrcode /> },
   ];
 
@@ -47,6 +48,7 @@ const SideBarDashboard: React.FC = () => {
   const navItems: NavItem[] = [
     { name: "Inicio", path: "/", icon: <FaHome /> },
     { name: "Perfil", path: "/dashboard", icon: <FaUser /> },
+    { name: "Editar usuario", path: "/dashboard/editar-usuario", icon: <FaUserEdit /> },
     { name: "Crear Negocio", path: `/crear_negocio/${session?.user.id}`, icon: <FaStore /> },
   ];
 

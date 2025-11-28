@@ -2,22 +2,27 @@
 
 import { TopMenu, TopMenuMobile } from "@/ui";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import CookieConsent from "react-cookie-consent";
 import Link from "next/link";
 import React, { useState, useEffect } from "react";
 
 export default function CatalogoLayout({ children }: { children: React.ReactNode }) {
   const [isMobile, setIsMobile] = useState(false);
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
+  const pathname = usePathname(); // ← Importante para evitar bucles
 
-  // Redirección si el perfil está incompleto
+  // Redirección solo si es placeholder y NO está ya en la página de edición
   useEffect(() => {
-    if (session?.user && !session.user.perfilCompleto) {
-      router.replace("/config/completePerfil");
+    if (
+      status === "authenticated" &&
+      session?.user?.isPlaceholder === true &&
+      pathname !== "/dashboard/editar-perfil"
+    ) {
+      router.replace("/dashboard/editar-perfil");
     }
-  }, [session, router]);
+  }, [session, status, pathname, router]);
 
   // Detectar si es móvil
   useEffect(() => {
@@ -31,7 +36,7 @@ export default function CatalogoLayout({ children }: { children: React.ReactNode
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Limpiar el manejador de scroll (parece incompleto, coméntalo si no se usa)
+  // Scroll infinito (opcional, puedes activarlo después)
   useEffect(() => {
     const handleScroll = () => {
       const scrollY = window.scrollY;
@@ -39,8 +44,8 @@ export default function CatalogoLayout({ children }: { children: React.ReactNode
       const documentHeight = document.documentElement.scrollHeight;
 
       if (scrollY + windowHeight >= documentHeight - 200) {
-        // TODO: Agregar lógica para scroll infinito o cargar más contenido
-        // Ejemplo: cargar más productos o publicaciones
+        // Aquí puedes cargar más contenido si quieres
+        // console.log("Cargar más...");
       }
     };
 
@@ -93,32 +98,32 @@ export default function CatalogoLayout({ children }: { children: React.ReactNode
         {/* Footer con enlaces legales */}
         <footer className="bg-gray-900 text-gray-300 py-6 px-4 text-center border-t border-gray-700">
           <div className="flex flex-wrap justify-center gap-4 mb-4">
-            <Link href="/politica-privacidad" className="text-blue-400 hover:text-blue-300 transition-colors duration-200" aria-label="Política de Privacidad">
+            <Link href="/politica-privacidad" className="text-blue-400 hover:text-blue-300 transition-colors duration-200">
               Política de Privacidad
             </Link>
-            <Link href="/politica-cookies" className="text-blue-400 hover:text-blue-300 transition-colors duration-200" aria-label="Política de Cookies">
+            <Link href="/politica-cookies" className="text-blue-400 hover:text-blue-300 transition-colors duration-200">
               Política de Cookies
             </Link>
-            <Link href="/terminos-servicio" className="text-blue-400 hover:text-blue-300 transition-colors duration-200" aria-label="Términos de Servicio">
+            <Link href="/terminos-servicio" className="text-blue-400 hover:text-blue-300 transition-colors duration-200">
               Términos de Servicio
             </Link>
-            <Link href="/politica-publicidad" className="text-blue-400 hover:text-blue-300 transition-colors duration-200" aria-label="Política de Publicidad">
+            <Link href="/politica-publicidad" className="text-blue-400 hover:text-blue-300 transition-colors duration-200">
               Política de Publicidad
             </Link>
-            <Link href="/contacto" className="text-blue-400 hover:text-blue-300 transition-colors duration-200" aria-label="Contacto">
+            <Link href="/contacto" className="text-blue-400 hover:text-blue-300 transition-colors duration-200">
               Contacto
             </Link>
           </div>
 
           <div className="text-sm space-y-1">
             <p>
-              &copy; {new Date().getFullYear()} <span className="font-semibold text-white">Myckeo</span> by <span className="font-semibold text-white">CÓDEX SOLUTIONS S.A.S.</span>
+              &copy; {new Date().getFullYear()} <span className="font-semibold text-white">Myckeo</span> by{" "}
+              <span className="font-semibold text-white">CÓDEX SOLUTIONS S.A.S.</span>
             </p>
             <p>Empresa registrada en la Cámara de Comercio de Bogotá, NIT 901.912.004-1.</p>
             <p>Todos los derechos reservados.</p>
           </div>
         </footer>
-
       </body>
     </html>
   );
