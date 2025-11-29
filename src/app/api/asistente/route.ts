@@ -1,5 +1,5 @@
 // app/api/asistente/route.ts
-import { NextRequest } from 'next/server';
+
 import prisma from '@/lib/prisma';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -120,10 +120,17 @@ export async function POST(request: Request) {
       default:
         return Response.json({ error: 'Acción no encontrada' }, { status: 404 });
     }
-  } catch (error: any) {
-    console.error('Error en /api/asistente:', error.message);
-    return Response.json({ error: error.message }, { status: 400 });
-  }
+  } catch (error: unknown) {
+  const message =
+    error instanceof Error ? error.message : 'Error inesperado';
+
+  console.error('Error en /api/asistente:', message);
+
+  return Response.json(
+    { error: message },
+    { status: 400 }
+  );
+}
 }
 
 // === FUNCIONES CORREGIDAS ===
