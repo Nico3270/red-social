@@ -5,9 +5,12 @@ import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 
 const ADMIN_KEY = process.env.MYCKEO_ADMIN_KEY!;
-if (!ADMIN_KEY) throw new Error('No es correcta o no está definida, la api key de administrador.');
+if (!ADMIN_KEY) throw new Error('No es correcta o no está definida la api key de administrador.');
 
-// === TIPOS ===
+/* ============================================================
+   TIPOS
+============================================================ */
+
 type NegocioLite = {
   id: string;
   nombre: string;
@@ -20,19 +23,33 @@ type NegocioLite = {
   urlGoogleMaps: string | null;
 };
 
-// === NORMALIZADOR DE TELÉFONO INTERNACIONAL ===
+/* ============================================================
+   NORMALIZADOR TELEFÓNICO ROBUSTO
+============================================================ */
+
 function normalizePhone(phone: string): string | null {
   if (!phone || typeof phone !== 'string') return null;
-  let cleaned = phone.replace(/[^\d+]/g, '').replace(/\+{2,}/g, '+');
-  if (!cleaned.startsWith('+') && cleaned.length >= 10) cleaned = '+' + cleaned;
+
+  // Remove spaces + special chars
+  let cleaned = phone.replace(/[^\d+]/g, '').replace(/ +/g, '');
+
+  // If does not start with +, prepend
+  if (!cleaned.startsWith('+') && cleaned.length >= 10) {
+    cleaned = '+' + cleaned;
+  }
+
   return /^\+\d{7,15}$/.test(cleaned) ? cleaned : null;
 }
 
-// === BÚSQUEDA SEGURA POR TELÉFONO ===
-async function getNegocioByTelefono(telefonoRaw: string): Promise<NegocioLite> {
-  if (!telefonoRaw) throw new Error('Teléfono requerido');
+/* ============================================================
+   OBTENER NEGOCIO POR TELÉFONO (SEGURO)
+============================================================ */
+
+async function getNegocioByTelefono(telefonoRaw: string): Promise<NegocioLite | null> {
+  if (!telefonoRaw) return null;
+
   const telefono = normalizePhone(telefonoRaw);
-  if (!telefono) throw new Error('Formato de teléfono inválido');
+  if (!telefono) return null;
 
   const negocio = await prisma.negocio.findFirst({
     where: { telefonoContacto: telefono },
@@ -49,35 +66,28 @@ async function getNegocioByTelefono(telefonoRaw: string): Promise<NegocioLite> {
     },
   });
 
-  if (!negocio) throw new Error('Negocio no encontrado con este número');
-  return negocio;
+  return negocio || null;
 }
 
-// === RUTA PRINCIPAL ===
+/* ============================================================
+   ENDPOINT PRINCIPAL
+============================================================ */
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
     const { action, telefono, key, pedidoId, reservaId } = body;
 
+    /* --- API Key Guard --- */
     if (key !== ADMIN_KEY) {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // NUEVA ACCIÓN: es-negocio (rápida y ligera)
+    /* ============================================================
+       ACCIÓN ES-NEGOCIO (ultra rápida)
+    ============================================================ */
     if (action === 'es-negocio') {
-      if (!telefono) {
-        return Response.json({ isBusiness: false, businessName: null });
-      }
-
-      const telefonoNorm = normalizePhone(telefono);
-      if (!telefonoNorm) {
-        return Response.json({ isBusiness: false, businessName: null });
-      }
-
-      const negocio = await prisma.negocio.findFirst({
-        where: { telefonoContacto: telefonoNorm },
-        select: { nombre: true },
-      });
+      const negocio = await getNegocioByTelefono(telefono);
 
       return Response.json({
         isBusiness: !!negocio,
@@ -85,7 +95,21 @@ export async function POST(request: Request) {
       });
     }
 
+    /* ============================================================
+       VALIDAR NEGOCIO PARA TODAS LAS DEMÁS ACCIONES
+    ============================================================ */
     const negocio = await getNegocioByTelefono(telefono);
+
+    if (!negocio) {
+      return Response.json(
+        { error: "Negocio no encontrado", isBusiness: false, datos: null },
+        { status: 404 }
+      );
+    }
+
+    /* ============================================================
+       SWITCH DE ACCIONES
+    ============================================================ */
 
     switch (action) {
       case 'nombre':
@@ -103,11 +127,21 @@ export async function POST(request: Request) {
       case 'pedidos-hoy':
         return Response.json(await pedidosHoy(negocio.id));
 
+      case 'proximos-pedidos':
+        return Response.json(await proximosPedidos(negocio.id));
+
+      case 'pedidos-manana':
+        return Response.json(await pedidosManana(negocio.id));
+
       case 'estadisticas-semana':
         return Response.json(await estadisticasSemana(negocio.id));
 
       case 'proximas-reservas':
-        return Response.json(await proximasReservas(negocio.id));
+      case 'reservas-proximas':
+        return Response.json(await reservasProximas(negocio.id)); // mergeado
+
+      case 'reservas-manana':
+        return Response.json(await reservasManana(negocio.id));
 
       case 'detalle-pedido':
         if (!pedidoId) throw new Error('pedidoId requerido');
@@ -121,104 +155,169 @@ export async function POST(request: Request) {
         return Response.json({ error: 'Acción no encontrada' }, { status: 404 });
     }
   } catch (error: unknown) {
-  const message =
-    error instanceof Error ? error.message : 'Error inesperado';
+    const message = error instanceof Error ? error.message : 'Error inesperado';
+    console.error('Error en /api/asistente:', message);
 
-  console.error('Error en /api/asistente:', message);
-
-  return Response.json(
-    { error: message },
-    { status: 400 }
-  );
-}
+    return Response.json({ error: message }, { status: 400 });
+  }
 }
 
-// === FUNCIONES CORREGIDAS ===
+/* ============================================================
+   FUNCIONES DE DATOS
+============================================================ */
 
 async function datosPerfil(negocio: NegocioLite) {
   return {
-    mensaje: `¡Hola jefe de *${negocio.nombre}*! 👋\n\nTus datos:\n\n📍 ${negocio.direccion || 'Sin dirección'}\n🌎 ${negocio.ciudad}\n🌐 ${negocio.sitioWeb || 'Sin web'}\n🗺️ ${negocio.urlGoogleMaps || 'Sin mapa'}\n\nTu perfil: https://myckeo.com/perfil/${negocio.slug}\nQR: https://myckeo.com/dashboard/qr`,
+    mensaje:
+      `¡Hola jefe de *${negocio.nombre}*! 👋\n\nTus datos:\n\n` +
+      `📍 ${negocio.direccion || 'Sin dirección'}\n` +
+      `🌎 ${negocio.ciudad}\n` +
+      `🌐 ${negocio.sitioWeb || 'Sin web'}\n` +
+      `🗺️ ${negocio.urlGoogleMaps || 'Sin mapa'}\n\n` +
+      `Tu perfil: https://myckeo.com/perfil/${negocio.slug}\n` +
+      `QR: https://myckeo.com/dashboard/qr`,
     datos: negocio,
   };
 }
 
 async function resumenDia(negocioId: string) {
-  const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
-  const mañana = new Date(hoy); mañana.setDate(mañana.getDate() + 1);
+  const hoy = new Date();
+  hoy.setHours(0, 0, 0, 0);
+
+  const mañana = new Date(hoy);
+  mañana.setDate(mañana.getDate() + 1);
 
   const [reservas, pedidos, ingresos] = await Promise.all([
     prisma.reservation.count({
       where: { negocioId, fechaHoraInicio: { gte: hoy, lt: mañana } },
     }),
     prisma.order.count({
-      where: { negocioId, createdAt: { gte: hoy, lt: mañana } }, // ← CORREGIDO
+      where: { negocioId, createdAt: { gte: hoy, lt: mañana } },
     }),
     prisma.order.aggregate({
-      where: { negocioId, createdAt: { gte: hoy, lt: mañana } }, // ← CORREGIDO
+      where: { negocioId, createdAt: { gte: hoy, lt: mañana } },
       _sum: { totalAmount: true },
     }),
   ]);
 
-  const ingresosHoy = Number(ingresos._sum.totalAmount ?? 0);
+  const ingresosHoy = Number(ingresos._sum.totalAmount || 0);
 
   return {
-    mensaje: `¡Buen día! ☀️\n\nResumen de hoy:\n\n${
-      reservas > 0 ? `✅ ${reservas} reservas` : '✅ Sin reservas'
-    }\n${
-      pedidos > 0 ? `🛍️ ${pedidos} pedidos` : '🛍️ Sin pedidos'
-    }\n${
-      ingresosHoy > 0 ? `💰 Ingresos: $${ingresosHoy.toLocaleString()}` : '💰 Ingresos: $0'
-    }\n\n¿En qué te ayudo hoy?`,
+    mensaje:
+      `Resumen de hoy ☀️\n\n` +
+      `${reservas ? `📅 ${reservas} reservas` : '📅 Sin reservas'}\n` +
+      `${pedidos ? `🛒 ${pedidos} pedidos` : '🛒 Sin pedidos'}\n` +
+      `💰 Ingresos: $${ingresosHoy.toLocaleString()}`,
     datos: { reservas, pedidos, ingresos: ingresosHoy },
   };
 }
 
 async function reservasHoy(negocioId: string) {
-  const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
-  const mañana = new Date(hoy); mañana.setDate(mañana.getDate() + 1);
+  const hoy = new Date();
+  hoy.setHours(0, 0, 0, 0);
+
+  const mañana = new Date(hoy);
+  mañana.setDate(mañana.getDate() + 1);
 
   const reservas = await prisma.reservation.findMany({
     where: { negocioId, fechaHoraInicio: { gte: hoy, lt: mañana } },
-    orderBy: { fechaHoraInicio: 'asc' },
-    select: { id: true, nombre: true, telefono: true, fechaHoraInicio: true, notas: true, estado: true },
+    orderBy: { fechaHoraInicio: "asc" },
+    take: 20,
   });
 
-  if (reservas.length === 0) {
-    return { mensaje: 'Hoy no tienes reservas programadas 😊\n¡Día tranquilo!', reservas: [] };
-  }
+  if (reservas.length === 0)
+    return { mensaje: "Hoy no tienes reservas programadas 😊", reservas: [] };
 
   const lista = reservas
-    .map(r => `• ${format(r.fechaHoraInicio, 'hh:mm a', { locale: es })} - ${r.nombre} (${r.telefono})${r.notas ? ` | ${r.notas}` : ''}`)
-    .join('\n');
+    .map((r) => `• ${format(r.fechaHoraInicio, "hh:mm a", { locale: es })} - ${r.nombre}`)
+    .join("\n");
 
   return {
-    mensaje: `Tus reservas de hoy 📅\n\n${lista}\n\n¿Quieres detalles de alguna?`,
+    mensaje: `Reservas de hoy 📅\n\n${lista}\n\n¿Quieres ver detalles de alguna?`,
+    reservas,
+  };
+}
+
+async function reservasManana(negocioId: string) {
+  const hoy = new Date();
+  hoy.setHours(0, 0, 0, 0);
+
+  const manana = new Date(hoy);
+  manana.setDate(manana.getDate() + 1);
+
+  const pasado = new Date(manana);
+  pasado.setDate(pasado.getDate() + 1);
+
+  const reservas = await prisma.reservation.findMany({
+    where: { negocioId, fechaHoraInicio: { gte: manana, lt: pasado } },
+    orderBy: { fechaHoraInicio: "asc" },
+    take: 20,
+  });
+
+  if (!reservas.length)
+    return { mensaje: "Mañana no tienes reservas 😊", reservas: [] };
+
+  const lista = reservas
+    .map((r) => `• ${format(r.fechaHoraInicio, "hh:mm a", { locale: es })} - ${r.nombre}`)
+    .join("\n");
+
+  return {
+    mensaje: `Reservas para mañana 📅\n\n${lista}\n\n¿Quieres detalles de alguna?`,
+    reservas,
+  };
+}
+
+async function reservasProximas(negocioId: string) {
+  const hoy = new Date();
+
+  const reservas = await prisma.reservation.findMany({
+    where: { negocioId, fechaHoraInicio: { gte: hoy } },
+    orderBy: { fechaHoraInicio: "asc" },
+    take: 25,
+  });
+
+  if (!reservas.length)
+    return { mensaje: "No tienes reservas próximas 😊", reservas: [] };
+
+  const lista = reservas
+    .map((r) => `• ${format(r.fechaHoraInicio, "EEE d MMM, hh:mm a", { locale: es })} - ${r.nombre}`)
+    .join("\n");
+
+  return {
+    mensaje: `Próximas reservas 📅\n\n${lista}`,
     reservas,
   };
 }
 
 async function pedidosHoy(negocioId: string) {
-  const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
-  const mañana = new Date(hoy); mañana.setDate(mañana.getDate() + 1);
+  const hoy = new Date();
+  hoy.setHours(0, 0, 0, 0);
+
+  const manana = new Date(hoy);
+  manana.setDate(manana.getDate() + 1);
 
   const pedidos = await prisma.order.findMany({
-    where: { negocioId, createdAt: { gte: hoy, lt: mañana } }, // ← CORREGIDO
-    include: { items: { include: { product: { select: { nombre: true } } } } },
+    where: { negocioId, createdAt: { gte: hoy, lt: manana } },
+    include: { items: true },
     orderBy: { createdAt: 'desc' },
+    take: 20,
   });
 
-  if (pedidos.length === 0) {
-    return { mensaje: 'Hoy no tienes pedidos nuevos 🛍️\n¡Todo listo!', pedidos: [] };
-  }
+  if (!pedidos.length)
+    return { mensaje: "Hoy no tienes pedidos 🛒", pedidos: [] };
 
   const lista = pedidos
-    .map(p => `• #${p.id.slice(-6)} | $${p.totalAmount.toLocaleString()} | ${p.items.map(i => `${i.quantity}x ${i.product?.nombre || i.description}`).join(', ')}`)
-    .join('\n');
+    .map((p) => `• #${p.id.slice(-6)} | $${p.totalAmount.toLocaleString()}`)
+    .join("\n");
 
   return {
     mensaje: `Pedidos de hoy 🛒\n\n${lista}\n\n¿Quieres ver detalles de alguno?`,
     pedidos,
   };
+}
+
+async function pedidoItemList(items: any[]) {
+  return items.map(i => `${i.quantity}x ${i.product?.nombre || i.description}`).join("\n");
 }
 
 async function detallePedido(negocioId: string, pedidoId: string) {
@@ -230,16 +329,72 @@ async function detallePedido(negocioId: string, pedidoId: string) {
     },
   });
 
-  if (!pedido) throw new Error('Pedido no encontrado');
+  if (!pedido) throw new Error("Pedido no encontrado");
 
-  const items = pedido.items.map(i => `${i.quantity}x ${i.product?.nombre || i.description}`).join('\n');
-  const entrega = pedido.datosDeEntrega
-    ? `${pedido.datosDeEntrega.clientName} | ${pedido.datosDeEntrega.clientPhone}\n${pedido.datosDeEntrega.deliveryAddress || 'Recoge en local'}`
-    : 'Sin datos de entrega';
+  const items = await pedidoItemList(pedido.items);
 
   return {
-    mensaje: `Detalle del pedido #${pedido.id.slice(-6)}\n\n🛍️ Productos:\n${items}\n\n💰 Total: $${pedido.totalAmount.toLocaleString()}\n\n📦 Entrega:\n${entrega}\n\nEstado: ${pedido.status}`,
+    mensaje:
+      `Pedido #${pedido.id.slice(-6)}\n\n` +
+      `🛍️ Productos:\n${items}\n\n` +
+      `💰 Total: $${pedido.totalAmount.toLocaleString()}\n\n` +
+      `📦 Cliente:\n${pedido.datosDeEntrega?.clientName || 'N/D'} | ${pedido.datosDeEntrega?.clientPhone || ''}\n` +
+      `${pedido.datosDeEntrega?.deliveryAddress || 'Recoge en local'}\n\n` +
+      `Estado: ${pedido.status}`,
     pedido,
+  };
+}
+
+async function proximosPedidos(negocioId: string) {
+  const hoy = new Date();
+
+  const pedidos = await prisma.order.findMany({
+    where: { negocioId, createdAt: { gte: hoy } },
+    include: { items: true },
+    orderBy: { createdAt: "asc" },
+    take: 25,
+  });
+
+  if (!pedidos.length)
+    return { mensaje: "No tienes pedidos próximos 😊", pedidos: [] };
+
+  const lista = pedidos
+    .map(p => `• ${format(p.createdAt, "EEE d MMM, hh:mm a", { locale: es })} | #${p.id.slice(-6)} | $${p.totalAmount.toLocaleString()}`)
+    .join("\n");
+
+  return {
+    mensaje: `Próximos pedidos 🛒\n\n${lista}`,
+    pedidos,
+  };
+}
+
+async function pedidosManana(negocioId: string) {
+  const hoy = new Date();
+  hoy.setHours(0, 0, 0, 0);
+
+  const manana = new Date(hoy);
+  manana.setDate(manana.getDate() + 1);
+
+  const pasado = new Date(manana);
+  pasado.setDate(pasado.getDate() + 1);
+
+  const pedidos = await prisma.order.findMany({
+    where: { negocioId, createdAt: { gte: manana, lt: pasado } },
+    include: { items: true },
+    orderBy: { createdAt: "asc" },
+    take: 20,
+  });
+
+  if (!pedidos.length)
+    return { mensaje: "Mañana no tienes pedidos 🛒", pedidos: [] };
+
+  const lista = pedidos
+    .map((p) => `• #${p.id.slice(-6)} | $${p.totalAmount.toLocaleString()}`)
+    .join("\n");
+
+  return {
+    mensaje: `Pedidos para mañana 🛒\n\n${lista}\n\n¿Quieres ver detalles de alguno?`,
+    pedidos,
   };
 }
 
@@ -248,10 +403,15 @@ async function detalleReserva(negocioId: string, reservaId: string) {
     where: { id: reservaId, negocioId },
   });
 
-  if (!reserva) throw new Error('Reserva no encontrada');
+  if (!reserva) throw new Error("Reserva no encontrada");
 
   return {
-    mensaje: `Reserva de ${reserva.nombre}\n\n📅 ${format(reserva.fechaHoraInicio, "EEEE d 'de' MMMM, hh:mm a", { locale: es })}\n📞 ${reserva.telefono}\n📝 ${reserva.notas || 'Sin notas'}\n\nEstado: ${reserva.estado}`,
+    mensaje:
+      `Reserva de ${reserva.nombre}\n\n` +
+      `📅 ${format(reserva.fechaHoraInicio, "EEEE d 'de' MMMM, hh:mm a", { locale: es })}\n` +
+      `📞 ${reserva.telefono}\n` +
+      `📝 ${reserva.notas || "Sin notas"}\n\n` +
+      `Estado: ${reserva.estado}`,
     reserva,
   };
 }
@@ -270,34 +430,13 @@ async function estadisticasSemana(negocioId: string) {
     }),
   ]);
 
-  const ingresosSemana = Number(ingresos._sum.totalAmount ?? 0);
+  const ingresosSemana = Number(ingresos._sum.totalAmount || 0);
 
   return {
-    mensaje: `Estadísticas de esta semana 📊\n\n• ${pedidos} pedidos\n• Ingresos: $${ingresosSemana.toLocaleString()}\n\n¡Vas excelente! 🚀`,
+    mensaje:
+      `Estadísticas de esta semana 📊\n\n` +
+      `• ${pedidos} pedidos\n` +
+      `• Ingresos: $${ingresosSemana.toLocaleString()}\n`,
     datos: { pedidos, ingresos: ingresosSemana },
-  };
-}
-
-async function proximasReservas(negocioId: string) {
-  const hoy = new Date();
-
-  const reservas = await prisma.reservation.findMany({
-    where: { negocioId, fechaHoraInicio: { gte: hoy } },
-    orderBy: { fechaHoraInicio: 'asc' },
-    take: 10,
-    select: { id: true, nombre: true, telefono: true, fechaHoraInicio: true, notas: true },
-  });
-
-  if (reservas.length === 0) {
-    return { mensaje: 'No tienes reservas próximas 😊', reservas: [] };
-  }
-
-  const lista = reservas
-    .map(r => `• ${format(r.fechaHoraInicio, "EEE d MMM, hh:mm a", { locale: es })} - ${r.nombre}`)
-    .join('\n');
-
-  return {
-    mensaje: `Próximas reservas 📅\n\n${lista}\n\n¿Quieres detalles de alguna?`,
-    reservas,
   };
 }
