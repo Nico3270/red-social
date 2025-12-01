@@ -23,6 +23,12 @@ type NegocioLite = {
   urlGoogleMaps: string | null;
 };
 
+type PedidoItem = {
+  quantity: number;
+  description: string | null;
+  product: { nombre: string | null } | null;
+};
+
 /* ============================================================
    NORMALIZADOR TELEFÓNICO ROBUSTO
 ============================================================ */
@@ -30,10 +36,8 @@ type NegocioLite = {
 function normalizePhone(phone: string): string | null {
   if (!phone || typeof phone !== 'string') return null;
 
-  // Remove spaces + special chars
   let cleaned = phone.replace(/[^\d+]/g, '').replace(/ +/g, '');
 
-  // If does not start with +, prepend
   if (!cleaned.startsWith('+') && cleaned.length >= 10) {
     cleaned = '+' + cleaned;
   }
@@ -78,14 +82,11 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { action, telefono, key, pedidoId, reservaId } = body;
 
-    /* --- API Key Guard --- */
     if (key !== ADMIN_KEY) {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    /* ============================================================
-       ACCIÓN ES-NEGOCIO (ultra rápida)
-    ============================================================ */
+    /* — es-negocio — */
     if (action === 'es-negocio') {
       const negocio = await getNegocioByTelefono(telefono);
 
@@ -95,9 +96,7 @@ export async function POST(request: Request) {
       });
     }
 
-    /* ============================================================
-       VALIDAR NEGOCIO PARA TODAS LAS DEMÁS ACCIONES
-    ============================================================ */
+    /* — Validar negocio para cualquier acción — */
     const negocio = await getNegocioByTelefono(telefono);
 
     if (!negocio) {
@@ -107,10 +106,7 @@ export async function POST(request: Request) {
       );
     }
 
-    /* ============================================================
-       SWITCH DE ACCIONES
-    ============================================================ */
-
+    /* — Switch de acciones — */
     switch (action) {
       case 'nombre':
         return Response.json({ nombre: negocio.nombre });
@@ -138,7 +134,7 @@ export async function POST(request: Request) {
 
       case 'proximas-reservas':
       case 'reservas-proximas':
-        return Response.json(await reservasProximas(negocio.id)); // mergeado
+        return Response.json(await reservasProximas(negocio.id));
 
       case 'reservas-manana':
         return Response.json(await reservasManana(negocio.id));
@@ -184,23 +180,23 @@ async function resumenDia(negocioId: string) {
   const hoy = new Date();
   hoy.setHours(0, 0, 0, 0);
 
-  const mañana = new Date(hoy);
-  mañana.setDate(mañana.getDate() + 1);
+  const manana = new Date(hoy);
+  manana.setDate(manana.getDate() + 1);
 
   const [reservas, pedidos, ingresos] = await Promise.all([
     prisma.reservation.count({
-      where: { negocioId, fechaHoraInicio: { gte: hoy, lt: mañana } },
+      where: { negocioId, fechaHoraInicio: { gte: hoy, lt: manana } },
     }),
     prisma.order.count({
-      where: { negocioId, createdAt: { gte: hoy, lt: mañana } },
+      where: { negocioId, createdAt: { gte: hoy, lt: manana } },
     }),
     prisma.order.aggregate({
-      where: { negocioId, createdAt: { gte: hoy, lt: mañana } },
+      where: { negocioId, createdAt: { gte: hoy, lt: manana } },
       _sum: { totalAmount: true },
     }),
   ]);
 
-  const ingresosHoy = Number(ingresos._sum.totalAmount || 0);
+  const ingresosHoy = Number(ingresos._sum.totalAmount ?? 0);
 
   return {
     mensaje:
@@ -216,16 +212,16 @@ async function reservasHoy(negocioId: string) {
   const hoy = new Date();
   hoy.setHours(0, 0, 0, 0);
 
-  const mañana = new Date(hoy);
-  mañana.setDate(mañana.getDate() + 1);
+  const manana = new Date(hoy);
+  manana.setDate(manana.getDate() + 1);
 
   const reservas = await prisma.reservation.findMany({
-    where: { negocioId, fechaHoraInicio: { gte: hoy, lt: mañana } },
+    where: { negocioId, fechaHoraInicio: { gte: hoy, lt: manana } },
     orderBy: { fechaHoraInicio: "asc" },
     take: 20,
   });
 
-  if (reservas.length === 0)
+  if (!reservas.length)
     return { mensaje: "Hoy no tienes reservas programadas 😊", reservas: [] };
 
   const lista = reservas
@@ -316,8 +312,14 @@ async function pedidosHoy(negocioId: string) {
   };
 }
 
-async function pedidoItemList(items: any[]) {
-  return items.map(i => `${i.quantity}x ${i.product?.nombre || i.description}`).join("\n");
+/* ============================================================
+   FIX TYPE: Antes items:any[] → Ahora items:PedidoItem[]
+============================================================ */
+
+async function pedidoItemList(items: PedidoItem[]): Promise<string> {
+  return items
+    .map(i => `${i.quantity}x ${i.product?.nombre || i.description}`)
+    .join("\n");
 }
 
 async function detallePedido(negocioId: string, pedidoId: string) {
@@ -331,7 +333,13 @@ async function detallePedido(negocioId: string, pedidoId: string) {
 
   if (!pedido) throw new Error("Pedido no encontrado");
 
-  const items = await pedidoItemList(pedido.items);
+  const items = await pedidoItemList(
+    pedido.items.map(i => ({
+      quantity: i.quantity,
+      description: i.description,
+      product: i.product ? { nombre: i.product.nombre } : null,
+    }))
+  );
 
   return {
     mensaje:
@@ -430,7 +438,7 @@ async function estadisticasSemana(negocioId: string) {
     }),
   ]);
 
-  const ingresosSemana = Number(ingresos._sum.totalAmount || 0);
+  const ingresosSemana = Number(ingresos._sum.totalAmount ?? 0);
 
   return {
     mensaje:
