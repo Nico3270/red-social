@@ -1,14 +1,11 @@
-// src/services/whatsapp/sender.ts
-
 /**
  * =====================================================================
  * WHATSAPP FREE TEXT SENDER — Myckeo AI 2025
  * ---------------------------------------------------------------------
- * Envia mensajes de texto GRATIS a WhatsApp Cloud API cuando la ventana
+ * Envía mensajes de texto GRATIS a WhatsApp Cloud API cuando la ventana
  * de 24 horas está abierta.
  *
- * Este método NO maneja plantillas.
- * Solo envía mensajes tipo "text".
+ * Este método solo envía mensajes "text" (NO plantillas).
  * =====================================================================
  */
 
@@ -18,7 +15,45 @@ interface WhatsAppSendParams {
   signal?: AbortSignal;
 }
 
-export async function sendWhatsApp({ to, text, signal }: WhatsAppSendParams) {
+/**
+ * Tipos de respuesta de WhatsApp Cloud API
+ */
+interface WhatsAppAPIError {
+  message: string;
+  type?: string;
+  code?: number;
+  error_subcode?: number;
+  fbtrace_id?: string;
+}
+
+interface WhatsAppAPIMessage {
+  id: string;
+  message_status?: string;
+}
+
+interface WhatsAppAPIResponse {
+  messaging_product?: string;
+  contacts?: Array<{ input: string; wa_id: string }>;
+  messages?: WhatsAppAPIMessage[];
+  error?: WhatsAppAPIError;
+}
+
+/**
+ * Respuesta para nuestra función
+ */
+interface WhatsAppSendResult {
+  success: boolean;
+  wamid?: string;
+  data?: WhatsAppAPIResponse;
+  error?: string | WhatsAppAPIError;
+  status?: number;
+}
+
+export async function sendWhatsApp({
+  to,
+  text,
+  signal,
+}: WhatsAppSendParams): Promise<WhatsAppSendResult> {
   const TOKEN = process.env.WHATSAPP_TOKEN;
   const PHONE_ID = process.env.PHONE_NUMBER_ID;
 
@@ -38,9 +73,7 @@ export async function sendWhatsApp({ to, text, signal }: WhatsAppSendParams) {
     messaging_product: "whatsapp",
     to,
     type: "text",
-    text: {
-      body: text,
-    },
+    text: { body: text },
   };
 
   try {
@@ -54,21 +87,26 @@ export async function sendWhatsApp({ to, text, signal }: WhatsAppSendParams) {
       signal,
     });
 
-    const data = await response.json();
+    const data = (await response.json()) as WhatsAppAPIResponse;
 
-    console.log("📡 WhatsApp response (HTTP", response.status + "):");
+    console.log("📡 WhatsApp response (HTTP " + response.status + "):");
     console.log(JSON.stringify(data, null, 2));
 
+    /** ❌ Error HTTP */
     if (!response.ok) {
       console.error("❌ WhatsApp rechazó el mensaje gratis");
-      return { success: false, status: response.status, error: data.error };
+      return {
+        success: false,
+        status: response.status,
+        error: data.error ?? "Unknown error",
+      };
     }
 
+    /** WhatsApp aceptó pero no devolvió ID */
     const msg = data.messages?.[0];
-
     if (!msg?.id) {
       console.error("⚠️ WhatsApp aceptó pero no devolvió ID");
-      return { success: false, error: "No message ID returned" };
+      return { success: false, error: "No message ID returned", data };
     }
 
     console.log("✅ WhatsApp mensaje GRATIS enviado → wamid:", msg.id);
@@ -78,13 +116,19 @@ export async function sendWhatsApp({ to, text, signal }: WhatsAppSendParams) {
       wamid: msg.id,
       data,
     };
-  } catch (err: any) {
-    if (err.name === "AbortError") {
-      console.warn("⏳ Timeout enviando mensaje WhatsApp (gratis)");
-      return { success: false, error: "timeout" };
+  } catch (err) {
+    /** Manejo estricto del tipo error */
+    if (err instanceof Error) {
+      if (err.name === "AbortError") {
+        console.warn("⏳ Timeout enviando mensaje WhatsApp (gratis)");
+        return { success: false, error: "timeout" };
+      }
+
+      console.error("💥 Error crítico enviando mensaje WhatsApp:", err);
+      return { success: false, error: err.message };
     }
 
-    console.error("💥 Error crítico enviando mensaje WhatsApp:", err);
-    return { success: false, error: err.message };
+    console.error("💥 Error desconocido enviando WhatsApp:", err);
+    return { success: false, error: "Unknown error" };
   }
 }
