@@ -37,7 +37,7 @@ function normalizePhone(raw: string): string {
   if (!raw || typeof raw !== "string") return "";
 
   // remover espacios y caracteres inútiles
-  let cleaned = raw.replace(/[^\d]/g, "");
+  const cleaned = raw.replace(/[^\d]/g, "");
 
   if (!cleaned) return "";
 

@@ -27,13 +27,11 @@ import {
   Tabs,
   Tab,
   TextField,
-  Tooltip,
   Typography,
   Button,
   Fab,
   Divider as MuiDivider,
 } from "@mui/material";
-import { Alert } from "@mui/material";
 import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear, subDays, subWeeks, subMonths, subYears } from "date-fns";
 import { es } from "date-fns/locale";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
@@ -59,7 +57,6 @@ import { Transaction } from "@/transacciones/interfaces/types";
 import { TransactionType, PaymentMethod } from "@prisma/client";
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
-import Divider from "@/ui/components/divider/Divider";
 import TransactionDetailModal from "./TransactionDetailModal";
 import EditTransactionModal from "./EditTransactionModal";
 import DeleteTransactionModal from "./DeleteTransactionModal";
