@@ -94,7 +94,7 @@ const CrearEncuestaNegocio: React.FC<CrearEncuestaNegocioProps> = ({ preguntas, 
   }, [responseMessage, router, slugNegocio]);
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6 md:p-12 flex flex-col items-center">
+    <div className="min-h-screen bg-gray-50 p-6 md:p-4 flex flex-col items-center">
       {/* Banner Explicativo: Condicional para modo crear/editar */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}

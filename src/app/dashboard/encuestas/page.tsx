@@ -36,7 +36,7 @@ export default async function ReservasPage() {
     <div>
       
       {/* Renderiza el componente de ReservasDashboard pasando el negocioId */}
-      <p>Página donde se mostrarán los resultados de las encuestas</p>
+
       <CrearEncuestaNegocio preguntas={result.preguntas} preguntasSeleccionadas={preguntas.preguntas} />
     </div>
   );

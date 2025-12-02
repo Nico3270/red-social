@@ -30,23 +30,23 @@ type PedidoItem = {
 };
 
 /* ============================================================
-   NORMALIZADOR TELEFÓNICO ROBUSTO
+   NORMALIZADOR UNIVERSAL (E.164 MINIMAL)
 ============================================================ */
 
-function normalizePhone(phone: string): string | null {
-  if (!phone || typeof phone !== 'string') return null;
+function normalizePhone(raw: string): string {
+  if (!raw || typeof raw !== "string") return "";
 
-  let cleaned = phone.replace(/[^\d+]/g, '').replace(/ +/g, '');
+  // remover espacios y caracteres inútiles
+  let cleaned = raw.replace(/[^\d]/g, "");
 
-  if (!cleaned.startsWith('+') && cleaned.length >= 10) {
-    cleaned = '+' + cleaned;
-  }
+  if (!cleaned) return "";
 
-  return /^\+\d{7,15}$/.test(cleaned) ? cleaned : null;
+  // agregar + al inicio
+  return "+" + cleaned;
 }
 
 /* ============================================================
-   OBTENER NEGOCIO POR TELÉFONO (SEGURO)
+   OBTENER NEGOCIO POR TELÉFONO (ROBUSTO + FALLBACK)
 ============================================================ */
 
 async function getNegocioByTelefono(telefonoRaw: string): Promise<NegocioLite | null> {
@@ -55,8 +55,27 @@ async function getNegocioByTelefono(telefonoRaw: string): Promise<NegocioLite | 
   const telefono = normalizePhone(telefonoRaw);
   if (!telefono) return null;
 
-  const negocio = await prisma.negocio.findFirst({
+  // búsqueda exacta
+  let negocio = await prisma.negocio.findFirst({
     where: { telefonoContacto: telefono },
+    select: {
+      id: true,
+      nombre: true,
+      slug: true,
+      fotoPerfil: true,
+      fotoPortada: true,
+      ciudad: true,
+      direccion: true,
+      sitioWeb: true,
+      urlGoogleMaps: true,
+    },
+  });
+
+  if (negocio) return negocio;
+
+  // fallback: buscar por coincidencia parcial (solo por seguridad)
+  negocio = await prisma.negocio.findFirst({
+    where: { telefonoContacto: { contains: telefono.replace("+", "") } },
     select: {
       id: true,
       nombre: true,
@@ -83,11 +102,11 @@ export async function POST(request: Request) {
     const { action, telefono, key, pedidoId, reservaId } = body;
 
     if (key !== ADMIN_KEY) {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 });
+      return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    /* — es-negocio — */
-    if (action === 'es-negocio') {
+    /* === es-negocio === */
+    if (action === "es-negocio") {
       const negocio = await getNegocioByTelefono(telefono);
 
       return Response.json({
@@ -96,7 +115,7 @@ export async function POST(request: Request) {
       });
     }
 
-    /* — Validar negocio para cualquier acción — */
+    /* === Validar negocio para cualquier acción === */
     const negocio = await getNegocioByTelefono(telefono);
 
     if (!negocio) {
@@ -106,53 +125,73 @@ export async function POST(request: Request) {
       );
     }
 
-    /* — Switch de acciones — */
+    /* === Acciones === */
     switch (action) {
-      case 'nombre':
+      case "nombre":
         return Response.json({ nombre: negocio.nombre });
 
-      case 'datos-perfil':
+      case "datos-perfil":
         return Response.json(await datosPerfil(negocio));
 
-      case 'resumen-dia':
+      case "resumen-dia":
         return Response.json(await resumenDia(negocio.id));
 
-      case 'reservas-hoy':
+      case "reservas-hoy":
         return Response.json(await reservasHoy(negocio.id));
 
-      case 'pedidos-hoy':
+      case "pedidos-hoy":
         return Response.json(await pedidosHoy(negocio.id));
 
-      case 'proximos-pedidos':
+      case "proximos-pedidos":
         return Response.json(await proximosPedidos(negocio.id));
 
-      case 'pedidos-manana':
+      case "pedidos-manana":
         return Response.json(await pedidosManana(negocio.id));
 
-      case 'estadisticas-semana':
+      case "estadisticas-semana":
         return Response.json(await estadisticasSemana(negocio.id));
 
-      case 'proximas-reservas':
-      case 'reservas-proximas':
+      case "proximas-reservas":
+      case "reservas-proximas":
         return Response.json(await reservasProximas(negocio.id));
 
-      case 'reservas-manana':
+      case "reservas-manana":
         return Response.json(await reservasManana(negocio.id));
 
-      case 'detalle-pedido':
-        if (!pedidoId) throw new Error('pedidoId requerido');
+      case "detalle-pedido":
+        if (!pedidoId) throw new Error("pedidoId requerido");
         return Response.json(await detallePedido(negocio.id, pedidoId));
 
-      case 'detalle-reserva':
-        if (!reservaId) throw new Error('reservaId requerido');
+      case "detalle-reserva":
+        if (!reservaId) throw new Error("reservaId requerido");
         return Response.json(await detalleReserva(negocio.id, reservaId));
 
       default:
-        return Response.json({ error: 'Acción no encontrada' }, { status: 404 });
+        return Response.json(
+          {
+            ok: false,
+            error: "Acción no encontrada",
+            allowedActions: [
+              "nombre",
+              "datos-perfil",
+              "resumen-dia",
+              "reservas-hoy",
+              "reservas-manana",
+              "reservas-proximas",
+              "proximos-pedidos",
+              "pedidos-hoy",
+              "pedidos-manana",
+              "detalle-pedido",
+              "detalle-reserva",
+              "estadisticas-semana",
+            ],
+          },
+          { status: 404 }
+        );
     }
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Error inesperado';
-    console.error('Error en /api/asistente:', message);
+    const message = error instanceof Error ? error.message : "Error inesperado";
+    console.error("Error en /api/asistente:", message);
 
     return Response.json({ error: message }, { status: 400 });
   }
@@ -166,10 +205,10 @@ async function datosPerfil(negocio: NegocioLite) {
   return {
     mensaje:
       `¡Hola jefe de *${negocio.nombre}*! 👋\n\nTus datos:\n\n` +
-      `📍 ${negocio.direccion || 'Sin dirección'}\n` +
+      `📍 ${negocio.direccion || "Sin dirección"}\n` +
       `🌎 ${negocio.ciudad}\n` +
-      `🌐 ${negocio.sitioWeb || 'Sin web'}\n` +
-      `🗺️ ${negocio.urlGoogleMaps || 'Sin mapa'}\n\n` +
+      `🌐 ${negocio.sitioWeb || "Sin web"}\n` +
+      `🗺️ ${negocio.urlGoogleMaps || "Sin mapa"}\n\n` +
       `Tu perfil: https://myckeo.com/perfil/${negocio.slug}\n` +
       `QR: https://myckeo.com/dashboard/qr`,
     datos: negocio,
@@ -201,8 +240,8 @@ async function resumenDia(negocioId: string) {
   return {
     mensaje:
       `Resumen de hoy ☀️\n\n` +
-      `${reservas ? `📅 ${reservas} reservas` : '📅 Sin reservas'}\n` +
-      `${pedidos ? `🛒 ${pedidos} pedidos` : '🛒 Sin pedidos'}\n` +
+      `${reservas ? `📅 ${reservas} reservas` : "📅 Sin reservas"}\n` +
+      `${pedidos ? `🛒 ${pedidos} pedidos` : "🛒 Sin pedidos"}\n` +
       `💰 Ingresos: $${ingresosHoy.toLocaleString()}`,
     datos: { reservas, pedidos, ingresos: ingresosHoy },
   };
@@ -225,7 +264,12 @@ async function reservasHoy(negocioId: string) {
     return { mensaje: "Hoy no tienes reservas programadas 😊", reservas: [] };
 
   const lista = reservas
-    .map((r) => `• ${format(r.fechaHoraInicio, "hh:mm a", { locale: es })} - ${r.nombre}`)
+    .map(
+      (r) =>
+        `• ${format(r.fechaHoraInicio, "hh:mm a", { locale: es })} - ${
+          r.nombre
+        }`
+    )
     .join("\n");
 
   return {
@@ -254,7 +298,12 @@ async function reservasManana(negocioId: string) {
     return { mensaje: "Mañana no tienes reservas 😊", reservas: [] };
 
   const lista = reservas
-    .map((r) => `• ${format(r.fechaHoraInicio, "hh:mm a", { locale: es })} - ${r.nombre}`)
+    .map(
+      (r) =>
+        `• ${format(r.fechaHoraInicio, "hh:mm a", { locale: es })} - ${
+          r.nombre
+        }`
+    )
     .join("\n");
 
   return {
@@ -276,7 +325,12 @@ async function reservasProximas(negocioId: string) {
     return { mensaje: "No tienes reservas próximas 😊", reservas: [] };
 
   const lista = reservas
-    .map((r) => `• ${format(r.fechaHoraInicio, "EEE d MMM, hh:mm a", { locale: es })} - ${r.nombre}`)
+    .map(
+      (r) =>
+        `• ${format(r.fechaHoraInicio, "EEE d MMM, hh:mm a", { locale: es })} - ${
+          r.nombre
+        }`
+    )
     .join("\n");
 
   return {
@@ -295,7 +349,7 @@ async function pedidosHoy(negocioId: string) {
   const pedidos = await prisma.order.findMany({
     where: { negocioId, createdAt: { gte: hoy, lt: manana } },
     include: { items: true },
-    orderBy: { createdAt: 'desc' },
+    orderBy: { createdAt: "desc" },
     take: 20,
   });
 
@@ -313,12 +367,12 @@ async function pedidosHoy(negocioId: string) {
 }
 
 /* ============================================================
-   FIX TYPE: Antes items:any[] → Ahora items:PedidoItem[]
+   Conversión items -> texto
 ============================================================ */
 
 async function pedidoItemList(items: PedidoItem[]): Promise<string> {
   return items
-    .map(i => `${i.quantity}x ${i.product?.nombre || i.description}`)
+    .map((i) => `${i.quantity}x ${i.product?.nombre || i.description}`)
     .join("\n");
 }
 
@@ -334,7 +388,7 @@ async function detallePedido(negocioId: string, pedidoId: string) {
   if (!pedido) throw new Error("Pedido no encontrado");
 
   const items = await pedidoItemList(
-    pedido.items.map(i => ({
+    pedido.items.map((i) => ({
       quantity: i.quantity,
       description: i.description,
       product: i.product ? { nombre: i.product.nombre } : null,
@@ -346,8 +400,12 @@ async function detallePedido(negocioId: string, pedidoId: string) {
       `Pedido #${pedido.id.slice(-6)}\n\n` +
       `🛍️ Productos:\n${items}\n\n` +
       `💰 Total: $${pedido.totalAmount.toLocaleString()}\n\n` +
-      `📦 Cliente:\n${pedido.datosDeEntrega?.clientName || 'N/D'} | ${pedido.datosDeEntrega?.clientPhone || ''}\n` +
-      `${pedido.datosDeEntrega?.deliveryAddress || 'Recoge en local'}\n\n` +
+      `📦 Cliente:\n${pedido.datosDeEntrega?.clientName || "N/D"} | ${
+        pedido.datosDeEntrega?.clientPhone || ""
+      }\n` +
+      `${
+        pedido.datosDeEntrega?.deliveryAddress || "Recoge en local"
+      }\n\n` +
       `Estado: ${pedido.status}`,
     pedido,
   };
@@ -367,7 +425,12 @@ async function proximosPedidos(negocioId: string) {
     return { mensaje: "No tienes pedidos próximos 😊", pedidos: [] };
 
   const lista = pedidos
-    .map(p => `• ${format(p.createdAt, "EEE d MMM, hh:mm a", { locale: es })} | #${p.id.slice(-6)} | $${p.totalAmount.toLocaleString()}`)
+    .map(
+      (p) =>
+        `• ${format(p.createdAt, "EEE d MMM, hh:mm a", {
+          locale: es,
+        })} | #${p.id.slice(-6)} | $${p.totalAmount.toLocaleString()}`
+    )
     .join("\n");
 
   return {
@@ -416,7 +479,9 @@ async function detalleReserva(negocioId: string, reservaId: string) {
   return {
     mensaje:
       `Reserva de ${reserva.nombre}\n\n` +
-      `📅 ${format(reserva.fechaHoraInicio, "EEEE d 'de' MMMM, hh:mm a", { locale: es })}\n` +
+      `📅 ${format(reserva.fechaHoraInicio, "EEEE d 'de' MMMM, hh:mm a", {
+        locale: es,
+      })}\n` +
       `📞 ${reserva.telefono}\n` +
       `📝 ${reserva.notas || "Sin notas"}\n\n` +
       `Estado: ${reserva.estado}`,
@@ -431,7 +496,9 @@ async function estadisticasSemana(negocioId: string) {
   inicioSemana.setHours(0, 0, 0, 0);
 
   const [pedidos, ingresos] = await Promise.all([
-    prisma.order.count({ where: { negocioId, createdAt: { gte: inicioSemana } } }),
+    prisma.order.count({
+      where: { negocioId, createdAt: { gte: inicioSemana } },
+    }),
     prisma.order.aggregate({
       where: { negocioId, createdAt: { gte: inicioSemana } },
       _sum: { totalAmount: true },

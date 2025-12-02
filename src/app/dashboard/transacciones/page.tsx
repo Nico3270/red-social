@@ -10,132 +10,127 @@ import {
   Fab,
   BottomNavigation,
   BottomNavigationAction,
+  Tabs,
+  Tab,
 } from "@mui/material";
 
 import AddIcon from "@mui/icons-material/Add";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import ListAltIcon from "@mui/icons-material/ListAlt";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
-import { Tabs, Tab } from "@mui/material";
-import { getTransactions } from "@/transacciones/actions/getTransactions";
-import { Transaction} from "@/transacciones/interfaces/types";
 
-// Lazy loading para componentes
-const AddTransactionComponent = lazy(() => import("@/transacciones/componentes/AddTransactionComponent"));
-const GraficosTransacciones = lazy(() => import("@/transacciones/componentes/GraficosTransacciones"));
-const ShowTransactions = lazy(() => import("@/transacciones/componentes/ShowTransactions"));
+import { getTransactions } from "@/transacciones/actions/getTransactions";
+import { Transaction } from "@/transacciones/interfaces/types";
+
+const AddTransactionComponent = lazy(() =>
+  import("@/transacciones/componentes/AddTransactionComponent")
+);
+const GraficosTransacciones = lazy(() =>
+  import("@/transacciones/componentes/GraficosTransacciones")
+);
+const ShowTransactions = lazy(() =>
+  import("@/transacciones/componentes/ShowTransactions")
+);
 
 const Page = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [showScrollTop, setShowScrollTop] = useState(false);
-  const [activeSection, setActiveSection] = useState("add"); // Sección activa
+  const [activeSection, setActiveSection] = useState("add");
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
-  // Cargar transacciones
   useEffect(() => {
     const fetchTransactions = async () => {
       const data = await getTransactions();
-      if (data.transactions) {
-        setTransactions(data.transactions);
-      }
+      if (data.transactions) setTransactions(data.transactions);
     };
     fetchTransactions();
   }, []);
 
-  // Mostrar botón scroll-to-top
   useEffect(() => {
-    const handleScroll = () => {
-      setShowScrollTop(window.scrollY > 200);
-    };
+    const handleScroll = () => setShowScrollTop(window.scrollY > 200);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Agregar nueva transacción
   const handleAddTransaction = (newTransaction: Transaction) => {
     setTransactions((prev) => [newTransaction, ...prev]);
   };
 
-  // Scroll to top
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
-  
 
-  // Navegación items
   const navItems = [
-    { label: "Agregar", icon: <AddIcon />, value: "add" },
-    { label: "Transacciones", icon: <ListAltIcon />, value: "transactions" },
-    { label: "Gráficos", icon: <BarChartIcon />, value: "charts" },
+    { label: "Agregar", icon: <AddIcon fontSize="small" />, value: "add" },
+    { label: "Transacciones", icon: <ListAltIcon fontSize="small" />, value: "transactions" },
+    { label: "Gráficos", icon: <BarChartIcon fontSize="small" />, value: "charts" },
   ];
 
   return (
-    <Box sx={{ overflowX: "hidden", width: "100%" }}>
-      {/* AppBar para desktop con botón de menú */}
+    <Box sx={{ width: "100%", overflowX: "hidden" }}>
+      
+      {/* ================= DESKTOP NAV (Apple Style Tabs) ================= */}
       {!isMobile && (
         <Box
           sx={{
-            bgcolor: "white",
-            borderRadius: 3,
-            boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
-            mb: 1,
-            px: 3,
-            pt: 1,
-            pb: 1, // espacio extra inferior en toda la caja
+            bgcolor: "rgba(255,255,255,0.8)",
+            backdropFilter: "blur(12px)",
+            borderRadius: 4,
+            boxShadow: "0 6px 20px rgba(0,0,0,0.06)",
+            px: 1,
+            pt: 3,
+            pb: 2,
+            mb: 3,
+            border: "1px solid rgba(0,0,0,0.05)",
           }}
         >
-          {/* Título centrado */}
           <Typography
-            variant="h6"
+            variant="h5"
             sx={{
-              fontWeight: "bold",
-              color: "#021526", // azul oscuro elegante
               textAlign: "center",
-              mb: 2,
-              fontSize: "1.4rem",
+              fontWeight: 700,
+              color: "#0F172A",
+              mb: 3,
+              letterSpacing: -0.5,
             }}
           >
             Dashboard de Transacciones
           </Typography>
 
-          {/* Barra de pestañas */}
+          {/* Tabs minimalistas tipo iOS */}
           <Tabs
             value={activeSection}
             onChange={(e, newValue) => setActiveSection(newValue)}
-            textColor="inherit"
             TabIndicatorProps={{
-              style: { backgroundColor: "#021526", height: "3px", borderRadius: "2px" },
+              style: { backgroundColor: "#0F172A", height: 3, borderRadius: 2 },
             }}
             sx={{
-              "& .MuiTabs-flexContainer": {
-                justifyContent: "space-around", // distribución uniforme
-                gap: 1.5,
-              },
               "& .MuiTab-root": {
                 flex: 1,
-                minHeight: "48px",
-                py: 1.5, // más padding vertical
-                border: "1px solid #1D1616",
-                borderRadius: 4,
                 textTransform: "none",
-                fontWeight: 500,
-                color: "#1D1616",
-                transition: "all 0.2s ease",
-                backgroundColor: "#fafafa",
-              },
-              "& .MuiTab-root:hover": {
-                backgroundColor: "#000B58",
-                boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
-                color: "#EEEEEE",
-
+                fontSize: "1rem",
+                borderRadius: 3,
+                background: "rgba(255,255,255,0.6)",
+                border: "1px solid rgba(0,0,0,0.06)",
+                color: "#fffff",
+                py: 1.5,
+                transition: "0.25s all",
               },
               "& .Mui-selected": {
-                backgroundColor: "#021526", // gris claro
-                color: "#E2DFD0", // azul oscuro
-                fontWeight: "bold",
-                boxShadow: "0 2px 8px rgba(30, 58, 138, 0.15)",
+                backgroundColor: "#0F172A",
+                color: "white",
+                fontWeight: 600,
+                boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
+              },
+              "& .MuiTab-root:hover": {
+                background: "#1581BF",
+                color: "white",
+
+              },
+              "& .MuiTabs-flexContainer": {
+                gap: 1.5,
               },
             }}
           >
@@ -152,160 +147,116 @@ const Page = () => {
         </Box>
       )}
 
-
-
-
-      {/* Nav: BottomNavigation en móvil */}
-      {isMobile ? (
-        <AppBar position="fixed" color="default" sx={{ top: "auto", bottom: 0, boxShadow: 3 }}>
+      {/* ================= MOBILE NAV ================= */}
+      {isMobile && (
+        <AppBar
+          position="fixed"
+          color="transparent"
+          elevation={0}
+          sx={{
+            top: "auto",
+            bottom: 0,
+            px: 1,
+            pb: 1.5,
+            background: "rgba(255,255,255,0.9)",
+            backdropFilter: "blur(12px)",
+            boxShadow: "0 -6px 18px rgba(0,0,0,0.08)",
+          }}
+        >
           <BottomNavigation
             showLabels
             value={activeSection}
             onChange={(event, newValue) => setActiveSection(newValue)}
-            sx={{ bgcolor: "white" }}
+            sx={{
+              borderRadius: 4,
+              overflow: "hidden",
+              background: "white",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+            }}
           >
             {navItems.map((item) => (
               <BottomNavigationAction
-                key={item.label}
+                key={item.value}
                 label={item.label}
                 value={item.value}
                 icon={item.icon}
                 sx={{
-                  "&.Mui-selected": { color: "#640D5F", bgcolor: "grey.100", fontWeight: "bold" },
-                  color: "grey.600",
-                  "&:hover": { color: "#640D5F", boxShadow: "0 2px 4px rgba(0,0,0,0.1)" },
+                  "&.Mui-selected": {
+                    color: "#0F172A",
+                    fontWeight: 600,
+                  },
+                  color: "#64748B",
                   transition: "all 0.2s",
                 }}
               />
             ))}
           </BottomNavigation>
         </AppBar>
-      ) : null}
+      )}
 
-      {/* Drawer para desktop (temporal, se abre con el botón del AppBar) */}
-      {/* {!isMobile && (
-        <Drawer
-          variant="temporary"
-          open={drawerOpen}
-          onClose={() => setDrawerOpen(false)}
-          sx={{ width: 240, flexShrink: 0, "& .MuiDrawer-paper": { width: 240, boxSizing: "border-box" } }}
+      {/* ================= TITULO EN MOBILE ================= */}
+      {isMobile && (
+        <Typography
+          variant="h5"
+          sx={{
+            mt: 2,
+            mb: 1,
+            textAlign: "center",
+            fontWeight: 700,
+            color: "#0F172A",
+          }}
         >
-          <List>
-            {navItems.map((item) => (
-              <ListItem key={item.label} disablePadding>
-                <ListItemButton
-                  onClick={() => {
-                    setActiveSection(item.value);
-                    setDrawerOpen(false);
-                  }}
-                  selected={activeSection === item.value}
-                  sx={{
-                    "&.Mui-selected": { bgcolor: "grey.200", color: "#640D5F" },
-                    "&:hover": { bgcolor: "grey.100" },
-                    "&.Mui-selected:hover": { bgcolor: "grey.300" },
-                  }}
-                >
-                  <ListItemIcon>{item.icon}</ListItemIcon>
-                  <ListItemText primary={item.label} />
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </List>
-        </Drawer>
-      )} */}
+          Dashboard de Transacciones
+        </Typography>
+      )}
 
-      {/* Header con KPIs modestos/elegantes: smaller, outlined, reduced spacing */}
-      <Fade in timeout={500}>
-        <Box sx={{ mb: 1, px: 2 }}>
-          {isMobile && (
-            <Typography variant="h5" sx={{ mb: 1.5, color: "#640D5F", fontWeight: "medium", textAlign: "center" }}>
-              Dashboard de Transacciones
-            </Typography>
-          )}
-          {/* <Grid container spacing={1} justifyContent="center">
-            <Grid item xs={4}>
-              <Card variant="outlined" sx={{ borderRadius: 3, borderColor: "grey.300" }}>
-                <CardContent sx={{ p: 1.5, textAlign: "center" }}>
-                  <Typography variant="body2" color="grey.600" sx={{ mb: 0.5 }}>
-                    Ingresos
-                  </Typography>
-                  <Typography variant="subtitle2" color="green.600">
-                    ${ingresos.toLocaleString("es-CO")}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={4}>
-              <Card variant="outlined" sx={{ borderRadius: 3, borderColor: "grey.300" }}>
-                <CardContent sx={{ p: 1.5, textAlign: "center" }}>
-                  <Typography variant="body2" color="grey.600" sx={{ mb: 0.5 }}>
-                    Gastos
-                  </Typography>
-                  <Typography variant="subtitle2" color="red.600">
-                    ${gastos.toLocaleString("es-CO")}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={4}>
-              <Card variant="outlined" sx={{ borderRadius: 3, borderColor: "grey.300" }}>
-                <CardContent sx={{ p: 1.5, textAlign: "center" }}>
-                  <Typography variant="body2" color="grey.600" sx={{ mb: 0.5 }}>
-                    Balance
-                  </Typography>
-                  <Typography variant="subtitle2" color={balance >= 0 ? "green.600" : "red.600"}>
-                    ${balance.toLocaleString("es-CO")}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-          </Grid> */}
-        </Box>
-      </Fade>
-
-      {/* Contenido principal: Render condicional de sección activa */}
-      <Box sx={{ pb: isMobile ? 12 : 4, overflowX: "hidden" }}>
+      {/* ================= CONTENIDO PRINCIPAL ================= */}
+      <Box sx={{ pb: isMobile ? 14 : 4 }}>
         {activeSection === "add" && (
           <Suspense fallback={<Typography>Cargando formulario...</Typography>}>
-            <Fade in timeout={700}>
-              <Box sx={{ maxWidth: "100%", overflowX: "auto" }}>
+            <Fade in timeout={600}>
+              <Box sx={{ px: 2 }}>
                 <AddTransactionComponent onTransactionAdded={handleAddTransaction} />
               </Box>
             </Fade>
           </Suspense>
         )}
-        {activeSection === "charts" && (
-          <Suspense fallback={<Typography>Cargando gráficos...</Typography>}>
-            <Fade in timeout={700}>
-              <Box sx={{ maxWidth: "100%", overflowX: "auto" }}>
-                <GraficosTransacciones transactions={transactions} />
+
+        {activeSection === "transactions" && (
+          <Suspense fallback={<Typography>Cargando transacciones...</Typography>}>
+            <Fade in timeout={600}>
+              <Box sx={{ px: 2 }}>
+                <ShowTransactions initialTransactions={transactions} />
               </Box>
             </Fade>
           </Suspense>
         )}
-        {activeSection === "transactions" && (
-          <Suspense fallback={<Typography>Cargando transacciones...</Typography>}>
-            <Fade in timeout={700}>
-              <Box sx={{ maxWidth: "100%", overflowX: "auto" }}>
-                <ShowTransactions initialTransactions={transactions}  />
+
+        {activeSection === "charts" && (
+          <Suspense fallback={<Typography>Cargando gráficos...</Typography>}>
+            <Fade in timeout={600}>
+              <Box sx={{ px: 2 }}>
+                <GraficosTransacciones transactions={transactions} />
               </Box>
             </Fade>
           </Suspense>
         )}
       </Box>
 
-      {/* Botón scroll-to-top */}
+      {/* ================= BOTÓN SCROLL-to-TOP ================= */}
       {showScrollTop && (
         <Fab
-          color="primary"
-          aria-label="Subir"
           onClick={scrollToTop}
           sx={{
             position: "fixed",
-            bottom: isMobile ? "calc(5rem + 56px)" : "2rem",
-            right: "1rem",
-            bgcolor: "#640D5F",
-            "&:hover": { bgcolor: "#4B0A47" },
+            bottom: isMobile ? "7rem" : "2rem",
+            right: "1.2rem",
+            bgcolor: "#0F172A",
+            color: "white",
+            "&:hover": {
+              bgcolor: "#1E293B",
+            },
+            transition: "0.3s ease",
           }}
         >
           <ArrowUpwardIcon />
