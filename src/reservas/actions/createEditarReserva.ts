@@ -108,21 +108,30 @@ export async function createEditarReserva(
   });
   const telefonoNegocio = negocio?.telefonoContacto ?? "+573132390868";
 
-  try {
-    let result;
+  /* ---------------------------------------------------------------------- */
+  /*                  1) EJECUTAR TODA LA LÓGICA DE PRISMA                 */
+  /* ---------------------------------------------------------------------- */
 
+  let result;
+  let existingReservaFechaInicio: Date | null = null;
+
+  try {
     /* ------------------- MODO EDITAR ------------------- */
     if (id) {
       const existing = await prisma.reservation.findUnique({ where: { id } });
+
       if (!existing || (negocioId && existing.negocioId !== negocioId)) {
         devLog("Permiso denegado para editar reserva", id);
         return { ok: false, message: "No tienes permiso para editar esta reserva" };
       }
 
+      existingReservaFechaInicio = existing.fechaHoraInicio;
+
       result = await prisma.reservation.update({
         where: { id },
         data: resData,
       });
+
       devLog("Reserva actualizada →", result.id);
     }
     /* ------------------- MODO CREAR ------------------- */
@@ -136,144 +145,150 @@ export async function createEditarReserva(
         data: {
           ...resData,
           negocioId,
-          // usuarioId: session?.user?.id ?? null,
         },
       });
+
       devLog("Reserva creada →", result.id);
     }
-
-    /* ------------------- DATOS COMUNES PARA WHATSAPP ------------------- */
-    const fecha = formatearFecha(resData.fechaHoraInicio);
-    const enlaceCancelar = `https://myckeo.com/reservas/eliminar/${result.id}`;
-
-    /* ------------------- 1. RESERVA CREADA POR EL PROPIO DUEÑO ------------------- */
-    const esDueno =
-      session?.user?.role === "negocio" &&
-      session.user.negocioId === negocioId &&
-      !id;
-
-    if (esDueno) {
-      devLog("Enviando confirmación al cliente (dueño crea reserva)");
-      const notif = await notifyReservaConfirmadaCliente({
-        to: parsed.data.telefono ?? "+573182293083",
-        nombre_cliente: resData.nombre,
-        fechaHora: fecha,
-        template: PlantillaWhatsApp.CONFIRMACION_RESERVA_CLIENTE,
-        enlace_cancelar: enlaceCancelar,
-        descripcion: resData.notas ?? "",
-        negocioId: negocioId ?? "",
-      });
-      devLog(
-        "Resultado notif cliente (dueño) →",
-        notif.ok ? "OK" : `FAIL: ${notif.message}`
-      );
-
-      if (!notif.ok) {
-        console.warn(
-          "[createEditarReserva] Notificación fallida (dueño → cliente):",
-          notif.message
-        );
-      }
-    }
-
-    /* ------------------- 2. RESERVA CREADA POR CUALQUIER OTRO ------------------- */
-    const esClienteExterno =
-      !session ||
-      session.user.role !== "negocio" ||
-      session.user.negocioId !== negocioId;
-
-    if (esClienteExterno) {
-      /* ---- 2a) Al negocio destino ---- */
-      devLog("Enviando notificación al negocio destino");
-      const notifNegocio = await notifyReservaConfirmadaCliente({
-        to: telefonoNegocio,
-        nombre_cliente: resData.nombre,
-        telefono_cliente: resData.telefono,
-        fechaHora: fecha,
-        template: PlantillaWhatsApp.CONFIRMAR_NEGOCIO_RESERVA,
-        negocioId: negocioId ?? "",
-      });
-      devLog(
-        "Resultado notif negocio →",
-        notifNegocio.ok ? "OK" : `FAIL: ${notifNegocio.message}`
-      );
-
-      if (!notifNegocio.ok) {
-        console.warn(
-          "[createEditarReserva] Notificación fallida (cliente → negocio):",
-          notifNegocio.message
-        );
-      }
-
-      /* ---- 2b) Al cliente (usuario que creó la reserva) ---- */
-      devLog("Enviando confirmación al cliente");
-      const notifCliente = await notifyReservaConfirmadaCliente({
-        to: parsed.data.telefono ?? "+573182293083",
-        nombre_cliente: resData.nombre,
-        fechaHora: fecha,
-        template: PlantillaWhatsApp.CONFIRMACION_RESERVA_CLIENTE,
-        enlace_cancelar: enlaceCancelar,
-        descripcion: resData.notas ?? "",
-        negocioId: negocioId ?? "",
-      });
-      devLog(
-        "Resultado notif cliente →",
-        notifCliente.ok ? "OK" : `FAIL: ${notifCliente.message}`
-      );
-
-      if (!notifCliente.ok) {
-        console.warn(
-          "[createEditarReserva] Notificación fallida (cliente → cliente):",
-          notifCliente.message
-        );
-      }
-    }
-
-    /* ------------------- 3. REPROGRAMACIÓN (edición) ------------------- */
-    if (id) {
-      const fechaAnterior = fecha;
-      const fechaNueva = formatearFecha(resData.fechaHoraFin);
-      devLog("Enviando notificación de reprogramación");
-      const notifReprogram = await notifyReservaConfirmadaCliente({
-        to: parsed.data.telefono ?? "+573182293083",
-        nombre_cliente: resData.nombre,
-        fecha_anterior: fechaAnterior,
-        fecha_nueva: fechaNueva,
-        template: PlantillaWhatsApp.RESERVA_REPROGRAMADA_USUARIO,
-        enlace_cancelar: enlaceCancelar,
-        negocioId: negocioId ?? "",
-      });
-      devLog(
-        "Resultado notif reprogramación →",
-        notifReprogram.ok ? "OK" : `FAIL: ${notifReprogram.message}`
-      );
-
-      if (!notifReprogram.ok) {
-        console.warn(
-          "[createEditarReserva] Notificación reprogramación fallida:",
-          notifReprogram.message
-        );
-      }
-    }
-
-    /* ------------------- RESPUESTA FINAL ------------------- */
-    return {
-      ok: true,
-      message: id
-        ? "Reserva actualizada exitosamente"
-        : "Reserva creada exitosamente",
-      reserva: {
-        id: result.id,
-        nombre: result.nombre,
-        telefono: result.telefono,
-        estado: result.estado,
-        fechaHoraInicio: result.fechaHoraInicio.toISOString(),
-        fechaHoraFin: result.fechaHoraFin?.toISOString() ?? undefined,
-        notas: result.notas ?? undefined,
-      },
-    };
   } catch (error) {
-    console.error("[createEditarReserva] Error inesperado:", error);
-    return { ok: false, message: "Error interno al procesar la reserva" };
+    console.error("[createEditarReserva] Error en prisma:", error);
+    return { ok: false, message: "Error interno al guardar la reserva" };
   }
+
+  /* ---------------------------------------------------------------------- */
+  /*               2) AHORA QUE PRISMA TERMINÓ → ENVIAR NOTIFICACIONES     */
+  /* ---------------------------------------------------------------------- */
+
+  const fecha = formatearFecha(resData.fechaHoraInicio);
+  const enlaceCancelar = `https://myckeo.com/reservas/eliminar/${result.id}`;
+
+  /* ------------------- SI EL NEGOCIO LA CREA (dueño → cliente) ------------------- */
+  const esDueno =
+    session?.user?.role === "negocio" &&
+    session.user.negocioId === negocioId &&
+    !id;
+
+  if (esDueno) {
+    devLog("Enviando confirmación al cliente (dueño crea reserva)");
+
+    const notif = await notifyReservaConfirmadaCliente({
+      to: parsed.data.telefono ?? "+573182293083",
+      nombre_cliente: resData.nombre,
+      fechaHora: fecha,
+      template: PlantillaWhatsApp.CONFIRMACION_RESERVA_CLIENTE,
+      enlace_cancelar: enlaceCancelar,
+      descripcion: resData.notas ?? "",
+      negocioId: negocioId ?? "",
+    });
+
+    devLog("Resultado notif cliente (dueño) →", notif.ok ? "OK" : `FAIL: ${notif.message}`);
+
+    if (!notif.ok) {
+      console.warn(
+        "[createEditarReserva] Notificación fallida (dueño → cliente):",
+        notif.message
+      );
+    }
+  }
+
+  /* ------------------- SI LA CREA UN CLIENTE EXTERNO ------------------- */
+  const esClienteExterno =
+    !session ||
+    session.user.role !== "negocio" ||
+    session.user.negocioId !== negocioId;
+
+  if (esClienteExterno) {
+    /* --- 2a) Notificar al negocio --- */
+    devLog("Enviando notificación al negocio destino");
+
+    const notifNegocio = await notifyReservaConfirmadaCliente({
+      to: telefonoNegocio,
+      nombre_cliente: resData.nombre,
+      telefono_cliente: resData.telefono,
+      fechaHora: fecha,
+      template: PlantillaWhatsApp.CONFIRMAR_NEGOCIO_RESERVA,
+      negocioId: negocioId ?? "",
+    });
+
+    devLog("Resultado notif negocio →", notifNegocio.ok ? "OK" : `FAIL: ${notifNegocio.message}`);
+
+    if (!notifNegocio.ok) {
+      console.warn(
+        "[createEditarReserva] Notificación fallida (cliente → negocio):",
+        notifNegocio.message
+      );
+    }
+
+    /* --- 2b) Confirmación al cliente --- */
+    devLog("Enviando confirmación al cliente");
+
+    const notifCliente = await notifyReservaConfirmadaCliente({
+      to: parsed.data.telefono ?? "+573182293083",
+      nombre_cliente: resData.nombre,
+      fechaHora: fecha,
+      template: PlantillaWhatsApp.CONFIRMACION_RESERVA_CLIENTE,
+      enlace_cancelar: enlaceCancelar,
+      descripcion: resData.notas ?? "",
+      negocioId: negocioId ?? "",
+    });
+
+    devLog("Resultado notif cliente →", notifCliente.ok ? "OK" : `FAIL: ${notifCliente.message}`);
+
+    if (!notifCliente.ok) {
+      console.warn(
+        "[createEditarReserva] Notificación fallida (cliente → cliente):",
+        notifCliente.message
+      );
+    }
+  }
+
+  /* ------------------- REPROGRAMACIÓN (solo si id existe) ------------------- */
+  if (id) {
+    const fechaAnterior = existingReservaFechaInicio
+      ? formatearFecha(existingReservaFechaInicio)
+      : fecha;
+
+    const fechaNueva = formatearFecha(resData.fechaHoraFin);
+
+    devLog("Enviando notificación de reprogramación");
+
+    const notifReprogram = await notifyReservaConfirmadaCliente({
+      to: parsed.data.telefono ?? "+573182293083",
+      nombre_cliente: resData.nombre,
+      fecha_anterior: fechaAnterior,
+      fecha_nueva: fechaNueva,
+      template: PlantillaWhatsApp.RESERVA_REPROGRAMADA_USUARIO,
+      enlace_cancelar: enlaceCancelar,
+      negocioId: negocioId ?? "",
+    });
+
+    devLog(
+      "Resultado notif reprogramación →",
+      notifReprogram.ok ? "OK" : `FAIL: ${notifReprogram.message}`
+    );
+
+    if (!notifReprogram.ok) {
+      console.warn(
+        "[createEditarReserva] Notificación reprogramación fallida:",
+        notifReprogram.message
+      );
+    }
+  }
+
+  /* ------------------- RESPUESTA FINAL ------------------- */
+  return {
+    ok: true,
+    message: id
+      ? "Reserva actualizada exitosamente"
+      : "Reserva creada exitosamente",
+    reserva: {
+      id: result.id,
+      nombre: result.nombre,
+      telefono: result.telefono,
+      estado: result.estado,
+      fechaHoraInicio: result.fechaHoraInicio.toISOString(),
+      fechaHoraFin: result.fechaHoraFin?.toISOString() ?? undefined,
+      notas: result.notas ?? undefined,
+    },
+  };
 }

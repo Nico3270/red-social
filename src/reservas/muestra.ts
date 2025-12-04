@@ -4,10 +4,10 @@ import {
   TemplateBuilders,
   TemplateVariables,
 } from "@/servicios/whatsapp/buildTemplateMessage";
-import { getInfoNegocioWhatsapp } from "../actions/getInfoNegocioWhatsapp";
-import { PlantillaWhatsApp } from "../interfaces/interfaces.whatsapp";
-import { sendWhatsAppMessage } from "./sendWhatsAppMessage";
 import { sendWhatsApp } from "@/servicios/whatsapp/sender";
+import { PlantillaWhatsApp } from "./interfaces/interfaces.whatsapp";
+import { getInfoNegocioWhatsapp } from "./actions/getInfoNegocioWhatsapp";
+import { sendWhatsAppMessage } from "./helpers/sendWhatsAppMessage";
 
 /* ========================================================================
    CONFIGURACIÓN
@@ -49,9 +49,14 @@ interface NotifyReservaConfirmadaClienteProps {
   ciudad?: string;
 }
 
-// Interfaz para la respuesta de la ventana de 24h
-interface WindowResponse {
+/* ========================================================================
+   RESPUESTA DE LA API /api/whatsapp/window
+======================================================================== */
+interface WhatsAppWindowResponse {
   isOpen: boolean;
+  lastUserMessageAt: string | null;
+  windowSecondsLeft: number;
+  reason: "OPEN" | "CLOSED" | "PERSON_NOT_FOUND" | "NO_CONVERSATION" | "NO_USER_MESSAGES";
 }
 
 /* ========================================================================
@@ -87,20 +92,17 @@ export async function notifyReservaConfirmadaCliente(
 
     const negocioInfo = await getInfoNegocioWhatsapp(negocioId);
 
-    console.log("negocioInfo:", negocioInfo);
-
     if (!negocioInfo) throw new Error("Información del negocio no encontrada");
 
     const slugNegocio = negocioInfo.slugNegocio;
-    const reservas_negocio = `https://myckeo.com/reservas/${slugNegocio}`;
     const nombre_negocio = negocioInfo.nombreNegocio || "Negocio Desconocido";
+
+    const reservas_negocio = `https://myckeo.com/reservas/${slugNegocio}`;
     const enlace_reserva = "https://myckeo.com/dashboard/reservas";
 
     /* ============================================================
        2. VALIDAR TELÉFONO
     ============================================================ */
-    console.log("Validando teléfono:", to);
-
     if (!to.startsWith("+") || !/^\+\d{10,15}$/.test(to)) {
       throw new Error("Número inválido (E.164 requerido)");
     }
@@ -108,8 +110,6 @@ export async function notifyReservaConfirmadaCliente(
     /* ============================================================
        3. ARMAR VARIABLES PARA LA PLANTILLA
     ============================================================ */
-    console.log("Construyendo variables para plantilla:", template);
-
     let variables: string[] = [];
     let placeholderNames: string[] = [];
     let languageCode = "es";
@@ -310,71 +310,54 @@ export async function notifyReservaConfirmadaCliente(
         throw new Error("Plantilla no reconocida");
     }
 
-    console.log("variables:", variables);
-    console.log("placeholderNames:", placeholderNames);
-
     if (variables.some((v) => !v || v.trim() === "")) {
-      console.error("Variables inválidas:", variables);
       throw new Error("Variables vacías o inválidas");
     }
 
     /* ============================================================
        4. VERIFICAR VENTANA 24H
     ============================================================ */
-    console.log("Revisando ventana de 24h...");
-    console.log("Teléfono destino:", to);
-    console.log("ADMIN_KEY (últimos 6):", ADMIN_KEY.slice(-6));
-
-    let isWindowOpen = false;
+    let is24hWindowOpen = false;
     let windowCheckOk = false;
-    let windowRawResponse = "";
-    let windowJsonResponse: WindowResponse | null = null;
+    let window24hResponse: WhatsAppWindowResponse | null = null;
 
     try {
-      const requestBody = JSON.stringify({ phone: to, key: ADMIN_KEY });
-      console.log("Enviando POST a /api/whatsapp/window");
-      console.log("URL:", `${MYCKEO_ADMIN_BASE}/api/whatsapp/window`);
-      console.log("Body:", requestBody);
-
       const response = await fetch(`${MYCKEO_ADMIN_BASE}/api/whatsapp/window`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
         },
-        body: requestBody,
+        body: JSON.stringify({ phone: to, key: ADMIN_KEY }),
       });
 
-      windowRawResponse = await response.text();
+      const raw = await response.text();
 
-      console.log("Respuesta RAW completa de /api/whatsapp/window:");
-      console.log(windowRawResponse);
-      console.log("Status HTTP:", response.status, response.statusText);
-
-      if (response.ok && windowRawResponse.trim().length > 0) {
+      if (response.ok && raw.trim()) {
         try {
-          windowJsonResponse = JSON.parse(windowRawResponse) as WindowResponse;
-          console.log("JSON parseado correctamente:", windowJsonResponse);
-
-          isWindowOpen = windowJsonResponse.isOpen === true;
+          const parsed = JSON.parse(raw) as WhatsAppWindowResponse;
+          window24hResponse = parsed;
+          is24hWindowOpen = parsed.isOpen === true;
           windowCheckOk = true;
-        } catch (parseErr) {
-          console.error("Error parseando JSON de ventana:", (parseErr as Error).message);
-          console.error("Contenido recibido:", windowRawResponse);
+
+          console.log("Ventana 24h activa:", {
+            abierta: is24hWindowOpen,
+            motivo: parsed.reason,
+            segundos_restantes: parsed.windowSecondsLeft,
+          });
+        } catch (parseError) {
+          console.error("Error parseando respuesta de ventana 24h:", parseError);
         }
       } else {
-        console.error("Error HTTP en ventana 24h");
-        console.error("Status:", response.status);
-        console.error("Body:", windowRawResponse);
+        console.warn("Respuesta no OK de ventana 24h:", response.status, raw);
       }
-    } catch (err) {
-      console.error("Error de red al consultar ventana 24h:", (err as Error).message);
+    } catch (networkError) {
+      console.error("Error de red al verificar ventana 24h:", networkError);
     }
 
     /* ============================================================
-       5. SI HAY VENTANA → MENSAJE GRATIS
+       5. SI HAY VENTANA: MENSAJE GRATIS
     ============================================================ */
-
     const extras = {
       nombre_cliente,
       telefono_cliente,
@@ -391,14 +374,12 @@ export async function notifyReservaConfirmadaCliente(
       slugNegocio,
     };
 
-    if (windowCheckOk && isWindowOpen) {
-      console.log("Ventana ABIERTA → Enviando mensaje GRATIS");
-
+    if (windowCheckOk && is24hWindowOpen) {
       const builder =
         TemplateBuilders[template as keyof typeof TemplateBuilders];
 
       if (!builder) {
-        throw new Error("No existe builder para la plantilla");
+        throw new Error("No existe builder para la plantilla seleccionada");
       }
 
       const messageText = builder({
@@ -418,12 +399,7 @@ export async function notifyReservaConfirmadaCliente(
         descripcion,
       } as TemplateVariables);
 
-      console.log("Texto generado GRATIS:");
-      console.log(messageText);
-
       const freeRes = await sendWhatsApp({ to, text: messageText });
-
-      console.log("Resultado envío GRATIS:", freeRes);
 
       await fetch(`${MYCKEO_ADMIN_BASE}/api/events`, {
         method: "POST",
@@ -439,6 +415,7 @@ export async function notifyReservaConfirmadaCliente(
             free: true,
             placeholders: variables,
             extras,
+            window24h: window24hResponse, // ← nombre correcto
           },
         }),
       });
@@ -453,10 +430,8 @@ export async function notifyReservaConfirmadaCliente(
     }
 
     /* ============================================================
-       6. SIN VENTANA → PLANTILLA PAGA
+       6. SIN VENTANA: PLANTILLA PAGA
     ============================================================ */
-    console.log("Ventana CERRADA o fallo en API → Enviando PLANTILLA PAGA");
-
     const paidRes = await sendWhatsAppMessage({
       to,
       templateName: template,
@@ -465,8 +440,6 @@ export async function notifyReservaConfirmadaCliente(
       ttl: 1800,
       languageCode,
     });
-
-    console.log("Resultado PLANTILLA:", paidRes);
 
     await fetch(`${MYCKEO_ADMIN_BASE}/api/events`, {
       method: "POST",
@@ -482,6 +455,7 @@ export async function notifyReservaConfirmadaCliente(
           free: false,
           placeholders: variables,
           extras,
+          window24h: window24hResponse, // ← nombre correcto
         },
       }),
     });
@@ -495,9 +469,7 @@ export async function notifyReservaConfirmadaCliente(
     };
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Error desconocido";
-
     console.error("ERROR en notifyReservaConfirmadaCliente:", msg);
-    if (err instanceof Error) console.error("Stack:", err.stack);
 
     return {
       ok: false,

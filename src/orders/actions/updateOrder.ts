@@ -47,45 +47,77 @@ export const updateOrder = async (input: UpdatePedidoInput): Promise<{
 
     const negocioId = session.user.negocioId;
 
-    // Validar campos requeridos según orderType
-    const { orderType, clientName, clientPhone, deliveryAddress, onSiteLocation, ciudad, departamento, country } = input.deliveryData;
+    // ============================
+    // VALIDACIÓN ORDER TYPE
+    // ============================
+    const {
+      orderType,
+      clientName,
+      clientPhone,
+      deliveryAddress,
+      onSiteLocation,
+      ciudad,
+      departamento,
+      country
+    } = input.deliveryData;
+
     if (orderType === "DELIVERY") {
       if (!country || !departamento || !ciudad || !deliveryAddress) {
-        return { ok: false, message: "Faltan datos requeridos para entrega a domicilio: país, departamento, ciudad y dirección son obligatorios." };
+        return {
+          ok: false,
+          message:
+            "Faltan datos para entrega a domicilio: país, departamento, ciudad y dirección son obligatorios.",
+        };
       }
     } else if (orderType === "ON_SITE") {
       if (!onSiteLocation) {
-        return { ok: false, message: "La referencia de ubicación es requerida para pedidos en sitio." };
+        return {
+          ok: false,
+          message: "La referencia de ubicación es requerida para pedidos en sitio.",
+        };
       }
     } else {
       return { ok: false, message: "Tipo de pedido inválido." };
     }
 
-    // Parsear deliveryDate a Date (si se proporciona)
-    const deliveryDate = input.deliveryData.deliveryDate ? new Date(input.deliveryData.deliveryDate) : undefined;
+    // Convertir deliveryDate
+    const deliveryDate = input.deliveryData.deliveryDate
+      ? new Date(input.deliveryData.deliveryDate)
+      : null;
+
     if (deliveryDate && isNaN(deliveryDate.getTime())) {
       return { ok: false, message: "Fecha de entrega inválida." };
     }
 
-    return await prisma.$transaction(async (tx) => {
-      // Verificar que la orden existe y pertenece al negocio
+    // ==============================================================
+    // 🟩 TRANSACCIÓN — SOLO PRISMA
+    // ==============================================================
+
+    const {
+      datosPedido,
+      valorCompra,
+      nombreCliente,
+      direccionCliente
+    } = await prisma.$transaction(async (tx) => {
       const existingOrder = await tx.order.findUnique({
         where: { id: input.orderId },
       });
 
       if (!existingOrder) {
-        return { ok: false, message: "Orden no encontrada." };
+        throw new Error("Orden no encontrada.");
       }
 
       if (existingOrder.negocioId !== negocioId) {
-        return { ok: false, message: "No autorizado para actualizar esta orden." };
+        throw new Error("No autorizado para actualizar esta orden.");
       }
 
       if (!existingOrder.deliveryDataId) {
-        return { ok: false, message: "No hay datos de entrega asociados." };
+        throw new Error("No hay datos de entrega asociados.");
       }
 
-      // Actualizar DeliveryData
+      // ============================
+      // UPDATE DELIVERY DATA
+      // ============================
       await tx.deliveryData.update({
         where: { id: existingOrder.deliveryDataId },
         data: {
@@ -97,57 +129,30 @@ export const updateOrder = async (input: UpdatePedidoInput): Promise<{
           deliveryAddress: orderType === "DELIVERY" ? deliveryAddress : null,
           onSiteLocation: orderType === "ON_SITE" ? onSiteLocation : null,
           deliveryDate,
-          additionalComments: input.deliveryData.additionalComments,
+          additionalComments: input.deliveryData.additionalComments || null
         },
       });
 
-      // Generar descripción auto de items
       const generatedDescription = input.items
         .map((item) => `${item.description} x${item.quantity}`)
         .join(", ");
 
-      // Actualizar Order
       await tx.order.update({
         where: { id: input.orderId },
         data: {
           description: generatedDescription,
           totalAmount: input.totalAmount,
           status: input.status ?? existingOrder.status,
-          orderType, // Update orderType
+          orderType,
         },
       });
 
-      // Notificaciones para cancelación
-      if (input.status && input.status === "Cancelada") {
-        const datosPedido = input.items
-          .map((item) => `${item.quantity} - ${item.description}`)
-          .join(", ");
-        const valorCompra = `$${input.totalAmount.toFixed(2)}`;
-        const nombreCliente = input.deliveryData.clientName;
-        const direccionCliente = orderType === "DELIVERY" ? input.deliveryData.deliveryAddress || "" : input.deliveryData.onSiteLocation || "";
-
-        if (session?.user.role === "negocio") {
-          const notificacionUsuario = await notifyReservaConfirmadaCliente({
-            to: clientPhone || "+573182293083", // Adjust as needed
-            template: PlantillaWhatsApp.PEDIDO_CANCELADO_NEGOCIO,
-            datos_pedido: datosPedido,
-            valor_compra: valorCompra,
-            nombre_cliente: nombreCliente,
-            direccion: direccionCliente,
-            negocioId: negocioId || "",
-          });
-          if (!notificacionUsuario.ok) {
-            console.warn("Notificación WhatsApp fallida, pero orden actualizada: error en plantilla PEDIDO_CANCELADO_NEGOCIO");
-          }
-        }
-      }
-
-      // Eliminar OrderItems existentes
+      // Delete old items
       await tx.orderItem.deleteMany({
         where: { orderId: input.orderId },
       });
 
-      // Crear nuevos OrderItems
+      // Add new items
       await tx.orderItem.createMany({
         data: input.items.map((item) => ({
           description: item.description,
@@ -159,7 +164,6 @@ export const updateOrder = async (input: UpdatePedidoInput): Promise<{
         })),
       });
 
-      // Crear historial de actualización
       await tx.orderStatusHistory.create({
         data: {
           orderId: input.orderId,
@@ -169,10 +173,52 @@ export const updateOrder = async (input: UpdatePedidoInput): Promise<{
         },
       });
 
-      return { ok: true, message: "Orden actualizada exitosamente." };
+      const datosPedido = input.items
+        .map((item) => `${item.quantity} - ${item.description}`)
+        .join(", ");
+
+      const valorCompra = `$${input.totalAmount.toFixed(2)}`;
+      const nombreCliente = clientName;
+      const direccionCliente =
+        orderType === "DELIVERY"
+          ? deliveryAddress || ""
+          : `Pedido en sitio: ${onSiteLocation}`;
+
+      return {
+        existingOrder,
+        datosPedido,
+        valorCompra,
+        nombreCliente,
+        direccionCliente
+      };
     });
+
+    // ==============================================================
+    // 🟦 FUERA DE LA TRANSACCIÓN → NOTIFICACIONES
+    // ==============================================================
+
+    // Notificar si SE CANCELÓ la orden
+    if (input.status === "Cancelada") {
+      await notifyReservaConfirmadaCliente({
+        to: clientPhone,
+        template: PlantillaWhatsApp.PEDIDO_CANCELADO_NEGOCIO,
+        datos_pedido: datosPedido,
+        valor_compra: valorCompra,
+        nombre_cliente: nombreCliente,
+        direccion: direccionCliente,
+        negocioId
+      });
+    }
+
+    return { ok: true, message: "Orden actualizada exitosamente." };
   } catch (error) {
     console.error("Error al actualizar la orden:", error);
-    return { ok: false, message: `Error al actualizar la orden: ${error instanceof Error ? error.message : "Error desconocido"}` };
+    return {
+      ok: false,
+      message:
+        error instanceof Error
+          ? `Error al actualizar la orden: ${error.message}`
+          : "Error desconocido",
+    };
   }
 };

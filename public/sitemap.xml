@@ -3,7 +3,7 @@
         
               <url>
                 <loc>https://myckeo.com/</loc>
-                <lastmod>2025-11-28T03:54:12.207Z</lastmod>
+                <lastmod>2025-12-04T16:08:10.309Z</lastmod>
                 <changefreq>daily</changefreq>
                 <priority>0.7</priority>
               </url>
@@ -11,7 +11,7 @@
 
               <url>
                 <loc>https://myckeo.com/inicio</loc>
-                <lastmod>2025-11-28T03:54:12.208Z</lastmod>
+                <lastmod>2025-12-04T16:08:10.309Z</lastmod>
                 <changefreq>daily</changefreq>
                 <priority>0.7</priority>
               </url>
@@ -19,7 +19,7 @@
 
               <url>
                 <loc>https://myckeo.com/carrusel</loc>
-                <lastmod>2025-11-28T03:54:12.208Z</lastmod>
+                <lastmod>2025-12-04T16:08:10.309Z</lastmod>
                 <changefreq>daily</changefreq>
                 <priority>0.7</priority>
               </url>
@@ -82,6 +82,22 @@
             
 
               <url>
+                <loc>https://myckeo.com/perfil/abogado-juan-sierra-bogota-beuh</loc>
+                <lastmod>2025-10-28T20:10:22.668Z</lastmod>
+                <changefreq>daily</changefreq>
+                <priority>0.8</priority>
+              </url>
+            
+
+              <url>
+                <loc>https://myckeo.com/perfil/buho-blanco-la-dorada-a99x</loc>
+                <lastmod>2025-11-29T19:10:22.817Z</lastmod>
+                <changefreq>daily</changefreq>
+                <priority>0.8</priority>
+              </url>
+            
+
+              <url>
                 <loc>https://myckeo.com/perfil/la-terraza-del-sabor-bogota-pl0k</loc>
                 <lastmod>2025-10-30T18:22:11.096Z</lastmod>
                 <changefreq>daily</changefreq>
@@ -98,14 +114,6 @@
             
 
               <url>
-                <loc>https://myckeo.com/perfil/zapateria-don-jorge-tunja-tzj2</loc>
-                <lastmod>2025-10-28T20:10:22.668Z</lastmod>
-                <changefreq>daily</changefreq>
-                <priority>0.8</priority>
-              </url>
-            
-
-              <url>
                 <loc>https://myckeo.com/perfil/concesionario-bellavista-tunja-ic56</loc>
                 <lastmod>2025-10-28T20:10:22.668Z</lastmod>
                 <changefreq>daily</changefreq>
@@ -114,7 +122,7 @@
             
 
               <url>
-                <loc>https://myckeo.com/perfil/parrilla-internacional-tunja-tunja-r3jq</loc>
+                <loc>https://myckeo.com/perfil/zapateria-don-jorge-tunja-tzj2</loc>
                 <lastmod>2025-10-28T20:10:22.668Z</lastmod>
                 <changefreq>daily</changefreq>
                 <priority>0.8</priority>
@@ -138,7 +146,7 @@
             
 
               <url>
-                <loc>https://myckeo.com/perfil/american-barber-tunja-kgmu</loc>
+                <loc>https://myckeo.com/perfil/parrilla-internacional-tunja-tunja-r3jq</loc>
                 <lastmod>2025-10-28T20:10:22.668Z</lastmod>
                 <changefreq>daily</changefreq>
                 <priority>0.8</priority>
@@ -147,14 +155,6 @@
 
               <url>
                 <loc>https://myckeo.com/perfil/andrea-beauty-studio-tunja-18ds</loc>
-                <lastmod>2025-10-28T20:10:22.668Z</lastmod>
-                <changefreq>daily</changefreq>
-                <priority>0.8</priority>
-              </url>
-            
-
-              <url>
-                <loc>https://myckeo.com/perfil/abogado-juan-sierra-bogota-beuh</loc>
                 <lastmod>2025-10-28T20:10:22.668Z</lastmod>
                 <changefreq>daily</changefreq>
                 <priority>0.8</priority>
@@ -178,6 +178,14 @@
             
 
               <url>
+                <loc>https://myckeo.com/perfil/american-barber-tunja-kgmu</loc>
+                <lastmod>2025-10-28T20:10:22.668Z</lastmod>
+                <changefreq>daily</changefreq>
+                <priority>0.8</priority>
+              </url>
+            
+
+              <url>
                 <loc>https://myckeo.com/perfil/novathread-tunja-q256</loc>
                 <lastmod>2025-10-28T20:10:22.668Z</lastmod>
                 <changefreq>daily</changefreq>
@@ -194,7 +202,7 @@
             
 
               <url>
-                <loc>https://myckeo.com/perfil/hotel-nuevo-mundo-tunja-8emh</loc>
+                <loc>https://myckeo.com/perfil/tienda-de-marcos-tunja-j052</loc>
                 <lastmod>2025-10-28T20:10:22.668Z</lastmod>
                 <changefreq>daily</changefreq>
                 <priority>0.8</priority>
@@ -202,7 +210,7 @@
             
 
               <url>
-                <loc>https://myckeo.com/perfil/tienda-de-marcos-tunja-j052</loc>
+                <loc>https://myckeo.com/perfil/hotel-nuevo-mundo-tunja-8emh</loc>
                 <lastmod>2025-10-28T20:10:22.668Z</lastmod>
                 <changefreq>daily</changefreq>
                 <priority>0.8</priority>
