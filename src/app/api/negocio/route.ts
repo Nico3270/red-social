@@ -2,6 +2,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { createNegocio } from "@/actions/auth/createHegocio";
+export const dynamic = "force-dynamic";
+
 
 const API_KEY = process.env.MYCKEO_ADMIN_KEY;
 

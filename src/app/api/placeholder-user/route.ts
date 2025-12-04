@@ -4,6 +4,8 @@ import prisma from "@/lib/prisma";
 import bcryptjs from "bcryptjs";
 import { separarCiudadDepartamento, generarUsernameUnico } from "@/helpers/usuario/funcionesUsuario";
 import { Genero } from "@prisma/client";
+export const dynamic = "force-dynamic";
+
 
 // CORRECTO: así se lee una variable privada del servidor
 const MYCKEO_ADMIN_KEY = process.env.MYCKEO_ADMIN_KEY;
