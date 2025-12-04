@@ -439,9 +439,17 @@ export const CompletePerfil = ({ informacionNegocio }: Props) => {
           </Alert>
         )}
 
-        <Typography variant="h5" sx={{ mb: 2, fontWeight: "bold" }}>
-          {informacionNegocio ? "Editar Información de usuario" : "Crear Nuevo Usuario"}
-        </Typography>
+        <Typography
+  variant="h5"
+  sx={{
+    mb: 2,
+    fontWeight: "bold",
+    color: "#000" // ← Fuerza el color negro
+  }}
+>
+  {informacionNegocio ? "Editar Información de usuario" : "Crear Nuevo Usuario"}
+</Typography>
+
 
         <FormControl fullWidth sx={{ mb: 2 }}>
           <FormLabel sx={{ mb: 1, fontWeight: "bold" }}>Nombre del Negocio</FormLabel>
@@ -668,30 +676,37 @@ export const CompletePerfil = ({ informacionNegocio }: Props) => {
         </FormControl>
 
         <FormControl fullWidth sx={{ mb: 2 }}>
-          <FormLabel sx={{ mb: 1, fontWeight: "bold" }}>Teléfono de Contacto (Opcional)</FormLabel>
-          <div className="flex items-center border rounded-lg focus-within:ring-2 focus-within:ring-red-600">
-            <span className="flex items-center bg-gray-100 px-3 py-2 border-r border-gray-300">
-              <GiColombia className="mr-2" />
-              {selectedCountryCode}
-            </span>
-            <input
-              type="text"
-              {...register("telefonoContacto", {
-                pattern: {
-                  value: /^\d{10}$/,
-                  message: "El número debe tener exactamente 10 dígitos (sin el código de país).",
-                },
-              })}
-              className={clsx("w-full border-none p-2 focus:outline-none", {
-                "border-red-500": errors.telefonoContacto,
-              })}
-              placeholder="Ej. 3123456789"
-            />
-          </div>
-          {errors.telefonoContacto && (
-            <span className="text-red-500 text-sm">{errors.telefonoContacto.message}</span>
-          )}
-        </FormControl>
+  <FormLabel sx={{ mb: 1, fontWeight: "bold", color: "#000" }}>Teléfono de Contacto (Opcional)</FormLabel>
+
+  <div className="flex items-center border rounded-lg focus-within:ring-2 focus-within:ring-red-600">
+    {/* Contenedor del ícono y código de país */}
+    <span className="flex items-center bg-gray-100 px-3 py-2 border-r border-gray-300 text-black">
+      <GiColombia className="mr-2 text-black" /> 
+      {selectedCountryCode}
+    </span>
+
+    {/* INPUT */}
+    <input
+      type="text"
+      {...register("telefonoContacto", {
+        pattern: {
+          value: /^\d{10}$/,
+          message: "El número debe tener exactamente 10 dígitos (sin el código de país).",
+        },
+      })}
+      className={clsx(
+        "w-full border-none p-2 focus:outline-none text-black placeholder-gray-500",
+        { "border-red-500": errors.telefonoContacto }
+      )}
+      placeholder="Ej. 3123456789"
+    />
+  </div>
+
+  {errors.telefonoContacto && (
+    <span className="text-red-500 text-sm">{errors.telefonoContacto.message}</span>
+  )}
+</FormControl>
+
 
         <Divider/>
 
@@ -846,24 +861,40 @@ export const CompletePerfil = ({ informacionNegocio }: Props) => {
         ))}
 
         <FormControl component="fieldset" sx={{ mt: 4 }}>
-          <FormLabel component="legend" sx={{ fontWeight: "bold" }}>
-            Estado del Negocio
-          </FormLabel>
-          <Controller
-            name="estadoNegocio"
-            control={control}
-            rules={{ required: "El estado del negocio es obligatorio" }}
-            render={({ field }) => (
-              <RadioGroup {...field} row>
-                <FormControlLabel value={EstadoNegocio.activo} control={<Radio />} label="Activo" />
-                <FormControlLabel value={EstadoNegocio.suspendido} control={<Radio />} label="Inactivo" />
-              </RadioGroup>
-            )}
-          />
-          {errors.estadoNegocio && (
-            <span className="text-red-500 text-sm">{errors.estadoNegocio.message}</span>
-          )}
-        </FormControl>
+  <FormLabel component="legend" sx={{ fontWeight: "bold", color: "#000" }}>
+    Estado del Negocio
+  </FormLabel>
+
+  <Controller
+    name="estadoNegocio"
+    control={control}
+    rules={{ required: "El estado del negocio es obligatorio" }}
+    render={({ field }) => (
+      <RadioGroup {...field} row>
+
+        <FormControlLabel
+          value={EstadoNegocio.activo}
+          control={<Radio sx={{ color: "#000" }} />}
+          label="Activo"
+          sx={{ color: "#000" }} // ← color del texto
+        />
+
+        <FormControlLabel
+          value={EstadoNegocio.suspendido}
+          control={<Radio sx={{ color: "#000" }} />}
+          label="Inactivo"
+          sx={{ color: "#000" }} // ← color del texto
+        />
+
+      </RadioGroup>
+    )}
+  />
+
+  {errors.estadoNegocio && (
+    <span className="text-red-500 text-sm">{errors.estadoNegocio.message}</span>
+  )}
+</FormControl>
+
 
         <Button
           type="submit"

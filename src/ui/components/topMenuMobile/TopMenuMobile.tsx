@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { FaMapMarkerAlt } from "react-icons/fa";
+import { FaMapMarkerAlt, FaWhatsapp } from "react-icons/fa";
 import { SideBar } from "../side-bar/SideBar";
 import { MenuSectionsBar } from "../menu-section-bar/MenuSectionBar";
 import { useCartCatalogoStore } from "@/store/carro/carro-store";
@@ -12,7 +12,17 @@ import { CrearModal } from "../topMenu/Crear";
 import { useSession } from "next-auth/react";
 import { usePreferencesStore } from "@/store/preferences/preferences-store";
 import { motion, AnimatePresence } from "framer-motion";
-import { Alert, Box, Button, CircularProgress, FormControl, InputLabel, MenuItem, Select, Typography } from "@mui/material";
+import {
+  Alert,
+  Box,
+  Button,
+  CircularProgress,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Typography,
+} from "@mui/material";
 import colombia from "@/config/colombia.json";
 import { updateUserPreferences } from "@/preferences/actions/updateUserPreferences";
 import SearchBar from "@/busqueda/componentes/SearchBar";
@@ -25,17 +35,19 @@ interface ColombiaDepartment {
 
 const UpdateLocationModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
   const { data: session } = useSession();
-  const { ciudad, departamento, setUbicacion, setGeo } = usePreferencesStore(); // ← setGeo agregado
+  const { ciudad, departamento, setUbicacion, setGeo } = usePreferencesStore();
   const [selectedDepartamento, setSelectedDepartamento] = useState(departamento);
   const [selectedCity, setSelectedCity] = useState(ciudad);
   const [cities, setCities] = useState<string[]>([]);
-  const [alert, setAlert] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const [alert, setAlert] = useState<{ type: "success" | "error"; message: string } | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [showThankYou, setShowThankYou] = useState(false);
 
   useEffect(() => {
     if (selectedDepartamento) {
-      const deptData = (colombia as ColombiaDepartment[]).find((dept) => dept.departamento === selectedDepartamento);
+      const deptData = (colombia as ColombiaDepartment[]).find(
+        (dept) => dept.departamento === selectedDepartamento
+      );
       setCities(deptData ? deptData.ciudades : []);
     } else {
       setCities([]);
@@ -44,18 +56,16 @@ const UpdateLocationModal: React.FC<{ isOpen: boolean; onClose: () => void }> = 
 
   const handleSave = async () => {
     if (!selectedCity || !selectedDepartamento) {
-      setAlert({ type: 'error', message: 'Completa todos los campos requeridos.' });
+      setAlert({ type: "error", message: "Completa todos los campos requeridos." });
       return;
     }
 
     setIsSaving(true);
     setAlert(null);
 
-    // Actualizar store
     setUbicacion(selectedCity, selectedDepartamento);
-    setGeo(null, null); // ← Limpia GPS para forzar feed por ciudad
+    setGeo(null, null);
 
-    // Si autenticado, guardar en DB
     if (session?.user) {
       const response = await updateUserPreferences({
         ciudad: selectedCity,
@@ -63,7 +73,7 @@ const UpdateLocationModal: React.FC<{ isOpen: boolean; onClose: () => void }> = 
         preferencias: [],
       });
       if (!response.ok) {
-        setAlert({ type: 'error', message: response.message });
+        setAlert({ type: "error", message: response.message });
         setIsSaving(false);
         return;
       }
@@ -89,48 +99,99 @@ const UpdateLocationModal: React.FC<{ isOpen: boolean; onClose: () => void }> = 
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 400, duration: 0.3 }}
+            transition={{ type: "spring", damping: 25, stiffness: 400, duration: 0.3 }}
             className="relative w-full max-w-md bg-white rounded-3xl shadow-lg overflow-hidden p-6 md:p-8 max-h-[80vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            <button onClick={onClose} className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition-colors">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <button
+              onClick={onClose}
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition-colors"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={1.5}
+              >
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
 
             <AnimatePresence mode="wait">
               {showThankYou ? (
-                <motion.div key="thankyou" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.3 }} className="text-center space-y-4">
-                  <Typography variant="h5" sx={{ fontWeight: 'medium', color: 'text.primary' }}>¡Gracias!</Typography>
-                  <Typography variant="body1" sx={{ color: 'text.secondary', lineHeight: 1.6 }}>
+                <motion.div
+                  key="thankyou"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.3 }}
+                  className="text-center space-y-4"
+                >
+                  <Typography variant="h5" sx={{ fontWeight: "medium", color: "text.primary" }}>
+                    ¡Gracias!
+                  </Typography>
+                  <Typography variant="body1" sx={{ color: "text.secondary", lineHeight: 1.6 }}>
                     Tu ubicación ha sido actualizada. ¡Disfruta explorando la plataforma!
                   </Typography>
                 </motion.div>
               ) : (
-                <motion.div key="form" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }} className="space-y-6">
-                  <Typography variant="h6" sx={{ fontWeight: 'medium', mb: 2, textAlign: 'center', color: 'text.primary' }}>
+                <motion.div
+                  key="form"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.3 }}
+                  className="space-y-6"
+                >
+                  <Typography
+                    variant="h6"
+                    sx={{ fontWeight: "medium", mb: 2, textAlign: "center", color: "text.primary" }}
+                  >
                     Actualizar Ubicación
                   </Typography>
 
-                  {alert && <Alert severity={alert.type} sx={{ mb: 2, borderRadius: '12px' }}>{alert.message}</Alert>}
+                  {alert && (
+                    <Alert severity={alert.type} sx={{ mb: 2, borderRadius: "12px" }}>
+                      {alert.message}
+                    </Alert>
+                  )}
 
                   <FormControl fullWidth variant="outlined" sx={{ mb: 2 }}>
                     <InputLabel shrink>Departamento</InputLabel>
-                    <Select value={selectedDepartamento} onChange={(e) => setSelectedDepartamento(e.target.value as string)} label="Departamento" sx={{ borderRadius: '12px' }}>
+                    <Select
+                      value={selectedDepartamento}
+                      onChange={(e) => setSelectedDepartamento(e.target.value as string)}
+                      label="Departamento"
+                      sx={{ borderRadius: "12px" }}
+                    >
                       <MenuItem value="">Selecciona</MenuItem>
                       {(colombia as ColombiaDepartment[]).map((dept) => (
-                        <MenuItem key={dept.id} value={dept.departamento}>{dept.departamento}</MenuItem>
+                        <MenuItem key={dept.id} value={dept.departamento}>
+                          {dept.departamento}
+                        </MenuItem>
                       ))}
                     </Select>
                   </FormControl>
 
-                  <FormControl fullWidth variant="outlined" disabled={!selectedDepartamento} sx={{ mb: 2 }}>
+                  <FormControl
+                    fullWidth
+                    variant="outlined"
+                    disabled={!selectedDepartamento}
+                    sx={{ mb: 2 }}
+                  >
                     <InputLabel shrink>Ciudad</InputLabel>
-                    <Select value={selectedCity} onChange={(e) => setSelectedCity(e.target.value as string)} label="Ciudad" sx={{ borderRadius: '12px' }}>
+                    <Select
+                      value={selectedCity}
+                      onChange={(e) => setSelectedCity(e.target.value as string)}
+                      label="Ciudad"
+                      sx={{ borderRadius: "12px" }}
+                    >
                       <MenuItem value="">Selecciona</MenuItem>
                       {cities.map((city, idx) => (
-                        <MenuItem key={idx} value={city}>{city}</MenuItem>
+                        <MenuItem key={idx} value={city}>
+                          {city}
+                        </MenuItem>
                       ))}
                     </Select>
                   </FormControl>
@@ -140,15 +201,22 @@ const UpdateLocationModal: React.FC<{ isOpen: boolean; onClose: () => void }> = 
                     fullWidth
                     onClick={handleSave}
                     disabled={isSaving}
-                    sx={{ mt: 4, borderRadius: '12px', py: 1.5, bgcolor: 'primary.main', textTransform: 'none', fontWeight: 'medium' }}
+                    sx={{
+                      mt: 4,
+                      borderRadius: "12px",
+                      py: 1.5,
+                      bgcolor: "primary.main",
+                      textTransform: "none",
+                      fontWeight: "medium",
+                    }}
                   >
                     {isSaving ? (
-                      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
                         <CircularProgress size={24} color="inherit" sx={{ mr: 1 }} />
                         Actualizando...
                       </Box>
                     ) : (
-                      'Actualizar Ubicación'
+                      "Actualizar Ubicación"
                     )}
                   </Button>
                 </motion.div>
@@ -165,25 +233,26 @@ export const TopMenuMobile = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isCrearModalOpen, setIsCrearModalOpen] = useState(false);
   const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
-  const filteredProducts: { id: number; slug: string; nombre: string }[] = [];
   const totalItemsInCart = useCartCatalogoStore((state) => state.getTotalItems());
   const totalFavorites = useFavoritesCatalogoStore((state) => state.getTotalItems());
   const { data: session } = useSession();
   const isNegocio = session?.user?.role === "negocio";
-  const { ciudad, userLat, userLong } = usePreferencesStore(); // ← GPS
+  const { ciudad, userLat, userLong } = usePreferencesStore();
 
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
-  // Ícono GPS si hay coordenadas
   const showGpsIcon = userLat != null && userLong != null;
 
+  const handleAyudaWhatsApp = () => {
+    window.open("https://wa.me/573132492256?text=Hola%2C%20necesito%20ayuda", "_blank");
+  };
+
   return (
-    <div className="sm:pb-16 shadow-lg">
+    <div className="pb-20">
       {/* Barra superior fija */}
       <header className="fixed top-0 w-full z-50 bg-white shadow-md border-b">
         <div className="flex items-center justify-between px-4 h-16">
-          {/* Logo */}
           <Link href="/" className="flex items-center">
             <Image
               src="/imgs/Logo Final (1).png"
@@ -195,114 +264,131 @@ export const TopMenuMobile = () => {
             />
           </Link>
 
-          {/* Búsqueda + Ubicación */}
-          <div className="flex items-center flex-1 mx-4">
-            <div className="relative flex-1">
+          <div className="flex items-center flex-1 mx-4 gap-2">
+            <div className="flex-1">
               <SearchBar />
-              {filteredProducts.length > 0 && (
-                <div className="absolute z-10 bg-white shadow-lg rounded-lg w-full mt-2 max-h-60 overflow-auto border border-gray-200">
-                  {filteredProducts.map((product) => (
-                    <Link key={`${product.id}-${product.slug}`} href={`/producto/${product.slug}`}>
-                      <div className="p-3 hover:bg-gray-100 cursor-pointer">{product.nombre}</div>
-                    </Link>
-                  ))}
-                </div>
-              )}
             </div>
             <button
               onClick={() => setIsLocationModalOpen(true)}
-              className="ml-2 flex items-center bg-white rounded-full shadow-md border border-gray-300 px-3 py-1 text-gray-800 hover:bg-gray-100 transition-colors text-sm"
+              className="flex items-center bg-white rounded-full shadow-md border border-gray-300 px-3 py-1.5 text-sm text-gray-800 hover:bg-gray-50 transition"
             >
-              <FaMapMarkerAlt className={`mr-1 ${showGpsIcon ? 'text-green-600' : 'text-gray-500'}`} />
-              <span className="font-medium truncate max-w-[80px]">{ciudad || 'Ciudad'}</span>
+              <FaMapMarkerAlt className={`mr-1 ${showGpsIcon ? "text-green-600" : "text-gray-500"}`} />
+              <span className="truncate max-w-20">{ciudad || "Ciudad"}</span>
               {showGpsIcon && <span className="ml-1 text-xs text-green-600">GPS</span>}
             </button>
           </div>
         </div>
       </header>
 
-      {/* Espaciado */}
       <div className="mt-16">
         <MenuSectionsBar />
       </div>
 
-      {/* Barra inferior */}
-      <nav className="bg-white fixed bottom-0 w-full z-50 border-t shadow-md">
-        <div className="flex justify-around items-center py-0">
+      {/* Barra inferior fija con botón de Ayuda WhatsApp */}
+      <nav className="fixed bottom-0 w-full bg-white border-t shadow-lg z-50">
+        <div className="flex justify-around items-center py-2">
           {/* Inicio */}
-          <Link href="/" className="group relative flex flex-col items-center justify-center w-14 h-14 transition-all duration-300">
-            <Image src="/imgs/iconos/home.png" alt="Inicio" unoptimized width={28} height={28} className="w-7 h-7 text-gray-600 transform transition-all duration-300 group-hover:scale-110 group-hover:-translate-y-0.5 group-hover:rotate-3" />
-            <span className="text-[13px] font-medium mt-1 text-gray-500 group-hover:text-blue-600">Inicio</span>
+          <Link href="/" className="flex flex-col items-center">
+            <Image
+              src="/imgs/iconos/home.png"
+              alt="Inicio"
+              width={26}
+              height={26}
+              unoptimized
+              className="mb-1"
+            />
+            <span className="text-xs text-gray-600">Inicio</span>
           </Link>
 
           {/* Carrito */}
-          <Link href={mounted && totalItemsInCart > 0 ? "/carro" : "/empty"} className="group relative flex flex-col items-center justify-center w-14 h-14 transition-all duration-300">
-            <Image src="/imgs/iconos/cart.png" alt="Carro" unoptimized width={28} height={28} className="w-8 h-8 text-gray-600 transform transition-all duration-300 group-hover:scale-110 group-hover:-translate-y-0.5 group-hover:rotate-3" />
+          <Link
+            href={mounted && totalItemsInCart > 0 ? "/carro" : "/empty"}
+            className="relative flex flex-col items-center"
+          >
+            <Image
+              src="/imgs/iconos/cart.png"
+              alt="Carro"
+              width={28}
+              height={28}
+              unoptimized
+              className="mb-1"
+            />
             {mounted && totalItemsInCart > 0 && (
-              <span className="absolute -top-1 -right-1 bg-emerald-600 text-white font-bold rounded-full text-[10px] min-w-[18px] h-[18px] flex items-center justify-center shadow-md">
+              <span className="absolute -top-1 -right-2 bg-emerald-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
                 {totalItemsInCart}
               </span>
             )}
-            <span className="text-[13px] font-medium mt-1 text-gray-500 group-hover:text-emerald-600">Carro</span>
+            <span className="text-xs text-gray-600">Carro</span>
           </Link>
 
           {/* Favoritos */}
-          <Link href="/favoritos" className="group relative flex flex-col items-center justify-center w-14 h-14 transition-all duration-300">
-            <Image src="/imgs/iconos/heart.png" alt="Favoritos" unoptimized width={28} height={28} className="w-7 h-7 text-gray-600 transform transition-all duration-300 group-hover:scale-110 group-hover:-translate-y-0.5 group-hover:rotate-3" />
+          <Link href="/favoritos" className="relative flex flex-col items-center">
+            <Image
+              src="/imgs/iconos/heart.png"
+              alt="Favoritos"
+              width={26}
+              height={26}
+              unoptimized
+              className="mb-1"
+            />
             {mounted && totalFavorites > 0 && (
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white font-bold rounded-full text-[10px] min-w-[18px] h-[18px] flex items-center justify-center shadow-md">
+              <span className="absolute -top-1 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
                 {totalFavorites}
               </span>
             )}
-            <span className="text-[13px] font-medium mt-1 text-gray-500 group-hover:text-red-500">Favoritos</span>
+            <span className="text-xs text-gray-600">Favoritos</span>
           </Link>
 
           {/* Crear o Mi Negocio */}
-{session ? (
-  isNegocio ? (
-    // Si está autenticado y ES negocio
-    <Link
-      href="/dashboard"
-      className="group relative flex flex-col items-center justify-center w-16 h-16 transition-all duration-300"
-    >
-      <Image
-        src="/imgs/iconos/shop.png"
-        alt="Mi negocio"
-        unoptimized
-        width={28}
-        height={28}
-        className="w-9 h-8 text-gray-600 transform transition-all duration-300 group-hover:scale-110 group-hover:-translate-y-0.5 group-hover:rotate-3"
-      />
-      <span className="whitespace-nowrap text-[12px] font-medium mt-1 text-gray-500 group-hover:text-purple-600">
-        Mi negocio
-      </span>
-    </Link>
-  ) : (
-    // Si está autenticado y NO es negocio
-    <button
-      onClick={() => setIsCrearModalOpen(true)}
-      className="group relative flex flex-col items-center justify-center w-14 h-14 transition-all duration-300"
-    >
-      <Image
-        src="/imgs/iconos/plus.png"
-        alt="Crear"
-        unoptimized
-        width={28}
-        height={28}
-        className="w-7 h-7 text-gray-600 transform transition-all duration-300 group-hover:scale-110 group-hover:-translate-y-0.5 group-hover:rotate-3"
-      />
-      <span className="text-[13px] font-medium mt-1 text-gray-500 group-hover:text-purple-600">
-        Crear
-      </span>
-    </button>
-  )
-) : null /* Si no hay sesión, no mostrar nada */}
-
+          {session ? (
+            isNegocio ? (
+              <Link href="/dashboard" className="flex flex-col items-center">
+                <Image
+                  src="/imgs/iconos/shop.png"
+                  alt="Mi negocio"
+                  width={32}
+                  height={32}
+                  unoptimized
+                  className="mb-1"
+                />
+                <span className="text-xs text-gray-600 whitespace-nowrap">Mi negocio</span>
+              </Link>
+            ) : (
+              <button onClick={() => setIsCrearModalOpen(true)} className="flex flex-col items-center">
+                <Image
+                  src="/imgs/iconos/plus.png"
+                  alt="Crear"
+                  width={28}
+                  height={28}
+                  unoptimized
+                  className="mb-1"
+                />
+                <span className="text-xs text-gray-600">Crear</span>
+              </button>
+            )
+          ) : null}
 
           {/* Perfil */}
-          <button onClick={() => setIsDrawerOpen(true)} className="group relative flex flex-col items-center justify-center w-16 h-16 transition-all duration-300">
-            <Image src="/imgs/iconos/profile.png" alt="Perfil" unoptimized width={28} height={28} className="w-7 h-7 text-gray-600 transform transition-all duration-300 group-hover:scale-110 group-hover:-translate-y-0.5 group-hover:rotate-3" />
-            <span className="text-[13px] font-medium mt-0 text-gray-500 group-hover:text-indigo-600">Perfil</span>
+          <button onClick={() => setIsDrawerOpen(true)} className="flex flex-col items-center">
+            <Image
+              src="/imgs/iconos/profile.png"
+              alt="Perfil"
+              width={26}
+              height={26}
+              unoptimized
+              className="mb-1"
+            />
+            <span className="text-xs text-gray-600">Perfil</span>
+          </button>
+
+          {/* Botón de Ayuda WhatsApp */}
+          <button
+            onClick={handleAyudaWhatsApp}
+            className="flex flex-col items-center text-green-600"
+            aria-label="Ayuda por WhatsApp"
+          >
+            <FaWhatsapp className="w-7 h-7 mb-1 drop-shadow-md" />
+            <span className="text-xs font-medium">Ayuda</span>
           </button>
         </div>
       </nav>

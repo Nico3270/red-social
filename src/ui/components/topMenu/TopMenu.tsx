@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { FaMapMarkerAlt } from "react-icons/fa";
+import { FaMapMarkerAlt, FaWhatsapp } from "react-icons/fa";
 import { SideBar } from "../side-bar/SideBar";
 import { MenuSectionsBar } from "../menu-section-bar/MenuSectionBar";
 import { useCartCatalogoStore } from "@/store/carro/carro-store";
@@ -207,6 +207,10 @@ export const TopMenu = () => {
   // Mostrar ícono GPS si hay coordenadas
   const showGpsIcon = userLat != null && userLong != null;
 
+  const handleAyudaClick = () => {
+    window.open('https://wa.me/573132492256?text=Hola,%20necesito%20ayuda', '_blank');
+  };
+
   return (
     <header className="fixed top-0 w-full z-50 bg-white shadow-md border-b">
       <div className="max-w-7xl mx-auto px-4 flex justify-between items-center h-20">
@@ -403,6 +407,31 @@ export const TopMenu = () => {
             />
             <span className="text-[10px] md:text-[11px] font-medium mt-1 text-gray-500 group-hover:text-indigo-600">
               Perfil
+            </span>
+          </button>
+
+          {/* Ayuda (WhatsApp) */}
+          <button
+            onClick={handleAyudaClick}
+            className="
+              group relative flex flex-col items-center justify-center 
+              w-12 h-12 md:w-14 md:h-14 
+              rounded-xl border border-gray-200 
+              bg-white shadow-md 
+              hover:shadow-lg hover:border-blue-200
+              transition-all duration-300
+            "
+          >
+            <FaWhatsapp
+              className="
+                w-5 h-5 md:w-6 md:h-6 text-green-600 
+                transform transition-all duration-300 
+                group-hover:scale-110 group-hover:-translate-y-0.5 
+                group-hover:rotate-3
+              "
+            />
+            <span className="text-[10px] md:text-[11px] font-medium mt-1 text-gray-500 group-hover:text-green-600">
+              ayuda
             </span>
           </button>
         </nav>

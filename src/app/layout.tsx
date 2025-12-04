@@ -68,7 +68,7 @@ export default async function RootLayout({
           }}
         />
       </head>
-      <body className="bg-white">
+      <body className="bg-gray-200">
         <Provider>
             <ReactQueryProvider>{children}</ReactQueryProvider>
         </Provider>
