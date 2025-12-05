@@ -141,7 +141,7 @@ export const ShowTestimonioPublicacion = ({ publicacion, productos, isInModal = 
               alt="Avatar del negocio"
               fill
               className="object-cover"
-              unoptimized
+    
               // unoptimized={true} // Evita problemas con imágenes externas
             />
           </div>
@@ -210,7 +210,7 @@ export const ShowTestimonioPublicacion = ({ publicacion, productos, isInModal = 
               className="object-contain rounded-b-xl hover:scale-105 transition-transform duration-300" // Hover sutil para engagement
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               loading="lazy"
-              unoptimized
+
             />
           )}
         </div>

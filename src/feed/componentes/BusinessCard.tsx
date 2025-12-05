@@ -5,7 +5,7 @@ import { SiGooglemaps } from "react-icons/si"; // Para Maps
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
-import { textosFont, titleFont, } from "@/config/fonts";
+import { textosFont, titleFont } from "@/config/fonts";
 import { BusinessCardData } from "../feed.interfaces";
 import { FollowButton } from "./FollowButton";
 import { motion, AnimatePresence } from "framer-motion";
@@ -14,7 +14,6 @@ import { FaTimes } from "react-icons/fa";
 interface BusinessCardProps {
   business: BusinessCardData;
 }
-
 
 const isValidUrl = (url?: string) => {
   if (!url || url.trim() === "") return false;
@@ -27,7 +26,22 @@ const isValidUrl = (url?: string) => {
 };
 
 export const BusinessCard: React.FC<BusinessCardProps> = ({ business }) => {
-  const [displayImage, setDisplayImage] = useState(business.imagenPortada || business.imagenPerfil || "/placeholder-business.jpg");
+  const DEFAULT_IMAGE = "/imgs/negocio_vacio (1).png";
+  const DEFAULT_HOVER_IMAGE = "/imgs/placeholder-negocio-2.png";
+
+  // Normalizar imágenes para evitar strings vacíos
+  const hasPortada =
+    typeof business.imagenPortada === "string" &&
+    business.imagenPortada.trim() !== "";
+
+  const hasPerfil =
+    typeof business.imagenPerfil === "string" &&
+    business.imagenPerfil.trim() !== "";
+
+  const portadaImage = hasPortada ? business.imagenPortada! : DEFAULT_IMAGE;
+  const perfilHoverImage = hasPerfil ? business.imagenPerfil! : DEFAULT_HOVER_IMAGE;
+
+  const [displayImage, setDisplayImage] = useState<string>(portadaImage);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Mensaje para WhatsApp (similar a ProductCard, pero para negocio)
@@ -37,7 +51,8 @@ export const BusinessCard: React.FC<BusinessCardProps> = ({ business }) => {
 
   // Capitalizar la primera categoría si existe
   const primeraCategoria = business.categorias[0]
-    ? business.categorias[0].charAt(0).toUpperCase() + business.categorias[0].slice(1)
+    ? business.categorias[0].charAt(0).toUpperCase() +
+      business.categorias[0].slice(1)
     : "Categoría no disponible";
 
   // Determinar si mostrar "Ver más" basado en longitud de descripción
@@ -51,7 +66,6 @@ export const BusinessCard: React.FC<BusinessCardProps> = ({ business }) => {
         transition={{ duration: 0.3 }}
         className="relative bg-white border-2 border-gray-100 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-[480px] w-full max-w-[380px] mx-auto overflow-hidden p-2"
       >
-
         {/* Header con nombre del negocio y categoría al lado */}
         <div className="flex items-center justify-between px-3 mb-3">
           <div className="flex items-center gap-2">
@@ -65,15 +79,20 @@ export const BusinessCard: React.FC<BusinessCardProps> = ({ business }) => {
               {primeraCategoria}
             </span>
           </div>
-          <FollowButton version={2} followedId={business.negocioId || ""} type="USER_TO_BUSINESS" className="mt-2" />
+          <FollowButton
+            version={2}
+            followedId={business.negocioId || ""}
+            type="USER_TO_BUSINESS"
+            className="mt-2"
+          />
         </div>
 
         {/* Imagen con enlace (hover para zoom, similar a ProductCard) */}
         <Link href={`/perfil/${business.slug}`} className="block relative">
           <div
             className="relative h-64 w-full cursor-pointer rounded-lg overflow-hidden"
-            onMouseEnter={() => setDisplayImage(business.imagenPerfil || displayImage)} // Switch a perfil en hover si disponible
-            onMouseLeave={() => setDisplayImage(business.imagenPortada || business.imagenPerfil || "/placeholder-business.jpg")}
+            onMouseEnter={() => setDisplayImage(perfilHoverImage)} // switch a perfil o a crear-negocio2
+            onMouseLeave={() => setDisplayImage(portadaImage)} // vuelve a portada o crear-negocio
           >
             <Image
               src={displayImage}
@@ -89,7 +108,9 @@ export const BusinessCard: React.FC<BusinessCardProps> = ({ business }) => {
         {/* Información del negocio (descripción truncada con botón "Ver más") */}
         <div className="mt-2 flex flex-col flex-grow justify-between">
           <div>
-            <p className={`text-lg text-gray-600 ${textosFont.className} mt-1 line-clamp-2`}>
+            <p
+              className={`text-lg text-gray-600 ${textosFont.className} mt-1 line-clamp-2`}
+            >
               {business.descripcion || "Explora este negocio en tu área."}
             </p>
             {isLongDescription && (
@@ -156,7 +177,7 @@ export const BusinessCard: React.FC<BusinessCardProps> = ({ business }) => {
               exit={{ scale: 0.95, y: 50 }}
               transition={{ type: "spring", damping: 20 }}
               className="bg-white rounded-2xl p-6 w-full max-w-3xl h-auto max-h-[90vh] overflow-y-auto relative grid grid-cols-1 md:grid-cols-2 gap-6"
-              style={{ WebkitOverflowScrolling: 'touch' }} // Scroll suave en iOS
+              style={{ WebkitOverflowScrolling: "touch" }} // Scroll suave en iOS
               onClick={(e) => e.stopPropagation()}
             >
               <button
@@ -171,11 +192,10 @@ export const BusinessCard: React.FC<BusinessCardProps> = ({ business }) => {
                 <FaTimes size={20} />
               </button>
 
-
               {/* Imágenes (izquierda en desktop, arriba en mobile) */}
               <div className="relative w-full h-[300px] md:h-full rounded-2xl overflow-hidden">
                 <Image
-                  src={business.imagenPortada || business.imagenPerfil || "/placeholder-business.jpg"}
+                  src={portadaImage}
                   alt={`Portada de ${business.nombre}`}
                   fill
                   className="object-cover"
@@ -198,11 +218,17 @@ export const BusinessCard: React.FC<BusinessCardProps> = ({ business }) => {
                       {primeraCategoria}
                     </span>
                   </div>
-                  <FollowButton version={2} followedId={business.negocioId || ""} type="USER_TO_BUSINESS" />
+                  <FollowButton
+                    version={2}
+                    followedId={business.negocioId || ""}
+                    type="USER_TO_BUSINESS"
+                  />
                 </div>
 
                 {/* Descripción completa */}
-                <p className={`text-gray-600 text-base leading-relaxed ${textosFont.className}`}>
+                <p
+                  className={`text-gray-600 text-base leading-relaxed ${textosFont.className}`}
+                >
                   {business.descripcion || "Explora este negocio en tu área."}
                 </p>
 

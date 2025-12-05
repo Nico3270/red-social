@@ -269,7 +269,7 @@ export const TopMenu = () => {
               unoptimized
               className="
                 w-5 h-5 md:w-6 md:h-6 text-gray-600 
-                transform transition-all duration-300 
+                transform transition-all duration-300-  cvbnm,.--  0-.,  NM.-   
                 group-hover:scale-110 group-hover:-translate-y-0.5 
                 group-hover:rotate-3
               "

@@ -98,7 +98,7 @@ export const ProductsInCart = () => {
             alt="Carrito vacío"
             fill
             className="object-contain drop-shadow-lg"
-            unoptimized
+          
           />
         </div>
 
