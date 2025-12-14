@@ -1,3 +1,5 @@
+//src/app/api/products/create/route.ts
+
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { ProductStatus, Currency } from "@prisma/client";
