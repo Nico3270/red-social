@@ -190,22 +190,26 @@ export async function POST(request: Request) {
     const rawBody: unknown = await request.json();
 
     if (!isObject(rawBody)) {
-      return Response.json({ error: "Body inválido" }, { status: 400 });
+      return Response.json({ error: "Body inválido", mensaje: "Body inválido" }, { status: 400 });
     }
 
     const actionRaw = rawBody.action;
-    const key = asNonEmptyString(rawBody.key);
+
+    // Soportar key por body o por header (compatibilidad con agentes)
+    const headerKey = asNonEmptyString(request.headers.get("x-api-key"));
+    const key = asNonEmptyString(rawBody.key) ?? headerKey;
+
     const telefono = asNonEmptyString(rawBody.telefono);
     const pedidoId = asNonEmptyString(rawBody.pedidoId);
     const reservaId = asNonEmptyString(rawBody.reservaId);
 
     if (!key || key !== ADMIN_KEY) {
-      return Response.json({ error: "Unauthorized" }, { status: 401 });
+      return Response.json({ error: "Unauthorized", mensaje: "Unauthorized" }, { status: 401 });
     }
 
     if (!telefono) {
       return Response.json(
-        { error: "Falta telefono en el body" },
+        { error: "Falta telefono en el body", mensaje: "Falta telefono en el body" },
         { status: 400 }
       );
     }
@@ -215,6 +219,7 @@ export async function POST(request: Request) {
         {
           ok: false,
           error: "Acción no encontrada",
+          mensaje: "Acción no encontrada",
           allowedActions: ALLOWED_ACTIONS,
         },
         { status: 404 }
@@ -243,67 +248,74 @@ export async function POST(request: Request) {
 
     if (!negocio) {
       return Response.json(
-        { error: "Negocio no encontrado", isBusiness: false, datos: null },
+        { error: "Negocio no encontrado", mensaje: "Negocio no encontrado", isBusiness: false, businessName: null, datos: null },
         { status: 404 }
       );
     }
 
+    // Meta común: se adjunta en TODAS las respuestas OK para que el agente pueda cachear el nombre real.
+    const baseMeta = {
+      isBusiness: true,
+      businessName: negocio.nombre,
+    };
+
     /* === Acciones === */
     switch (body.action) {
       case "nombre":
-        return Response.json({ nombre: negocio.nombre });
+        return Response.json({ ...baseMeta, nombre: negocio.nombre });
 
       case "datos-perfil":
-        return Response.json(await datosPerfil(negocio));
+        return Response.json({ ...baseMeta, ...(await datosPerfil(negocio)) });
 
       case "resumen-dia":
-        return Response.json(await resumenDia(negocio.id));
+        return Response.json({ ...baseMeta, ...(await resumenDia(negocio.id)) });
 
       case "reservas-hoy":
-        return Response.json(await reservasHoy(negocio.id));
+        return Response.json({ ...baseMeta, ...(await reservasHoy(negocio.id)) });
 
       case "reservas-manana":
-        return Response.json(await reservasManana(negocio.id));
+        return Response.json({ ...baseMeta, ...(await reservasManana(negocio.id)) });
 
       case "reservas-proximas":
       case "proximas-reservas":
-        return Response.json(await reservasProximas(negocio.id));
+        return Response.json({ ...baseMeta, ...(await reservasProximas(negocio.id)) });
 
       case "pedidos-hoy":
-        return Response.json(await pedidosHoy(negocio.id));
+        return Response.json({ ...baseMeta, ...(await pedidosHoy(negocio.id)) });
 
       case "pedidos-manana":
-        return Response.json(await pedidosManana(negocio.id));
+        return Response.json({ ...baseMeta, ...(await pedidosManana(negocio.id)) });
 
       case "proximos-pedidos":
-        return Response.json(await proximosPedidos(negocio.id));
+        return Response.json({ ...baseMeta, ...(await proximosPedidos(negocio.id)) });
 
       case "estadisticas-semana":
-        return Response.json(await estadisticasSemana(negocio.id));
+        return Response.json({ ...baseMeta, ...(await estadisticasSemana(negocio.id)) });
 
       case "detalle-pedido":
         if (!body.pedidoId) {
           return Response.json(
-            { error: "pedidoId requerido" },
+            { error: "pedidoId requerido", mensaje: "pedidoId requerido" },
             { status: 400 }
           );
         }
-        return Response.json(await detallePedido(negocio.id, body.pedidoId));
+        return Response.json({ ...baseMeta, ...(await detallePedido(negocio.id, body.pedidoId)) });
 
       case "detalle-reserva":
         if (!body.reservaId) {
           return Response.json(
-            { error: "reservaId requerido" },
+            { error: "reservaId requerido", mensaje: "reservaId requerido" },
             { status: 400 }
           );
         }
-        return Response.json(await detalleReserva(negocio.id, body.reservaId));
+        return Response.json({ ...baseMeta, ...(await detalleReserva(negocio.id, body.reservaId)) });
 
       default:
         return Response.json(
           {
             ok: false,
             error: "Acción no encontrada",
+            mensaje: "Acción no encontrada",
             allowedActions: ALLOWED_ACTIONS,
           },
           { status: 404 }
@@ -312,7 +324,7 @@ export async function POST(request: Request) {
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Error inesperado";
     console.error("Error en /api/asistente:", message);
-    return Response.json({ error: message }, { status: 400 });
+    return Response.json({ error: message, mensaje: message }, { status: 400 });
   }
 }
 
