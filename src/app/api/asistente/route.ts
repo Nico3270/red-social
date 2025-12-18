@@ -4,11 +4,7 @@ import prisma from "@/lib/prisma";
 import type { Prisma } from "@prisma/client";
 import { startOfDay, addDays, startOfWeek } from "date-fns";
 import { es } from "date-fns/locale";
-import {
-  formatInTimeZone,
-  utcToZonedTime,
-  zonedTimeToUtc,
-} from "date-fns-tz";
+import { formatInTimeZone, toZonedTime, fromZonedTime } from "date-fns-tz";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -41,15 +37,15 @@ function dayRangeUtcCO(offsetDays = 0): { startUtc: Date; endUtc: Date } {
   const now = new Date();
 
   // "Ahora" visto en hora Colombia (wall time)
-  const nowZoned = utcToZonedTime(now, TZ);
+  const nowZoned = toZonedTime(now, TZ);
 
   // Inicio del día en Colombia (wall time)
   const startZoned = startOfDay(addDays(nowZoned, offsetDays));
   const endZoned = addDays(startZoned, 1);
 
   // Convertimos esos wall-times a instantes UTC reales (para consultar DB)
-  const startUtc = zonedTimeToUtc(startZoned, TZ);
-  const endUtc = zonedTimeToUtc(endZoned, TZ);
+  const startUtc = fromZonedTime(startZoned, TZ);
+  const endUtc = fromZonedTime(endZoned, TZ);
 
   return { startUtc, endUtc };
 }
@@ -59,9 +55,9 @@ function dayRangeUtcCO(offsetDays = 0): { startUtc: Date; endUtc: Date } {
  */
 function startOfWeekUtcCO(): Date {
   const now = new Date();
-  const nowZoned = utcToZonedTime(now, TZ);
+  const nowZoned = toZonedTime(now, TZ);
   const startWeekZoned = startOfWeek(nowZoned, { weekStartsOn: 1 });
-  return zonedTimeToUtc(startWeekZoned, TZ);
+  return fromZonedTime(startWeekZoned, TZ);
 }
 
 /* ============================================================
@@ -528,8 +524,7 @@ async function reservasProximas(negocioId: string) {
 
   const lista = reservas
     .map(
-      (r) =>
-        `• ${fmtCO(r.fechaHoraInicio, "EEE d MMM, hh:mm a")} - ${r.nombre}`
+      (r) => `• ${fmtCO(r.fechaHoraInicio, "EEE d MMM, hh:mm a")} - ${r.nombre}`
     )
     .join("\n");
 
@@ -566,7 +561,11 @@ async function pedidosHoy(negocioId: string) {
       negocioId,
       OR: [
         // (a) Programados para hoy (en CO)
-        { datosDeEntrega: { is: { deliveryDate: { gte: hoyUtc, lt: mananaUtc } } } },
+        {
+          datosDeEntrega: {
+            is: { deliveryDate: { gte: hoyUtc, lt: mananaUtc } },
+          },
+        },
         // (b) Sin fecha programada: creados hoy (en CO)
         {
           createdAt: { gte: hoyUtc, lt: mananaUtc },
