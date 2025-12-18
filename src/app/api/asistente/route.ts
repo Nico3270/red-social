@@ -2,15 +2,66 @@
 
 import prisma from "@/lib/prisma";
 import type { Prisma } from "@prisma/client";
-import { format, startOfDay, addDays, startOfWeek } from "date-fns";
+import { startOfDay, addDays, startOfWeek } from "date-fns";
 import { es } from "date-fns/locale";
+import {
+  formatInTimeZone,
+  utcToZonedTime,
+  zonedTimeToUtc,
+} from "date-fns-tz";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const ADMIN_KEY = process.env.MYCKEO_ADMIN_KEY;
 if (!ADMIN_KEY) {
-  throw new Error("No es correcta o no está definida la api key de administrador.");
+  throw new Error(
+    "No es correcta o no está definida la api key de administrador."
+  );
+}
+
+/* ============================================================
+   TIMEZONE (Colombia)
+============================================================ */
+
+const TZ = "America/Bogota";
+
+/**
+ * Formatea SIEMPRE en hora Colombia, independientemente del TZ del servidor.
+ */
+function fmtCO(date: Date, pattern: string): string {
+  return formatInTimeZone(date, TZ, pattern, { locale: es });
+}
+
+/**
+ * Devuelve el rango UTC [inicio, fin) que corresponde a un "día" en Colombia.
+ * offsetDays = 0 -> hoy (CO), 1 -> mañana (CO), etc.
+ */
+function dayRangeUtcCO(offsetDays = 0): { startUtc: Date; endUtc: Date } {
+  const now = new Date();
+
+  // "Ahora" visto en hora Colombia (wall time)
+  const nowZoned = utcToZonedTime(now, TZ);
+
+  // Inicio del día en Colombia (wall time)
+  const startZoned = startOfDay(addDays(nowZoned, offsetDays));
+  const endZoned = addDays(startZoned, 1);
+
+  // Convertimos esos wall-times a instantes UTC reales (para consultar DB)
+  const startUtc = zonedTimeToUtc(startZoned, TZ);
+  const endUtc = zonedTimeToUtc(endZoned, TZ);
+
+  return { startUtc, endUtc };
+}
+
+/**
+ * Inicio de semana (lunes) en Colombia, convertido a UTC para query.
+ */
+function startOfWeekUtcCO(): Date {
+  const now = new Date();
+  const nowZoned = utcToZonedTime(now, TZ);
+  const startWeekZoned = startOfWeek(nowZoned, { weekStartsOn: 1 });
+  return zonedTimeToUtc(startWeekZoned, TZ);
 }
 
 /* ============================================================
@@ -190,7 +241,10 @@ export async function POST(request: Request) {
     const rawBody: unknown = await request.json();
 
     if (!isObject(rawBody)) {
-      return Response.json({ error: "Body inválido", mensaje: "Body inválido" }, { status: 400 });
+      return Response.json(
+        { error: "Body inválido", mensaje: "Body inválido" },
+        { status: 400 }
+      );
     }
 
     const actionRaw = rawBody.action;
@@ -204,12 +258,18 @@ export async function POST(request: Request) {
     const reservaId = asNonEmptyString(rawBody.reservaId);
 
     if (!key || key !== ADMIN_KEY) {
-      return Response.json({ error: "Unauthorized", mensaje: "Unauthorized" }, { status: 401 });
+      return Response.json(
+        { error: "Unauthorized", mensaje: "Unauthorized" },
+        { status: 401 }
+      );
     }
 
     if (!telefono) {
       return Response.json(
-        { error: "Falta telefono en el body", mensaje: "Falta telefono en el body" },
+        {
+          error: "Falta telefono en el body",
+          mensaje: "Falta telefono en el body",
+        },
         { status: 400 }
       );
     }
@@ -248,7 +308,13 @@ export async function POST(request: Request) {
 
     if (!negocio) {
       return Response.json(
-        { error: "Negocio no encontrado", mensaje: "Negocio no encontrado", isBusiness: false, businessName: null, datos: null },
+        {
+          error: "Negocio no encontrado",
+          mensaje: "Negocio no encontrado",
+          isBusiness: false,
+          businessName: null,
+          datos: null,
+        },
         { status: 404 }
       );
     }
@@ -268,29 +334,53 @@ export async function POST(request: Request) {
         return Response.json({ ...baseMeta, ...(await datosPerfil(negocio)) });
 
       case "resumen-dia":
-        return Response.json({ ...baseMeta, ...(await resumenDia(negocio.id)) });
+        return Response.json({
+          ...baseMeta,
+          ...(await resumenDia(negocio.id)),
+        });
 
       case "reservas-hoy":
-        return Response.json({ ...baseMeta, ...(await reservasHoy(negocio.id)) });
+        return Response.json({
+          ...baseMeta,
+          ...(await reservasHoy(negocio.id)),
+        });
 
       case "reservas-manana":
-        return Response.json({ ...baseMeta, ...(await reservasManana(negocio.id)) });
+        return Response.json({
+          ...baseMeta,
+          ...(await reservasManana(negocio.id)),
+        });
 
       case "reservas-proximas":
       case "proximas-reservas":
-        return Response.json({ ...baseMeta, ...(await reservasProximas(negocio.id)) });
+        return Response.json({
+          ...baseMeta,
+          ...(await reservasProximas(negocio.id)),
+        });
 
       case "pedidos-hoy":
-        return Response.json({ ...baseMeta, ...(await pedidosHoy(negocio.id)) });
+        return Response.json({
+          ...baseMeta,
+          ...(await pedidosHoy(negocio.id)),
+        });
 
       case "pedidos-manana":
-        return Response.json({ ...baseMeta, ...(await pedidosManana(negocio.id)) });
+        return Response.json({
+          ...baseMeta,
+          ...(await pedidosManana(negocio.id)),
+        });
 
       case "proximos-pedidos":
-        return Response.json({ ...baseMeta, ...(await proximosPedidos(negocio.id)) });
+        return Response.json({
+          ...baseMeta,
+          ...(await proximosPedidos(negocio.id)),
+        });
 
       case "estadisticas-semana":
-        return Response.json({ ...baseMeta, ...(await estadisticasSemana(negocio.id)) });
+        return Response.json({
+          ...baseMeta,
+          ...(await estadisticasSemana(negocio.id)),
+        });
 
       case "detalle-pedido":
         if (!body.pedidoId) {
@@ -299,7 +389,10 @@ export async function POST(request: Request) {
             { status: 400 }
           );
         }
-        return Response.json({ ...baseMeta, ...(await detallePedido(negocio.id, body.pedidoId)) });
+        return Response.json({
+          ...baseMeta,
+          ...(await detallePedido(negocio.id, body.pedidoId)),
+        });
 
       case "detalle-reserva":
         if (!body.reservaId) {
@@ -308,7 +401,10 @@ export async function POST(request: Request) {
             { status: 400 }
           );
         }
-        return Response.json({ ...baseMeta, ...(await detalleReserva(negocio.id, body.reservaId)) });
+        return Response.json({
+          ...baseMeta,
+          ...(await detalleReserva(negocio.id, body.reservaId)),
+        });
 
       default:
         return Response.json(
@@ -347,18 +443,17 @@ async function datosPerfil(negocio: NegocioLite) {
 }
 
 async function resumenDia(negocioId: string) {
-  const hoy = startOfDay(new Date());
-  const manana = addDays(hoy, 1);
+  const { startUtc: hoyUtc, endUtc: mananaUtc } = dayRangeUtcCO(0);
 
   const [reservas, pedidos, ingresos] = await Promise.all([
     prisma.reservation.count({
-      where: { negocioId, fechaHoraInicio: { gte: hoy, lt: manana } },
+      where: { negocioId, fechaHoraInicio: { gte: hoyUtc, lt: mananaUtc } },
     }),
     prisma.order.count({
-      where: { negocioId, createdAt: { gte: hoy, lt: manana } },
+      where: { negocioId, createdAt: { gte: hoyUtc, lt: mananaUtc } },
     }),
     prisma.order.aggregate({
-      where: { negocioId, createdAt: { gte: hoy, lt: manana } },
+      where: { negocioId, createdAt: { gte: hoyUtc, lt: mananaUtc } },
       _sum: { totalAmount: true },
     }),
   ]);
@@ -376,11 +471,10 @@ async function resumenDia(negocioId: string) {
 }
 
 async function reservasHoy(negocioId: string) {
-  const hoy = startOfDay(new Date());
-  const manana = addDays(hoy, 1);
+  const { startUtc: hoyUtc, endUtc: mananaUtc } = dayRangeUtcCO(0);
 
   const reservas = await prisma.reservation.findMany({
-    where: { negocioId, fechaHoraInicio: { gte: hoy, lt: manana } },
+    where: { negocioId, fechaHoraInicio: { gte: hoyUtc, lt: mananaUtc } },
     orderBy: { fechaHoraInicio: "asc" },
     take: 20,
   });
@@ -389,10 +483,7 @@ async function reservasHoy(negocioId: string) {
     return { mensaje: "Hoy no tienes reservas programadas 😊", reservas: [] };
 
   const lista = reservas
-    .map(
-      (r) =>
-        `• ${format(r.fechaHoraInicio, "hh:mm a", { locale: es })} - ${r.nombre}`
-    )
+    .map((r) => `• ${fmtCO(r.fechaHoraInicio, "hh:mm a")} - ${r.nombre}`)
     .join("\n");
 
   return {
@@ -402,23 +493,19 @@ async function reservasHoy(negocioId: string) {
 }
 
 async function reservasManana(negocioId: string) {
-  const hoy = startOfDay(new Date());
-  const manana = addDays(hoy, 1);
-  const pasado = addDays(manana, 1);
+  const { startUtc: mananaUtc, endUtc: pasadoUtc } = dayRangeUtcCO(1);
 
   const reservas = await prisma.reservation.findMany({
-    where: { negocioId, fechaHoraInicio: { gte: manana, lt: pasado } },
+    where: { negocioId, fechaHoraInicio: { gte: mananaUtc, lt: pasadoUtc } },
     orderBy: { fechaHoraInicio: "asc" },
     take: 20,
   });
 
-  if (!reservas.length) return { mensaje: "Mañana no tienes reservas 😊", reservas: [] };
+  if (!reservas.length)
+    return { mensaje: "Mañana no tienes reservas 😊", reservas: [] };
 
   const lista = reservas
-    .map(
-      (r) =>
-        `• ${format(r.fechaHoraInicio, "hh:mm a", { locale: es })} - ${r.nombre}`
-    )
+    .map((r) => `• ${fmtCO(r.fechaHoraInicio, "hh:mm a")} - ${r.nombre}`)
     .join("\n");
 
   return {
@@ -436,12 +523,13 @@ async function reservasProximas(negocioId: string) {
     take: 25,
   });
 
-  if (!reservas.length) return { mensaje: "No tienes reservas próximas 😊", reservas: [] };
+  if (!reservas.length)
+    return { mensaje: "No tienes reservas próximas 😊", reservas: [] };
 
   const lista = reservas
     .map(
       (r) =>
-        `• ${format(r.fechaHoraInicio, "EEE d MMM, hh:mm a", { locale: es })} - ${r.nombre}`
+        `• ${fmtCO(r.fechaHoraInicio, "EEE d MMM, hh:mm a")} - ${r.nombre}`
     )
     .join("\n");
 
@@ -471,18 +559,17 @@ function pedidoDisplayDate(p: PedidoListItem): Date {
 }
 
 async function pedidosHoy(negocioId: string) {
-  const hoy = startOfDay(new Date());
-  const manana = addDays(hoy, 1);
+  const { startUtc: hoyUtc, endUtc: mananaUtc } = dayRangeUtcCO(0);
 
   const pedidos = await prisma.order.findMany({
     where: {
       negocioId,
       OR: [
-        // (a) Programados para hoy
-        { datosDeEntrega: { is: { deliveryDate: { gte: hoy, lt: manana } } } },
-        // (b) Sin fecha programada: creados hoy
+        // (a) Programados para hoy (en CO)
+        { datosDeEntrega: { is: { deliveryDate: { gte: hoyUtc, lt: mananaUtc } } } },
+        // (b) Sin fecha programada: creados hoy (en CO)
         {
-          createdAt: { gte: hoy, lt: manana },
+          createdAt: { gte: hoyUtc, lt: mananaUtc },
           OR: [
             { deliveryDataId: null },
             { datosDeEntrega: { is: { deliveryDate: null } } },
@@ -507,7 +594,7 @@ async function pedidosHoy(negocioId: string) {
     .map((p) => {
       const when = pedidoDisplayDate(p);
       return (
-        `• ${format(when, "hh:mm a", { locale: es })} | ` +
+        `• ${fmtCO(when, "hh:mm a")} | ` +
         `#${p.id.slice(-6)} | $${formatMoney(p.totalAmount)}`
       );
     })
@@ -555,7 +642,7 @@ async function detallePedido(negocioId: string, pedidoId: string) {
       `🛍️ Productos:\n${itemsText}\n\n` +
       `💰 Total: $${formatMoney(pedido.totalAmount)}\n\n` +
       (deliveryDate
-        ? `🗓️ Entrega: ${format(deliveryDate, "EEE d MMM, hh:mm a", { locale: es })}\n`
+        ? `🗓️ Entrega: ${fmtCO(deliveryDate, "EEE d MMM, hh:mm a")}\n`
         : "") +
       `📦 Cliente:\n${pedido.datosDeEntrega?.clientName || "N/D"} | ${
         pedido.datosDeEntrega?.clientPhone || ""
@@ -593,7 +680,7 @@ async function proximosPedidos(negocioId: string) {
     .map((p) => {
       const when = pedidoDisplayDate(p);
       return (
-        `• ${format(when, "EEE d MMM, hh:mm a", { locale: es })} | ` +
+        `• ${fmtCO(when, "EEE d MMM, hh:mm a")} | ` +
         `#${p.id.slice(-6)} | $${formatMoney(p.totalAmount)}`
       );
     })
@@ -606,14 +693,12 @@ async function proximosPedidos(negocioId: string) {
 }
 
 async function pedidosManana(negocioId: string) {
-  const hoy = startOfDay(new Date());
-  const manana = addDays(hoy, 1);
-  const pasado = addDays(manana, 1);
+  const { startUtc: mananaUtc, endUtc: pasadoUtc } = dayRangeUtcCO(1);
 
   const pedidos = await prisma.order.findMany({
     where: {
       negocioId,
-      datosDeEntrega: { is: { deliveryDate: { gte: manana, lt: pasado } } },
+      datosDeEntrega: { is: { deliveryDate: { gte: mananaUtc, lt: pasadoUtc } } },
     },
     select: {
       id: true,
@@ -632,7 +717,7 @@ async function pedidosManana(negocioId: string) {
     .map((p) => {
       const when = pedidoDisplayDate(p);
       return (
-        `• ${format(when, "hh:mm a", { locale: es })} | ` +
+        `• ${fmtCO(when, "hh:mm a")} | ` +
         `#${p.id.slice(-6)} | $${formatMoney(p.totalAmount)}`
       );
     })
@@ -654,9 +739,7 @@ async function detalleReserva(negocioId: string, reservaId: string) {
   return {
     mensaje:
       `Reserva de ${reserva.nombre}\n\n` +
-      `📅 ${format(reserva.fechaHoraInicio, "EEEE d 'de' MMMM, hh:mm a", {
-        locale: es,
-      })}\n` +
+      `📅 ${fmtCO(reserva.fechaHoraInicio, "EEEE d 'de' MMMM, hh:mm a")}\n` +
       `📞 ${reserva.telefono}\n` +
       `📝 ${reserva.notas || "Sin notas"}\n\n` +
       `Estado: ${reserva.estado}`,
@@ -665,15 +748,14 @@ async function detalleReserva(negocioId: string, reservaId: string) {
 }
 
 async function estadisticasSemana(negocioId: string) {
-  const hoy = new Date();
-  const inicioSemana = startOfWeek(hoy, { weekStartsOn: 1 });
+  const inicioSemanaUtc = startOfWeekUtcCO();
 
   const [pedidos, ingresos] = await Promise.all([
     prisma.order.count({
-      where: { negocioId, createdAt: { gte: inicioSemana } },
+      where: { negocioId, createdAt: { gte: inicioSemanaUtc } },
     }),
     prisma.order.aggregate({
-      where: { negocioId, createdAt: { gte: inicioSemana } },
+      where: { negocioId, createdAt: { gte: inicioSemanaUtc } },
       _sum: { totalAmount: true },
     }),
   ]);
