@@ -249,7 +249,7 @@ export const TopMenuMobile = () => {
   };
 
   return (
-    <div className="pb-20">
+    <div className="pb-0 sm:pb-10">
       {/* Barra superior fija */}
       <header className="fixed top-0 w-full z-50 bg-white shadow-md border-b">
         <div className="flex items-center justify-between px-4 h-16">

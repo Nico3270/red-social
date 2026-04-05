@@ -5,7 +5,6 @@ import { InfoEmpresa as empresa } from "@/config/config";
 import ReactQueryProvider from "@/feed/componentes/ReactQueryProvider";
 
 
-
 export const metadata: Metadata = {
   metadataBase: new URL(empresa.linkWebProduccion),
   title: empresa.titulo,

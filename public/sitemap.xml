@@ -3,7 +3,7 @@
         
               <url>
                 <loc>https://myckeo.com/</loc>
-                <lastmod>2025-12-14T02:02:19.704Z</lastmod>
+                <lastmod>2026-04-05T17:51:14.843Z</lastmod>
                 <changefreq>daily</changefreq>
                 <priority>0.7</priority>
               </url>
@@ -11,7 +11,7 @@
 
               <url>
                 <loc>https://myckeo.com/inicio</loc>
-                <lastmod>2025-12-14T02:02:19.704Z</lastmod>
+                <lastmod>2026-04-05T17:51:14.843Z</lastmod>
                 <changefreq>daily</changefreq>
                 <priority>0.7</priority>
               </url>
@@ -19,7 +19,7 @@
 
               <url>
                 <loc>https://myckeo.com/carrusel</loc>
-                <lastmod>2025-12-14T02:02:19.704Z</lastmod>
+                <lastmod>2026-04-05T17:51:14.843Z</lastmod>
                 <changefreq>daily</changefreq>
                 <priority>0.7</priority>
               </url>
@@ -266,14 +266,6 @@
             
 
               <url>
-                <loc>https://myckeo.com/perfil/parrilla-internacional-tunja-tunja-r3jq</loc>
-                <lastmod>2025-10-28T20:10:22.668Z</lastmod>
-                <changefreq>daily</changefreq>
-                <priority>0.8</priority>
-              </url>
-            
-
-              <url>
                 <loc>https://myckeo.com/perfil/restaurante-mi-rincon-mexicano-tunja-p1r0</loc>
                 <lastmod>2025-12-05T15:34:19.123Z</lastmod>
                 <changefreq>daily</changefreq>
@@ -284,6 +276,14 @@
               <url>
                 <loc>https://myckeo.com/perfil/barroco-restaurante-envigado-flvm</loc>
                 <lastmod>2025-12-05T15:34:29.552Z</lastmod>
+                <changefreq>daily</changefreq>
+                <priority>0.8</priority>
+              </url>
+            
+
+              <url>
+                <loc>https://myckeo.com/perfil/parrilla-internacional-tunja-tunja-r3jq</loc>
+                <lastmod>2025-12-22T21:32:47.299Z</lastmod>
                 <changefreq>daily</changefreq>
                 <priority>0.8</priority>
               </url>
@@ -370,16 +370,16 @@
             
 
               <url>
-                <loc>https://myckeo.com/perfil/blitzbite-tunja-llfb</loc>
-                <lastmod>2025-10-28T20:10:22.668Z</lastmod>
+                <loc>https://myckeo.com/perfil/presttigio-restaurante-rooftop-tunja-hhg6</loc>
+                <lastmod>2025-12-05T00:16:39.050Z</lastmod>
                 <changefreq>daily</changefreq>
                 <priority>0.8</priority>
               </url>
             
 
               <url>
-                <loc>https://myckeo.com/perfil/presttigio-restaurante-rooftop-tunja-hhg6</loc>
-                <lastmod>2025-12-05T00:16:39.050Z</lastmod>
+                <loc>https://myckeo.com/perfil/blitzbite-tunja-llfb</loc>
+                <lastmod>2025-10-28T20:10:22.668Z</lastmod>
                 <changefreq>daily</changefreq>
                 <priority>0.8</priority>
               </url>
@@ -522,6 +522,14 @@
             
 
               <url>
+                <loc>https://myckeo.com/producto/bandeja-paisa-8j6g</loc>
+                <lastmod>2026-03-24T13:27:53.729Z</lastmod>
+                <changefreq>weekly</changefreq>
+                <priority>0.7</priority>
+              </url>
+            
+
+              <url>
                 <loc>https://myckeo.com/producto/caramelnitro-rush-s6sa</loc>
                 <lastmod>2025-10-28T20:10:29.554Z</lastmod>
                 <changefreq>weekly</changefreq>
@@ -540,6 +548,14 @@
               <url>
                 <loc>https://myckeo.com/producto/novabelt-lf2h</loc>
                 <lastmod>2025-10-28T20:10:29.554Z</lastmod>
+                <changefreq>weekly</changefreq>
+                <priority>0.7</priority>
+              </url>
+            
+
+              <url>
+                <loc>https://myckeo.com/producto/salchipapa-colombiano</loc>
+                <lastmod>2025-12-25T01:51:50.796Z</lastmod>
                 <changefreq>weekly</changefreq>
                 <priority>0.7</priority>
               </url>
@@ -595,14 +611,6 @@
 
               <url>
                 <loc>https://myckeo.com/producto/versadenim-pants-syze</loc>
-                <lastmod>2025-10-28T20:10:29.554Z</lastmod>
-                <changefreq>weekly</changefreq>
-                <priority>0.7</priority>
-              </url>
-            
-
-              <url>
-                <loc>https://myckeo.com/producto/bandeja-paisa-8j6g</loc>
                 <lastmod>2025-10-28T20:10:29.554Z</lastmod>
                 <changefreq>weekly</changefreq>
                 <priority>0.7</priority>
@@ -746,14 +754,6 @@
             
 
               <url>
-                <loc>https://myckeo.com/producto/cuajada-con-melao-eql0</loc>
-                <lastmod>2025-10-28T20:10:29.554Z</lastmod>
-                <changefreq>weekly</changefreq>
-                <priority>0.7</priority>
-              </url>
-            
-
-              <url>
                 <loc>https://myckeo.com/producto/harmonycape-layer-x2w0</loc>
                 <lastmod>2025-10-28T20:10:29.554Z</lastmod>
                 <changefreq>weekly</changefreq>
@@ -772,6 +772,14 @@
               <url>
                 <loc>https://myckeo.com/producto/vegastride-sneakers-v0l2</loc>
                 <lastmod>2025-10-28T20:10:29.554Z</lastmod>
+                <changefreq>weekly</changefreq>
+                <priority>0.7</priority>
+              </url>
+            
+
+              <url>
+                <loc>https://myckeo.com/producto/cuajada-con-melao-eql0</loc>
+                <lastmod>2025-12-22T17:53:14.465Z</lastmod>
                 <changefreq>weekly</changefreq>
                 <priority>0.7</priority>
               </url>
@@ -1194,7 +1202,7 @@
             
 
               <url>
-                <loc>https://myckeo.com/producto/coctel-de-camarones-1eg2</loc>
+                <loc>https://myckeo.com/producto/vestido-blanco-aurora-artesanal-2kak</loc>
                 <lastmod>2025-10-28T20:10:29.554Z</lastmod>
                 <changefreq>weekly</changefreq>
                 <priority>0.7</priority>
@@ -1202,8 +1210,8 @@
             
 
               <url>
-                <loc>https://myckeo.com/producto/vestido-blanco-aurora-artesanal-2kak</loc>
-                <lastmod>2025-10-28T20:10:29.554Z</lastmod>
+                <loc>https://myckeo.com/producto/coctel-de-camarones-1eg2</loc>
+                <lastmod>2026-01-02T21:21:21.996Z</lastmod>
                 <changefreq>weekly</changefreq>
                 <priority>0.7</priority>
               </url>

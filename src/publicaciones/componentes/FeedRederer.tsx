@@ -14,8 +14,6 @@ import SocialMediaCarousel from "@/publicaciones/componentes/SocialMediaPublicac
 import { FaNewspaper, FaShoppingBag, FaTools, FaBuilding } from "react-icons/fa";
 import Image from "next/image";
 import { initialData } from "@/seed/seed";
-
-import "./FeedRenderer.css";
 import ResenaProductoCard from "@/resenas/componentes/ResenaProductoCard";
 
 interface FeedRendererProps {

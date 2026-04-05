@@ -55,17 +55,17 @@ export const MenuSectionsBar = () => {
     <div className="relative w-full color-fondo-principal">
       <div
         ref={scrollContainerRef}
-        className="flex flex-nowrap overflow-x-auto gap-6 p-2 rounded-lg color-principal scrollbar-hide"
+        className="flex flex-nowrap overflow-x-auto gap-2 pt-2 pb-0 sm:pb-2 rounded-lg color-principal scrollbar-hide"
         style={{ scrollBehavior: "smooth" }}
       >
         {initialData.categorias.length === 0
           ? Array.from({ length: 5 }).map((_, index) => (
               <div
                 key={index}
-                className="animate-pulse flex flex-col items-center text-center min-w-[80px] sm:min-w-[100px] flex-shrink-0"
+                className="animate-pulse flex flex-col items-center text-center min-w-[6px] sm:min-w-[100px] flex-shrink-0"
               >
                 <div className="w-6 h-6 bg-gray-300 rounded-full"></div>
-                <div className="mt-2 h-3 w-16 bg-gray-300 rounded"></div>
+                <div className="mt-2 h-3 w-8 bg-gray-300 rounded"></div>
               </div>
             ))
           : initialData.categorias.map((section) => (
@@ -74,7 +74,7 @@ export const MenuSectionsBar = () => {
                   <motion.img
                     src={`/imgs/iconos/${section.iconName}`}
                     alt={section.nombre}
-                    className="w-10 h-10 md:w-12 md:h-12 object-contain"
+                    className="w-8 h-8 md:w-12 md:h-12 object-contain"
                     whileHover={{ scale: 1.15, rotate: 5 }}
                     whileTap={{ scale: 0.9 }}
                     transition={{ type: "spring", stiffness: 300, damping: 15 }}

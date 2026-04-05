@@ -12,11 +12,16 @@ import { sendWhatsApp } from "@/servicios/whatsapp/sender";
 /* ========================================================================
    CONFIGURACIÓN
 ======================================================================== */
-const ADMIN_KEY = process.env.MYCKEO_ADMIN_KEY!;
+const ADMIN_KEY = process.env.MYCKEO_ADMIN_KEY ?? "";
 const MYCKEO_ADMIN_BASE =
   process.env.MYCKEO_ADMIN_URL ?? "https://myckeo-admin.vercel.app";
 
 if (!ADMIN_KEY) throw new Error("Falta MYCKEO_ADMIN_KEY");
+
+/* ========================================================================
+   CONSTANTES
+======================================================================== */
+const FALLBACK_COMENTARIOS_ADICIONALES = "Sin comentarios adicionales";
 
 /* ========================================================================
    TIPOS DE RETORNO
@@ -55,6 +60,13 @@ interface WindowResponse {
 }
 
 /* ========================================================================
+   HELPERS
+======================================================================== */
+function normalizeText(value?: string | null): string {
+  return typeof value === "string" ? value.trim() : "";
+}
+
+/* ========================================================================
    FUNCIÓN PRINCIPAL
 ======================================================================== */
 export async function notifyReservaConfirmadaCliente(
@@ -80,6 +92,13 @@ export async function notifyReservaConfirmadaCliente(
       ciudad,
     } = props;
 
+    const descripcionNormalizada =
+      template === PlantillaWhatsApp.PEDIDO_CREADO_NEGOCIO
+        ? normalizeText(descripcion) || FALLBACK_COMENTARIOS_ADICIONALES
+        : typeof descripcion === "string"
+        ? descripcion
+        : "";
+
     /* ============================================================
        1. INFO DEL NEGOCIO
     ============================================================ */
@@ -101,7 +120,9 @@ export async function notifyReservaConfirmadaCliente(
     ============================================================ */
     console.log("Validando teléfono:", to);
 
-    if (!to.startsWith("+") || !/^\+\d{10,15}$/.test(to)) {
+    const normalizedTo = normalizeText(to);
+
+    if (!normalizedTo.startsWith("+") || !/^\+\d{10,15}$/.test(normalizedTo)) {
       throw new Error("Número inválido (E.164 requerido)");
     }
 
@@ -123,7 +144,7 @@ export async function notifyReservaConfirmadaCliente(
           nombre_negocio,
           fechaHora,
           enlace_cancelar,
-          descripcion ?? "",
+          descripcionNormalizada ?? "",
         ];
         placeholderNames = [
           "nombre_cliente",
@@ -219,7 +240,6 @@ export async function notifyReservaConfirmadaCliente(
           !datos_pedido ||
           !nombre_cliente ||
           !telefono_cliente ||
-          !descripcion ||
           !direccion
         )
           throw new Error("Datos incompletos");
@@ -230,7 +250,7 @@ export async function notifyReservaConfirmadaCliente(
           nombre_cliente,
           telefono_cliente,
           direccion,
-          descripcion,
+          descripcionNormalizada,
         ];
         placeholderNames = [
           "nombre_negocio",
@@ -322,7 +342,7 @@ export async function notifyReservaConfirmadaCliente(
        4. VERIFICAR VENTANA 24H
     ============================================================ */
     console.log("Revisando ventana de 24h...");
-    console.log("Teléfono destino:", to);
+    console.log("Teléfono destino:", normalizedTo);
     console.log("ADMIN_KEY (últimos 6):", ADMIN_KEY.slice(-6));
 
     let isWindowOpen = false;
@@ -331,7 +351,7 @@ export async function notifyReservaConfirmadaCliente(
     let windowJsonResponse: WindowResponse | null = null;
 
     try {
-      const requestBody = JSON.stringify({ phone: to, key: ADMIN_KEY });
+      const requestBody = JSON.stringify({ phone: normalizedTo, key: ADMIN_KEY });
       console.log("Enviando POST a /api/whatsapp/window");
       console.log("URL:", `${MYCKEO_ADMIN_BASE}/api/whatsapp/window`);
       console.log("Body:", requestBody);
@@ -359,7 +379,10 @@ export async function notifyReservaConfirmadaCliente(
           isWindowOpen = windowJsonResponse.isOpen === true;
           windowCheckOk = true;
         } catch (parseErr) {
-          console.error("Error parseando JSON de ventana:", (parseErr as Error).message);
+          console.error(
+            "Error parseando JSON de ventana:",
+            (parseErr as Error).message
+          );
           console.error("Contenido recibido:", windowRawResponse);
         }
       } else {
@@ -368,7 +391,10 @@ export async function notifyReservaConfirmadaCliente(
         console.error("Body:", windowRawResponse);
       }
     } catch (err) {
-      console.error("Error de red al consultar ventana 24h:", (err as Error).message);
+      console.error(
+        "Error de red al consultar ventana 24h:",
+        (err as Error).message
+      );
     }
 
     /* ============================================================
@@ -382,7 +408,7 @@ export async function notifyReservaConfirmadaCliente(
       valor_compra,
       direccion,
       ciudad,
-      descripcion,
+      descripcion: descripcionNormalizada,
       fechaHora,
       fecha_anterior,
       fecha_nueva,
@@ -415,13 +441,13 @@ export async function notifyReservaConfirmadaCliente(
         valor_compra,
         direccion,
         ciudad,
-        descripcion,
+        descripcion: descripcionNormalizada,
       } as TemplateVariables);
 
       console.log("Texto generado GRATIS:");
       console.log(messageText);
 
-      const freeRes = await sendWhatsApp({ to, text: messageText });
+      const freeRes = await sendWhatsApp({ to: normalizedTo, text: messageText });
 
       console.log("Resultado envío GRATIS:", freeRes);
 
@@ -433,7 +459,7 @@ export async function notifyReservaConfirmadaCliente(
         },
         body: JSON.stringify({
           eventType: template,
-          phone: to,
+          phone: normalizedTo,
           content: messageText,
           data: {
             free: true,
@@ -458,7 +484,7 @@ export async function notifyReservaConfirmadaCliente(
     console.log("Ventana CERRADA o fallo en API → Enviando PLANTILLA PAGA");
 
     const paidRes = await sendWhatsAppMessage({
-      to,
+      to: normalizedTo,
       templateName: template,
       placeholderNames,
       variables,
@@ -476,7 +502,7 @@ export async function notifyReservaConfirmadaCliente(
       },
       body: JSON.stringify({
         eventType: template,
-        phone: to,
+        phone: normalizedTo,
         content: null,
         data: {
           free: false,

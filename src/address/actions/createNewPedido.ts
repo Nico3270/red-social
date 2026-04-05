@@ -35,16 +35,32 @@ interface PedidoInput {
   totalAmount: number;
 }
 
-export const createNewPedido = async (input: PedidoInput): Promise<{
+interface CreatePedidoResponse {
   ok: boolean;
   message: string;
-}> => {
+}
+
+const FALLBACK_COMENTARIOS_ADICIONALES = "Sin comentarios adicionales";
+const FALLBACK_TELEFONO_NEGOCIO = "+573132390868";
+
+export const createNewPedido = async (
+  input: PedidoInput
+): Promise<CreatePedidoResponse> => {
   try {
     const session = await auth();
+
     let negocioId = "";
     let tipoUsuario: TipoUsuario = TipoUsuario.negocio;
     let telefonoNegocio = "";
-    const negocioSlug = session?.user.negocioSlug; 
+    const negocioSlug = session?.user.negocioSlug ?? "";
+
+    if (!Array.isArray(input.items) || input.items.length === 0) {
+      return { ok: false, message: "Debes agregar al menos un producto al pedido." };
+    }
+
+    if (!Number.isFinite(input.totalAmount) || input.totalAmount < 0) {
+      return { ok: false, message: "El valor total del pedido es inválido." };
+    }
 
     // ============================
     // VALIDACIONES NEGOCIO
@@ -61,13 +77,16 @@ export const createNewPedido = async (input: PedidoInput): Promise<{
 
       negocioId = negocio.id;
       tipoUsuario = TipoUsuario.usuario;
-      telefonoNegocio = negocio.telefonoContacto || "+573132390868";
+      telefonoNegocio = negocio.telefonoContacto || FALLBACK_TELEFONO_NEGOCIO;
     } else {
       negocioId = session?.user.negocioId || "";
       tipoUsuario = TipoUsuario.negocio;
 
       if (!negocioId) {
-        return { ok: false, message: "No se encontró el negocio en la sesión." };
+        return {
+          ok: false,
+          message: "No se encontró el negocio en la sesión.",
+        };
       }
     }
 
@@ -80,10 +99,33 @@ export const createNewPedido = async (input: PedidoInput): Promise<{
       ciudad,
       departamento,
       country,
+      additionalComments,
     } = input.deliveryData;
 
+    const sanitizedClientName = sanitizeParam(clientName);
+    const sanitizedClientPhone = sanitizeParam(clientPhone);
+    const sanitizedDeliveryAddress = sanitizeParam(deliveryAddress);
+    const sanitizedOnSiteLocation = sanitizeParam(onSiteLocation);
+    const sanitizedCiudad = sanitizeParam(ciudad);
+    const sanitizedDepartamento = sanitizeParam(departamento);
+    const sanitizedCountry = sanitizeParam(country) || "Colombia";
+    const sanitizedAdditionalComments = sanitizeParam(additionalComments);
+
+    if (!sanitizedClientName) {
+      return { ok: false, message: "El nombre del cliente es obligatorio." };
+    }
+
+    if (!sanitizedClientPhone) {
+      return { ok: false, message: "El teléfono del cliente es obligatorio." };
+    }
+
     if (orderType === "DELIVERY") {
-      if (!country || !departamento || !ciudad || !deliveryAddress) {
+      if (
+        !sanitizedCountry ||
+        !sanitizedDepartamento ||
+        !sanitizedCiudad ||
+        !sanitizedDeliveryAddress
+      ) {
         return {
           ok: false,
           message:
@@ -91,172 +133,211 @@ export const createNewPedido = async (input: PedidoInput): Promise<{
         };
       }
     } else if (orderType === "ON_SITE") {
-      if (!onSiteLocation) {
+      if (!sanitizedOnSiteLocation) {
         return {
           ok: false,
           message: "La referencia de ubicación es requerida para pedidos en sitio.",
         };
       }
+    } else {
+      return { ok: false, message: "Tipo de pedido inválido." };
     }
 
     const deliveryDate = input.deliveryData.deliveryDate
       ? new Date(input.deliveryData.deliveryDate)
       : undefined;
 
-    if (deliveryDate && isNaN(deliveryDate.getTime())) {
+    if (deliveryDate && Number.isNaN(deliveryDate.getTime())) {
       return { ok: false, message: "Fecha de entrega inválida." };
     }
 
     // =======================================================
     // 🟩 TRANSACCIÓN — SOLO PRISMA
     // =======================================================
-    const {  datosPedido, valorCompra, nombreCliente, telefonoCliente, descripcionCompra, direccionCompra, ciudadCompra } =
-      await prisma.$transaction(async (tx) => {
-        const newDeliveryData = await tx.deliveryData.create({
-          data: {
-            country: orderType === "DELIVERY" ? country || "Colombia" : null,
-            departamento: orderType === "DELIVERY" ? departamento : null,
-            ciudad: orderType === "DELIVERY" ? ciudad : null,
-            clientName,
-            clientPhone,
-            deliveryAddress: orderType === "DELIVERY" ? deliveryAddress : null,
-            onSiteLocation: orderType === "ON_SITE" ? onSiteLocation : null,
-            deliveryDate,
-            additionalComments: input.deliveryData.additionalComments,
-          },
-        });
-
-        const generatedDescription = input.items
-          .map((item) => `${item.description} x${item.quantity}`)
-          .join(", ");
-
-        const newOrder = await tx.order.create({
-          data: {
-            type: "ingreso",
-            description: generatedDescription,
-            totalAmount: new Decimal(input.totalAmount.toFixed(2)),
-            category: "ventas",
-            status: "Recibida",
-            TipoUsuario: tipoUsuario,
-            negocioId,
-            deliveryDataId: newDeliveryData.id,
-            orderType,
-          },
-        });
-
-        await tx.orderItem.createMany({
-          data: input.items.map((item) => ({
-            description: item.description,
-            quantity: item.quantity,
-            price: new Decimal(item.price.toFixed(2)),
-            subtotal: new Decimal(item.subtotal.toFixed(2)),
-            orderId: newOrder.id,
-            productId: item.productId || null,
-          })),
-        });
-
-        await tx.orderStatusHistory.create({
-          data: {
-            orderId: newOrder.id,
-            previousState: null,
-            newState: "Recibida",
-            comment: `Pedido ${orderType === "DELIVERY" ? "a domicilio" : "en sitio"} creado`,
-          },
-        });
-
-        const datosPedido = input.items
-          .map((item) => `${item.quantity} - ${item.description}`)
-          .join(", ");
-
-        const valorCompra = `$${input.totalAmount.toFixed(2)}`;
-        const nombreCliente = clientName;
-        const telefonoCliente = clientPhone;
-        const descripcionCompra = input.deliveryData.additionalComments || "";
-        let direccionCompra =
-          orderType === "DELIVERY" ? deliveryAddress || "" : onSiteLocation || "";
-        const ciudadCompra = orderType === "DELIVERY" ? ciudad || "" : "";
-
-        if (orderType === "ON_SITE") {
-          direccionCompra = `Pedido en sitio: ${onSiteLocation}`;
-        }
-
-        return {
-          newOrder,
-          datosPedido,
-          valorCompra,
-          nombreCliente,
-          telefonoCliente,
-          descripcionCompra,
-          direccionCompra,
-          ciudadCompra,
-        };
+    const {
+      datosPedido,
+      valorCompra,
+      nombreCliente,
+      telefonoCliente,
+      descripcionCompra,
+      direccionCompra,
+      ciudadCompra,
+    } = await prisma.$transaction(async (tx) => {
+      const newDeliveryData = await tx.deliveryData.create({
+        data: {
+          country: orderType === "DELIVERY" ? sanitizedCountry : null,
+          departamento: orderType === "DELIVERY" ? sanitizedDepartamento : null,
+          ciudad: orderType === "DELIVERY" ? sanitizedCiudad : null,
+          clientName: sanitizedClientName,
+          clientPhone: sanitizedClientPhone,
+          deliveryAddress:
+            orderType === "DELIVERY" ? sanitizedDeliveryAddress : null,
+          onSiteLocation:
+            orderType === "ON_SITE" ? sanitizedOnSiteLocation : null,
+          deliveryDate,
+          additionalComments: sanitizedAdditionalComments || null,
+        },
       });
 
+      const generatedDescription = input.items
+        .map((item) => `${sanitizeParam(item.description)} x${item.quantity}`)
+        .join(", ");
+
+      const newOrder = await tx.order.create({
+        data: {
+          type: "ingreso",
+          description: generatedDescription,
+          totalAmount: new Decimal(input.totalAmount.toFixed(2)),
+          category: "ventas",
+          status: "Recibida",
+          TipoUsuario: tipoUsuario,
+          negocioId,
+          deliveryDataId: newDeliveryData.id,
+          orderType,
+        },
+      });
+
+      await tx.orderItem.createMany({
+        data: input.items.map((item) => ({
+          description: sanitizeParam(item.description),
+          quantity: item.quantity,
+          price: new Decimal(item.price.toFixed(2)),
+          subtotal: new Decimal(item.subtotal.toFixed(2)),
+          orderId: newOrder.id,
+          productId: item.productId || null,
+        })),
+      });
+
+      await tx.orderStatusHistory.create({
+        data: {
+          orderId: newOrder.id,
+          previousState: null,
+          newState: "Recibida",
+          comment: `Pedido ${
+            orderType === "DELIVERY" ? "a domicilio" : "en sitio"
+          } creado`,
+        },
+      });
+
+      const datosPedido = input.items
+        .map((item) => `${item.quantity} - ${sanitizeParam(item.description)}`)
+        .join(", ");
+
+      const valorCompra = `$${input.totalAmount.toFixed(2)}`;
+      const nombreCliente = sanitizedClientName;
+      const telefonoCliente = sanitizedClientPhone;
+      const descripcionCompra = sanitizedAdditionalComments;
+
+      let direccionCompra =
+        orderType === "DELIVERY"
+          ? sanitizedDeliveryAddress
+          : sanitizedOnSiteLocation;
+
+      const ciudadCompra = orderType === "DELIVERY" ? sanitizedCiudad : "";
+
+      if (orderType === "ON_SITE") {
+        direccionCompra = `Pedido en sitio: ${sanitizedOnSiteLocation}`;
+      }
+
+      return {
+        datosPedido,
+        valorCompra,
+        nombreCliente,
+        telefonoCliente,
+        descripcionCompra,
+        direccionCompra,
+        ciudadCompra,
+      };
+    });
+
     // =======================================================
-    // 🟦 AHORA SÍ — NOTIFICACIONES FUERA DE LA TRANSACCIÓN
+    // 🟦 NOTIFICACIONES FUERA DE LA TRANSACCIÓN
     // =======================================================
 
-    // Determinar si enviar notificación al negocio
+    const sanitizedDatosPedido = sanitizeParam(datosPedido);
+    const sanitizedValorCompra = sanitizeParam(valorCompra);
+    const sanitizedNombreCliente = sanitizeParam(nombreCliente);
+    const sanitizedTelefonoCliente = sanitizeParam(telefonoCliente);
+    const sanitizedDireccionCompra = sanitizeParam(direccionCompra);
+    const sanitizedCiudadCompra = sanitizeParam(ciudadCompra);
+    const sanitizedDescripcionCompraFinal = sanitizeParam(descripcionCompra);
+    const descripcionParaNegocio =
+      sanitizedDescripcionCompraFinal || FALLBACK_COMENTARIOS_ADICIONALES;
+
     let enviarANegocio = true;
 
     if (session?.user.role === "negocio") {
-      // Si hay input.slug (creando en otro negocio potencial)
       if (input.slug) {
-        // No enviar si es el mismo negocio
         if (input.slug === negocioSlug) {
           enviarANegocio = false;
         }
       } else {
-        // Si no hay slug, es su propio negocio, no enviar
         enviarANegocio = false;
       }
     } else if (!session?.user || session.user.role !== "negocio") {
-      // Siempre enviar si no es negocio o no hay sesión
       enviarANegocio = true;
     }
 
-    // Enviar al negocio si corresponde
     if (enviarANegocio) {
-      await notifyReservaConfirmadaCliente({
+      const notifyBusinessResult = await notifyReservaConfirmadaCliente({
         to: telefonoNegocio,
         template: PlantillaWhatsApp.PEDIDO_CREADO_NEGOCIO,
-        datos_pedido: sanitizeParam(datosPedido),
-        valor_compra: sanitizeParam(valorCompra),
-        nombre_cliente: sanitizeParam(nombreCliente),
-        telefono_cliente: sanitizeParam(telefonoCliente),
-        direccion: sanitizeParam(direccionCompra),
-        descripcion: sanitizeParam(descripcionCompra),
+        datos_pedido: sanitizedDatosPedido,
+        valor_compra: sanitizedValorCompra,
+        nombre_cliente: sanitizedNombreCliente,
+        telefono_cliente: sanitizedTelefonoCliente,
+        direccion: sanitizedDireccionCompra,
+        descripcion: descripcionParaNegocio,
         negocioId,
+      });
+
+      logNotificationResult("negocio", notifyBusinessResult, {
+        negocioId,
+        telefonoDestino: telefonoNegocio,
+        template: PlantillaWhatsApp.PEDIDO_CREADO_NEGOCIO,
       });
     }
 
-    // Enviar al cliente (adaptando plantilla según rol)
     if (session?.user.role === "negocio") {
-      await notifyReservaConfirmadaCliente({
-        to: telefonoCliente,
-        template: PlantillaWhatsApp.PEDIDO_CREADO_NEGOCIO_USUARIO,
-        datos_pedido: sanitizeParam(datosPedido),
-        valor_compra: sanitizeParam(valorCompra),
-        nombre_cliente: sanitizeParam(nombreCliente),
-        direccion: sanitizeParam(direccionCompra),
+      const notifyClientFromBusinessResult =
+        await notifyReservaConfirmadaCliente({
+          to: telefonoCliente,
+          template: PlantillaWhatsApp.PEDIDO_CREADO_NEGOCIO_USUARIO,
+          datos_pedido: sanitizedDatosPedido,
+          valor_compra: sanitizedValorCompra,
+          nombre_cliente: sanitizedNombreCliente,
+          direccion: sanitizedDireccionCompra,
+          negocioId,
+        });
+
+      logNotificationResult("cliente_desde_negocio", notifyClientFromBusinessResult, {
         negocioId,
+        telefonoDestino: telefonoCliente,
+        template: PlantillaWhatsApp.PEDIDO_CREADO_NEGOCIO_USUARIO,
       });
     } else {
-      await notifyReservaConfirmadaCliente({
+      const notifyClientResult = await notifyReservaConfirmadaCliente({
         to: telefonoCliente,
         template: PlantillaWhatsApp.PEDIDO_CREADO_USUARIO_USUARIO,
-        datos_pedido: sanitizeParam(datosPedido),
-        valor_compra: sanitizeParam(valorCompra),
-        nombre_cliente: sanitizeParam(nombreCliente),
-        direccion: sanitizeParam(direccionCompra),
-        ciudad: sanitizeParam(ciudadCompra),
+        datos_pedido: sanitizedDatosPedido,
+        valor_compra: sanitizedValorCompra,
+        nombre_cliente: sanitizedNombreCliente,
+        direccion: sanitizedDireccionCompra,
+        ciudad: sanitizedCiudadCompra,
         negocioId,
+      });
+
+      logNotificationResult("cliente", notifyClientResult, {
+        negocioId,
+        telefonoDestino: telefonoCliente,
+        template: PlantillaWhatsApp.PEDIDO_CREADO_USUARIO_USUARIO,
       });
     }
 
     return { ok: true, message: "Pedido creado exitosamente." };
   } catch (error) {
     console.error("Error al crear el pedido:", error);
+
     return {
       ok: false,
       message:
@@ -267,7 +348,20 @@ export const createNewPedido = async (input: PedidoInput): Promise<{
   }
 };
 
-function sanitizeParam(text: string): string {
+function sanitizeParam(text?: string | null): string {
   if (!text) return "";
-  return text.replace(/\n|\r|\t/g, " ").replace(/ {5,}/g, " ").trim();
+  return text.replace(/\n|\r|\t/g, " ").replace(/ {2,}/g, " ").trim();
+}
+
+function logNotificationResult(
+  label: string,
+  result: { ok: boolean; errorMessage: string | null },
+  context?: Record<string, unknown>
+) {
+  if (result.ok) return;
+
+  console.warn(`Advertencia notificando ${label}:`, {
+    errorMessage: result.errorMessage,
+    ...context,
+  });
 }
