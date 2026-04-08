@@ -19,7 +19,7 @@ import {
 } from "@mui/material";
 import { CheckCircleOutline, ErrorOutline } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { useCartCatalogoStore } from "@/store/carro/carro-store";
 import { useAddressStore } from "@/store/address/address-store";
 import { fetchNegocioName } from "@/carro/componentes/ProductsInCart";
@@ -28,6 +28,8 @@ import { createNewPedido } from "../actions/createNewPedido";
 interface CheckoutOrderProps {
   slug: string;
 }
+
+type ModalStatus = "idle" | "loading" | "success" | "error";
 
 const MotionBox = motion(Box);
 
@@ -38,18 +40,24 @@ const CheckoutOrder: React.FC<CheckoutOrderProps> = ({ slug }) => {
 
   const [negocioName, setNegocioName] = useState<string>("Cargando...");
   const [isLoading, setIsLoading] = useState(true);
+
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [modalStatus, setModalStatus] = useState<ModalStatus>("idle");
 
   const redirectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const cartItems = useMemo(() => getCartForNegocio(slug) || [], [getCartForNegocio, slug]);
+  const cartItems = useMemo(() => {
+    return getCartForNegocio(slug) || [];
+  }, [getCartForNegocio, slug]);
 
   const total = useMemo(() => {
     return cartItems.reduce((sum, item) => sum + item.precio * item.cantidad, 0);
   }, [cartItems]);
+
+  const isSubmitting = modalStatus === "loading";
+  const isSuccess = modalStatus === "success";
+  const isError = modalStatus === "error";
 
   const formatCurrency = useCallback((value: number) => {
     return `$${value.toFixed(2)}`;
@@ -71,13 +79,11 @@ const CheckoutOrder: React.FC<CheckoutOrderProps> = ({ slug }) => {
         const name = await fetchNegocioName(slug);
 
         if (!isMounted) return;
-
         setNegocioName(name || "Negocio");
       } catch (error) {
         console.error("Error cargando nombre del negocio:", error);
 
         if (!isMounted) return;
-
         setNegocioName("Negocio");
       } finally {
         if (isMounted) {
@@ -99,32 +105,38 @@ const CheckoutOrder: React.FC<CheckoutOrderProps> = ({ slug }) => {
     };
   }, [clearRedirectTimeout]);
 
+  const openFeedbackModal = useCallback((status: ModalStatus, message: string) => {
+    setModalStatus(status);
+    setModalMessage(message);
+    setModalOpen(true);
+  }, []);
+
   const handleCloseModal = useCallback(() => {
     if (isSubmitting) return;
+
     setModalOpen(false);
+
+    // Dejamos un pequeño reset visual del estado después del cierre
+    window.setTimeout(() => {
+      setModalStatus("idle");
+      setModalMessage("");
+    }, 180);
   }, [isSubmitting]);
 
   const handleCreatePedido = useCallback(async () => {
     if (isSubmitting) return;
 
     if (cartItems.length === 0) {
-      setModalOpen(true);
-      setModalMessage("Tu carrito está vacío.");
-      setIsSuccess(false);
+      openFeedbackModal("error", "Tu carrito está vacío.");
       return;
     }
 
     if (!address?.orderType) {
-      setModalOpen(true);
-      setModalMessage("Faltan los datos del pedido.");
-      setIsSuccess(false);
+      openFeedbackModal("error", "Faltan los datos del pedido.");
       return;
     }
 
-    setIsSubmitting(true);
-    setModalOpen(true);
-    setModalMessage("Creando pedido...");
-    setIsSuccess(false);
+    openFeedbackModal("loading", "Creando pedido...");
 
     try {
       const pedidoData = {
@@ -143,8 +155,8 @@ const CheckoutOrder: React.FC<CheckoutOrderProps> = ({ slug }) => {
       const response = await createNewPedido(pedidoData);
 
       if (response.ok) {
+        setModalStatus("success");
         setModalMessage(response.message || "Pedido creado exitosamente.");
-        setIsSuccess(true);
 
         clearCartForNegocio(slug);
         clearAddress();
@@ -154,19 +166,17 @@ const CheckoutOrder: React.FC<CheckoutOrderProps> = ({ slug }) => {
           router.push("/");
         }, 3000);
       } else {
+        setModalStatus("error");
         setModalMessage(response.message || "Error al crear el pedido.");
-        setIsSuccess(false);
       }
     } catch (error) {
       console.error("Error en handleCreatePedido:", error);
+      setModalStatus("error");
       setModalMessage(
         error instanceof Error
           ? error.message
           : "Error inesperado al crear el pedido."
       );
-      setIsSuccess(false);
-    } finally {
-      setIsSubmitting(false);
     }
   }, [
     address,
@@ -175,6 +185,7 @@ const CheckoutOrder: React.FC<CheckoutOrderProps> = ({ slug }) => {
     clearCartForNegocio,
     clearRedirectTimeout,
     isSubmitting,
+    openFeedbackModal,
     router,
     slug,
     total,
@@ -386,6 +397,13 @@ const CheckoutOrder: React.FC<CheckoutOrderProps> = ({ slug }) => {
     </Paper>
   );
 
+  const getModalAccentColor = () => {
+    if (modalStatus === "loading") return "rgba(25, 118, 210, 0.4)";
+    if (modalStatus === "success") return "success.main";
+    if (modalStatus === "error") return "error.main";
+    return "divider";
+  };
+
   if (isLoading) {
     return (
       <Box
@@ -465,107 +483,104 @@ const CheckoutOrder: React.FC<CheckoutOrderProps> = ({ slug }) => {
           </Button>
         </Box>
 
-        <AnimatePresence>
-          {modalOpen && (
-            <Modal
-              open={modalOpen}
-              onClose={handleCloseModal}
-              closeAfterTransition
-              slots={{ backdrop: Backdrop }}
-              slotProps={{
-                backdrop: {
-                  timeout: 300,
-                  TransitionComponent: MuiFade,
-                  sx: {
-                    backgroundColor: "rgba(0,0,0,0.18)",
-                    backdropFilter: "blur(2px)",
-                  },
-                },
+        <Modal
+          open={modalOpen}
+          onClose={handleCloseModal}
+          closeAfterTransition
+          disableEscapeKeyDown={isSubmitting}
+          slots={{ backdrop: Backdrop }}
+          slotProps={{
+            backdrop: {
+              timeout: 220,
+              TransitionComponent: MuiFade,
+              sx: {
+                backgroundColor: "rgba(15, 23, 42, 0.42)",
+              },
+            },
+          }}
+        >
+          <Box
+            sx={{
+              height: "100vh",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              p: 2,
+            }}
+          >
+            <MotionBox
+              initial={{ opacity: 0, scale: 0.96, y: 8 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ duration: 0.22, ease: "easeOut" }}
+              sx={{
+                bgcolor: "background.paper",
+                border: `1px solid`,
+                borderColor: getModalAccentColor(),
+                borderRadius: 4,
+                boxShadow: "0 24px 80px rgba(15, 23, 42, 0.22)",
+                p: { xs: 2.5, sm: 4 },
+                textAlign: "center",
+                width: { xs: "100%", sm: 420 },
+                maxWidth: "100%",
+                maxHeight: "90vh",
+                overflowY: "auto",
+                outline: "none",
               }}
             >
-              <Box
-                sx={{
-                  height: "100vh",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  p: 2,
-                }}
+              {isSubmitting ? (
+                <CircularProgress sx={{ mb: 2 }} />
+              ) : isSuccess ? (
+                <CheckCircleOutline
+                  sx={{ fontSize: 60, color: "success.main", mb: 2 }}
+                />
+              ) : isError ? (
+                <ErrorOutline
+                  sx={{ fontSize: 60, color: "error.main", mb: 2 }}
+                />
+              ) : null}
+
+              <Typography
+                variant="h6"
+                sx={{ mb: 1.5, fontWeight: 700, color: "grey.900" }}
               >
-                <MotionBox
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.25 }}
+                {isSubmitting
+                  ? "Procesando pedido"
+                  : isSuccess
+                  ? "Pedido creado"
+                  : isError
+                  ? "No se pudo crear el pedido"
+                  : ""}
+              </Typography>
+
+              <Typography
+                variant="body1"
+                sx={{ mb: isSubmitting ? 0 : 3, color: "text.secondary" }}
+              >
+                {modalMessage}
+              </Typography>
+
+              {!isSubmitting && (
+                <Button
+                  onClick={handleCloseModal}
+                  variant="contained"
                   sx={{
-                    bgcolor: "background.paper",
-                    border: `2px solid ${
-                      isSubmitting
-                        ? "rgba(25, 118, 210, 0.4)"
-                        : isSuccess
-                        ? "success.main"
-                        : "error.main"
-                    }`,
+                    minWidth: 120,
                     borderRadius: 3,
-                    boxShadow: 24,
-                    p: { xs: 2.5, sm: 4 },
-                    textAlign: "center",
-                    width: { xs: "100%", sm: 400 },
-                    maxHeight: "90vh",
-                    overflowY: "auto",
-                    outline: "none",
+                    textTransform: "none",
+                    fontWeight: 600,
+                    bgcolor: isSuccess ? "success.main" : "error.main",
+                    color: "#fff",
+                    "&:hover": {
+                      bgcolor: isSuccess ? "success.dark" : "error.dark",
+                    },
                   }}
                 >
-                  {isSubmitting ? (
-                    <CircularProgress sx={{ mb: 2 }} />
-                  ) : isSuccess ? (
-                    <CheckCircleOutline
-                      sx={{ fontSize: 60, color: "success.main", mb: 2 }}
-                    />
-                  ) : (
-                    <ErrorOutline
-                      sx={{ fontSize: 60, color: "error.main", mb: 2 }}
-                    />
-                  )}
-
-                  <Typography
-                    variant="h6"
-                    sx={{ mb: 1.5, fontWeight: 600, color: "grey.900" }}
-                  >
-                    {isSubmitting
-                      ? "Procesando pedido"
-                      : isSuccess
-                      ? "Pedido creado"
-                      : "No se pudo crear el pedido"}
-                  </Typography>
-
-                  <Typography
-                    variant="body1"
-                    sx={{ mb: isSubmitting ? 0 : 3, color: "text.secondary" }}
-                  >
-                    {modalMessage}
-                  </Typography>
-
-                  {!isSubmitting && (
-                    <Button
-                      onClick={handleCloseModal}
-                      variant="contained"
-                      sx={{
-                        bgcolor: isSuccess ? "success.main" : "error.main",
-                        color: "#fff",
-                        "&:hover": {
-                          bgcolor: isSuccess ? "success.dark" : "error.dark",
-                        },
-                      }}
-                    >
-                      Cerrar
-                    </Button>
-                  )}
-                </MotionBox>
-              </Box>
-            </Modal>
-          )}
-        </AnimatePresence>
+                  Cerrar
+                </Button>
+              )}
+            </MotionBox>
+          </Box>
+        </Modal>
       </Container>
     </MuiFade>
   );

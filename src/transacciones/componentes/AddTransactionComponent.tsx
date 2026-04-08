@@ -41,12 +41,10 @@ import { editTransaction } from "../actions/editTransaction";
 import { TransactionType, PaymentMethod } from "@prisma/client";
 import { Transaction, FormData } from "@/transacciones/interfaces/types";
 
-
 interface AddTransactionProps {
   onTransactionAdded: (newTransaction: Transaction) => void;
   initialData?: FormData & { transactionId: string };
 }
-
 
 const AddTransactionComponent: React.FC<AddTransactionProps> = ({
   onTransactionAdded,
@@ -119,7 +117,6 @@ const AddTransactionComponent: React.FC<AddTransactionProps> = ({
     name: "items",
   });
 
-  // Estados UI
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
@@ -129,14 +126,10 @@ const AddTransactionComponent: React.FC<AddTransactionProps> = ({
   const [addedTransaction, setAddedTransaction] =
     useState<Transaction | null>(null);
 
-
-  // Fetch productos
   useEffect(() => {
     fetchProductos();
   }, [fetchProductos]);
 
-
-  // Prefill para edición
   useEffect(() => {
     if (isEditMode && initialData) {
       reset({
@@ -154,8 +147,6 @@ const AddTransactionComponent: React.FC<AddTransactionProps> = ({
     }
   }, [initialData, isEditMode, reset]);
 
-
-  // Calcula subtotal + total
   const calculateSubtotal = (index: number) => {
     const item = watch(`items.${index}`);
     const q = Number(item.quantity) || 0;
@@ -172,7 +163,6 @@ const AddTransactionComponent: React.FC<AddTransactionProps> = ({
     setValue("amount", total);
   };
 
-  // Autocomplete UX
   const handleAutocompleteChange = (
     index: number,
     selectedProduct: { id: string; nombre: string; precio: number } | null
@@ -190,7 +180,6 @@ const AddTransactionComponent: React.FC<AddTransactionProps> = ({
     }
   };
 
-  // Submit
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true);
 
@@ -203,7 +192,10 @@ const AddTransactionComponent: React.FC<AddTransactionProps> = ({
       const localTime = `${now.getHours().toString().padStart(2, "0")}:${now
         .getMinutes()
         .toString()
-        .padStart(2, "0")}:${now.getSeconds().toString().padStart(2, "0")}`;
+        .padStart(2, "0")}:${now
+        .getSeconds()
+        .toString()
+        .padStart(2, "0")}`;
 
       const localFull = new Date(`${data.date}T${localTime}`);
 
@@ -258,10 +250,13 @@ const AddTransactionComponent: React.FC<AddTransactionProps> = ({
     }
   };
 
-  const ingresoColor = "#0EA35A";
-  const ingresoHover = "#15BF6C";
-  const gastoColor = "#D64545";
-  const gastoHover = "#E25757";
+  const ingresoColor = "#16A34A";
+  const ingresoHover = "#15803D";
+  const ingresoSoft = "#ECFDF3";
+
+  const gastoColor = "#DC2626";
+  const gastoHover = "#B91C1C";
+  const gastoSoft = "#FEF2F2";
 
   const submitColor =
     transactionType === TransactionType.ingreso ? ingresoColor : gastoColor;
@@ -271,6 +266,15 @@ const AddTransactionComponent: React.FC<AddTransactionProps> = ({
       ? ingresoHover
       : gastoHover;
 
+  const toggleBaseSx = {
+    textTransform: "none",
+    fontWeight: 700,
+    flex: 1,
+    py: 1.8,
+    border: "0 !important",
+    transition: "all 0.2s ease",
+    gap: 0.8,
+  };
 
   if (productsError)
     return (
@@ -278,7 +282,6 @@ const AddTransactionComponent: React.FC<AddTransactionProps> = ({
         Error cargando productos: {productsError}
       </Typography>
     );
-
 
   return (
     <Fade in timeout={400}>
@@ -311,9 +314,6 @@ const AddTransactionComponent: React.FC<AddTransactionProps> = ({
 
         <form onSubmit={handleSubmit(onSubmit)}>
           <Grid container spacing={3}>
-
-
-            {/* ================= TIPO ================= */}
             <Grid item xs={12}>
               <Controller
                 name="type"
@@ -327,8 +327,10 @@ const AddTransactionComponent: React.FC<AddTransactionProps> = ({
                       borderRadius: 3,
                       overflow: "hidden",
                       boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+                      border: "1px solid rgba(15,23,42,0.06)",
+                      backgroundColor: "#FFFFFF",
                     }}
-                    onChange={(e, value) => {
+                    onChange={(_, value) => {
                       if (value !== null) {
                         const prev = field.value;
                         field.onChange(value);
@@ -348,60 +350,51 @@ const AddTransactionComponent: React.FC<AddTransactionProps> = ({
                     <ToggleButton
                       value={TransactionType.ingreso}
                       sx={{
-                        textTransform: "none",
-                        fontWeight: 600,
-                        flex: 1,
-                        py: 1.8,
-                        color:
-                          transactionType === TransactionType.ingreso
-                            ? "white"
-                            : "#14532D",
-                        bgcolor:
-                          transactionType === TransactionType.ingreso
-                            ? ingresoColor
-                            : "transparent",
+                        ...toggleBaseSx,
+                        color: "#166534",
+                        bgcolor: ingresoSoft,
                         "&:hover": {
-                          bgcolor:
-                            transactionType === TransactionType.ingreso
-                              ? ingresoHover
-                              : "#E8F5E9",
+                          bgcolor: "#DCFCE7",
+                        },
+                        "&.Mui-selected": {
+                          bgcolor: ingresoColor,
+                          color: "#FFFFFF",
+                        },
+                        "&.Mui-selected:hover": {
+                          bgcolor: ingresoHover,
                         },
                       }}
                     >
-                      <ArrowUpward fontSize="small" sx={{ mr: 1 }} /> Ingreso
+                      <ArrowUpward fontSize="small" sx={{ mr: 1 }} />
+                      Ingreso
                     </ToggleButton>
 
                     <ToggleButton
                       value={TransactionType.gasto}
                       sx={{
-                        textTransform: "none",
-                        fontWeight: 600,
-                        flex: 1,
-                        py: 1.8,
-                        color:
-                          transactionType === TransactionType.gasto
-                            ? "white"
-                            : "#7F1D1D",
-                        bgcolor:
-                          transactionType === TransactionType.gasto
-                            ? gastoColor
-                            : "transparent",
+                        ...toggleBaseSx,
+                        color: "#991B1B",
+                        bgcolor: gastoSoft,
                         "&:hover": {
-                          bgcolor:
-                            transactionType === TransactionType.gasto
-                              ? gastoHover
-                              : "#FEE2E2",
+                          bgcolor: "#FEE2E2",
+                        },
+                        "&.Mui-selected": {
+                          bgcolor: gastoColor,
+                          color: "#FFFFFF",
+                        },
+                        "&.Mui-selected:hover": {
+                          bgcolor: gastoHover,
                         },
                       }}
                     >
-                      <ArrowDownward fontSize="small" sx={{ mr: 1 }} /> Gasto
+                      <ArrowDownward fontSize="small" sx={{ mr: 1 }} />
+                      Gasto
                     </ToggleButton>
                   </ToggleButtonGroup>
                 )}
               />
             </Grid>
 
-            {/* ================= FECHA ================= */}
             <Grid item xs={12} sm={6}>
               <Controller
                 name="date"
@@ -424,7 +417,6 @@ const AddTransactionComponent: React.FC<AddTransactionProps> = ({
               />
             </Grid>
 
-            {/* ================= CATEGORÍA ================= */}
             <Grid item xs={12} sm={6}>
               <Controller
                 name="category"
@@ -451,7 +443,6 @@ const AddTransactionComponent: React.FC<AddTransactionProps> = ({
               />
             </Grid>
 
-            {/* ================= MEDIO DE PAGO ================= */}
             <Grid item xs={12}>
               <Controller
                 name="paymentMethod"
@@ -475,7 +466,6 @@ const AddTransactionComponent: React.FC<AddTransactionProps> = ({
               />
             </Grid>
 
-            {/* ================= ITEMS (INGRESOS) ================= */}
             {transactionType === TransactionType.ingreso && (
               <Grid item xs={12}>
                 <Paper
@@ -514,8 +504,6 @@ const AddTransactionComponent: React.FC<AddTransactionProps> = ({
                           }}
                         >
                           <Grid container spacing={2}>
-
-                            {/* ==== AUTOCOMPLETE ==== */}
                             <Grid item xs={12}>
                               <Controller
                                 name={`items.${index}.description`}
@@ -530,18 +518,11 @@ const AddTransactionComponent: React.FC<AddTransactionProps> = ({
                                     }
                                     value={field.value}
                                     onInputChange={(_, v) => field.onChange(v)}
-                                    disabled={watch(
-                                      `items.${index}.isLocked`
-                                    )}
+                                    disabled={watch(`items.${index}.isLocked`)}
                                     onChange={(_, value) => {
                                       const selected =
-                                        typeof value === "string"
-                                          ? null
-                                          : value;
-                                      handleAutocompleteChange(
-                                        index,
-                                        selected
-                                      );
+                                        typeof value === "string" ? null : value;
+                                      handleAutocompleteChange(index, selected);
                                     }}
                                     renderInput={(params) => (
                                       <TextField
@@ -563,7 +544,6 @@ const AddTransactionComponent: React.FC<AddTransactionProps> = ({
                               />
                             </Grid>
 
-                            {/* ==== CANTIDAD - PRECIO - TOTAL ==== */}
                             <Grid item xs={12}>
                               <Grid container spacing={2}>
                                 <Grid item xs={4}>
@@ -649,9 +629,7 @@ const AddTransactionComponent: React.FC<AddTransactionProps> = ({
                                     fullWidth
                                     value={(
                                       Number(
-                                        watch(
-                                          `items.${index}.subtotal`
-                                        ) || 0
+                                        watch(`items.${index}.subtotal`) || 0
                                       )
                                     ).toFixed(2)}
                                     InputProps={{ readOnly: true }}
@@ -661,7 +639,6 @@ const AddTransactionComponent: React.FC<AddTransactionProps> = ({
                               </Grid>
                             </Grid>
 
-                            {/* Botón eliminar */}
                             <Grid
                               item
                               xs={12}
@@ -705,7 +682,6 @@ const AddTransactionComponent: React.FC<AddTransactionProps> = ({
               </Grid>
             )}
 
-            {/* ================= GASTOS ================= */}
             {transactionType === TransactionType.gasto && (
               <>
                 <Grid item xs={12} sm={6}>
@@ -758,7 +734,6 @@ const AddTransactionComponent: React.FC<AddTransactionProps> = ({
               </>
             )}
 
-            {/* ================= TOTAL + SUBMIT ================= */}
             <Grid
               item
               xs={12}
@@ -813,7 +788,6 @@ const AddTransactionComponent: React.FC<AddTransactionProps> = ({
           </Grid>
         </form>
 
-        {/* ================= MODAL ================= */}
         <Modal
           open={modalOpen}
           onClose={() => setModalOpen(false)}
@@ -892,9 +866,7 @@ const AddTransactionComponent: React.FC<AddTransactionProps> = ({
                   </Typography>
                   <Typography>
                     <strong>Categoría:</strong>{" "}
-                    {addedTransaction.category
-                      .charAt(0)
-                      .toUpperCase() +
+                    {addedTransaction.category.charAt(0).toUpperCase() +
                       addedTransaction.category.slice(1)}
                   </Typography>
                   <Typography>
@@ -910,9 +882,7 @@ const AddTransactionComponent: React.FC<AddTransactionProps> = ({
                 sx={{
                   mt: 2,
                   bgcolor:
-                    modalSeverity === "success"
-                      ? submitColor
-                      : "#D64545",
+                    modalSeverity === "success" ? submitColor : "#D64545",
                   color: "white",
                   borderRadius: 3,
                   textTransform: "none",

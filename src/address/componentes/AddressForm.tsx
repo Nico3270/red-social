@@ -1,7 +1,9 @@
+
+
 // /components/dashboard/reservas/AddressNegocio.tsx
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import {
   Box,
@@ -23,8 +25,6 @@ import {
   FormControl,
   InputLabel,
   FormHelperText,
-  ToggleButton,
-  ToggleButtonGroup,
   Alert,
   InputAdornment,
 } from "@mui/material";
@@ -35,7 +35,7 @@ import { useAddressStore } from "@/store/address/address-store";
 import { fetchNegocioName } from "@/carro/componentes/ProductsInCart";
 import colombiaData from "@/config/colombia.json";
 import { FiMapPin, FiTruck } from "react-icons/fi";
-import { FaFlag } from "react-icons/fa"; // Icono de bandera
+import { FaFlag } from "react-icons/fa";
 
 type OrderType = "DELIVERY" | "ON_SITE";
 
@@ -45,7 +45,7 @@ interface Address {
   departamento?: string;
   ciudad?: string;
   clientName: string;
-  clientPhone: string; // Número local (10 dígitos)
+  clientPhone: string;
   deliveryAddress?: string;
   onSiteLocation?: string;
   deliveryDate?: string;
@@ -62,12 +62,52 @@ interface ColombiaDepartment {
   ciudades: string[];
 }
 
+const ORDER_OPTIONS: {
+  value: OrderType;
+  label: string;
+  icon: React.ReactNode;
+  selectedBg: string;
+  selectedBorder: string;
+  softBg: string;
+  softBorder: string;
+  shadow: string;
+}[] = [
+  {
+    value: "DELIVERY",
+    label: "A domicilio",
+    icon: <FiTruck size={20} />,
+    selectedBg: "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)",
+    selectedBorder: "#1d4ed8",
+    softBg: "rgba(37, 99, 235, 0.08)",
+    softBorder: "rgba(37, 99, 235, 0.18)",
+    shadow: "0 14px 30px rgba(37, 99, 235, 0.26)",
+  },
+  {
+    value: "ON_SITE",
+    label: "En sitio",
+    icon: <FiMapPin size={20} />,
+    selectedBg: "linear-gradient(135deg, #16a34a 0%, #15803d 100%)",
+    selectedBorder: "#15803d",
+    softBg: "rgba(22, 163, 74, 0.08)",
+    softBorder: "rgba(22, 163, 74, 0.18)",
+    shadow: "0 14px 30px rgba(22, 163, 74, 0.24)",
+  },
+];
+
 const AddressNegocio: React.FC<AddressNegocioProps> = ({ slug }) => {
   const router = useRouter();
   const { removeProduct, getCartForNegocio } = useCartCatalogoStore();
   const { address, setAddress } = useAddressStore();
 
-  const { control, handleSubmit, reset, watch, trigger, formState: { errors }, setValue } = useForm<Address>({
+  const {
+    control,
+    handleSubmit,
+    reset,
+    watch,
+    trigger,
+    setValue,
+    formState: { errors },
+  } = useForm<Address>({
     defaultValues: {
       orderType: "DELIVERY",
       country: "Colombia",
@@ -90,24 +130,30 @@ const AddressNegocio: React.FC<AddressNegocioProps> = ({ slug }) => {
   const selectedDepartamento = watch("departamento");
   const orderType = watch("orderType");
 
-
-  // Fetch negocio y prellenar
   useEffect(() => {
     const loadData = async () => {
-      const name = await fetchNegocioName(slug);
-      setNegocioName(name);
-      setIsLoading(false);
+      try {
+        const name = await fetchNegocioName(slug);
+        setNegocioName(name);
+      } finally {
+        setIsLoading(false);
+      }
     };
+
     loadData();
 
     if (address && address.orderType) {
-      // Si el teléfono viene con +57, removerlo para mostrar solo el número local
-      const localPhone = address.clientPhone?.startsWith("+57") ? address.clientPhone.slice(3) : address.clientPhone;
-      reset({ ...address, clientPhone: localPhone });
+      const localPhone = address.clientPhone?.startsWith("+57")
+        ? address.clientPhone.slice(3)
+        : address.clientPhone;
+
+      reset({
+        ...address,
+        clientPhone: localPhone || "",
+      });
     }
   }, [slug, reset, address]);
 
-  // Actualizar ciudades
   useEffect(() => {
     if (selectedDepartamento && orderType === "DELIVERY") {
       const departmentData = (colombiaData as ColombiaDepartment[]).find(
@@ -119,26 +165,50 @@ const AddressNegocio: React.FC<AddressNegocioProps> = ({ slug }) => {
     }
   }, [selectedDepartamento, orderType]);
 
-  // Revalidar al cambiar tipo de pedido
   useEffect(() => {
     trigger();
   }, [orderType, trigger]);
 
   const cartItems = getCartForNegocio(slug) || [];
-  const total = cartItems.reduce((sum, item) => sum + item.precio * item.cantidad, 0);
+
+  const total = useMemo(() => {
+    return cartItems.reduce(
+      (sum, item) => sum + item.precio * item.cantidad,
+      0
+    );
+  }, [cartItems]);
+
+  const handleOrderTypeChange = (newType: OrderType) => {
+    if (newType === orderType) return;
+
+    setValue("orderType", newType, { shouldValidate: true, shouldDirty: true });
+
+    if (newType === "DELIVERY") {
+      setValue("onSiteLocation", "", { shouldValidate: true, shouldDirty: true });
+    } else {
+      setValue("departamento", "", { shouldValidate: true, shouldDirty: true });
+      setValue("ciudad", "", { shouldValidate: true, shouldDirty: true });
+      setValue("deliveryAddress", "", { shouldValidate: true, shouldDirty: true });
+    }
+
+    trigger();
+  };
 
   const onSubmit = (data: Address) => {
     try {
       setErrorMessage(null);
-      // Concatenar +57 al teléfono antes de guardar
-      const formattedData = {
+
+      const formattedData: Address = {
         ...data,
         clientPhone: `+57${data.clientPhone}`,
       };
+
       setAddress(formattedData);
       router.push(`/checkout/${slug}`);
     } catch (error) {
-      setErrorMessage("Error al guardar los datos. Por favor, intenta de nuevo.");
+      setErrorMessage(
+        "Error al guardar los datos. Por favor, intenta de nuevo."
+      );
       console.error("Error al guardar la dirección:", error);
     }
   };
@@ -149,17 +219,35 @@ const AddressNegocio: React.FC<AddressNegocioProps> = ({ slug }) => {
 
   if (isLoading) {
     return (
-      <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
         <CircularProgress />
       </Box>
     );
   }
 
   const CartSummary = () => (
-    <Paper elevation={1} sx={{ p: { xs: 2, sm: 3 }, borderRadius: 3, bgcolor: "background.paper" }}>
-      <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "text.primary" }}>
+    <Paper
+      elevation={1}
+      sx={{
+        p: { xs: 2, sm: 3 },
+        borderRadius: 3,
+        bgcolor: "background.paper",
+      }}
+    >
+      <Typography
+        variant="h6"
+        sx={{ mb: 2, fontWeight: 600, color: "text.primary" }}
+      >
         Resumen de tu pedido
       </Typography>
+
       <List disablePadding>
         {cartItems.map((item) => (
           <ListItem key={item.id} sx={{ py: 1, px: 0 }}>
@@ -167,26 +255,48 @@ const AddressNegocio: React.FC<AddressNegocioProps> = ({ slug }) => {
               primary={`${item.nombre} x ${item.cantidad}`}
               secondary={`$${item.precio.toFixed(2)} cada uno`}
               primaryTypographyProps={{ variant: "body1", fontWeight: 500 }}
-              secondaryTypographyProps={{ variant: "body2", color: "text.secondary" }}
+              secondaryTypographyProps={{
+                variant: "body2",
+                color: "text.secondary",
+              }}
             />
-            <Typography variant="body1" sx={{ fontWeight: 600, ml: 2, flexShrink: 0 }}>
+            <Typography
+              variant="body1"
+              sx={{ fontWeight: 600, ml: 2, flexShrink: 0 }}
+            >
               ${(item.precio * item.cantidad).toFixed(2)}
             </Typography>
-            <IconButton edge="end" aria-label="delete" onClick={() => removeProduct(slug, item.id)} sx={{ ml: 1 }}>
+            <IconButton
+              edge="end"
+              aria-label="delete"
+              onClick={() => removeProduct(slug, item.id)}
+              sx={{ ml: 1 }}
+            >
               <Delete fontSize="small" />
             </IconButton>
           </ListItem>
         ))}
       </List>
+
       <Divider sx={{ my: 2 }} />
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <Typography variant="subtitle1" sx={{ fontWeight: 600, color: "text.primary" }}>
+
+      <Box
+        sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+      >
+        <Typography
+          variant="subtitle1"
+          sx={{ fontWeight: 600, color: "text.primary" }}
+        >
           Total:
         </Typography>
-        <Typography variant="subtitle1" sx={{ fontWeight: 600, color: "text.primary" }}>
+        <Typography
+          variant="subtitle1"
+          sx={{ fontWeight: 600, color: "text.primary" }}
+        >
           ${total.toFixed(2)}
         </Typography>
       </Box>
+
       <Box sx={{ display: "flex", justifyContent: "center" }}>
         <Button
           startIcon={<ArrowBack />}
@@ -231,7 +341,8 @@ const AddressNegocio: React.FC<AddressNegocioProps> = ({ slug }) => {
             color: "text.primary",
             letterSpacing: "-0.02em",
             fontSize: { xs: "2rem", sm: "2.75rem", md: "3.25rem" },
-            fontFamily: "'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+            fontFamily:
+              "'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
             lineHeight: 1.2,
             textRendering: "optimizeLegibility",
             WebkitFontSmoothing: "antialiased",
@@ -262,27 +373,80 @@ const AddressNegocio: React.FC<AddressNegocioProps> = ({ slug }) => {
                 bgcolor: "background.paper",
               }}
             >
-              <Box sx={{ display: "flex", justifyContent: "center", mb: 4 }}>
-                <ToggleButtonGroup
-                  value={orderType}
-                  exclusive
-                  onChange={(e, newType) => {
-                    if (newType) {
-                      reset({ ...watch(), orderType: newType, ciudad: "", departamento: "", deliveryAddress: "", onSiteLocation: "" });
-                    }
+              <Box sx={{ mb: 4 }}>
+                <Box
+                  sx={{
+                    p: 1,
+                    borderRadius: 4,
+                    bgcolor: "#f3f4f6",
+                    border: "1px solid #e5e7eb",
+                    boxShadow: "inset 0 1px 2px rgba(0,0,0,0.04)",
                   }}
-                  aria-label="tipo de pedido"
-                  sx={{ gap: 2 }}
                 >
-                  <ToggleButton value="DELIVERY" sx={toggleButtonStyle}>
-                    <FiTruck size={20} />
-                    A domicilio
-                  </ToggleButton>
-                  <ToggleButton value="ON_SITE" sx={toggleButtonStyle}>
-                    <FiMapPin size={20} />
-                    En sitio
-                  </ToggleButton>
-                </ToggleButtonGroup>
+                  <Box
+                    sx={{
+                      display: "grid",
+                      gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
+                      gap: 1.25,
+                    }}
+                  >
+                    {ORDER_OPTIONS.map((option) => {
+                      const selected = orderType === option.value;
+
+                      return (
+                        <Box
+                          key={option.value}
+                          component="button"
+                          type="button"
+                          onClick={() => handleOrderTypeChange(option.value)}
+                          aria-pressed={selected}
+                          sx={{
+                            appearance: "none",
+                            border: selected
+                              ? `1px solid ${option.selectedBorder}`
+                              : `1px solid ${option.softBorder}`,
+                            outline: "none",
+                            cursor: "pointer",
+                            width: "100%",
+                            minHeight: 58,
+                            px: 2,
+                            py: 1.5,
+                            borderRadius: 3,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            gap: 1.25,
+                            fontSize: "0.98rem",
+                            fontWeight: 700,
+                            lineHeight: 1,
+                            transition: "all 0.24s ease",
+                            color: selected ? "#ffffff" : "#111827",
+                            bgcolor: selected ? "transparent" : "#ffffff",
+                            background: selected ? option.selectedBg : option.softBg,
+                            boxShadow: selected
+                              ? option.shadow
+                              : "0 1px 2px rgba(15,23,42,0.06)",
+                            transform: selected ? "translateY(-1px)" : "none",
+                            "& svg": {
+                              color: "inherit",
+                              flexShrink: 0,
+                            },
+                            "&:hover": {
+                              transform: "translateY(-1px)",
+                              boxShadow: selected
+                                ? option.shadow
+                                : "0 8px 18px rgba(15,23,42,0.08)",
+                              filter: selected ? "saturate(1.04)" : "none",
+                            },
+                          }}
+                        >
+                          {option.icon}
+                          <Box component="span">{option.label}</Box>
+                        </Box>
+                      );
+                    })}
+                  </Box>
+                </Box>
               </Box>
 
               <form onSubmit={handleSubmit(onSubmit)}>
@@ -293,7 +457,10 @@ const AddressNegocio: React.FC<AddressNegocioProps> = ({ slug }) => {
                         <Controller
                           name="country"
                           control={control}
-                          rules={{ required: orderType === "DELIVERY" ? "País requerido" : false }}
+                          rules={{
+                            required:
+                              orderType === "DELIVERY" ? "País requerido" : false,
+                          }}
                           render={({ field }) => (
                             <TextField
                               {...field}
@@ -308,38 +475,68 @@ const AddressNegocio: React.FC<AddressNegocioProps> = ({ slug }) => {
                           )}
                         />
                       </Grid>
+
                       <Grid item xs={12} sm={6}>
                         <Controller
                           name="departamento"
                           control={control}
-                          rules={{ required: orderType === "DELIVERY" ? "Departamento requerido" : false }}
+                          rules={{
+                            required:
+                              orderType === "DELIVERY"
+                                ? "Departamento requerido"
+                                : false,
+                          }}
                           render={({ field }) => (
-                            <FormControl fullWidth variant="outlined" error={!!errors.departamento}>
-                              <InputLabel id="departamento-label">Departamento</InputLabel>
+                            <FormControl
+                              fullWidth
+                              variant="outlined"
+                              error={!!errors.departamento}
+                            >
+                              <InputLabel id="departamento-label">
+                                Departamento
+                              </InputLabel>
                               <Select
                                 {...field}
                                 labelId="departamento-label"
                                 label="Departamento"
                                 sx={selectStyle}
                               >
-                                {(colombiaData as ColombiaDepartment[]).map((dept) => (
-                                  <MenuItem key={dept.id} value={dept.departamento}>
-                                    {dept.departamento}
-                                  </MenuItem>
-                                ))}
+                                {(colombiaData as ColombiaDepartment[]).map(
+                                  (dept) => (
+                                    <MenuItem
+                                      key={dept.id}
+                                      value={dept.departamento}
+                                    >
+                                      {dept.departamento}
+                                    </MenuItem>
+                                  )
+                                )}
                               </Select>
-                              {errors.departamento && <FormHelperText>{errors.departamento.message}</FormHelperText>}
+                              {errors.departamento && (
+                                <FormHelperText>
+                                  {errors.departamento.message}
+                                </FormHelperText>
+                              )}
                             </FormControl>
                           )}
                         />
                       </Grid>
+
                       <Grid item xs={12} sm={6}>
                         <Controller
                           name="ciudad"
                           control={control}
-                          rules={{ required: orderType === "DELIVERY" ? "Ciudad requerida" : false }}
+                          rules={{
+                            required:
+                              orderType === "DELIVERY" ? "Ciudad requerida" : false,
+                          }}
                           render={({ field }) => (
-                            <FormControl fullWidth variant="outlined" error={!!errors.ciudad} disabled={!selectedDepartamento}>
+                            <FormControl
+                              fullWidth
+                              variant="outlined"
+                              error={!!errors.ciudad}
+                              disabled={!selectedDepartamento}
+                            >
                               <InputLabel id="ciudad-label">Ciudad</InputLabel>
                               <Select
                                 {...field}
@@ -353,16 +550,26 @@ const AddressNegocio: React.FC<AddressNegocioProps> = ({ slug }) => {
                                   </MenuItem>
                                 ))}
                               </Select>
-                              {errors.ciudad && <FormHelperText>{errors.ciudad.message}</FormHelperText>}
+                              {errors.ciudad && (
+                                <FormHelperText>
+                                  {errors.ciudad.message}
+                                </FormHelperText>
+                              )}
                             </FormControl>
                           )}
                         />
                       </Grid>
+
                       <Grid item xs={12}>
                         <Controller
                           name="deliveryAddress"
                           control={control}
-                          rules={{ required: orderType === "DELIVERY" ? "Dirección de entrega requerida" : false }}
+                          rules={{
+                            required:
+                              orderType === "DELIVERY"
+                                ? "Dirección de entrega requerida"
+                                : false,
+                          }}
                           render={({ field }) => (
                             <TextField
                               {...field}
@@ -380,12 +587,18 @@ const AddressNegocio: React.FC<AddressNegocioProps> = ({ slug }) => {
                       </Grid>
                     </>
                   )}
+
                   {orderType === "ON_SITE" && (
                     <Grid item xs={12}>
                       <Controller
                         name="onSiteLocation"
                         control={control}
-                        rules={{ required: orderType === "ON_SITE" ? "Referencia de ubicación requerida" : false }}
+                        rules={{
+                          required:
+                            orderType === "ON_SITE"
+                              ? "Referencia de ubicación requerida"
+                              : false,
+                        }}
                         render={({ field }) => (
                           <TextField
                             {...field}
@@ -400,6 +613,7 @@ const AddressNegocio: React.FC<AddressNegocioProps> = ({ slug }) => {
                       />
                     </Grid>
                   )}
+
                   <Grid item xs={12}>
                     <Controller
                       name="clientName"
@@ -419,7 +633,6 @@ const AddressNegocio: React.FC<AddressNegocioProps> = ({ slug }) => {
                     />
                   </Grid>
 
-                  {/* Campo de Teléfono con +57 y bandera */}
                   <Grid item xs={12}>
                     <Controller
                       name="clientPhone"
@@ -444,7 +657,9 @@ const AddressNegocio: React.FC<AddressNegocioProps> = ({ slug }) => {
                             startAdornment: (
                               <InputAdornment position="start">
                                 <FaFlag className="text-gray-500" size={16} />
-                                <span className="ml-2 text-gray-600 text-sm">+57</span>
+                                <span className="ml-2 text-gray-600 text-sm">
+                                  +57
+                                </span>
                               </InputAdornment>
                             ),
                           }}
@@ -459,10 +674,11 @@ const AddressNegocio: React.FC<AddressNegocioProps> = ({ slug }) => {
                           }}
                           inputProps={{
                             maxLength: 10,
+                            inputMode: "numeric",
                           }}
                           onChange={(e) => {
                             const value = e.target.value.replace(/\D/g, "");
-                            setValue("clientPhone", value);
+                            field.onChange(value);
                           }}
                           aria-label="Teléfono del cliente (10 dígitos)"
                         />
@@ -490,6 +706,7 @@ const AddressNegocio: React.FC<AddressNegocioProps> = ({ slug }) => {
                       )}
                     />
                   </Grid>
+
                   <Grid item xs={12}>
                     <Controller
                       name="additionalComments"
@@ -508,6 +725,7 @@ const AddressNegocio: React.FC<AddressNegocioProps> = ({ slug }) => {
                     />
                   </Grid>
                 </Grid>
+
                 <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
                   <Button
                     type="submit"
@@ -520,7 +738,10 @@ const AddressNegocio: React.FC<AddressNegocioProps> = ({ slug }) => {
                       textTransform: "none",
                       fontWeight: 600,
                       bgcolor: "primary.main",
-                      "&:hover": { bgcolor: "primary.dark", boxShadow: "0 4px 12px rgba(0,0,0,0.1)" },
+                      "&:hover": {
+                        bgcolor: "primary.dark",
+                        boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                      },
                       transition: "all 0.2s ease",
                     }}
                   >
@@ -542,7 +763,6 @@ const AddressNegocio: React.FC<AddressNegocioProps> = ({ slug }) => {
   );
 };
 
-// Estilos reutilizables
 const textFieldStyle = {
   "& .MuiOutlinedInput-root": {
     borderRadius: 3,
@@ -558,29 +778,6 @@ const selectStyle = {
   bgcolor: "background.default",
   "& .MuiOutlinedInput-notchedOutline": { borderColor: "divider" },
   "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "primary.light" },
-};
-
-const toggleButtonStyle = {
-  px: 4,
-  py: 2,
-  textTransform: "none",
-  fontWeight: 600,
-  borderRadius: 3,
-  display: "flex",
-  alignItems: "center",
-  gap: 1.5,
-  bgcolor: "background.paper",
-  boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
-  transition: "all 0.25s ease",
-  "&:hover": {
-    boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
-    transform: "translateY(-1px)",
-  },
-  "&.Mui-selected": {
-    bgcolor: "primary.main",
-    color: "#fff",
-    boxShadow: "0 6px 16px rgba(0,0,0,0.15)",
-  },
 };
 
 export default AddressNegocio;

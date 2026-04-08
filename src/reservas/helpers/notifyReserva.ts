@@ -24,7 +24,7 @@ if (!ADMIN_KEY) throw new Error("Falta MYCKEO_ADMIN_KEY");
 const FALLBACK_COMENTARIOS_ADICIONALES = "Sin comentarios adicionales";
 
 /* ========================================================================
-   TIPOS DE RETORNO
+   TIPOS
 ======================================================================== */
 interface NotifyResult {
   ok: boolean;
@@ -32,11 +32,22 @@ interface NotifyResult {
   message: string | null;
   errorMessage: string | null;
   result: unknown;
+
+  // Campos extra útiles para logs/debug y server actions
+  traceId?: string;
+  status?:
+    | "free_sent"
+    | "free_failed"
+    | "template_sent"
+    | "template_failed"
+    | "validation_error"
+    | "exception";
+  providerAccepted?: boolean;
+  templateName?: string;
+  phone?: string;
+  messageId?: string | null;
 }
 
-/* ========================================================================
-   PROPS
-======================================================================== */
 interface NotifyReservaConfirmadaClienteProps {
   to: string;
   nombre_cliente?: string;
@@ -54,9 +65,11 @@ interface NotifyReservaConfirmadaClienteProps {
   ciudad?: string;
 }
 
-// Interfaz para la respuesta de la ventana de 24h
 interface WindowResponse {
   isOpen: boolean;
+  lastUserMessageAt?: string;
+  windowSecondsLeft?: number;
+  reason?: string;
 }
 
 /* ========================================================================
@@ -66,13 +79,184 @@ function normalizeText(value?: string | null): string {
   return typeof value === "string" ? value.trim() : "";
 }
 
+function createTraceId() {
+  return `notify-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function maskPhone(phone?: string | null) {
+  const raw = normalizeText(phone);
+  if (!raw) return "unknown";
+  const digits = raw.replace(/[^\d]/g, "");
+  if (!digits) return "unknown";
+  if (digits.length <= 4) return `***${digits}`;
+  return `***${digits.slice(-4)}`;
+}
+
+function safeStringify(value: unknown) {
+  try {
+    return JSON.stringify(value, null, 2);
+  } catch {
+    return "[unserializable]";
+  }
+}
+
+function asRecord(value: unknown): Record<string, unknown> | null {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  return value as Record<string, unknown>;
+}
+
+function extractMessageId(result: unknown): string | null {
+  const root = asRecord(result);
+  if (!root) return null;
+
+  const rootMessageId =
+    typeof root.messageId === "string" ? root.messageId : null;
+  if (rootMessageId) return rootMessageId;
+
+  const data = asRecord(root.data);
+  if (!data) return null;
+
+  const messages = Array.isArray(data.messages) ? data.messages : [];
+  if (messages.length === 0) return null;
+
+  const firstMessage = asRecord(messages[0]);
+  if (!firstMessage) return null;
+
+  return typeof firstMessage.id === "string" ? firstMessage.id : null;
+}
+
+function getProviderSummary(result: unknown) {
+  const root = asRecord(result);
+  if (!root) {
+    return {
+      kind: typeof result,
+      ok: false,
+      messageId: null,
+      hasData: false,
+      messagesCount: 0,
+      contactsCount: 0,
+      error: null as string | null,
+    };
+  }
+
+  const data = asRecord(root.data);
+  const messages = Array.isArray(data?.messages) ? data.messages : [];
+  const contacts = Array.isArray(data?.contacts) ? data.contacts : [];
+
+  return {
+    kind: "object",
+    ok: typeof root.ok === "boolean" ? root.ok : null,
+    messageId: extractMessageId(result),
+    hasData: !!data,
+    messagesCount: messages.length,
+    contactsCount: contacts.length,
+    error:
+      typeof root.errorMessage === "string"
+        ? root.errorMessage
+        : typeof root.error === "string"
+        ? root.error
+        : typeof root.message === "string" && root.ok === false
+        ? root.message
+        : null,
+  };
+}
+
+function isProviderAccepted(result: unknown): boolean {
+  const root = asRecord(result);
+  if (!root) return false;
+
+  const okFlag = typeof root.ok === "boolean" ? root.ok : null;
+  const data = asRecord(root.data);
+  const messages = Array.isArray(data?.messages) ? data.messages : [];
+
+  if (okFlag === false) return false;
+  if (messages.length > 0) return true;
+  if (okFlag === true && data) return true;
+  if (okFlag === true) return true;
+
+  return false;
+}
+
+function buildValidationErrorMessage(
+  template: PlantillaWhatsApp,
+  missingFields: string[]
+) {
+  return `Datos incompletos para la plantilla ${template}: faltan ${missingFields.join(
+    ", "
+  )}`;
+}
+
+async function logWhatsAppEvent(params: {
+  traceId: string;
+  template: PlantillaWhatsApp;
+  phone: string;
+  content: string | null;
+  free: boolean;
+  placeholders: string[];
+  extras: Record<string, unknown>;
+  providerResult: unknown;
+  providerAccepted: boolean;
+}) {
+  const {
+    traceId,
+    template,
+    phone,
+    content,
+    free,
+    placeholders,
+    extras,
+    providerResult,
+    providerAccepted,
+  } = params;
+
+  try {
+    const response = await fetch(`${MYCKEO_ADMIN_BASE}/api/events`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": ADMIN_KEY,
+      },
+      body: JSON.stringify({
+        eventType: template,
+        phone,
+        content,
+        data: {
+          traceId,
+          free,
+          placeholders,
+          extras,
+          providerAccepted,
+          providerSummary: getProviderSummary(providerResult),
+        },
+      }),
+    });
+
+    console.log(`[notifyReserva][${traceId}] Evento /api/events registrado`, {
+      status: response.status,
+      ok: response.ok,
+    });
+  } catch (err) {
+    console.error(
+      `[notifyReserva][${traceId}] Error registrando evento /api/events:`,
+      err
+    );
+  }
+}
+
 /* ========================================================================
    FUNCIÓN PRINCIPAL
 ======================================================================== */
 export async function notifyReservaConfirmadaCliente(
   props: NotifyReservaConfirmadaClienteProps
 ): Promise<NotifyResult> {
-  console.log("notifyReservaConfirmadaCliente() llamado con props:", props);
+  const traceId = createTraceId();
+
+  console.log(`[notifyReserva][${traceId}] Inicio`);
+  console.log(`[notifyReserva][${traceId}] Props recibidas:`, {
+    ...props,
+    toMasked: maskPhone(props.to),
+    telefono_cliente_masked: maskPhone(props.telefono_cliente),
+  });
 
   try {
     const {
@@ -92,6 +276,13 @@ export async function notifyReservaConfirmadaCliente(
       ciudad,
     } = props;
 
+    console.log(`[notifyReserva][${traceId}] Plantilla exacta solicitada:`, {
+      template,
+      templateRaw: String(template),
+      isPedidoCreadoUsuarioUsuario:
+        template === PlantillaWhatsApp.PEDIDO_CREADO_USUARIO_USUARIO,
+    });
+
     const descripcionNormalizada =
       template === PlantillaWhatsApp.PEDIDO_CREADO_NEGOCIO
         ? normalizeText(descripcion) || FALLBACK_COMENTARIOS_ADICIONALES
@@ -102,13 +293,33 @@ export async function notifyReservaConfirmadaCliente(
     /* ============================================================
        1. INFO DEL NEGOCIO
     ============================================================ */
-    console.log("Obteniendo información del negocio:", negocioId);
+    console.log(
+      `[notifyReserva][${traceId}] Obteniendo información del negocio...`,
+      { negocioId }
+    );
 
     const negocioInfo = await getInfoNegocioWhatsapp(negocioId);
 
-    console.log("negocioInfo:", negocioInfo);
+    console.log(`[notifyReserva][${traceId}] negocioInfo:`, negocioInfo);
 
-    if (!negocioInfo) throw new Error("Información del negocio no encontrada");
+    if (!negocioInfo) {
+      const errorMessage = "Información del negocio no encontrada";
+      console.error(`[notifyReserva][${traceId}] ${errorMessage}`);
+
+      return {
+        ok: false,
+        free: false,
+        message: null,
+        errorMessage,
+        result: null,
+        traceId,
+        status: "validation_error",
+        providerAccepted: false,
+        templateName: template,
+        phone: to,
+        messageId: null,
+      };
+    }
 
     const slugNegocio = negocioInfo.slugNegocio;
     const reservas_negocio = `https://myckeo.com/reservas/${slugNegocio}`;
@@ -118,32 +329,74 @@ export async function notifyReservaConfirmadaCliente(
     /* ============================================================
        2. VALIDAR TELÉFONO
     ============================================================ */
-    console.log("Validando teléfono:", to);
+    console.log(`[notifyReserva][${traceId}] Validando teléfono destino...`, {
+      to,
+      toMasked: maskPhone(to),
+    });
 
     const normalizedTo = normalizeText(to);
 
     if (!normalizedTo.startsWith("+") || !/^\+\d{10,15}$/.test(normalizedTo)) {
-      throw new Error("Número inválido (E.164 requerido)");
+      const errorMessage = `Número inválido (E.164 requerido): ${normalizedTo}`;
+      console.error(`[notifyReserva][${traceId}] ${errorMessage}`);
+
+      return {
+        ok: false,
+        free: false,
+        message: null,
+        errorMessage,
+        result: null,
+        traceId,
+        status: "validation_error",
+        providerAccepted: false,
+        templateName: template,
+        phone: normalizedTo,
+        messageId: null,
+      };
     }
 
     /* ============================================================
        3. ARMAR VARIABLES PARA LA PLANTILLA
     ============================================================ */
-    console.log("Construyendo variables para plantilla:", template);
+    console.log(
+      `[notifyReserva][${traceId}] Construyendo variables para plantilla...`,
+      { template }
+    );
 
     let variables: string[] = [];
     let placeholderNames: string[] = [];
     let languageCode = "es";
 
     switch (template) {
-      case PlantillaWhatsApp.CONFIRMACION_RESERVA_CLIENTE:
-        if (!nombre_cliente || !fechaHora || !enlace_cancelar)
-          throw new Error("Datos incompletos");
+      case PlantillaWhatsApp.CONFIRMACION_RESERVA_CLIENTE: {
+        const missing: string[] = [];
+        if (!nombre_cliente) missing.push("nombre_cliente");
+        if (!fechaHora) missing.push("fechaHora");
+        if (!enlace_cancelar) missing.push("enlace_cancelar");
+
+        if (missing.length > 0) {
+          const errorMessage = buildValidationErrorMessage(template, missing);
+          console.error(`[notifyReserva][${traceId}] ${errorMessage}`);
+          return {
+            ok: false,
+            free: false,
+            message: null,
+            errorMessage,
+            result: null,
+            traceId,
+            status: "validation_error",
+            providerAccepted: false,
+            templateName: template,
+            phone: normalizedTo,
+            messageId: null,
+          };
+        }
+
         variables = [
-          nombre_cliente,
+          nombre_cliente!,
           nombre_negocio,
-          fechaHora,
-          enlace_cancelar,
+          fechaHora!,
+          enlace_cancelar!,
           descripcionNormalizada ?? "",
         ];
         placeholderNames = [
@@ -154,15 +407,37 @@ export async function notifyReservaConfirmadaCliente(
           "descripcion",
         ];
         break;
+      }
 
-      case PlantillaWhatsApp.CONFIRMAR_NEGOCIO_RESERVA:
-        if (!nombre_cliente || !telefono_cliente || !fechaHora)
-          throw new Error("Datos incompletos");
+      case PlantillaWhatsApp.CONFIRMAR_NEGOCIO_RESERVA: {
+        const missing: string[] = [];
+        if (!nombre_cliente) missing.push("nombre_cliente");
+        if (!telefono_cliente) missing.push("telefono_cliente");
+        if (!fechaHora) missing.push("fechaHora");
+
+        if (missing.length > 0) {
+          const errorMessage = buildValidationErrorMessage(template, missing);
+          console.error(`[notifyReserva][${traceId}] ${errorMessage}`);
+          return {
+            ok: false,
+            free: false,
+            message: null,
+            errorMessage,
+            result: null,
+            traceId,
+            status: "validation_error",
+            providerAccepted: false,
+            templateName: template,
+            phone: normalizedTo,
+            messageId: null,
+          };
+        }
+
         variables = [
           nombre_negocio,
-          nombre_cliente,
-          telefono_cliente,
-          fechaHora,
+          nombre_cliente!,
+          telefono_cliente!,
+          fechaHora!,
           enlace_reserva,
         ];
         placeholderNames = [
@@ -174,13 +449,35 @@ export async function notifyReservaConfirmadaCliente(
         ];
         languageCode = "es_CO";
         break;
+      }
 
-      case PlantillaWhatsApp.RESERVA_CANCELADA_USUARIO:
-        if (!nombre_cliente || !fechaHora) throw new Error("Datos incompletos");
+      case PlantillaWhatsApp.RESERVA_CANCELADA_USUARIO: {
+        const missing: string[] = [];
+        if (!nombre_cliente) missing.push("nombre_cliente");
+        if (!fechaHora) missing.push("fechaHora");
+
+        if (missing.length > 0) {
+          const errorMessage = buildValidationErrorMessage(template, missing);
+          console.error(`[notifyReserva][${traceId}] ${errorMessage}`);
+          return {
+            ok: false,
+            free: false,
+            message: null,
+            errorMessage,
+            result: null,
+            traceId,
+            status: "validation_error",
+            providerAccepted: false,
+            templateName: template,
+            phone: normalizedTo,
+            messageId: null,
+          };
+        }
+
         variables = [
-          nombre_cliente,
+          nombre_cliente!,
           nombre_negocio,
-          fechaHora,
+          fechaHora!,
           reservas_negocio,
         ];
         placeholderNames = [
@@ -190,15 +487,37 @@ export async function notifyReservaConfirmadaCliente(
           "reservas_negocio",
         ];
         break;
+      }
 
-      case PlantillaWhatsApp.RESERVA_CANCELADA_NEGOCIO:
-        if (!nombre_cliente || !fechaHora || !telefono_cliente)
-          throw new Error("Datos incompletos");
+      case PlantillaWhatsApp.RESERVA_CANCELADA_NEGOCIO: {
+        const missing: string[] = [];
+        if (!nombre_cliente) missing.push("nombre_cliente");
+        if (!fechaHora) missing.push("fechaHora");
+        if (!telefono_cliente) missing.push("telefono_cliente");
+
+        if (missing.length > 0) {
+          const errorMessage = buildValidationErrorMessage(template, missing);
+          console.error(`[notifyReserva][${traceId}] ${errorMessage}`);
+          return {
+            ok: false,
+            free: false,
+            message: null,
+            errorMessage,
+            result: null,
+            traceId,
+            status: "validation_error",
+            providerAccepted: false,
+            templateName: template,
+            phone: normalizedTo,
+            messageId: null,
+          };
+        }
+
         variables = [
-          nombre_cliente,
+          nombre_cliente!,
           nombre_negocio,
-          fechaHora,
-          telefono_cliente,
+          fechaHora!,
+          telefono_cliente!,
           enlace_reserva,
         ];
         placeholderNames = [
@@ -209,21 +528,39 @@ export async function notifyReservaConfirmadaCliente(
           "enlace_reserva",
         ];
         break;
+      }
 
-      case PlantillaWhatsApp.RESERVA_REPROGRAMADA_USUARIO:
-        if (
-          !nombre_cliente ||
-          !fecha_anterior ||
-          !fecha_nueva ||
-          !enlace_cancelar
-        )
-          throw new Error("Datos incompletos");
+      case PlantillaWhatsApp.RESERVA_REPROGRAMADA_USUARIO: {
+        const missing: string[] = [];
+        if (!nombre_cliente) missing.push("nombre_cliente");
+        if (!fecha_anterior) missing.push("fecha_anterior");
+        if (!fecha_nueva) missing.push("fecha_nueva");
+        if (!enlace_cancelar) missing.push("enlace_cancelar");
+
+        if (missing.length > 0) {
+          const errorMessage = buildValidationErrorMessage(template, missing);
+          console.error(`[notifyReserva][${traceId}] ${errorMessage}`);
+          return {
+            ok: false,
+            free: false,
+            message: null,
+            errorMessage,
+            result: null,
+            traceId,
+            status: "validation_error",
+            providerAccepted: false,
+            templateName: template,
+            phone: normalizedTo,
+            messageId: null,
+          };
+        }
+
         variables = [
-          nombre_cliente,
+          nombre_cliente!,
           nombre_negocio,
-          fecha_anterior,
-          fecha_nueva,
-          enlace_cancelar,
+          fecha_anterior!,
+          fecha_nueva!,
+          enlace_cancelar!,
         ];
         placeholderNames = [
           "nombre_cliente",
@@ -233,23 +570,41 @@ export async function notifyReservaConfirmadaCliente(
           "enlace_cancelar",
         ];
         break;
+      }
 
-      case PlantillaWhatsApp.PEDIDO_CREADO_NEGOCIO:
-        if (
-          !valor_compra ||
-          !datos_pedido ||
-          !nombre_cliente ||
-          !telefono_cliente ||
-          !direccion
-        )
-          throw new Error("Datos incompletos");
+      case PlantillaWhatsApp.PEDIDO_CREADO_NEGOCIO: {
+        const missing: string[] = [];
+        if (!valor_compra) missing.push("valor_compra");
+        if (!datos_pedido) missing.push("datos_pedido");
+        if (!nombre_cliente) missing.push("nombre_cliente");
+        if (!telefono_cliente) missing.push("telefono_cliente");
+        if (!direccion) missing.push("direccion");
+
+        if (missing.length > 0) {
+          const errorMessage = buildValidationErrorMessage(template, missing);
+          console.error(`[notifyReserva][${traceId}] ${errorMessage}`);
+          return {
+            ok: false,
+            free: false,
+            message: null,
+            errorMessage,
+            result: null,
+            traceId,
+            status: "validation_error",
+            providerAccepted: false,
+            templateName: template,
+            phone: normalizedTo,
+            messageId: null,
+          };
+        }
+
         variables = [
           nombre_negocio,
-          datos_pedido,
-          valor_compra,
-          nombre_cliente,
-          telefono_cliente,
-          direccion,
+          datos_pedido!,
+          valor_compra!,
+          nombre_cliente!,
+          telefono_cliente!,
+          direccion!,
           descripcionNormalizada,
         ];
         placeholderNames = [
@@ -262,23 +617,42 @@ export async function notifyReservaConfirmadaCliente(
           "descripcion",
         ];
         break;
+      }
 
-      case PlantillaWhatsApp.PEDIDO_CREADO_USUARIO_USUARIO:
-        if (
-          !valor_compra ||
-          !datos_pedido ||
-          !nombre_cliente ||
-          !direccion ||
-          !ciudad
-        )
-          throw new Error("Datos incompletos");
+      case PlantillaWhatsApp.PEDIDO_CREADO_USUARIO_USUARIO: {
+        const missing: string[] = [];
+        if (!valor_compra) missing.push("valor_compra");
+        if (!datos_pedido) missing.push("datos_pedido");
+        if (!nombre_cliente) missing.push("nombre_cliente");
+        if (!direccion) missing.push("direccion");
+        if (!ciudad) missing.push("ciudad");
+
+        if (missing.length > 0) {
+          const errorMessage = buildValidationErrorMessage(template, missing);
+          console.error(`[notifyReserva][${traceId}] ${errorMessage}`);
+          return {
+            ok: false,
+            free: false,
+            message: null,
+            errorMessage,
+            result: null,
+            traceId,
+            status: "validation_error",
+            providerAccepted: false,
+            templateName: template,
+            phone: normalizedTo,
+            messageId: null,
+          };
+        }
+
+        // Importante: NO cambiamos el nombre de la plantilla.
         variables = [
-          nombre_cliente,
+          nombre_cliente!,
           nombre_negocio,
-          datos_pedido,
-          valor_compra,
-          direccion,
-          ciudad,
+          datos_pedido!,
+          valor_compra!,
+          direccion!,
+          ciudad!,
         ];
         placeholderNames = [
           "nombre_cliente",
@@ -289,16 +663,39 @@ export async function notifyReservaConfirmadaCliente(
           "ciudad",
         ];
         break;
+      }
 
-      case PlantillaWhatsApp.PEDIDO_CREADO_NEGOCIO_USUARIO:
-        if (!nombre_cliente || !datos_pedido || !valor_compra || !direccion)
-          throw new Error("Datos incompletos");
+      case PlantillaWhatsApp.PEDIDO_CREADO_NEGOCIO_USUARIO: {
+        const missing: string[] = [];
+        if (!nombre_cliente) missing.push("nombre_cliente");
+        if (!datos_pedido) missing.push("datos_pedido");
+        if (!valor_compra) missing.push("valor_compra");
+        if (!direccion) missing.push("direccion");
+
+        if (missing.length > 0) {
+          const errorMessage = buildValidationErrorMessage(template, missing);
+          console.error(`[notifyReserva][${traceId}] ${errorMessage}`);
+          return {
+            ok: false,
+            free: false,
+            message: null,
+            errorMessage,
+            result: null,
+            traceId,
+            status: "validation_error",
+            providerAccepted: false,
+            templateName: template,
+            phone: normalizedTo,
+            messageId: null,
+          };
+        }
+
         variables = [
-          nombre_cliente,
+          nombre_cliente!,
           nombre_negocio,
-          datos_pedido,
-          valor_compra,
-          direccion,
+          datos_pedido!,
+          valor_compra!,
+          direccion!,
         ];
         placeholderNames = [
           "nombre_cliente",
@@ -308,15 +705,37 @@ export async function notifyReservaConfirmadaCliente(
           "direccion",
         ];
         break;
+      }
 
-      case PlantillaWhatsApp.PEDIDO_CANCELADO_NEGOCIO:
-        if (!nombre_cliente || !datos_pedido || !valor_compra)
-          throw new Error("Datos incompletos");
+      case PlantillaWhatsApp.PEDIDO_CANCELADO_NEGOCIO: {
+        const missing: string[] = [];
+        if (!nombre_cliente) missing.push("nombre_cliente");
+        if (!datos_pedido) missing.push("datos_pedido");
+        if (!valor_compra) missing.push("valor_compra");
+
+        if (missing.length > 0) {
+          const errorMessage = buildValidationErrorMessage(template, missing);
+          console.error(`[notifyReserva][${traceId}] ${errorMessage}`);
+          return {
+            ok: false,
+            free: false,
+            message: null,
+            errorMessage,
+            result: null,
+            traceId,
+            status: "validation_error",
+            providerAccepted: false,
+            templateName: template,
+            phone: normalizedTo,
+            messageId: null,
+          };
+        }
+
         variables = [
-          nombre_cliente,
+          nombre_cliente!,
           nombre_negocio,
-          datos_pedido,
-          valor_compra,
+          datos_pedido!,
+          valor_compra!,
         ];
         placeholderNames = [
           "nombre_cliente",
@@ -325,25 +744,64 @@ export async function notifyReservaConfirmadaCliente(
           "valor_compra",
         ];
         break;
+      }
 
-      default:
-        throw new Error("Plantilla no reconocida");
+      default: {
+        const errorMessage = `Plantilla no reconocida: ${String(template)}`;
+        console.error(`[notifyReserva][${traceId}] ${errorMessage}`);
+
+        return {
+          ok: false,
+          free: false,
+          message: null,
+          errorMessage,
+          result: null,
+          traceId,
+          status: "validation_error",
+          providerAccepted: false,
+          templateName: template,
+          phone: normalizedTo,
+          messageId: null,
+        };
+      }
     }
 
-    console.log("variables:", variables);
-    console.log("placeholderNames:", placeholderNames);
+    console.log(`[notifyReserva][${traceId}] Variables construidas OK`, {
+      template,
+      languageCode,
+      placeholderNames,
+      variables,
+    });
 
     if (variables.some((v) => !v || v.trim() === "")) {
-      console.error("Variables inválidas:", variables);
-      throw new Error("Variables vacías o inválidas");
+      const errorMessage = `Variables vacías o inválidas para plantilla ${template}`;
+      console.error(`[notifyReserva][${traceId}] ${errorMessage}`, {
+        variables,
+      });
+
+      return {
+        ok: false,
+        free: false,
+        message: null,
+        errorMessage,
+        result: null,
+        traceId,
+        status: "validation_error",
+        providerAccepted: false,
+        templateName: template,
+        phone: normalizedTo,
+        messageId: null,
+      };
     }
 
     /* ============================================================
        4. VERIFICAR VENTANA 24H
     ============================================================ */
-    console.log("Revisando ventana de 24h...");
-    console.log("Teléfono destino:", normalizedTo);
-    console.log("ADMIN_KEY (últimos 6):", ADMIN_KEY.slice(-6));
+    console.log(`[notifyReserva][${traceId}] Revisando ventana de 24h...`, {
+      phone: normalizedTo,
+      phoneMasked: maskPhone(normalizedTo),
+      adminKeyLast6: ADMIN_KEY.slice(-6),
+    });
 
     let isWindowOpen = false;
     let windowCheckOk = false;
@@ -351,10 +809,21 @@ export async function notifyReservaConfirmadaCliente(
     let windowJsonResponse: WindowResponse | null = null;
 
     try {
-      const requestBody = JSON.stringify({ phone: normalizedTo, key: ADMIN_KEY });
-      console.log("Enviando POST a /api/whatsapp/window");
-      console.log("URL:", `${MYCKEO_ADMIN_BASE}/api/whatsapp/window`);
-      console.log("Body:", requestBody);
+      const requestBody = JSON.stringify({
+        phone: normalizedTo,
+        key: ADMIN_KEY,
+      });
+
+      console.log(
+        `[notifyReserva][${traceId}] Enviando POST a /api/whatsapp/window`,
+        {
+          url: `${MYCKEO_ADMIN_BASE}/api/whatsapp/window`,
+          bodyPreview: {
+            phone: normalizedTo,
+            keyLast6: ADMIN_KEY.slice(-6),
+          },
+        }
+      );
 
       const response = await fetch(`${MYCKEO_ADMIN_BASE}/api/whatsapp/window`, {
         method: "POST",
@@ -367,40 +836,61 @@ export async function notifyReservaConfirmadaCliente(
 
       windowRawResponse = await response.text();
 
-      console.log("Respuesta RAW completa de /api/whatsapp/window:");
+      console.log(
+        `[notifyReserva][${traceId}] Respuesta RAW /api/whatsapp/window:`
+      );
       console.log(windowRawResponse);
-      console.log("Status HTTP:", response.status, response.statusText);
+      console.log(`[notifyReserva][${traceId}] Status HTTP ventana:`, {
+        status: response.status,
+        statusText: response.statusText,
+        ok: response.ok,
+      });
 
       if (response.ok && windowRawResponse.trim().length > 0) {
         try {
           windowJsonResponse = JSON.parse(windowRawResponse) as WindowResponse;
-          console.log("JSON parseado correctamente:", windowJsonResponse);
-
           isWindowOpen = windowJsonResponse.isOpen === true;
           windowCheckOk = true;
+
+          console.log(
+            `[notifyReserva][${traceId}] JSON ventana parseado correctamente:`,
+            windowJsonResponse
+          );
         } catch (parseErr) {
           console.error(
-            "Error parseando JSON de ventana:",
-            (parseErr as Error).message
+            `[notifyReserva][${traceId}] Error parseando JSON de ventana:`,
+            parseErr
           );
-          console.error("Contenido recibido:", windowRawResponse);
+          console.error(
+            `[notifyReserva][${traceId}] Contenido recibido:`,
+            windowRawResponse
+          );
         }
       } else {
-        console.error("Error HTTP en ventana 24h");
-        console.error("Status:", response.status);
-        console.error("Body:", windowRawResponse);
+        console.error(
+          `[notifyReserva][${traceId}] Error HTTP en verificación de ventana`,
+          {
+            status: response.status,
+            body: windowRawResponse,
+          }
+        );
       }
     } catch (err) {
       console.error(
-        "Error de red al consultar ventana 24h:",
-        (err as Error).message
+        `[notifyReserva][${traceId}] Error de red al consultar ventana 24h:`,
+        err
       );
     }
 
-    /* ============================================================
-       5. SI HAY VENTANA → MENSAJE GRATIS
-    ============================================================ */
+    console.log(`[notifyReserva][${traceId}] Resultado ventana 24h:`, {
+      windowCheckOk,
+      isWindowOpen,
+      windowJsonResponse,
+    });
 
+    /* ============================================================
+       EXTRAS PARA EVENTOS
+    ============================================================ */
     const extras = {
       nombre_cliente,
       telefono_cliente,
@@ -415,16 +905,38 @@ export async function notifyReservaConfirmadaCliente(
       enlace_cancelar,
       nombre_negocio,
       slugNegocio,
+      template,
+      languageCode,
     };
 
+    /* ============================================================
+       5. SI HAY VENTANA → MENSAJE GRATIS
+    ============================================================ */
     if (windowCheckOk && isWindowOpen) {
-      console.log("Ventana ABIERTA → Enviando mensaje GRATIS");
+      console.log(
+        `[notifyReserva][${traceId}] Ventana ABIERTA → enviando mensaje GRATIS`
+      );
 
       const builder =
         TemplateBuilders[template as keyof typeof TemplateBuilders];
 
       if (!builder) {
-        throw new Error("No existe builder para la plantilla");
+        const errorMessage = `No existe builder para la plantilla ${template}`;
+        console.error(`[notifyReserva][${traceId}] ${errorMessage}`);
+
+        return {
+          ok: false,
+          free: true,
+          message: null,
+          errorMessage,
+          result: null,
+          traceId,
+          status: "validation_error",
+          providerAccepted: false,
+          templateName: template,
+          phone: normalizedTo,
+          messageId: null,
+        };
       }
 
       const messageText = builder({
@@ -444,30 +956,70 @@ export async function notifyReservaConfirmadaCliente(
         descripcion: descripcionNormalizada,
       } as TemplateVariables);
 
-      console.log("Texto generado GRATIS:");
+      console.log(`[notifyReserva][${traceId}] Texto generado GRATIS:`);
       console.log(messageText);
 
-      const freeRes = await sendWhatsApp({ to: normalizedTo, text: messageText });
-
-      console.log("Resultado envío GRATIS:", freeRes);
-
-      await fetch(`${MYCKEO_ADMIN_BASE}/api/events`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-api-key": ADMIN_KEY,
-        },
-        body: JSON.stringify({
-          eventType: template,
-          phone: normalizedTo,
-          content: messageText,
-          data: {
-            free: true,
-            placeholders: variables,
-            extras,
-          },
-        }),
+      const freeRes = await sendWhatsApp({
+        to: normalizedTo,
+        text: messageText,
       });
+
+      const freeAccepted = isProviderAccepted(freeRes);
+      const freeMessageId = extractMessageId(freeRes);
+
+      console.log(
+        `[notifyReserva][${traceId}] Resultado envío GRATIS (raw):`,
+        freeRes
+      );
+      console.log(
+        `[notifyReserva][${traceId}] Resultado envío GRATIS (summary):`,
+        getProviderSummary(freeRes)
+      );
+
+      await logWhatsAppEvent({
+        traceId,
+        template,
+        phone: normalizedTo,
+        content: messageText,
+        free: true,
+        placeholders: variables,
+        extras,
+        providerResult: freeRes,
+        providerAccepted: freeAccepted,
+      });
+
+      if (!freeAccepted) {
+        const errorMessage =
+          "WhatsApp no confirmó la aceptación del mensaje libre.";
+
+        console.error(`[notifyReserva][${traceId}] ${errorMessage}`, {
+          providerSummary: getProviderSummary(freeRes),
+          providerRaw: safeStringify(freeRes),
+        });
+
+        return {
+          ok: false,
+          free: true,
+          message: null,
+          errorMessage,
+          result: freeRes,
+          traceId,
+          status: "free_failed",
+          providerAccepted: false,
+          templateName: template,
+          phone: normalizedTo,
+          messageId: freeMessageId,
+        };
+      }
+
+      console.log(
+        `[notifyReserva][${traceId}] Mensaje GRATIS aceptado por el provider`,
+        {
+          messageId: freeMessageId,
+          to: normalizedTo,
+          toMasked: maskPhone(normalizedTo),
+        }
+      );
 
       return {
         ok: true,
@@ -475,42 +1027,95 @@ export async function notifyReservaConfirmadaCliente(
         message: messageText,
         errorMessage: null,
         result: freeRes,
+        traceId,
+        status: "free_sent",
+        providerAccepted: true,
+        templateName: template,
+        phone: normalizedTo,
+        messageId: freeMessageId,
       };
     }
 
     /* ============================================================
        6. SIN VENTANA → PLANTILLA PAGA
     ============================================================ */
-    console.log("Ventana CERRADA o fallo en API → Enviando PLANTILLA PAGA");
+    console.log(
+      `[notifyReserva][${traceId}] Ventana CERRADA o fallo en API → enviando PLANTILLA PAGA`
+    );
 
-    const paidRes = await sendWhatsAppMessage({
+    const templatePayload = {
       to: normalizedTo,
       templateName: template,
       placeholderNames,
       variables,
       ttl: 1800,
       languageCode,
+    };
+
+    console.log(
+      `[notifyReserva][${traceId}] Payload sendWhatsAppMessage:`,
+      templatePayload
+    );
+
+    const paidRes = await sendWhatsAppMessage(templatePayload);
+
+    const paidAccepted = isProviderAccepted(paidRes);
+    const paidMessageId = extractMessageId(paidRes);
+
+    console.log(
+      `[notifyReserva][${traceId}] Resultado PLANTILLA (raw):`,
+      paidRes
+    );
+    console.log(
+      `[notifyReserva][${traceId}] Resultado PLANTILLA (summary):`,
+      getProviderSummary(paidRes)
+    );
+
+    await logWhatsAppEvent({
+      traceId,
+      template,
+      phone: normalizedTo,
+      content: null,
+      free: false,
+      placeholders: variables,
+      extras,
+      providerResult: paidRes,
+      providerAccepted: paidAccepted,
     });
 
-    console.log("Resultado PLANTILLA:", paidRes);
+    if (!paidAccepted) {
+      const errorMessage = `WhatsApp no confirmó la aceptación de la plantilla ${template}.`;
 
-    await fetch(`${MYCKEO_ADMIN_BASE}/api/events`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": ADMIN_KEY,
-      },
-      body: JSON.stringify({
-        eventType: template,
+      console.error(`[notifyReserva][${traceId}] ${errorMessage}`, {
+        providerSummary: getProviderSummary(paidRes),
+        providerRaw: safeStringify(paidRes),
+      });
+
+      return {
+        ok: false,
+        free: false,
+        message: null,
+        errorMessage,
+        result: paidRes,
+        traceId,
+        status: "template_failed",
+        providerAccepted: false,
+        templateName: template,
         phone: normalizedTo,
-        content: null,
-        data: {
-          free: false,
-          placeholders: variables,
-          extras,
-        },
-      }),
-    });
+        messageId: paidMessageId,
+      };
+    }
+
+    console.log(
+      `[notifyReserva][${traceId}] Plantilla aceptada por el provider`,
+      {
+        template,
+        languageCode,
+        messageId: paidMessageId,
+        to: normalizedTo,
+        toMasked: maskPhone(normalizedTo),
+      }
+    );
 
     return {
       ok: true,
@@ -518,12 +1123,22 @@ export async function notifyReservaConfirmadaCliente(
       message: null,
       errorMessage: null,
       result: paidRes,
+      traceId,
+      status: "template_sent",
+      providerAccepted: true,
+      templateName: template,
+      phone: normalizedTo,
+      messageId: paidMessageId,
     };
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Error desconocido";
 
-    console.error("ERROR en notifyReservaConfirmadaCliente:", msg);
-    if (err instanceof Error) console.error("Stack:", err.stack);
+    console.error(`[notifyReserva][${traceId}] ERROR general:`, msg);
+    if (err instanceof Error) {
+      console.error(`[notifyReserva][${traceId}] Stack:`, err.stack);
+    } else {
+      console.error(`[notifyReserva][${traceId}] Error raw:`, err);
+    }
 
     return {
       ok: false,
@@ -531,6 +1146,12 @@ export async function notifyReservaConfirmadaCliente(
       message: null,
       errorMessage: msg,
       result: null,
+      traceId,
+      status: "exception",
+      providerAccepted: false,
+      templateName: props.template,
+      phone: props.to,
+      messageId: null,
     };
   }
 }

@@ -1,12 +1,6 @@
 "use client";
 
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Box,
   Grid,
@@ -25,11 +19,13 @@ import {
 } from "@mui/material";
 import { CheckCircleOutline, ErrorOutline } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { useCartCatalogoStore } from "@/store/carro/carro-store";
 import { useAddressStore } from "@/store/address/address-store";
 import { fetchNegocioName } from "@/carro/componentes/ProductsInCart";
 import { createNewPedido } from "../actions/createNewPedido";
+
+type ModalStatus = "idle" | "loading" | "success" | "error";
 
 const MotionBox = motion(Box);
 
@@ -40,27 +36,36 @@ const CheckoutOrderTotal: React.FC = () => {
 
   const [negocioNames, setNegocioNames] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(true);
+
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [modalStatus, setModalStatus] = useState<ModalStatus>("idle");
 
   const redirectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const cartEntries = useMemo(() => Object.entries(carts), [carts]);
+  const cartEntries = useMemo(
+    () => Object.entries(carts ?? {}),
+    [carts]
+  );
+
+  const nonEmptyCartEntries = useMemo(
+    () => cartEntries.filter(([, items]) => Array.isArray(items) && items.length > 0),
+    [cartEntries]
+  );
 
   const totalGlobal = useMemo(() => {
-    return cartEntries.reduce((globalSum, [, items]) => {
+    return nonEmptyCartEntries.reduce((globalSum, [, items]) => {
       return (
         globalSum +
         items.reduce((sum, item) => sum + item.precio * item.cantidad, 0)
       );
     }, 0);
-  }, [cartEntries]);
+  }, [nonEmptyCartEntries]);
 
-  const hasItems = useMemo(() => {
-    return cartEntries.some(([, items]) => items.length > 0);
-  }, [cartEntries]);
+  const hasItems = nonEmptyCartEntries.length > 0;
+  const isSubmitting = modalStatus === "loading";
+  const isSuccess = modalStatus === "success";
+  const isError = modalStatus === "error";
 
   const clearRedirectTimeout = useCallback(() => {
     if (redirectTimeoutRef.current) {
@@ -109,8 +114,7 @@ const CheckoutOrderTotal: React.FC = () => {
 
         if (!isMounted) return;
 
-        const names = Object.fromEntries(namesArray);
-        setNegocioNames(names);
+        setNegocioNames(Object.fromEntries(namesArray));
       } finally {
         if (isMounted) {
           setIsLoading(false);
@@ -131,36 +135,44 @@ const CheckoutOrderTotal: React.FC = () => {
     };
   }, [clearRedirectTimeout]);
 
+  const openFeedbackModal = useCallback((status: ModalStatus, message: string) => {
+    setModalStatus(status);
+    setModalMessage(message);
+    setModalOpen(true);
+  }, []);
+
   const handleCloseModal = useCallback(() => {
     if (isSubmitting) return;
+
     setModalOpen(false);
+
+    window.setTimeout(() => {
+      setModalStatus("idle");
+      setModalMessage("");
+    }, 180);
   }, [isSubmitting]);
 
   const handleCreatePedido = useCallback(async () => {
     if (isSubmitting) return;
 
     if (!hasItems) {
-      setModalOpen(true);
-      setModalMessage("Tu carrito está vacío.");
-      setIsSuccess(false);
+      openFeedbackModal("error", "Tu carrito está vacío.");
       return;
     }
 
-    if (!address?.orderType) {
-      setModalOpen(true);
-      setModalMessage("Faltan los datos del pedido.");
-      setIsSuccess(false);
+    if (!address?.orderType || !address?.clientName || !address?.clientPhone) {
+      openFeedbackModal(
+        "error",
+        "Faltan datos del pedido. Revisa la información antes de continuar."
+      );
       return;
     }
 
-    setIsSubmitting(true);
-    setModalOpen(true);
-    setModalMessage("Creando pedidos...");
-    setIsSuccess(false);
+    openFeedbackModal("loading", "Creando pedidos...");
 
     try {
       const responses = await Promise.all(
-        cartEntries.map(async ([slug, items]) => {
+        nonEmptyCartEntries.map(async ([slug, items]) => {
           const totalAmount = items.reduce(
             (sum, item) => sum + item.precio * item.cantidad,
             0
@@ -188,18 +200,18 @@ const CheckoutOrderTotal: React.FC = () => {
         })
       );
 
-      const allSuccess = responses.every(({ response }) => response.ok);
+      const allSuccess = responses.every(({ response }) => response?.ok);
 
       const messages = responses
         .map(({ slug, response }) => {
           const name = negocioNames[slug] || slug || "Negocio";
-          return `${name}: ${response.ok ? "Éxito" : `Error - ${response.message}`}`;
+          return `${name}: ${response?.ok ? "Éxito" : `Error - ${response?.message || "Sin detalle"}`}`;
         })
         .join("\n");
 
       if (allSuccess) {
-        setModalMessage(`Todos los pedidos creados exitosamente.\n${messages}`);
-        setIsSuccess(true);
+        setModalStatus("success");
+        setModalMessage(`Todos los pedidos fueron creados exitosamente.\n${messages}`);
 
         clearCart();
         clearAddress();
@@ -209,35 +221,35 @@ const CheckoutOrderTotal: React.FC = () => {
           router.push("/");
         }, 3000);
       } else {
+        setModalStatus("error");
         setModalMessage(`Algunos pedidos fallaron:\n${messages}`);
-        setIsSuccess(false);
       }
     } catch (error) {
       console.error("Error en handleCreatePedido:", error);
+
+      setModalStatus("error");
       setModalMessage(
         error instanceof Error
           ? error.message
           : "Error inesperado al crear los pedidos."
       );
-      setIsSuccess(false);
-    } finally {
-      setIsSubmitting(false);
     }
   }, [
     address,
-    cartEntries,
     clearAddress,
     clearCart,
     clearRedirectTimeout,
     hasItems,
     isSubmitting,
     negocioNames,
+    nonEmptyCartEntries,
+    openFeedbackModal,
     router,
   ]);
 
   const CartSummary = () => (
     <>
-      {cartEntries.map(([slug, items]) => {
+      {nonEmptyCartEntries.map(([slug, items]) => {
         const subtotal = items.reduce(
           (sum, item) => sum + item.precio * item.cantidad,
           0
@@ -258,58 +270,50 @@ const CheckoutOrderTotal: React.FC = () => {
               variant="h6"
               sx={{ mb: 2, fontWeight: 600, color: "text.primary" }}
             >
-              {negocioNames[slug] || "Negocio Desconocido"}
+              {negocioNames[slug] || "Negocio desconocido"}
             </Typography>
 
-            {items.length === 0 ? (
-              <Typography variant="body2" color="text.secondary">
-                No hay productos en este carrito.
+            <List disablePadding>
+              {items.map((item) => (
+                <ListItem key={item.id} sx={{ py: 1, px: 0 }}>
+                  <ListItemText
+                    primary={`${item.nombre} x ${item.cantidad}`}
+                    secondary={`${formatCurrency(item.precio)} cada uno`}
+                    primaryTypographyProps={{
+                      variant: "body1",
+                      fontWeight: 500,
+                    }}
+                    secondaryTypographyProps={{
+                      variant: "body2",
+                      color: "text.secondary",
+                    }}
+                  />
+                  <Typography
+                    variant="body1"
+                    sx={{ fontWeight: 600, ml: 2, flexShrink: 0 }}
+                  >
+                    {formatCurrency(item.precio * item.cantidad)}
+                  </Typography>
+                </ListItem>
+              ))}
+            </List>
+
+            <Divider sx={{ my: 2 }} />
+
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                Subtotal:
               </Typography>
-            ) : (
-              <>
-                <List disablePadding>
-                  {items.map((item) => (
-                    <ListItem key={item.id} sx={{ py: 1, px: 0 }}>
-                      <ListItemText
-                        primary={`${item.nombre} x ${item.cantidad}`}
-                        secondary={`${formatCurrency(item.precio)} cada uno`}
-                        primaryTypographyProps={{
-                          variant: "body1",
-                          fontWeight: 500,
-                        }}
-                        secondaryTypographyProps={{
-                          variant: "body2",
-                          color: "text.secondary",
-                        }}
-                      />
-                      <Typography
-                        variant="body1"
-                        sx={{ fontWeight: 600, ml: 2, flexShrink: 0 }}
-                      >
-                        {formatCurrency(item.precio * item.cantidad)}
-                      </Typography>
-                    </ListItem>
-                  ))}
-                </List>
-
-                <Divider sx={{ my: 2 }} />
-
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                  }}
-                >
-                  <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-                    Subtotal:
-                  </Typography>
-                  <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-                    {formatCurrency(subtotal)}
-                  </Typography>
-                </Box>
-              </>
-            )}
+              <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                {formatCurrency(subtotal)}
+              </Typography>
+            </Box>
           </Paper>
         );
       })}
@@ -326,7 +330,7 @@ const CheckoutOrderTotal: React.FC = () => {
         }}
       >
         <Typography variant="h6" sx={{ fontWeight: 600, color: "text.primary" }}>
-          Total Global:
+          Total global:
         </Typography>
 
         <Typography variant="h6" sx={{ fontWeight: 700, color: "grey.900" }}>
@@ -343,6 +347,7 @@ const CheckoutOrderTotal: React.FC = () => {
         p: { xs: 2, sm: 3 },
         borderRadius: 3,
         bgcolor: "background.paper",
+        height: "100%",
       }}
     >
       <Typography
@@ -391,7 +396,7 @@ const CheckoutOrderTotal: React.FC = () => {
             <ListItem sx={{ py: 0.5, px: 0 }}>
               <ListItemText
                 primary="País"
-                secondary={address.country || "No especificado"}
+                secondary={address?.country || "No especificado"}
                 primaryTypographyProps={{ fontWeight: 500 }}
                 secondaryTypographyProps={{ color: "text.secondary" }}
               />
@@ -400,7 +405,7 @@ const CheckoutOrderTotal: React.FC = () => {
             <ListItem sx={{ py: 0.5, px: 0 }}>
               <ListItemText
                 primary="Departamento"
-                secondary={address.departamento || "No especificado"}
+                secondary={address?.departamento || "No especificado"}
                 primaryTypographyProps={{ fontWeight: 500 }}
                 secondaryTypographyProps={{ color: "text.secondary" }}
               />
@@ -409,7 +414,7 @@ const CheckoutOrderTotal: React.FC = () => {
             <ListItem sx={{ py: 0.5, px: 0 }}>
               <ListItemText
                 primary="Ciudad"
-                secondary={address.ciudad || "No especificado"}
+                secondary={address?.ciudad || "No especificado"}
                 primaryTypographyProps={{ fontWeight: 500 }}
                 secondaryTypographyProps={{ color: "text.secondary" }}
               />
@@ -418,7 +423,7 @@ const CheckoutOrderTotal: React.FC = () => {
             <ListItem sx={{ py: 0.5, px: 0 }}>
               <ListItemText
                 primary="Dirección de entrega"
-                secondary={address.deliveryAddress || "No especificado"}
+                secondary={address?.deliveryAddress || "No especificado"}
                 primaryTypographyProps={{ fontWeight: 500 }}
                 secondaryTypographyProps={{ color: "text.secondary" }}
               />
@@ -430,7 +435,7 @@ const CheckoutOrderTotal: React.FC = () => {
           <ListItem sx={{ py: 0.5, px: 0 }}>
             <ListItemText
               primary="Ubicación en sitio"
-              secondary={address.onSiteLocation || "No especificado"}
+              secondary={address?.onSiteLocation || "No especificado"}
               primaryTypographyProps={{ fontWeight: 500 }}
               secondaryTypographyProps={{ color: "text.secondary" }}
             />
@@ -459,6 +464,13 @@ const CheckoutOrderTotal: React.FC = () => {
       </List>
     </Paper>
   );
+
+  const getModalBorderColor = () => {
+    if (modalStatus === "loading") return "rgba(25, 118, 210, 0.4)";
+    if (modalStatus === "success") return "success.main";
+    if (modalStatus === "error") return "error.main";
+    return "divider";
+  };
 
   if (isLoading) {
     return (
@@ -539,108 +551,105 @@ const CheckoutOrderTotal: React.FC = () => {
           </Button>
         </Box>
 
-        <AnimatePresence>
-          {modalOpen && (
-            <Modal
-              open={modalOpen}
-              onClose={handleCloseModal}
-              closeAfterTransition
-              slots={{ backdrop: Backdrop }}
-              slotProps={{
-                backdrop: {
-                  timeout: 300,
-                  TransitionComponent: MuiFade,
-                  sx: {
-                    backgroundColor: "rgba(0,0,0,0.18)",
-                    backdropFilter: "blur(2px)",
-                  },
-                },
+        <Modal
+          open={modalOpen}
+          onClose={handleCloseModal}
+          closeAfterTransition
+          disableEscapeKeyDown={isSubmitting}
+          slots={{ backdrop: Backdrop }}
+          slotProps={{
+            backdrop: {
+              timeout: 220,
+              TransitionComponent: MuiFade,
+              sx: {
+                backgroundColor: "rgba(15, 23, 42, 0.42)",
+              },
+            },
+          }}
+        >
+          <Box
+            sx={{
+              height: "100vh",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              p: 2,
+            }}
+          >
+            <MotionBox
+              initial={{ opacity: 0, scale: 0.96, y: 8 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ duration: 0.22, ease: "easeOut" }}
+              sx={{
+                bgcolor: "background.paper",
+                border: "1px solid",
+                borderColor: getModalBorderColor(),
+                borderRadius: 4,
+                boxShadow: "0 24px 80px rgba(15, 23, 42, 0.22)",
+                p: { xs: 2.5, sm: 4 },
+                textAlign: "center",
+                width: { xs: "100%", sm: 460 },
+                maxWidth: "100%",
+                maxHeight: "90vh",
+                overflowY: "auto",
+                outline: "none",
+                whiteSpace: "pre-line",
               }}
             >
-              <Box
-                sx={{
-                  height: "100vh",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  p: 2,
-                }}
+              {isSubmitting ? (
+                <CircularProgress sx={{ mb: 2 }} />
+              ) : isSuccess ? (
+                <CheckCircleOutline
+                  sx={{ fontSize: 60, color: "success.main", mb: 2 }}
+                />
+              ) : isError ? (
+                <ErrorOutline
+                  sx={{ fontSize: 60, color: "error.main", mb: 2 }}
+                />
+              ) : null}
+
+              <Typography
+                variant="h6"
+                sx={{ mb: 1.5, fontWeight: 700, color: "grey.900" }}
               >
-                <MotionBox
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.25 }}
+                {isSubmitting
+                  ? "Procesando pedidos"
+                  : isSuccess
+                  ? "Pedidos creados"
+                  : isError
+                  ? "No se pudieron crear todos los pedidos"
+                  : ""}
+              </Typography>
+
+              <Typography
+                variant="body1"
+                sx={{ mb: isSubmitting ? 0 : 3, color: "text.secondary" }}
+              >
+                {modalMessage}
+              </Typography>
+
+              {!isSubmitting && (
+                <Button
+                  onClick={handleCloseModal}
+                  variant="contained"
                   sx={{
-                    bgcolor: "background.paper",
-                    border: `2px solid ${
-                      isSubmitting
-                        ? "rgba(25, 118, 210, 0.4)"
-                        : isSuccess
-                        ? "success.main"
-                        : "error.main"
-                    }`,
+                    minWidth: 120,
                     borderRadius: 3,
-                    boxShadow: 24,
-                    p: { xs: 2.5, sm: 4 },
-                    textAlign: "center",
-                    width: { xs: "100%", sm: 460 },
-                    maxHeight: "90vh",
-                    overflowY: "auto",
-                    outline: "none",
-                    whiteSpace: "pre-line",
+                    textTransform: "none",
+                    fontWeight: 600,
+                    bgcolor: isSuccess ? "success.main" : "error.main",
+                    color: "#fff",
+                    "&:hover": {
+                      bgcolor: isSuccess ? "success.dark" : "error.dark",
+                    },
                   }}
                 >
-                  {isSubmitting ? (
-                    <CircularProgress sx={{ mb: 2 }} />
-                  ) : isSuccess ? (
-                    <CheckCircleOutline
-                      sx={{ fontSize: 60, color: "success.main", mb: 2 }}
-                    />
-                  ) : (
-                    <ErrorOutline
-                      sx={{ fontSize: 60, color: "error.main", mb: 2 }}
-                    />
-                  )}
-
-                  <Typography
-                    variant="h6"
-                    sx={{ mb: 1.5, fontWeight: 600, color: "grey.900" }}
-                  >
-                    {isSubmitting
-                      ? "Procesando pedidos"
-                      : isSuccess
-                      ? "Pedidos creados"
-                      : "No se pudieron crear todos los pedidos"}
-                  </Typography>
-
-                  <Typography
-                    variant="body1"
-                    sx={{ mb: isSubmitting ? 0 : 3, color: "text.secondary" }}
-                  >
-                    {modalMessage}
-                  </Typography>
-
-                  {!isSubmitting && (
-                    <Button
-                      onClick={handleCloseModal}
-                      variant="contained"
-                      sx={{
-                        bgcolor: isSuccess ? "success.main" : "error.main",
-                        color: "#fff",
-                        "&:hover": {
-                          bgcolor: isSuccess ? "success.dark" : "error.dark",
-                        },
-                      }}
-                    >
-                      Cerrar
-                    </Button>
-                  )}
-                </MotionBox>
-              </Box>
-            </Modal>
-          )}
-        </AnimatePresence>
+                  Cerrar
+                </Button>
+              )}
+            </MotionBox>
+          </Box>
+        </Modal>
       </Container>
     </MuiFade>
   );
