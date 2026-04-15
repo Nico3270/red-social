@@ -7,9 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
-
-
 // Enums para estructurar datos categóricos
 enum TipoContacto {
   CLIENTE
@@ -26,39 +23,37 @@ enum EstadoContacto {
 
 // Modelo Contactos
 model Contactos {
-  id                 Int            @id @default(autoincrement())
-  nombre             String
-  departamento       String
-  municipio          String
-  direccion          String
-  correo             String         @unique
-  identificacion     String         @unique
-  telefono           String?
-  categoria          String? 
+  id                   Int            @id @default(autoincrement())
+  nombre               String
+  departamento         String
+  municipio            String
+  direccion            String
+  correo               String         @unique
+  identificacion       String         @unique
+  telefono             String?
+  categoria            String?
 
   promocionalEnviado   Boolean        @default(false)
-  brevoMessageId       String?        // ID único del correo en Brevo
-  emailEstado          String?        // Ej: "enviado", "entregado", "abierto", "clic", "rebotado"
+  brevoMessageId       String?
+  emailEstado          String?
   entregadoEn          DateTime?
   abiertoEn            DateTime?
   clicEn               DateTime?
   reboteRazon          String?
-  ultimoEventoBrevo  DateTime?      // Fecha del último evento recibido de Brevo
-  
+  ultimoEventoBrevo    DateTime?
 
-  createdAt          DateTime       @default(now())
-  updatedAt          DateTime       @updatedAt
-  notas              String?
-  tipoContacto       TipoContacto?  @default(OTRO)
-  estado             EstadoContacto @default(ACTIVO)
-  negocioId          String?        // 👈 debe coincidir con el tipo de id de Negocio
-  Negocio            Negocio?       @relation(fields: [negocioId], references: [id], onDelete: SetNull)
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+  notas                String?
+  tipoContacto         TipoContacto?  @default(OTRO)
+  estado               EstadoContacto @default(ACTIVO)
+  negocioId            String?
+  Negocio              Negocio?       @relation(fields: [negocioId], references: [id], onDelete: SetNull)
+
   @@index([correo])
   @@index([identificacion])
   @@index([negocioId])
 }
-
-
 
 model BusinessAvailability {
   id                       String   @id @default(cuid())
@@ -150,18 +145,23 @@ model Order {
 }
 
 model OrderItem {
-  id          String   @id @default(uuid())
-  description String
-  quantity    Int      @default(1)
-  price       Decimal
-  subtotal    Decimal
-  orderId     String
-  productId   String?
-  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  product     Product? @relation(fields: [productId], references: [id])
+  id               String          @id @default(uuid())
+  description      String
+  quantity         Int             @default(1)
+  price            Decimal
+  subtotal         Decimal
+  orderId          String
+  productId        String?
+  productVariantId String?
+  variantLabel     String?
+
+  order            Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product          Product?        @relation(fields: [productId], references: [id])
+  productVariant   ProductVariant? @relation(fields: [productVariantId], references: [id])
 
   @@index([orderId])
   @@index([productId])
+  @@index([productVariantId])
 }
 
 enum OrderType {
@@ -183,12 +183,12 @@ model DeliveryData {
   id                 String    @id @default(uuid())
   clientName         String
   clientPhone        String
-  deliveryAddress    String? // Opcional para pedidos en sitio
-  onSiteLocation     String? // Referencia para pedidos en sitio (e.g., "Mesa 4")
+  deliveryAddress    String?
+  onSiteLocation     String?
   deliveryDate       DateTime?
-  ciudad             String? // Ahora opcional
-  country            String?   @default("Colombia") // Opcional con valor por defecto
-  departamento       String? // Ahora opcional
+  ciudad             String?
+  country            String?   @default("Colombia")
+  departamento       String?
   additionalComments String?
   order              Order?
 }
@@ -213,14 +213,24 @@ model Product {
   categoryId                String
   negocioId                 String
   orden                     Float                    @default(8.0)
+
+  // Nuevos campos opcionales / no destructivos
+  stock                     Int?
+  stockIlimitado            Boolean                  @default(true)
+  usaVariantes              Boolean                  @default(false)
+
   imagenes                  Image[]                  @relation("ProductImages")
   orderItems                OrderItem[]
   category                  Category                 @relation(fields: [categoryId], references: [id])
   negocio                   Negocio                  @relation(fields: [negocioId], references: [id], onDelete: Cascade)
   secciones                 ProductSection[]
   publicacionesRelacionadas PublicacionProducto[]
-  ratingPromedio Float? // Calculado: promedio de calificaciones de reseñas asociadas
-  numResenas     Int    @default(0) // Contador de reseñas
+  ratingPromedio            Float?
+  numResenas                Int                      @default(0)
+
+  // Nuevas relaciones opcionales
+  atributos                 ProductAttribute[]
+  variantes                 ProductVariant[]
 
   @@index([negocioId])
   @@index([categoryId])
@@ -233,7 +243,60 @@ model Product {
   @@index([orden(sort: Desc), createdAt(sort: Desc)])
   @@index([tags], type: Gin)
   @@index([componentes], type: Gin)
+}
 
+model ProductAttribute {
+  id        String   @id @default(uuid())
+  productId String
+  nombre    String
+  valor     String
+  orden     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+  @@index([nombre])
+  @@index([productId, orden])
+}
+
+model ProductVariant {
+  id             String                 @id @default(uuid())
+  productId      String
+  nombre         String?
+  sku            String?
+  precio         Float?
+  stock          Int?
+  stockIlimitado Boolean                @default(false)
+  isActive       Boolean                @default(true)
+  imagenUrl      String?
+  orden          Int                    @default(0)
+  createdAt      DateTime               @default(now())
+  updatedAt      DateTime               @updatedAt
+
+  product        Product                @relation(fields: [productId], references: [id], onDelete: Cascade)
+  options        ProductVariantOption[]
+  orderItems     OrderItem[]
+
+  @@index([productId])
+  @@index([productId, isActive])
+  @@index([productId, orden])
+  @@index([sku])
+}
+
+model ProductVariantOption {
+  id         String         @id @default(uuid())
+  variantId  String
+  nombre     String
+  valor      String
+  orden      Int            @default(0)
+
+  variant    ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+
+  @@index([variantId])
+  @@index([nombre])
+  @@index([variantId, orden])
 }
 
 model ProductSection {
@@ -306,7 +369,7 @@ model Publicacion {
   orden                  Float                 @default(8.0)
   interacciones          Interaccion[]         @relation("PublicacionInteracciones")
   multimedia             Media[]
-  calificacion Int? // Nueva: para estrellas (1-5)
+  calificacion           Int?
   negocio                Negocio?              @relation(fields: [negocioId], references: [id], onDelete: Cascade)
   usuario                Usuario               @relation(fields: [usuarioId], references: [id])
   productosEnPublicacion PublicacionProducto[]
@@ -323,7 +386,7 @@ model PublicacionProducto {
   publicacionId String
   productoId    String
   orden         Int         @default(0)
-  esResena      Boolean  @default(false) // Nueva: indica si es reseña del producto
+  esResena      Boolean     @default(false)
   producto      Product     @relation(fields: [productoId], references: [id], onDelete: Cascade)
   publicacion   Publicacion @relation(fields: [publicacionId], references: [id], onDelete: Cascade)
 
@@ -364,46 +427,45 @@ model Interaccion {
   @@index([publicacionId, reaccionTipo])
 }
 
-
 model Usuario {
-  id              String        @id @default(uuid())
-  nombre          String
-  apellido        String
-  username        String        @unique
-  contraseña     String
-  email           String        @unique
-  ciudad          String
-  departamento    String
-  pais            String?       @default("Colombia")
-  genero          Genero
-  fechaNacimiento DateTime
-  fotoPerfil      String?
-  biografia       String?
-  role            Role          @default(user)
-  facebook        String?
-  instagram       String?
-  tiktok          String?
-  youtube         String?
-  twitter         String?
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-  ultimaActividad DateTime      @default(now())
-  estado          EstadoUsuario @default(activo)
-  emailVerified   DateTime?
-  preferencias    String[]
-  encuestas       Encuesta[]    @relation("UsuarioEncuestas")
-  followsOut      Follow[]      @relation("Follower")
-  followsIn       Follow[]      @relation("FollowedUser")
-  interacciones   Interaccion[] @relation("UsuarioInteracciones")
-  negocio         Negocio?
-  orders          Order[]
-  publicaciones   Publicacion[]
-  resenas         Resena[]
-  reservations    Reservation[]
-  respuestas      Respuesta[]   @relation("UsuarioRespuestas")
-  Transaction     Transaction[]
-  perfilCompleto  Boolean       @default(false)
-  isPlaceholder   Boolean       @default(false)
+  id                  String               @id @default(uuid())
+  nombre              String
+  apellido            String
+  username            String               @unique
+  contraseña          String
+  email               String               @unique
+  ciudad              String
+  departamento        String
+  pais                String?              @default("Colombia")
+  genero              Genero
+  fechaNacimiento     DateTime
+  fotoPerfil          String?
+  biografia           String?
+  role                Role                 @default(user)
+  facebook            String?
+  instagram           String?
+  tiktok              String?
+  youtube             String?
+  twitter             String?
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  ultimaActividad     DateTime             @default(now())
+  estado              EstadoUsuario        @default(activo)
+  emailVerified       DateTime?
+  preferencias        String[]
+  encuestas           Encuesta[]           @relation("UsuarioEncuestas")
+  followsOut          Follow[]             @relation("Follower")
+  followsIn           Follow[]             @relation("FollowedUser")
+  interacciones       Interaccion[]        @relation("UsuarioInteracciones")
+  negocio             Negocio?
+  orders              Order[]
+  publicaciones       Publicacion[]
+  resenas             Resena[]
+  reservations        Reservation[]
+  respuestas          Respuesta[]          @relation("UsuarioRespuestas")
+  Transaction         Transaction[]
+  perfilCompleto      Boolean              @default(false)
+  isPlaceholder       Boolean              @default(false)
   passwordResetTokens PasswordResetToken[] @relation("UserPasswordResetTokens")
 
   @@index([username])
@@ -419,7 +481,6 @@ enum Role {
   creador
   negocio
 }
-
 
 model PasswordResetToken {
   id        String   @id @default(uuid())
@@ -455,7 +516,7 @@ model Negocio {
   fotoPortada      String?
   latitud          Float?
   longitud         Float?
-  palabrasClave    String[]  @default([])
+  palabrasClave    String[]              @default([])
   availability     BusinessAvailability?
   encuestas        Encuesta[]            @relation("NegocioEncuestas")
   followsIn        Follow[]              @relation("FollowedBusiness")
@@ -469,8 +530,8 @@ model Negocio {
   publicaciones    Publicacion[]
   reservations     Reservation[]
   Servicio         Servicio[]
-  tipo             TipoNegocio              @default(NEGOCIO)
-  contactos Contactos[]
+  tipo             TipoNegocio           @default(NEGOCIO)
+  contactos        Contactos[]
 
   @@index([ciudad])
   @@index([departamento])
@@ -486,7 +547,6 @@ enum TipoNegocio {
   NEGOCIO
   PROFESIONAL
 }
-
 
 model Servicio {
   id          String         @id @default(uuid())
@@ -510,7 +570,6 @@ model Servicio {
   @@index([orden(sort: Desc), createdAt(sort: Desc)])
   @@index([tags], type: Gin)
   @@index([descripcion], type: Gin)
-
 }
 
 model NegocioCategory {
@@ -627,7 +686,6 @@ enum EstadoUsuario {
   suspendido
   eliminado
 }
-
 
 enum Genero {
   masculino
