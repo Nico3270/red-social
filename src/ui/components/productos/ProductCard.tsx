@@ -4,47 +4,176 @@ import { FaShoppingCart } from "react-icons/fa";
 import { BsWhatsapp } from "react-icons/bs";
 import Link from "next/link";
 import Image from "next/image";
-import { useState, useEffect } from "react";
-import {  textosFont, tituloCard } from "@/config/fonts";
+import { useState, useEffect, useMemo } from "react";
+import { textosFont, tituloCard } from "@/config/fonts";
 import { InfoEmpresa as empresa } from "@/config/config";
 import { AddFavorites } from "./AddFavorites";
 import { Precio } from "./Precio";
-import { ProductRedSocial } from "@/interfaces/productRedSocial.interface";
+import {
+  ProductRedSocial,
+} from "@/interfaces/productRedSocial.interface";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCartCatalogoStore } from "@/store/carro/carro-store";
 import { FollowButton } from "@/feed/componentes/FollowButton";
-import { createPortal } from "react-dom"; // Importado para portal
+import { createPortal } from "react-dom";
+import {
+  buildVariantLabel,
+  getVariantOptionSummary,
+  getVariantTitle,
+} from "./variantDisplay";
 
 interface ProductCardProps {
   product: ProductRedSocial;
 }
 
 const urlWebProduccion = empresa.linkWebProduccion;
+const FALLBACK_PRODUCT_IMAGE = "/imgs/no-image.png";
+const FALLBACK_PROFILE_IMAGE = "/default-profile.png";
 
-
+const formatCurrency = (value: number) =>
+  new Intl.NumberFormat("es-CO", {
+    style: "currency",
+    currency: "COP",
+    minimumFractionDigits: 0,
+  }).format(value);
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
-  const [displayImage, setDisplayImage] = useState(product.imagenes[0]);
+  const productImages = Array.isArray(product.imagenes) ? product.imagenes.filter(Boolean) : [];
+  const primaryImage = productImages[0] || FALLBACK_PRODUCT_IMAGE;
+  const secondaryImage = productImages[1] || primaryImage;
+
+  const [displayImage, setDisplayImage] = useState(primaryImage);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [showSuccess, setShowSuccess] = useState(false);
-  const telefonoLimpio = product.telefonoContacto?.replace("+", "") ?? "";
   const [modalRoot, setModalRoot] = useState<Element | null>(null);
+  const [selectedVariantId, setSelectedVariantId] = useState<string | null>(null);
+
+  const addProductToCart = useCartCatalogoStore((state) => state.addProductToCart);
+
+  const telefonoLimpio = product.telefonoContacto?.replace(/\D/g, "") ?? "";
+
+  const activeVariants = useMemo(
+    () => (product.variantes ?? []).filter((variant) => variant.isActive),
+    [product.variantes]
+  );
+
+  const hasVariants = product.usaVariantes === true && activeVariants.length > 0;
+
+  const selectedVariant = useMemo(
+    () =>
+      hasVariants
+        ? activeVariants.find((variant) => variant.id === selectedVariantId) ?? null
+        : null,
+    [activeVariants, hasVariants, selectedVariantId]
+  );
+
+  const minVariantPrice = useMemo(() => {
+    if (!hasVariants || activeVariants.length === 0) return null;
+
+    const variantPrices = activeVariants
+      .map((variant) => variant.precio)
+      .filter((price): price is number => typeof price === "number" && !Number.isNaN(price));
+
+    if (variantPrices.length === 0) return null;
+
+    return Math.min(...variantPrices);
+  }, [activeVariants, hasVariants]);
+
+  const displayPrice = minVariantPrice ?? product.precio;
+  const shouldShowFromPrice = hasVariants && minVariantPrice !== null;
+  const modalDisplayPrice = selectedVariant?.precio ?? minVariantPrice ?? product.precio;
+
+  const variantHasLimitedStock =
+    selectedVariant?.stockIlimitado === false &&
+    typeof selectedVariant?.stock === "number";
+
+  const variantStock = variantHasLimitedStock ? selectedVariant?.stock ?? null : null;
+
+  const productHasLimitedStock =
+    !hasVariants &&
+    product.stockIlimitado === false &&
+    typeof product.stock === "number";
+
+  const productStock = productHasLimitedStock ? product.stock ?? null : null;
+
+  const currentMaxStock = hasVariants ? variantStock : productStock;
+
+  const areAllVariantsOutOfStock =
+    hasVariants &&
+    activeVariants.every(
+      (variant) =>
+        variant.stockIlimitado === false &&
+        typeof variant.stock === "number" &&
+        variant.stock <= 0
+    );
+
+  const isOutOfStock = hasVariants
+    ? !!selectedVariant &&
+      selectedVariant.stockIlimitado === false &&
+      typeof selectedVariant.stock === "number" &&
+      selectedVariant.stock <= 0
+    : product.stockIlimitado === false &&
+      typeof product.stock === "number" &&
+      product.stock <= 0;
+
+  const isCartDisabled = hasVariants ? areAllVariantsOutOfStock : isOutOfStock;
 
   useEffect(() => {
-    // Solo corre en cliente
+    setDisplayImage(primaryImage);
+  }, [primaryImage]);
+
+  useEffect(() => {
+    if (hasVariants) {
+      const selectedExists = activeVariants.some(
+        (variant) => variant.id === selectedVariantId
+      );
+
+      if (selectedVariantId && !selectedExists) {
+        setSelectedVariantId(null);
+      }
+
+      return;
+    }
+
+    if (selectedVariantId) {
+      setSelectedVariantId(null);
+    }
+  }, [activeVariants, hasVariants, selectedVariantId]);
+
+  useEffect(() => {
     const root = document.getElementById("modal-root") || document.body;
     setModalRoot(root);
   }, []);
 
-  const addProductToCart = useCartCatalogoStore((state) => state.addProductToCart);
+  useEffect(() => {
+    if (isModalOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
 
-  // Crear el mensaje para WhatsApp con formato adecuado
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isModalOpen]);
+
+  useEffect(() => {
+    setQuantity((prev) => {
+      if (typeof currentMaxStock === "number") {
+        return Math.max(1, Math.min(prev, currentMaxStock));
+      }
+
+      return Math.max(1, prev);
+    });
+  }, [currentMaxStock]);
+
   const whatsappMessage = encodeURIComponent(
     `¡Hola! Estoy interesado en el siguiente producto:\n\n` +
-    `*${product.nombre}*\n` +
-    `Precio: $${product.precio.toFixed(2)}\n\n` +
-    `Puedes ver más detalles aquí: ${urlWebProduccion}/producto/${product.slug}`
+      `*${product.nombre}*\n` +
+      `${shouldShowFromPrice ? "Precio desde" : "Precio"}: ${formatCurrency(displayPrice)}\n\n` +
+      `${hasVariants ? "Veo que tiene opciones o variantes, me gustaría más información.\n\n" : ""}` +
+      `Puedes ver más detalles aquí: ${urlWebProduccion}/producto/${product.slug}`
   );
 
   const handleAddToCart = () => {
@@ -53,39 +182,52 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       return;
     }
 
+    if (hasVariants && !selectedVariant) {
+      return;
+    }
+
+    if (isOutOfStock) {
+      return;
+    }
+
+    const effectivePrice = selectedVariant?.precio ?? product.precio;
+    const effectiveImage = selectedVariant?.imagenUrl || primaryImage;
+    const effectiveStock = selectedVariant?.stock ?? product.stock ?? null;
+    const effectiveStockIlimitado = selectedVariant
+      ? selectedVariant.stockIlimitado ?? true
+      : (product.stockIlimitado ?? true);
+
     const cartProduct = {
-      cartItemId: `${product.id}-${Date.now()}`, // ID único para el ítem en el carrito
+      cartItemId: `${product.id}-${selectedVariant?.id ?? "base"}-${Date.now()}`,
       id: product.id,
       slug: product.slug,
       nombre: product.nombre,
-      precio: product.precio,
+      precio: effectivePrice,
       cantidad: quantity,
-      imagen: product.imagenes[0],
+      imagen: effectiveImage,
       seccionIds: product.sections,
-      descripcionCorta: product.descripcionCorta,
-      negocioFotoPerfil: product.negocioFotoPerfil
+      descripcionCorta: product.descripcionCorta ?? "",
+      negocioFotoPerfil: product.negocioFotoPerfil,
+      usaVariantes: hasVariants,
+      productVariantId: selectedVariant?.id ?? null,
+      variantLabel: selectedVariant ? buildVariantLabel(selectedVariant) : null,
+      stock: effectiveStock,
+      stockIlimitado: effectiveStockIlimitado,
     };
 
     addProductToCart(product.slugNegocio, cartProduct);
     setIsModalOpen(false);
     setShowSuccess(true);
-    setQuantity(1); // Resetear cantidad
-    setTimeout(() => setShowSuccess(false), 1000); // Ocultar mensaje después de 3 segundos
+    setQuantity(1);
+
+    window.setTimeout(() => setShowSuccess(false), 1000);
   };
 
-  // Bloquear/restaurar scroll en body cuando modal abierto (UX como Instagram)
-  useEffect(() => {
-    if (isModalOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
-    }
-    return () => {
-      document.body.style.overflow = "unset"; // Cleanup
-    };
-  }, [isModalOpen]);
+  const handleOpenCartFlow = () => {
+    setQuantity(1);
+    setIsModalOpen(true);
+  };
 
-  // Contenido del Modal (renderizado vía portal)
   const ModalContent = (
     <AnimatePresence>
       {isModalOpen && (
@@ -94,68 +236,207 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4"
-          onClick={() => setIsModalOpen(false)} // Cerrar al clic en backdrop
+          onClick={() => setIsModalOpen(false)}
           aria-modal="true"
           role="dialog"
         >
           <motion.div
-            initial={{ scale: 0.95, opacity: 0 }}
+            initial={{ scale: 0.96, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.95, opacity: 0 }}
-            transition={{ type: "spring", stiffness: 300, damping: 25 }} // Animación suave y bouncy
-            className="relative bg-white rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.2)] p-6 w-full max-w-md max-h-[80vh] overflow-y-auto p-2" // Scroll interno, centrado premium
-            onClick={(e) => e.stopPropagation()} // Evitar cierre al clic dentro
+            exit={{ scale: 0.96, opacity: 0 }}
+            transition={{ type: "spring", stiffness: 320, damping: 26 }}
+            className="relative w-full max-w-md max-h-[80vh] overflow-y-auto rounded-2xl bg-white p-5 shadow-[0_18px_50px_rgba(0,0,0,0.18)]"
+            onClick={(e) => e.stopPropagation()}
           >
-            {/* Encabezado */}
-            <h5 className="text-lg font-semibold text-center mb-4 text-gray-900">
+            <h5 className="mb-3 text-left text-base font-semibold text-gray-900">
               Agregar al carrito
             </h5>
 
-            {/* Producto */}
-            <div className="text-center mb-6">
-              <p className="text-xl font-bold text-gray-800">{product.nombre}</p>
-              <p className="text-lg font-semibold text-gray-600 mt-1">
-                ${new Intl.NumberFormat("es-CO").format(product.precio)}
+            <div className="mb-4 border-b border-gray-100 pb-4 text-left">
+              <p className="text-lg font-bold leading-tight text-gray-800">{product.nombre}</p>
+              <p className="mt-1 text-2xl font-semibold tracking-tight text-gray-900">
+                {shouldShowFromPrice && !selectedVariant ? "Desde " : ""}
+                {formatCurrency(modalDisplayPrice)}
               </p>
+
+              {hasVariants && (
+                <p className="mt-1 text-xs text-gray-500">
+                  Elige la variante que quieres agregar.
+                </p>
+              )}
+
+              {productHasLimitedStock && (
+                <p className="mt-1 text-xs text-gray-500">
+                  Stock disponible: {product.stock}
+                </p>
+              )}
             </div>
 
-            {/* Selector de cantidad */}
-            <div className="flex items-center justify-center mb-8">
-              <button
-                onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                className="bg-gray-800 hover:bg-gray-300 text-gray-100 hover:text-gray-800 font-bold px-4 py-2 rounded-l-full transition-colors duration-200 shadow-sm"
-              >
-                –
-              </button>
-              <input
-                type="number"
-                value={quantity}
-                onChange={(e) =>
-                  setQuantity(Math.max(1, parseInt(e.target.value) || 1))
-                }
-                className="w-16 text-center border-t border-b border-gray-200 py-2 font-semibold text-gray-900 focus:outline-none text-lg"
-                min="1"
-                aria-label="Cantidad del producto"
-              />
-              <button
-                onClick={() => setQuantity((q) => q + 1)}
-                className="bg-gray-800 hover:bg-gray-300 text-gray-100 hover:text-gray-800 font-bold px-4 py-2 rounded-r-full transition-colors duration-200 shadow-sm"
-              >
-                +
-              </button>
-            </div>
+            {hasVariants && (
+              <div className="mb-4">
+                <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-gray-500">
+                  Variantes
+                </p>
+                <div className="space-y-2">
+                  {activeVariants.map((variant, index) => {
+                    const optionSummary = getVariantOptionSummary(variant);
+                    const variantOutOfStock =
+                      variant.stockIlimitado === false &&
+                      typeof variant.stock === "number" &&
+                      variant.stock <= 0;
+                    const stockSummary =
+                      variant.stockIlimitado === false &&
+                      typeof variant.stock === "number"
+                        ? variant.stock > 0
+                          ? `Stock: ${variant.stock}`
+                          : "Sin stock"
+                        : null;
+                    const secondaryText = [optionSummary, stockSummary]
+                      .filter(Boolean)
+                      .join(" · ");
 
-            {/* Botones */}
-            <div className="flex gap-4">
+                    return (
+                      <button
+                        key={variant.id}
+                        type="button"
+                        onClick={() => {
+                          setSelectedVariantId((current) =>
+                            current === variant.id ? null : variant.id
+                          );
+                          setQuantity(1);
+                        }}
+                        className={`w-full rounded-xl border px-3 py-2.5 text-left transition-all ${
+                          selectedVariantId === variant.id
+                            ? "border-blue-500 bg-blue-50"
+                            : "border-gray-200 bg-white hover:border-gray-300"
+                        } ${variantOutOfStock ? "opacity-60" : ""}`}
+                      >
+                        <div className="flex items-start gap-3">
+                          <div
+                            className={`mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border ${
+                              selectedVariantId === variant.id
+                                ? "border-blue-600"
+                                : "border-gray-300"
+                            }`}
+                          >
+                            {selectedVariantId === variant.id && (
+                              <span className="h-2 w-2 rounded-full bg-blue-600" />
+                            )}
+                          </div>
+
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-start justify-between gap-3">
+                              <div className="min-w-0">
+                                <p className="truncate text-sm font-semibold text-gray-800">
+                                  {getVariantTitle(variant, index)}
+                                </p>
+                                {secondaryText && (
+                                  <p className="mt-0.5 line-clamp-2 text-xs text-gray-500">
+                                    {secondaryText}
+                                  </p>
+                                )}
+                              </div>
+
+                              <p className="shrink-0 text-sm font-semibold text-gray-900">
+                                {formatCurrency(variant.precio ?? product.precio)}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {hasVariants && !selectedVariant && (
+              <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
+                Selecciona una variante antes de continuar.
+              </div>
+            )}
+
+            {selectedVariant && (
+              <div className="mb-4 rounded-lg bg-blue-50 px-3 py-2 text-sm text-blue-900">
+                <span className="font-semibold">Elegida:</span>{" "}
+                <span className="text-blue-800">{buildVariantLabel(selectedVariant)}</span>
+              </div>
+            )}
+
+            {((hasVariants && selectedVariant) || !hasVariants) && (
+              <div className="mb-5 rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-gray-800">Cantidad</p>
+                    {typeof currentMaxStock === "number" && (
+                      <p className="text-xs text-gray-500">
+                        Stock disponible: {currentMaxStock}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="flex items-center overflow-hidden rounded-full border border-gray-200 bg-white">
+                    <button
+                      type="button"
+                      onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                      className="px-3 py-1.5 text-lg font-bold text-gray-800 transition-colors duration-200 hover:bg-gray-100"
+                      aria-label="Disminuir cantidad"
+                    >
+                      –
+                    </button>
+
+                    <input
+                      type="number"
+                      value={quantity}
+                      onChange={(e) => {
+                        const nextValue = Math.max(1, parseInt(e.target.value, 10) || 1);
+                        if (typeof currentMaxStock === "number") {
+                          setQuantity(Math.min(nextValue, currentMaxStock));
+                          return;
+                        }
+                        setQuantity(nextValue);
+                      }}
+                      className="w-12 border-x border-gray-200 py-1.5 text-center text-base font-semibold text-gray-900 focus:outline-none"
+                      min="1"
+                      max={typeof currentMaxStock === "number" ? currentMaxStock : undefined}
+                      aria-label="Cantidad del producto"
+                    />
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setQuantity((q) => {
+                          const next = q + 1;
+                          if (typeof currentMaxStock === "number") {
+                            return Math.min(next, currentMaxStock);
+                          }
+                          return next;
+                        });
+                      }}
+                      className="px-3 py-1.5 text-lg font-bold text-gray-800 transition-colors duration-200 hover:bg-gray-100"
+                      aria-label="Aumentar cantidad"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="flex gap-2">
               <button
+                type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 rounded-full transition-colors duration-200 shadow-sm"
+                className="flex-1 rounded-full bg-gray-100 py-2.5 text-sm font-medium text-gray-700 transition-colors duration-200 hover:bg-gray-200"
               >
                 Cancelar
               </button>
+
               <button
+                type="button"
                 onClick={handleAddToCart}
-                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-full transition-colors duration-200 shadow-sm"
+                disabled={(hasVariants && !selectedVariant) || isOutOfStock}
+                className="flex-1 rounded-full bg-blue-600 py-2.5 text-sm font-medium text-white transition-colors duration-200 hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-300"
               >
                 Confirmar
               </button>
@@ -166,18 +447,17 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     </AnimatePresence>
   );
 
-  // Contenido del Toast (también vía portal para global)
   const ToastContent = (
     <AnimatePresence>
       {showSuccess && (
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
+          initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.95 }}
-          transition={{ duration: 0.3, ease: "easeInOut" }}
+          exit={{ opacity: 0, scale: 0.96 }}
+          transition={{ duration: 0.25, ease: "easeInOut" }}
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm"
         >
-          <div className="bg-white/90 backdrop-blur-md text-green-600 px-8 py-4 rounded-2xl shadow-[0_0_20px_rgba(34,197,94,0.4)] text-center text-lg font-semibold border-2 border-green-600">
+          <div className="rounded-2xl border-2 border-green-600 bg-white/90 px-8 py-4 text-center text-lg font-semibold text-green-600 shadow-[0_0_20px_rgba(34,197,94,0.35)] backdrop-blur-md">
             ✅ ¡Producto agregado al carrito!
           </div>
         </motion.div>
@@ -187,41 +467,48 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      className="relative bg-white border-2 border-gray-100 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-[480px] w-full  mx-auto overflow-hidden p-2"
+      transition={{ duration: 0.28 }}
+      className="relative mx-auto flex h-[480px] w-full flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white p-2 shadow-lg transition-all duration-300 hover:shadow-2xl"
     >
-      {/* Header con nombre del negocio */}
-      <div className="flex items-center justify-between px-3 mb-3">
-        <div className="flex items-center gap-2">
-          {/* Imagen del negocio */}
-          <div className="relative w-8 h-8 rounded-full overflow-hidden">
+      <div className="mb-3 flex items-center justify-between px-3">
+        <div className="flex min-w-0 items-center gap-2">
+          <div className="relative h-8 w-8 overflow-hidden rounded-full">
             <Image
-              src={product.negocioFotoPerfil || "/default-profile.png"}
-              alt={`Perfil de ${product.nombreNegocio}`}
+              src={product.negocioFotoPerfil || FALLBACK_PROFILE_IMAGE}
+              alt={`Perfil de ${product.nombreNegocio ?? "negocio"}`}
               fill
+              sizes="32px"
               className="object-cover"
             />
           </div>
 
-          {/* Nombre con link */}
-          {product.nombreNegocio && product.slugNegocio && (
+          {product.nombreNegocio && product.slugNegocio ? (
             <Link
               href={`/perfil/${product.slugNegocio}`}
-              className={`font-semibold text-gray-800 hover:text-blue-700 text-md sm:text-sm transition-colors duration-200 ${tituloCard.className}`}
+              className={`truncate text-md font-semibold text-gray-800 transition-colors duration-200 hover:text-blue-700 sm:text-sm ${tituloCard.className}`}
             >
               {product.nombreNegocio}
             </Link>
+          ) : (
+            <span
+              className={`truncate text-md font-semibold text-gray-800 sm:text-sm ${tituloCard.className}`}
+            >
+              {product.nombreNegocio ?? "Negocio"}
+            </span>
           )}
         </div>
 
-        <div className="flex items-center flex-row">
-          {/* Botón de seguir */}
-          <FollowButton followedId={product.negocioId} version={2} type="USER_TO_BUSINESS" className="text-sm" />
+        <div className="flex items-center">
+          <FollowButton
+            followedId={product.negocioId}
+            version={2}
+            type="USER_TO_BUSINESS"
+            className="text-sm"
+          />
 
-          {/* Botón de favoritos premium */}
-          <div className="ml-2 z-20">
+          <div className="z-20 ml-2">
             <AddFavorites
               id={product.id}
               title={product.nombre}
@@ -229,7 +516,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
               description={product.descripcion}
               slug={product.slug}
               images={product.imagenes}
-              descripcionCorta={product.descripcionCorta}
+              descripcionCorta={product.descripcionCorta ?? ""}
               sections={product.sections}
               slugNegocio={product.slugNegocio || ""}
             />
@@ -237,17 +524,16 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         </div>
       </div>
 
-      {/* Imagen con enlace */}
-      <Link href={`/producto/${product.slug}`} className="block relative">
+      <Link href={`/producto/${product.slug}`} className="relative block">
         <div
-          className="relative h-64 w-full cursor-pointer rounded-lg overflow-hidden"
+          className="relative h-64 w-full cursor-pointer overflow-hidden rounded-xl"
           onMouseEnter={() => {
-            if (product.imagenes.length > 1) {
-              setDisplayImage(product.imagenes[1]); // cambia a la segunda imagen
+            if (secondaryImage !== displayImage) {
+              setDisplayImage(secondaryImage);
             }
           }}
           onMouseLeave={() => {
-            setDisplayImage(product.imagenes[0]); // vuelve a la primera imagen
+            setDisplayImage(primaryImage);
           }}
         >
           <Image
@@ -255,60 +541,95 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             alt={product.nombre}
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            className="object-cover transition-transform duration-300 hover:scale-110"
+            className="object-cover transition-transform duration-300 hover:scale-[1.04]"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+
+          <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-100" />
+
+          <div className="pointer-events-none absolute left-3 top-3 flex flex-wrap gap-2">
+            {hasVariants && (
+              <span className="rounded-full bg-white/90 px-2.5 py-1 text-[11px] font-semibold text-gray-800 shadow-sm backdrop-blur-sm">
+                Variantes
+              </span>
+            )}
+
+            {product.etiquetaEspecial && product.etiquetaEspecial !== "ninguna" && (
+              <span className="rounded-full bg-blue-600/90 px-2.5 py-1 text-[11px] font-semibold text-white shadow-sm">
+                {product.etiquetaEspecial.replaceAll("_", " ")}
+              </span>
+            )}
+
+            {isOutOfStock && (
+              <span className="rounded-full bg-red-600/90 px-2.5 py-1 text-[11px] font-semibold text-white shadow-sm">
+                Agotado
+              </span>
+            )}
+          </div>
         </div>
       </Link>
 
-      {/* Información del producto */}
-      <div className="mt-2 flex flex-col flex-grow justify-between">
+      <div className="mt-2 flex flex-grow flex-col justify-between">
         <div>
           <Link href={`/producto/${product.slug}`} className="block">
             <h3
-              className={`text-lg font-extrabold text-gray-800 ${tituloCard.className} transition duration-300 hover:text-blue-700`}
-              style={{ textShadow: "0.5px 0.5px 1px rgba(0, 0, 0, 0.1)" }}
+              className={`text-lg font-extrabold text-gray-800 transition duration-300 hover:text-blue-700 ${tituloCard.className}`}
+              style={{ textShadow: "0.5px 0.5px 1px rgba(0, 0, 0, 0.08)" }}
             >
               {product.nombre}
             </h3>
           </Link>
 
-          <p className={`text-lg text-gray-600 ${textosFont.className} mt-1 line-clamp-2`}>
+          <p className={`mt-1 line-clamp-2 text-lg text-gray-600 ${textosFont.className}`}>
             {product.descripcionCorta || "Sin descripción disponible"}
           </p>
         </div>
 
-        {/* Precio y botones */}
         <div className="m-1">
-          <div className="flex justify-around items-center gap-2">
-            <Precio value={product.precio} />
+          <div className="flex items-center justify-between gap-2">
+            <div className="min-w-0">
+              {shouldShowFromPrice ? (
+                <div className="flex flex-col leading-tight">
+                  <span className="text-xs font-medium uppercase tracking-wide text-gray-400">
+                    Desde
+                  </span>
+                  <Precio value={displayPrice} />
+                </div>
+              ) : (
+                <Precio value={displayPrice} />
+              )}
+            </div>
 
-            <div className="flex gap-4">
-              {/* Botón de WhatsApp */}
-              {product.telefonoContacto && (
+            <div className="flex items-center gap-3">
+              {product.telefonoContacto && telefonoLimpio && (
                 <Link
                   href={`https://wa.me/${telefonoLimpio}?text=${whatsappMessage}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="bg-gradient-to-r from-green-500 to-green-600 p-3 rounded-full hover:from-green-600 hover:to-green-700 flex items-center justify-center transition-all duration-300"
+                  aria-label={`Contactar por WhatsApp sobre ${product.nombre}`}
+                  className="flex items-center justify-center rounded-full bg-gradient-to-r from-green-500 to-green-600 p-3 transition-all duration-300 hover:from-green-600 hover:to-green-700"
                 >
-                  <BsWhatsapp className="text-white text-2xl sm:text-xl" />
+                  <BsWhatsapp className="text-2xl text-white sm:text-xl" />
                 </Link>
               )}
 
-              {/* Botón de Carrito */}
               <button
-                onClick={() => setIsModalOpen(true)}
-                className="bg-gradient-to-r from-blue-500 to-blue-600 p-3 rounded-full hover:from-blue-600 hover:to-blue-700 flex items-center justify-center transition-all duration-300"
+                type="button"
+                onClick={handleOpenCartFlow}
+                disabled={isCartDisabled}
+                aria-label={
+                  hasVariants
+                    ? `Seleccionar variantes de ${product.nombre}`
+                    : `Agregar ${product.nombre} al carrito`
+                }
+                className="flex items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-blue-600 p-3 transition-all duration-300 hover:from-blue-600 hover:to-blue-700 disabled:cursor-not-allowed disabled:from-gray-300 disabled:to-gray-400"
               >
-                <FaShoppingCart className="text-white text-2xl" />
+                <FaShoppingCart className="text-2xl text-white" />
               </button>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Renderizar Modal y Toast vía Portal */}
       {modalRoot && createPortal(ModalContent, modalRoot)}
       {modalRoot && createPortal(ToastContent, modalRoot)}
     </motion.div>

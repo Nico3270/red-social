@@ -11,11 +11,9 @@ export default function PitchLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es">
-      <body className={`${inter.className} bg-white antialiased`}>
-        {/* SIN NAVBAR — se moverá a page.tsx */}
-        <main>{children}</main>
-      </body>
-    </html>
+    <div className={`${inter.className} min-h-screen bg-white antialiased`}>
+      {/* SIN NAVBAR — se moverá a page.tsx */}
+      <main>{children}</main>
+    </div>
   );
 }

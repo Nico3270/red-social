@@ -36,7 +36,8 @@ const preferencesCreator: StateCreator<PreferencesState> = (set) => ({
   addSeenId: (id) =>
     set((state) => {
       if (state.seenIds.includes(id)) return state;
-      return { seenIds: [...state.seenIds, id] };
+      const nextSeenIds = [...state.seenIds, id];
+      return { seenIds: nextSeenIds.slice(-500) };
     }),
 
   resetSeenIds: () => set({ seenIds: [] }),

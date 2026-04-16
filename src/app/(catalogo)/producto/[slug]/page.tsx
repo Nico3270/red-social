@@ -102,6 +102,7 @@ export default async function ProductPage({ params }: Props) {
     return <h1 className="sm:mt-40 text-center">No hay producto</h1>;
   }
 
+
   const productosConvertidos: ProductRedSocial[] = (productosSimilares ?? []).map(
     (producto) => ({
       id: producto.id,

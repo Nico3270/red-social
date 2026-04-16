@@ -37,6 +37,9 @@ export async function getProductById(id: string): Promise<GetProductById> {
         categoryId: true,
         componentes: true,
         negocioId: true,
+        stock: true,
+        stockIlimitado: true,
+        usaVariantes: true,
         negocio: {
           select: {
             fotoPerfil: true,
@@ -56,6 +59,44 @@ export async function getProductById(id: string): Promise<GetProductById> {
                 id: true,
               },
             },
+          },
+        },
+        atributos: {
+          select: {
+            id: true,
+            nombre: true,
+            valor: true,
+            orden: true,
+          },
+          orderBy: {
+            orden: "asc",
+          },
+        },
+        variantes: {
+          select: {
+            id: true,
+            nombre: true,
+            sku: true,
+            precio: true,
+            stock: true,
+            stockIlimitado: true,
+            isActive: true,
+            imagenUrl: true,
+            orden: true,
+            options: {
+              select: {
+                id: true,
+                nombre: true,
+                valor: true,
+                orden: true,
+              },
+              orderBy: {
+                orden: "asc",
+              },
+            },
+          },
+          orderBy: {
+            orden: "asc",
           },
         },
       },
@@ -85,6 +126,32 @@ export async function getProductById(id: string): Promise<GetProductById> {
       sections: product.secciones.map((s) => s.section.id),
       negocioId: product.negocioId,
       negocioFotoPerfil: product.negocio.fotoPerfil || "", // Este campo no está en la consulta original
+      stock: product.stock,
+      stockIlimitado: product.stockIlimitado,
+      usaVariantes: product.usaVariantes,
+      atributos: product.atributos.map((atributo) => ({
+        id: atributo.id,
+        nombre: atributo.nombre,
+        valor: atributo.valor,
+        orden: atributo.orden,
+      })),
+      variantes: product.variantes.map((variante) => ({
+        id: variante.id,
+        nombre: variante.nombre,
+        sku: variante.sku,
+        precio: variante.precio,
+        stock: variante.stock,
+        stockIlimitado: variante.stockIlimitado,
+        isActive: variante.isActive,
+        imagenUrl: variante.imagenUrl,
+        orden: variante.orden,
+        options: variante.options.map((option) => ({
+          id: option.id,
+          nombre: option.nombre,
+          valor: option.valor,
+          orden: option.orden,
+        })),
+      })),
     };
 
     return { ok: true, product: formattedProduct, userId: product.negocioId };

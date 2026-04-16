@@ -198,6 +198,7 @@ export const BusinessCard: React.FC<BusinessCardProps> = ({ business }) => {
                   src={portadaImage}
                   alt={`Portada de ${business.nombre}`}
                   fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
                   className="object-cover"
                   loading="lazy"
                 />

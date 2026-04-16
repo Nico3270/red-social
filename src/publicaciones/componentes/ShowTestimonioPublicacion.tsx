@@ -12,6 +12,7 @@ import { motion } from "framer-motion";
 import { FollowButton } from "@/feed/componentes/FollowButton";
 import { EnhancedPublicacion } from "../interfaces/enhancedPublicacion.interface";
 import { textosFont, titleFont } from "@/config/fonts";
+import { useMediaAspectRatio } from "@/hooks/useMediaAspectRatio";
 
 
 interface Productos {
@@ -28,73 +29,13 @@ interface ShowTestimonioPublicacionProps {
   isInModal?: boolean;
 }
 
-
-
-// Hook personalizado para obtener dimensiones de medios (optimizado con fallback responsive)
-const useMediaDimensions = (url: string, tipo: "IMAGEN" | "VIDEO" | undefined) => {
-  const [aspectRatio, setAspectRatio] = useState<number | null>(null);
-
-  useEffect(() => {
-    if (!url) {
-      setAspectRatio(1); // Fallback cuadrado
-      return;
-    }
-
-    const loadDimensions = async () => {
-      try {
-        if (tipo === "IMAGEN" || !tipo) {
-          const img = new window.Image();
-          img.src = url;
-          await new Promise((resolve, reject) => {
-            img.onload = () => {
-              setAspectRatio(img.naturalWidth / img.naturalHeight || 1);
-              resolve(null);
-            };
-            img.onerror = () => {
-              setAspectRatio(1);
-              reject(new Error("Error cargando imagen"));
-            };
-          });
-        } else if (tipo === "VIDEO") {
-          const video = document.createElement("video");
-          video.src = url + "#t=0.1";
-          video.muted = true;
-          await new Promise((resolve, reject) => {
-            video.onloadedmetadata = () => {
-              setAspectRatio(video.videoWidth / video.videoHeight || 9 / 16); // Vertical para videos sociales
-              resolve(null);
-            };
-            video.onerror = () => {
-              setAspectRatio(9 / 16);
-              reject(new Error("Error cargando video"));
-            };
-          });
-          video.remove();
-        }
-      } catch (error) {
-        if (process.env.NODE_ENV === "development") {
-          console.error("Error cargando dimensiones:", error);
-        }
-        setAspectRatio(tipo === "VIDEO" ? 9 / 16 : 1);
-      }
-    };
-
-    loadDimensions();
-    return () => {
-      setAspectRatio(null);
-    };
-  }, [url, tipo]);
-
-  return aspectRatio;
-};
-
 export const ShowTestimonioPublicacion = ({ publicacion, productos, isInModal = false }: ShowTestimonioPublicacionProps) => {
   const [isModalOpenLocal, setIsModalOpenLocal] = useState(false);
 
   const media = publicacion.multimedia?.[0];
   const mediaUrl = media?.url || "/placeholder-image.jpg";
   const mediaTipo = media?.tipo;
-  const aspectRatio = useMediaDimensions(mediaUrl, mediaTipo);
+  const aspectRatio = useMediaAspectRatio(mediaUrl, mediaTipo);
   const timeAgo = formatDistanceToNow(new Date(publicacion.createdAt), { addSuffix: true, locale: es });
 
   
@@ -119,7 +60,7 @@ export const ShowTestimonioPublicacion = ({ publicacion, productos, isInModal = 
   if (!publicacion.negocio?.slug || !/^[a-z0-9-]+$/i.test(publicacion.negocio.slug)) {
     return (
       <div className="w-full my-6 bg-white rounded-2xl shadow-lg p-4">
-        <Typography color="error">Error: Slug de negocio inválido</Typography>
+        {/* <Typography color="error">Error: Slug de negocio inválido</Typography> */}
       </div>
     );
   }
@@ -140,6 +81,7 @@ export const ShowTestimonioPublicacion = ({ publicacion, productos, isInModal = 
               src={publicacion.negocio.fotoPerfil || "/default-profile.png"}
               alt="Avatar del negocio"
               fill
+              sizes="48px"
               className="object-cover"
     
               // unoptimized={true} // Evita problemas con imágenes externas
@@ -238,6 +180,7 @@ export const ShowTestimonioPublicacion = ({ publicacion, productos, isInModal = 
                         src={producto.imagen || "/placeholder-image.jpg"}
                         alt={producto.nombre}
                         fill
+                        sizes="48px"
                         className="object-cover rounded-md"
                       />
                     </div>

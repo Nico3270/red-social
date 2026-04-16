@@ -11,18 +11,20 @@ import ShowTestimonioPublicacion from "@/publicaciones/componentes/ShowTestimoni
 
 import { BusinessCard } from "@/feed/componentes/BusinessCard";
 import SocialMediaCarousel from "@/publicaciones/componentes/SocialMediaPublicacion";
-import { FaNewspaper, FaShoppingBag, FaTools, FaBuilding } from "react-icons/fa";
+import { FaNewspaper, FaShoppingBag, FaTools, FaBuilding, FaCompass } from "react-icons/fa";
 import Image from "next/image";
 import { initialData } from "@/seed/seed";
 import ResenaProductoCard from "@/resenas/componentes/ResenaProductoCard";
+
+type FeedTab = "Para ti" | "Publicaciones" | "Productos" | "Servicios" | "Negocios";
 
 interface FeedRendererProps {
   items: FeedItem[];
   hasMore: boolean;
   isLoadingNext: boolean;
   sentinelRef: React.RefCallback<HTMLDivElement>;
-  activeTab: "Publicaciones" | "Productos" | "Servicios" | "Negocios";
-  onTabChange: (tab: "Publicaciones" | "Productos" | "Servicios" | "Negocios") => void;
+  activeTab: FeedTab;
+  onTabChange: (tab: FeedTab) => void;
 }
 
 const SkeletonCard = React.memo(() => (
@@ -124,7 +126,7 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
     return filtered;
   }, [itemsPorTab, activeTab, selectedCategory]);
 
-  const itemsHash = useMemo(() => filteredItems.map(item => item.id).join(','), [filteredItems]);
+  const itemsHash = useMemo(() => filteredItems.map(item => `${item.type}-${item.id}`).join(','), [filteredItems]);
 
   // Efecto principal para manejar cambios de tab y relayout
   useEffect(() => {
@@ -201,6 +203,7 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
   }, []);
 
   const tabs = [
+    { label: "Para ti" as const, icon: <FaCompass className="text-sky-600" /> },
     { label: "Publicaciones" as const, icon: <FaNewspaper className="text-blue-600" /> },
     { label: "Productos" as const, icon: <FaShoppingBag className="text-green-600" /> },
     { label: "Servicios" as const, icon: <FaTools className="text-orange-600" /> },
@@ -210,7 +213,7 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
   const todasCategorias = useMemo(() => initialData.categorias.filter(cat => cat.isActive), []);
 
   const categoriasDisponibles = useMemo(() => {
-    if (activeTab === "Publicaciones") return [];
+    if (activeTab === "Publicaciones" || activeTab === "Para ti") return [];
 
     const catIds = new Set<string>();
 
@@ -240,7 +243,7 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
 
     return (
       <motion.div
-        key={item.id}
+        key={`${item.type}-${item.id}`}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, delay: index * 0.05, ease: "easeOut" }}
@@ -266,7 +269,8 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
     setSelectedCategory(null);
   }, [activeTab]);
 
-  const placeholderImages: Record<"Publicaciones" | "Productos" | "Servicios" | "Negocios", string> = {
+  const placeholderImages: Record<FeedTab, string> = {
+    "Para ti": "/imgs/no_publicaciones.png",
     "Publicaciones": "/imgs/no_publicaciones.png",
     "Productos": "/imgs/no_productos.png",
     "Servicios": "/imgs/no_servicios.png",
@@ -274,7 +278,7 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
   };
 
   const renderCategoryFilter = () => {
-    if (activeTab === "Publicaciones" || categoriasDisponibles.length === 0) return null;
+    if (activeTab === "Publicaciones" || activeTab === "Para ti" || categoriasDisponibles.length === 0) return null;
 
     return (
       <motion.div
@@ -354,6 +358,24 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
         ))}
       </motion.div>
 
+      {activeTab === "Para ti" && (
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.25 }}
+          className="mb-4 rounded-2xl border border-slate-200 bg-white/95 px-4 py-4 shadow-sm"
+        >
+          <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-sky-50 px-3 py-1 text-xs font-semibold text-sky-700">
+            <FaCompass className="text-[11px]" />
+            Feed Inteligente
+          </div>
+          <p className="text-sm leading-6 text-slate-600">
+            Mezclamos publicaciones, productos, servicios y negocios priorizando cercania,
+            cuentas que sigues, contenido con mejor respuesta y variedad real entre negocios.
+          </p>
+        </motion.div>
+      )}
+
       {renderCategoryFilter()}
 
       <motion.div
@@ -368,7 +390,9 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
         ) : filteredItems.length === 0 && !isLoadingNext ? (
           <div className="flex flex-col items-center justify-center py-8">
             <p className="text-center text-gray-800 font-bold mb-4 text-lg sm:text-2xl">
-              No hay {activeTab.toLowerCase()} disponibles
+              {activeTab === "Para ti"
+                ? "Aun no encontramos contenido ideal para ti"
+                : `No hay ${activeTab.toLowerCase()} disponibles`}
               {selectedCategory
                 ? ` en la categoría "${categoriasDisponibles.find(cat => cat.id === selectedCategory)
                   ?.nombre || "seleccionada"
@@ -383,7 +407,7 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
               height={500}
               className="max-w-xs md:max-w-md lg:max-w-lg w-full h-auto object-contain mb-4"
               loading="lazy"
-              quality={75}
+      
             />
             
           </div>
@@ -416,7 +440,7 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
             height={300}
             className="max-w-xs md:max-w-md lg:max-w-lg w-full h-auto object-contain mb-4"
             loading="lazy"
-            quality={75}
+       
           />
           <p className="text-center text-gray-500 font-light">
             No hay más {activeTab.toLowerCase()}.

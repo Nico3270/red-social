@@ -267,7 +267,7 @@ export default function PerfilUsuarioHeader({
           width={1200}
           height={400}
           loading="lazy"
-          quality={85}
+     
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/20"></div>
@@ -284,7 +284,7 @@ export default function PerfilUsuarioHeader({
             width={160}
             height={160}
             loading="lazy"
-            quality={90}
+       
           />
         </div>
       </div>
@@ -576,7 +576,7 @@ export default function PerfilUsuarioHeader({
                       height={500}
                       className="max-w-xs md:max-w-md lg:max-w-lg w-full h-auto object-contain mb-4"
                       loading="lazy"
-                      quality={75}
+                  
                     />
 
                   </div>
@@ -598,7 +598,7 @@ export default function PerfilUsuarioHeader({
                     height={500}
                     className="max-w-xs md:max-w-md lg:max-w-lg w-full h-auto object-contain mb-4"
                     loading="lazy"
-                    quality={75}
+               
                   />
 
                 </div>
@@ -644,7 +644,7 @@ export default function PerfilUsuarioHeader({
                     height={500}
                     className="max-w-xs md:max-w-md lg:max-w-lg w-full h-auto object-contain mb-4"
                     loading="lazy"
-                    quality={75}
+                  
                   />
 
                 </div>
@@ -685,7 +685,7 @@ export default function PerfilUsuarioHeader({
                     height={500}
                     className="max-w-xs md:max-w-md lg:max-w-lg w-full h-auto object-contain mb-4"
                     loading="lazy"
-                    quality={75}
+                    
                   />
                 </div>
               )}

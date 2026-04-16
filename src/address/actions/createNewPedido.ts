@@ -13,6 +13,8 @@ interface ItemInput {
   price: number;
   subtotal: number;
   productId?: string;
+  productVariantId?: string | null;
+  variantLabel?: string | null;
 }
 
 interface DeliveryDataInput {
@@ -94,6 +96,13 @@ function getErrorMessage(error: unknown): string {
   return "Error desconocido";
 }
 
+function getItemDisplayName(item: ItemInput): string {
+  const base = sanitizeParam(item.description);
+  const variant = sanitizeParam(item.variantLabel);
+
+  return variant ? `${base} (${variant})` : base;
+}
+
 function summarizeNotifyResult(params: {
   result: unknown;
   target: "negocio" | "cliente";
@@ -140,6 +149,8 @@ export const createNewPedido = async (
       price: item.price,
       subtotal: item.subtotal,
       productId: item.productId ?? null,
+      productVariantId: item.productVariantId ?? null,
+      variantLabel: sanitizeParam(item.variantLabel),
     })),
     deliveryData: {
       orderType: input.deliveryData.orderType,
@@ -324,7 +335,7 @@ export const createNewPedido = async (
       });
 
       const generatedDescription = input.items
-        .map((item) => `${item.description} x${item.quantity}`)
+        .map((item) => `${getItemDisplayName(item)} x${item.quantity}`)
         .join(", ");
 
       const newOrder = await tx.order.create({
@@ -349,6 +360,8 @@ export const createNewPedido = async (
           subtotal: new Decimal(item.subtotal.toFixed(2)),
           orderId: newOrder.id,
           productId: item.productId || null,
+          productVariantId: item.productVariantId || null,
+          variantLabel: item.variantLabel || null,
         })),
       });
 
@@ -364,20 +377,19 @@ export const createNewPedido = async (
       });
 
       const datosPedido = input.items
-        .map((item) => `${item.quantity} - ${item.description}`)
+        .map((item) => `${item.quantity} - ${getItemDisplayName(item)}`)
         .join(", ");
 
       const valorCompra = `$${input.totalAmount.toFixed(2)}`;
       const nombreCliente = clientName;
       const telefonoCliente = clientPhone;
       const descripcionCompra = input.deliveryData.additionalComments || "";
-      let direccionCompra =
-        orderType === "DELIVERY" ? deliveryAddress || "" : onSiteLocation || "";
-      const ciudadCompra = orderType === "DELIVERY" ? ciudad || "" : "";
-
-      if (orderType === "ON_SITE") {
-        direccionCompra = `Pedido en sitio: ${onSiteLocation}`;
-      }
+      const direccionCompra =
+        orderType === "DELIVERY"
+          ? deliveryAddress || ""
+          : `Ubicación en sitio: ${onSiteLocation || "No especificada"}`;
+      const ciudadCompra =
+        orderType === "DELIVERY" ? ciudad || "" : "Consumo en sitio";
 
       return {
         newOrderId: newOrder.id,
@@ -468,6 +480,7 @@ export const createNewPedido = async (
       try {
         const negocioNotifyRes = await notifyReservaConfirmadaCliente({
           to: telefonoNegocio,
+          orderType,
           template: PlantillaWhatsApp.PEDIDO_CREADO_NEGOCIO,
           datos_pedido: sanitizedDatosPedido,
           valor_compra: sanitizedValorCompra,
@@ -547,6 +560,7 @@ export const createNewPedido = async (
         session?.user.role === "negocio"
           ? await notifyReservaConfirmadaCliente({
               to: telefonoCliente,
+              orderType,
               template: PlantillaWhatsApp.PEDIDO_CREADO_NEGOCIO_USUARIO,
               datos_pedido: sanitizedDatosPedido,
               valor_compra: sanitizedValorCompra,
@@ -556,6 +570,7 @@ export const createNewPedido = async (
             })
           : await notifyReservaConfirmadaCliente({
               to: telefonoCliente,
+              orderType,
               template: PlantillaWhatsApp.PEDIDO_CREADO_USUARIO_USUARIO,
               datos_pedido: sanitizedDatosPedido,
               valor_compra: sanitizedValorCompra,

@@ -2,56 +2,107 @@ import { create } from "zustand";
 import { persist, PersistOptions } from "zustand/middleware";
 
 export interface CartProduct {
-  cartItemId: string; // Identificador único del producto en el carrito
-  id: string; // Identificador del producto (relacionado con la base de datos)
-  slug: string; // Slug del producto para generar rutas dinámicas
-  nombre: string; // Nombre del producto
-  precio: number; // Precio del producto
-  cantidad: number; // Cantidad seleccionada por el usuario
-  imagen: string; // Imagen principal del producto
-  seccionIds: string[]; // IDs de las secciones asociadas
-  descripcionCorta?: string; // Descripción corta del producto (opcional)
+  cartItemId: string;
+  id: string;
+  slug: string;
+  nombre: string;
+  precio: number;
+  cantidad: number;
+  imagen: string;
+  seccionIds: string[];
+  descripcionCorta?: string;
+
+  // Nuevos campos opcionales para variantes / inventario
+  productVariantId?: string | null;
+  variantLabel?: string | null;
+  stock?: number | null;
+  stockIlimitado?: boolean;
+  usaVariantes?: boolean;
+
+  negocioFotoPerfil?: string;
 }
 
 interface State {
-  carts: Record<string, CartProduct[]>; // Clave: negocioId, Valor: array de productos en el carrito de ese negocio
+  carts: Record<string, CartProduct[]>;
   addProductToCart: (negocioId: string, product: CartProduct) => void;
   getTotalItems: () => number;
   removeProduct: (negocioId: string, cartItemId: string) => void;
   updateProductQuantity: (negocioId: string, cartItemId: string, cantidad: number) => void;
   getTotalPrice: () => number;
   clearCart: () => void;
-  clearCartForNegocio: (negocioId: string) => void; // Nueva acción para vaciar un carrito específico
-  getCartForNegocio: (negocioId: string) => CartProduct[]; // Nueva acción para obtener el carrito de un negocio
-  getTotalNegociosWithItems: () => number; // Nueva acción para contar negocios con items (opcional, pero útil para UI)
+  clearCartForNegocio: (negocioId: string) => void;
+  getCartForNegocio: (negocioId: string) => CartProduct[];
+  getTotalNegociosWithItems: () => number;
 }
+
+const isSameCartLine = (a: CartProduct, b: CartProduct) => {
+  const aUsesVariants = a.usaVariantes === true;
+  const bUsesVariants = b.usaVariantes === true;
+
+  if (aUsesVariants || bUsesVariants) {
+    return a.id === b.id && (a.productVariantId ?? null) === (b.productVariantId ?? null);
+  }
+
+  return a.id === b.id;
+};
+
+const clampQuantityByStock = (item: CartProduct, desiredQuantity: number) => {
+  if (item.stockIlimitado !== false) {
+    return Math.max(1, desiredQuantity);
+  }
+
+  if (typeof item.stock !== "number") {
+    return Math.max(1, desiredQuantity);
+  }
+
+  return Math.max(1, Math.min(desiredQuantity, item.stock));
+};
 
 export const useCartCatalogoStore = create<State>()(
   persist(
     (set, get) => ({
-      carts: {}, // Inicializa como objeto vacío
+      carts: {},
 
       addProductToCart: (negocioId: string, product: CartProduct) => {
         set((state) => {
           const negocioCart = state.carts[negocioId] || [];
-          // Verifica si el producto ya existe en el carrito del negocio (por id del producto)
-          const existingProduct = negocioCart.find((item) => item.id === product.id);
+
+          const existingProduct = negocioCart.find((item) => isSameCartLine(item, product));
+
           if (existingProduct) {
-            // Si existe, incrementa la cantidad (asumiendo que no quieres duplicados)
             return {
               carts: {
                 ...state.carts,
-                [negocioId]: negocioCart.map((item) =>
-                  item.id === product.id ? { ...item, cantidad: item.cantidad + product.cantidad } : item
-                ),
+                [negocioId]: negocioCart.map((item) => {
+                  if (!isSameCartLine(item, product)) return item;
+
+                  const nextQuantity = clampQuantityByStock(
+                    item,
+                    item.cantidad + product.cantidad
+                  );
+
+                  return {
+                    ...item,
+                    cantidad: nextQuantity,
+                  };
+                }),
               },
             };
           }
-          // Si no existe, agrega el nuevo producto
+
+          const normalizedProduct: CartProduct = {
+            ...product,
+            cantidad: clampQuantityByStock(product, product.cantidad),
+            stockIlimitado: product.stockIlimitado ?? true,
+            usaVariantes: product.usaVariantes ?? false,
+            productVariantId: product.productVariantId ?? null,
+            variantLabel: product.variantLabel ?? null,
+          };
+
           return {
             carts: {
               ...state.carts,
-              [negocioId]: [...negocioCart, product],
+              [negocioId]: [...negocioCart, normalizedProduct],
             },
           };
         });
@@ -67,12 +118,18 @@ export const useCartCatalogoStore = create<State>()(
       updateProductQuantity: (negocioId: string, cartItemId: string, cantidad: number) =>
         set((state) => {
           const negocioCart = state.carts[negocioId] || [];
+
           return {
             carts: {
               ...state.carts,
-              [negocioId]: negocioCart.map((item) =>
-                item.cartItemId === cartItemId ? { ...item, cantidad: Math.max(1, cantidad) } : item // Evita cantidad <1
-              ),
+              [negocioId]: negocioCart.map((item) => {
+                if (item.cartItemId !== cartItemId) return item;
+
+                return {
+                  ...item,
+                  cantidad: clampQuantityByStock(item, cantidad),
+                };
+              }),
             },
           };
         }),
@@ -82,11 +139,13 @@ export const useCartCatalogoStore = create<State>()(
           const negocioCart = state.carts[negocioId] || [];
           const updatedCart = negocioCart.filter((item) => item.cartItemId !== cartItemId);
           const newCarts = { ...state.carts };
+
           if (updatedCart.length > 0) {
             newCarts[negocioId] = updatedCart;
           } else {
-            delete newCarts[negocioId]; // Borra la entrada si el carrito queda vacío
+            delete newCarts[negocioId];
           }
+
           return { carts: newCarts };
         }),
 
@@ -119,7 +178,7 @@ export const useCartCatalogoStore = create<State>()(
     }),
     {
       name: "carro_negocios",
-      partialize: (state) => ({ carts: state.carts }), // Solo persiste los carts para optimizar
+      partialize: (state) => ({ carts: state.carts }),
     } as PersistOptions<State>
   )
 );

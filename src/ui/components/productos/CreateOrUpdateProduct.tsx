@@ -1,37 +1,42 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
-import { useForm, Controller } from "react-hook-form";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import {
   Alert,
-  Stack,
-  TextField,
-  Button,
-  FormControl,
-  FormLabel,
-  RadioGroup,
-  Radio,
-  Chip,
-  FormControlLabel,
-  CircularProgress,
-  Typography,
   Box,
+  Button,
+  Chip,
+  CircularProgress,
+  Divider as MuiDivider,
+  FormControl,
+  FormControlLabel,
+  FormLabel,
+  IconButton,
+  Radio,
+  RadioGroup,
+  Stack,
+  Switch,
+  TextField,
+  Typography,
 } from "@mui/material";
 import { AiOutlineCloudUpload } from "react-icons/ai";
-import { FaTrashAlt, FaTimes } from "react-icons/fa";
+import { FaPlus, FaTimes, FaTrashAlt } from "react-icons/fa";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
-import { createProduct, generateDescriptionFromText } from "@/ui/actions/productos/createNewProduct";
+import {
+  createProduct,
+  generateDescriptionFromText,
+} from "@/ui/actions/productos/createNewProduct";
+import { updateProduct } from "@/ui/actions/productos/updateProduct";
 import { initialData } from "@/seed/seed";
 import Divider from "../divider/Divider";
 import { ProductStatus } from "@prisma/client";
-import { updateProduct } from "@/ui/actions/productos/updateProduct";
 import { ProductRedSocial } from "@/interfaces/productRedSocial.interface";
 import AutoUploadMedia from "../autoUpload/AutoUploadMedia";
 import { useProductosTransaccionesStore } from "@/store/productosTransacciones/productosTransaccionesStore";
-import { motion, AnimatePresence } from "framer-motion";
-import { createPortal } from "react-dom";
 import Image from "next/image";
+import { AnimatePresence, motion } from "framer-motion";
+import { createPortal } from "react-dom";
 
 interface ProductFormData {
   nombre: string;
@@ -39,102 +44,112 @@ interface ProductFormData {
   descripcion: string;
   descripcionCorta: string;
   slug: string;
+  prioridad: number;
   status: ProductStatus;
   tags: string;
   categoriaId: string;
+  stock: number | null;
+  stockIlimitado: boolean;
+  usaVariantes: boolean;
 }
 
-//Hacemos opcional el producto para que el componente sirva para editar o crear un nuevo producto
+interface ProductAttributeInput {
+  id: string;
+  nombre: string;
+  valor: string;
+}
+
+interface ProductVariantOptionInput {
+  id: string;
+  nombre: string;
+  valor: string;
+}
+
+interface ProductVariantInput {
+  id: string;
+  nombre: string;
+  sku: string;
+  precio: string;
+  stock: string;
+  stockIlimitado: boolean;
+  imagenUrl: string;
+  isActive: boolean;
+  options: ProductVariantOptionInput[];
+}
+
 interface Props {
   product?: ProductRedSocial;
 }
 
-export default function CreateOrUpdateProduct({ product }: Props) {
-  const { register, handleSubmit, control, setValue, watch, reset } = useForm<ProductFormData>({
-    defaultValues: {
-      nombre: "",
-      precio: 0,
-      descripcion: "",
-      descripcionCorta: "",
-      slug: "",
-      status: "disponible" as ProductStatus,
-      tags: "",
-      categoriaId: "",
-    },
-  });
+const defaultFormValues: ProductFormData = {
+  nombre: "",
+  precio: 0,
+  descripcion: "",
+  descripcionCorta: "",
+  slug: "",
+  prioridad: 1,
+  status: "disponible",
+  tags: "",
+  categoriaId: "",
+  stock: null,
+  stockIlimitado: true,
+  usaVariantes: false,
+};
 
-  const [alert, setAlert] = useState<{ type: "success" | "error" | "info"; message: string } | null>(null);
-  // Para saber el nombre o slug de la categoría seleccionada
-  const [selectedCategorySlug, setSelectedCategorySlug] = useState<string>("");
-  // Es un set o array de strings con las secciones seleccionadas, se inicia vacío 
+const createId = () => Math.random().toString(36).slice(2, 10);
+
+export default function CreateOrUpdateProduct({ product }: Props) {
+  const { register, handleSubmit, control, setValue, watch, reset } =
+    useForm<ProductFormData>({
+      defaultValues: defaultFormValues,
+    });
+
+  const [alert, setAlert] = useState<{
+    type: "success" | "error" | "info";
+    message: string;
+  } | null>(null);
+
+  const [selectedCategorySlug, setSelectedCategorySlug] = useState("");
+  const [submitted, setSubmitted] = useState(false);
   const [selectedSections, setSelectedSections] = useState<Set<string>>(new Set());
-  // Imagenes cargadas, es un array con las imagenes ya subidas a Cloudinary
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
-  // Sirve para bloquear los botones mientras se esta creando o actualizando el producto
   const [loading, setLoading] = useState(false);
   const [generating, setGenerating] = useState(false);
-  // String con las características del producto, cada característica separadas por comeas
   const [caracteristicas, setCaracteristicas] = useState("");
-  // Componentes del producto en un solo string separados por comas
   const [componentesInput, setComponentesInput] = useState("");
   const [componentes, setComponentes] = useState<string[]>([]);
-  // Para hacer redirección
+  const [atributos, setAtributos] = useState<ProductAttributeInput[]>([]);
+  const [variantes, setVariantes] = useState<ProductVariantInput[]>([]);
+  const [showAdvancedInventory, setShowAdvancedInventory] = useState(false);
+  const [showAttributesBlock, setShowAttributesBlock] = useState(false);
+  const [showVariantsBlock, setShowVariantsBlock] = useState(false);
+  const [modalState, setModalState] = useState<"idle" | "loading" | "success" | "error">(
+    "idle"
+  );
+  const [modalMessage, setModalMessage] = useState("");
+  const [redirectUrl, setRedirectUrl] = useState("");
+
   const router = useRouter();
-  // Para obtener la información de la sesión desde next auth
-  const { data: session } = useSession();
-  // Obtenemos el id del dueño del negocio que actualizará su producto
-  const id = session?.user.id;
+  const addProducto = useProductosTransaccionesStore((state) => state.addProducto);
+  const updateProducto = useProductosTransaccionesStore((state) => state.updateProducto);
 
-  const updateProductoStore = useProductosTransaccionesStore((state) => state.updateProducto);
+  const selectedCategoryId = watch("categoriaId");
+  const nombreProducto = watch("nombre");
+  const usaVariantes = watch("usaVariantes");
+  const stockIlimitado = watch("stockIlimitado");
 
-  const [modalState, setModalState] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
-  const [modalMessage, setModalMessage] = useState('');
-  const [redirectUrl, setRedirectUrl] = useState('');
-  const [submitted, setSubmitted] = useState(false);
-
-  const handleMediaChange = useCallback((urls: string[] | string | undefined) => {
-    setUploadedImages(
-        Array.isArray(urls) ? urls : urls ? [urls] : []
-    );
-}, []); // Dependencias vacías: setUploadedImages es estable.
-
-  useEffect(() => {
-    // Si viene el producto con el método rerset de useForm, insertamos estos valores del producto en el formulario
-    if (product) {
-      reset({
-        nombre: product.nombre,
-        precio: product.precio,
-        descripcion: product.descripcion,
-        descripcionCorta: product.descripcionCorta,
-        slug: product.slug,
-        status: product.status,
-        tags: product.tags.join(", "),
-        categoriaId: product.categoriaId,
-      });
-
-      // Desde el archivo initialData se revisa si la categoría que viene en el producto este en las disponibles
-      const category = initialData.categorias.find((cat) => cat.id === product.categoriaId);
-      // Si la verificación anterior se cumple y category no esta vacía, se obtiene el slug ("comidad") y se almacena en CategorySlug
-      if (category) {
-        setSelectedCategorySlug(category.slug);
-      }
-      // Como recibimos un producto que contiene secciones con id y slug, extraemos los ids de las secciones y los almacenamos en el set de selectedSections, queda algo así ["s1", "s3", "s5"]
-      // Se almacenan como un set para evitar duplicados y facilitar la manipulación
-      setSelectedSections(new Set(product.sections));
-
-
-      // Obtenemos los componentes del producto y los almacenamos en el array de componentes
-      setComponentes(product.componentes);
-    }
-    // Si no viene un producto, se reinicia el formulario con los valores por defecto
-  }, [product, reset]);
-
-  // Se utiliza para filtrar las secciones según la categoría seleccionada y solo mostrar las secciones que pertenecen a esa categoría
-  const filteredSections = initialData.secciones.filter(
-    (section) => section.categorySlug === selectedCategorySlug
+  const filteredSections = useMemo(
+    () =>
+      initialData.secciones.filter(
+        (section) => section.categorySlug === selectedCategorySlug
+      ),
+    [selectedCategorySlug]
   );
 
-  // Función para generar un slug único basado en el nombre del producto
+  const multiple = true;
+  const dataEntrada = product?.imagenes;
+  const isModalOpen = modalState !== "idle";
+
   const generateSlug = (title: string) => {
     const randomId = Math.random().toString(36).substring(2, 6);
     const slug = title
@@ -144,153 +159,129 @@ export default function CreateOrUpdateProduct({ product }: Props) {
       .replace(/[^\w\s-]/g, "")
       .trim()
       .replace(/\s+/g, "-");
+
     return `${slug}-${randomId}`;
   };
-  // Vatiable que se utiliza para obtener el nombre del producto desde el formulario y generar un slug automáticamente
-  const nombreProducto = watch("nombre");
 
-  // Efecto que se ejecuta cuando cambia el nombre del producto, si no hay un producto cargado, genera un slug automáticamente
   useEffect(() => {
     if (!product && nombreProducto) {
       const nuevoSlug = generateSlug(nombreProducto);
       setValue("slug", nuevoSlug, { shouldValidate: true });
     }
-  }, [nombreProducto, setValue, product]);
+  }, [nombreProducto, product, setValue]);
 
-
-  // Función que se ejecuta al enviar el formulario, recibe los datos del formulario como parámetro
-  const onSubmit = async (data: ProductFormData) => {
-    setLoading(true);
-    setModalState('loading');
-    setModalMessage(product ? 'Estamos actualizando tu producto...' : 'Estamos creando tu producto...');
-
-    try {
-      setAlert(null);
-      // Revisa el id del usuario autenticado, si no hay un id, muestra un mensaje de error
-      if (!id) {
-        setModalState('error');
-        setModalMessage("Debes iniciar sesión para guardar el producto.");
-        return;
-      }
-      // Cada producto debe tener al menos un nombre, un precio y un slug, si no hay un nombre, muestra un mensaje de error
-      if (!selectedCategorySlug) {
-        setModalState('error');
-        setModalMessage("Debes seleccionar una categoría.");
-        return;
-      }
-      // Cada producto debe tener imagenes, si no hay imágenes subidas, muestra un mensaje de error
-      if (uploadedImages.length === 0) {
-        setModalState('error');
-        setModalMessage("Debes subir al menos una imagen antes de guardar el producto.");
-        return;
-      }
-      // Cada productodebe pertenecer a una categoría y tener al menos una sección seleccionada, si no hay secciones seleccionadas, muestra un mensaje de error
-      if (selectedSections.size === 0) {
-        setModalState('error');
-        setModalMessage("Debes seleccionar al menos una sección.");
-        return;
-      }
-      // Se crea un formData para enviar los datos del formulario al servidor, se utiliza FormData para manejar archivos e imágenes con la información del formulario
-      const formData = new FormData();
-      // Se agregan los datos del formulario al formData con el método append, se convierten los números a string para evitar errores al enviar
-      formData.append("nombre", data.nombre);
-      formData.append("precio", data.precio.toString());
-      formData.append("descripcion", data.descripcion);
-      formData.append("descripcionCorta", data.descripcionCorta);
-      formData.append("slug", data.slug);
-      formData.append("prioridad", "1");
-      formData.append("status", data.status);
-      formData.append("tags", data.tags);
-      formData.append("usuarioId", id);
-
-      const category = initialData.categorias.find((cat) => cat.slug === selectedCategorySlug);
-      if (category) {
-        // Se agrega la categoría pero se agrega es el id de la categoría, no el slug
-        formData.append("categoriaId", category.id);
-      } else {
-        // Si la categoría no existe, muestra un mensaje de error
-        setModalState('error');
-        setModalMessage("La categoría seleccionada no existe.");
-        return;
-      }
-      // Se agregan las secciones seleccionadas, se convierte el set de selectedSections a un array y se agrega cada id al formData
-      selectedSections.forEach((id) => formData.append("seccionIds", id));
-      // se agregan las imágenes subidas a Cloudinary, se recorre el array de uploadedImages y se agrega cada url al formData
-      uploadedImages.forEach((url) => formData.append("imageUrls", url));
-      // Se agregan los componentes del producto, se recorre el array de componentes y se agrega cada componente al formData
-      componentes.forEach((componente) => formData.append("componentes", componente));
-      // Si inicialmente se paso un producto se utiliza updateProduct, se envía el formData actualizado, el id del producto
-      const result = product
-        ? await updateProduct(product.id, formData)
-        // Si no se pasó un producto, se utiliza createProduct, se envía el formData con los datos del nuevo producto
-        : await createProduct(formData);
-      // Si la respuesta es exitosa, se redirige al usuario a la página del producto creado o actualizado
-      if (result.ok) {
-        // Se obtiene el slug de la categoría seleccionada y el id de la primera sección seleccionada
-        const firstSectionId = Array.from(selectedSections)[0];
-        const section = initialData.secciones.find((sec) => sec.id === firstSectionId);
-        if (!section) {
-          setModalState('error');
-          setModalMessage("La sección seleccionada no existe.");
-          return;
-        }
-        if (product && product.id) {
-          updateProductoStore(product.id, {
-            nombre: data.nombre,
-            precio: data.precio,
-          })
-        }
-
-        // enlace creado para redirigir al usuario a la página del producto creado o actualizado
-        const url = `/${selectedCategorySlug}/${section.slug}/${result.product?.slug}`;
-        setRedirectUrl(url);
-        setSubmitted(true);
-        setModalState('success');
-        setModalMessage(product ? "Producto actualizado exitosamente." : "Producto creado exitosamente.");
-
-        setTimeout(() => {
-          router.push(url);
-        }, 2000);
-      } else {
-        setModalState('error');
-        setModalMessage(result.message || "Ocurrió un error al guardar el producto.");
-      }
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Error desconocido al enviar el formulario";
-      setModalState('error');
-      setModalMessage(errorMessage);
-      console.error("Error al enviar el formulario:", errorMessage);
-    } finally {
-      setLoading(false);
+  useEffect(() => {
+    if (usaVariantes) {
+      setValue("stockIlimitado", true);
+      setValue("stock", null);
     }
-  };
+  }, [usaVariantes, setValue]);
 
-  // Función para alternar la selección de secciones, recibe el id de la sección y actualiza el set de selectedSections
+  useEffect(() => {
+    if (!product) {
+      reset(defaultFormValues);
+      setSelectedCategorySlug("");
+      setSelectedSections(new Set());
+      setUploadedImages([]);
+      setComponentes([]);
+      setAtributos([]);
+      setVariantes([]);
+      setShowAdvancedInventory(false);
+      setShowAttributesBlock(false);
+      setShowVariantsBlock(false);
+      return;
+    }
+
+    const categoria = initialData.categorias.find((cat) => cat.id === product.categoriaId);
+    const atributosIniciales = (product.atributos ?? []).map((atributo) => ({
+      id: atributo.id || createId(),
+      nombre: atributo.nombre,
+      valor: atributo.valor,
+    }));
+    const variantesIniciales = (product.variantes ?? []).map((variant) => ({
+      id: variant.id || createId(),
+      nombre: variant.nombre ?? "",
+      sku: variant.sku ?? "",
+      precio: variant.precio !== null && variant.precio !== undefined ? String(variant.precio) : "",
+      stock: variant.stock !== null && variant.stock !== undefined ? String(variant.stock) : "",
+      stockIlimitado: variant.stockIlimitado ?? true,
+      imagenUrl: variant.imagenUrl ?? "",
+      isActive: variant.isActive,
+      options: (variant.options ?? []).map((option) => ({
+        id: option.id || createId(),
+        nombre: option.nombre,
+        valor: option.valor,
+      })),
+    }));
+
+    reset({
+      nombre: product.nombre,
+      precio: product.precio,
+      descripcion: product.descripcion,
+      descripcionCorta: product.descripcionCorta ?? "",
+      slug: product.slug,
+      prioridad: product.prioridad ?? 1,
+      status: product.status,
+      tags: product.tags.join(", "),
+      categoriaId: product.categoriaId,
+      stock: product.stock ?? null,
+      stockIlimitado: product.stockIlimitado ?? true,
+      usaVariantes: product.usaVariantes ?? false,
+    });
+
+    setSelectedCategorySlug(categoria?.slug ?? "");
+    setSelectedSections(new Set(product.sections ?? []));
+    setUploadedImages(product.imagenes ?? []);
+    setComponentes(product.componentes ?? []);
+    setAtributos(atributosIniciales);
+    setVariantes(variantesIniciales);
+    setShowAdvancedInventory(
+      (product.stockIlimitado ?? true) === false ||
+        product.usaVariantes === true ||
+        (product.stock ?? null) !== null
+    );
+    setShowAttributesBlock(atributosIniciales.length > 0);
+    setShowVariantsBlock(variantesIniciales.length > 0);
+  }, [product, reset]);
+
+  const handleMediaChange = useCallback((urls: string[] | string | undefined) => {
+    setUploadedImages(Array.isArray(urls) ? urls : urls ? [urls] : []);
+  }, []);
+
   const toggleSection = (id: string) => {
     setSelectedSections((prev) => {
       const newSet = new Set(prev);
-      if (newSet.has(id)) newSet.delete(id);
-      else newSet.add(id);
+      if (newSet.has(id)) {
+        newSet.delete(id);
+      } else {
+        newSet.add(id);
+      }
       return newSet;
     });
   };
-  // Fucnión que se ejecuta al cambiar la categoría, recibe el slug de la categoría y actualiza el estado de selectedCategorySlug y selectedSections
-  const handleCategoryChange = (slug: string) => {
+
+  const handleCategoryChange = (slug: string, categoryId: string) => {
     setSelectedCategorySlug(slug);
-    setSelectedSections(new Set()); // Clear sections when category changes
+    setSelectedSections(new Set());
+    setValue("categoriaId", categoryId, { shouldValidate: true });
   };
-  // funcuión que se ejecuta al cambiar el input de características del producto, actualiza el estado de caracteristicas
+
   const handleGenerateDescription = async () => {
+    const nombre = watch("nombre").trim();
 
-    const nombreProducto = watch("nombre").trim();
-
-    if (!nombreProducto) {
-      setAlert({ type: "error", message: "Debes ingresar un nombre para el producto antes de generar la descripción." });
+    if (!nombre) {
+      setAlert({
+        type: "error",
+        message: "Debes ingresar un nombre para el producto antes de generar la descripción.",
+      });
       return;
     }
 
     if (!caracteristicas.trim()) {
-      setAlert({ type: "error", message: "Ingresa las características del producto antes de generar la descripción." });
+      setAlert({
+        type: "error",
+        message: "Ingresa las características del producto antes de generar la descripción.",
+      });
       return;
     }
 
@@ -298,27 +289,41 @@ export default function CreateOrUpdateProduct({ product }: Props) {
     setAlert(null);
 
     try {
-      const result = await generateDescriptionFromText(nombreProducto, caracteristicas, componentes);
+      const result = await generateDescriptionFromText(
+        nombre,
+        caracteristicas,
+        componentes
+      );
+
       if (result.ok) {
-        // Se obtiene la descripción generada por openai y con el metodo setValue se actualizan los campos del formulario
         setValue("descripcion", result.description || "");
         setValue("descripcionCorta", result.shortDescription || "");
         setValue("tags", result.tags ? result.tags.join(", ") : "");
-        setAlert({ type: "success", message: "Descripción generada exitosamente." });
+        setAlert({
+          type: "success",
+          message: "Descripción generada exitosamente.",
+        });
       } else {
-        setAlert({ type: "error", message: result.message || "Error al generar la descripción." });
+        setAlert({
+          type: "error",
+          message: result.message || "Error al generar la descripción.",
+        });
       }
     } catch (error) {
       console.error("Error al generar la descripción:", error);
-      setAlert({ type: "error", message: "Hubo un error al generar la descripción con IA." });
+      setAlert({
+        type: "error",
+        message: "Hubo un error al generar la descripción con IA.",
+      });
+    } finally {
+      setGenerating(false);
     }
-
-    setGenerating(false);
   };
 
-  // Función que se ejecuta al cambiar el input de componentes del producto, actualiza el estado de componentesInput
   const handleGenerateComponentes = () => {
-    if (!componentesInput.trim()) return;
+    if (!componentesInput.trim()) {
+      return;
+    }
 
     const nuevosComponentes = componentesInput
       .split("\n")
@@ -334,419 +339,1289 @@ export default function CreateOrUpdateProduct({ product }: Props) {
   };
 
   const handleCloseModal = () => {
-    setModalState('idle');
-    if (modalState === 'success' && redirectUrl) {
-        router.push(redirectUrl);
+    setModalState("idle");
+    if (modalState === "success" && redirectUrl) {
+      router.push(redirectUrl);
     }
   };
 
-  // Variables para definir la cantidad de archivos, si el input permite uno o varios, y si hay archivos iniciales
+  const addAtributo = () => {
+    setAtributos((prev) => [...prev, { id: createId(), nombre: "", valor: "" }]);
+  };
 
-  const multiple = true;
-  const dataEntrada = product?.imagenes;
+  const updateAtributo = (
+    id: string,
+    field: keyof Omit<ProductAttributeInput, "id">,
+    value: string
+  ) => {
+    setAtributos((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, [field]: value } : item))
+    );
+  };
 
-  const isModalOpen = modalState !== 'idle';
+  const removeAtributo = (id: string) => {
+    setAtributos((prev) => prev.filter((item) => item.id !== id));
+  };
+
+  const addVariant = () => {
+    setVariantes((prev) => [
+      ...prev,
+      {
+        id: createId(),
+        nombre: "",
+        sku: "",
+        precio: "",
+        stock: "",
+        stockIlimitado: true,
+        imagenUrl: "",
+        isActive: true,
+        options: [],
+      },
+    ]);
+  };
+
+  const updateVariant = (
+    id: string,
+    field: keyof Omit<ProductVariantInput, "id" | "options">,
+    value: string | boolean
+  ) => {
+    setVariantes((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, [field]: value } : item))
+    );
+  };
+
+  const removeVariant = (id: string) => {
+    setVariantes((prev) => prev.filter((item) => item.id !== id));
+  };
+
+  const addVariantOption = (variantId: string) => {
+    setVariantes((prev) =>
+      prev.map((variant) =>
+        variant.id === variantId
+          ? {
+              ...variant,
+              options: [...variant.options, { id: createId(), nombre: "", valor: "" }],
+            }
+          : variant
+      )
+    );
+  };
+
+  const updateVariantOption = (
+    variantId: string,
+    optionId: string,
+    field: keyof Omit<ProductVariantOptionInput, "id">,
+    value: string
+  ) => {
+    setVariantes((prev) =>
+      prev.map((variant) =>
+        variant.id === variantId
+          ? {
+              ...variant,
+              options: variant.options.map((option) =>
+                option.id === optionId ? { ...option, [field]: value } : option
+              ),
+            }
+          : variant
+      )
+    );
+  };
+
+  const removeVariantOption = (variantId: string, optionId: string) => {
+    setVariantes((prev) =>
+      prev.map((variant) =>
+        variant.id === variantId
+          ? {
+              ...variant,
+              options: variant.options.filter((option) => option.id !== optionId),
+            }
+          : variant
+      )
+    );
+  };
+
+  const onSubmit = async (data: ProductFormData) => {
+    setLoading(true);
+    setModalState("loading");
+    setModalMessage(
+      product ? "Estamos actualizando tu producto..." : "Estamos creando tu producto..."
+    );
+
+    try {
+      if (!selectedCategorySlug || !selectedCategoryId) {
+        setModalState("error");
+        setModalMessage("Debes seleccionar una categoría.");
+        return;
+      }
+
+      if (uploadedImages.length === 0) {
+        setModalState("error");
+        setModalMessage(
+          product
+            ? "Debes mantener al menos una imagen para actualizar el producto."
+            : "Debes subir al menos una imagen antes de crear el producto."
+        );
+        return;
+      }
+
+      if (selectedSections.size === 0) {
+        setModalState("error");
+        setModalMessage("Debes seleccionar al menos una sección.");
+        return;
+      }
+
+      if (usaVariantes && variantes.length === 0) {
+        setModalState("error");
+        setModalMessage("Si activas variantes, debes agregar al menos una.");
+        return;
+      }
+
+      const atributosValidos = atributos
+        .map((item) => ({
+          nombre: item.nombre.trim(),
+          valor: item.valor.trim(),
+        }))
+        .filter((item) => item.nombre && item.valor);
+
+      const variantesValidas = variantes
+        .map((variant) => ({
+          nombre: variant.nombre.trim() || null,
+          sku: variant.sku.trim() || null,
+          precio:
+            variant.precio.trim() !== "" && !Number.isNaN(Number(variant.precio))
+              ? Number(variant.precio)
+              : null,
+          stock:
+            variant.stock.trim() !== "" && !Number.isNaN(Number(variant.stock))
+              ? Number(variant.stock)
+              : null,
+          stockIlimitado: variant.stockIlimitado,
+          imagenUrl: variant.imagenUrl.trim() || null,
+          isActive: variant.isActive,
+          options: variant.options
+            .map((option) => ({
+              nombre: option.nombre.trim(),
+              valor: option.valor.trim(),
+            }))
+            .filter((option) => option.nombre && option.valor),
+        }))
+        .filter((variant) => {
+          if (!usaVariantes) {
+            return false;
+          }
+
+          return (
+            variant.nombre ||
+            variant.sku ||
+            variant.precio !== null ||
+            variant.stock !== null ||
+            variant.imagenUrl ||
+            variant.options.length > 0
+          );
+        });
+
+      const formData = new FormData();
+      formData.append("nombre", data.nombre.trim());
+      formData.append("precio", String(Number(data.precio) || 0));
+      formData.append("descripcion", data.descripcion);
+      formData.append("descripcionCorta", data.descripcionCorta || "");
+      formData.append("slug", data.slug);
+      formData.append("prioridad", String(data.prioridad || 1));
+      formData.append("status", data.status);
+      formData.append("tags", data.tags);
+      formData.append("categoriaId", selectedCategoryId);
+      formData.append("stockIlimitado", String(data.stockIlimitado));
+      formData.append("usaVariantes", String(data.usaVariantes));
+
+      if (!data.usaVariantes && data.stockIlimitado === false && data.stock !== null) {
+        formData.append("stock", String(data.stock));
+      }
+
+      selectedSections.forEach((id) => formData.append("seccionIds", id));
+      uploadedImages.forEach((url) => formData.append("imageUrls", url));
+      componentes.forEach((componente) => formData.append("componentes", componente));
+
+      if (atributosValidos.length > 0) {
+        formData.append("atributos", JSON.stringify(atributosValidos));
+      }
+
+      if (variantesValidas.length > 0) {
+        formData.append("variantes", JSON.stringify(variantesValidas));
+      }
+
+      const result =
+        product && product.id
+          ? await updateProduct(product.id, formData)
+          : await createProduct(formData);
+
+      if (!result.ok) {
+        setModalState("error");
+        setModalMessage(result.message || "Ocurrió un error al guardar el producto.");
+        return;
+      }
+
+      const firstSectionId = Array.from(selectedSections)[0];
+      const section = initialData.secciones.find((sec) => sec.id === firstSectionId);
+
+      if (!section) {
+        setModalState("error");
+        setModalMessage("La sección seleccionada no existe.");
+        return;
+      }
+
+      if (product?.id) {
+        updateProducto(product.id, {
+          nombre: data.nombre,
+          precio: data.precio,
+        });
+      } else {
+        const createdProduct = result.product as
+          | { id: string; nombre: string; precio: number }
+          | undefined;
+
+        if (!createdProduct) {
+          setModalState("error");
+          setModalMessage("No se pudo obtener la información del producto creado.");
+          return;
+        }
+
+        addProducto({
+          id: createdProduct.id,
+          nombre: createdProduct.nombre,
+          precio: createdProduct.precio,
+        });
+      }
+
+      const productSlug = result.product?.slug ?? data.slug;
+      const url = `/${selectedCategorySlug}/${section.slug}/${productSlug}`;
+
+      setRedirectUrl(url);
+      setSubmitted(true);
+      setModalState("success");
+      setModalMessage(
+        product ? "Producto actualizado exitosamente." : "Producto creado exitosamente."
+      );
+
+      window.setTimeout(() => {
+        router.push(url);
+      }, 2000);
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Error desconocido al enviar el formulario";
+
+      setModalState("error");
+      setModalMessage(errorMessage);
+      console.error("Error al enviar el formulario:", errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <>
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="space-y-4 bg-white p-4 rounded-lg shadow-lg w-full mx-auto ml-0"
-    >
-      <Typography variant="h5" sx={{ mb: 2, fontWeight: "bold" }}>
-        {product ? "Editar Producto" : "Crear Nuevo Producto"}
-      </Typography>
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="mx-auto ml-0 w-full space-y-4 rounded-2xl bg-white p-4 shadow-lg"
+      >
+        <FormControl fullWidth>
+          <FormLabel sx={{ mb: 1, color: "info.main", fontWeight: "bold" }}>
+            Ingresa el nombre de tu producto
+          </FormLabel>
+          <TextField label="Nombre" {...register("nombre", { required: true })} fullWidth />
+        </FormControl>
 
-      <FormControl fullWidth>
-        <FormLabel sx={{ mb: 1, color: "info.main", fontWeight: "bold" }}>Nombre del Producto</FormLabel>
-        <TextField label="Nombre" {...register("nombre", { required: true })} fullWidth />
-      </FormControl>
+        <FormControl fullWidth>
+          <FormLabel sx={{ mb: 1, color: "info.main", fontWeight: "bold" }}>
+            Precio base
+          </FormLabel>
+          <TextField
+            label="Precio"
+            type="number"
+            {...register("precio", {
+              required: true,
+              valueAsNumber: true,
+            })}
+            fullWidth
+          />
+        </FormControl>
 
-      <FormControl>
-        <FormLabel sx={{ mb: 1, color: "info.main", fontWeight: "bold" }}>Precio</FormLabel>
-        <TextField label="Precio" type="number" {...register("precio", { required: true })} fullWidth />
-      </FormControl>
+        <FormControl fullWidth margin="normal">
+          <FormLabel sx={{ mb: 1, color: "info.main", fontWeight: "bold" }}>
+            Categoría
+          </FormLabel>
+          <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>
+            Selecciona la categoría que mejor se relacione con tu producto.
+          </Typography>
 
-      <FormControl fullWidth margin="normal">
-        <FormLabel sx={{ mb: 1, color: "info.main", fontWeight: "bold" }}>Categoría</FormLabel>
-        <Controller
-          name="categoriaId"
-          control={control}
-          render={({ field }) => (
+          <Controller
+            name="categoriaId"
+            control={control}
+            render={({ field }) => (
+              <Stack direction="row" spacing={1} flexWrap="wrap" rowGap={1}>
+                {initialData.categorias.map((category) => {
+                  const isSelected = field.value === category.id;
+
+                  return (
+                    <Box
+                      key={`${category.id}-${category.slug}`}
+                      onClick={() => handleCategoryChange(category.slug, category.id)}
+                      sx={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        px: 2.5,
+                        py: 1.2,
+                        borderRadius: "12px",
+                        backgroundColor: isSelected ? "primary.main" : "#fff",
+                        boxShadow: isSelected ? 3 : 1,
+                        border: "1px solid",
+                        borderColor: isSelected ? "primary.main" : "grey.200",
+                        color: isSelected ? "#fff" : "text.primary",
+                        cursor: "pointer",
+                        transition: "all 0.25s ease-in-out",
+                        minWidth: "140px",
+                        "&:hover": {
+                          boxShadow: 3,
+                          backgroundColor: isSelected ? "primary.dark" : "grey.100",
+                          borderColor: "primary.main",
+                        },
+                      }}
+                    >
+                      <Image
+                        src={`/imgs/iconos/${category.iconName}`}
+                        alt={category.nombre}
+                        width={18}
+                        height={18}
+                        style={{ marginRight: 8 }}
+                      />
+                      <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                        {category.nombre}
+                      </Typography>
+                    </Box>
+                  );
+                })}
+              </Stack>
+            )}
+          />
+        </FormControl>
+
+        <Divider />
+
+        <FormControl fullWidth margin="normal">
+          <FormLabel sx={{ mb: 1, color: "info.main", fontWeight: "bold" }}>
+            Secciones
+          </FormLabel>
+          <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>
+            Selecciona una o más secciones asociadas a tu producto.
+          </Typography>
+
+          {selectedCategorySlug === "" ? (
+            <Typography color="textSecondary">
+              Selecciona una categoría para ver las secciones disponibles.
+            </Typography>
+          ) : (
             <Stack direction="row" spacing={1} flexWrap="wrap" rowGap={1}>
-              {initialData.categorias.map((category) => {
-                const isSelected = field.value === category.id;
+              {filteredSections.map((section) => {
+                const isActive = selectedSections.has(section.id);
 
                 return (
                   <Box
-                    key={`${category.id}-${category.slug}`}
-                    onClick={() => {
-                      handleCategoryChange(category.slug);
-                      setValue("categoriaId", category.id);
-                    }}
+                    key={`${section.id}-${section.nombre}`}
+                    onClick={() => toggleSection(section.id)}
                     sx={{
                       display: "inline-flex",
                       alignItems: "center",
                       px: 2.5,
                       py: 1.2,
                       borderRadius: "12px",
-                      backgroundColor: isSelected ? "primary.main" : "#fff",
-                      boxShadow: isSelected ? 3 : 1,
+                      backgroundColor: isActive ? "primary.main" : "#fff",
+                      boxShadow: isActive ? 3 : 1,
                       border: "1px solid",
-                      borderColor: isSelected ? "primary.main" : "grey.200",
-                      color: isSelected ? "#fff" : "text.primary",
+                      borderColor: isActive ? "primary.main" : "grey.200",
+                      color: isActive ? "#fff" : "text.primary",
                       cursor: "pointer",
-                      transition: "all 0.25s ease-in-out",
-                      minWidth: "140px",
+                      transition: "all 0.2s ease-in-out",
                       "&:hover": {
                         boxShadow: 3,
-                        backgroundColor: isSelected ? "primary.dark" : "grey.100",
+                        backgroundColor: isActive ? "primary.dark" : "grey.100",
                         borderColor: "primary.main",
                       },
                     }}
                   >
                     <Image
-                      src={`/imgs/iconos/${category.iconName}`}
-                      alt={category.nombre}
+                      src={`/imgs/iconos/${section.iconName}`}
+                      alt={section.nombre}
                       width={18}
                       height={18}
                       style={{ marginRight: 8 }}
                     />
                     <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                      {category.nombre}
+                      {section.nombre}
                     </Typography>
                   </Box>
                 );
               })}
             </Stack>
           )}
-        />
-      </FormControl>
-      <Divider />
+        </FormControl>
 
-      <FormControl fullWidth margin="normal">
-        <FormLabel sx={{ mb: 1, color: "info.main", fontWeight: "bold" }}>Secciones</FormLabel>
-        {selectedCategorySlug === "" ? (
-          <Typography color="textSecondary">
-            Selecciona una categoría para ver las secciones disponibles.
-          </Typography>
-        ) : (
-          <Stack direction="row" spacing={1} flexWrap="wrap" rowGap={1}>
-            {filteredSections.map((section) => {
-              const isActive = selectedSections.has(section.id);
-              return (
-                <Box
-                  key={`${section.id}-${section.nombre}`}
-                  onClick={() => toggleSection(section.id)}
-                  sx={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    px: 2.5,
-                    py: 1.2,
-                    borderRadius: "12px",
-                    backgroundColor: isActive ? "primary.main" : "#fff",
-                    boxShadow: isActive ? 3 : 1,
-                    border: "1px solid",
-                    borderColor: isActive ? "primary.main" : "grey.200",
-                    color: isActive ? "#fff" : "text.primary",
-                    cursor: "pointer",
-                    transition: "all 0.2s ease-in-out",
-                    "&:hover": {
-                      boxShadow: 3,
-                      backgroundColor: isActive ? "primary.dark" : "grey.100",
-                      borderColor: "primary.main",
-                    },
-                  }}
-                >
-                  <Image
-                    src={`/imgs/iconos/${section.iconName}`}
-                    alt={section.nombre}
-                    width={18}
-                    height={18}
-                    style={{ marginRight: 8 }}
-                  />
-                  <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                    {section.nombre}
-                  </Typography>
-                </Box>
-              );
-            })}
-          </Stack>
-        )}
-      </FormControl>
+        <Divider />
 
-      <Divider />
-
-      <div className="bg-gray-100 border-l-4 border-blue-500 p-4 rounded-lg shadow-sm">
-        <h4 className="text-blue-700 font-semibold">📸 Instrucción para Subida de Imágenes</h4>
-        <p className="text-gray-600 text-md mt-1">
-          Agrega imágenes del producto utilizando el botón de carga, con icono de cámara. <br />
-          Luego, presiona <strong> &quot;Cargar imágenes seleccionadas&quot; </strong>y espera el mensaje de confirmación antes de continuar.
-        </p>
-      </div>
-
-      <FormControl>
-        <FormLabel sx={{ mb: 1, color: 'info.main', fontWeight: "bold", }}>Imagenes del producto</FormLabel>
-        <AutoUploadMedia
-          initialData={
-            multiple
-              ? Array.isArray(dataEntrada)
-                ? dataEntrada
-                : dataEntrada
-                  ? [dataEntrada]
-                  : []
-              : Array.isArray(dataEntrada)
-                ? dataEntrada[0]
-                : dataEntrada
-          }
-          multiple={multiple}
-          onChange={handleMediaChange} // Usamos la versión memoizada
-          onError={(message) => setAlert({ type: "error", message })}
-          onLoading={setLoading}
-          mediaType="image"
-        />
-      </FormControl>
-
-      <div className="bg-gray-100 border-l-4 border-green-600 p-4 rounded-lg shadow-sm">
-        <h4 className="text-green-600 font-semibold">🚀 Generación Automática de Descripciones y Tags con IA</h4>
-        <p className="text-gray-600 text-md mt-1">
-          Para optimizar la visibilidad de tu producto y atraer más clientes, ingresa una descripción detallada con sus principales características.
-          No es necesario un formato específico, pero procura incluir información clara y relevante.
-          <br /><br />
-          Luego, presiona <strong>&quot;Generar Descripción con IA&quot;</strong>. En unos segundos, la IA mejorará la redacción, estructurará la información
-          y generará palabras clave (tags) optimizadas para SEO, ayudando a que más personas encuentren tu producto fácilmente. Estas descripciones
-          las puedes modificar o eliminar según tus preferencias.
-        </p>
-      </div>
-      <Divider />
-
-      <FormControl fullWidth>
-        <FormLabel sx={{ mb: 1, color: "info.main", fontWeight: "bold" }}>Componentes del Producto</FormLabel>
-        <TextField
-          label="Ingresa los componentes (uno por línea)"
-          value={componentesInput}
-          onChange={(e) => setComponentesInput(e.target.value)}
-          multiline
-          rows={4}
-          placeholder="Ejemplo:\nBandeja decorada\nMix de frutas: Mango, Piña, Banano, Fresa\nHuevos de Codorniz"
+        <FormControl
           fullWidth
-        />
-      </FormControl>
-
-      <Button variant="contained" color="primary" sx={{textTransform: "none", fontSize: "0.95rem"}} onClick={handleGenerateComponentes} fullWidth>
-        Agregar
-      </Button>
-      <Divider />
-
-      {componentes.length > 0 && (
-        <div className="bg-gray-100 p-4 rounded-lg shadow-sm">
-          <h4 className="text-blue-700 font-semibold mb-2">📦 Componentes Generados</h4>
-          <Stack direction="row" spacing={1} flexWrap="wrap">
-            {componentes.map((componente, index) => (
-              <Chip
-                key={`componente-${index}`}
-                label={componente}
-                onDelete={() => handleRemoveComponente(index)}
-                deleteIcon={<FaTrashAlt />}
-                color="primary"
-                variant="outlined"
-              />
-            ))}
-          </Stack>
-        </div>
-      )}
-      <FormControl fullWidth>
-        <FormLabel sx={{ mb: 1, color: "info.main", fontWeight: "bold" }}>Características principales del producto</FormLabel>
-        <TextField
-          label="Características Principales"
-          value={caracteristicas}
-          onChange={(e) => setCaracteristicas(e.target.value)}
-          fullWidth
-          multiline
-          rows={3}
-          helperText="Ejemplo: Bandeja decorada con jugo natural, sandwiches, queso, frutas como kiwi, fresas y duraznos."
-        />
-
-        <Button
-          variant="contained"
-          color="primary"
-          fullWidth
-          startIcon={<AiOutlineCloudUpload />}
-          onClick={handleGenerateDescription}
-          disabled={generating}
-          className="mt-4"
-          sx={{textTransform: "none", fontSize: "0.95rem"}}
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            textAlign: "center",
+          }}
         >
-          {generating ? <CircularProgress size={24} /> : "Generar Descripciones con IA"}
-        </Button>
+          <FormLabel sx={{ mb: 1, color: "info.main", fontWeight: "bold" }}>
+            Imágenes del producto
+          </FormLabel>
+
+          <AutoUploadMedia
+            initialData={
+              multiple
+                ? Array.isArray(dataEntrada)
+                  ? dataEntrada
+                  : dataEntrada
+                    ? [dataEntrada]
+                    : []
+                : Array.isArray(dataEntrada)
+                  ? dataEntrada[0]
+                  : dataEntrada
+            }
+            multiple={multiple}
+            onChange={handleMediaChange}
+            onError={(message) => setAlert({ type: "error", message })}
+            onLoading={setLoading}
+            mediaType="image"
+          />
+        </FormControl>
+
+        <Divider />
+
+        <div className="rounded-lg border-l-4 border-green-600 bg-gray-100 p-4 shadow-sm">
+          <h4 className="font-semibold text-green-600">
+            🚀 Generación Automática de Descripciones y Tags con IA
+          </h4>
+          <p className="mt-1 text-md text-gray-600">
+            Para optimizar la visibilidad de tu producto y atraer más clientes, ingresa
+            una descripción detallada con sus principales características.
+            <br />
+            <br />
+            Luego, presiona <strong>&quot;Generar Descripciones con IA&quot;</strong>.
+          </p>
+        </div>
+
+        <Divider />
+
+        <FormControl fullWidth>
+          <FormLabel sx={{ mb: 1, color: "info.main", fontWeight: "bold" }}>
+            Componentes del producto
+          </FormLabel>
+          <TextField
+            label="Ingresa los componentes (uno por línea)"
+            value={componentesInput}
+            onChange={(e) => setComponentesInput(e.target.value)}
+            multiline
+            rows={4}
+            placeholder={`Ejemplo:
+Bandeja decorada
+Mix de frutas
+Huevos de codorniz`}
+            fullWidth
+          />
+        </FormControl>
+
+        <Box sx={{ display: "flex", justifyContent: "center" }}>
+          <Button
+            variant="contained"
+            color="primary"
+            sx={{
+              textTransform: "none",
+              fontSize: "0.95rem",
+              width: { xs: "100%", sm: "300px" },
+            }}
+            onClick={handleGenerateComponentes}
+            fullWidth
+          >
+            Agregar
+          </Button>
+        </Box>
+
+        <Divider />
+
+        {componentes.length > 0 && (
+          <div className="rounded-lg bg-gray-100 p-4 shadow-sm">
+            <h4 className="mb-2 font-semibold text-blue-700">📦 Componentes generados</h4>
+            <Stack direction="row" spacing={1} flexWrap="wrap">
+              {componentes.map((componente, index) => (
+                <Chip
+                  key={`componente-${index}`}
+                  label={componente}
+                  onDelete={() => handleRemoveComponente(index)}
+                  deleteIcon={<FaTrashAlt />}
+                  color="primary"
+                  variant="outlined"
+                />
+              ))}
+            </Stack>
+          </div>
+        )}
+
+        <FormControl fullWidth>
+          <FormLabel sx={{ mb: 1, color: "info.main", fontWeight: "bold" }}>
+            Características principales del producto
+          </FormLabel>
+          <TextField
+            label="Características principales"
+            value={caracteristicas}
+            onChange={(e) => setCaracteristicas(e.target.value)}
+            fullWidth
+            multiline
+            rows={3}
+            helperText="Ejemplo: Material, beneficios, presentación, uso, estilo, contenido, etc."
+          />
+
+          <Box sx={{ display: "flex", justifyContent: "center", marginTop: 2 }}>
+            <Button
+              variant="contained"
+              color="primary"
+              fullWidth
+              startIcon={<AiOutlineCloudUpload />}
+              onClick={handleGenerateDescription}
+              disabled={generating}
+              sx={{
+                textTransform: "none",
+                fontSize: "0.95rem",
+                width: { xs: "100%", sm: "300px" },
+              }}
+            >
+              {generating ? <CircularProgress size={24} /> : "Generar Descripciones con IA"}
+            </Button>
+          </Box>
+
+          {alert && (
+            <Alert severity={alert.type} onClose={() => setAlert(null)} sx={{ mt: 2 }}>
+              {alert.message}
+            </Alert>
+          )}
+        </FormControl>
+
+        <Divider />
+
+        <div className="rounded-lg border-l-4 border-blue-600 bg-gray-100 p-4 shadow-sm">
+          <h5 className="font-semibold text-blue-600">Descripción completa</h5>
+          <p className="mt-1 text-md text-gray-600">
+            Esta es la descripción que aparecerá en la información completa del producto.
+          </p>
+        </div>
+
+        <Divider />
+
+        <FormControl fullWidth>
+          <FormLabel sx={{ mb: 1, color: "info.main", fontWeight: "bold" }}>
+            Descripción
+          </FormLabel>
+          <TextField
+            label="Descripción"
+            {...register("descripcion", { required: true })}
+            fullWidth
+            multiline
+            rows={8}
+            InputLabelProps={{ shrink: true }}
+          />
+        </FormControl>
+
+        <Divider />
+
+        <div className="rounded-lg border-l-4 border-blue-600 bg-gray-100 p-4 shadow-sm">
+          <h5 className="font-semibold text-blue-600">Descripción corta</h5>
+          <p className="mt-1 text-md text-gray-600">
+            Esta es la descripción que aparece en las tarjetas de productos.
+          </p>
+        </div>
+
+        <Divider />
+
+        <FormControl fullWidth>
+          <FormLabel sx={{ mb: 1, color: "info.main", fontWeight: "bold" }}>
+            Descripción corta
+          </FormLabel>
+          <TextField
+            label="Descripción corta"
+            {...register("descripcionCorta")}
+            fullWidth
+            multiline
+            rows={4}
+            InputLabelProps={{ shrink: true }}
+          />
+        </FormControl>
+
+        <Divider />
+
+        <div className="rounded-lg border-l-4 border-blue-600 bg-gray-100 p-4 shadow-sm">
+          <h5 className="font-semibold text-blue-600">🔍 Tags (Palabras Clave)</h5>
+          <p className="mt-1 text-md text-gray-600">
+            Los tags ayudan a que tu producto sea más fácil de encontrar en búsquedas.
+          </p>
+        </div>
+
+        <Divider />
+
+        <FormControl fullWidth>
+          <FormLabel sx={{ mb: 1, color: "info.main", fontWeight: "bold" }}>
+            Tags (Palabras clave)
+          </FormLabel>
+          <TextField
+            label="Tags"
+            {...register("tags")}
+            fullWidth
+            multiline
+            rows={3}
+            helperText="Palabras clave separadas por comas."
+            InputLabelProps={{ shrink: true }}
+          />
+        </FormControl>
+
+        <Divider />
+
+        <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h5 className="font-semibold text-gray-800">Inventario y opciones avanzadas</h5>
+              <p className="mt-1 text-sm text-gray-500">
+                Activa estas opciones solo si tu producto lo necesita.
+              </p>
+            </div>
+
+            <Button
+              variant="outlined"
+              color="inherit"
+              onClick={() => setShowAdvancedInventory((prev) => !prev)}
+              sx={{ textTransform: "none", borderRadius: "12px" }}
+            >
+              {showAdvancedInventory ? "Ocultar" : "Configurar"}
+            </Button>
+          </div>
+
+          <AnimatePresence initial={false}>
+            {showAdvancedInventory && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.25 }}
+                className="overflow-hidden"
+              >
+                <MuiDivider sx={{ my: 3 }} />
+
+                <Stack spacing={3}>
+                  <FormControlLabel
+                    control={
+                      <Controller
+                        name="stockIlimitado"
+                        control={control}
+                        render={({ field }) => (
+                          <Switch
+                            checked={field.value}
+                            onChange={(e) => field.onChange(e.target.checked)}
+                          />
+                        )}
+                      />
+                    }
+                    label="Stock ilimitado"
+                  />
+
+                  {!stockIlimitado && !usaVariantes && (
+                    <TextField
+                      label="Stock disponible"
+                      type="number"
+                      fullWidth
+                      {...register("stock", {
+                        setValueAs: (value) =>
+                          value === "" || value === null ? null : Number(value),
+                      })}
+                    />
+                  )}
+
+                  <FormControlLabel
+                    control={
+                      <Controller
+                        name="usaVariantes"
+                        control={control}
+                        render={({ field }) => (
+                          <Switch
+                            checked={field.value}
+                            onChange={(e) => field.onChange(e.target.checked)}
+                          />
+                        )}
+                      />
+                    }
+                    label="Este producto tiene variantes"
+                  />
+                </Stack>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        <Divider />
+
+        <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h5 className="font-semibold text-gray-800">Atributos adicionales</h5>
+              <p className="mt-1 text-sm text-gray-500">
+                Úsalos para datos como material, marca, estilo, potencia, uso, etc.
+              </p>
+            </div>
+
+            <div className="flex gap-2">
+              <Button
+                variant="outlined"
+                color="inherit"
+                onClick={() => setShowAttributesBlock((prev) => !prev)}
+                sx={{ textTransform: "none", borderRadius: "12px" }}
+              >
+                {showAttributesBlock ? "Ocultar" : "Mostrar"}
+              </Button>
+              <Button
+                variant="contained"
+                onClick={() => {
+                  setShowAttributesBlock(true);
+                  addAtributo();
+                }}
+                startIcon={<FaPlus />}
+                sx={{ textTransform: "none", borderRadius: "12px" }}
+              >
+                Agregar
+              </Button>
+            </div>
+          </div>
+
+          <AnimatePresence initial={false}>
+            {showAttributesBlock && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.25 }}
+                className="overflow-hidden"
+              >
+                <MuiDivider sx={{ my: 3 }} />
+
+                {atributos.length === 0 ? (
+                  <Typography variant="body2" color="text.secondary">
+                    Aún no has agregado atributos.
+                  </Typography>
+                ) : (
+                  <Stack spacing={2}>
+                    {atributos.map((atributo) => (
+                      <Box
+                        key={atributo.id}
+                        className="rounded-2xl border border-gray-200 bg-gray-50 p-3"
+                      >
+                        <div className="mb-3 flex items-center justify-between">
+                          <Typography fontWeight={600}>Atributo</Typography>
+                          <IconButton
+                            onClick={() => removeAtributo(atributo.id)}
+                            size="small"
+                            color="error"
+                          >
+                            <FaTrashAlt size={14} />
+                          </IconButton>
+                        </div>
+
+                        <Stack spacing={2}>
+                          <TextField
+                            label="Nombre"
+                            value={atributo.nombre}
+                            onChange={(e) =>
+                              updateAtributo(atributo.id, "nombre", e.target.value)
+                            }
+                            fullWidth
+                          />
+                          <TextField
+                            label="Valor"
+                            value={atributo.valor}
+                            onChange={(e) =>
+                              updateAtributo(atributo.id, "valor", e.target.value)
+                            }
+                            fullWidth
+                          />
+                        </Stack>
+                      </Box>
+                    ))}
+                  </Stack>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        <Divider />
+
+        <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h5 className="font-semibold text-gray-800">Variantes del producto</h5>
+              <p className="mt-1 text-sm text-gray-500">
+                Ejemplo: talla, color, presentación, capacidad o tamaño.
+              </p>
+            </div>
+
+            <div className="flex gap-2">
+              <Button
+                variant="outlined"
+                color="inherit"
+                onClick={() => setShowVariantsBlock((prev) => !prev)}
+                sx={{ textTransform: "none", borderRadius: "12px" }}
+              >
+                {showVariantsBlock ? "Ocultar" : "Mostrar"}
+              </Button>
+              <Button
+                variant="contained"
+                disabled={!usaVariantes}
+                onClick={() => {
+                  setShowVariantsBlock(true);
+                  addVariant();
+                }}
+                startIcon={<FaPlus />}
+                sx={{ textTransform: "none", borderRadius: "12px" }}
+              >
+                Agregar variante
+              </Button>
+            </div>
+          </div>
+
+          {!usaVariantes && (
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
+              Activa “Este producto tiene variantes” para usar esta sección.
+            </Typography>
+          )}
+
+          {usaVariantes && (
+            <Box className="mt-4 rounded-2xl border border-blue-100 bg-gradient-to-br from-blue-50 via-white to-slate-50 p-4">
+              <Typography fontWeight={700} color="text.primary">
+                Como crear variantes sin confusion
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 1.2 }}>
+                Cada bloque de variante representa una opcion comprable distinta.
+                Si vendes "Grande" y "Extra grande", debes crear 2 variantes
+                separadas.
+              </Typography>
+
+              <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap sx={{ mt: 2 }}>
+                <Chip label="Variante 1: Grande" size="small" color="primary" variant="outlined" />
+                <Chip label="Variante 2: Extra grande" size="small" color="primary" variant="outlined" />
+              </Stack>
+
+              <Stack spacing={1} sx={{ mt: 2 }}>
+                <Typography variant="body2" color="text.secondary">
+                  <Box component="span" sx={{ fontWeight: 700, color: "text.primary" }}>
+                    Nombre que ve el cliente:
+                  </Box>{" "}
+                  escribe la opcion real, por ejemplo: "Grande".
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  <Box component="span" sx={{ fontWeight: 700, color: "text.primary" }}>
+                    SKU interno:
+                  </Box>{" "}
+                  es un codigo opcional para inventario o integraciones, por ejemplo:
+                  "SALCH-GRA". Si no usas codigos internos, puedes dejarlo vacio.
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  <Box component="span" sx={{ fontWeight: 700, color: "text.primary" }}>
+                    Detalles de la variante:
+                  </Box>{" "}
+                  sirven para describir esa variante, por ejemplo: atributo
+                  "Tamano" y valor "Grande". No crean variantes nuevas por si
+                  solos.
+                </Typography>
+              </Stack>
+            </Box>
+          )}
+
+          <AnimatePresence initial={false}>
+            {showVariantsBlock && usaVariantes && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.25 }}
+                className="overflow-hidden"
+              >
+                <MuiDivider sx={{ my: 3 }} />
+
+                {variantes.length === 0 ? (
+                  <Typography variant="body2" color="text.secondary">
+                    Aún no has agregado variantes.
+                  </Typography>
+                ) : (
+                  <Stack spacing={3}>
+                    {variantes.map((variant, index) => (
+                      <Box
+                        key={variant.id}
+                        className="rounded-2xl border border-gray-200 bg-gray-50 p-4"
+                      >
+                        <div className="mb-3 flex items-center justify-between">
+                          <Typography fontWeight={700}>Variante {index + 1}</Typography>
+                          <IconButton
+                            onClick={() => removeVariant(variant.id)}
+                            size="small"
+                            color="error"
+                          >
+                            <FaTrashAlt size={14} />
+                          </IconButton>
+                        </div>
+
+                        <Stack spacing={2}>
+                          <TextField
+                            label="Nombre que vera el cliente"
+                            value={variant.nombre}
+                            onChange={(e) =>
+                              updateVariant(variant.id, "nombre", e.target.value)
+                            }
+                            fullWidth
+                            helperText='Ej: Grande, Extra grande, Roja, 1 kg. Este es el texto que el cliente elegira.'
+                          />
+
+                          <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
+                            <TextField
+                              label="SKU interno (opcional)"
+                              value={variant.sku}
+                              onChange={(e) =>
+                                updateVariant(variant.id, "sku", e.target.value)
+                              }
+                              fullWidth
+                              helperText='Codigo interno para inventario. Ej: SALCH-GRA. No es el nombre visible.'
+                            />
+                            <TextField
+                              label="Precio"
+                              type="number"
+                              value={variant.precio}
+                              onChange={(e) =>
+                                updateVariant(variant.id, "precio", e.target.value)
+                              }
+                              fullWidth
+                              helperText="Precio final de esta variante."
+                            />
+                          </Stack>
+
+                          <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
+                            <FormControlLabel
+                              control={
+                                <Switch
+                                  checked={variant.stockIlimitado}
+                                  onChange={(e) =>
+                                    updateVariant(
+                                      variant.id,
+                                      "stockIlimitado",
+                                      e.target.checked
+                                    )
+                                  }
+                                />
+                              }
+                              label="Stock ilimitado"
+                            />
+
+                            <FormControlLabel
+                              control={
+                                <Switch
+                                  checked={variant.isActive}
+                                  onChange={(e) =>
+                                    updateVariant(variant.id, "isActive", e.target.checked)
+                                  }
+                                />
+                              }
+                              label="Activa"
+                            />
+                          </Stack>
+
+                          {!variant.stockIlimitado && (
+                            <TextField
+                              label="Stock"
+                              type="number"
+                              value={variant.stock}
+                              onChange={(e) =>
+                                updateVariant(variant.id, "stock", e.target.value)
+                              }
+                              fullWidth
+                              helperText="Cantidad disponible solo para esta variante."
+                            />
+                          )}
+
+                          <TextField
+                            label="URL de imagen específica (opcional)"
+                            value={variant.imagenUrl}
+                            onChange={(e) =>
+                              updateVariant(variant.id, "imagenUrl", e.target.value)
+                            }
+                            fullWidth
+                            helperText="Usala si esta variante tiene una foto distinta al producto principal."
+                          />
+
+                          <Box className="rounded-xl border border-dashed border-gray-300 bg-white p-3">
+                            <div className="mb-2 flex items-center justify-between">
+                              <Typography fontWeight={600}>
+                                Detalles opcionales de esta variante
+                              </Typography>
+                              <Button
+                                size="small"
+                                variant="outlined"
+                                startIcon={<FaPlus />}
+                                onClick={() => addVariantOption(variant.id)}
+                                sx={{ textTransform: "none", borderRadius: "10px" }}
+                              >
+                                Opción
+                              </Button>
+                            </div>
+
+                            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                              Estos campos describen esta variante. Ejemplo: atributo
+                              "Tamano" y valor "Grande". Si solo quieres crear
+                              opciones comprables como "Grande" y "Extra grande",
+                              crea dos variantes separadas arriba.
+                            </Typography>
+
+                            {variant.options.length === 0 ? (
+                              <Typography variant="body2" color="text.secondary">
+                                Agrega detalles como tamano, color, sabor o presentacion
+                                si necesitas mostrarlos con mas claridad.
+                              </Typography>
+                            ) : (
+                              <Stack spacing={2}>
+                                {variant.options.map((option) => (
+                                  <Box
+                                    key={option.id}
+                                    className="rounded-xl border border-gray-200 bg-gray-50 p-3"
+                                  >
+                                    <div className="mb-2 flex items-center justify-between">
+                                      <Typography fontWeight={600}>Opción</Typography>
+                                      <IconButton
+                                        onClick={() =>
+                                          removeVariantOption(variant.id, option.id)
+                                        }
+                                        size="small"
+                                        color="error"
+                                      >
+                                        <FaTrashAlt size={13} />
+                                      </IconButton>
+                                    </div>
+
+                                    <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
+                                      <TextField
+                                        label="Atributo"
+                                        value={option.nombre}
+                                        onChange={(e) =>
+                                          updateVariantOption(
+                                            variant.id,
+                                            option.id,
+                                            "nombre",
+                                            e.target.value
+                                          )
+                                        }
+                                        fullWidth
+                                        helperText="Ej: tamano, color, presentacion"
+                                      />
+                                      <TextField
+                                        label="Valor visible"
+                                        value={option.valor}
+                                        onChange={(e) =>
+                                          updateVariantOption(
+                                            variant.id,
+                                            option.id,
+                                            "valor",
+                                            e.target.value
+                                          )
+                                        }
+                                        fullWidth
+                                        helperText="Ej: Grande, Negro, 1 kg"
+                                      />
+                                    </Stack>
+                                  </Box>
+                                ))}
+                              </Stack>
+                            )}
+                          </Box>
+                        </Stack>
+                      </Box>
+                    ))}
+                  </Stack>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        <Divider />
+
+        <FormControl fullWidth margin="normal">
+          <FormLabel sx={{ mb: 1, color: "info.main", fontWeight: "bold" }}>
+            Slug
+          </FormLabel>
+          <TextField
+            label="Slug"
+            {...register("slug")}
+            fullWidth
+            InputProps={{
+              readOnly: true,
+            }}
+          />
+        </FormControl>
+
+        <Divider />
+
+        <FormControl>
+          <FormLabel sx={{ mb: 1, color: "info.main", fontWeight: "bold" }}>
+            Estado
+          </FormLabel>
+          <Controller
+            name="status"
+            control={control}
+            render={({ field }) => (
+              <RadioGroup {...field} row>
+                <FormControlLabel
+                  sx={{ color: "black" }}
+                  value="disponible"
+                  control={<Radio />}
+                  label="Disponible"
+                />
+                <FormControlLabel
+                  sx={{ color: "black" }}
+                  value="descontinuado"
+                  control={<Radio />}
+                  label="Descontinuado"
+                />
+                <FormControlLabel
+                  sx={{ color: "black" }}
+                  value="agotado"
+                  control={<Radio />}
+                  label="Agotado"
+                />
+                <FormControlLabel
+                  sx={{ color: "black" }}
+                  value="oculto"
+                  control={<Radio />}
+                  label="Oculto"
+                />
+              </RadioGroup>
+            )}
+          />
+        </FormControl>
+
+        <Box sx={{ display: "flex", justifyContent: "center", marginTop: 2 }}>
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            fullWidth
+            disabled={loading || submitted}
+            sx={{
+              textTransform: "none",
+              fontSize: "0.95rem",
+              width: { xs: "100%", sm: "320px" },
+              borderRadius: "12px",
+            }}
+          >
+            {loading ? (
+              <CircularProgress size={24} color="inherit" />
+            ) : product ? (
+              "Actualizar producto"
+            ) : (
+              "Crear producto"
+            )}
+          </Button>
+        </Box>
 
         {alert && (
           <Alert severity={alert.type} onClose={() => setAlert(null)}>
             {alert.message}
           </Alert>
         )}
-      </FormControl>
-      <Divider />
+      </form>
 
-      
-      <Divider />
-
-      <div className="bg-gray-100 border-l-4 border-blue-600 p-4 rounded-lg shadow-sm">
-        <h5 className="text-blue-600 font-semibold">Descripción completa</h5>
-        <p className="text-gray-600 text-md mt-1">
-          Esta es la descripción que aparecerá en la información completa del producto
-        </p>
-      </div>
-      <Divider />
-      <FormControl fullWidth>
-        <FormLabel sx={{ mb: 1, color: "info.main", fontWeight: "bold" }}>Descripción</FormLabel>
-        <TextField
-          label="Descripción"
-          {...register("descripcion", { required: true })}
-          fullWidth
-          multiline
-          rows={8}
-          InputLabelProps={{ shrink: true }}
-        />
-      </FormControl>
-      <Divider />
-      <div className="bg-gray-100 border-l-4 border-blue-600 p-4 rounded-lg shadow-sm">
-        <h5 className="text-blue-600 font-semibold">Descripción corta</h5>
-        <p className="text-gray-600 text-md mt-1">
-          Esta es la descripción que aparece en las tarjetas de productos
-        </p>
-      </div>
-      <Divider />
-      <FormControl fullWidth>
-        <FormLabel sx={{ mb: 1, color: "info.main", fontWeight: "bold" }}>Descripción Corta</FormLabel>
-        <TextField
-          label="Descripción corta"
-          {...register("descripcionCorta")}
-          fullWidth
-          multiline
-          rows={4}
-          InputLabelProps={{ shrink: true }}
-        />
-      </FormControl>
-      <Divider />
-      <div className="bg-gray-100 border-l-4 border-blue-600 p-4 rounded-lg shadow-sm">
-        <h5 className="text-blue-600 font-semibold">🔍 Tags (Palabras Clave)</h5>
-        <p className="text-gray-600 text-md mt-1">
-          Los tags son palabras clave que ayudan a que tu producto sea más fácil de encontrar en búsquedas.
-          Estas palabras están optimizadas para SEO y permiten relacionar el producto con lo que los clientes buscan.
-          <br /><br />
-          Asegúrate de que los tags sean relevantes y describan bien tu producto. Puedes usar palabras como ingredientes,
-          materiales, colores o cualquier término que ayude a identificarlo mejor.
-        </p>
-      </div>
-      <Divider />
-      <FormControl fullWidth>
-        <FormLabel sx={{ mb: 1, color: "info.main", fontWeight: "bold" }}>Tags (Palabras Clave)</FormLabel>
-        <TextField
-          label="Tags"
-          {...register("tags")}
-          fullWidth
-          multiline
-          rows={3}
-          helperText="Palabras clave separadas por comas, optimizadas para SEO."
-          InputLabelProps={{ shrink: true }}
-        />
-      </FormControl>
-      <Divider />
-
-      <FormControl fullWidth margin="normal">
-        <FormLabel sx={{ mb: 1, color: "info.main", fontWeight: "bold" }}>Slug</FormLabel>
-        <TextField
-          label="Slug"
-          {...register("slug")}
-          fullWidth
-          InputProps={{
-            readOnly: !!product,
-          }}
-        />
-      </FormControl>
-      <Divider />
-      <FormControl>
-        <FormLabel sx={{ mb: 1, color: "info.main", fontWeight: "bold" }}>Estado</FormLabel>
-        <Controller
-          name="status"
-          control={control}
-          render={({ field }) => (
-            <RadioGroup {...field} row>
-              <FormControlLabel value="disponible" control={<Radio />} label="Disponible" />
-              <FormControlLabel value="agotado" control={<Radio />} label="Agotado" />
-              <FormControlLabel value="oculto" control={<Radio />} label="Oculto" />
-              <FormControlLabel value="descontinuado" control={<Radio />} label="Descontinuado" />
-            </RadioGroup>
-          )}
-        />
-      </FormControl>
-
-      <Button type="submit" variant="contained" color="primary" fullWidth disabled={loading || submitted}>
-        {loading ? <CircularProgress size={24} color="inherit" /> : (product ? "Actualizar Producto" : "Crear Producto")}
-      </Button>
-
-      {alert && (
-        <Alert severity={alert.type} onClose={() => setAlert(null)}>
-          {alert.message}
-        </Alert>
-      )}
-    </form>
-
-    {isModalOpen && createPortal(
-      <AnimatePresence>
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.3 }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
-          onClick={handleCloseModal}
-        >
-          <motion.div
-            initial={{ scale: 0.9, y: 50 }}
-            animate={{ scale: 1, y: 0 }}
-            exit={{ scale: 0.9, y: 50 }}
-            transition={{ type: "spring", damping: 20, stiffness: 300 }}
-            className="relative w-full max-w-md bg-white rounded-xl shadow-2xl overflow-hidden transform transition-all duration-300 p-6"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
+      {isModalOpen &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <AnimatePresence>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 backdrop-blur-sm"
               onClick={handleCloseModal}
-              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition-colors duration-200 z-10"
-              aria-label="Cerrar modal"
             >
-              <FaTimes size={20} />
-            </button>
-            <div className="flex flex-col items-center justify-center text-center">
-              {modalState === 'loading' && (
-                <>
-                  <CircularProgress size={40} className="mb-4" />
-                  <Typography variant="h6" sx={{ color: "black" }}>{modalMessage}</Typography>
-                </>
-              )}
-              {modalState === 'success' && (
-                <>
-                  <Typography variant="h6" color="success.main">{modalMessage}</Typography>
-                  <Button onClick={handleCloseModal} variant="contained" color="primary" className="mt-4">
-                    Cerrar
-                  </Button>
-                </>
-              )}
-              {modalState === 'error' && (
-                <>
-                  <Typography variant="h6" color="error.main">{modalMessage}</Typography>
-                  <Button onClick={handleCloseModal} variant="contained" color="primary" className="mt-4">
-                    Cerrar
-                  </Button>
-                </>
-              )}
-            </div>
-          </motion.div>
-        </motion.div>
-      </AnimatePresence>,
-      document.body
-    )}
+              <motion.div
+                initial={{ scale: 0.96, y: 24 }}
+                animate={{ scale: 1, y: 0 }}
+                exit={{ scale: 0.96, y: 24 }}
+                transition={{ type: "spring", damping: 22, stiffness: 280 }}
+                className="relative w-full max-w-md overflow-hidden rounded-2xl bg-white p-6 shadow-2xl"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button
+                  onClick={handleCloseModal}
+                  className="absolute right-4 top-4 z-10 text-gray-500 transition-colors duration-200 hover:text-gray-700"
+                  aria-label="Cerrar modal"
+                >
+                  <FaTimes size={20} />
+                </button>
+
+                <div className="flex flex-col items-center justify-center text-center">
+                  {modalState === "loading" && (
+                    <>
+                      <CircularProgress size={40} className="mb-4" />
+                      <Typography sx={{ color: "black" }} variant="h6">
+                        {modalMessage}
+                      </Typography>
+                    </>
+                  )}
+
+                  {modalState === "success" && (
+                    <>
+                      <Typography variant="h6" color="success.main">
+                        {modalMessage}
+                      </Typography>
+                      <Button
+                        onClick={handleCloseModal}
+                        variant="contained"
+                        color="primary"
+                        className="mt-4"
+                        sx={{ mt: 3, textTransform: "none", borderRadius: "12px" }}
+                      >
+                        Cerrar
+                      </Button>
+                    </>
+                  )}
+
+                  {modalState === "error" && (
+                    <>
+                      <Typography variant="h6" color="error.main">
+                        {modalMessage}
+                      </Typography>
+                      <Button
+                        onClick={handleCloseModal}
+                        variant="contained"
+                        color="primary"
+                        className="mt-4"
+                        sx={{ mt: 3, textTransform: "none", borderRadius: "12px" }}
+                      >
+                        Cerrar
+                      </Button>
+                    </>
+                  )}
+                </div>
+              </motion.div>
+            </motion.div>
+          </AnimatePresence>,
+          document.body
+        )}
     </>
   );
 }

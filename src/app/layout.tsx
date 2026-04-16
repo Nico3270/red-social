@@ -36,8 +36,8 @@ export default async function RootLayout({
 
 
   return (
-    <html lang="es">
-      <head>
+    <html lang="es" suppressHydrationWarning>
+      <head suppressHydrationWarning>
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="theme-color" content="#ffffff" />
@@ -67,7 +67,7 @@ export default async function RootLayout({
           }}
         />
       </head>
-      <body className="bg-gray-100">
+      <body className="bg-gray-100" suppressHydrationWarning>
         <Provider>
             <ReactQueryProvider>{children}</ReactQueryProvider>
         </Provider>

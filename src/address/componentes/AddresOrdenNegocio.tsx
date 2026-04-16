@@ -155,7 +155,10 @@ const AddresOrdenNegocio: React.FC = () => {
     trigger();
   }, [orderType, trigger]);
 
-  const total = useMemo(() => getTotalPrice(), [getTotalPrice]);
+  const total = useMemo(
+    () => cart.reduce((sum, item) => sum + item.precio * item.cantidad, 0),
+    [cart]
+  );
 
   const handleOrderTypeChange = (newType: OrderType) => {
     if (newType === orderType) return;
@@ -225,7 +228,7 @@ const AddresOrdenNegocio: React.FC = () => {
           <ListItem key={item.cartItemId} sx={{ py: 1, px: 0 }}>
             <ListItemText
               primary={`${item.nombre} x ${item.cantidad}`}
-              secondary={`$${item.precio.toFixed(2)} cada uno`}
+              secondary={`$${item.precio.toFixed(2)} cada uno${item.variantLabel ? ` • Variante: ${item.variantLabel}` : ""}`}
               primaryTypographyProps={{ variant: "body1", fontWeight: 500 }}
               secondaryTypographyProps={{
                 variant: "body2",

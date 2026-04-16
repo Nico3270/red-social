@@ -12,6 +12,8 @@ interface ItemInput {
   price: number;
   subtotal: number;
   productId?: string;
+  productVariantId?: string | null;
+  variantLabel?: string | null;
 }
 
 interface DeliveryDataInput {
@@ -33,6 +35,18 @@ interface UpdatePedidoInput {
   deliveryData: DeliveryDataInput;
   totalAmount: number;
   status?: OrderState;
+}
+
+function sanitizeParam(text?: string | null): string {
+  if (!text) return "";
+  return text.replace(/\n|\r|\t/g, " ").replace(/ {5,}/g, " ").trim();
+}
+
+function getItemDisplayName(item: ItemInput): string {
+  const base = sanitizeParam(item.description);
+  const variant = sanitizeParam(item.variantLabel);
+
+  return variant ? `${base} (${variant})` : base;
 }
 
 export const updateOrder = async (input: UpdatePedidoInput): Promise<{
@@ -134,7 +148,7 @@ export const updateOrder = async (input: UpdatePedidoInput): Promise<{
       });
 
       const generatedDescription = input.items
-        .map((item) => `${item.description} x${item.quantity}`)
+        .map((item) => `${getItemDisplayName(item)} x${item.quantity}`)
         .join(", ");
 
       await tx.order.update({
@@ -161,6 +175,8 @@ export const updateOrder = async (input: UpdatePedidoInput): Promise<{
           subtotal: item.subtotal,
           orderId: input.orderId,
           productId: item.productId || null,
+          productVariantId: item.productVariantId || null,
+          variantLabel: item.variantLabel || null,
         })),
       });
 
@@ -174,7 +190,7 @@ export const updateOrder = async (input: UpdatePedidoInput): Promise<{
       });
 
       const datosPedido = input.items
-        .map((item) => `${item.quantity} - ${item.description}`)
+        .map((item) => `${item.quantity} - ${getItemDisplayName(item)}`)
         .join(", ");
 
       const valorCompra = `$${input.totalAmount.toFixed(2)}`;

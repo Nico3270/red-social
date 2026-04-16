@@ -17,6 +17,8 @@ import {
 import { mapToFeedItem } from "./mapItem";
 import { isRawProduct, isRawPublication, isRawService, isRawBusiness } from "../feed.interfaces";
 import { EnhancedPublicacion } from "@/publicaciones/interfaces/enhancedPublicacion.interface";
+import { extractSeenRawIds } from "../feed-ids";
+import { rankRawItems } from "./feedRanking";
 
 // === 1. FUNCIONES FETCH (orden correcto) ===
 
@@ -24,7 +26,7 @@ async function fetchPublicationsCity(params: ExtendedParams): Promise<RawPublica
   const where: Prisma.PublicacionWhereInput = {
     tipo: { in: ["TESTIMONIO", "CARRUSEL_IMAGENES"] },
     visibilidad: "PUBLICA",
-    id: { notIn: params.seenIds.filter((id: string) => id.startsWith("pub-")) },
+    id: { notIn: extractSeenRawIds(params.seenIds, "publications") },
     negocio: { ciudad: params.ciudad },
   };
   return prisma.publicacion.findMany({
@@ -41,7 +43,7 @@ async function fetchPublicationsDept(params: ExtendedParams): Promise<RawPublica
   const where: Prisma.PublicacionWhereInput = {
     tipo: { in: ["TESTIMONIO", "CARRUSEL_IMAGENES"] },
     visibilidad: "PUBLICA",
-    id: { notIn: params.seenIds.filter((id: string) => id.startsWith("pub-")) },
+    id: { notIn: extractSeenRawIds(params.seenIds, "publications") },
     negocio: { departamento: params.departamento, ciudad: { not: params.ciudad } },
   };
   return prisma.publicacion.findMany({
@@ -58,7 +60,7 @@ async function fetchPublicationsNational(params: ExtendedParams): Promise<RawPub
   const where: Prisma.PublicacionWhereInput = {
     tipo: { in: ["TESTIMONIO", "CARRUSEL_IMAGENES"] },
     visibilidad: "PUBLICA",
-    id: { notIn: params.seenIds.filter((id: string) => id.startsWith("pub-")) },
+    id: { notIn: extractSeenRawIds(params.seenIds, "publications") },
   };
   return prisma.publicacion.findMany({
     where,
@@ -73,7 +75,7 @@ async function fetchPublicationsNational(params: ExtendedParams): Promise<RawPub
 async function fetchProductsCity(params: ExtendedParams): Promise<RawProduct[]> {
   const where: Prisma.ProductWhereInput = {
     status: "disponible",
-    id: { notIn: params.seenIds.filter((id: string) => id.startsWith("product-")) },
+    id: { notIn: extractSeenRawIds(params.seenIds, "products") },
     negocio: { ciudad: params.ciudad },
   };
   return prisma.product.findMany({
@@ -89,7 +91,7 @@ async function fetchProductsCity(params: ExtendedParams): Promise<RawProduct[]> 
 async function fetchProductsDept(params: ExtendedParams): Promise<RawProduct[]> {
   const where: Prisma.ProductWhereInput = {
     status: "disponible",
-    id: { notIn: params.seenIds.filter((id: string) => id.startsWith("product-")) },
+    id: { notIn: extractSeenRawIds(params.seenIds, "products") },
     negocio: { departamento: params.departamento, ciudad: { not: params.ciudad } },
   };
   return prisma.product.findMany({
@@ -105,7 +107,7 @@ async function fetchProductsDept(params: ExtendedParams): Promise<RawProduct[]> 
 async function fetchProductsNational(params: ExtendedParams): Promise<RawProduct[]> {
   const where: Prisma.ProductWhereInput = {
     status: "disponible",
-    id: { notIn: params.seenIds.filter((id: string) => id.startsWith("product-")) },
+    id: { notIn: extractSeenRawIds(params.seenIds, "products") },
   };
   return prisma.product.findMany({
     where,
@@ -120,7 +122,7 @@ async function fetchProductsNational(params: ExtendedParams): Promise<RawProduct
 async function fetchServicesCity(params: ExtendedParams): Promise<RawService[]> {
   const where: Prisma.ServicioWhereInput = {
     status: "disponible",
-    id: { notIn: params.seenIds.filter((id: string) => id.startsWith("serv-")) },
+    id: { notIn: extractSeenRawIds(params.seenIds, "services") },
     negocio: { ciudad: params.ciudad },
   };
   return prisma.servicio.findMany({
@@ -136,7 +138,7 @@ async function fetchServicesCity(params: ExtendedParams): Promise<RawService[]> 
 async function fetchServicesDept(params: ExtendedParams): Promise<RawService[]> {
   const where: Prisma.ServicioWhereInput = {
     status: "disponible",
-    id: { notIn: params.seenIds.filter((id: string) => id.startsWith("serv-")) },
+    id: { notIn: extractSeenRawIds(params.seenIds, "services") },
     negocio: { departamento: params.departamento, ciudad: { not: params.ciudad } },
   };
   return prisma.servicio.findMany({
@@ -152,7 +154,7 @@ async function fetchServicesDept(params: ExtendedParams): Promise<RawService[]> 
 async function fetchServicesNational(params: ExtendedParams): Promise<RawService[]> {
   const where: Prisma.ServicioWhereInput = {
     status: "disponible",
-    id: { notIn: params.seenIds.filter((id: string) => id.startsWith("serv-")) },
+    id: { notIn: extractSeenRawIds(params.seenIds, "services") },
   };
   return prisma.servicio.findMany({
     where,
@@ -167,7 +169,7 @@ async function fetchServicesNational(params: ExtendedParams): Promise<RawService
 async function fetchBusinessesCity(params: ExtendedParams): Promise<RawBusiness[]> {
   const where: Prisma.NegocioWhereInput = {
     estado: "activo",
-    id: { notIn: params.seenIds.filter((id: string) => id.startsWith("bus-")) },
+    id: { notIn: extractSeenRawIds(params.seenIds, "businesses") },
     ciudad: params.ciudad,
   };
   return prisma.negocio.findMany({
@@ -183,14 +185,14 @@ async function fetchBusinessesCity(params: ExtendedParams): Promise<RawBusiness[
 async function fetchBusinessesDept(params: ExtendedParams): Promise<RawBusiness[]> {
   const where: Prisma.NegocioWhereInput = {
     estado: "activo",
-    id: { notIn: params.seenIds.filter((id: string) => id.startsWith("bus-")) },
+    id: { notIn: extractSeenRawIds(params.seenIds, "businesses") },
     departamento: params.departamento,
     ciudad: { not: params.ciudad },
   };
   return prisma.negocio.findMany({
     where,
     select: businessSelect,
-    orderBy: { createdAt: "desc" },
+    orderBy: [{ orden: "desc" }, { createdAt: "desc" }],
     take: params.limit,
     cursor: params.cursor ? { id: params.cursor } : undefined,
     skip: params.cursor ? 1 : 0,
@@ -200,12 +202,12 @@ async function fetchBusinessesDept(params: ExtendedParams): Promise<RawBusiness[
 async function fetchBusinessesNational(params: ExtendedParams): Promise<RawBusiness[]> {
   const where: Prisma.NegocioWhereInput = {
     estado: "activo",
-    id: { notIn: params.seenIds.filter((id: string) => id.startsWith("bus-")) },
+    id: { notIn: extractSeenRawIds(params.seenIds, "businesses") },
   };
   return prisma.negocio.findMany({
     where,
     select: businessSelect,
-    orderBy: { createdAt: "desc" },
+    orderBy: [{ orden: "desc" }, { createdAt: "desc" }],
     take: params.limit,
     cursor: params.cursor ? { id: params.cursor } : undefined,
     skip: params.cursor ? 1 : 0,
@@ -215,6 +217,7 @@ async function fetchBusinessesNational(params: ExtendedParams): Promise<RawBusin
 // === 2. INTERFACES Y HELPERS ===
 
 interface SortableItem {
+  id: string;
   orden?: number;
   createdAt: Date;
 }
@@ -274,23 +277,11 @@ async function fetchWithPriority<T extends SortableItem>(
     }
   }
 
-  return items.slice(0, params.limit + buffer);
+  const uniqueItems = Array.from(new Map(items.map((item) => [item.id, item])).values());
+  return uniqueItems.slice(0, params.limit + buffer);
 }
 
-// === 3. Haversine ===
-const haversine = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
-  const R = 6371;
-  const toRad = (n: number) => (n * Math.PI) / 180;
-  const dLat = toRad(lat2 - lat1);
-  const dLon = toRad(lon2 - lon1);
-  const a =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return R * c;
-};
-
-// === 4. getFeedDataByType ===
+// === 3. getFeedDataByType ===
 export async function getFeedDataByType(
   type: "products" | "publications" | "services" | "businesses",
   params: ExtendedParams
@@ -325,40 +316,8 @@ export async function getFeedDataByType(
     console.error(`Error fetching ${type}:`, error);
     rawItems = [];
   }
-
-  // === SORTING POR DISTANCIA ===
-  if (params.userLat != null && params.userLong != null) {
-    const itemsWithDistance = rawItems
-      .map((item) => {
-        let negocioLat: number | null = null;
-        let negocioLong: number | null = null;
-
-        if ("negocio" in item && item.negocio) {
-          negocioLat = item.negocio.latitud ?? null;
-          negocioLong = item.negocio.longitud ?? null;
-        } else if ("latitud" in item && "longitud" in item) {
-          const business = item as RawBusiness;
-          negocioLat = business.latitud ?? null;
-          negocioLong = business.longitud ?? null;
-        }
-
-        if (negocioLat != null && negocioLong != null) {
-          const distance = haversine(params.userLat!, params.userLong!, negocioLat, negocioLong);
-          return { item, distance };
-        }
-        return { item, distance: Infinity };
-      })
-      .sort((a, b) => {
-        if (a.distance !== b.distance) return a.distance - b.distance;
-        const orderA = (a.item as SortableItem).orden ?? 0;
-        const orderB = (b.item as SortableItem).orden ?? 0;
-        if (orderB !== orderA) return orderB - orderA;
-        return new Date((b.item as SortableItem).createdAt).getTime() - new Date((a.item as SortableItem).createdAt).getTime();
-      })
-      .map(({ item }) => item);
-
-    rawItems = itemsWithDistance;
-  }
+  const rankedRawItems = rankRawItems(rawItems, type, params);
+  rawItems = rankedRawItems.map(({ item }) => item);
 
   // === Reacciones ===
   let userReactionsMap: Record<string, { id: string; tipo: ReaccionTipo } | null> = {};
@@ -393,6 +352,8 @@ export async function getFeedDataByType(
   }
 
   // === Mapeo final ===
+  const scoreMap = new Map(rankedRawItems.map(({ item, score }) => [item.id, score]));
+
   const items: FeedItem[] = rawItems.map((raw) => {
     let item: FeedItem;
     if (isRawProduct(raw)) {
@@ -431,6 +392,7 @@ export async function getFeedDataByType(
     }
     (item.data as { negocioId?: string }).negocioId = negocioId;
     item.isFollowed = params.followedBusinessIds?.includes(negocioId) ?? false;
+    item.score = scoreMap.get(raw.id) ?? item.score;
 
     return item;
   });

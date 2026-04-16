@@ -217,10 +217,10 @@ const AddressNegocioTotal: React.FC = () => {
 
             <List disablePadding>
               {items.map((item) => (
-                <ListItem key={item.id} sx={{ py: 1, px: 0 }}>
+                <ListItem key={item.cartItemId} sx={{ py: 1, px: 0 }}>
                   <ListItemText
                     primary={`${item.nombre} x ${item.cantidad}`}
-                    secondary={`$${item.precio.toFixed(2)} cada uno`}
+                    secondary={`$${item.precio.toFixed(2)} cada uno${item.variantLabel ? ` • Variante: ${item.variantLabel}` : ""}`}
                     primaryTypographyProps={{
                       variant: "body1",
                       fontWeight: 500,
@@ -240,7 +240,7 @@ const AddressNegocioTotal: React.FC = () => {
                   <IconButton
                     edge="end"
                     aria-label="Eliminar producto"
-                    onClick={() => removeProduct(slug, item.id)}
+                    onClick={() => removeProduct(slug, item.cartItemId)}
                     sx={{ ml: 1 }}
                   >
                     <Delete fontSize="small" />

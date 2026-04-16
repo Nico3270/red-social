@@ -58,6 +58,8 @@ const CheckoutOrdenNegocio: React.FC = () => {
       const pedidoData = {
         items: cart.map(item => ({
           productId: item.id,
+          productVariantId: item.productVariantId ?? null,
+          variantLabel: item.variantLabel ?? null,
           quantity: item.cantidad,
           price: item.precio,
           subtotal: item.precio * item.cantidad,
@@ -120,7 +122,7 @@ const CheckoutOrdenNegocio: React.FC = () => {
           <ListItem key={item.cartItemId} sx={{ py: 1, px: 0 }}>
             <ListItemText
               primary={`${item.nombre} x ${item.cantidad}`}
-              secondary={`$${item.precio.toFixed(2)} cada uno`}
+              secondary={`$${item.precio.toFixed(2)} cada uno${item.variantLabel ? ` • Variante: ${item.variantLabel}` : ""}`}
               primaryTypographyProps={{ variant: "body1", fontWeight: 500 }}
               secondaryTypographyProps={{ variant: "body2", color: "text.secondary" }}
             />

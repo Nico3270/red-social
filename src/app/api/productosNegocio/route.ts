@@ -19,9 +19,38 @@ export async function GET() {
         nombre: true,
         slug: true,
         precio: true,
+        stock: true,
+        stockIlimitado: true,
+        usaVariantes: true,
         imagenes: true,
         secciones: true,
         descripcionCorta: true,
+        variantes: {
+          where: {
+            isActive: true,
+          },
+          select: {
+            id: true,
+            nombre: true,
+            precio: true,
+            stock: true,
+            stockIlimitado: true,
+            imagenUrl: true,
+            options: {
+              select: {
+                nombre: true,
+                valor: true,
+                orden: true,
+              },
+              orderBy: {
+                orden: 'asc',
+              },
+            },
+          },
+          orderBy: {
+            orden: 'asc',
+          },
+        },
       },
     });
 
@@ -35,9 +64,24 @@ export async function GET() {
       slug: p.slug,
       nombre: p.nombre,
       precio: p.precio,
+      stock: p.stock,
+      stockIlimitado: p.stockIlimitado,
+      usaVariantes: p.usaVariantes,
       imagen: p.imagenes[0]?.url || '', // Tomar la URL de la primera imagen, o cadena vacía si no hay
       seccionIds: p.secciones.map((sec) => sec.sectionId), // Extraer solo los sectionId como array de strings
       descripcionCorta: p.descripcionCorta,
+      variantes: p.variantes.map((variant) => ({
+        id: variant.id,
+        nombre: variant.nombre,
+        precio: variant.precio,
+        stock: variant.stock,
+        stockIlimitado: variant.stockIlimitado,
+        imagenUrl: variant.imagenUrl,
+        options: variant.options.map((option) => ({
+          nombre: option.nombre,
+          valor: option.valor,
+        })),
+      })),
     }));
 
     return NextResponse.json(products);

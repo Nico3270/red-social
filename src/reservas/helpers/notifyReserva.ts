@@ -52,6 +52,7 @@ interface NotifyReservaConfirmadaClienteProps {
   to: string;
   nombre_cliente?: string;
   telefono_cliente?: string;
+  orderType?: "DELIVERY" | "ON_SITE";
   fechaHora?: string;
   fecha_anterior?: string;
   fecha_nueva?: string;
@@ -263,6 +264,7 @@ export async function notifyReservaConfirmadaCliente(
       to,
       nombre_cliente,
       telefono_cliente,
+      orderType,
       fechaHora,
       fecha_anterior,
       fecha_nueva,
@@ -275,6 +277,10 @@ export async function notifyReservaConfirmadaCliente(
       direccion,
       ciudad,
     } = props;
+
+    const direccionNormalizada = normalizeText(direccion);
+    const ciudadNormalizada =
+      normalizeText(ciudad) || (orderType === "ON_SITE" ? "Consumo en sitio" : "");
 
     console.log(`[notifyReserva][${traceId}] Plantilla exacta solicitada:`, {
       template,
@@ -624,8 +630,8 @@ export async function notifyReservaConfirmadaCliente(
         if (!valor_compra) missing.push("valor_compra");
         if (!datos_pedido) missing.push("datos_pedido");
         if (!nombre_cliente) missing.push("nombre_cliente");
-        if (!direccion) missing.push("direccion");
-        if (!ciudad) missing.push("ciudad");
+        if (!direccionNormalizada) missing.push("direccion");
+        if (!ciudadNormalizada) missing.push("ciudad");
 
         if (missing.length > 0) {
           const errorMessage = buildValidationErrorMessage(template, missing);
@@ -651,8 +657,8 @@ export async function notifyReservaConfirmadaCliente(
           nombre_negocio,
           datos_pedido!,
           valor_compra!,
-          direccion!,
-          ciudad!,
+          direccionNormalizada,
+          ciudadNormalizada,
         ];
         placeholderNames = [
           "nombre_cliente",
@@ -896,8 +902,8 @@ export async function notifyReservaConfirmadaCliente(
       telefono_cliente,
       datos_pedido,
       valor_compra,
-      direccion,
-      ciudad,
+      direccion: direccionNormalizada,
+      ciudad: ciudadNormalizada,
       descripcion: descripcionNormalizada,
       fechaHora,
       fecha_anterior,
@@ -951,8 +957,8 @@ export async function notifyReservaConfirmadaCliente(
         reservas_negocio,
         datos_pedido,
         valor_compra,
-        direccion,
-        ciudad,
+        direccion: direccionNormalizada,
+        ciudad: ciudadNormalizada,
         descripcion: descripcionNormalizada,
       } as TemplateVariables);
 

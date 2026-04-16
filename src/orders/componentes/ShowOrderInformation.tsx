@@ -37,6 +37,8 @@ interface OrderDetails {
     price: number;
     subtotal: number;
     productId: string | null;
+    productVariantId: string | null;
+    variantLabel: string | null;
   }[];
   datosDeEntrega: {
     id: string;
@@ -247,6 +249,7 @@ const ShowOrderInformation: React.FC<ShowOrderInformationProps> = ({ orderId, op
                                 color="text.secondary"
                               >
                                 ${item.price.toFixed(2)} cada uno
+                                {item.variantLabel ? ` • Variante: ${item.variantLabel}` : ""}
                               </Typography>
                             </Box>
                             <Typography fontWeight={600}>

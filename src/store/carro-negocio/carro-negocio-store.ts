@@ -11,6 +11,11 @@ export interface CartProduct {
   imagen: string; // Imagen principal del producto
   seccionIds: string[]; // IDs de las secciones asociadas
   descripcionCorta?: string; // Descripción corta del producto (opcional)
+  productVariantId?: string | null;
+  variantLabel?: string | null;
+  stock?: number | null;
+  stockIlimitado?: boolean;
+  usaVariantes?: boolean;
 }
 
 interface State {
@@ -24,6 +29,29 @@ interface State {
   getCart: () => CartProduct[]; // Acción para obtener el carrito
 }
 
+const isSameCartLine = (a: CartProduct, b: CartProduct) => {
+  const aUsesVariants = a.usaVariantes === true;
+  const bUsesVariants = b.usaVariantes === true;
+
+  if (aUsesVariants || bUsesVariants) {
+    return a.id === b.id && (a.productVariantId ?? null) === (b.productVariantId ?? null);
+  }
+
+  return a.id === b.id;
+};
+
+const clampQuantityByStock = (item: CartProduct, desiredQuantity: number) => {
+  if (item.stockIlimitado !== false) {
+    return Math.max(1, desiredQuantity);
+  }
+
+  if (typeof item.stock !== "number") {
+    return Math.max(1, desiredQuantity);
+  }
+
+  return Math.max(1, Math.min(desiredQuantity, item.stock));
+};
+
 export const useCartNegocioStore = create<State>()(
   persist(
     (set, get) => ({
@@ -31,19 +59,32 @@ export const useCartNegocioStore = create<State>()(
 
       addProductToCart: (product: CartProduct) => {
         set((state) => {
-          // Verifica si el producto ya existe en el carrito (por id del producto)
-          const existingProduct = state.cart.find((item) => item.id === product.id);
+          const existingProduct = state.cart.find((item) => isSameCartLine(item, product));
+
           if (existingProduct) {
-            // Si existe, incrementa la cantidad (asumiendo que no quieres duplicados)
             return {
               cart: state.cart.map((item) =>
-                item.id === product.id ? { ...item, cantidad: item.cantidad + product.cantidad } : item
+                isSameCartLine(item, product)
+                  ? {
+                      ...item,
+                      cantidad: clampQuantityByStock(item, item.cantidad + product.cantidad),
+                    }
+                  : item
               ),
             };
           }
-          // Si no existe, agrega el nuevo producto
+
+          const normalizedProduct: CartProduct = {
+            ...product,
+            cantidad: clampQuantityByStock(product, product.cantidad),
+            stockIlimitado: product.stockIlimitado ?? true,
+            usaVariantes: product.usaVariantes ?? false,
+            productVariantId: product.productVariantId ?? null,
+            variantLabel: product.variantLabel ?? null,
+          };
+
           return {
-            cart: [...state.cart, product],
+            cart: [...state.cart, normalizedProduct],
           };
         });
       },
@@ -56,7 +97,9 @@ export const useCartNegocioStore = create<State>()(
       updateProductQuantity: (cartItemId: string, cantidad: number) =>
         set((state) => ({
           cart: state.cart.map((item) =>
-            item.cartItemId === cartItemId ? { ...item, cantidad: Math.max(1, cantidad) } : item // Evita cantidad <1
+            item.cartItemId === cartItemId
+              ? { ...item, cantidad: clampQuantityByStock(item, cantidad) }
+              : item
           ),
         })),
 

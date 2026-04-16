@@ -1,4 +1,4 @@
-import { ProductStatus } from "@prisma/client";
+import { ProductStatus, ProductEtiquetaEspecial } from "@prisma/client";
 
 export interface ProductAttributeRedSocial {
   id: string;
@@ -32,10 +32,11 @@ export interface ProductRedSocial {
   nombre: string;
   precio: number;
   descripcion: string;
-  descripcionCorta: string;
+  descripcionCorta?: string | null;
   slug: string;
-  prioridad: number;
+  prioridad?: number | null;
   status: ProductStatus;
+  etiquetaEspecial?: ProductEtiquetaEspecial | null;
   tags: string[];
   categoriaId: string;
   imagenes: string[];
@@ -47,7 +48,6 @@ export interface ProductRedSocial {
   telefonoContacto?: string;
   negocioFotoPerfil: string;
 
-  // Nuevos campos opcionales
   stock?: number | null;
   stockIlimitado?: boolean;
   usaVariantes?: boolean;

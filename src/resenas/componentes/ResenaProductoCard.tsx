@@ -10,11 +10,9 @@ import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
 import Link from "next/link";
 import { Swiper as SwiperType } from "swiper";
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
 import Interactions from "@/interacciones/componentes/Interactions";
 import PublicationModal from "@/publicaciones/componentes/PublicationModal";
+import { useMediaAspectRatio } from "@/hooks/useMediaAspectRatio";
 
 interface EnhancedPublicacion {
   id: string;
@@ -50,58 +48,6 @@ interface EnhancedPublicacion {
   ) => void;
 }
 
-const useMediaDimensions = (url: string, tipo: "IMAGEN" | "VIDEO") => {
-  const [aspectRatio, setAspectRatio] = useState<number | null>(null);
-
-  useEffect(() => {
-    if (!url) {
-      setAspectRatio(1);
-      return;
-    }
-
-    const loadDimensions = async () => {
-      try {
-        if (tipo === "IMAGEN") {
-          const img = new window.Image();
-          img.src = url;
-          await new Promise((resolve, reject) => {
-            img.onload = () => {
-              setAspectRatio(img.naturalWidth / img.naturalHeight || 1);
-              resolve(null);
-            };
-            img.onerror = () => {
-              setAspectRatio(1);
-              reject(new Error("Error cargando imagen"));
-            };
-          });
-        } else if (tipo === "VIDEO") {
-          const video = document.createElement("video");
-          video.src = url + "#t=0.1";
-          video.muted = true;
-          await new Promise((resolve, reject) => {
-            video.onloadedmetadata = () => {
-              setAspectRatio(video.videoWidth / video.videoHeight || 9 / 16);
-              resolve(null);
-            };
-            video.onerror = () => {
-              setAspectRatio(9 / 16);
-              reject(new Error("Error cargando video"));
-            };
-          });
-          video.remove();
-        }
-      } catch {
-        setAspectRatio(tipo === "VIDEO" ? 9 / 16 : 1);
-      }
-    };
-
-    loadDimensions();
-    return () => setAspectRatio(null);
-  }, [url, tipo]);
-
-  return aspectRatio;
-};
-
 interface Props {
   publicacion: EnhancedPublicacion;
   isInModal?: boolean;
@@ -131,7 +77,7 @@ const MediaSlide: React.FC<{
   isInModal: boolean;
   descripcion?: string;
 }> = ({ media, index, multimediaLength, onClick, isInModal, descripcion }) => {
-  const aspectRatio = useMediaDimensions(media.url, media.tipo);
+  const aspectRatio = useMediaAspectRatio(media.url, media.tipo);
   const maxDescriptionLength = 100;
 
   const formattedDescription = useMemo(() => {
@@ -293,6 +239,7 @@ const ResenaProductoCard: React.FC<Props> = ({ publicacion, isInModal = false })
               src={publicacion.usuario.fotoPerfil || "/default-profile.png"}
               alt={`Foto de perfil de ${publicacion.usuario.nombre} ${publicacion.usuario.apellido}`}
               fill
+              sizes="40px"
               className="object-cover"
             />
           </div>

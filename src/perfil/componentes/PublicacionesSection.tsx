@@ -72,7 +72,7 @@ const PublicacionesSection: React.FC<PublicacionesSectionProps> = ({
                   alt={p.titulo || "Publicación"}
                   fill
                   className="object-cover"
-                  quality={60}
+    
                   sizes="30vw"
                 />
               )}
@@ -140,7 +140,7 @@ const PublicacionesSection: React.FC<PublicacionesSectionProps> = ({
                     alt={pub.titulo || "Publicación"}
                     fill
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
-                    quality={80}
+                
                     sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                   />
                 )}

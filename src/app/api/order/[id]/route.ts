@@ -23,6 +23,8 @@ interface OrderDetails {
     price: number;
     subtotal: number;
     productId: string | null;
+    productVariantId: string | null;
+    variantLabel: string | null;
   }[];
   datosDeEntrega: {
     id: string;
@@ -94,6 +96,8 @@ export async function GET(req: Request, context: { params: Promise<{ id: string 
         price: Number(item.price),
         subtotal: Number(item.subtotal),
         productId: item.productId,
+        productVariantId: item.productVariantId,
+        variantLabel: item.variantLabel,
       })),
       datosDeEntrega: order.datosDeEntrega
         ? {

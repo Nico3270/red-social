@@ -2,7 +2,7 @@
 
 import { usePreferencesStore } from "@/store/preferences/preferences-store";
 import { useSession } from "next-auth/react";
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { getFollowedBusinesses } from "../actions/getFollowedBusinesses";
 import { FeedItem, FeedQueryParams, FeedResponse } from "../feed.interfaces";
 import { useInfiniteQuery } from '@tanstack/react-query';
@@ -14,6 +14,8 @@ import { toast } from 'sonner';
 import FeedRenderer from "@/publicaciones/componentes/FeedRederer";
 import { CircularProgress } from "@mui/material";
 import { useUserLocation } from "@/hooks/useUserLocation"; // ← NUEVO: Hook de ubicación
+import { buildSeenFeedId, extractSeenRawIds } from "../feed-ids";
+import { buildForYouFeed, dedupeFeedItems } from "../feedForYou";
 
 // EXTENSIÓN: Agrega categoriaSlug a params (para temático futuro)
 interface ExtendedFeedQueryParams extends FeedQueryParams {
@@ -34,12 +36,25 @@ type BackendExtendedParams = ExtendedFeedQueryParams & {
   cursor?: string;
 };
 
+type FeedTab = "Para ti" | "Publicaciones" | "Productos" | "Servicios" | "Negocios";
+
 export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedComponentProps = {}) {
   const { data: session } = useSession();
-  const { ciudad, departamento, userLat, userLong, seenIds, addSeenId } = usePreferencesStore();
+  const {
+    ciudad,
+    departamento,
+    preferencias,
+    secciones,
+    userLat,
+    userLong,
+    seenIds,
+    addSeenId,
+    resetSeenIds,
+  } = usePreferencesStore();
   const [followedBusinessIds, setFollowedBusinessIds] = useState<string[]>([]);
-  const [activeTab, setActiveTab] = useState<"Publicaciones" | "Productos" | "Servicios" | "Negocios">("Publicaciones");
-  const [prevItemsLength, setPrevItemsLength] = useState(0);
+  const [activeTab, setActiveTab] = useState<FeedTab>("Para ti");
+  const [feedCycle, setFeedCycle] = useState(0);
+  const recycledFeedKeysRef = useRef<Set<string>>(new Set());
 
   // ← NUEVO: Ejecuta detección de ubicación en background
   useUserLocation();
@@ -50,15 +65,29 @@ export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedCo
     const baseParams: ExtendedFeedQueryParams = {
       ciudad,
       departamento,
+      preferencias,
+      secciones,
       followedBusinessIds,
-      limit: 20,
+      limit: activeTab === "Para ti" ? 10 : 20,
       seenIds,
       userId: session?.user?.id || null,
       userLat: userLat ?? undefined,
       userLong: userLong ?? undefined,
     };
     return categoriaSlug ? { ...baseParams, categoriaSlug } : baseParams;
-  }, [ciudad, departamento, followedBusinessIds, seenIds, session?.user?.id, categoriaSlug, userLat, userLong]);
+  }, [
+    ciudad,
+    departamento,
+    preferencias,
+    secciones,
+    followedBusinessIds,
+    activeTab,
+    seenIds,
+    session?.user?.id,
+    categoriaSlug,
+    userLat,
+    userLong,
+  ]);
 
   // Carga follows
   useEffect(() => {
@@ -84,10 +113,32 @@ export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedCo
   }, [ciudad, params]);
 
   // Helpers (sin cambios)
-  const getQueryKey = useCallback((type: string): readonly (string | ExtendedFeedQueryParams | null)[] => {
-    const key = ['feed-' + type, categoriaSlug || 'global', params];
-    return key;
-  }, [categoriaSlug, params]);
+  const getQueryKey = useCallback((type: string) => ([
+    "feed-" + type,
+    categoriaSlug || "global",
+    ciudad || "sin-ciudad",
+    departamento || "sin-departamento",
+    session?.user?.id || "anon",
+    userLat ?? "sin-lat",
+    userLong ?? "sin-long",
+    preferencias.join("|"),
+    secciones.join("|"),
+    followedBusinessIds.join("|"),
+    activeTab === "Para ti" ? "for-you" : "single-tab",
+    `cycle-${feedCycle}`,
+  ] as const), [
+    categoriaSlug,
+    ciudad,
+    departamento,
+    session?.user?.id,
+    userLat,
+    userLong,
+    preferencias,
+    secciones,
+    followedBusinessIds,
+    activeTab,
+    feedCycle,
+  ]);
 
   const getQueryFn = useCallback((type: "publications" | "products" | "services" | "businesses") => 
     async ({ pageParam }: { pageParam?: string }) => {
@@ -102,12 +153,12 @@ export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedCo
     }, [params, categoriaSlug]
   );
 
-  type FlexibleQueryKey = readonly (string | ExtendedFeedQueryParams | null)[];
+  type FlexibleQueryKey = ReturnType<typeof getQueryKey>;
 
   const publicationsQuery = useInfiniteQuery<FeedResponse, Error, InfiniteData<FeedResponse>, FlexibleQueryKey, string | undefined>({
     queryKey: getQueryKey('publicaciones'),
     queryFn: getQueryFn('publications'),
-    enabled: !!params,
+    enabled: !!params && (activeTab === "Para ti" || activeTab === "Publicaciones"),
     getNextPageParam: (lastPage) => lastPage.nextCursor,
     initialPageParam: undefined,
     staleTime: categoriaSlug ? 2 * 60 * 1000 : 5 * 60 * 1000,
@@ -120,7 +171,7 @@ export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedCo
   const productsQuery = useInfiniteQuery<FeedResponse, Error, InfiniteData<FeedResponse>, FlexibleQueryKey, string | undefined>({
     queryKey: getQueryKey('productos'),
     queryFn: getQueryFn('products'),
-    enabled: !!params && activeTab === "Productos",
+    enabled: !!params && (activeTab === "Para ti" || activeTab === "Productos"),
     getNextPageParam: (lastPage) => lastPage.nextCursor,
     initialPageParam: undefined,
     staleTime: 2 * 60 * 1000,
@@ -134,7 +185,7 @@ export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedCo
   const servicesQuery = useInfiniteQuery<FeedResponse, Error, InfiniteData<FeedResponse>, FlexibleQueryKey, string | undefined>({
     queryKey: getQueryKey('servicios'),
     queryFn: getQueryFn('services'),
-    enabled: !!params && activeTab === "Servicios",
+    enabled: !!params && (activeTab === "Para ti" || activeTab === "Servicios"),
     getNextPageParam: (lastPage) => lastPage.nextCursor,
     initialPageParam: undefined,
     staleTime: 2 * 60 * 1000,
@@ -148,7 +199,7 @@ export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedCo
   const businessesQuery = useInfiniteQuery<FeedResponse, Error, InfiniteData<FeedResponse>, FlexibleQueryKey, string | undefined>({
     queryKey: getQueryKey('negocios'),
     queryFn: getQueryFn('businesses'),
-    enabled: !!params && activeTab === "Negocios",
+    enabled: !!params && (activeTab === "Para ti" || activeTab === "Negocios"),
     getNextPageParam: (lastPage) => lastPage.nextCursor,
     initialPageParam: undefined,
     staleTime: 2 * 60 * 1000,
@@ -160,6 +211,7 @@ export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedCo
   });
 
   const queries = useMemo(() => ({
+    "Para ti": publicationsQuery,
     Publicaciones: publicationsQuery,
     Productos: productsQuery,
     Servicios: servicesQuery,
@@ -172,13 +224,65 @@ export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedCo
   });
 
   useEffect(() => {
-    const currentQuery = queries[activeTab];
-    if (inView && currentQuery.hasNextPage && !currentQuery.isFetchingNextPage) {
-      currentQuery.fetchNextPage();
+    if (!inView) return;
+
+    if (activeTab === "Para ti") {
+      const nextCandidates = ([
+        { label: "Publicaciones" as const, query: publicationsQuery },
+        { label: "Productos" as const, query: productsQuery },
+        { label: "Servicios" as const, query: servicesQuery },
+        { label: "Negocios" as const, query: businessesQuery },
+      ])
+        .map((entry) => ({
+          ...entry,
+          itemCount: entry.query.data?.pages.flatMap((page) => page.items).length ?? 0,
+        }))
+        .filter((entry) => entry.query.hasNextPage && !entry.query.isFetchingNextPage)
+        .sort((a, b) => a.itemCount - b.itemCount);
+
+      if (nextCandidates.length > 0) {
+        void nextCandidates[0].query.fetchNextPage();
+      }
+      return;
     }
-  }, [inView, activeTab, queries]);
+
+    const currentQuery = queries[activeTab];
+    if (currentQuery.hasNextPage && !currentQuery.isFetchingNextPage) {
+      void currentQuery.fetchNextPage();
+    }
+  }, [activeTab, businessesQuery, inView, productsQuery, publicationsQuery, queries, servicesQuery]);
 
   useEffect(() => {
+    if (activeTab === "Para ti") {
+      const failedSections = ([
+        ["publicaciones", publicationsQuery.error],
+        ["productos", productsQuery.error],
+        ["servicios", servicesQuery.error],
+        ["negocios", businessesQuery.error],
+      ] as const).filter(([, error]) => !!error);
+
+      if (failedSections.length > 0) {
+        const contexto = categoriaNombre || 'global';
+        toast.error(
+          `Algunas secciones del feed en ${contexto} no cargaron correctamente.`, 
+          {
+            action: {
+              label: 'Reintentar',
+              onClick: () => {
+                failedSections.forEach(([section]) => {
+                  if (section === "publicaciones") void publicationsQuery.refetch();
+                  if (section === "productos") void productsQuery.refetch();
+                  if (section === "servicios") void servicesQuery.refetch();
+                  if (section === "negocios") void businessesQuery.refetch();
+                });
+              },
+            },
+          }
+        );
+      }
+      return;
+    }
+
     const currentQuery = queries[activeTab];
     if (currentQuery.error) {
       const contexto = categoriaNombre || 'global';
@@ -192,9 +296,9 @@ export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedCo
         }
       );
     }
-  }, [activeTab, queries, categoriaNombre]);
+  }, [activeTab, businessesQuery, categoriaNombre, productsQuery, publicationsQuery, queries, servicesQuery]);
 
-  const getItemsForTab = useCallback((tab: typeof activeTab): FeedItem[] => {
+  const getItemsForQuery = useCallback((tab: Exclude<FeedTab, "Para ti">): FeedItem[] => {
     const query = queries[tab];
     const allItems = query.data?.pages.flatMap((page) => page.items) || [];
     
@@ -202,52 +306,144 @@ export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedCo
       console.log(`📊 getItemsForTab(${tab}): FlatMap ${allItems.length} items from ${query.data?.pages.length || 0} pages`);
     }
     
-    const uniqueMap = new Map<string, FeedItem>();
-    allItems.forEach((item) => {
-      const prefixedId = categoriaSlug ? `${categoriaSlug}-${item.id}` : item.id;
-      if (item && !uniqueMap.has(prefixedId)) {
-        uniqueMap.set(prefixedId, item);
-      }
-    });
-    
-    const uniqueItems = Array.from(uniqueMap.values());
+    const uniqueItems = dedupeFeedItems(allItems);
     
     if (process.env.NODE_ENV === "development") {
-      console.log(`📊 getItemsForTab(${tab}): After dedup ${uniqueItems.length} items (prefixed: ${!!categoriaSlug})`);
+      console.log(`📊 getItemsForTab(${tab}): After dedup ${uniqueItems.length} items`);
     }
     
     return uniqueItems;
-  }, [queries, categoriaSlug]);
+  }, [queries]);
+
+  const getItemsForTab = useCallback((tab: FeedTab): FeedItem[] => {
+    if (tab === "Para ti") {
+      const allItems = [
+        ...getItemsForQuery("Publicaciones"),
+        ...getItemsForQuery("Productos"),
+        ...getItemsForQuery("Servicios"),
+        ...getItemsForQuery("Negocios"),
+      ];
+
+      return buildForYouFeed(allItems);
+    }
+
+    return getItemsForQuery(tab);
+  }, [getItemsForQuery]);
 
   const markAsSeen = useCallback(() => {
     const currentItems = getItemsForTab(activeTab);
-    const currentLength = currentItems.length;
-    const newItemsCount = currentLength - prevItemsLength;
-    if (newItemsCount > 0) {
-      const itemsToMark = currentItems.slice(-newItemsCount);
-      itemsToMark.forEach((item) => {
-        const prefixedId = categoriaSlug ? `${categoriaSlug}-${item.id}` : item.id;
-        if (!seenIds.includes(prefixedId)) {
-          addSeenId(prefixedId);
-        }
-      });
-      setPrevItemsLength(currentLength);
-      if (process.env.NODE_ENV === "development") {
-        console.log(`👁️ markAsSeen(${activeTab}): +${newItemsCount} nuevos IDs (total: ${seenIds.length + newItemsCount})`);
-      }
+    const unseenItems = currentItems.filter((item) => {
+      const prefixedId = buildSeenFeedId(item.type, item.id);
+      return !seenIds.includes(prefixedId);
+    });
+
+    if (unseenItems.length === 0) return;
+
+    unseenItems.forEach((item) => {
+      addSeenId(buildSeenFeedId(item.type, item.id));
+    });
+
+    if (process.env.NODE_ENV === "development") {
+      console.log(`👁️ markAsSeen(${activeTab}): +${unseenItems.length} nuevos IDs (total: ${seenIds.length + unseenItems.length})`);
     }
-  }, [activeTab, getItemsForTab, categoriaSlug, addSeenId, seenIds, prevItemsLength]);
+  }, [activeTab, addSeenId, getItemsForTab, seenIds]);
 
   useEffect(() => {
+    if (activeTab === "Para ti") {
+      const hasAnyData = [
+        publicationsQuery,
+        productsQuery,
+        servicesQuery,
+        businessesQuery,
+      ].some((query) => query.isSuccess && (query.data?.pages.length ?? 0) > 0);
+
+      if (hasAnyData) {
+        markAsSeen();
+      }
+      return;
+    }
+
     const currentQuery = queries[activeTab];
     if (currentQuery.isSuccess && currentQuery.data?.pages.length > 0) {
       markAsSeen();
     }
-  }, [activeTab, queries, markAsSeen]);
+  }, [activeTab, businessesQuery, markAsSeen, productsQuery, publicationsQuery, queries, servicesQuery]);
 
-  const currentQuery = queries[activeTab];
   const items = getItemsForTab(activeTab);
-  const isLoading = !params || currentQuery.isPending || (currentQuery.isFetching && items.length === 0);
+  const recycleScopeKey = `${categoriaSlug || "global"}:${activeTab}`;
+  const seenIdsForCurrentScope = useMemo(() => {
+    switch (activeTab) {
+      case "Publicaciones":
+        return extractSeenRawIds(seenIds, "publications").length;
+      case "Productos":
+        return extractSeenRawIds(seenIds, "products").length;
+      case "Servicios":
+        return extractSeenRawIds(seenIds, "services").length;
+      case "Negocios":
+        return extractSeenRawIds(seenIds, "businesses").length;
+      case "Para ti":
+      default:
+        return seenIds.length;
+    }
+  }, [activeTab, seenIds]);
+  const hasMore = activeTab === "Para ti"
+    ? Boolean(
+        publicationsQuery.hasNextPage ||
+        productsQuery.hasNextPage ||
+        servicesQuery.hasNextPage ||
+        businessesQuery.hasNextPage
+      )
+    : Boolean(queries[activeTab].hasNextPage);
+  const isLoadingNext = activeTab === "Para ti"
+    ? Boolean(
+        publicationsQuery.isFetchingNextPage ||
+        productsQuery.isFetchingNextPage ||
+        servicesQuery.isFetchingNextPage ||
+        businessesQuery.isFetchingNextPage
+      )
+    : queries[activeTab].isFetchingNextPage;
+  const isLoading = !params || (
+    activeTab === "Para ti"
+      ? (
+          (publicationsQuery.isPending || productsQuery.isPending || servicesQuery.isPending || businessesQuery.isPending) &&
+          items.length === 0
+        )
+      : (
+          queries[activeTab].isPending ||
+          (queries[activeTab].isFetching && items.length === 0)
+        )
+  );
+
+  useEffect(() => {
+    if (items.length > 0) {
+      recycledFeedKeysRef.current.delete(recycleScopeKey);
+    }
+  }, [items.length, recycleScopeKey]);
+
+  useEffect(() => {
+    if (isLoading || isLoadingNext || hasMore || items.length > 0) return;
+    if (seenIdsForCurrentScope === 0) return;
+    if (recycledFeedKeysRef.current.has(recycleScopeKey)) return;
+
+    recycledFeedKeysRef.current.add(recycleScopeKey);
+    resetSeenIds();
+    setFeedCycle((current) => current + 1);
+
+    toast.info(
+      activeTab === "Para ti"
+        ? "Volvimos a cargar el contenido disponible para que sigas explorando."
+        : `Reiniciamos ${activeTab.toLowerCase()} para mostrarte de nuevo el contenido disponible.`
+    );
+  }, [
+    activeTab,
+    hasMore,
+    isLoading,
+    isLoadingNext,
+    items.length,
+    recycleScopeKey,
+    resetSeenIds,
+    seenIdsForCurrentScope,
+  ]);
 
   if (isLoading) {
     return (
@@ -255,9 +451,11 @@ export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedCo
         <CircularProgress />
         <p className="mt-4 text-gray-600 text-sm">
           {categoriaNombre 
-            ? `Cargando ${activeTab.toLowerCase()} en ${categoriaNombre}...` 
+            ? `Cargando ${activeTab === "Para ti" ? "tu feed inteligente" : activeTab.toLowerCase()} en ${categoriaNombre}...` 
             : !ciudad 
             ? 'Estamos preparando un feed personalizado para ti...' 
+            : activeTab === "Para ti"
+            ? 'Cargando tu feed inteligente...'
             : `Cargando tu feed de ${activeTab.toLowerCase()}...`}
         </p>
       </div>
@@ -268,8 +466,8 @@ export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedCo
     <div className="p-0 w-full mx-auto ">
       <FeedRenderer
         items={items}
-        hasMore={currentQuery.hasNextPage ?? false}
-        isLoadingNext={currentQuery.isFetchingNextPage}
+        hasMore={hasMore}
+        isLoadingNext={isLoadingNext}
         sentinelRef={sentinelRef}
         activeTab={activeTab}
         onTabChange={setActiveTab}

@@ -15,6 +15,11 @@ interface OrderData {
     imagen: string;
     seccionIds: string[];
     descripcionCorta: string;
+    productVariantId?: string | null;
+    variantLabel?: string | null;
+    stock?: number | null;
+    stockIlimitado?: boolean;
+    usaVariantes?: boolean;
   }[];
   address: {
     orderType: string;
@@ -55,6 +60,7 @@ export async function GET(request: Request, context: { params: Promise<Params> }
                 secciones: true,
               },
             },
+            productVariant: true,
           },
         },
         datosDeEntrega: true,
@@ -72,15 +78,25 @@ export async function GET(request: Request, context: { params: Promise<Params> }
     // Mapear productos desde items (OrderItem[])
     const products = order.items.map((item) => {
       const product = item.product;
+      const variant = item.productVariant;
+      const usesVariants = product?.usaVariantes ?? Boolean(item.productVariantId);
+
       return {
-        id: item.productId || "",
+        id: item.productId || product?.id || "",
         slug: product?.slug || "",
         nombre: item.description,
         precio: Number(item.price),
         cantidad: item.quantity,
-        imagen: product?.imagenes[0]?.url || "",
+        imagen: variant?.imagenUrl || product?.imagenes[0]?.url || "",
         seccionIds: product?.secciones.map((sec) => sec.sectionId) || [],
         descripcionCorta: product?.descripcionCorta || "",
+        productVariantId: item.productVariantId ?? null,
+        variantLabel: item.variantLabel ?? null,
+        stock: item.productVariantId ? variant?.stock ?? null : product?.stock ?? null,
+        stockIlimitado: item.productVariantId
+          ? variant?.stockIlimitado ?? true
+          : product?.stockIlimitado ?? true,
+        usaVariantes: usesVariants,
       };
     });
 

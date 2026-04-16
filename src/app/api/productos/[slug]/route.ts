@@ -40,6 +40,9 @@ export async function GET(
         tags: true,
         categoryId: true,
         componentes: true,
+        stock: true,
+        stockIlimitado: true,
+        usaVariantes: true,
         category: {
           select: {
             nombre: true,
@@ -71,6 +74,36 @@ export async function GET(
             url: true,
           },
         },
+        variantes: {
+          where: {
+            isActive: true,
+          },
+          select: {
+            id: true,
+            nombre: true,
+            sku: true,
+            precio: true,
+            stock: true,
+            stockIlimitado: true,
+            isActive: true,
+            imagenUrl: true,
+            orden: true,
+            options: {
+              select: {
+                id: true,
+                nombre: true,
+                valor: true,
+                orden: true,
+              },
+              orderBy: {
+                orden: "asc",
+              },
+            },
+          },
+          orderBy: {
+            orden: "asc",
+          },
+        },
       },
     });
 
@@ -100,6 +133,26 @@ export async function GET(
       telefonoContacto: product.negocio.telefonoContacto || "",
       negocioId: product.negocio.id,
       negocioFotoPerfil: product.negocio.fotoPerfil || "",
+      stock: product.stock,
+      stockIlimitado: product.stockIlimitado,
+      usaVariantes: product.usaVariantes,
+      variantes: product.variantes.map((variante) => ({
+        id: variante.id,
+        nombre: variante.nombre,
+        sku: variante.sku,
+        precio: variante.precio,
+        stock: variante.stock,
+        stockIlimitado: variante.stockIlimitado,
+        isActive: variante.isActive,
+        imagenUrl: variante.imagenUrl,
+        orden: variante.orden,
+        options: variante.options.map((option) => ({
+          id: option.id,
+          nombre: option.nombre,
+          valor: option.valor,
+          orden: option.orden,
+        })),
+      })),
     }));
 
     return NextResponse.json(

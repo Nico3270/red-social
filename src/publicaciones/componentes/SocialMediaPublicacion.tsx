@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import React, { useState, useRef, useCallback, useMemo } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Navigation, Autoplay } from "swiper/modules";
 import Image from "next/image";
@@ -21,64 +21,7 @@ import Link from "next/link";
 import { FollowButton } from "@/feed/componentes/FollowButton";
 import { EnhancedPublicacion } from "../interfaces/enhancedPublicacion.interface";
 import { titleFont } from "@/config/fonts";
-
-// Hook personalizado para obtener dimensiones de medios (sin cambios, optimizado)
-const useMediaDimensions = (url: string, tipo: "IMAGEN" | "VIDEO") => {
-  const [aspectRatio, setAspectRatio] = useState<number | null>(null);
-
-  useEffect(() => {
-    if (!url) {
-      setAspectRatio(1); // Fallback si no hay URL
-      return;
-    }
-
-    const loadDimensions = async () => {
-      try {
-        if (tipo === "IMAGEN") {
-          const img = new window.Image();
-          img.src = url;
-          await new Promise((resolve, reject) => {
-            img.onload = () => {
-              setAspectRatio(img.naturalWidth / img.naturalHeight || 1);
-              resolve(null);
-            };
-            img.onerror = () => {
-              setAspectRatio(1); // Fallback: proporción cuadrada
-              reject(new Error("Error cargando imagen"));
-            };
-          });
-        } else if (tipo === "VIDEO") {
-          const video = document.createElement("video");
-          video.src = url + "#t=0.1";
-          video.muted = true;
-          await new Promise((resolve, reject) => {
-            video.onloadedmetadata = () => {
-              setAspectRatio(video.videoWidth / video.videoHeight || 9 / 16);
-              resolve(null);
-            };
-            video.onerror = () => {
-              setAspectRatio(9 / 16); // Fallback: proporción vertical típica
-              reject(new Error("Error cargando video"));
-            };
-          });
-          video.remove();
-        }
-      } catch (error) {
-        if (process.env.NODE_ENV === "development") {
-          console.error("Error cargando dimensiones:", error);
-        }
-        setAspectRatio(tipo === "VIDEO" ? 9 / 16 : 1); // Fallback según tipo
-      }
-    };
-
-    loadDimensions();
-    return () => {
-      setAspectRatio(null);
-    };
-  }, [url, tipo]);
-
-  return aspectRatio;
-};
+import { useMediaAspectRatio } from "@/hooks/useMediaAspectRatio";
 
 interface Props {
   publicacion: EnhancedPublicacion;
@@ -93,7 +36,7 @@ const MediaSlide: React.FC<{
   onClick: () => void; // Prop para abrir modal
   isInModal: boolean; // Prop para evitar clicks en modal
 }> = ({ media, index, multimediaLength, onClick, isInModal }) => {
-  const aspectRatio = useMediaDimensions(media.url, media.tipo);
+  const aspectRatio = useMediaAspectRatio(media.url, media.tipo);
 
   return (
     <motion.div
@@ -194,6 +137,7 @@ export const SocialMediaCarousel: React.FC<Props> = ({ publicacion, isInModal = 
               src={publicacion.negocio?.fotoPerfil || publicacion.usuario.fotoPerfil || "/default-profile.png"}
               alt={`Foto de perfil de ${publicacion.negocio?.nombre || `${publicacion.usuario.nombre} ${publicacion.usuario.apellido}`}`}
               fill
+              sizes="48px"
               className="object-cover"
 
               

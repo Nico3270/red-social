@@ -75,11 +75,74 @@ interface Product {
     precio: number;
     imagen: string;
     seccionIds: string[];
-    descripcionCorta: string;
+    descripcionCorta?: string | null;
+    stock?: number | null;
+    stockIlimitado?: boolean;
+    usaVariantes?: boolean;
+    variantes: ProductVariantOptionData[];
+}
+
+interface ProductVariantOption {
+    nombre: string;
+    valor: string;
+}
+
+interface ProductVariantOptionData {
+    id: string;
+    nombre: string;
+    precio: number | null;
+    stock: number | null;
+    stockIlimitado: boolean;
+    imagenUrl?: string | null;
+    options: ProductVariantOption[];
 }
 interface BackdropProps extends HTMLMotionProps<"div"> {
     ownerState?: unknown;
 }
+
+const buildVariantLabel = (variant: ProductVariantOptionData) => {
+    const parts: string[] = [];
+
+    if (variant.nombre?.trim()) {
+        parts.push(variant.nombre.trim());
+    }
+
+    const optionLabel = variant.options
+        .map((option) => {
+            const nombre = option.nombre?.trim();
+            const valor = option.valor?.trim();
+
+            if (!nombre && !valor) return "";
+            if (!nombre) return valor;
+            if (!valor) return nombre;
+
+            return `${nombre}: ${valor}`;
+        })
+        .filter(Boolean)
+        .join(" / ");
+
+    if (optionLabel) {
+        parts.push(optionLabel);
+    }
+
+    return parts.join(" - ") || "Variante";
+};
+
+const clampByStock = (
+    desiredQuantity: number,
+    stock: number | null | undefined,
+    stockIlimitado?: boolean
+) => {
+    if (stockIlimitado !== false) {
+        return Math.max(1, desiredQuantity);
+    }
+
+    if (typeof stock !== "number") {
+        return Math.max(1, desiredQuantity);
+    }
+
+    return Math.max(1, Math.min(desiredQuantity, stock));
+};
 
 const AnimatedBackdrop = React.forwardRef<HTMLDivElement, BackdropProps>(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -120,6 +183,7 @@ const EditOrderModal: React.FC<EditOrderModalProps> = ({ orderId, open, onClose,
     const [isLoadingProducts, setIsLoadingProducts] = useState(false);
     const [showAddForm, setShowAddForm] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+    const [selectedVariantId, setSelectedVariantId] = useState("");
     const [quantity, setQuantity] = useState(1);
     const [status, setStatus] = useState<OrderState>(OrderState.Recibida);
     const [isFetching, setIsFetching] = useState(false);
@@ -136,6 +200,43 @@ const EditOrderModal: React.FC<EditOrderModalProps> = ({ orderId, open, onClose,
     const selectedDepartamento = watch("departamento");
     const orderType = watch("orderType");
 
+    const selectedVariant = useMemo(() => {
+        if (!selectedProduct?.usaVariantes) return null;
+
+        return (
+            selectedProduct.variantes.find((variant) => variant.id === selectedVariantId) ?? null
+        );
+    }, [selectedProduct, selectedVariantId]);
+
+    const effectivePrice = useMemo(() => {
+        if (selectedProduct?.usaVariantes) {
+            return selectedVariant?.precio ?? selectedProduct.precio ?? 0;
+        }
+
+        return selectedProduct?.precio ?? 0;
+    }, [selectedProduct, selectedVariant]);
+
+    const effectiveStock = useMemo(() => {
+        if (selectedProduct?.usaVariantes) {
+            return selectedVariant?.stock ?? null;
+        }
+
+        return selectedProduct?.stock ?? null;
+    }, [selectedProduct, selectedVariant]);
+
+    const effectiveStockIlimitado = useMemo(() => {
+        if (selectedProduct?.usaVariantes) {
+            return selectedVariant?.stockIlimitado ?? true;
+        }
+
+        return selectedProduct?.stockIlimitado ?? true;
+    }, [selectedProduct, selectedVariant]);
+
+    const hasLimitedSelectionStock =
+        effectiveStockIlimitado === false && typeof effectiveStock === "number";
+    const quantityReachedLimit =
+        hasLimitedSelectionStock && quantity >= (effectiveStock ?? 0);
+
     const revertWithFreshData = useCallback(async () => {
         try {
             const response = await fetch(`/api/editarOrder/${orderId}`);
@@ -145,6 +246,8 @@ const EditOrderModal: React.FC<EditOrderModalProps> = ({ orderId, open, onClose,
                     id: crypto.randomUUID(),
                     orderId: orderId,
                     productId: p.id,
+                    productVariantId: p.productVariantId ?? null,
+                    variantLabel: p.variantLabel ?? null,
                     quantity: p.cantidad,
                     price: p.precio,
                     subtotal: p.precio * p.cantidad,
@@ -241,16 +344,48 @@ const EditOrderModal: React.FC<EditOrderModalProps> = ({ orderId, open, onClose,
     const handleAddClick = () => {
         setShowAddForm(true);
         setSelectedProduct(null);
+        setSelectedVariantId("");
         setQuantity(1);
+    };
+
+    const handleProductChange = (value: Product | null) => {
+        setSelectedProduct(value);
+        setQuantity(1);
+
+        if (value?.usaVariantes && value.variantes.length > 0) {
+            setSelectedVariantId(value.variantes[0].id);
+            return;
+        }
+
+        setSelectedVariantId("");
     };
 
     const handleAddToCart = () => {
         if (selectedProduct) {
-            const existing = localCart.find((item) => item.id === selectedProduct.id);
+            if (selectedProduct.usaVariantes && !selectedVariant) {
+                return;
+            }
+
+            const variantLabel = selectedVariant ? buildVariantLabel(selectedVariant) : null;
+            const existing = localCart.find(
+                (item) =>
+                    item.id === selectedProduct.id &&
+                    (item.productVariantId ?? null) === (selectedVariant?.id ?? null)
+            );
+
             if (existing) {
                 setLocalCart(
                     localCart.map((item) =>
-                        item.id === selectedProduct.id ? { ...item, cantidad: item.cantidad + quantity } : item
+                        item.cartItemId === existing.cartItemId
+                            ? {
+                                ...item,
+                                cantidad: clampByStock(
+                                    item.cantidad + quantity,
+                                    item.stock,
+                                    item.stockIlimitado
+                                ),
+                            }
+                            : item
                     )
                 );
             } else {
@@ -259,22 +394,35 @@ const EditOrderModal: React.FC<EditOrderModalProps> = ({ orderId, open, onClose,
                     id: selectedProduct.id,
                     slug: selectedProduct.slug,
                     nombre: selectedProduct.nombre,
-                    precio: selectedProduct.precio,
+                    precio: effectivePrice,
                     cantidad: quantity,
-                    imagen: selectedProduct.imagen,
+                    imagen: selectedVariant?.imagenUrl || selectedProduct.imagen,
                     seccionIds: selectedProduct.seccionIds,
-                    descripcionCorta: selectedProduct.descripcionCorta,
+                    descripcionCorta: selectedProduct.descripcionCorta ?? "",
+                    usaVariantes: selectedProduct.usaVariantes ?? false,
+                    productVariantId: selectedVariant?.id ?? null,
+                    variantLabel,
+                    stock: effectiveStock,
+                    stockIlimitado: effectiveStockIlimitado,
                 };
                 setLocalCart([...localCart, cartProduct]);
             }
             setShowAddForm(false);
+            setSelectedProduct(null);
+            setSelectedVariantId("");
+            setQuantity(1);
         }
     };
 
     const handleQuantityChange = (cartItemId: string, newQuantity: number) => {
         setLocalCart(
             localCart.map((item) =>
-                item.cartItemId === cartItemId ? { ...item, cantidad: Math.max(1, newQuantity) } : item
+                item.cartItemId === cartItemId
+                    ? {
+                        ...item,
+                        cantidad: clampByStock(newQuantity, item.stock, item.stockIlimitado),
+                    }
+                    : item
             )
         );
     };
@@ -283,7 +431,9 @@ const EditOrderModal: React.FC<EditOrderModalProps> = ({ orderId, open, onClose,
         setLocalCart(localCart.filter((item) => item.cartItemId !== cartItemId));
     };
 
-    const handleIncrement = () => setQuantity((prev) => prev + 1);
+    const handleIncrement = () => {
+        setQuantity((prev) => clampByStock(prev + 1, effectiveStock, effectiveStockIlimitado));
+    };
     const handleDecrement = () => setQuantity((prev) => Math.max(1, prev - 1));
 
     const onSubmit: SubmitHandler<Address> = async (deliveryData) => {
@@ -294,6 +444,8 @@ const EditOrderModal: React.FC<EditOrderModalProps> = ({ orderId, open, onClose,
             id: crypto.randomUUID(),
             orderId: orderId,
             productId: item.id,
+            productVariantId: item.productVariantId ?? null,
+            variantLabel: item.variantLabel ?? null,
             quantity: item.cantidad,
             price: item.precio,
             subtotal: item.precio * item.cantidad,
@@ -314,6 +466,8 @@ const EditOrderModal: React.FC<EditOrderModalProps> = ({ orderId, open, onClose,
                 orderId,
                 items: localCart.map((item) => ({
                     productId: item.id,
+                    productVariantId: item.productVariantId ?? null,
+                    variantLabel: item.variantLabel ?? null,
                     quantity: item.cantidad,
                     price: item.precio,
                     subtotal: item.precio * item.cantidad,
@@ -458,7 +612,7 @@ const EditOrderModal: React.FC<EditOrderModalProps> = ({ orderId, open, onClose,
                                             <Autocomplete
                                                 options={products}
                                                 getOptionLabel={(option) => option.nombre}
-                                                onChange={(event, value) => setSelectedProduct(value)}
+                                                onChange={(_, value) => handleProductChange(value)}
                                                 renderInput={(params) => (
                                                     <TextField
                                                         {...params}
@@ -478,7 +632,46 @@ const EditOrderModal: React.FC<EditOrderModalProps> = ({ orderId, open, onClose,
                                             />
                                             {selectedProduct && (
                                                 <>
-                                                    <Typography sx={{ mt: 2 }}>Precio: ${selectedProduct.precio.toFixed(2)}</Typography>
+                                                    {selectedProduct.usaVariantes && (
+                                                        <Autocomplete
+                                                            options={selectedProduct.variantes}
+                                                            value={selectedVariant}
+                                                            getOptionLabel={(option) => buildVariantLabel(option)}
+                                                            onChange={(_, value) => {
+                                                                setSelectedVariantId(value?.id ?? "");
+                                                                setQuantity(1);
+                                                            }}
+                                                            renderInput={(params) => (
+                                                                <TextField
+                                                                    {...params}
+                                                                    label="Selecciona una variante"
+                                                                    fullWidth
+                                                                    sx={{
+                                                                        mt: 2,
+                                                                        "& .MuiOutlinedInput-root": {
+                                                                            borderRadius: 3,
+                                                                            bgcolor: "background.default",
+                                                                            "& fieldset": { borderColor: "divider" },
+                                                                            "&:hover fieldset": { borderColor: "primary.light" },
+                                                                        },
+                                                                        "& .MuiInputLabel-root": { color: "text.secondary" },
+                                                                    }}
+                                                                />
+                                                            )}
+                                                        />
+                                                    )}
+
+                                                    <Typography sx={{ mt: 2 }}>Precio: ${effectivePrice.toFixed(2)}</Typography>
+                                                    {selectedProduct.usaVariantes && selectedVariant && (
+                                                        <Typography sx={{ mt: 1, color: "text.secondary" }}>
+                                                            Variante: {buildVariantLabel(selectedVariant)}
+                                                        </Typography>
+                                                    )}
+                                                    {hasLimitedSelectionStock && (
+                                                        <Typography sx={{ mt: 1, color: "text.secondary" }}>
+                                                            Stock disponible: {effectiveStock}
+                                                        </Typography>
+                                                    )}
                                                     <Box sx={{ display: "flex", alignItems: "center", mt: 2 }}>
                                                         <IconButton onClick={handleDecrement} disabled={quantity <= 1}>
                                                             <Remove />
@@ -486,16 +679,47 @@ const EditOrderModal: React.FC<EditOrderModalProps> = ({ orderId, open, onClose,
                                                         <TextField
                                                             type="number"
                                                             value={quantity}
-                                                            onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                                                            onChange={(e) => {
+                                                                const nextValue = Math.max(1, parseInt(e.target.value, 10) || 1);
+                                                                setQuantity(
+                                                                    clampByStock(
+                                                                        nextValue,
+                                                                        effectiveStock,
+                                                                        effectiveStockIlimitado
+                                                                    )
+                                                                );
+                                                            }}
                                                             sx={{ width: 60, mx: 1 }}
+                                                            inputProps={{
+                                                                min: 1,
+                                                                max: hasLimitedSelectionStock
+                                                                    ? effectiveStock ?? undefined
+                                                                    : undefined,
+                                                            }}
                                                         />
-                                                        <IconButton onClick={handleIncrement}>
+                                                        <IconButton onClick={handleIncrement} disabled={quantityReachedLimit}>
                                                             <Add />
                                                         </IconButton>
                                                     </Box>
                                                     <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
-                                                        <Button onClick={() => setShowAddForm(false)}>Cancelar</Button>
-                                                        <Button variant="contained" onClick={handleAddToCart} disabled={quantity < 1}>
+                                                        <Button
+                                                            onClick={() => {
+                                                                setShowAddForm(false);
+                                                                setSelectedProduct(null);
+                                                                setSelectedVariantId("");
+                                                                setQuantity(1);
+                                                            }}
+                                                        >
+                                                            Cancelar
+                                                        </Button>
+                                                        <Button
+                                                            variant="contained"
+                                                            onClick={handleAddToCart}
+                                                            disabled={
+                                                                quantity < 1 ||
+                                                                (selectedProduct.usaVariantes && !selectedVariant)
+                                                            }
+                                                        >
                                                             Añadir
                                                         </Button>
                                                     </Box>
@@ -505,21 +729,30 @@ const EditOrderModal: React.FC<EditOrderModalProps> = ({ orderId, open, onClose,
                                     )}
 
                                     <List>
-                                        {localCart.map((item) => (
+                                        {localCart.map((item) => {
+                                            const hasLimitedStock =
+                                                item.stockIlimitado === false && typeof item.stock === "number";
+                                            const reachedStockLimit =
+                                                hasLimitedStock && item.cantidad >= (item.stock ?? 0);
+
+                                            return (
                                             <ListItem key={item.cartItemId}>
-                                                <ListItemText primary={item.nombre} secondary={`x${item.cantidad} - $${(item.precio * item.cantidad).toFixed(2)}`} />
+                                                <ListItemText
+                                                    primary={item.nombre}
+                                                    secondary={`x${item.cantidad} - $${(item.precio * item.cantidad).toFixed(2)}${item.variantLabel ? ` • Variante: ${item.variantLabel}` : ""}`}
+                                                />
                                                 <IconButton onClick={() => handleQuantityChange(item.cartItemId, item.cantidad - 1)} disabled={item.cantidad <= 1}>
                                                     <Remove />
                                                 </IconButton>
                                                 <Typography sx={{ mx: 1 }}>{item.cantidad}</Typography>
-                                                <IconButton onClick={() => handleQuantityChange(item.cartItemId, item.cantidad + 1)}>
+                                                <IconButton onClick={() => handleQuantityChange(item.cartItemId, item.cantidad + 1)} disabled={reachedStockLimit}>
                                                     <Add />
                                                 </IconButton>
                                                 <IconButton onClick={() => handleRemoveProduct(item.cartItemId)}>
                                                     <Delete />
                                                 </IconButton>
                                             </ListItem>
-                                        ))}
+                                        )})}
                                     </List>
                                     <Typography>Total: ${getTotalPrice().toFixed(2)}</Typography>
                                 </>

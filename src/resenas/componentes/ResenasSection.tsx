@@ -76,7 +76,7 @@ const ResenasSection: React.FC<ResenasSectionProps> = ({
                       className="object-cover rounded-t-xl transition-transform duration-300 hover:scale-110"
                       sizes="(max-width: 768px) 80vw, 50vw"
                       loading="lazy"
-                      quality={70}
+              
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300" />
                   </div>
@@ -123,7 +123,7 @@ const ResenasSection: React.FC<ResenasSectionProps> = ({
                       className="object-cover rounded-t-xl transition-transform duration-300 hover:scale-110"
                       sizes="(max-width: 1200px) 33vw, 25vw"
                       loading="lazy"
-                      quality={70}
+                
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300" />
                   </div>

@@ -1,15 +1,9 @@
 // /ui/actions/productos/updateProduct.ts
 "use server";
 
-import { v2 as cloudinary } from "cloudinary";
 import prisma from "@/lib/prisma";
 import { Prisma, ProductStatus } from "@prisma/client";
 import { auth } from "@/auth.config";
-
-if (!process.env.CLOUDINARY_URL) {
-  throw new Error("CLOUDINARY_URL no está configurado en las variables de entorno.");
-}
-cloudinary.config(process.env.CLOUDINARY_URL);
 
 interface UpdateProductResult {
   ok: boolean;
@@ -20,143 +14,335 @@ interface UpdateProductResult {
   message?: string;
 }
 
-export async function updateProduct(productId: string, formData: FormData): Promise<UpdateProductResult> {
-  console.log("Iniciando updateProduct con productId:", productId, "y formData:", Object.fromEntries(formData));
-  const session = await auth();
-  if (!session || !session.user) {
-    return { ok: false, message: "No estás autenticado. Por favor, inicia sesión." };
-  }
+interface AttributeInput {
+  nombre: string;
+  valor: string;
+}
 
-  const userSessionId = session.user.id;
+interface VariantOptionInput {
+  nombre: string;
+  valor: string;
+}
+
+interface VariantInput {
+  nombre?: string | null;
+  sku?: string | null;
+  precio?: number | null;
+  stock?: number | null;
+  stockIlimitado?: boolean;
+  imagenUrl?: string | null;
+  isActive?: boolean;
+  options?: VariantOptionInput[];
+}
+
+const cloudinaryUrlPattern = /^https:\/\/res\.cloudinary\.com\//;
+
+const normalizeString = (value: FormDataEntryValue | null): string => {
+  return typeof value === "string" ? value.trim() : "";
+};
+
+const parseBoolean = (value: FormDataEntryValue | null, defaultValue = false): boolean => {
+  if (typeof value !== "string") return defaultValue;
+  const normalized = value.trim().toLowerCase();
+  if (normalized === "true") return true;
+  if (normalized === "false") return false;
+  return defaultValue;
+};
+
+const parseOptionalNumber = (value: FormDataEntryValue | null): number | null => {
+  if (typeof value !== "string") return null;
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+
+  const parsed = Number(trimmed);
+  return Number.isFinite(parsed) ? parsed : null;
+};
+
+const safeJsonParse = <T>(value: FormDataEntryValue | null, fallback: T): T => {
+  if (typeof value !== "string" || !value.trim()) return fallback;
 
   try {
-    // console.log("Extrayendo datos del formData...");
-    const nombre = formData.get("nombre") as string;
-    const precio = parseFloat(formData.get("precio") as string);
-    const descripcion = formData.get("descripcion") as string;
-    const descripcionCorta = formData.get("descripcionCorta") as string;
-    const slug = formData.get("slug") as string;
-    const prioridad = parseInt(formData.get("prioridad") as string);
-    const status = formData.get("status") as ProductStatus;
-    const tags = (formData.get("tags") as string).split(",").map((tag) => tag.trim());
-    const seccionIds = formData.getAll("seccionIds") as string[];
-    const imageUrls = formData.getAll("imageUrls") as string[];
-    const componentes = formData.getAll("componentes") as string[];
-    const usuarioId = formData.get("usuarioId") as string;
-    const categoryId = formData.get("categoriaId") as string;
+    return JSON.parse(value) as T;
+  } catch {
+    return fallback;
+  }
+};
 
-    if (userSessionId !== usuarioId) {
-      return { ok: false, message: "No tienes permiso para actualizar productos para este usuario." };
+export async function updateProduct(
+  productId: string,
+  formData: FormData
+): Promise<UpdateProductResult> {
+  const session = await auth();
+
+  if (!session?.user?.id) {
+    return {
+      ok: false,
+      message: "No estás autenticado. Por favor, inicia sesión.",
+    };
+  }
+
+  try {
+    const userSessionId = session.user.id;
+
+    const nombre = normalizeString(formData.get("nombre"));
+    const precio = parseOptionalNumber(formData.get("precio"));
+    const descripcion = normalizeString(formData.get("descripcion"));
+    const descripcionCortaRaw = normalizeString(formData.get("descripcionCorta"));
+    const descripcionCorta = descripcionCortaRaw || null;
+    const slug = normalizeString(formData.get("slug"));
+    const prioridad = parseOptionalNumber(formData.get("prioridad"));
+    const statusRaw = normalizeString(formData.get("status")) as ProductStatus;
+    const tagsRaw = normalizeString(formData.get("tags"));
+    const tags = tagsRaw
+      ? tagsRaw
+          .split(",")
+          .map((tag) => tag.trim())
+          .filter(Boolean)
+      : [];
+    const seccionIds = formData
+      .getAll("seccionIds")
+      .map((value) => (typeof value === "string" ? value.trim() : ""))
+      .filter(Boolean);
+    const imageUrls = formData
+      .getAll("imageUrls")
+      .map((value) => (typeof value === "string" ? value.trim() : ""))
+      .filter(Boolean);
+    const componentes = formData
+      .getAll("componentes")
+      .map((value) => (typeof value === "string" ? value.trim() : ""))
+      .filter(Boolean);
+    const categoryId = normalizeString(formData.get("categoriaId"));
+
+    const stock = parseOptionalNumber(formData.get("stock"));
+    const stockIlimitado = parseBoolean(formData.get("stockIlimitado"), true);
+    const usaVariantes = parseBoolean(formData.get("usaVariantes"), false);
+
+    const atributos = safeJsonParse<AttributeInput[]>(formData.get("atributos"), [])
+      .map((item) => ({
+        nombre: item?.nombre?.trim?.() || "",
+        valor: item?.valor?.trim?.() || "",
+      }))
+      .filter((item) => item.nombre && item.valor);
+
+    const variantes = safeJsonParse<VariantInput[]>(formData.get("variantes"), [])
+      .map((variant) => ({
+        nombre: variant?.nombre?.trim?.() || null,
+        sku: variant?.sku?.trim?.() || null,
+        precio:
+          typeof variant?.precio === "number" && Number.isFinite(variant.precio)
+            ? variant.precio
+            : null,
+        stock:
+          typeof variant?.stock === "number" && Number.isFinite(variant.stock)
+            ? variant.stock
+            : null,
+        stockIlimitado:
+          typeof variant?.stockIlimitado === "boolean" ? variant.stockIlimitado : true,
+        imagenUrl: variant?.imagenUrl?.trim?.() || null,
+        isActive: typeof variant?.isActive === "boolean" ? variant.isActive : true,
+        options: Array.isArray(variant?.options)
+          ? variant.options
+              .map((option) => ({
+                nombre: option?.nombre?.trim?.() || "",
+                valor: option?.valor?.trim?.() || "",
+              }))
+              .filter((option) => option.nombre && option.valor)
+          : [],
+      }))
+      .filter((variant) => {
+        return (
+          variant.nombre ||
+          variant.sku ||
+          variant.precio !== null ||
+          variant.stock !== null ||
+          variant.imagenUrl ||
+          variant.options.length > 0
+        );
+      });
+
+    if (!productId) {
+      return { ok: false, message: "El ID del producto es obligatorio." };
     }
-    
-    //_ Verificar que el producto corresponda al negocio
 
-    const productNegocioId = await prisma.product.findUnique({
-      where: { id: productId },
-      select: { negocioId: true, },
+    if (!nombre || !descripcion || precio === null || !slug || !categoryId) {
+      return {
+        ok: false,
+        message:
+          "Faltan datos obligatorios: nombre, descripción, precio, slug o categoría.",
+      };
+    }
+
+    if (precio < 0) {
+      return {
+        ok: false,
+        message: "El precio no puede ser negativo.",
+      };
+    }
+
+    if (imageUrls.length === 0) {
+      return {
+        ok: false,
+        message: "Debes mantener al menos una imagen para el producto.",
+      };
+    }
+
+    if (prioridad !== null && !Number.isInteger(prioridad)) {
+      return {
+        ok: false,
+        message: "La prioridad debe ser un número entero válido.",
+      };
+    }
+
+    if (!Object.values(ProductStatus).includes(statusRaw)) {
+      return {
+        ok: false,
+        message: "El estado del producto no es válido.",
+      };
+    }
+
+    if (!imageUrls.every((url) => cloudinaryUrlPattern.test(url))) {
+      return {
+        ok: false,
+        message: "Una o más URLs de imágenes no son válidas.",
+      };
+    }
+
+    const negocio = await prisma.negocio.findUnique({
+      where: { usuarioId: userSessionId },
+      select: { id: true, slug: true },
     });
 
-    const negocioId = await prisma.negocio.findUnique({
-      where: { usuarioId },
+    if (!negocio) {
+      return {
+        ok: false,
+        message: "El usuario no tiene un negocio asociado.",
+      };
+    }
+
+    const existingProduct = await prisma.product.findUnique({
+      where: { id: productId },
+      select: {
+        id: true,
+        negocioId: true,
+      },
+    });
+
+    if (!existingProduct) {
+      return {
+        ok: false,
+        message: "El producto especificado no existe.",
+      };
+    }
+
+    if (existingProduct.negocioId !== negocio.id) {
+      return {
+        ok: false,
+        message: "El producto no pertenece al negocio del usuario.",
+      };
+    }
+
+    const categoryExists = await prisma.category.findUnique({
+      where: { id: categoryId },
       select: { id: true },
-    }); 
+    });
 
-    if(productNegocioId?.negocioId !== negocioId?.id) {
-      return { ok: false, message: "El producto no pertenece al negocio del usuario." };
+    if (!categoryExists) {
+      return {
+        ok: false,
+        message: "La categoría especificada no existe.",
+      };
     }
 
-    // console.log("Datos extraídos:", {
-    //   nombre,
-    //   precio,
-    //   descripcion,
-    //   slug,
-    //   usuarioId,
-    //   categoryId,
-    //   seccionIds,
-    //   imageUrls,
-    //   componentes,
-    // });
+    if (seccionIds.length > 0) {
+      const sectionsExist = await prisma.section.findMany({
+        where: { id: { in: seccionIds } },
+        select: { id: true },
+      });
 
-    // Validations
-    // console.log("Validando datos de entrada...");
-    if (!nombre || !descripcion || !precio || imageUrls.length === 0) {
-      return { ok: false, message: "Faltan datos obligatorios: nombre, descripción, precio o imágenes." };
-    }
-    if (!usuarioId) {
-      return { ok: false, message: "El ID del usuario es obligatorio." };
+      if (sectionsExist.length !== seccionIds.length) {
+        return {
+          ok: false,
+          message: "Una o más secciones especificadas no existen.",
+        };
+      }
     }
 
+    const duplicateSlug = await prisma.product.findFirst({
+      where: {
+        slug,
+        id: { not: productId },
+      },
+      select: { id: true },
+    });
 
-    if (!categoryId) {
-      return { ok: false, message: "El ID de la categoría es obligatorio." };
+    if (duplicateSlug) {
+      return {
+        ok: false,
+        message: "El slug ya está en uso. Por favor, utiliza uno diferente.",
+      };
     }
 
-    if (!Object.values(ProductStatus).includes(status)) {
-      return { ok: false, message: "El estado del producto no es válido." };
+    if (!usaVariantes) {
+      if (!stockIlimitado && (stock === null || stock < 0)) {
+        return {
+          ok: false,
+          message:
+            "Si el producto no tiene stock ilimitado, debes indicar un stock válido.",
+        };
+      }
     }
 
-    
-    // Posibles validacioes, que las haremos antes en la página de productos de usuario, para que el usuario no pueda enviar datos inválidos y verificar que el usuario dueño del producto es el mismo que el usuario que lo está actualizando.
+    if (usaVariantes) {
+      if (variantes.length === 0) {
+        return {
+          ok: false,
+          message: "Debes agregar al menos una variante válida.",
+        };
+      }
 
-    // console.log("Validando categoría...");
-    // const categoryExists = await prisma.category.findUnique({
-    //   where: { id: categoryId },
-    // });
-    // if (!categoryExists) {
-    //   return { ok: false, message: "La categoría especificada no existe." };
-    // }
+      for (const variant of variantes) {
+        if (!variant.stockIlimitado && (variant.stock === null || variant.stock < 0)) {
+          return {
+            ok: false,
+            message:
+              "Todas las variantes con stock limitado deben tener un stock válido.",
+          };
+        }
 
-    // console.log("Validando producto existente...");
-    // const productExists = await prisma.product.findUnique({
-    //   where: { id: productId },
-    // });
-    // if (!productExists) {
-    //   return { ok: false, message: "El producto especificado no existe." };
-    // }
+        if (variant.imagenUrl && !cloudinaryUrlPattern.test(variant.imagenUrl)) {
+          return {
+            ok: false,
+            message: "Una o más imágenes de variantes no tienen una URL válida.",
+          };
+        }
+      }
+    }
 
-    // console.log("Validando slug...");
-    // const existingProduct = await prisma.product.findFirst({
-    //   where: {
-    //     slug,
-    //     id: { not: productId },
-    //   },
-    // });
-    // if (existingProduct) {
-    //   return { ok: false, message: "El slug ya está en uso. Por favor, utiliza un slug diferente." };
-    // }
-
-    // console.log("Validando URLs de imágenes...");
-    // const cloudinaryUrlPattern = /^https:\/\/res\.cloudinary\.com\//;
-    // if (!imageUrls.every((url) => cloudinaryUrlPattern.test(url))) {
-    //   return { ok: false, message: "Una o más URLs de imágenes no son válidas." };
-    // }
-
-    // console.log("Actualizando producto en transacción...");
     const updatedProduct = await prisma.$transaction(async (tx) => {
-      // Update product
       const product = await tx.product.update({
         where: { id: productId },
         data: {
           nombre,
           precio,
           descripcion,
-          descripcionCorta,
+          descripcionCorta: descripcionCorta || undefined,
           slug,
           prioridad,
-          status,
+          status: statusRaw,
           tags,
           componentes,
-          negocioId: negocioId?.id, // Use the negocioId associated with the user
+          negocioId: negocio.id,
           categoryId,
+          stock: !usaVariantes && !stockIlimitado ? stock : null,
+          stockIlimitado: usaVariantes ? true : stockIlimitado,
+          usaVariantes,
         },
       });
 
-      // Delete existing images
       await tx.image.deleteMany({
         where: { productId },
       });
 
-      // Create new images
       await tx.image.createMany({
         data: imageUrls.map((url) => ({
           url,
@@ -164,56 +350,105 @@ export async function updateProduct(productId: string, formData: FormData): Prom
         })),
       });
 
-      // Validate and update sections
-      // console.log("Validando secciones...");
+      await tx.productSection.deleteMany({
+        where: { productId },
+      });
+
       if (seccionIds.length > 0) {
-        const sectionsExist = await tx.section.findMany({
-          where: { id: { in: seccionIds } },
-        });
-        // console.log("Secciones encontradas:", sectionsExist);
-        if (sectionsExist.length !== seccionIds.length) {
-          throw new Error("Una o más secciones especificadas no existen.");
-        }
-
-        // Delete existing product-section relations
-        await tx.productSection.deleteMany({
-          where: { productId },
-        });
-
-        // Create new product-section relations
-        // console.log("Creando relaciones con secciones...");
         await tx.productSection.createMany({
           data: seccionIds.map((sectionId) => ({
             productId,
             sectionId,
           })),
         });
-      } else {
-        // If no sections are provided, remove all existing relations
-        await tx.productSection.deleteMany({
-          where: { productId },
+      }
+
+      await tx.productAttribute.deleteMany({
+        where: { productId },
+      });
+
+      if (atributos.length > 0) {
+        await tx.productAttribute.createMany({
+          data: atributos.map((atributo, index) => ({
+            productId,
+            nombre: atributo.nombre,
+            valor: atributo.valor,
+            orden: index,
+          })),
         });
+      }
+
+      await tx.productVariant.deleteMany({
+        where: { productId },
+      });
+
+      if (usaVariantes && variantes.length > 0) {
+        for (let variantIndex = 0; variantIndex < variantes.length; variantIndex++) {
+          const variant = variantes[variantIndex];
+
+          const createdVariant = await tx.productVariant.create({
+            data: {
+              productId,
+              nombre: variant.nombre || undefined,
+              sku: variant.sku || undefined,
+              precio: variant.precio,
+              stock: variant.stockIlimitado ? null : variant.stock,
+              stockIlimitado: variant.stockIlimitado ?? true,
+              imagenUrl: variant.imagenUrl || undefined,
+              isActive: variant.isActive ?? true,
+              orden: variantIndex,
+            },
+          });
+
+          if (variant.options.length > 0) {
+            await tx.productVariantOption.createMany({
+              data: variant.options.map((option, optionIndex) => ({
+                variantId: createdVariant.id,
+                nombre: option.nombre,
+                valor: option.valor,
+                orden: optionIndex,
+              })),
+            });
+          }
+        }
       }
 
       return product;
     });
 
-    // console.log("Producto actualizado exitosamente:", updatedProduct);
     return {
       ok: true,
-      product: { id: updatedProduct.id, slug: updatedProduct.slug },
+      product: {
+        id: updatedProduct.id,
+        slug: updatedProduct.slug,
+      },
     };
   } catch (error: unknown) {
     console.error("Error al actualizar producto:", error);
+
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       if (error.code === "P2002") {
-        return { ok: false, message: "El slug ya está en uso." };
+        return {
+          ok: false,
+          message: "El slug ya está en uso.",
+        };
       }
+
       if (error.code === "P2003") {
-        return { ok: false, message: "Error de integridad: usuario, categoría o secciones no válidos." };
+        return {
+          ok: false,
+          message:
+            "Error de integridad: categoría, secciones o relaciones no válidas.",
+        };
       }
     }
-    const errorMessage = error instanceof Error ? error.message : "Error desconocido en el servidor";
-    return { ok: false, message: `Error inesperado al actualizar el producto: ${errorMessage}` };
+
+    const errorMessage =
+      error instanceof Error ? error.message : "Error desconocido en el servidor";
+
+    return {
+      ok: false,
+      message: `Error inesperado al actualizar el producto: ${errorMessage}`,
+    };
   }
 }

@@ -85,7 +85,10 @@ const ListOrders: React.FC<ListOrdersProps> = ({ initialOrders, total }) => {
     // Función para generar descripción concatenada
     const getDescription = (items: Orders["items"]) => {
         return items
-            .map((item) => `${item.quantity} ${item.description}`)
+            .map(
+                (item) =>
+                    `${item.quantity} ${item.description}${item.variantLabel ? ` (${item.variantLabel})` : ""}`
+            )
             .join(", ") || "Sin items";
     };
 

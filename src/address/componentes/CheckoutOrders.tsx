@@ -143,6 +143,8 @@ const CheckoutOrder: React.FC<CheckoutOrderProps> = ({ slug }) => {
         slug,
         items: cartItems.map((item) => ({
           productId: item.id,
+          productVariantId: item.productVariantId ?? null,
+          variantLabel: item.variantLabel ?? null,
           quantity: item.cantidad,
           price: item.precio,
           subtotal: item.precio * item.cantidad,
@@ -225,10 +227,10 @@ const CheckoutOrder: React.FC<CheckoutOrderProps> = ({ slug }) => {
         <>
           <List disablePadding>
             {cartItems.map((item) => (
-              <ListItem key={item.id} sx={{ py: 1, px: 0 }}>
+              <ListItem key={item.cartItemId} sx={{ py: 1, px: 0 }}>
                 <ListItemText
                   primary={`${item.nombre} x ${item.cantidad}`}
-                  secondary={`${formatCurrency(item.precio)} cada uno`}
+                  secondary={`${formatCurrency(item.precio)} cada uno${item.variantLabel ? ` • Variante: ${item.variantLabel}` : ""}`}
                   primaryTypographyProps={{ variant: "body1", fontWeight: 500 }}
                   secondaryTypographyProps={{
                     variant: "body2",

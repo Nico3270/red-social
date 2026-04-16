@@ -4,6 +4,7 @@ const withBundleAnalyzer = require("@next/bundle-analyzer")({
 
 const nextConfig = withBundleAnalyzer({
   images: {
+    qualities: [80],
     remotePatterns: [
       {
         protocol: "https",
@@ -23,11 +24,10 @@ const nextConfig = withBundleAnalyzer({
       },
     ],
   },
-  
-  
-  reactStrictMode: true, // ✅ Mantiene el modo estricto en desarrollo
-  productionBrowserSourceMaps: false, // ✅ No genera source maps en producción
-  compress: true, // ✅ Activa compresión gzip/brotli para archivos estáticos
+
+  reactStrictMode: true,
+  productionBrowserSourceMaps: false,
+  compress: true,
 });
 
 module.exports = nextConfig;

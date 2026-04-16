@@ -22,6 +22,26 @@ export interface BusinessCardData {
 }
 
 
+export interface ProductVariantOptionRedSocial {
+  id: string;
+  nombre: string;
+  valor: string;
+  orden: number;
+}
+
+export interface ProductVariantRedSocial {
+  id: string;
+  nombre?: string | null;
+  sku?: string | null;
+  precio?: number | null;
+  stock?: number | null;
+  stockIlimitado?: boolean;
+  isActive: boolean;
+  imagenUrl?: string | null;
+  orden: number;
+  options: ProductVariantOptionRedSocial[];
+}
+
 // Interface para ProductCard
 export interface ProductRedSocial {
   id: string;
@@ -44,6 +64,10 @@ export interface ProductRedSocial {
   negocioFotoPerfil: string;
   ciudad?: string; // De negocio
   departamento?: string;
+  stock?: number | null;
+  stockIlimitado?: boolean;
+  usaVariantes?: boolean;
+  variantes?: ProductVariantRedSocial[];
 }
 // Interface para publicaciones en componentes como ShowTestimonioPublicacion y SocialMediaPublicacion
 // Solo tenemos publicaciones del tipo TESTIMONIO que se muestran en ShowTestimonioPublicacion

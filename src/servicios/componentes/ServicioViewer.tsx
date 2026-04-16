@@ -175,6 +175,7 @@ const ServicioViewer: React.FC<Props> = ({ servicio, version = 1 }) => {
                   src={negocioFotoPerfil}
                   alt={`Perfil de ${nombreNegocio}`}
                   fill
+                  sizes="48px"
                   className="object-cover"
                 />
               </div>
@@ -315,6 +316,7 @@ const ServicioViewer: React.FC<Props> = ({ servicio, version = 1 }) => {
                           src={negocioFotoPerfil}
                           alt={`Perfil de ${nombreNegocio}`}
                           fill
+                          sizes="48px"
                           className="object-cover"
                         />
                       </div>

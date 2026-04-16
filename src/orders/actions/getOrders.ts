@@ -13,6 +13,8 @@ export interface Orders {
     subtotal: number; // Convertido a number
     orderId: string;
     productId: string | null;
+    productVariantId: string | null;
+    variantLabel: string | null;
   }[];
   description: string | null; // Ajustado para permitir null
   status: OrderState;
@@ -78,6 +80,8 @@ export const getOrdersByNegocio = async (
         subtotal: Number(item.subtotal),
         orderId: item.orderId,
         productId: item.productId,
+        productVariantId: item.productVariantId,
+        variantLabel: item.variantLabel,
       })),
     }));
 
