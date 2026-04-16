@@ -13,6 +13,8 @@ import PublicacionesSection from "./PublicacionesSection";
 import ProductosSection from "./ProductosSection";
 import ServiciosSection from "./ServiciosSection";
 import ResenasSection from "./ResenasSection";
+import { BusinessGuideSection } from "./BusinessGuideSection";
+import type { BusinessGuideResolvedPreset } from "@/perfil/guide/business-guide.types";
 
 interface LandingPageProps {
   informacionNegocio: InformacionInicialNegocio;
@@ -22,15 +24,18 @@ interface LandingPageProps {
   servicios: ServicioData[];
   resumenPerfil: ResumenPerfil;
   onSelectTab: (tab: "Publicaciones" | "Productos" | "Negocio" | "Reseñas") => void;
+  onExploreProducts: (selection: BusinessGuideResolvedPreset) => void;
 }
 
 const LandingPage: React.FC<LandingPageProps> = ({
+  informacionNegocio,
   productos = [],
   publicaciones = [],
   resenas = [],
   servicios = [],
   resumenPerfil,
   onSelectTab,
+  onExploreProducts,
 }) => {
   // Filtrar publicaciones para excluir reseñas (TESTIMONIO con producto)
   const publicacionesFiltradas = useMemo(() => {
@@ -107,6 +112,12 @@ const LandingPage: React.FC<LandingPageProps> = ({
       transition={{ duration: 0.5 }}
       className="w-full p-4 sm:p-6 space-y-6" // Apilado vertical con espaciado
     >
+      <BusinessGuideSection
+        business={informacionNegocio}
+        products={productos}
+        onExploreProducts={onExploreProducts}
+      />
+
       {/* Secciones apiladas verticalmente, full width */}
       {sections.map((section, index) => (
         <motion.div

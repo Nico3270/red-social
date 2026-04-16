@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useMemo, useRef } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import {
   FaMapMarkerAlt,
   FaLink,
@@ -37,6 +37,10 @@ import { FollowButton } from "@/feed/componentes/FollowButton";
 import { EnhancedPublicacion } from "@/publicaciones/interfaces/enhancedPublicacion.interface";
 import { ResumenPerfil } from "@/perfil/interfaces/resumenPerfil.interface";
 import LandingPage from "@/perfil/componentes/ PerfilLanding";
+import type {
+  BusinessGuideResolvedPreset,
+  ProductGuideExploreContext,
+} from "@/perfil/guide/business-guide.types";
 
 
 interface TabErrorBoundaryState {
@@ -121,14 +125,6 @@ interface Props {
   servicios?: ServicioData[]; // Añadido
 }
 
-function pickRandom<T>(arr: T[], count: number): T[] {
-  // Evita errores si el array es vacío o menor que count
-  if (!arr || arr.length === 0) return [];
-  const shuffled = [...arr].sort(() => Math.random() - 0.5);
-  return shuffled.slice(0, count);
-}
-
-
 export default function PerfilUsuarioHeader({
   productos = [],
   publicaciones = [],
@@ -142,20 +138,19 @@ export default function PerfilUsuarioHeader({
   const [servicios, setServicios] = useState<ServicioData[]>([]);
   const [loadingServicios, setLoadingServicios] = useState(false);
   const [isDescriptionModalOpen, setIsDescriptionModalOpen] = useState(false);
+  const [productGuideContext, setProductGuideContext] = useState<ProductGuideExploreContext | null>(null);
   const { data: session } = useSession();
   const isNegocio = session?.user.negocioSlug === informacionNegocio?.slugNegocio;
-  const landingTeasersRef = useRef<ProductRedSocial[]>([]);
-
-  if (!landingTeasersRef.current.length && productos?.length) {
-    landingTeasersRef.current = pickRandom(productos, Math.min(4, productos.length));
-  }
-
-  const landingTeasers = landingTeasersRef.current;
 
   // Filtrar reseñas de publicaciones
   const resenas = useMemo(() => {
     return publicaciones.filter(pub => pub.tipo === 'TESTIMONIO' && pub.producto);
   }, [publicaciones]);
+
+  const handleExploreGuideProducts = (selection: BusinessGuideResolvedPreset) => {
+    setProductGuideContext(selection.exploreContext);
+    setActiveTab("Productos");
+  };
 
   // Manejo de escape en modal
   useEffect(() => {
@@ -235,6 +230,71 @@ export default function PerfilUsuarioHeader({
       label: "Google Maps",
     },
   ];
+
+  const visibleRedes = redes.filter(({ url }) => url?.trim() !== "");
+
+  const tabStyles: Record<
+    "Inicio" | "Publicaciones" | "Productos" | "Negocio" | "Reseñas",
+    {
+      active: string;
+      inactive: string;
+      iconActive: string;
+      iconInactive: string;
+      underlineActive: string;
+      underlineInactive: string;
+    }
+  > = {
+    Inicio: {
+      active:
+        "scale-[1.02] border-slate-900 bg-slate-900 text-white shadow-[0_12px_26px_rgba(15,23,42,0.18)]",
+      inactive:
+        "border-slate-200 bg-white text-slate-600 shadow-[0_4px_14px_rgba(15,23,42,0.06)] hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900",
+      iconActive: "text-amber-200",
+      iconInactive: "text-slate-400 group-hover:text-slate-700",
+      underlineActive: "bg-white/70",
+      underlineInactive: "bg-slate-200/90 group-hover:bg-slate-300",
+    },
+    Publicaciones: {
+      active:
+        "scale-[1.02] border-sky-300 bg-[linear-gradient(135deg,rgba(239,246,255,0.98),rgba(219,234,254,0.98))] text-sky-900 shadow-[0_12px_26px_rgba(59,130,246,0.16)]",
+      inactive:
+        "border-sky-100 bg-white text-slate-600 shadow-[0_4px_14px_rgba(15,23,42,0.06)] hover:border-sky-200 hover:bg-sky-50/70 hover:text-sky-900",
+      iconActive: "text-sky-600",
+      iconInactive: "text-sky-400 group-hover:text-sky-600",
+      underlineActive: "bg-sky-500/80",
+      underlineInactive: "bg-sky-200/90 group-hover:bg-sky-300",
+    },
+    Productos: {
+      active:
+        "scale-[1.02] border-amber-300 bg-[linear-gradient(135deg,rgba(255,251,235,0.98),rgba(253,230,138,0.96))] text-amber-950 shadow-[0_12px_26px_rgba(245,158,11,0.18)]",
+      inactive:
+        "border-amber-100 bg-white text-slate-600 shadow-[0_4px_14px_rgba(15,23,42,0.06)] hover:border-amber-200 hover:bg-amber-50/80 hover:text-amber-900",
+      iconActive: "text-amber-600",
+      iconInactive: "text-amber-400 group-hover:text-amber-600",
+      underlineActive: "bg-amber-500/80",
+      underlineInactive: "bg-amber-200/90 group-hover:bg-amber-300",
+    },
+    Negocio: {
+      active:
+        "scale-[1.02] border-emerald-300 bg-[linear-gradient(135deg,rgba(236,253,245,0.98),rgba(209,250,229,0.98))] text-emerald-950 shadow-[0_12px_26px_rgba(16,185,129,0.16)]",
+      inactive:
+        "border-emerald-100 bg-white text-slate-600 shadow-[0_4px_14px_rgba(15,23,42,0.06)] hover:border-emerald-200 hover:bg-emerald-50/80 hover:text-emerald-900",
+      iconActive: "text-emerald-600",
+      iconInactive: "text-emerald-400 group-hover:text-emerald-600",
+      underlineActive: "bg-emerald-500/80",
+      underlineInactive: "bg-emerald-200/90 group-hover:bg-emerald-300",
+    },
+    Reseñas: {
+      active:
+        "scale-[1.02] border-violet-300 bg-[linear-gradient(135deg,rgba(245,243,255,0.98),rgba(237,233,254,0.98))] text-violet-950 shadow-[0_12px_26px_rgba(124,58,237,0.16)]",
+      inactive:
+        "border-violet-100 bg-white text-slate-600 shadow-[0_4px_14px_rgba(15,23,42,0.06)] hover:border-violet-200 hover:bg-violet-50/80 hover:text-violet-900",
+      iconActive: "text-violet-600",
+      iconInactive: "text-violet-400 group-hover:text-violet-600",
+      underlineActive: "bg-violet-500/80",
+      underlineInactive: "bg-violet-200/90 group-hover:bg-violet-300",
+    },
+  };
 
   // Pestañas dinámicas basadas en resumenPerfil
   const tabs = [
@@ -389,26 +449,26 @@ export default function PerfilUsuarioHeader({
           </div>
 
           {/* Right Column: Stats, Follow Button, and Social Links */}
-          <div className="flex sm:mt-8 flex-col items-center gap-6">
-            <div className="flex items-center gap-4">
+          <div className="flex w-full flex-col items-stretch gap-4 sm:mt-8 sm:w-auto sm:items-center sm:gap-6">
+            <div className="flex w-full items-center justify-start gap-2 overflow-x-auto pb-1 sm:w-auto sm:justify-center sm:gap-3">
               <FollowButton
                 followedId={informacionNegocio?.negocioId || ""}
                 type="USER_TO_BUSINESS"
-                className="mt-2"
+                className="mt-0 shrink-0"
               />
 
               {/* Botón de Solicitar Reserva */}
               {informacionNegocio?.configReservation && (
                 <Link
                   href={`/reservas/${informacionNegocio.slugNegocio}`}
-                  className="w-full sm:w-auto flex justify-center"
+                  className="flex shrink-0 justify-center"
                 >
                   <Button
                     variant="outline"
-                    className="text-sm sm:text-base px-4 py-2 bg-green-600 text-white hover:bg-green-700 transition-colors duration-200 shadow-sm font-semibold rounded-md flex items-center gap-2 focus:ring-2 focus:ring-green-500 focus:outline-none"
+                    className="flex shrink-0 items-center gap-1.5 rounded-lg bg-green-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition-colors duration-200 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 sm:text-sm"
                     aria-label="Solicitar reserva"
                   >
-                    <FaCalendarCheck className="text-xl" />
+                    <FaCalendarCheck className="text-base" />
                     Solicitar Reserva
                   </Button>
                 </Link>
@@ -418,14 +478,14 @@ export default function PerfilUsuarioHeader({
               {informacionNegocio?.configEncuestas && (
                 <Link
                   href={`/encuestas/${informacionNegocio.slugNegocio}`}
-                  className="w-full sm:w-auto flex justify-center"
+                  className="flex shrink-0 justify-center"
                 >
                   <Button
                     variant="outline"
-                    className="text-sm sm:text-base px-4 py-2 bg-gray-900 text-white hover:bg-black transition-colors duration-200 shadow-sm font-semibold rounded-md flex items-center gap-2 focus:ring-2 focus:ring-gray-700 focus:outline-none"
+                    className="flex shrink-0 items-center gap-1.5 rounded-lg bg-gray-900 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition-colors duration-200 hover:bg-black focus:outline-none focus:ring-2 focus:ring-gray-700 sm:text-sm"
                     aria-label="Deja tu opinión"
                   >
-                    <FaRegCommentDots className="text-lg" />
+                    <FaRegCommentDots className="text-base" />
                     Evalúanos
                   </Button>
                 </Link>
@@ -433,77 +493,79 @@ export default function PerfilUsuarioHeader({
             </div>
 
             {/* Social Media Links */}
-            <div className="flex justify-around px-2 sm:gap-8 gap-6 pt-2">
-              {redes.map(
-                ({ icon, url, color, label }, index) =>
-                  url?.trim() !== "" && (
+            {visibleRedes.length > 0 && (
+              <div className="flex w-full items-start justify-between gap-1.5 overflow-x-auto px-0.5 pt-0 pb-1 sm:w-auto sm:justify-center sm:gap-4 sm:px-1">
+                {visibleRedes.map(
+                  ({ icon, url, color, label }, index) => (
                     <Link
                       key={index}
                       href={url || ""}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex flex-col items-center group"
+                      className="group flex min-w-0 flex-1 flex-col items-center text-center sm:w-auto sm:flex-none"
                       aria-label={label}
                     >
                       <div
                         className={clsx(
-                          "text-3xl transition-transform duration-200 group-hover:scale-110",
+                          "flex h-10 w-10 items-center justify-center rounded-2xl border border-slate-200 bg-white text-[1.5rem] shadow-[0_6px_18px_rgba(15,23,42,0.08)] transition-all duration-200 group-hover:-translate-y-0.5 group-hover:scale-[1.03] group-hover:border-slate-300 group-hover:shadow-[0_10px_24px_rgba(15,23,42,0.12)] sm:h-11 sm:w-11 sm:text-[1.65rem]",
                           color
                         )}
                       >
                         {icon}
                       </div>
-                      <span className="mt-1 text-xs text-gray-500 group-hover:text-gray-700 transition-colors">
+                      <span className="mt-1.5 max-w-full text-[10px] leading-3.5 text-gray-500 transition-colors group-hover:text-gray-700 sm:text-xs sm:leading-4">
                         {label}
                       </span>
                     </Link>
                   )
-              )}
-            </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Divider */}
-        <div className="border-b border-gray-200 my-6"></div>
+        {/* Divider
+        <div className="my-4 border-b border-gray-200 sm:my-6"></div> */}
 
         {/* Tabs */}
-        <div className="flex justify-center sm:justify-between gap-2 sm:gap-3 px-3 sm:px-4 py-2 border-b border-gray-200 overflow-x-auto whitespace-nowrap bg-white/80 backdrop-blur-md rounded-2xl shadow-sm">
+        <div className="mt-1 flex justify-start gap-2 overflow-x-auto whitespace-nowrap rounded-[22px] border border-slate-200/90 bg-[linear-gradient(135deg,rgba(248,250,252,0.96),rgba(255,255,255,0.98),rgba(248,250,252,0.96))] px-1.5 py-1.5 shadow-[0_12px_30px_rgba(15,23,42,0.08)] backdrop-blur-md sm:justify-between sm:gap-3 sm:px-3 sm:py-2">
           {tabs.map((tab) => {
             const isActive = activeTab === tab.name;
+            const theme = tabStyles[tab.name];
             const icon =
               tab.name === "Inicio" ? (
                 <FaHome
                   className={clsx(
                     "text-lg",
-                    isActive ? "text-white" : "text-gray-400 group-hover:text-gray-700"
+                    isActive ? theme.iconActive : theme.iconInactive
                   )}
                 />
               ) : tab.name === "Publicaciones" ? (
                 <FaRegNewspaper
                   className={clsx(
                     "text-lg",
-                    isActive ? "text-white" : "text-gray-400 group-hover:text-gray-700"
+                    isActive ? theme.iconActive : theme.iconInactive
                   )}
                 />
               ) : tab.name === "Productos" ? (
                 <FaStore
                   className={clsx(
                     "text-lg",
-                    isActive ? "text-white" : "text-gray-400 group-hover:text-gray-700"
+                    isActive ? theme.iconActive : theme.iconInactive
                   )}
                 />
               ) : tab.name === "Negocio" ? (
                 <FaBriefcase
                   className={clsx(
                     "text-lg",
-                    isActive ? "text-white" : "text-gray-400 group-hover:text-gray-700"
+                    isActive ? theme.iconActive : theme.iconInactive
                   )}
                 />
               ) : (
                 <FaStar
                   className={clsx(
                     "text-lg",
-                    isActive ? "text-white" : "text-gray-400 group-hover:text-gray-700"
+                    isActive ? theme.iconActive : theme.iconInactive
                   )}
                 />
               );
@@ -513,10 +575,10 @@ export default function PerfilUsuarioHeader({
                 key={tab.name}
                 onClick={() => setActiveTab(tab.name)}
                 className={clsx(
-                  "relative group flex items-center gap-2 py-2 px-5 sm:px-7 font-semibold text-sm sm:text-base rounded-xl transition-all duration-300 min-w-max focus:outline-none",
+                  "relative group flex min-w-max shrink-0 items-center gap-2 rounded-[16px] border px-4 py-2 text-sm font-semibold transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 focus-visible:ring-offset-2 sm:px-6 sm:text-base",
                   isActive
-                    ? "text-white bg-gray-800 shadow-md scale-105" // 👈 Color base aquí
-                    : "text-gray-700 hover:text-gray-900 hover:bg-gray-100"
+                    ? theme.active
+                    : theme.inactive
                 )}
                 aria-current={isActive ? "page" : undefined}
                 aria-expanded={isActive}
@@ -526,8 +588,10 @@ export default function PerfilUsuarioHeader({
 
                 <span
                   className={clsx(
-                    "absolute bottom-0 left-1/2 -translate-x-1/2 h-[3px] rounded-full transition-all duration-300",
-                    isActive ? "w-3/4 bg-white/70" : "w-0 bg-transparent group-hover:w-1/2 group-hover:bg-gray-300"
+                    "absolute bottom-1 left-1/2 h-[3px] -translate-x-1/2 rounded-full transition-all duration-300",
+                    isActive
+                      ? `w-2/3 ${theme.underlineActive}`
+                      : `w-8 ${theme.underlineInactive} group-hover:w-10`
                   )}
                 ></span>
               </button>
@@ -537,16 +601,17 @@ export default function PerfilUsuarioHeader({
 
 
         {/* Tab Content */}
-        <div className="mt-6 transition-opacity duration-300 ease-in-out space-y-6">
+        <div className="mt-4 space-y-6 transition-opacity duration-300 ease-in-out sm:mt-6">
           {activeTab === "Inicio" && (
             <LandingPage
               informacionNegocio={informacionNegocio!}
-              productos={landingTeasers || []}  // Fallback para tipos opcionales
+              productos={productos}
               publicaciones={publicaciones || []} // Fallback para tipos opcionales
               resenas={resenas}
               servicios={servicios}
               resumenPerfil={resumenPerfil!}
               onSelectTab={setActiveTab}
+              onExploreProducts={handleExploreGuideProducts}
             />
           )}
           {activeTab === "Publicaciones" && (
@@ -606,6 +671,7 @@ export default function PerfilUsuarioHeader({
                 <ProductGridWithSectionFilter
                   initialProducts={productos}
                   slug={informacionNegocio?.slugNegocio || ""}
+                  guideContext={productGuideContext}
                 />
               )}
             </div>

@@ -6,6 +6,7 @@ import Image from "next/image";
 import { FaBriefcase } from "react-icons/fa";
 import { ServicioData } from "@/servicios/interfaces/servicios.interface";
 import Divider from "@/ui/components/divider/Divider";
+import { getDeterministicFloatingCardStyle } from "./landing-section.utils";
 
 interface ServiciosSectionProps {
   servicios: ServicioData[];
@@ -38,13 +39,10 @@ const ServiciosSection: React.FC<ServiciosSectionProps> = ({
               repeat: Infinity,
               repeatType: "mirror",
             }}
-            style={{
-              top: `${Math.random() * 70}%`,
-              left: `${Math.random() * 70}%`,
-              width: `${180 + Math.random() * 140}px`,
-              height: `${150 + Math.random() * 160}px`,
-              rotate: `${Math.random() * 20 - 10}deg`,
-            }}
+            style={getDeterministicFloatingCardStyle(
+              s.id || `${s.titulo}-${i}`,
+              i
+            )}
           >
             {s.multimedia[0]?.url && (
               <Image

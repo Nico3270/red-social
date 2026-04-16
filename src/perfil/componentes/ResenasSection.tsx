@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { FaStar } from "react-icons/fa";
 import { EnhancedPublicacion } from "@/publicaciones/interfaces/enhancedPublicacion.interface";
+import { getDeterministicFloatingCardStyle } from "./landing-section.utils";
 
 interface ResenasSectionProps {
   resenas: EnhancedPublicacion[];
@@ -48,13 +49,7 @@ const ResenasSection: React.FC<ResenasSectionProps> = ({
                 repeat: Infinity,
                 repeatType: "mirror",
               }}
-              style={{
-                top: `${Math.random() * 70}%`,
-                left: `${Math.random() * 70}%`,
-                width: `${180 + Math.random() * 160}px`,
-                height: `${140 + Math.random() * 180}px`,
-                rotate: `${Math.random() * 20 - 10}deg`,
-              }}
+              style={getDeterministicFloatingCardStyle(r.id, i)}
             >
               <Image
                 src={r.multimedia[0]?.url || "/placeholder-resena.jpg"}

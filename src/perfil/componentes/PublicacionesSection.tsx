@@ -6,6 +6,7 @@ import { FaRegNewspaper, FaImages, FaPlayCircle, FaQuoteRight } from "react-icon
 import Image from "next/image";
 import { EnhancedPublicacion } from "@/publicaciones/interfaces/enhancedPublicacion.interface";
 import Divider from "@/ui/components/divider/Divider";
+import { getDeterministicFloatingCardStyle } from "./landing-section.utils";
 
 interface PublicacionesSectionProps {
   publicaciones: EnhancedPublicacion[];
@@ -58,13 +59,7 @@ const PublicacionesSection: React.FC<PublicacionesSectionProps> = ({
                 repeat: Infinity,
                 repeatType: "mirror",
               }}
-              style={{
-                top: `${Math.random() * 70}%`,
-                left: `${Math.random() * 70}%`,
-                width: `${180 + Math.random() * 160}px`,
-                height: `${140 + Math.random() * 180}px`,
-                rotate: `${Math.random() * 20 - 10}deg`,
-              }}
+              style={getDeterministicFloatingCardStyle(p.id, i)}
             >
               {media?.url && (
                 <Image

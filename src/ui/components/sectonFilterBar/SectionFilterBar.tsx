@@ -7,23 +7,38 @@ import { initialData } from "@/seed/seed";
 import { ProductGridProduct } from "../productos/ProductGridProduct";
 import useSWRInfinite from "swr/infinite";
 import Image from "next/image";
+import type { ProductGuideExploreContext } from "@/perfil/guide/business-guide.types";
 
 interface Props {
   initialProducts: ProductRedSocial[];
   slug: string;
   take?: number;
+  guideContext?: ProductGuideExploreContext | null;
 }
 
 interface ProductsPage {
   products: ProductRedSocial[];
 }
 
-export const ProductGridWithSectionFilter = ({ initialProducts, slug, take = 10 }: Props) => {
+export const ProductGridWithSectionFilter = ({
+  initialProducts,
+  slug,
+  take = 10,
+  guideContext = null,
+}: Props) => {
   const [selectedSectionId, setSelectedSectionId] = useState<string | null>(null);
+  const [activeGuideContext, setActiveGuideContext] = useState<ProductGuideExploreContext | null>(guideContext);
   const observerRef = useRef<HTMLDivElement>(null);
   const hasReachedEndRef = useRef(false); // Para el freno en getKey
   const [hasReachedEndLocal, setHasReachedEndLocal] = useState(false); // Para la UI
   const observer = useRef<IntersectionObserver | null>(null);
+
+  useEffect(() => {
+    if (!guideContext) return;
+
+    setActiveGuideContext(guideContext);
+    setSelectedSectionId(guideContext.preferredSectionId ?? null);
+  }, [guideContext]);
 
   // Mejorar getKey con freno definitivo
   const getKey = (pageIndex: number, previousPageData: ProductsPage | null) => {
@@ -148,6 +163,35 @@ export const ProductGridWithSectionFilter = ({ initialProducts, slug, take = 10 
   return (
     <div className="w-full sp:mb-0 mb-20">
       <style>{styles}</style>
+      {activeGuideContext && (
+        <div className="mb-3 rounded-2xl border border-amber-200/80 bg-amber-50/80 px-4 py-3 shadow-sm">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber-700">
+                Llegaste desde la guía
+              </p>
+              <p className="mt-1 text-sm font-semibold text-slate-900">
+                {activeGuideContext.title}
+              </p>
+              <p className="mt-1 text-sm text-slate-600">
+                {activeGuideContext.summary}
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                setActiveGuideContext(null);
+                setSelectedSectionId(null);
+              }}
+              className="inline-flex items-center justify-center rounded-full border border-amber-200 bg-white px-4 py-2 text-sm font-semibold text-amber-800 transition hover:border-amber-300 hover:bg-amber-100"
+            >
+              Ver todo el catálogo
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="flex overflow-x-auto justify-around gap-4 p-2 bg-white shadow rounded-xl mb-2">
         {seccionesConProductos.map((sec) => {
           const isSelected = selectedSectionId === sec.id;

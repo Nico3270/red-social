@@ -1,9 +1,13 @@
 "use client";
-import React from "react";
+import React, { useMemo } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { ProductRedSocial } from "@/interfaces/productRedSocial.interface";
 import Divider from "@/ui/components/divider/Divider";
+import {
+  getDeterministicFloatingCardStyle,
+  pickStablePreviewItems,
+} from "./landing-section.utils";
 
 interface ProductosSectionProps {
   productos: ProductRedSocial[];
@@ -14,17 +18,31 @@ const ProductosSection: React.FC<ProductosSectionProps> = ({
   productos,
   onSelectTab,
 }) => {
-  // Escoge 4 productos aleatorios pero asegúrate de tener al menos 4 visibles
-  const teasers =
-    productos.length >= 4
-      ? [...productos].sort(() => 0.5 - Math.random()).slice(0, 4)
-      : productos;
+  const teasers = useMemo(
+    () =>
+      pickStablePreviewItems(
+        productos,
+        4,
+        (producto, index) => producto.id || producto.slug || `${producto.nombre}-${index}`
+      ),
+    [productos]
+  );
+
+  const backgroundProducts = useMemo(
+    () =>
+      pickStablePreviewItems(
+        productos,
+        6,
+        (producto, index) => `bg:${producto.id || producto.slug || `${producto.nombre}-${index}`}`
+      ),
+    [productos]
+  );
 
   return (
     <section className="relative py-8 sm:py-2 bg-gradient-to-b from-white via-green-50/20 to-white overflow-hidden">
       {/* Fondo animado más liviano */}
       <div className="absolute inset-0 z-0 overflow-hidden">
-        {productos.slice(0, 6).map((p, i) => (
+        {backgroundProducts.map((p, i) => (
           <motion.div
             key={p.id}
             className="absolute rounded-3xl overflow-hidden shadow-md opacity-20"
@@ -37,13 +55,10 @@ const ProductosSection: React.FC<ProductosSectionProps> = ({
               repeat: Infinity,
               repeatType: "mirror",
             }}
-            style={{
-              top: `${Math.random() * 70}%`,
-              left: `${Math.random() * 70}%`,
-              width: `${180 + Math.random() * 160}px`,
-              height: `${140 + Math.random() * 180}px`,
-              rotate: `${Math.random() * 20 - 10}deg`,
-            }}
+            style={getDeterministicFloatingCardStyle(
+              p.id || p.slug || `${p.nombre}-${i}`,
+              i
+            )}
           >
             <Image
               src={p.imagenes[0] || "/placeholder-product.jpg"}
