@@ -3,6 +3,7 @@ import { ProductRedSocial } from "@/interfaces/productRedSocial.interface";
 import { EnhancedPublicacion } from "@/publicaciones/interfaces/enhancedPublicacion.interface";
 import { PublicacionTipo } from "@prisma/client";
 import { EstadoNegocio } from "@prisma/client";
+import { reportOperationalError } from "@/lib/observability/operationalLogger";
 import prisma from "@/lib/prisma";
 
 export interface ProductosNegocioBySlug {
@@ -176,7 +177,15 @@ export const getInfoPerfilBySlugNegocio = async (slugNegocio: string): Promise<D
       negocio: negocioFormateado,
     };
   } catch (error) {
-    console.error("Error al obtener el perfil del negocio:", error);
+    reportOperationalError({
+      area: "public-profile",
+      event: "profile_business_query_failed",
+      message: "Fallo la carga del perfil publico del negocio.",
+      context: { slugNegocio },
+      error,
+      dedupeKey: `profile-business-query-failed:${slugNegocio}`,
+    });
+
     return {
       ok: false,
       message: "Error al obtener el perfil del negocio",

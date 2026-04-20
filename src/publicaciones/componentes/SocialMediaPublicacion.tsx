@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useCallback, useMemo } from "react";
+import React, { useState, useRef, useCallback, useMemo, useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Navigation, Autoplay } from "swiper/modules";
 import Image from "next/image";
@@ -22,6 +22,14 @@ import { FollowButton } from "@/feed/componentes/FollowButton";
 import { EnhancedPublicacion } from "../interfaces/enhancedPublicacion.interface";
 import { titleFont } from "@/config/fonts";
 import { useMediaAspectRatio } from "@/hooks/useMediaAspectRatio";
+import {
+  PLACEHOLDER_BUSINESS_IMAGE,
+  PLACEHOLDER_PRODUCT_IMAGE,
+  isLikelyVideoUrl,
+  isRenderableImageSource,
+  resolveSafeImageSource,
+} from "@/lib/media/resolveSafeImageSource";
+import { reportOperationalWarning } from "@/lib/observability/operationalLogger";
 
 interface Props {
   publicacion: EnhancedPublicacion;
@@ -36,7 +44,8 @@ const MediaSlide: React.FC<{
   onClick: () => void; // Prop para abrir modal
   isInModal: boolean; // Prop para evitar clicks en modal
 }> = ({ media, index, multimediaLength, onClick, isInModal }) => {
-  const aspectRatio = useMediaAspectRatio(media.url, media.tipo);
+  const isVideo = media.tipo === "VIDEO" || isLikelyVideoUrl(media.url);
+  const aspectRatio = useMediaAspectRatio(media.url, isVideo ? "VIDEO" : "IMAGEN");
 
   return (
     <motion.div
@@ -50,7 +59,7 @@ const MediaSlide: React.FC<{
       tabIndex={!isInModal ? 0 : undefined}
       aria-label={!isInModal ? `Abrir modal con detalle de la media ${index + 1} de ${multimediaLength}` : undefined}
     >
-      {media.tipo === "VIDEO" ? (
+      {isVideo ? (
         <video
           src={media.url}
           controls
@@ -63,7 +72,7 @@ const MediaSlide: React.FC<{
         />
       ) : (
         <Image
-          src={media.url}
+          src={resolveSafeImageSource(media.url, PLACEHOLDER_PRODUCT_IMAGE)}
           alt={`Imagen ${index + 1} de carrusel`}
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -86,8 +95,48 @@ export const SocialMediaCarousel: React.FC<Props> = ({ publicacion, isInModal = 
 
   // Cachear multimedia para evitar re-renderizados
   const multimedia = useMemo(() => {
-    return publicacion.multimedia.sort((a, b) => a.orden - b.orden);
+    return [...publicacion.multimedia]
+      .sort((a, b) => a.orden - b.orden)
+      .map((media) => {
+        const isVideo = media.tipo === "VIDEO" || isLikelyVideoUrl(media.url);
+
+        if (isVideo) {
+          return {
+            ...media,
+            tipo: "VIDEO" as const,
+          };
+        }
+
+        return {
+          ...media,
+          tipo: "IMAGEN" as const,
+          url: resolveSafeImageSource(media.url, PLACEHOLDER_PRODUCT_IMAGE),
+        };
+      })
+      .filter((media) => media.tipo === "VIDEO" || isRenderableImageSource(media.url));
   }, [publicacion.multimedia]);
+  const safeAuthorImage = resolveSafeImageSource(
+    publicacion.negocio?.fotoPerfil || publicacion.usuario.fotoPerfil,
+    PLACEHOLDER_BUSINESS_IMAGE
+  );
+
+  useEffect(() => {
+    if (multimedia.length === publicacion.multimedia.length) {
+      return;
+    }
+
+    reportOperationalWarning({
+      area: "public-feed",
+      event: "publication_invalid_media_filtered",
+      message: "Se descartó media inválida al renderizar una publicación pública.",
+      context: {
+        publicationId: publicacion.id,
+        originalMediaCount: publicacion.multimedia.length,
+        renderedMediaCount: multimedia.length,
+      },
+      dedupeKey: `publication-invalid-media:${publicacion.id}`,
+    });
+  }, [multimedia.length, publicacion.id, publicacion.multimedia.length]);
 
   // Procesar hashtags y menciones
   const formatDescription = useCallback((text: string) => {
@@ -134,7 +183,7 @@ export const SocialMediaCarousel: React.FC<Props> = ({ publicacion, isInModal = 
         <div className="flex items-center p-4 border-b border-gray-100">
           <div className="relative w-12 h-12 rounded-full overflow-hidden mr-3">
             <Image
-              src={publicacion.negocio?.fotoPerfil || publicacion.usuario.fotoPerfil || "/default-profile.png"}
+              src={safeAuthorImage}
               alt={`Foto de perfil de ${publicacion.negocio?.nombre || `${publicacion.usuario.nombre} ${publicacion.usuario.apellido}`}`}
               fill
               sizes="48px"

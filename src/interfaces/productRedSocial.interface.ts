@@ -47,6 +47,7 @@ export interface ProductRedSocial {
   negocioId: string;
   telefonoContacto?: string;
   negocioFotoPerfil: string;
+  isFeatured?: boolean;
 
   stock?: number | null;
   stockIlimitado?: boolean;

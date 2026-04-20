@@ -13,8 +13,10 @@ import PublicacionesSection from "./PublicacionesSection";
 import ProductosSection from "./ProductosSection";
 import ServiciosSection from "./ServiciosSection";
 import ResenasSection from "./ResenasSection";
+import CatalogGroupsPreviewSection from "./CatalogGroupsPreviewSection";
 import { BusinessGuideSection } from "./BusinessGuideSection";
 import type { BusinessGuideResolvedPreset } from "@/perfil/guide/business-guide.types";
+import type { ProfileCatalogPreloadData } from "@/actions/catalogGroups/preloadProfileCatalog";
 
 interface LandingPageProps {
   informacionNegocio: InformacionInicialNegocio;
@@ -25,6 +27,8 @@ interface LandingPageProps {
   resumenPerfil: ResumenPerfil;
   onSelectTab: (tab: "Publicaciones" | "Productos" | "Negocio" | "Reseñas") => void;
   onExploreProducts: (selection: BusinessGuideResolvedPreset) => void;
+  onSelectGroupFromNav?: (groupId: string) => void;
+  catalogPreloadData?: ProfileCatalogPreloadData;
 }
 
 const LandingPage: React.FC<LandingPageProps> = ({
@@ -36,6 +40,8 @@ const LandingPage: React.FC<LandingPageProps> = ({
   resumenPerfil,
   onSelectTab,
   onExploreProducts,
+  onSelectGroupFromNav,
+  catalogPreloadData,
 }) => {
   // Filtrar publicaciones para excluir reseñas (TESTIMONIO con producto)
   const publicacionesFiltradas = useMemo(() => {
@@ -116,7 +122,24 @@ const LandingPage: React.FC<LandingPageProps> = ({
         business={informacionNegocio}
         products={productos}
         onExploreProducts={onExploreProducts}
+        catalogPreloadData={catalogPreloadData}
       />
+
+      {/* Mostrar preview de grupos si el negocio usa CatalogGroups */}
+      {catalogPreloadData?.hasCatalogGroups && catalogPreloadData?.rootGroups && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="w-full"
+        >
+          <CatalogGroupsPreviewSection
+            groups={catalogPreloadData.rootGroups}
+            onNavigateToGroup={(groupId: string) => onSelectGroupFromNav?.(groupId)}
+            onViewAll={() => onSelectTab("Productos")}
+          />
+        </motion.div>
+      )}
 
       {/* Secciones apiladas verticalmente, full width */}
       {sections.map((section, index) => (
@@ -124,7 +147,7 @@ const LandingPage: React.FC<LandingPageProps> = ({
           key={section.id}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: index * 0.2 }}
+          transition={{ duration: 0.5, delay: (catalogPreloadData?.hasCatalogGroups ? 0.15 : 0) + index * 0.2 }}
           className="w-full" // Máximo ancho, responsividad heredada
         >
           {section.component}

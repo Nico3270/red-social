@@ -1,21 +1,28 @@
 const { PrismaClient } = require("@prisma/client");
 const fs = require("fs");
+const path = require("path");
 
 const prisma = new PrismaClient();
-const siteUrl = "https://myckeo.com";
+const siteUrl = process.env.SITE_URL || "https://myckeo.com";
 
-(async () => {
+async function fetchDynamicEntities() {
+  const [negocios, productos, categorias, encuestas] = await Promise.all([
+    prisma.negocio.findMany({ select: { slug: true, updatedAt: true } }),
+    prisma.product.findMany({ select: { slug: true, updatedAt: true } }),
+    prisma.category.findMany({ select: { slug: true, updatedAt: true } }),
+    prisma.encuesta.findMany({
+      select: { id: true, updatedAt: true, negocio: { select: { slug: true } } },
+    }),
+  ]);
+
+  return { negocios, productos, categorias, encuestas };
+}
+
+async function main() {
   try {
     console.log("🔍 Fetching dynamic routes for sitemap...");
 
-    // Consulta entidades dinámicas desde la base de datos
-    const negocios = await prisma.negocio.findMany({ select: { slug: true, updatedAt: true } });
-    const productos = await prisma.product.findMany({ select: { slug: true, updatedAt: true } });
-    const categorias = await prisma.category.findMany({ select: { slug: true, updatedAt: true } });
-    // Para encuestas, asumimos que el slug viene del negocio asociado
-    const encuestas = await prisma.encuesta.findMany({
-      select: { id: true, updatedAt: true, negocio: { select: { slug: true } } },
-    });
+    const { negocios, productos, categorias, encuestas } = await fetchDynamicEntities();
 
     // URLs estáticas (de tu sitemap actual)
     const staticUrls = [
@@ -85,13 +92,15 @@ const siteUrl = "https://myckeo.com";
       </urlset>`;
 
     // Escribe el archivo en public/
-    fs.writeFileSync("public/sitemap.xml", sitemapContent.trim());
-    console.log("✅ Sitemap generated successfully at public/sitemap.xml with updated routes!");
-
-    await prisma.$disconnect();
+    const targetPath = path.join(process.cwd(), "public", "sitemap.xml");
+    fs.writeFileSync(targetPath, sitemapContent.trim());
+    console.log(`✅ Sitemap generated successfully at ${targetPath} with updated routes!`);
   } catch (error) {
     console.error("❌ Error generating sitemap:", error);
-    await prisma.$disconnect();
     process.exit(1);
+  } finally {
+    await prisma.$disconnect();
   }
-})();
+}
+
+void main();

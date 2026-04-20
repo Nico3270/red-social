@@ -1,0 +1,66 @@
+name: Smoke Tests
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    name: Public smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      CI: "true"
+      DATABASE_URL: ${{ secrets.SMOKE_DATABASE_URL || secrets.DATABASE_URL }}
+      NEXTAUTH_URL: http://127.0.0.1:3100
+      AUTH_URL: http://127.0.0.1:3100
+      AUTH_SECRET: smoke-tests-auth-secret
+      NEXTAUTH_SECRET: smoke-tests-auth-secret
+      GOOGLE_CLIENT_ID: smoke-google-client-id
+      GOOGLE_CLIENT_SECRET: smoke-google-client-secret
+      SMOKE_HOST: 127.0.0.1
+      SMOKE_PORT: 3100
+      SMOKE_BOOTSTRAP_FIXTURES: "1"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Validate smoke environment
+        run: pnpm run env:check:smoke
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Generate smoke fixtures
+        run: pnpm run smoke:fixtures
+
+      - name: Run smoke suite
+        run: pnpm run smoke
+
+      - name: Upload Playwright artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-smoke-artifacts
+          if-no-files-found: ignore
+          path: |
+            playwright-report
+            test-results/playwright

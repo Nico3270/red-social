@@ -1,6 +1,8 @@
 "use server";
 
 import { ProductRedSocial } from "@/interfaces/productRedSocial.interface";
+import { PLACEHOLDER_BUSINESS_IMAGE } from "@/lib/media/resolveSafeImageSource";
+import { reportOperationalError } from "@/lib/observability/operationalLogger";
 import prisma from "@/lib/prisma";
 
 interface ProductosNegocioBySlug {
@@ -15,8 +17,6 @@ export const getNegocioProductsBySlug = async (
   skip?: number
 ): Promise<ProductosNegocioBySlug> => {
   try {
-    console.log("Iniciando getNegocioProductsBySlug con slug:", slug, "take:", take, "skip:", skip);
-
     if (!slug) {
       return { ok: false, message: "El slug del negocio es obligatorio." };
     }
@@ -131,7 +131,7 @@ export const getNegocioProductsBySlug = async (
       nombreNegocio: product.negocio.nombre,
       telefonoContacto: product.negocio.telefonoContacto || "",
       negocioId: product.negocio.id,
-      negocioFotoPerfil: product.negocio.fotoPerfil || "imgs/admin-avatar.webp",
+      negocioFotoPerfil: product.negocio.fotoPerfil || PLACEHOLDER_BUSINESS_IMAGE,
       stock: product.stock,
       stockIlimitado: product.stockIlimitado,
       usaVariantes: product.usaVariantes,
@@ -156,7 +156,15 @@ export const getNegocioProductsBySlug = async (
 
     return { ok: true, products: formattedProducts, message: "productos obtenidos exitosamente" };
   } catch (error) {
-    console.error("Error en getNegocioProductsBySlug:", error);
+    reportOperationalError({
+      area: "public-profile",
+      event: "profile_products_query_failed",
+      message: "Fallo la consulta de productos publicos del negocio.",
+      context: { slug, take, skip },
+      error,
+      dedupeKey: `profile-products-query-failed:${slug}:${take || 0}:${skip || 0}`,
+    });
+
     return { ok: false, message: "Error al obtener los productos del negocio." };
   }
 };

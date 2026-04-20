@@ -3,6 +3,10 @@ import React, { useMemo } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { ProductRedSocial } from "@/interfaces/productRedSocial.interface";
+import {
+  PLACEHOLDER_PRODUCT_IMAGE,
+  isRenderableImageSource,
+} from "@/lib/media/resolveSafeImageSource";
 import Divider from "@/ui/components/divider/Divider";
 import {
   getDeterministicFloatingCardStyle,
@@ -61,11 +65,10 @@ const ProductosSection: React.FC<ProductosSectionProps> = ({
             )}
           >
             <Image
-              src={p.imagenes[0] || "/placeholder-product.jpg"}
+              src={p.imagenes.find(isRenderableImageSource) || PLACEHOLDER_PRODUCT_IMAGE}
               alt={p.nombre}
               fill
               className="object-cover"
-              
               sizes="30vw"
             />
           </motion.div>
@@ -104,11 +107,10 @@ const ProductosSection: React.FC<ProductosSectionProps> = ({
           >
             <div className="relative w-full aspect-[4/5]">
               <Image
-                src={producto.imagenes[0] || "/placeholder-product.jpg"}
+                src={producto.imagenes.find(isRenderableImageSource) || PLACEHOLDER_PRODUCT_IMAGE}
                 alt={producto.nombre}
                 fill
                 className="object-cover transition-transform duration-700 group-hover:scale-105"
-      
                 sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent transition-opacity duration-500" />

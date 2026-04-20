@@ -231,6 +231,7 @@ model Product {
   // Nuevas relaciones opcionales
   atributos                 ProductAttribute[]
   variantes                 ProductVariant[]
+  catalogGroupProducts      CatalogGroupProduct[]      // NUEVA: Relación con grupos de catálogo por negocio
 
   @@index([negocioId])
   @@index([categoryId])
@@ -308,6 +309,51 @@ model ProductSection {
   section   Section @relation(fields: [sectionId], references: [id], onDelete: Cascade)
 
   @@unique([productId, sectionId])
+}
+
+// NUEVA CAPA: GRUPOS DE CATÁLOGO POR NEGOCIO (Fase 1)
+// Permite que cada negocio organice su catálogo con jerarquía propia
+// Opcional: Sin usar CatalogGroup, todo sigue funcionando como actualmente
+model CatalogGroup {
+  id          String                  @id @default(uuid())
+  negocioId   String
+  nombre      String
+  slug        String
+  parentId    String?
+  order       Int                     @default(0)
+  isActive    Boolean                 @default(true)
+  description String?
+  createdAt   DateTime                @default(now())
+  updatedAt   DateTime                @updatedAt
+
+  negocio     Negocio                 @relation(fields: [negocioId], references: [id], onDelete: Cascade)
+  parent      CatalogGroup?           @relation("ParentChild", fields: [parentId], references: [id], onDelete: SetNull)
+  children    CatalogGroup[]          @relation("ParentChild")
+  productos   CatalogGroupProduct[]
+
+  @@unique([negocioId, slug])
+  @@index([negocioId])
+  @@index([negocioId, parentId])
+  @@index([negocioId, order])
+  @@index([parentId])
+}
+
+model CatalogGroupProduct {
+  id             String       @id @default(uuid())
+  catalogGroupId String
+  productId      String
+  order          Int          @default(0)
+  isFeatured     Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  catalogGroup   CatalogGroup @relation(fields: [catalogGroupId], references: [id], onDelete: Cascade)
+  product        Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([catalogGroupId, productId])
+  @@index([catalogGroupId])
+  @@index([productId])
+  @@index([catalogGroupId, order])
 }
 
 model Image {
@@ -505,7 +551,7 @@ model Negocio {
   direccion        String?
   urlGoogleMaps    String?
   horarios         Json?
-  imagenes         String[]
+  imagenes        String[]
   sitioWeb         String?
   telefonoContacto String?
   estado           EstadoNegocio         @default(activo)
@@ -532,6 +578,7 @@ model Negocio {
   Servicio         Servicio[]
   tipo             TipoNegocio           @default(NEGOCIO)
   contactos        Contactos[]
+  catalogGroups    CatalogGroup[]         // NUEVA: Relación con grupos de catálogo
 
   @@index([ciudad])
   @@index([departamento])

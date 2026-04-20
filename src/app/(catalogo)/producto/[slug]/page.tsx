@@ -1,6 +1,10 @@
 import { getProductBySlug } from "@/actions/productos/getProductBySlug";
 import { titulosPrincipales } from "@/config/fonts";
 import { ProductRedSocial } from "@/interfaces/productRedSocial.interface";
+import {
+  PLACEHOLDER_PRODUCT_IMAGE,
+  isRenderableImageSource,
+} from "@/lib/media/resolveSafeImageSource";
 import Divider from "@/ui/components/divider/Divider";
 import { DetallesProducto } from "@/ui/components/productos/DetallesProducto";
 import { ProductGridProduct } from "@/ui/components/productos/ProductGridProduct";
@@ -8,16 +12,33 @@ import { ResponsiveSlideShow } from "@/ui/components/slideShow/ResponsiveSlideSh
 import { Metadata } from "next";
 import { getResenasProductoTestimonio } from "@/resenas/actions/getResenasProductoTestimonio";
 import FeedResenasProducto from "@/resenas/componentes/FeedResenasProducto";
+import Link from "next/link";
+import { buildProfileUrl } from "@/perfil/helpers/catalog-group-url";
+import { FaArrowLeft } from "react-icons/fa";
 
 interface Props {
   params: Promise<{
     slug: string;
   }>;
+  searchParams: Promise<{
+    from?: string | string[];
+    group?: string | string[];
+    section?: string | string[];
+  }>;
+}
+
+function getSingleSearchParam(value?: string | string[]): string | null {
+  if (Array.isArray(value)) {
+    return value[0] ?? null;
+  }
+
+  return value ?? null;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const result = await getProductBySlug(slug);
+  const siteUrl = (process.env.SITE_URL || "https://myckeo.com").replace(/\/$/, "");
 
   if (!result.ok || !result.product) {
     return {
@@ -29,6 +50,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   const { product, nombreNegocio } = result;
+  const renderableImages = product.imagenes?.filter(isRenderableImageSource) ?? [];
   const title = `${product.nombre} - ${nombreNegocio || "Negocio"} | Myckeo`;
   const description =
     product.descripcionCorta ||
@@ -36,10 +58,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     "Descubre este producto moderno y de alta calidad en nuestra plataforma social-comercial.";
 
   const image =
-    product.imagenes?.[0] ||
-    "https://myckeo.com/imgs/placeholder_productos.png";
+    renderableImages[0] ||
+    `${siteUrl}${PLACEHOLDER_PRODUCT_IMAGE}`;
 
-  const url = `https://myckeo.com/producto/${slug}`;
+  const url = `${siteUrl}/producto/${slug}`;
   const keywords =
     product.tags?.join(", ") ||
     `producto, compra, moderno, ${product.nombre}, ${product.nombreNegocio}`;
@@ -77,8 +99,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function ProductPage({ params }: Props) {
+export default async function ProductPage({ params, searchParams }: Props) {
   const { slug } = await params;
+  const resolvedSearchParams = await searchParams;
   const result = await getProductBySlug(slug);
 
   if (!result.ok) {
@@ -101,6 +124,21 @@ export default async function ProductPage({ params }: Props) {
   if (!product) {
     return <h1 className="sm:mt-40 text-center">No hay producto</h1>;
   }
+
+  const origin = getSingleSearchParam(resolvedSearchParams.from);
+  const originGroupSlug = getSingleSearchParam(resolvedSearchParams.group);
+  const originSectionSlug = getSingleSearchParam(resolvedSearchParams.section);
+  const catalogReturnHref =
+    origin === "profile-products" && product.slugNegocio
+      ? buildProfileUrl(
+          product.slugNegocio,
+          "productos",
+          originGroupSlug ?? undefined,
+          originGroupSlug ? undefined : originSectionSlug ?? undefined
+        )
+      : null;
+
+  const renderableProductImages = product.imagenes?.filter(isRenderableImageSource) ?? [];
 
 
   const productosConvertidos: ProductRedSocial[] = (productosSimilares ?? []).map(
@@ -137,7 +175,9 @@ export default async function ProductPage({ params }: Props) {
     "@context": "https://schema.org",
     "@type": "Product",
     name: product.nombre,
-    image: product.imagenes?.length ? product.imagenes : ["/images/placeholder.jpg"],
+    image: renderableProductImages.length
+      ? renderableProductImages
+      : [PLACEHOLDER_PRODUCT_IMAGE],
     description: product.descripcion,
     brand: {
       "@type": "Brand",
@@ -159,6 +199,32 @@ export default async function ProductPage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
+
+      {catalogReturnHref && (
+        <div className="mb-4 rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-3 shadow-sm">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-sm font-semibold text-slate-900">Volver al catálogo</p>
+              <p className="text-sm text-slate-600">
+                Retoma la exploración en los productos de {nombreNegocio || product.nombreNegocio || "este negocio"}
+                {originGroupSlug
+                  ? " manteniendo la misma colección cuando aplique."
+                  : originSectionSlug
+                    ? " manteniendo la misma sección cuando aplique."
+                    : "."}
+              </p>
+            </div>
+
+            <Link
+              href={catalogReturnHref}
+              className="inline-flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-800 transition hover:border-slate-300 hover:bg-slate-100"
+            >
+              <FaArrowLeft className="text-xs" />
+              Volver al catálogo
+            </Link>
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
         <div className="flex justify-center">

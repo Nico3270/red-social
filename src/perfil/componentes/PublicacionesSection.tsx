@@ -5,6 +5,12 @@ import { motion } from "framer-motion";
 import { FaRegNewspaper, FaImages, FaPlayCircle, FaQuoteRight } from "react-icons/fa";
 import Image from "next/image";
 import { EnhancedPublicacion } from "@/publicaciones/interfaces/enhancedPublicacion.interface";
+import {
+  PLACEHOLDER_PRODUCT_IMAGE,
+  isLikelyVideoUrl,
+  isRenderableImageSource,
+  resolveSafeImageSource,
+} from "@/lib/media/resolveSafeImageSource";
 import Divider from "@/ui/components/divider/Divider";
 import { getDeterministicFloatingCardStyle } from "./landing-section.utils";
 
@@ -43,8 +49,11 @@ const PublicacionesSection: React.FC<PublicacionesSectionProps> = ({
       <div className="absolute inset-0 z-0 overflow-hidden">
         {teasers.slice(0, 6).map((p, i) => {
           const media =
-            p.multimedia.find((m) => m.tipo === "IMAGEN" || m.tipo === "VIDEO") ||
-            p.multimedia[0];
+            p.multimedia.find(
+              (m) => m.tipo === "VIDEO" || isLikelyVideoUrl(m.url) || isRenderableImageSource(m.url)
+            ) || p.multimedia[0];
+          const mediaIsVideo = media?.tipo === "VIDEO" || isLikelyVideoUrl(media?.url);
+          const mediaImageSrc = resolveSafeImageSource(media?.url, PLACEHOLDER_PRODUCT_IMAGE);
 
           return (
             <motion.div
@@ -61,16 +70,25 @@ const PublicacionesSection: React.FC<PublicacionesSectionProps> = ({
               }}
               style={getDeterministicFloatingCardStyle(p.id, i)}
             >
-              {media?.url && (
-                <Image
-                  src={media.url}
-                  alt={p.titulo || "Publicación"}
-                  fill
-                  className="object-cover"
-    
-                  sizes="30vw"
-                />
-              )}
+              {media?.url &&
+                (mediaIsVideo ? (
+                  <video
+                    src={media.url}
+                    className="h-full w-full object-cover"
+                    muted
+                    playsInline
+                    loop
+                    autoPlay
+                  />
+                ) : (
+                  <Image
+                    src={mediaImageSrc}
+                    alt={p.titulo || "Publicación"}
+                    fill
+                    className="object-cover"
+                    sizes="30vw"
+                  />
+                ))}
             </motion.div>
           );
         })}
@@ -105,8 +123,11 @@ const PublicacionesSection: React.FC<PublicacionesSectionProps> = ({
       <div className="relative z-10 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-5 px-6 sm:px-12">
         {teasers.map((pub, index) => {
           const media =
-            pub.multimedia.find((m) => m.tipo === "IMAGEN" || m.tipo === "VIDEO") ||
-            pub.multimedia[0];
+            pub.multimedia.find(
+              (m) => m.tipo === "VIDEO" || isLikelyVideoUrl(m.url) || isRenderableImageSource(m.url)
+            ) || pub.multimedia[0];
+          const mediaIsVideo = media?.tipo === "VIDEO" || isLikelyVideoUrl(media?.url);
+          const mediaImageSrc = resolveSafeImageSource(media?.url, PLACEHOLDER_PRODUCT_IMAGE);
           const descripcion = pub.descripcion || pub.titulo || "Publicación destacada";
 
           return (
@@ -120,7 +141,7 @@ const PublicacionesSection: React.FC<PublicacionesSectionProps> = ({
               className="group relative cursor-pointer overflow-hidden rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500"
             >
               <div className="relative w-full aspect-[4/5]">
-                {media?.tipo === "VIDEO" ? (
+                {mediaIsVideo ? (
                   <video
                     src={media.url}
                     className="w-full h-full object-cover"
@@ -131,11 +152,10 @@ const PublicacionesSection: React.FC<PublicacionesSectionProps> = ({
                   />
                 ) : (
                   <Image
-                    src={media?.url || "/placeholder.jpg"}
+                    src={mediaImageSrc}
                     alt={pub.titulo || "Publicación"}
                     fill
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
-                
                     sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                   />
                 )}

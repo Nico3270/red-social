@@ -4,6 +4,13 @@ import React, { useMemo } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { FaStar } from "react-icons/fa";
+import {
+  PLACEHOLDER_BUSINESS_IMAGE,
+  PLACEHOLDER_PRODUCT_IMAGE,
+  isLikelyVideoUrl,
+  isRenderableImageSource,
+  resolveSafeImageSource,
+} from "@/lib/media/resolveSafeImageSource";
 import { EnhancedPublicacion } from "@/publicaciones/interfaces/enhancedPublicacion.interface";
 import { getDeterministicFloatingCardStyle } from "./landing-section.utils";
 
@@ -36,31 +43,55 @@ const ResenasSection: React.FC<ResenasSectionProps> = ({
         {teasers
           .filter((r) => r.multimedia?.length > 0)
           .slice(0, 6)
-          .map((r, i) => (
-            <motion.div
-              key={r.id}
-              className="absolute rounded-3xl overflow-hidden shadow-md opacity-20"
-              initial={{ scale: 1.05 }}
-              animate={{ scale: 1 }}
-              transition={{
-                duration: 10,
-                delay: i * 0.25,
-                ease: "easeInOut",
-                repeat: Infinity,
-                repeatType: "mirror",
-              }}
-              style={getDeterministicFloatingCardStyle(r.id, i)}
-            >
-              <Image
-                src={r.multimedia[0]?.url || "/placeholder-resena.jpg"}
-                alt={r.titulo || "Reseña"}
-                fill
-                className="object-cover"
+          .map((r, i) => {
+            const media = r.multimedia.find(
+              (item) =>
+                item.tipo === "VIDEO" || isLikelyVideoUrl(item.url) || isRenderableImageSource(item.url)
+            );
 
-                sizes="30vw"
-              />
-            </motion.div>
-          ))}
+            if (!media) {
+              return null;
+            }
+
+            const mediaIsVideo = media.tipo === "VIDEO" || isLikelyVideoUrl(media.url);
+            const safeMediaImage = resolveSafeImageSource(media.url, PLACEHOLDER_PRODUCT_IMAGE);
+
+            return (
+              <motion.div
+                key={r.id}
+                className="absolute rounded-3xl overflow-hidden shadow-md opacity-20"
+                initial={{ scale: 1.05 }}
+                animate={{ scale: 1 }}
+                transition={{
+                  duration: 10,
+                  delay: i * 0.25,
+                  ease: "easeInOut",
+                  repeat: Infinity,
+                  repeatType: "mirror",
+                }}
+                style={getDeterministicFloatingCardStyle(r.id, i)}
+              >
+                {mediaIsVideo ? (
+                  <video
+                    src={media.url}
+                    className="h-full w-full object-cover"
+                    muted
+                    playsInline
+                    loop
+                    autoPlay
+                  />
+                ) : (
+                  <Image
+                    src={safeMediaImage}
+                    alt={r.titulo || "Reseña"}
+                    fill
+                    className="object-cover"
+                    sizes="30vw"
+                  />
+                )}
+              </motion.div>
+            );
+          })}
         <div className="absolute inset-0 bg-white/60 backdrop-blur-[1px]" />
       </div>
 
@@ -96,12 +127,19 @@ const ResenasSection: React.FC<ResenasSectionProps> = ({
             ))
           : teasers.map((resena, index) => {
               const media = resena.multimedia[0];
-              const tieneMedia = media?.url;
+              const mediaIsVideo = media?.tipo === "VIDEO" || isLikelyVideoUrl(media?.url);
+              const hasRenderableMedia =
+                !!media && (mediaIsVideo || isRenderableImageSource(media.url));
+              const safeMediaImage = resolveSafeImageSource(media?.url, PLACEHOLDER_PRODUCT_IMAGE);
               const usuario =
                 resena.negocio?.nombre ||
                 `${resena.usuario.nombre} ${resena.usuario.apellido}`;
               const fotoPerfil =
                 resena.negocio?.fotoPerfil || resena.usuario?.fotoPerfil;
+              const safeProfileImage = resolveSafeImageSource(
+                fotoPerfil,
+                PLACEHOLDER_BUSINESS_IMAGE
+              );
 
               return (
                 <motion.div
@@ -115,15 +153,25 @@ const ResenasSection: React.FC<ResenasSectionProps> = ({
                 >
                   {/* Imagen o texto motivacional */}
                   <div className="relative w-full aspect-[4/5]">
-                    {tieneMedia ? (
-                      <Image
-                        src={media.url}
-                        alt={resena.titulo || "Reseña"}
-                        fill
-                        className="object-cover transition-transform duration-700 group-hover:scale-105"
-                     
-                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                      />
+                    {hasRenderableMedia ? (
+                      mediaIsVideo ? (
+                        <video
+                          src={media?.url}
+                          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                          muted
+                          playsInline
+                          loop
+                          autoPlay
+                        />
+                      ) : (
+                        <Image
+                          src={safeMediaImage}
+                          alt={resena.titulo || "Reseña"}
+                          fill
+                          className="object-cover transition-transform duration-700 group-hover:scale-105"
+                          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                        />
+                      )
                     ) : (
                       <div className="flex items-center justify-center h-full px-6 text-center bg-gradient-to-br from-indigo-700 via-purple-800 to-indigo-900 text-white">
                         <p className="italic text-base sm:text-lg font-medium line-clamp-5 leading-relaxed">
@@ -136,7 +184,7 @@ const ResenasSection: React.FC<ResenasSectionProps> = ({
                     )}
 
                     {/* Gradiente inferior e info */}
-                    {tieneMedia && (
+                    {hasRenderableMedia && (
                       <div className="absolute bottom-0 left-0 right-0 px-4 py-3 bg-black/60 backdrop-blur-sm text-white">
                         <div className="flex items-center justify-center gap-2 mb-1">
                           {[...Array(5)].map((_, i) => (
@@ -159,15 +207,13 @@ const ResenasSection: React.FC<ResenasSectionProps> = ({
                         </p>
 
                         <div className="flex items-center justify-center gap-2">
-                          {fotoPerfil && (
-                            <Image
-                              src={fotoPerfil}
-                              alt={usuario}
-                              width={26}
-                              height={26}
-                              className="rounded-full object-cover border border-white/40"
-                            />
-                          )}
+                          <Image
+                            src={safeProfileImage}
+                            alt={usuario}
+                            width={26}
+                            height={26}
+                            className="rounded-full object-cover border border-white/40"
+                          />
                           <span className="text-xs opacity-90 font-medium">
                             {usuario}
                           </span>

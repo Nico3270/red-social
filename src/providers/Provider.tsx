@@ -1,5 +1,6 @@
 "use client";
 
+import { AnalyticsBootstrap } from "@/analytics/AnalyticsBootstrap";
 import { SessionProvider } from 'next-auth/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React, { useState } from 'react';
@@ -15,6 +16,7 @@ export const Provider = ({ children }: Props) => {
 
   return (
     <SessionProvider>
+      <AnalyticsBootstrap />
       <QueryClientProvider client={queryClient}>
         {children}
       </QueryClientProvider>

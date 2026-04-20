@@ -1211,7 +1211,7 @@ Huevos de codorniz`}
               </Typography>
               <Typography variant="body2" color="text.secondary" sx={{ mt: 1.2 }}>
                 Cada bloque de variante representa una opcion comprable distinta.
-                Si vendes "Grande" y "Extra grande", debes crear 2 variantes
+                Si vendes &quot;Grande&quot; y &quot;Extra grande&quot;, debes crear 2 variantes
                 separadas.
               </Typography>
 
@@ -1225,21 +1225,21 @@ Huevos de codorniz`}
                   <Box component="span" sx={{ fontWeight: 700, color: "text.primary" }}>
                     Nombre que ve el cliente:
                   </Box>{" "}
-                  escribe la opcion real, por ejemplo: "Grande".
+                  escribe la opcion real, por ejemplo: &quot;Grande&quot;.
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                   <Box component="span" sx={{ fontWeight: 700, color: "text.primary" }}>
                     SKU interno:
                   </Box>{" "}
                   es un codigo opcional para inventario o integraciones, por ejemplo:
-                  "SALCH-GRA". Si no usas codigos internos, puedes dejarlo vacio.
+                  &quot;SALCH-GRA&quot;. Si no usas codigos internos, puedes dejarlo vacio.
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                   <Box component="span" sx={{ fontWeight: 700, color: "text.primary" }}>
                     Detalles de la variante:
                   </Box>{" "}
                   sirven para describir esa variante, por ejemplo: atributo
-                  "Tamano" y valor "Grande". No crean variantes nuevas por si
+                  &quot;Tamano&quot; y valor &quot;Grande&quot;. No crean variantes nuevas por si
                   solos.
                 </Typography>
               </Stack>
@@ -1383,8 +1383,8 @@ Huevos de codorniz`}
 
                             <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                               Estos campos describen esta variante. Ejemplo: atributo
-                              "Tamano" y valor "Grande". Si solo quieres crear
-                              opciones comprables como "Grande" y "Extra grande",
+                              &quot;Tamano&quot; y valor &quot;Grande&quot;. Si solo quieres crear
+                              opciones comprables como &quot;Grande&quot; y &quot;Extra grande&quot;,
                               crea dos variantes separadas arriba.
                             </Typography>
 

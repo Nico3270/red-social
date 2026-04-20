@@ -4,9 +4,16 @@ import { FaShoppingCart } from "react-icons/fa";
 import { BsWhatsapp } from "react-icons/bs";
 import Link from "next/link";
 import Image from "next/image";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { textosFont, tituloCard } from "@/config/fonts";
 import { InfoEmpresa as empresa } from "@/config/config";
+import {
+  PLACEHOLDER_BUSINESS_IMAGE,
+  PLACEHOLDER_PRODUCT_IMAGE,
+  isRenderableImageSource,
+  resolveSafeImageSource,
+} from "@/lib/media/resolveSafeImageSource";
+import { reportOperationalWarning } from "@/lib/observability/operationalLogger";
 import { AddFavorites } from "./AddFavorites";
 import { Precio } from "./Precio";
 import {
@@ -21,14 +28,29 @@ import {
   getVariantOptionSummary,
   getVariantTitle,
 } from "./variantDisplay";
+import {
+  trackAnalyticsEvent,
+  type EventSource,
+  type NavigationMode,
+} from "@/analytics/events";
 
 interface ProductCardProps {
   product: ProductRedSocial;
+  analyticsContext?: {
+    negocioSlug?: string;
+    navigationMode?: NavigationMode;
+    source?: EventSource;
+    groupId?: string;
+    groupSlug?: string;
+    sectionId?: string;
+    sectionSlug?: string;
+    position?: number;
+  };
 }
 
 const urlWebProduccion = empresa.linkWebProduccion;
-const FALLBACK_PRODUCT_IMAGE = "/imgs/no-image.png";
-const FALLBACK_PROFILE_IMAGE = "/default-profile.png";
+const FALLBACK_PRODUCT_IMAGE = PLACEHOLDER_PRODUCT_IMAGE;
+const FALLBACK_PROFILE_IMAGE = PLACEHOLDER_BUSINESS_IMAGE;
 
 const formatCurrency = (value: number) =>
   new Intl.NumberFormat("es-CO", {
@@ -37,8 +59,10 @@ const formatCurrency = (value: number) =>
     minimumFractionDigits: 0,
   }).format(value);
 
-export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
-  const productImages = Array.isArray(product.imagenes) ? product.imagenes.filter(Boolean) : [];
+export const ProductCard: React.FC<ProductCardProps> = ({ product, analyticsContext }) => {
+  const productImages = Array.isArray(product.imagenes)
+    ? product.imagenes.filter(isRenderableImageSource)
+    : [];
   const primaryImage = productImages[0] || FALLBACK_PRODUCT_IMAGE;
   const secondaryImage = productImages[1] || primaryImage;
 
@@ -50,6 +74,28 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const [selectedVariantId, setSelectedVariantId] = useState<string | null>(null);
 
   const addProductToCart = useCartCatalogoStore((state) => state.addProductToCart);
+  const analyticsNegocioSlug = analyticsContext?.negocioSlug ?? product.slugNegocio ?? "";
+  const analyticsNavigationMode = analyticsContext?.navigationMode ?? "traditional";
+  const analyticsSource = analyticsContext?.source ?? "productos_tab";
+  const detailHref = useMemo(() => {
+    const params = new URLSearchParams();
+
+    if (analyticsContext && product.slugNegocio) {
+      params.set("from", "profile-products");
+
+      if (analyticsContext.groupSlug) {
+        params.set("group", analyticsContext.groupSlug);
+      } else if (
+        analyticsContext.navigationMode === "traditional" &&
+        analyticsContext.sectionSlug
+      ) {
+        params.set("section", analyticsContext.sectionSlug);
+      }
+    }
+
+    const queryString = params.toString();
+    return queryString ? `/producto/${product.slug}?${queryString}` : `/producto/${product.slug}`;
+  }, [analyticsContext, product.slug, product.slugNegocio]);
 
   const telefonoLimpio = product.telefonoContacto?.replace(/\D/g, "") ?? "";
 
@@ -176,9 +222,20 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       `Puedes ver más detalles aquí: ${urlWebProduccion}/producto/${product.slug}`
   );
 
-  const handleAddToCart = () => {
+  const handleAddToCart = useCallback(() => {
     if (!product.slugNegocio) {
-      console.error("No se encontró el slug del negocio");
+      reportOperationalWarning({
+        area: "product-card",
+        event: "product_card_missing_business_slug",
+        message: "Se intento agregar al carrito un producto sin slug de negocio.",
+        context: {
+          productId: product.id,
+          productSlug: product.slug,
+          source: analyticsSource,
+        },
+        dedupeKey: `product-card-missing-business-slug:${product.id}`,
+      });
+
       return;
     }
 
@@ -191,11 +248,28 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     }
 
     const effectivePrice = selectedVariant?.precio ?? product.precio;
-    const effectiveImage = selectedVariant?.imagenUrl || primaryImage;
+    const effectiveImage = resolveSafeImageSource(selectedVariant?.imagenUrl, primaryImage);
     const effectiveStock = selectedVariant?.stock ?? product.stock ?? null;
     const effectiveStockIlimitado = selectedVariant
       ? selectedVariant.stockIlimitado ?? true
       : (product.stockIlimitado ?? true);
+
+    // Track event
+    trackAnalyticsEvent({
+      event: "product_add_to_cart_clicked",
+      timestamp: Date.now(),
+      negocioSlug: analyticsNegocioSlug,
+      navigationMode: analyticsNavigationMode,
+      source: analyticsSource,
+      productId: product.id,
+      productSlug: product.slug,
+      productName: product.nombre,
+      productPrice: effectivePrice,
+      variantId: selectedVariant?.id,
+      quantity,
+      groupId: analyticsContext?.groupId,
+      groupSlug: analyticsContext?.groupSlug,
+    });
 
     const cartProduct = {
       cartItemId: `${product.id}-${selectedVariant?.id ?? "base"}-${Date.now()}`,
@@ -221,12 +295,115 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     setQuantity(1);
 
     window.setTimeout(() => setShowSuccess(false), 1000);
-  };
+  }, [
+    addProductToCart,
+    analyticsContext?.groupId,
+    analyticsContext?.groupSlug,
+    analyticsNavigationMode,
+    analyticsNegocioSlug,
+    analyticsSource,
+    hasVariants,
+    isOutOfStock,
+    primaryImage,
+    product,
+    quantity,
+    selectedVariant,
+  ]);
 
-  const handleOpenCartFlow = () => {
+  const trackProductCardClick = useCallback(() => {
+    trackAnalyticsEvent({
+      event: "product_card_clicked",
+      timestamp: Date.now(),
+      negocioSlug: analyticsNegocioSlug,
+      navigationMode: analyticsNavigationMode,
+      source: analyticsSource,
+      productId: product.id,
+      productSlug: product.slug,
+      productName: product.nombre,
+      productPrice: displayPrice,
+      position: analyticsContext?.position,
+      groupId: analyticsContext?.groupId,
+      groupSlug: analyticsContext?.groupSlug,
+    });
+  }, [
+    analyticsContext?.groupId,
+    analyticsContext?.groupSlug,
+    analyticsContext?.position,
+    analyticsNavigationMode,
+    analyticsNegocioSlug,
+    analyticsSource,
+    displayPrice,
+    product.id,
+    product.nombre,
+    product.slug,
+  ]);
+
+  const handleDetailLinkClick = useCallback(() => {
+    trackProductCardClick();
+  }, [trackProductCardClick]);
+
+  const handleWhatsAppClick = useCallback(() => {
+    trackAnalyticsEvent({
+      event: "product_whatsapp_clicked",
+      timestamp: Date.now(),
+      negocioSlug: analyticsNegocioSlug,
+      navigationMode: analyticsNavigationMode,
+      source: analyticsSource,
+      productId: product.id,
+      productSlug: product.slug,
+      productName: product.nombre,
+      productPrice: selectedVariant?.precio ?? displayPrice,
+      variantId: selectedVariant?.id,
+      quantity,
+      groupId: analyticsContext?.groupId,
+      groupSlug: analyticsContext?.groupSlug,
+    });
+  }, [
+    analyticsContext?.groupId,
+    analyticsContext?.groupSlug,
+    analyticsNavigationMode,
+    analyticsNegocioSlug,
+    analyticsSource,
+    displayPrice,
+    product.id,
+    product.nombre,
+    product.slug,
+    quantity,
+    selectedVariant?.id,
+    selectedVariant?.precio,
+  ]);
+
+  const handleOpenCartFlow = useCallback(() => {
+    trackProductCardClick();
+
+    trackAnalyticsEvent({
+      event: "product_detail_viewed",
+      timestamp: Date.now(),
+      negocioSlug: analyticsNegocioSlug,
+      navigationMode: analyticsNavigationMode,
+      source: analyticsSource,
+      productId: product.id,
+      productSlug: product.slug,
+      productName: product.nombre,
+      productPrice: displayPrice,
+      groupId: analyticsContext?.groupId,
+      groupSlug: analyticsContext?.groupSlug,
+      hasVariants,
+    });
+
     setQuantity(1);
     setIsModalOpen(true);
-  };
+  }, [
+    analyticsContext?.groupId,
+    analyticsContext?.groupSlug,
+    analyticsNavigationMode,
+    analyticsNegocioSlug,
+    analyticsSource,
+    displayPrice,
+    hasVariants,
+    product,
+    trackProductCardClick,
+  ]);
 
   const ModalContent = (
     <AnimatePresence>
@@ -438,7 +615,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                 disabled={(hasVariants && !selectedVariant) || isOutOfStock}
                 className="flex-1 rounded-full bg-blue-600 py-2.5 text-sm font-medium text-white transition-colors duration-200 hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-300"
               >
-                Confirmar
+                {isOutOfStock ? "Sin stock" : "Agregar al carrito"}
               </button>
             </div>
           </motion.div>
@@ -476,7 +653,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         <div className="flex min-w-0 items-center gap-2">
           <div className="relative h-8 w-8 overflow-hidden rounded-full">
             <Image
-              src={product.negocioFotoPerfil || FALLBACK_PROFILE_IMAGE}
+              src={resolveSafeImageSource(product.negocioFotoPerfil, FALLBACK_PROFILE_IMAGE)}
               alt={`Perfil de ${product.nombreNegocio ?? "negocio"}`}
               fill
               sizes="32px"
@@ -524,7 +701,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         </div>
       </div>
 
-      <Link href={`/producto/${product.slug}`} className="relative block">
+      <Link href={detailHref} onClick={handleDetailLinkClick} className="relative block">
         <div
           className="relative h-64 w-full cursor-pointer overflow-hidden rounded-xl"
           onMouseEnter={() => {
@@ -570,7 +747,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
       <div className="mt-2 flex flex-grow flex-col justify-between">
         <div>
-          <Link href={`/producto/${product.slug}`} className="block">
+          <Link href={detailHref} onClick={handleDetailLinkClick} className="block">
             <h3
               className={`text-lg font-extrabold text-gray-800 transition duration-300 hover:text-blue-700 ${tituloCard.className}`}
               style={{ textShadow: "0.5px 0.5px 1px rgba(0, 0, 0, 0.08)" }}
@@ -605,6 +782,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                   href={`https://wa.me/${telefonoLimpio}?text=${whatsappMessage}`}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={handleWhatsAppClick}
                   aria-label={`Contactar por WhatsApp sobre ${product.nombre}`}
                   className="flex items-center justify-center rounded-full bg-gradient-to-r from-green-500 to-green-600 p-3 transition-all duration-300 hover:from-green-600 hover:to-green-700"
                 >
@@ -630,7 +808,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         </div>
       </div>
 
-      {modalRoot && createPortal(ModalContent, modalRoot)}
+              {modalRoot && createPortal(ModalContent, modalRoot)}
       {modalRoot && createPortal(ToastContent, modalRoot)}
     </motion.div>
   );

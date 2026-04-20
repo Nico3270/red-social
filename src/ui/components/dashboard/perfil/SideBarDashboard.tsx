@@ -11,6 +11,7 @@ import { IoMdAddCircle } from "react-icons/io";
 import { FaFilePen, FaMoneyBillTransfer } from "react-icons/fa6";
 import { useSession } from "next-auth/react";
 import { MdHomeRepairService } from "react-icons/md";
+import { FaFolderTree } from "react-icons/fa6";
 
 interface NavItem {
   name: string;
@@ -33,6 +34,7 @@ const SideBarDashboard: React.FC = () => {
     { name: `${nombreNegocio}`, path: `/perfil/${slug}`, icon: <FaUser /> },
     { name: "Nuevo producto", path: "/dashboard/productos/nuevo_producto", icon: <IoMdAddCircle /> },
     { name: "Productos", path: "/dashboard/productos", icon: <FaBox /> },
+    { name: "Organización del Catálogo", path: "/dashboard/organizacion-catalogo", icon: <FaFolderTree /> },
     { name: "Nueva Publicación", path: "/dashboard/crear-publicacion", icon: <FaFilePen /> },
     { name: "Pedidos", path: "/dashboard/orders", icon: <FaShoppingCart /> },
     { name: "Transacciones", path: "/dashboard/transacciones", icon: <FaMoneyBillTransfer /> },

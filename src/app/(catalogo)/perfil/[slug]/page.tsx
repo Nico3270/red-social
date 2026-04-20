@@ -10,12 +10,22 @@ import { Metadata } from "next";
 import { Suspense } from "react";
 import { unstable_cache } from "next/cache";
 import { getConteosSecciones } from "@/perfil/actions/getConteosSecciones";
+import { preloadProfileCatalogData } from "@/actions/catalogGroups/preloadProfileCatalog";
 import { ServicioData } from "@/servicios/interfaces/servicios.interface";
 import { EnhancedPublicacion } from "@/publicaciones/interfaces/enhancedPublicacion.interface";
+import {
+  PLACEHOLDER_BUSINESS_IMAGE,
+  resolveSafeImageSource,
+} from "@/lib/media/resolveSafeImageSource";
 
 interface Props {
   params: Promise<{
     slug: string;
+  }>;
+  searchParams: Promise<{
+    tab?: string;
+    group?: string;
+    section?: string;
   }>;
 }
 
@@ -29,20 +39,15 @@ export async function generateStaticParams() {
 }
 
 // Página principal del perfil de negocio
-export default async function NegocioPage({ params }: Props) {
+export default async function NegocioPage({ params, searchParams }: Props) {
   const { slug } = await params;
+  const { tab, group, section } = await searchParams;
 
   // Sesión del usuario autenticado (si existe)
   const session = await auth();
   const userId = session?.user?.id || null;
 
   // === CACHE: mejora el rendimiento y evita consultas repetidas ===
-  const getCachedProducts = unstable_cache(
-    async (slug: string, take: number) => getNegocioProductsBySlug(slug, take),
-    ["negocio-products"],
-    { revalidate: 3600, tags: [`negocio-products-${slug}`] }
-  );
-
   const getCachedPublications = unstable_cache(
     async (slug: string, take: number, userId: string | null) =>
       getPublicacionesNegocio({ slug, take, userId }),
@@ -56,11 +61,18 @@ export default async function NegocioPage({ params }: Props) {
     { revalidate: 3600, tags: [`negocio-profile-${slug}`] }
   );
 
+  const getCachedCatalogData = unstable_cache(
+    async (slug: string) => preloadProfileCatalogData(slug),
+    ["negocio-catalog"],
+    { revalidate: 1800, tags: [`negocio-catalog-${slug}`] }
+  );
+
   // === Llamadas cacheadas ===
-  const result = await getCachedProducts(slug, 20);
+  const result = await getNegocioProductsBySlug(slug, 20);
   const { negocio } = await getCachedProfile(slug);
   const publicacionesIniciales = await getCachedPublications(slug, 20, userId);
   const conteos = await getConteosSecciones(slug);
+  const catalogData = await getCachedCatalogData(slug);
 
   // === Manejo de errores ===
   if (!result.ok) {
@@ -109,6 +121,10 @@ export default async function NegocioPage({ params }: Props) {
           resumenPerfil={resumenPerfil}
           resenas={resenas}
           servicios={servicios}
+          catalogPreloadData={catalogData}
+          initialTab={tab}
+          initialGroupSlug={group}
+          initialSectionSlug={section}
         />
       </Suspense>
     </div>
@@ -121,6 +137,7 @@ export const revalidate = 60;
 // === METADATOS DINÁMICOS (SEO) ===
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
+  const siteUrl = (process.env.SITE_URL || "https://myckeo.com").replace(/\/$/, "");
 
   // Reutilizamos el cache del perfil
   const getCachedProfile = unstable_cache(
@@ -140,11 +157,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     "Descubre negocios locales y productos en Myckeo, la plataforma social-comercial.";
 
   const image =
-    negocio?.imagenPortada ||
-    negocio?.imagenPerfil ||
-    "https://myckeo.com/images/placeholder_perfiles.png";
+    resolveSafeImageSource(
+      negocio?.imagenPortada || negocio?.imagenPerfil,
+      `${siteUrl}${PLACEHOLDER_BUSINESS_IMAGE}`
+    );
 
-  const canonicalUrl = `https://myckeo.com/perfil/${slug}`;
+  const canonicalUrl = `${siteUrl}/perfil/${slug}`;
 
   // === JSON-LD estructurado (para Google Rich Results) ===
   const structuredData = negocio

@@ -8,7 +8,7 @@ export type BusinessGuideVertical =
   | "home"
   | "generic";
 
-export type BusinessGuidePresetKind = "universal" | "contextual" | "section";
+export type BusinessGuidePresetKind = "universal" | "contextual" | "section" | "group";
 
 export type UniversalGuidePresetId =
   | "universal:catalog"
@@ -34,10 +34,13 @@ export type ContextualGuidePresetId =
 
 export type SectionGuidePresetId = `section:${string}`;
 
+export type GroupGuidePresetId = `group:${string}`;
+
 export type BusinessGuidePresetId =
   | UniversalGuidePresetId
   | ContextualGuidePresetId
-  | SectionGuidePresetId;
+  | SectionGuidePresetId
+  | GroupGuidePresetId;
 
 export type BusinessGuideIcon =
   | "catalog"
@@ -77,6 +80,9 @@ export interface BusinessGuidePreset {
   shortResultLabel: string;
   icon: BusinessGuideIcon;
   preferredSectionId?: string | null;
+  groupId?: string;
+  groupSlug?: string;
+  groupName?: string;
   evidence?: string[];
 }
 
@@ -98,6 +104,9 @@ export interface ProductGuideExploreContext {
   title: string;
   summary: string;
   preferredSectionId?: string | null;
+  groupId?: string;
+  groupSlug?: string;
+  groupName?: string;
 }
 
 export interface BusinessGuideAction {

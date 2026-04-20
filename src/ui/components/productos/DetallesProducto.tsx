@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { BsWhatsapp } from "react-icons/bs";
 import { InfoEmpresa } from "@/config/config";
 import { IoMdClose } from "react-icons/io";
@@ -12,6 +12,12 @@ import { useSession } from "next-auth/react";
 import { FaComment, FaShoppingCart } from "react-icons/fa";
 import { ModalPublicaciones } from "@/publicaciones/componentes/ModalPublicaciones";
 import { AddFavorites } from "./AddFavorites";
+import {
+  PLACEHOLDER_PRODUCT_IMAGE,
+  isRenderableImageSource,
+  resolveSafeImageSource,
+} from "@/lib/media/resolveSafeImageSource";
+import { reportOperationalWarning } from "@/lib/observability/operationalLogger";
 import { useCartCatalogoStore } from "@/store/carro/carro-store";
 import { motion, AnimatePresence } from "framer-motion";
 import { textosFont, titleFont, titulosPrincipales } from "@/config/fonts";
@@ -21,6 +27,7 @@ import {
   getVariantOptionSummary,
   getVariantTitle,
 } from "./variantDisplay";
+import { trackAnalyticsEvent } from "@/analytics/events";
 
 interface AddToCartProps {
   product: ProductRedSocial;
@@ -29,7 +36,7 @@ interface AddToCartProps {
 
 type SuccessType = "cart" | "review" | null;
 
-const FALLBACK_IMAGE = "/imgs/no-image.png";
+const FALLBACK_IMAGE = PLACEHOLDER_PRODUCT_IMAGE;
 
 const formatCurrency = (value: number) =>
   new Intl.NumberFormat("es-CO", {
@@ -52,14 +59,20 @@ export const DetallesProducto: React.FC<AddToCartProps> = ({
   const [showSuccess, setShowSuccess] = useState(false);
   const [successType, setSuccessType] = useState<SuccessType>(null);
   const [selectedVariantId, setSelectedVariantId] = useState<string | null>(null);
+  const detailTrackedRef = useRef<string | null>(null);
 
   const addProductToCart = useCartCatalogoStore((state) => state.addProductToCart);
 
   const telefonoLimpio = telefonoNegocio?.replace(/\D/g, "") ?? "";
+  const analyticsNegocioSlug = product.slugNegocio ?? "";
 
   const activeVariants = useMemo(
     () => (product.variantes ?? []).filter((variant) => variant.isActive),
     [product.variantes]
+  );
+  const safePrimaryImage = useMemo(
+    () => product.imagenes?.find(isRenderableImageSource) ?? FALLBACK_IMAGE,
+    [product.imagenes]
   );
 
   const hasVariants = product.usaVariantes === true && activeVariants.length > 0;
@@ -101,6 +114,14 @@ export const DetallesProducto: React.FC<AddToCartProps> = ({
   const productStock = productHasLimitedStock ? product.stock ?? null : null;
 
   const currentMaxStock = hasVariants ? variantStock : productStock;
+  const areAllVariantsOutOfStock =
+    hasVariants &&
+    activeVariants.every(
+      (variant) =>
+        variant.stockIlimitado === false &&
+        typeof variant.stock === "number" &&
+        variant.stock <= 0
+    );
 
   const isOutOfStock = hasVariants
     ? !!selectedVariant &&
@@ -110,6 +131,8 @@ export const DetallesProducto: React.FC<AddToCartProps> = ({
     : product.stockIlimitado === false &&
       typeof product.stock === "number" &&
       product.stock <= 0;
+  const isCartActionDisabled = hasVariants ? areAllVariantsOutOfStock : isOutOfStock;
+  const hasProductSpecs = Boolean(product.componentes?.length || product.atributos?.length);
 
   const whatsappMessage = encodeURIComponent(
     `¡Hola! Estoy interesado en el siguiente producto:\n\n` +
@@ -127,6 +150,27 @@ export const DetallesProducto: React.FC<AddToCartProps> = ({
       setSelectedVariantId(activeVariants[0].id);
     }
   }, [activeVariants, hasVariants, selectedVariantId]);
+
+  useEffect(() => {
+    if (detailTrackedRef.current === product.id) {
+      return;
+    }
+
+    detailTrackedRef.current = product.id;
+
+    trackAnalyticsEvent({
+      event: "product_detail_viewed",
+      timestamp: Date.now(),
+      negocioSlug: analyticsNegocioSlug,
+      navigationMode: "traditional",
+      source: "detalle_producto",
+      productId: product.id,
+      productSlug: product.slug,
+      productName: product.nombre,
+      productPrice: displayPrice,
+      hasVariants,
+    });
+  }, [analyticsNegocioSlug, displayPrice, hasVariants, product.id, product.nombre, product.slug]);
 
   useEffect(() => {
     setQuantity((prev) => {
@@ -150,6 +194,10 @@ export const DetallesProducto: React.FC<AddToCartProps> = ({
   }, [isCartModalOpen, isComponentsModalOpen, isReviewModalOpen]);
 
   const openCartModal = () => {
+    if (isCartActionDisabled) {
+      return;
+    }
+
     if (hasVariants && activeVariants.length > 0 && !selectedVariantId) {
       setSelectedVariantId(activeVariants[0].id);
     }
@@ -164,7 +212,17 @@ export const DetallesProducto: React.FC<AddToCartProps> = ({
 
   const handleAddToCart = () => {
     if (!product.slugNegocio) {
-      console.error("No se encontró el slug del negocio");
+      reportOperationalWarning({
+        area: "product-detail",
+        event: "product_detail_missing_business_slug",
+        message: "Se intento agregar al carrito desde detalle sin slug de negocio.",
+        context: {
+          productId: product.id,
+          productSlug: product.slug,
+        },
+        dedupeKey: `product-detail-missing-business-slug:${product.id}`,
+      });
+
       return;
     }
 
@@ -177,11 +235,25 @@ export const DetallesProducto: React.FC<AddToCartProps> = ({
     }
 
     const effectivePrice = selectedVariant?.precio ?? product.precio;
-    const effectiveImage = selectedVariant?.imagenUrl || product.imagenes?.[0] || FALLBACK_IMAGE;
+  const effectiveImage = resolveSafeImageSource(selectedVariant?.imagenUrl, safePrimaryImage);
     const effectiveStock = selectedVariant?.stock ?? product.stock ?? null;
     const effectiveStockIlimitado = selectedVariant
       ? selectedVariant.stockIlimitado
       : (product.stockIlimitado ?? true);
+
+    trackAnalyticsEvent({
+      event: "product_add_to_cart_clicked",
+      timestamp: Date.now(),
+      negocioSlug: analyticsNegocioSlug,
+      navigationMode: "traditional",
+      source: "detalle_producto",
+      productId: product.id,
+      productSlug: product.slug,
+      productName: product.nombre,
+      productPrice: effectivePrice,
+      variantId: selectedVariant?.id,
+      quantity,
+    });
 
     const cartProduct = {
       cartItemId: `${product.id}-${selectedVariant?.id ?? "base"}-${Date.now()}`,
@@ -224,7 +296,10 @@ export const DetallesProducto: React.FC<AddToCartProps> = ({
   };
 
   return (
-    <div className="mb-10 flex flex-col items-center gap-6 rounded-2xl border border-gray-100 bg-white p-4 shadow-md sm:mt-10 md:mb-20">
+    <div
+      className="mb-10 flex flex-col items-center gap-6 rounded-2xl border border-gray-100 bg-white p-4 shadow-md sm:mt-10 md:mb-20"
+      data-testid="product-detail-view"
+    >
       <div className="text-center">
         <h1
           className={`break-words text-center text-2xl font-semibold leading-snug text-gray-800 sm:text-3xl md:text-4xl ${titleFont.className}`}
@@ -253,20 +328,23 @@ export const DetallesProducto: React.FC<AddToCartProps> = ({
         </div>
 
         <div className="flex flex-wrap items-center justify-center gap-3 py-2">
-          <button
-            onClick={() => setIsComponentsModalOpen(true)}
-            className="mt-0 flex items-center gap-2 rounded-xl bg-gray-900 px-5 py-3 font-semibold text-white shadow-sm transition-all hover:bg-gray-800"
-          >
-            <HiOutlineCube className="text-lg" />
-            Especificaciones
-          </button>
+          {hasProductSpecs && (
+            <button
+              onClick={() => setIsComponentsModalOpen(true)}
+              className="mt-0 flex items-center gap-2 rounded-xl bg-gray-900 px-5 py-3 font-semibold text-white shadow-sm transition-all hover:bg-gray-800"
+            >
+              <HiOutlineCube className="text-lg" />
+              Especificaciones
+            </button>
+          )}
 
           {hasVariants && (
             <button
               onClick={openCartModal}
-              className="mt-0 rounded-xl border border-blue-200 bg-blue-50 px-5 py-3 font-semibold text-blue-700 shadow-sm transition-all hover:bg-blue-100"
+              disabled={isCartActionDisabled}
+              className="mt-0 rounded-xl border border-blue-200 bg-blue-50 px-5 py-3 font-semibold text-blue-700 shadow-sm transition-all hover:bg-blue-100 disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-100 disabled:text-gray-400"
             >
-              Ver opciones del producto
+              {areAllVariantsOutOfStock ? "Opciones sin stock" : "Ver opciones del producto"}
             </button>
           )}
         </div>
@@ -367,6 +445,22 @@ export const DetallesProducto: React.FC<AddToCartProps> = ({
             href={whatsappUrl}
             target="_blank"
             rel="noopener noreferrer"
+            data-testid="product-detail-whatsapp"
+            onClick={() => {
+              trackAnalyticsEvent({
+                event: "product_whatsapp_clicked",
+                timestamp: Date.now(),
+                negocioSlug: analyticsNegocioSlug,
+                navigationMode: "traditional",
+                source: "detalle_producto",
+                productId: product.id,
+                productSlug: product.slug,
+                productName: product.nombre,
+                productPrice: displayPrice,
+                variantId: selectedVariant?.id,
+                quantity,
+              });
+            }}
             className="flex items-center justify-center gap-2 rounded-xl bg-green-500 px-6 py-3 font-bold text-white shadow-sm transition-all hover:bg-green-600"
           >
             <BsWhatsapp className="text-lg" />
@@ -379,7 +473,7 @@ export const DetallesProducto: React.FC<AddToCartProps> = ({
           title={product.nombre}
           price={product.precio}
           slug={product.slug}
-          images={product.imagenes?.[0] ? [product.imagenes[0]] : []}
+          images={[safePrimaryImage]}
           descripcionCorta={product.descripcionCorta ?? ""}
           description={product.descripcion}
           sections={product.sections}
@@ -388,10 +482,13 @@ export const DetallesProducto: React.FC<AddToCartProps> = ({
 
         <button
           onClick={openCartModal}
-          className="flex items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-blue-600 p-3 transition-all duration-300 hover:from-blue-600 hover:to-blue-700"
+          disabled={isCartActionDisabled}
+          data-testid="product-detail-cart-trigger"
+          className="flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 px-5 py-3 font-semibold text-white transition-all duration-300 hover:from-blue-600 hover:to-blue-700 disabled:cursor-not-allowed disabled:from-gray-300 disabled:to-gray-400"
           aria-label="Agregar producto al carrito"
         >
           <FaShoppingCart className="text-xl text-white" />
+          <span>{isCartActionDisabled ? "Sin stock" : hasVariants ? "Elegir variante" : "Agregar al carrito"}</span>
         </button>
       </div>
 
@@ -432,6 +529,7 @@ export const DetallesProducto: React.FC<AddToCartProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            data-testid="product-detail-cart-modal"
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 backdrop-blur-sm"
             onClick={closeCartModal}
           >
@@ -628,9 +726,10 @@ export const DetallesProducto: React.FC<AddToCartProps> = ({
                 <button
                   onClick={handleAddToCart}
                   disabled={(hasVariants && !selectedVariant) || isOutOfStock}
+                  data-testid="product-detail-cart-confirm"
                   className="flex-1 rounded-full border border-gray-500 bg-gray-900 py-2.5 text-sm font-medium text-white transition-all duration-200 hover:bg-green-600 disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-300 disabled:text-gray-500"
                 >
-                  Confirmar
+                  {isOutOfStock ? "Sin stock" : "Agregar al carrito"}
                 </button>
               </div>
             </motion.div>

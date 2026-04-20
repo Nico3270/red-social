@@ -61,7 +61,7 @@ export function BusinessGuideEntry({
   onSelectPreset,
 }: Props) {
   return (
-<div className="relative overflow-hidden rounded-[24px] border border-stone-200/80 bg-[linear-gradient(135deg,rgba(255,251,245,0.98),rgba(255,255,255,0.98),rgba(248,250,252,0.98))] p-4 shadow-[0_12px_30px_rgba(15,23,42,0.06)] sm:p-5">
+<div data-testid="business-guide-entry" className="relative overflow-hidden rounded-[24px] border border-stone-200/80 bg-[linear-gradient(135deg,rgba(255,251,245,0.98),rgba(255,255,255,0.98),rgba(248,250,252,0.98))] p-4 shadow-[0_12px_30px_rgba(15,23,42,0.06)] sm:p-5">
       <div className="absolute right-0 top-0 h-32 w-32 rounded-full bg-amber-100/40 blur-3xl" />
       <div className="absolute bottom-0 left-0 h-28 w-28 rounded-full bg-slate-100/60 blur-3xl" />
 
@@ -86,6 +86,7 @@ export function BusinessGuideEntry({
                 key={preset.id}
                 type="button"
                 onClick={() => onSelectPreset(preset.id)}
+                data-testid={`business-guide-preset-${index}`}
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.24, delay: index * 0.05 }}

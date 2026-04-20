@@ -13,6 +13,13 @@ import { FollowButton } from "@/feed/componentes/FollowButton";
 import { EnhancedPublicacion } from "../interfaces/enhancedPublicacion.interface";
 import { textosFont, titleFont } from "@/config/fonts";
 import { useMediaAspectRatio } from "@/hooks/useMediaAspectRatio";
+import {
+  PLACEHOLDER_BUSINESS_IMAGE,
+  PLACEHOLDER_PRODUCT_IMAGE,
+  isLikelyVideoUrl,
+  resolveSafeImageSource,
+} from "@/lib/media/resolveSafeImageSource";
+import { reportOperationalWarning } from "@/lib/observability/operationalLogger";
 
 
 interface Productos {
@@ -33,10 +40,52 @@ export const ShowTestimonioPublicacion = ({ publicacion, productos, isInModal = 
   const [isModalOpenLocal, setIsModalOpenLocal] = useState(false);
 
   const media = publicacion.multimedia?.[0];
-  const mediaUrl = media?.url || "/placeholder-image.jpg";
-  const mediaTipo = media?.tipo;
-  const aspectRatio = useMediaAspectRatio(mediaUrl, mediaTipo);
+  const mediaTipo = media?.tipo ?? "IMAGEN";
+  const mediaIsVideo = mediaTipo === "VIDEO" || isLikelyVideoUrl(media?.url);
+  const mediaUrl = mediaIsVideo
+    ? media?.url || ""
+    : resolveSafeImageSource(media?.url, PLACEHOLDER_PRODUCT_IMAGE);
+  const aspectRatio = useMediaAspectRatio(mediaUrl, mediaIsVideo ? "VIDEO" : "IMAGEN");
   const timeAgo = formatDistanceToNow(new Date(publicacion.createdAt), { addSuffix: true, locale: es });
+  const safeBusinessImage = resolveSafeImageSource(
+    publicacion.negocio?.fotoPerfil,
+    PLACEHOLDER_BUSINESS_IMAGE
+  );
+  const hasInvalidPublicationId = !publicacion.id || !/^c[0-9a-z]{24}$/.test(publicacion.id);
+  const hasInvalidBusinessSlug = !publicacion.negocio?.slug || !/^[a-z0-9-]+$/i.test(publicacion.negocio.slug);
+
+  useEffect(() => {
+    if (!hasInvalidPublicationId) {
+      return;
+    }
+
+    reportOperationalWarning({
+      area: "public-feed",
+      event: "testimonial_invalid_publication_id",
+      message: "Se descartó un testimonio con ID de publicación inválido.",
+      context: {
+        publicationId: publicacion.id,
+      },
+      dedupeKey: `testimonial-invalid-publication-id:${publicacion.id ?? "missing"}`,
+    });
+  }, [hasInvalidPublicationId, publicacion.id]);
+
+  useEffect(() => {
+    if (!hasInvalidBusinessSlug) {
+      return;
+    }
+
+    reportOperationalWarning({
+      area: "public-feed",
+      event: "testimonial_invalid_business_slug",
+      message: "Se descartó un testimonio con slug de negocio inválido.",
+      context: {
+        publicationId: publicacion.id,
+        negocioSlug: publicacion.negocio?.slug,
+      },
+      dedupeKey: `testimonial-invalid-business-slug:${publicacion.id}`,
+    });
+  }, [hasInvalidBusinessSlug, publicacion.id, publicacion.negocio?.slug]);
 
   
 
@@ -50,14 +99,14 @@ export const ShowTestimonioPublicacion = ({ publicacion, productos, isInModal = 
     setIsModalOpenLocal(false);
   }, []);
 
-  if (!publicacion.id || !/^c[0-9a-z]{24}$/.test(publicacion.id)) {
+  if (hasInvalidPublicationId) {
     return (
       <div className="w-full my-6 bg-white rounded-2xl shadow-lg p-4">
         <Typography color="error">Error: ID de publicación inválido</Typography>
       </div>
     );
   }
-  if (!publicacion.negocio?.slug || !/^[a-z0-9-]+$/i.test(publicacion.negocio.slug)) {
+  if (hasInvalidBusinessSlug) {
     return (
       <div className="w-full my-6 bg-white rounded-2xl shadow-lg p-4">
         {/* <Typography color="error">Error: Slug de negocio inválido</Typography> */}
@@ -78,7 +127,7 @@ export const ShowTestimonioPublicacion = ({ publicacion, productos, isInModal = 
         <div className="flex items-center justify-between p-4 border-b border-gray-100"> {/* Fixed items-between a items-center para responsive */}
           <div className="relative w-12 h-12 rounded-full overflow-hidden mr-3">
             <Image
-              src={publicacion.negocio.fotoPerfil || "/default-profile.png"}
+              src={safeBusinessImage}
               alt="Avatar del negocio"
               fill
               sizes="48px"
@@ -89,7 +138,7 @@ export const ShowTestimonioPublicacion = ({ publicacion, productos, isInModal = 
           </div>
           <div className="flex-1 min-w-0"> {/* min-w-0 para truncate en móviles */}
             <Link
-              href={`/perfil/${publicacion.negocio.slug}`}
+              href={`/perfil/${publicacion.negocio?.slug || ""}`}
               className={`font-semibold text-red-800 hover:text-blue-600 transition-colors duration-200 truncate ${titleFont.className}`}
             >
               {publicacion.negocio?.nombre || "Negocio Desconocido"}
@@ -136,7 +185,7 @@ export const ShowTestimonioPublicacion = ({ publicacion, productos, isInModal = 
           tabIndex={!isInModal ? 0 : undefined}
           aria-label={!isInModal ? "Abrir modal con detalle del testimonio" : undefined}
         >
-          {mediaUrl.endsWith(".mp4") || mediaTipo === "VIDEO" ? (
+          {mediaIsVideo ? (
             <video
               src={mediaUrl}
               className="w-full h-full object-contain rounded-b-xl" // Contain para no distorsionar
@@ -177,7 +226,7 @@ export const ShowTestimonioPublicacion = ({ publicacion, productos, isInModal = 
                   >
                     <div className="relative w-12 h-12 flex-shrink-0">
                       <Image
-                        src={producto.imagen || "/placeholder-image.jpg"}
+                        src={resolveSafeImageSource(producto.imagen, PLACEHOLDER_PRODUCT_IMAGE)}
                         alt={producto.nombre}
                         fill
                         sizes="48px"

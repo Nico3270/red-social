@@ -9,6 +9,14 @@ import { FaStar } from "react-icons/fa";
 import useSWRInfinite from "swr/infinite";
 import { ShowTestimonioPublicacion } from "@/publicaciones/componentes/ShowTestimonioPublicacion";
 import { SocialMediaCarousel } from "@/publicaciones/componentes/SocialMediaPublicacion";
+import {
+  PLACEHOLDER_PRODUCT_IMAGE,
+  resolveSafeImageSource,
+} from "@/lib/media/resolveSafeImageSource";
+import {
+  reportOperationalError,
+  reportOperationalWarning,
+} from "@/lib/observability/operationalLogger";
 
 
 import "./FeedPublicaciones.css";
@@ -65,7 +73,7 @@ const ProductosDestacados: React.FC<{ productos: ProductDestacado[] }> = ({ prod
         >
           <div className="relative w-16 h-16">
             <Image
-              src={producto.imagen || "/placeholder-image.jpg"}
+              src={resolveSafeImageSource(producto.imagen, PLACEHOLDER_PRODUCT_IMAGE)}
               alt={producto.nombre}
               fill
               className="object-cover rounded-md"
@@ -130,30 +138,26 @@ const FeedPublicaciones = memo(function FeedPublicaciones({
     }, delay);
   }, []);
 
-  useEffect(() => {
-    if (process.env.NODE_ENV === "development") {
-      console.log(
-        "Initial publicaciones en FeedPublicaciones:",
-        initialPublicaciones.map((pub) => ({ id: pub.id, tipo: pub.tipo, createdAt: pub.createdAt, hasUserReaction: !!pub.userReaction }))
-      );
-    }
-  }, [initialPublicaciones]);
-
   const getKey = (pageIndex: number, previousPageData: PublicacionesResult | null) => {
     if (hasReachedEndRef.current) {
-      // console.log("getKey: Reached end, no more requests");
       return null;
     }
     const slug = initialPublicaciones[0]?.negocio?.slug;
     if (!slug) {
-      console.log("getKey: No slug available");
+      reportOperationalWarning({
+        area: "public-feed",
+        event: "feed_incremental_load_missing_slug",
+        message: "No se pudo continuar la carga incremental del feed público por falta de slug.",
+        context: {
+          initialPublicaciones: initialPublicaciones.length,
+        },
+        dedupeKey: "feed-incremental-load-missing-slug",
+      });
       return null;
     }
     const skip = initialPublicaciones.length + pageIndex * 10;
     const url = `/api/publicaciones/${slug}?skip=${skip}&take=10`;
-    // console.log("getKey: pageIndex=", pageIndex, "skip=", skip, "url=", url);
     if (previousPageData && (!previousPageData.publicaciones || previousPageData.publicaciones.length === 0)) {
-      console.log("getKey: No more data, pageIndex=", pageIndex);
       hasReachedEndRef.current = true;
       setHasReachedEndLocal(true);
       return null;
@@ -162,13 +166,23 @@ const FeedPublicaciones = memo(function FeedPublicaciones({
   };
 
   const fetcher = async (url: string) => {
-    // console.log("Fetching URL:", url);
     const res = await fetch(url);
     if (!res.ok) {
-      throw new Error(`HTTP error! status: ${res.status}`);
+      const error = new Error(`HTTP error! status: ${res.status}`);
+      reportOperationalError({
+        area: "public-feed",
+        event: "feed_incremental_request_failed",
+        message: "La carga incremental del feed público devolvió una respuesta no exitosa.",
+        error,
+        context: {
+          url,
+          status: res.status,
+        },
+        dedupeKey: `feed-incremental-request:${res.status}:${url}`,
+      });
+      throw error;
     }
     const data = await res.json();
-    // console.log("Fetched data:", data);
     return data as PublicacionesResult;
   };
 
@@ -190,25 +204,11 @@ const FeedPublicaciones = memo(function FeedPublicaciones({
   useEffect(() => {
     if (data && Array.isArray(data)) {
       const newDynamicPublicaciones = data.flatMap((page) => page?.publicaciones || []);
-      if (process.env.NODE_ENV === "development") {
-        console.log("Updating dynamic publicaciones:", newDynamicPublicaciones.length);
-        console.log(
-          "New dynamic publicaciones:",
-          newDynamicPublicaciones.map((pub) => ({ id: pub.id, tipo: pub.tipo, createdAt: pub.createdAt, hasUserReaction: !!pub.userReaction }))
-        );
-      }
       setDynamicPublicaciones((prev) => {
         const publicationMap = new Map<string, EnhancedPublicacion>();
         prev.forEach((pub) => publicationMap.set(pub.id, pub));
         newDynamicPublicaciones.forEach((pub) => publicationMap.set(pub.id, pub));
-        const updated = Array.from(publicationMap.values());
-        if (process.env.NODE_ENV === "development") {
-          console.log(
-            "Updated dynamic publicaciones:",
-            updated.map((pub) => ({ id: pub.id, tipo: pub.tipo, createdAt: pub.createdAt, hasUserReaction: !!pub.userReaction }))
-          );
-        }
-        return updated;
+        return Array.from(publicationMap.values());
       });
     }
   }, [data]);
@@ -219,6 +219,25 @@ const FeedPublicaciones = memo(function FeedPublicaciones({
     dynamicPublicaciones.forEach((pub) => publicationMap.set(pub.id, pub));
     return Array.from(publicationMap.values());
   }, [initialPublicaciones, dynamicPublicaciones]);
+
+  useEffect(() => {
+    if (!error) {
+      return;
+    }
+
+    reportOperationalError({
+      area: "public-feed",
+      event: "feed_incremental_load_failed",
+      message: "La carga incremental del feed público falló.",
+      error,
+      context: {
+        negocioSlug: initialPublicaciones[0]?.negocio?.slug,
+        loadedPublicaciones: publicaciones.length,
+        size,
+      },
+      dedupeKey: `feed-incremental-load-failed:${initialPublicaciones[0]?.negocio?.slug ?? "unknown"}:${error.message}`,
+    });
+  }, [error, initialPublicaciones, publicaciones.length, size]);
 
   const publicacionesFiltradas = useMemo((): EnhancedPublicacion[] => {  // Tipo explícito para evitar void
     let filtered: EnhancedPublicacion[] = [...publicaciones];
@@ -285,7 +304,6 @@ const FeedPublicaciones = memo(function FeedPublicaciones({
     observer.current = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting && !isLoading && !isValidating && !hasReachedEndRef.current) {
-          // console.log("Loading more publications, size:", size);
           setSize((prev) => prev + 1);
         }
       },

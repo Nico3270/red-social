@@ -11,8 +11,10 @@ import type {
   BusinessGuideResolvedPreset,
   BusinessGuideVertical,
   ContextualGuidePresetId,
+  GroupGuidePresetId,
   ProductGuideExploreContext,
 } from "./business-guide.types";
+import type { CatalogGroupsSignal } from "@/actions/catalogGroups/preloadProfileCatalog";
 
 type PriceStrategy = "low" | "balanced" | "premium";
 
@@ -38,6 +40,7 @@ interface CatalogSignals {
   prices: number[];
   hasContactChannel: boolean;
   contactHref: string | null;
+  catalogGroupsSignal?: CatalogGroupsSignal;
 }
 
 interface GuideProfileMatch {
@@ -132,7 +135,8 @@ const buildContactHref = (products: ProductRedSocial[]) => {
 
 export const extractCatalogSignals = (
   business: BusinessGuideBusinessInfo,
-  products: ProductRedSocial[]
+  products: ProductRedSocial[],
+  catalogGroupsSignal?: CatalogGroupsSignal
 ): CatalogSignals => {
   const availableProducts = productPool(products);
 
@@ -218,6 +222,7 @@ export const extractCatalogSignals = (
     prices: enrichedProducts.map((product) => product.price),
     hasContactChannel: Boolean(contactHref),
     contactHref,
+    catalogGroupsSignal,
   };
 };
 
@@ -887,6 +892,53 @@ const buildSectionFallbackPresets = (
     .slice(0, 2)
     .map((sectionId) => sectionPresetFromId(sectionId, profile.vertical));
 
+const buildCatalogGroupPresets = (
+  profile: GuideProfileMatch,
+  signals: CatalogSignals
+): BusinessGuidePreset[] => {
+  if (!signals.catalogGroupsSignal?.groupStats || signals.catalogGroupsSignal.groupStats.length === 0) {
+    return [];
+  }
+
+  // Seleccionar máximo 4 grupos más útiles
+  const groupsToUse = [...signals.catalogGroupsSignal.groupStats]
+    .sort((a, b) => {
+      // Priorizar por sortPriority (menor es mejor)
+      if (a.sortPriority !== b.sortPriority) {
+        return a.sortPriority - b.sortPriority;
+      }
+      // Desempate por cantidad de productos
+      return b.productCount - a.productCount;
+    })
+    .slice(0, 4);
+
+  // Convertir nombres a slug para usar como ID
+  const slugify = (text: string) =>
+    normalizeText(text)
+      .replace(/\s+/g, "-")
+      .replace(/[^a-z0-9\-]/g, "")
+      .toLowerCase();
+
+  return groupsToUse.map((group) => {
+    const groupSlug = group.slug || slugify(group.nombre);
+    const presetId: GroupGuidePresetId = `group:${groupSlug}`;
+
+    return {
+      id: presetId,
+      kind: "group" as const,
+      vertical: profile.vertical,
+      label: group.nombre,
+      hint: `${group.productCount} producto${group.productCount !== 1 ? "s" : ""} en esta categoría`,
+      shortResultLabel: `Productos: ${group.nombre}`,
+      icon: "section" as const,
+      groupId: group.id,
+      groupSlug,
+      groupName: group.nombre,
+      evidence: [group.nombre],
+    };
+  });
+};
+
 const getGuideCopy = (vertical: BusinessGuideVertical): Pick<BusinessGuideConfig, "title" | "subtitle" | "helperText"> => {
   switch (vertical) {
     case "restaurant":
@@ -928,19 +980,21 @@ const dedupePresets = (presets: BusinessGuidePreset[]) => {
 
 export const getBusinessGuideConfig = (
   business: BusinessGuideBusinessInfo,
-  products: ProductRedSocial[]
+  products: ProductRedSocial[],
+  catalogGroupsSignal?: CatalogGroupsSignal
 ): BusinessGuideConfig | null => {
   if (products.length === 0) {
     return null;
   }
 
   const profile = detectGuideProfile(business, products);
-  const signals = extractCatalogSignals(business, products);
+  const signals = extractCatalogSignals(business, products, catalogGroupsSignal);
   const universalPresets = buildUniversalPresets(profile, signals);
   const contextualPresets = buildContextualPresets(profile, signals);
+  const groupPresets = buildCatalogGroupPresets(profile, signals);
 
   const needsSectionFallback =
-    profile.vertical === "generic" || contextualPresets.length === 0;
+    profile.vertical === "generic" || (contextualPresets.length === 0 && groupPresets.length === 0);
 
   const fallbackSectionPresets = needsSectionFallback
     ? buildSectionFallbackPresets(profile, signals)
@@ -956,6 +1010,7 @@ export const getBusinessGuideConfig = (
     presets: dedupePresets([
       ...universalPresets,
       ...contextualPresets,
+      ...groupPresets,
       ...fallbackSectionPresets,
     ]),
   };
@@ -1140,6 +1195,19 @@ const getPresetRule = (preset: BusinessGuidePreset): ScoreRule => {
     };
   }
 
+  // Manejar presets derivados de CatalogGroups
+  if (preset.kind === "group" && preset.evidence && preset.evidence.length > 0) {
+    return {
+      keywords: normalizeTokens([preset.evidence[0], preset.label]),
+      preferredSectionSlugs: [],
+      preferredCategorySlugs: [],
+      priceStrategy: "balanced",
+      specialLabels: ["mas_vendido", "novedad", "promocion"],
+      priorityWeight: 1.1,
+      defaultReason: `Relacionado con ${preset.label}`,
+    };
+  }
+
   const contextualRule =
     preset.kind === "contextual" ? contextualRuleById.get(preset.id as ContextualGuidePresetId) : null;
 
@@ -1245,15 +1313,17 @@ const buildPrimaryAction = (
 export const resolveBusinessGuidePreset = ({
   business,
   products,
+  catalogGroupsSignal,
   presetId,
   maxResults = 4,
 }: {
   business: BusinessGuideBusinessInfo;
   products: ProductRedSocial[];
+  catalogGroupsSignal?: CatalogGroupsSignal;
   presetId: BusinessGuidePresetId;
   maxResults?: number;
 }): BusinessGuideResolvedPreset | null => {
-  const config = getBusinessGuideConfig(business, products);
+  const config = getBusinessGuideConfig(business, products, catalogGroupsSignal);
   if (!config || maxResults <= 0) {
     return null;
   }
@@ -1263,7 +1333,7 @@ export const resolveBusinessGuidePreset = ({
     return null;
   }
 
-  const signals = extractCatalogSignals(business, products);
+  const signals = extractCatalogSignals(business, products, catalogGroupsSignal);
   if (signals.products.length === 0) {
     return null;
   }
@@ -1316,13 +1386,17 @@ export const resolveBusinessGuidePreset = ({
     ? `No encontramos coincidencias perfectas para “${preset.label}”, así que te mostramos una selección general y segura del negocio.`
     : `${preset.shortResultLabel} construidas con señales reales del catálogo de ${business.nombreNegocio}.`;
 
-  const preferredSectionId = dominantSectionId(selected, preset);
+  const preferredSectionId =
+    preset.id === "universal:catalog" ? null : dominantSectionId(selected, preset);
   const exploreContext: ProductGuideExploreContext = {
     requestKey: `${preset.id}-${Date.now()}`,
     presetId: preset.id,
     title: preset.label,
     summary,
     preferredSectionId,
+    groupId: preset.groupId,
+    groupSlug: preset.groupSlug,
+    groupName: preset.groupName,
   };
 
   return {

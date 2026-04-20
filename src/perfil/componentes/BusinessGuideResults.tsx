@@ -6,6 +6,10 @@ import { motion } from "framer-motion";
 import { BsWhatsapp } from "react-icons/bs";
 import { FaArrowRight, FaRedoAlt, FaStar } from "react-icons/fa";
 import { titleFont, textosFont } from "@/config/fonts";
+import {
+  PLACEHOLDER_PRODUCT_IMAGE,
+  isRenderableImageSource,
+} from "@/lib/media/resolveSafeImageSource";
 import { InfoEmpresa as empresa } from "@/config/config";
 import { Precio } from "@/ui/components/productos/Precio";
 import type { BusinessGuideResolvedPreset } from "@/perfil/guide/business-guide.types";
@@ -13,6 +17,7 @@ import type { BusinessGuideResolvedPreset } from "@/perfil/guide/business-guide.
 interface Props {
   selection: BusinessGuideResolvedPreset;
   onExploreMore: (selection: BusinessGuideResolvedPreset) => void;
+  onResultClick?: (selection: BusinessGuideResolvedPreset, index: number) => void;
   onReset: () => void;
 }
 
@@ -39,12 +44,13 @@ const getDisplayPrice = (price: number, variantPrices: Array<number | null | und
   return Math.min(price, ...normalizedVariantPrices);
 };
 
-export function BusinessGuideResults({ selection, onExploreMore, onReset }: Props) {
+export function BusinessGuideResults({ selection, onExploreMore, onResultClick, onReset }: Props) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 18 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.28, ease: "easeOut" }}
+      data-testid="business-guide-results"
       className="overflow-hidden rounded-[28px] border border-slate-200/80 bg-white shadow-[0_20px_40px_rgba(15,23,42,0.08)]"
     >
       <div className="border-b border-slate-100 bg-[linear-gradient(135deg,rgba(255,247,237,0.92),rgba(255,255,255,0.98))] px-5 py-5 sm:px-6">
@@ -78,6 +84,7 @@ export function BusinessGuideResults({ selection, onExploreMore, onReset }: Prop
             <button
               type="button"
               onClick={onReset}
+              data-testid="business-guide-reset"
               className="inline-flex items-center gap-2 rounded-full border border-stone-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-stone-300 hover:bg-stone-50"
             >
               <FaRedoAlt className="text-xs" />
@@ -86,6 +93,7 @@ export function BusinessGuideResults({ selection, onExploreMore, onReset }: Prop
             <button
               type="button"
               onClick={() => onExploreMore(selection)}
+              data-testid="business-guide-explore-more"
               className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-slate-900/15 transition hover:bg-slate-800"
             >
               Ver más opciones
@@ -97,7 +105,8 @@ export function BusinessGuideResults({ selection, onExploreMore, onReset }: Prop
 
       <div className="grid gap-4 p-4 sm:grid-cols-2 sm:p-6 xl:grid-cols-4">
         {selection.items.map((item, index) => {
-          const primaryImage = item.product.imagenes[0] || "/imgs/no-image.png";
+          const primaryImage =
+            item.product.imagenes.find(isRenderableImageSource) || PLACEHOLDER_PRODUCT_IMAGE;
           const telefonoLimpio = item.product.telefonoContacto?.replace(/\D/g, "") ?? "";
           const displayPrice = getDisplayPrice(
             item.product.precio,
@@ -113,9 +122,14 @@ export function BusinessGuideResults({ selection, onExploreMore, onReset }: Prop
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.24, delay: index * 0.06 }}
+              data-testid={`business-guide-result-${index}`}
               className="flex h-full flex-col overflow-hidden rounded-[24px] border border-slate-100 bg-white shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-lg"
             >
-              <Link href={`/producto/${item.product.slug}`} className="relative block aspect-[4/3] overflow-hidden">
+              <Link
+                href={`/producto/${item.product.slug}`}
+                onClick={() => onResultClick?.(selection, index)}
+                className="relative block aspect-[4/3] overflow-hidden"
+              >
                 <Image
                   src={primaryImage}
                   alt={item.product.nombre}
@@ -139,7 +153,7 @@ export function BusinessGuideResults({ selection, onExploreMore, onReset }: Prop
 
               <div className="flex flex-1 flex-col justify-between px-4 py-4">
                 <div>
-                  <Link href={`/producto/${item.product.slug}`}>
+                  <Link href={`/producto/${item.product.slug}`} onClick={() => onResultClick?.(selection, index)}>
                     <h4 className={`text-lg leading-tight text-slate-900 transition hover:text-amber-700 ${titleFont.className}`}>
                       {item.product.nombre}
                     </h4>
@@ -180,6 +194,7 @@ export function BusinessGuideResults({ selection, onExploreMore, onReset }: Prop
 
                       <Link
                         href={`/producto/${item.product.slug}`}
+                        onClick={() => onResultClick?.(selection, index)}
                         className="inline-flex items-center gap-2 rounded-full border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
                       >
                         Ver detalle

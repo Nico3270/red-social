@@ -1,0 +1,68 @@
+{
+  "fixtureVersion": 2,
+  "generatedAt": "2026-04-18T22:19:01.516Z",
+  "invalidGroupSlug": "grupo-smoke-inexistente",
+  "catalogGroupsProfileStatus": "bootstrapped",
+  "catalogGroupsProfileReason": "Fixture estable no-restaurante ya provisionada en la base activa.",
+  "traditionalProfile": {
+    "slug": "vestidos-bogota-bogota-1aog",
+    "businessName": "Vestidos Bogota",
+    "product": {
+      "slug": "vestido-de-15-anos-mjdx",
+      "name": "Vestido de 15 años",
+      "hasWhatsApp": true,
+      "hasVariants": false,
+      "isOutOfStock": false
+    }
+  },
+  "catalogGroupsProfile": {
+    "slug": "smoke-catalog-groups-no-restaurante",
+    "businessName": "Smoke Catalog Groups",
+    "fixtureSource": "bootstrapped",
+    "fallbackTarget": {
+      "id": "9c5aae77-d435-4755-8536-96da0dd095f7",
+      "slug": "temporada-actual",
+      "name": "Temporada actual",
+      "rootName": "Colecciones",
+      "sampleProduct": {
+        "slug": "chaqueta-smoke-catalog-groups",
+        "name": "Chaqueta Smoke de catálogo",
+        "hasWhatsApp": true,
+        "hasVariants": false,
+        "isOutOfStock": false
+      }
+    },
+    "ungroupedSampleProduct": {
+      "slug": "collar-smoke-catalog-groups",
+      "name": "Collar Smoke sin grupo",
+      "hasWhatsApp": true,
+      "hasVariants": false,
+      "isOutOfStock": false
+    }
+  },
+  "restaurantProfile": {
+    "slug": "parrilla-internacional-tunja-tunja-r3jq",
+    "businessName": "Pariila Internacional Tunja",
+    "fixtureSource": "existing",
+    "fallbackTarget": {
+      "id": "3ac4dba0-904f-4ce7-adf4-128b550f5bd6",
+      "slug": "platos-fuertes",
+      "name": "Platos Fuertes",
+      "rootName": "Platos Fuertes",
+      "sampleProduct": {
+        "slug": "bandeja-paisa-8j6g",
+        "name": "Bandeja Paisa",
+        "hasWhatsApp": true,
+        "hasVariants": false,
+        "isOutOfStock": false
+      }
+    },
+    "ungroupedSampleProduct": {
+      "slug": "salchipapa-colombiano",
+      "name": "Salchipapa colombiano",
+      "hasWhatsApp": true,
+      "hasVariants": false,
+      "isOutOfStock": false
+    }
+  }
+}

@@ -4,6 +4,10 @@ import React, { useMemo } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { FaBriefcase } from "react-icons/fa";
+import {
+  PLACEHOLDER_PRODUCT_IMAGE,
+  resolveSafeImageSource,
+} from "@/lib/media/resolveSafeImageSource";
 import { ServicioData } from "@/servicios/interfaces/servicios.interface";
 import Divider from "@/ui/components/divider/Divider";
 import { getDeterministicFloatingCardStyle } from "./landing-section.utils";
@@ -46,11 +50,10 @@ const ServiciosSection: React.FC<ServiciosSectionProps> = ({
           >
             {s.multimedia[0]?.url && (
               <Image
-                src={s.multimedia[0].url}
+                src={resolveSafeImageSource(s.multimedia[0].url, PLACEHOLDER_PRODUCT_IMAGE)}
                 alt={s.titulo}
                 fill
                 className="object-cover"
-                
                 sizes="30vw"
               />
             )}
@@ -109,11 +112,13 @@ const ServiciosSection: React.FC<ServiciosSectionProps> = ({
               >
                 <div className="relative w-full aspect-[4/5]">
                   <Image
-                    src={servicio.multimedia[0]?.url || "/placeholder-service.jpg"}
+                    src={resolveSafeImageSource(
+                      servicio.multimedia[0]?.url,
+                      PLACEHOLDER_PRODUCT_IMAGE
+                    )}
                     alt={servicio.titulo}
                     fill
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
-                    
                     sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent transition-opacity duration-500" />
