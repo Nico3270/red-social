@@ -23,32 +23,32 @@ enum EstadoContacto {
 
 // Modelo Contactos
 model Contactos {
-  id                   Int            @id @default(autoincrement())
-  nombre               String
-  departamento         String
-  municipio            String
-  direccion            String
-  correo               String         @unique
-  identificacion       String         @unique
-  telefono             String?
-  categoria            String?
+  id             Int     @id @default(autoincrement())
+  nombre         String
+  departamento   String
+  municipio      String
+  direccion      String
+  correo         String  @unique
+  identificacion String  @unique
+  telefono       String?
+  categoria      String?
 
-  promocionalEnviado   Boolean        @default(false)
-  brevoMessageId       String?
-  emailEstado          String?
-  entregadoEn          DateTime?
-  abiertoEn            DateTime?
-  clicEn               DateTime?
-  reboteRazon          String?
-  ultimoEventoBrevo    DateTime?
+  promocionalEnviado Boolean   @default(false)
+  brevoMessageId     String?
+  emailEstado        String?
+  entregadoEn        DateTime?
+  abiertoEn          DateTime?
+  clicEn             DateTime?
+  reboteRazon        String?
+  ultimoEventoBrevo  DateTime?
 
-  createdAt            DateTime       @default(now())
-  updatedAt            DateTime       @updatedAt
-  notas                String?
-  tipoContacto         TipoContacto?  @default(OTRO)
-  estado               EstadoContacto @default(ACTIVO)
-  negocioId            String?
-  Negocio              Negocio?       @relation(fields: [negocioId], references: [id], onDelete: SetNull)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  notas        String?
+  tipoContacto TipoContacto?  @default(OTRO)
+  estado       EstadoContacto @default(ACTIVO)
+  negocioId    String?
+  Negocio      Negocio?       @relation(fields: [negocioId], references: [id], onDelete: SetNull)
 
   @@index([correo])
   @@index([identificacion])
@@ -145,9 +145,9 @@ model Order {
 }
 
 model OrderItem {
-  id               String          @id @default(uuid())
+  id               String  @id @default(uuid())
   description      String
-  quantity         Int             @default(1)
+  quantity         Int     @default(1)
   price            Decimal
   subtotal         Decimal
   orderId          String
@@ -155,9 +155,9 @@ model OrderItem {
   productVariantId String?
   variantLabel     String?
 
-  order            Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  product          Product?        @relation(fields: [productId], references: [id])
-  productVariant   ProductVariant? @relation(fields: [productVariantId], references: [id])
+  order          Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product        Product?        @relation(fields: [productId], references: [id])
+  productVariant ProductVariant? @relation(fields: [productVariantId], references: [id])
 
   @@index([orderId])
   @@index([productId])
@@ -194,44 +194,44 @@ model DeliveryData {
 }
 
 model Product {
-  id                        String                   @id @default(uuid())
-  nombre                    String
-  slug                      String                   @unique
-  descripcion               String
-  descripcionCorta          String?
-  precio                    Float
-  currency                  Currency                 @default(COP)
-  prioridad                 Int?
-  status                    ProductStatus            @default(disponible)
-  etiquetaEspecial          ProductEtiquetaEspecial? @default(ninguna)
-  tags                      String[]
-  componentes               String[]
-  disponibleDesde           DateTime?
-  disponibleHasta           DateTime?
-  createdAt                 DateTime                 @default(now())
-  updatedAt                 DateTime                 @updatedAt
-  categoryId                String
-  negocioId                 String
-  orden                     Float                    @default(8.0)
+  id               String                   @id @default(uuid())
+  nombre           String
+  slug             String                   @unique
+  descripcion      String
+  descripcionCorta String?
+  precio           Float
+  currency         Currency                 @default(COP)
+  prioridad        Int?
+  status           ProductStatus            @default(disponible)
+  etiquetaEspecial ProductEtiquetaEspecial? @default(ninguna)
+  tags             String[]
+  componentes      String[]
+  disponibleDesde  DateTime?
+  disponibleHasta  DateTime?
+  createdAt        DateTime                 @default(now())
+  updatedAt        DateTime                 @updatedAt
+  categoryId       String
+  negocioId        String
+  orden            Float                    @default(8.0)
 
   // Nuevos campos opcionales / no destructivos
-  stock                     Int?
-  stockIlimitado            Boolean                  @default(true)
-  usaVariantes              Boolean                  @default(false)
+  stock          Int?
+  stockIlimitado Boolean @default(true)
+  usaVariantes   Boolean @default(false)
 
-  imagenes                  Image[]                  @relation("ProductImages")
+  imagenes                  Image[]               @relation("ProductImages")
   orderItems                OrderItem[]
-  category                  Category                 @relation(fields: [categoryId], references: [id])
-  negocio                   Negocio                  @relation(fields: [negocioId], references: [id], onDelete: Cascade)
+  category                  Category              @relation(fields: [categoryId], references: [id])
+  negocio                   Negocio               @relation(fields: [negocioId], references: [id], onDelete: Cascade)
   secciones                 ProductSection[]
   publicacionesRelacionadas PublicacionProducto[]
   ratingPromedio            Float?
-  numResenas                Int                      @default(0)
+  numResenas                Int                   @default(0)
 
   // Nuevas relaciones opcionales
-  atributos                 ProductAttribute[]
-  variantes                 ProductVariant[]
-  catalogGroupProducts      CatalogGroupProduct[]      // NUEVA: Relación con grupos de catálogo por negocio
+  atributos            ProductAttribute[]
+  variantes            ProductVariant[]
+  catalogGroupProducts CatalogGroupProduct[] // NUEVA: Relación con grupos de catálogo por negocio
 
   @@index([negocioId])
   @@index([categoryId])
@@ -255,7 +255,7 @@ model ProductAttribute {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@index([productId])
   @@index([nombre])
@@ -263,22 +263,22 @@ model ProductAttribute {
 }
 
 model ProductVariant {
-  id             String                 @id @default(uuid())
+  id             String   @id @default(uuid())
   productId      String
   nombre         String?
   sku            String?
   precio         Float?
   stock          Int?
-  stockIlimitado Boolean                @default(false)
-  isActive       Boolean                @default(true)
+  stockIlimitado Boolean  @default(false)
+  isActive       Boolean  @default(true)
   imagenUrl      String?
-  orden          Int                    @default(0)
-  createdAt      DateTime               @default(now())
-  updatedAt      DateTime               @updatedAt
+  orden          Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
-  product        Product                @relation(fields: [productId], references: [id], onDelete: Cascade)
-  options        ProductVariantOption[]
-  orderItems     OrderItem[]
+  product    Product                @relation(fields: [productId], references: [id], onDelete: Cascade)
+  options    ProductVariantOption[]
+  orderItems OrderItem[]
 
   @@index([productId])
   @@index([productId, isActive])
@@ -287,13 +287,13 @@ model ProductVariant {
 }
 
 model ProductVariantOption {
-  id         String         @id @default(uuid())
-  variantId  String
-  nombre     String
-  valor      String
-  orden      Int            @default(0)
+  id        String @id @default(uuid())
+  variantId String
+  nombre    String
+  valor     String
+  orden     Int    @default(0)
 
-  variant    ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  variant ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
 
   @@index([variantId])
   @@index([nombre])
@@ -315,21 +315,21 @@ model ProductSection {
 // Permite que cada negocio organice su catálogo con jerarquía propia
 // Opcional: Sin usar CatalogGroup, todo sigue funcionando como actualmente
 model CatalogGroup {
-  id          String                  @id @default(uuid())
+  id          String   @id @default(uuid())
   negocioId   String
   nombre      String
   slug        String
   parentId    String?
-  order       Int                     @default(0)
-  isActive    Boolean                 @default(true)
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
   description String?
-  createdAt   DateTime                @default(now())
-  updatedAt   DateTime                @updatedAt
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  negocio     Negocio                 @relation(fields: [negocioId], references: [id], onDelete: Cascade)
-  parent      CatalogGroup?           @relation("ParentChild", fields: [parentId], references: [id], onDelete: SetNull)
-  children    CatalogGroup[]          @relation("ParentChild")
-  productos   CatalogGroupProduct[]
+  negocio   Negocio               @relation(fields: [negocioId], references: [id], onDelete: Cascade)
+  parent    CatalogGroup?         @relation("ParentChild", fields: [parentId], references: [id], onDelete: SetNull)
+  children  CatalogGroup[]        @relation("ParentChild")
+  productos CatalogGroupProduct[]
 
   @@unique([negocioId, slug])
   @@index([negocioId])
@@ -339,16 +339,16 @@ model CatalogGroup {
 }
 
 model CatalogGroupProduct {
-  id             String       @id @default(uuid())
+  id             String   @id @default(uuid())
   catalogGroupId String
   productId      String
-  order          Int          @default(0)
-  isFeatured     Boolean      @default(false)
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  order          Int      @default(0)
+  isFeatured     Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
-  catalogGroup   CatalogGroup @relation(fields: [catalogGroupId], references: [id], onDelete: Cascade)
-  product        Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
+  catalogGroup CatalogGroup @relation(fields: [catalogGroupId], references: [id], onDelete: Cascade)
+  product      Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@unique([catalogGroupId, productId])
   @@index([catalogGroupId])
@@ -441,16 +441,16 @@ model PublicacionProducto {
 }
 
 model Media {
-  id            String         @id @default(uuid())
-  url           String         @db.VarChar(2048)
-  tipo          MultimediaTipo
-  formato       String?
-  orden         Int            @default(0)
+  id      String         @id @default(uuid())
+  url     String         @db.VarChar(2048)
+  tipo    MultimediaTipo
+  formato String?
+  orden   Int            @default(0)
 
   publicacionId String?
   servicioId    String?
-  publicacion   Publicacion?   @relation(fields: [publicacionId], references: [id], onDelete: Cascade)
-  servicio      Servicio?      @relation(fields: [servicioId], references: [id], onDelete: Cascade)
+  publicacion   Publicacion? @relation(fields: [publicacionId], references: [id], onDelete: Cascade)
+  servicio      Servicio?    @relation(fields: [servicioId], references: [id], onDelete: Cascade)
 
   @@index([publicacionId])
   @@index([publicacionId, tipo])
@@ -478,7 +478,7 @@ model Usuario {
   nombre              String
   apellido            String
   username            String               @unique
-  contraseña          String
+  contraseña         String
   email               String               @unique
   ciudad              String
   departamento        String
@@ -522,6 +522,7 @@ model Usuario {
 
 enum Role {
   admin
+  super_admin
   user
   navegante
   creador
@@ -551,10 +552,12 @@ model Negocio {
   direccion        String?
   urlGoogleMaps    String?
   horarios         Json?
-  imagenes        String[]
+  imagenes         String[]
   sitioWeb         String?
   telefonoContacto String?
   estado           EstadoNegocio         @default(activo)
+  isTestData       Boolean               @default(false)
+  archivedAt       DateTime?
   createdAt        DateTime              @default(now())
   updatedAt        DateTime              @updatedAt
   slug             String                @unique
@@ -578,7 +581,7 @@ model Negocio {
   Servicio         Servicio[]
   tipo             TipoNegocio           @default(NEGOCIO)
   contactos        Contactos[]
-  catalogGroups    CatalogGroup[]         // NUEVA: Relación con grupos de catálogo
+  catalogGroups    CatalogGroup[] // NUEVA: Relación con grupos de catálogo
 
   @@index([ciudad])
   @@index([departamento])

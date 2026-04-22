@@ -23,6 +23,7 @@ import { motion } from "framer-motion";
 import { useCartCatalogoStore } from "@/store/carro/carro-store";
 import { useAddressStore } from "@/store/address/address-store";
 import { fetchNegocioName } from "@/carro/componentes/ProductsInCart";
+import { trackAnalyticsEvent } from "@/analytics/events";
 import { createNewPedido } from "../actions/createNewPedido";
 
 interface CheckoutOrderProps {
@@ -157,6 +158,20 @@ const CheckoutOrder: React.FC<CheckoutOrderProps> = ({ slug }) => {
       const response = await createNewPedido(pedidoData);
 
       if (response.ok) {
+        trackAnalyticsEvent({
+          event: "catalog_order_submitted",
+          timestamp: Date.now(),
+          negocioSlug: slug,
+          navigationMode: "traditional",
+          source: "carrito",
+          orderType: address.orderType,
+          totalAmount: total,
+          itemCount: cartItems.reduce((sum, item) => sum + item.cantidad, 0),
+          hasVariants: cartItems.some(
+            (item) => Boolean(item.productVariantId) || Boolean(item.usaVariantes)
+          ),
+        });
+
         setModalStatus("success");
         setModalMessage(response.message || "Pedido creado exitosamente.");
 

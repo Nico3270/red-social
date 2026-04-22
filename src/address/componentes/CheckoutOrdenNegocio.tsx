@@ -24,6 +24,7 @@ import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { useCartNegocioStore } from "@/store/carro-negocio/carro-negocio-store";
 import { useAddressStore } from "@/store/address/address-store";
+import { trackAnalyticsEvent } from "@/analytics/events";
 import { createNewPedido } from "../actions/createNewPedido";
 
 const MotionBox = motion(Box);
@@ -72,6 +73,22 @@ const CheckoutOrdenNegocio: React.FC = () => {
       const response = await createNewPedido(pedidoData);
 
       if (response.ok) {
+        if (address?.orderType) {
+          trackAnalyticsEvent({
+            event: "catalog_order_submitted",
+            timestamp: Date.now(),
+            negocioSlug: "",
+            navigationMode: "traditional",
+            source: "carrito",
+            orderType: address.orderType,
+            totalAmount: total,
+            itemCount: cart.reduce((sum, item) => sum + item.cantidad, 0),
+            hasVariants: cart.some(
+              (item) => Boolean(item.productVariantId) || Boolean(item.usaVariantes)
+            ),
+          });
+        }
+
         setModalMessage(response.message || "Orden creada exitosamente.");
         setIsSuccess(true);
         setToastMessage("¡Orden creada con éxito!");

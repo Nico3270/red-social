@@ -4,6 +4,7 @@ import { auth } from "@/auth.config";
 import prisma from "@/lib/prisma";
 import { notifyReservaConfirmadaCliente } from "@/reservas/helpers/notifyReserva";
 import { PlantillaWhatsApp } from "@/reservas/interfaces/interfaces.whatsapp";
+import { buildVariantLabel } from "@/ui/components/productos/variantDisplay";
 import { TipoUsuario } from "@prisma/client";
 import { Decimal } from "@prisma/client/runtime/library";
 
@@ -70,6 +71,16 @@ interface NotificationAttemptSummary {
   errorMessage: string | null;
 }
 
+interface NormalizedOrderItem {
+  description: string;
+  quantity: number;
+  price: number;
+  subtotal: number;
+  productId?: string;
+  productVariantId?: string | null;
+  variantLabel?: string | null;
+}
+
 function createTraceId() {
   return `pedido-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 }
@@ -101,6 +112,10 @@ function getItemDisplayName(item: ItemInput): string {
   const variant = sanitizeParam(item.variantLabel);
 
   return variant ? `${base} (${variant})` : base;
+}
+
+function isPositiveInteger(value: number): boolean {
+  return Number.isInteger(value) && value > 0;
 }
 
 function summarizeNotifyResult(params: {
@@ -303,6 +318,13 @@ export const createNewPedido = async (
       return { ok: false, message: "Fecha de entrega inválida." };
     }
 
+    if (input.items.length === 0) {
+      console.warn(
+        `[createNewPedido][${actionTraceId}] Pedido rechazado por no tener items`
+      );
+      return { ok: false, message: "El pedido no contiene productos." };
+    }
+
     // =======================================================
     // 🟩 TRANSACCIÓN — SOLO PRISMA
     // =======================================================
@@ -320,6 +342,156 @@ export const createNewPedido = async (
       direccionCompra,
       ciudadCompra,
     } = await prisma.$transaction(async (tx) => {
+      const normalizedItems: NormalizedOrderItem[] = [];
+
+      for (const item of input.items) {
+        if (!isPositiveInteger(item.quantity)) {
+          throw new Error("La cantidad de uno de los productos es inválida.");
+        }
+
+        if (!item.productId) {
+          if (item.productVariantId) {
+            throw new Error(
+              "No se puede validar una variante sin un producto asociado."
+            );
+          }
+
+          const normalizedDescription = sanitizeParam(item.description);
+
+          if (!normalizedDescription) {
+            throw new Error("Uno de los productos no tiene descripción válida.");
+          }
+
+          if (typeof item.price !== "number" || Number.isNaN(item.price) || item.price < 0) {
+            throw new Error("Uno de los productos tiene un precio inválido.");
+          }
+
+          normalizedItems.push({
+            description: normalizedDescription,
+            quantity: item.quantity,
+            price: item.price,
+            subtotal: item.price * item.quantity,
+            productId: undefined,
+            productVariantId: null,
+            variantLabel: null,
+          });
+
+          continue;
+        }
+
+        const product = await tx.product.findUnique({
+          where: { id: item.productId },
+          select: {
+            id: true,
+            nombre: true,
+            precio: true,
+            negocioId: true,
+            stock: true,
+            stockIlimitado: true,
+            usaVariantes: true,
+            variantes: {
+              where: { isActive: true },
+              select: {
+                id: true,
+                nombre: true,
+                precio: true,
+                stock: true,
+                stockIlimitado: true,
+                isActive: true,
+                orden: true,
+                options: {
+                  select: {
+                    id: true,
+                    nombre: true,
+                    valor: true,
+                    orden: true,
+                  },
+                  orderBy: { orden: "asc" },
+                },
+              },
+              orderBy: { orden: "asc" },
+            },
+          },
+        });
+
+        if (!product || product.negocioId !== negocioId) {
+          throw new Error("Uno de los productos del pedido ya no está disponible.");
+        }
+
+        const activeVariants = product.variantes;
+        const hasActiveVariants = product.usaVariantes === true && activeVariants.length > 0;
+        const selectedVariant = item.productVariantId
+          ? activeVariants.find((variant) => variant.id === item.productVariantId) ?? null
+          : null;
+
+        if (item.productVariantId && !selectedVariant) {
+          throw new Error(
+            `La variante seleccionada para ${sanitizeParam(product.nombre)} ya no está disponible.`
+          );
+        }
+
+        if (hasActiveVariants && !item.productVariantId) {
+          throw new Error(
+            `Debes seleccionar una variante válida para ${sanitizeParam(product.nombre)}.`
+          );
+        }
+
+        if (!hasActiveVariants && item.productVariantId) {
+          throw new Error(
+            `El producto ${sanitizeParam(product.nombre)} ya no usa la variante seleccionada.`
+          );
+        }
+
+        const effectiveStock = selectedVariant?.stock ?? product.stock ?? null;
+        const effectiveStockIlimitado = selectedVariant
+          ? selectedVariant.stockIlimitado ?? true
+          : (product.stockIlimitado ?? true);
+
+        if (
+          effectiveStockIlimitado === false &&
+          typeof effectiveStock === "number" &&
+          effectiveStock < item.quantity
+        ) {
+          throw new Error(
+            `No hay stock suficiente para ${sanitizeParam(product.nombre)}${
+              selectedVariant ? ` (${buildVariantLabel(selectedVariant)})` : ""
+            }.`
+          );
+        }
+
+        const normalizedDescription =
+          sanitizeParam(item.description) || sanitizeParam(product.nombre);
+        const normalizedPrice = selectedVariant?.precio ?? product.precio;
+        const normalizedVariantLabel = selectedVariant
+          ? buildVariantLabel(selectedVariant)
+          : null;
+
+        normalizedItems.push({
+          description: normalizedDescription,
+          quantity: item.quantity,
+          price: normalizedPrice,
+          subtotal: normalizedPrice * item.quantity,
+          productId: product.id,
+          productVariantId: selectedVariant?.id ?? null,
+          variantLabel: normalizedVariantLabel,
+        });
+      }
+
+      const normalizedTotalAmount = normalizedItems.reduce(
+        (sum, item) => sum + item.subtotal,
+        0
+      );
+
+      if (Math.abs(normalizedTotalAmount - input.totalAmount) > 1) {
+        console.warn(
+          `[createNewPedido][${actionTraceId}] Total ajustado con valores del servidor`,
+          {
+            clientTotal: input.totalAmount,
+            normalizedTotal: normalizedTotalAmount,
+          }
+        );
+      }
+
       const newDeliveryData = await tx.deliveryData.create({
         data: {
           country: orderType === "DELIVERY" ? country || "Colombia" : null,
@@ -334,7 +506,7 @@ export const createNewPedido = async (
         },
       });
 
-      const generatedDescription = input.items
+      const generatedDescription = normalizedItems
         .map((item) => `${getItemDisplayName(item)} x${item.quantity}`)
         .join(", ");
 
@@ -342,7 +514,7 @@ export const createNewPedido = async (
         data: {
           type: "ingreso",
           description: generatedDescription,
-          totalAmount: new Decimal(input.totalAmount.toFixed(2)),
+          totalAmount: new Decimal(normalizedTotalAmount.toFixed(2)),
           category: "ventas",
           status: "Recibida",
           TipoUsuario: tipoUsuario,
@@ -353,7 +525,7 @@ export const createNewPedido = async (
       });
 
       await tx.orderItem.createMany({
-        data: input.items.map((item) => ({
+        data: normalizedItems.map((item) => ({
           description: item.description,
           quantity: item.quantity,
           price: new Decimal(item.price.toFixed(2)),
@@ -376,11 +548,11 @@ export const createNewPedido = async (
         },
       });
 
-      const datosPedido = input.items
+      const datosPedido = normalizedItems
         .map((item) => `${item.quantity} - ${getItemDisplayName(item)}`)
         .join(", ");
 
-      const valorCompra = `$${input.totalAmount.toFixed(2)}`;
+      const valorCompra = `$${normalizedTotalAmount.toFixed(2)}`;
       const nombreCliente = clientName;
       const telefonoCliente = clientPhone;
       const descripcionCompra = input.deliveryData.additionalComments || "";

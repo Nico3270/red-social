@@ -27,9 +27,16 @@ export type AnalyticsEventName =
   
   // Catálogo y producto
   | "product_card_clicked"
+  | "product_quick_add_opened"
+  | "product_quick_add_closed"
+  | "product_variant_selected"
+  | "product_variant_selection_required"
+  | "product_quick_add_confirmed"
+  | "product_card_direct_add_to_cart_clicked"
   | "product_detail_viewed"
   | "product_whatsapp_clicked"
   | "product_add_to_cart_clicked"
+  | "catalog_order_submitted"
   
   // Menú de restaurante (premium experience)
   | "restaurant_menu_group_selected"
@@ -173,6 +180,80 @@ export interface ProductCardClickedPayload extends BaseEventPayload {
   groupSlug?: string;
 }
 
+export interface ProductQuickAddOpenedPayload extends BaseEventPayload {
+  event: "product_quick_add_opened";
+  productId: string;
+  productSlug: string;
+  productName: string;
+  productPrice: number;
+  hasVariants: boolean;
+  availableVariantCount?: number;
+  groupId?: string;
+  groupSlug?: string;
+}
+
+export interface ProductQuickAddClosedPayload extends BaseEventPayload {
+  event: "product_quick_add_closed";
+  productId: string;
+  productSlug: string;
+  productName: string;
+  productPrice: number;
+  hadVariantSelected: boolean;
+  selectedVariantId?: string;
+  quantity: number;
+  closeReason: "dismissed" | "cancelled" | "completed";
+  groupId?: string;
+  groupSlug?: string;
+}
+
+export interface ProductVariantSelectedPayload extends BaseEventPayload {
+  event: "product_variant_selected";
+  productId: string;
+  productSlug: string;
+  productName: string;
+  productPrice: number;
+  variantId: string;
+  variantLabel: string;
+  availableVariantCount?: number;
+  groupId?: string;
+  groupSlug?: string;
+}
+
+export interface ProductVariantSelectionRequiredPayload extends BaseEventPayload {
+  event: "product_variant_selection_required";
+  productId: string;
+  productSlug: string;
+  productName: string;
+  productPrice: number;
+  availableVariantCount?: number;
+  groupId?: string;
+  groupSlug?: string;
+}
+
+export interface ProductQuickAddConfirmedPayload extends BaseEventPayload {
+  event: "product_quick_add_confirmed";
+  productId: string;
+  productSlug: string;
+  productName: string;
+  productPrice: number;
+  variantId?: string;
+  quantity: number;
+  groupId?: string;
+  groupSlug?: string;
+}
+
+export interface ProductCardDirectAddToCartClickedPayload extends BaseEventPayload {
+  event: "product_card_direct_add_to_cart_clicked";
+  productId: string;
+  productSlug: string;
+  productName: string;
+  productPrice: number;
+  variantId?: string;
+  quantity: number;
+  groupId?: string;
+  groupSlug?: string;
+}
+
 /**
  * Evento: modal de detalle de producto abierto
  */
@@ -215,6 +296,14 @@ export interface ProductAddToCartClickedPayload extends BaseEventPayload {
   quantity: number;
   groupId?: string;
   groupSlug?: string;
+}
+
+export interface CatalogOrderSubmittedPayload extends BaseEventPayload {
+  event: "catalog_order_submitted";
+  orderType: "DELIVERY" | "ON_SITE";
+  totalAmount: number;
+  itemCount: number;
+  hasVariants: boolean;
 }
 
 export interface RestaurantMenuGroupSelectedPayload extends BaseEventPayload {
@@ -280,9 +369,16 @@ export type AnalyticsPayload =
   | GuideResultClickedPayload
   | GuideNavigationToProductsPayload
   | ProductCardClickedPayload
+  | ProductQuickAddOpenedPayload
+  | ProductQuickAddClosedPayload
+  | ProductVariantSelectedPayload
+  | ProductVariantSelectionRequiredPayload
+  | ProductQuickAddConfirmedPayload
+  | ProductCardDirectAddToCartClickedPayload
   | ProductDetailViewedPayload
   | ProductWhatsappClickedPayload
   | ProductAddToCartClickedPayload
+  | CatalogOrderSubmittedPayload
   | RestaurantMenuGroupSelectedPayload
   | RestaurantMenuItemClickedPayload
   | RestaurantMenuFeaturedClickedPayload

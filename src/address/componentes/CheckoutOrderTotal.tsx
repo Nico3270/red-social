@@ -23,6 +23,7 @@ import { motion } from "framer-motion";
 import { useCartCatalogoStore } from "@/store/carro/carro-store";
 import { useAddressStore } from "@/store/address/address-store";
 import { fetchNegocioName } from "@/carro/componentes/ProductsInCart";
+import { trackAnalyticsEvent } from "@/analytics/events";
 import { createNewPedido } from "../actions/createNewPedido";
 
 type ModalStatus = "idle" | "loading" | "success" | "error";
@@ -203,6 +204,30 @@ const CheckoutOrderTotal: React.FC = () => {
       );
 
       const allSuccess = responses.every(({ response }) => response?.ok);
+
+      if (address?.orderType) {
+        responses.forEach(({ slug, response }) => {
+          if (!response?.ok) {
+            return;
+          }
+
+          const items = carts?.[slug] ?? [];
+
+          trackAnalyticsEvent({
+            event: "catalog_order_submitted",
+            timestamp: Date.now(),
+            negocioSlug: slug,
+            navigationMode: "traditional",
+            source: "carrito",
+            orderType: address.orderType,
+            totalAmount: items.reduce((sum, item) => sum + item.precio * item.cantidad, 0),
+            itemCount: items.reduce((sum, item) => sum + item.cantidad, 0),
+            hasVariants: items.some(
+              (item) => Boolean(item.productVariantId) || Boolean(item.usaVariantes)
+            ),
+          });
+        });
+      }
 
       const messages = responses
         .map(({ slug, response }) => {

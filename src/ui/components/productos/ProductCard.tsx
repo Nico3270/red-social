@@ -4,7 +4,7 @@ import { FaShoppingCart } from "react-icons/fa";
 import { BsWhatsapp } from "react-icons/bs";
 import Link from "next/link";
 import Image from "next/image";
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { textosFont, tituloCard } from "@/config/fonts";
 import { InfoEmpresa as empresa } from "@/config/config";
 import {
@@ -23,11 +23,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useCartCatalogoStore } from "@/store/carro/carro-store";
 import { FollowButton } from "@/feed/componentes/FollowButton";
 import { createPortal } from "react-dom";
-import {
-  buildVariantLabel,
-  getVariantOptionSummary,
-  getVariantTitle,
-} from "./variantDisplay";
+import { ProductQuickAddModal } from "./ProductQuickAddModal";
+import { useQuickAddSelection } from "./useQuickAddSelection";
+import { buildVariantLabel } from "./variantDisplay";
 import {
   trackAnalyticsEvent,
   type EventSource,
@@ -68,15 +66,41 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, analyticsCont
 
   const [displayImage, setDisplayImage] = useState(primaryImage);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [quantity, setQuantity] = useState(1);
   const [showSuccess, setShowSuccess] = useState(false);
   const [modalRoot, setModalRoot] = useState<Element | null>(null);
-  const [selectedVariantId, setSelectedVariantId] = useState<string | null>(null);
+  const quickAddCloseReasonRef = useRef<"dismissed" | "cancelled" | "completed" | null>(null);
+  const quickAddWasOpenRef = useRef(false);
 
   const addProductToCart = useCartCatalogoStore((state) => state.addProductToCart);
   const analyticsNegocioSlug = analyticsContext?.negocioSlug ?? product.slugNegocio ?? "";
   const analyticsNavigationMode = analyticsContext?.navigationMode ?? "traditional";
   const analyticsSource = analyticsContext?.source ?? "productos_tab";
+  const {
+    activeVariants,
+    hasVariants,
+    selectedVariant,
+    selectedVariantId,
+    selectVariant,
+    quantity,
+    updateQuantity,
+    incrementQuantity,
+    decrementQuantity,
+    resetQuantity,
+    resetSelectionState,
+    displayPrice,
+    modalDisplayPrice,
+    shouldShowFromPrice,
+    currentMaxStock,
+    areAllVariantsOutOfStock,
+    isOutOfStock,
+    isActionDisabled,
+    requiresVariantSelection,
+    effectivePrice,
+    effectiveStock,
+    effectiveStockIlimitado,
+    selectedVariantLabel,
+  } = useQuickAddSelection(product);
+
   const detailHref = useMemo(() => {
     const params = new URLSearchParams();
 
@@ -98,94 +122,32 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, analyticsCont
   }, [analyticsContext, product.slug, product.slugNegocio]);
 
   const telefonoLimpio = product.telefonoContacto?.replace(/\D/g, "") ?? "";
-
-  const activeVariants = useMemo(
-    () => (product.variantes ?? []).filter((variant) => variant.isActive),
-    [product.variantes]
-  );
-
-  const hasVariants = product.usaVariantes === true && activeVariants.length > 0;
-
-  const selectedVariant = useMemo(
-    () =>
-      hasVariants
-        ? activeVariants.find((variant) => variant.id === selectedVariantId) ?? null
-        : null,
-    [activeVariants, hasVariants, selectedVariantId]
-  );
-
-  const minVariantPrice = useMemo(() => {
-    if (!hasVariants || activeVariants.length === 0) return null;
-
-    const variantPrices = activeVariants
-      .map((variant) => variant.precio)
-      .filter((price): price is number => typeof price === "number" && !Number.isNaN(price));
-
-    if (variantPrices.length === 0) return null;
-
-    return Math.min(...variantPrices);
-  }, [activeVariants, hasVariants]);
-
-  const displayPrice = minVariantPrice ?? product.precio;
-  const shouldShowFromPrice = hasVariants && minVariantPrice !== null;
-  const modalDisplayPrice = selectedVariant?.precio ?? minVariantPrice ?? product.precio;
-
-  const variantHasLimitedStock =
-    selectedVariant?.stockIlimitado === false &&
-    typeof selectedVariant?.stock === "number";
-
-  const variantStock = variantHasLimitedStock ? selectedVariant?.stock ?? null : null;
-
-  const productHasLimitedStock =
-    !hasVariants &&
-    product.stockIlimitado === false &&
-    typeof product.stock === "number";
-
-  const productStock = productHasLimitedStock ? product.stock ?? null : null;
-
-  const currentMaxStock = hasVariants ? variantStock : productStock;
-
-  const areAllVariantsOutOfStock =
-    hasVariants &&
-    activeVariants.every(
-      (variant) =>
-        variant.stockIlimitado === false &&
-        typeof variant.stock === "number" &&
-        variant.stock <= 0
-    );
-
-  const isOutOfStock = hasVariants
-    ? !!selectedVariant &&
-      selectedVariant.stockIlimitado === false &&
-      typeof selectedVariant.stock === "number" &&
-      selectedVariant.stock <= 0
-    : product.stockIlimitado === false &&
-      typeof product.stock === "number" &&
-      product.stock <= 0;
-
-  const isCartDisabled = hasVariants ? areAllVariantsOutOfStock : isOutOfStock;
+  const hasSingleActiveVariant = hasVariants && activeVariants.length === 1 && !!selectedVariant;
+  const hasMultipleVariantChoices = hasVariants && activeVariants.length > 1;
+  const simpleProductHasStock = !hasVariants && !isActionDisabled;
+  const limitedStockLabel =
+    !hasVariants && typeof currentMaxStock === "number"
+      ? currentMaxStock === 1
+        ? "Ultima unidad"
+        : `${currentMaxStock} disponibles`
+      : null;
+  const primaryCtaLabel = isActionDisabled
+    ? "Agotado"
+    : hasMultipleVariantChoices
+      ? "Elegir opciones"
+      : "Agregar";
+  const primaryCtaHint = isActionDisabled
+    ? "No disponible ahora"
+    : hasMultipleVariantChoices
+      ? `${activeVariants.length} opciones disponibles`
+      : hasSingleActiveVariant
+        ? `Compra directa de ${selectedVariantLabel}`
+        : limitedStockLabel ?? "Compra rápida";
+  const pricePrefixLabel = shouldShowFromPrice ? "Desde" : "Precio";
 
   useEffect(() => {
     setDisplayImage(primaryImage);
   }, [primaryImage]);
-
-  useEffect(() => {
-    if (hasVariants) {
-      const selectedExists = activeVariants.some(
-        (variant) => variant.id === selectedVariantId
-      );
-
-      if (selectedVariantId && !selectedExists) {
-        setSelectedVariantId(null);
-      }
-
-      return;
-    }
-
-    if (selectedVariantId) {
-      setSelectedVariantId(null);
-    }
-  }, [activeVariants, hasVariants, selectedVariantId]);
 
   useEffect(() => {
     const root = document.getElementById("modal-root") || document.body;
@@ -205,14 +167,69 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, analyticsCont
   }, [isModalOpen]);
 
   useEffect(() => {
-    setQuantity((prev) => {
-      if (typeof currentMaxStock === "number") {
-        return Math.max(1, Math.min(prev, currentMaxStock));
-      }
+    if (isModalOpen && !quickAddWasOpenRef.current) {
+      quickAddWasOpenRef.current = true;
+      quickAddCloseReasonRef.current = null;
 
-      return Math.max(1, prev);
-    });
-  }, [currentMaxStock]);
+      trackAnalyticsEvent({
+        event: "product_quick_add_opened",
+        timestamp: Date.now(),
+        negocioSlug: analyticsNegocioSlug,
+        navigationMode: analyticsNavigationMode,
+        source: analyticsSource,
+        productId: product.id,
+        productSlug: product.slug,
+        productName: product.nombre,
+        productPrice: displayPrice,
+        hasVariants,
+        availableVariantCount: activeVariants.length,
+        groupId: analyticsContext?.groupId,
+        groupSlug: analyticsContext?.groupSlug,
+      });
+
+      return;
+    }
+
+    if (!isModalOpen && quickAddWasOpenRef.current) {
+      quickAddWasOpenRef.current = false;
+
+      trackAnalyticsEvent({
+        event: "product_quick_add_closed",
+        timestamp: Date.now(),
+        negocioSlug: analyticsNegocioSlug,
+        navigationMode: analyticsNavigationMode,
+        source: analyticsSource,
+        productId: product.id,
+        productSlug: product.slug,
+        productName: product.nombre,
+        productPrice: effectivePrice,
+        hadVariantSelected: Boolean(selectedVariant),
+        selectedVariantId: selectedVariant?.id,
+        quantity,
+        closeReason: quickAddCloseReasonRef.current ?? "dismissed",
+        groupId: analyticsContext?.groupId,
+        groupSlug: analyticsContext?.groupSlug,
+      });
+
+      quickAddCloseReasonRef.current = null;
+    }
+  }, [
+    activeVariants.length,
+    analyticsContext?.groupId,
+    analyticsContext?.groupSlug,
+    analyticsNavigationMode,
+    analyticsNegocioSlug,
+    analyticsSource,
+    displayPrice,
+    effectivePrice,
+    hasVariants,
+    isModalOpen,
+    product.id,
+    product.nombre,
+    product.slug,
+    quantity,
+    selectedVariant,
+  ]);
 
   const whatsappMessage = encodeURIComponent(
     `¡Hola! Estoy interesado en el siguiente producto:\n\n` +
@@ -222,7 +239,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, analyticsCont
       `Puedes ver más detalles aquí: ${urlWebProduccion}/producto/${product.slug}`
   );
 
-  const handleAddToCart = useCallback(() => {
+  const handleAddToCart = useCallback((quantityToAdd = quantity, entryPoint: "direct" | "modal" = "modal") => {
     if (!product.slugNegocio) {
       reportOperationalWarning({
         area: "product-card",
@@ -240,6 +257,20 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, analyticsCont
     }
 
     if (hasVariants && !selectedVariant) {
+      trackAnalyticsEvent({
+        event: "product_variant_selection_required",
+        timestamp: Date.now(),
+        negocioSlug: analyticsNegocioSlug,
+        navigationMode: analyticsNavigationMode,
+        source: analyticsSource,
+        productId: product.id,
+        productSlug: product.slug,
+        productName: product.nombre,
+        productPrice: displayPrice,
+        availableVariantCount: activeVariants.length,
+        groupId: analyticsContext?.groupId,
+        groupSlug: analyticsContext?.groupSlug,
+      });
       return;
     }
 
@@ -247,12 +278,41 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, analyticsCont
       return;
     }
 
-    const effectivePrice = selectedVariant?.precio ?? product.precio;
     const effectiveImage = resolveSafeImageSource(selectedVariant?.imagenUrl, primaryImage);
-    const effectiveStock = selectedVariant?.stock ?? product.stock ?? null;
-    const effectiveStockIlimitado = selectedVariant
-      ? selectedVariant.stockIlimitado ?? true
-      : (product.stockIlimitado ?? true);
+
+    if (entryPoint === "direct") {
+      trackAnalyticsEvent({
+        event: "product_card_direct_add_to_cart_clicked",
+        timestamp: Date.now(),
+        negocioSlug: analyticsNegocioSlug,
+        navigationMode: analyticsNavigationMode,
+        source: analyticsSource,
+        productId: product.id,
+        productSlug: product.slug,
+        productName: product.nombre,
+        productPrice: effectivePrice,
+        variantId: selectedVariant?.id,
+        quantity: quantityToAdd,
+        groupId: analyticsContext?.groupId,
+        groupSlug: analyticsContext?.groupSlug,
+      });
+    } else {
+      trackAnalyticsEvent({
+        event: "product_quick_add_confirmed",
+        timestamp: Date.now(),
+        negocioSlug: analyticsNegocioSlug,
+        navigationMode: analyticsNavigationMode,
+        source: analyticsSource,
+        productId: product.id,
+        productSlug: product.slug,
+        productName: product.nombre,
+        productPrice: effectivePrice,
+        variantId: selectedVariant?.id,
+        quantity: quantityToAdd,
+        groupId: analyticsContext?.groupId,
+        groupSlug: analyticsContext?.groupSlug,
+      });
+    }
 
     // Track event
     trackAnalyticsEvent({
@@ -266,7 +326,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, analyticsCont
       productName: product.nombre,
       productPrice: effectivePrice,
       variantId: selectedVariant?.id,
-      quantity,
+      quantity: quantityToAdd,
       groupId: analyticsContext?.groupId,
       groupSlug: analyticsContext?.groupSlug,
     });
@@ -277,22 +337,23 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, analyticsCont
       slug: product.slug,
       nombre: product.nombre,
       precio: effectivePrice,
-      cantidad: quantity,
+      cantidad: quantityToAdd,
       imagen: effectiveImage,
       seccionIds: product.sections,
       descripcionCorta: product.descripcionCorta ?? "",
       negocioFotoPerfil: product.negocioFotoPerfil,
       usaVariantes: hasVariants,
       productVariantId: selectedVariant?.id ?? null,
-      variantLabel: selectedVariant ? buildVariantLabel(selectedVariant) : null,
+      variantLabel: selectedVariantLabel,
       stock: effectiveStock,
       stockIlimitado: effectiveStockIlimitado,
     };
 
     addProductToCart(product.slugNegocio, cartProduct);
+    quickAddCloseReasonRef.current = entryPoint === "modal" ? "completed" : null;
     setIsModalOpen(false);
     setShowSuccess(true);
-    setQuantity(1);
+    resetQuantity();
 
     window.setTimeout(() => setShowSuccess(false), 1000);
   }, [
@@ -302,12 +363,18 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, analyticsCont
     analyticsNavigationMode,
     analyticsNegocioSlug,
     analyticsSource,
+    effectivePrice,
+    effectiveStock,
+    effectiveStockIlimitado,
     hasVariants,
     isOutOfStock,
+    activeVariants.length,
     primaryImage,
     product,
     quantity,
+    resetQuantity,
     selectedVariant,
+    selectedVariantLabel,
   ]);
 
   const trackProductCardClick = useCallback(() => {
@@ -374,255 +441,18 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, analyticsCont
   ]);
 
   const handleOpenCartFlow = useCallback(() => {
-    trackProductCardClick();
+    if (!hasVariants) {
+      handleAddToCart(1, "direct");
+      return;
+    }
 
-    trackAnalyticsEvent({
-      event: "product_detail_viewed",
-      timestamp: Date.now(),
-      negocioSlug: analyticsNegocioSlug,
-      navigationMode: analyticsNavigationMode,
-      source: analyticsSource,
-      productId: product.id,
-      productSlug: product.slug,
-      productName: product.nombre,
-      productPrice: displayPrice,
-      groupId: analyticsContext?.groupId,
-      groupSlug: analyticsContext?.groupSlug,
-      hasVariants,
-    });
-
-    setQuantity(1);
+    resetQuantity();
     setIsModalOpen(true);
   }, [
-    analyticsContext?.groupId,
-    analyticsContext?.groupSlug,
-    analyticsNavigationMode,
-    analyticsNegocioSlug,
-    analyticsSource,
-    displayPrice,
+    handleAddToCart,
     hasVariants,
-    product,
-    trackProductCardClick,
+    resetQuantity,
   ]);
-
-  const ModalContent = (
-    <AnimatePresence>
-      {isModalOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4"
-          onClick={() => setIsModalOpen(false)}
-          aria-modal="true"
-          role="dialog"
-        >
-          <motion.div
-            initial={{ scale: 0.96, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.96, opacity: 0 }}
-            transition={{ type: "spring", stiffness: 320, damping: 26 }}
-            className="relative w-full max-w-md max-h-[80vh] overflow-y-auto rounded-2xl bg-white p-5 shadow-[0_18px_50px_rgba(0,0,0,0.18)]"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h5 className="mb-3 text-left text-base font-semibold text-gray-900">
-              Agregar al carrito
-            </h5>
-
-            <div className="mb-4 border-b border-gray-100 pb-4 text-left">
-              <p className="text-lg font-bold leading-tight text-gray-800">{product.nombre}</p>
-              <p className="mt-1 text-2xl font-semibold tracking-tight text-gray-900">
-                {shouldShowFromPrice && !selectedVariant ? "Desde " : ""}
-                {formatCurrency(modalDisplayPrice)}
-              </p>
-
-              {hasVariants && (
-                <p className="mt-1 text-xs text-gray-500">
-                  Elige la variante que quieres agregar.
-                </p>
-              )}
-
-              {productHasLimitedStock && (
-                <p className="mt-1 text-xs text-gray-500">
-                  Stock disponible: {product.stock}
-                </p>
-              )}
-            </div>
-
-            {hasVariants && (
-              <div className="mb-4">
-                <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-gray-500">
-                  Variantes
-                </p>
-                <div className="space-y-2">
-                  {activeVariants.map((variant, index) => {
-                    const optionSummary = getVariantOptionSummary(variant);
-                    const variantOutOfStock =
-                      variant.stockIlimitado === false &&
-                      typeof variant.stock === "number" &&
-                      variant.stock <= 0;
-                    const stockSummary =
-                      variant.stockIlimitado === false &&
-                      typeof variant.stock === "number"
-                        ? variant.stock > 0
-                          ? `Stock: ${variant.stock}`
-                          : "Sin stock"
-                        : null;
-                    const secondaryText = [optionSummary, stockSummary]
-                      .filter(Boolean)
-                      .join(" · ");
-
-                    return (
-                      <button
-                        key={variant.id}
-                        type="button"
-                        onClick={() => {
-                          setSelectedVariantId((current) =>
-                            current === variant.id ? null : variant.id
-                          );
-                          setQuantity(1);
-                        }}
-                        className={`w-full rounded-xl border px-3 py-2.5 text-left transition-all ${
-                          selectedVariantId === variant.id
-                            ? "border-blue-500 bg-blue-50"
-                            : "border-gray-200 bg-white hover:border-gray-300"
-                        } ${variantOutOfStock ? "opacity-60" : ""}`}
-                      >
-                        <div className="flex items-start gap-3">
-                          <div
-                            className={`mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border ${
-                              selectedVariantId === variant.id
-                                ? "border-blue-600"
-                                : "border-gray-300"
-                            }`}
-                          >
-                            {selectedVariantId === variant.id && (
-                              <span className="h-2 w-2 rounded-full bg-blue-600" />
-                            )}
-                          </div>
-
-                          <div className="min-w-0 flex-1">
-                            <div className="flex items-start justify-between gap-3">
-                              <div className="min-w-0">
-                                <p className="truncate text-sm font-semibold text-gray-800">
-                                  {getVariantTitle(variant, index)}
-                                </p>
-                                {secondaryText && (
-                                  <p className="mt-0.5 line-clamp-2 text-xs text-gray-500">
-                                    {secondaryText}
-                                  </p>
-                                )}
-                              </div>
-
-                              <p className="shrink-0 text-sm font-semibold text-gray-900">
-                                {formatCurrency(variant.precio ?? product.precio)}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-
-            {hasVariants && !selectedVariant && (
-              <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
-                Selecciona una variante antes de continuar.
-              </div>
-            )}
-
-            {selectedVariant && (
-              <div className="mb-4 rounded-lg bg-blue-50 px-3 py-2 text-sm text-blue-900">
-                <span className="font-semibold">Elegida:</span>{" "}
-                <span className="text-blue-800">{buildVariantLabel(selectedVariant)}</span>
-              </div>
-            )}
-
-            {((hasVariants && selectedVariant) || !hasVariants) && (
-              <div className="mb-5 rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5">
-                <div className="flex items-center justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="text-sm font-semibold text-gray-800">Cantidad</p>
-                    {typeof currentMaxStock === "number" && (
-                      <p className="text-xs text-gray-500">
-                        Stock disponible: {currentMaxStock}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="flex items-center overflow-hidden rounded-full border border-gray-200 bg-white">
-                    <button
-                      type="button"
-                      onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                      className="px-3 py-1.5 text-lg font-bold text-gray-800 transition-colors duration-200 hover:bg-gray-100"
-                      aria-label="Disminuir cantidad"
-                    >
-                      –
-                    </button>
-
-                    <input
-                      type="number"
-                      value={quantity}
-                      onChange={(e) => {
-                        const nextValue = Math.max(1, parseInt(e.target.value, 10) || 1);
-                        if (typeof currentMaxStock === "number") {
-                          setQuantity(Math.min(nextValue, currentMaxStock));
-                          return;
-                        }
-                        setQuantity(nextValue);
-                      }}
-                      className="w-12 border-x border-gray-200 py-1.5 text-center text-base font-semibold text-gray-900 focus:outline-none"
-                      min="1"
-                      max={typeof currentMaxStock === "number" ? currentMaxStock : undefined}
-                      aria-label="Cantidad del producto"
-                    />
-
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setQuantity((q) => {
-                          const next = q + 1;
-                          if (typeof currentMaxStock === "number") {
-                            return Math.min(next, currentMaxStock);
-                          }
-                          return next;
-                        });
-                      }}
-                      className="px-3 py-1.5 text-lg font-bold text-gray-800 transition-colors duration-200 hover:bg-gray-100"
-                      aria-label="Aumentar cantidad"
-                    >
-                      +
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={() => setIsModalOpen(false)}
-                className="flex-1 rounded-full bg-gray-100 py-2.5 text-sm font-medium text-gray-700 transition-colors duration-200 hover:bg-gray-200"
-              >
-                Cancelar
-              </button>
-
-              <button
-                type="button"
-                onClick={handleAddToCart}
-                disabled={(hasVariants && !selectedVariant) || isOutOfStock}
-                className="flex-1 rounded-full bg-blue-600 py-2.5 text-sm font-medium text-white transition-colors duration-200 hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-300"
-              >
-                {isOutOfStock ? "Sin stock" : "Agregar al carrito"}
-              </button>
-            </div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
 
   const ToastContent = (
     <AnimatePresence>
@@ -726,7 +556,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, analyticsCont
           <div className="pointer-events-none absolute left-3 top-3 flex flex-wrap gap-2">
             {hasVariants && (
               <span className="rounded-full bg-white/90 px-2.5 py-1 text-[11px] font-semibold text-gray-800 shadow-sm backdrop-blur-sm">
-                Variantes
+                {activeVariants.length === 1 ? "1 opcion" : `${activeVariants.length} opciones`}
               </span>
             )}
 
@@ -762,53 +592,145 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, analyticsCont
         </div>
 
         <div className="m-1">
-          <div className="flex items-center justify-between gap-2">
-            <div className="min-w-0">
-              {shouldShowFromPrice ? (
+          <div className="rounded-2xl border border-gray-100 bg-gray-50/80 p-3">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
                 <div className="flex flex-col leading-tight">
-                  <span className="text-xs font-medium uppercase tracking-wide text-gray-400">
-                    Desde
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-gray-400">
+                    {pricePrefixLabel}
                   </span>
                   <Precio value={displayPrice} />
                 </div>
-              ) : (
-                <Precio value={displayPrice} />
-              )}
+
+                <div className="mt-1 flex flex-wrap gap-2">
+                  {hasMultipleVariantChoices && (
+                    <span className="rounded-full bg-blue-50 px-2 py-1 text-[11px] font-medium text-blue-700">
+                      Elige variante antes de comprar
+                    </span>
+                  )}
+                  {hasSingleActiveVariant && selectedVariantLabel && (
+                    <span className="rounded-full bg-emerald-50 px-2 py-1 text-[11px] font-medium text-emerald-700">
+                      {selectedVariantLabel}
+                    </span>
+                  )}
+                  {limitedStockLabel && (
+                    <span className="rounded-full bg-amber-50 px-2 py-1 text-[11px] font-medium text-amber-800">
+                      {limitedStockLabel}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                {product.telefonoContacto && telefonoLimpio && (
+                  <Link
+                    href={`https://wa.me/${telefonoLimpio}?text=${whatsappMessage}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={handleWhatsAppClick}
+                    aria-label={`Contactar por WhatsApp sobre ${product.nombre}`}
+                    className="flex items-center justify-center rounded-full bg-gradient-to-r from-green-500 to-green-600 p-3 transition-all duration-300 hover:from-green-600 hover:to-green-700"
+                  >
+                    <BsWhatsapp className="text-2xl text-white sm:text-xl" />
+                  </Link>
+                )}
+              </div>
             </div>
 
-            <div className="flex items-center gap-3">
-              {product.telefonoContacto && telefonoLimpio && (
-                <Link
-                  href={`https://wa.me/${telefonoLimpio}?text=${whatsappMessage}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={handleWhatsAppClick}
-                  aria-label={`Contactar por WhatsApp sobre ${product.nombre}`}
-                  className="flex items-center justify-center rounded-full bg-gradient-to-r from-green-500 to-green-600 p-3 transition-all duration-300 hover:from-green-600 hover:to-green-700"
-                >
-                  <BsWhatsapp className="text-2xl text-white sm:text-xl" />
-                </Link>
-              )}
-
+            <div className="mt-3 flex items-center gap-2">
               <button
                 type="button"
                 onClick={handleOpenCartFlow}
-                disabled={isCartDisabled}
+                disabled={isActionDisabled}
                 aria-label={
-                  hasVariants
-                    ? `Seleccionar variantes de ${product.nombre}`
-                    : `Agregar ${product.nombre} al carrito`
+                  isActionDisabled
+                    ? `${product.nombre} agotado`
+                    : hasMultipleVariantChoices
+                      ? `Elegir opciones de ${product.nombre}`
+                      : `Agregar ${product.nombre} al carrito`
                 }
-                className="flex items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-blue-600 p-3 transition-all duration-300 hover:from-blue-600 hover:to-blue-700 disabled:cursor-not-allowed disabled:from-gray-300 disabled:to-gray-400"
+                className={`flex flex-1 items-center justify-center gap-2 rounded-full px-4 py-3 text-sm font-semibold transition-all duration-300 ${
+                  isActionDisabled
+                    ? "cursor-not-allowed bg-gray-200 text-gray-500"
+                    : simpleProductHasStock || hasSingleActiveVariant
+                      ? "bg-gradient-to-r from-emerald-500 to-emerald-600 text-white hover:from-emerald-600 hover:to-emerald-700"
+                      : "bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700"
+                }`}
               >
-                <FaShoppingCart className="text-2xl text-white" />
+                <FaShoppingCart className="text-base" />
+                <span>{primaryCtaLabel}</span>
               </button>
+
+              <Link
+                href={detailHref}
+                onClick={handleDetailLinkClick}
+                className="inline-flex shrink-0 items-center justify-center rounded-full border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-700 transition hover:border-gray-300 hover:bg-gray-100"
+              >
+                Ver detalle
+              </Link>
             </div>
+
+            <p className="mt-2 text-xs text-gray-500">
+              {primaryCtaHint}
+            </p>
           </div>
         </div>
       </div>
 
-              {modalRoot && createPortal(ModalContent, modalRoot)}
+      {modalRoot &&
+        createPortal(
+          <ProductQuickAddModal
+            isOpen={isModalOpen}
+            onClose={(reason) => {
+              quickAddCloseReasonRef.current = reason;
+              setIsModalOpen(false);
+              resetSelectionState();
+            }}
+            productName={product.nombre}
+            fallbackPrice={product.precio}
+            hasVariants={hasVariants}
+            activeVariants={activeVariants}
+            selectedVariantId={selectedVariantId}
+            onSelectVariant={(variantId) => {
+              selectVariant(variantId);
+
+              const nextVariant = activeVariants.find((variant) => variant.id === variantId);
+              if (!nextVariant) {
+                return;
+              }
+
+              trackAnalyticsEvent({
+                event: "product_variant_selected",
+                timestamp: Date.now(),
+                negocioSlug: analyticsNegocioSlug,
+                navigationMode: analyticsNavigationMode,
+                source: analyticsSource,
+                productId: product.id,
+                productSlug: product.slug,
+                productName: product.nombre,
+                productPrice: nextVariant.precio ?? product.precio,
+                variantId: nextVariant.id,
+                variantLabel: buildVariantLabel(nextVariant),
+                availableVariantCount: activeVariants.length,
+                groupId: analyticsContext?.groupId,
+                groupSlug: analyticsContext?.groupSlug,
+              });
+            }}
+            selectedVariantLabel={selectedVariantLabel}
+            modalDisplayPrice={modalDisplayPrice}
+            shouldShowFromPrice={hasVariants && shouldShowFromPrice && !selectedVariant}
+            currentMaxStock={currentMaxStock}
+            quantity={quantity}
+            onQuantityChange={updateQuantity}
+            onDecreaseQuantity={decrementQuantity}
+            onIncreaseQuantity={incrementQuantity}
+            requiresVariantSelection={requiresVariantSelection}
+            isOutOfStock={isOutOfStock}
+            isActionDisabled={isActionDisabled}
+            onConfirm={() => handleAddToCart(quantity, "modal")}
+          />,
+          modalRoot
+        )}
       {modalRoot && createPortal(ToastContent, modalRoot)}
     </motion.div>
   );

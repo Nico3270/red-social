@@ -148,7 +148,6 @@ export default async function ProductPage({ params, searchParams }: Props) {
       precio: producto.precio,
       imagenes: producto.imagenes,
       descripcion: producto.descripcion,
-      seccionIds: producto.sections,
       descripcionCorta: producto.descripcionCorta,
       slug: producto.slug,
       tags: producto.tags,
@@ -157,6 +156,11 @@ export default async function ProductPage({ params, searchParams }: Props) {
       status: producto.status,
       categoriaId: producto.categoriaId,
       sections: producto.sections,
+      stock: producto.stock,
+      stockIlimitado: producto.stockIlimitado,
+      usaVariantes: producto.usaVariantes,
+      atributos: producto.atributos,
+      variantes: producto.variantes,
       telefonoContacto: producto.telefonoContacto || "",
       slugNegocio: producto.slugNegocio || "",
       nombreNegocio: producto.nombreNegocio || "",
@@ -201,7 +205,7 @@ export default async function ProductPage({ params, searchParams }: Props) {
       />
 
       {catalogReturnHref && (
-        <div className="mb-4 rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-3 shadow-sm">
+        <div className="mb-4 mt-8 rounded-2xl border border-slate-200 bg-yellow-100 px-4 py-3 shadow-sm">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-sm font-semibold text-slate-900">Volver al catálogo</p>
