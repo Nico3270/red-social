@@ -1,28 +1,43 @@
 import { getConfigUserReservation, BusinessAvailabilityData } from "@/reservas/actions/getCongifUserReservation"; // Corrige 'getCongif' a 'getConfig' si es typo
 import ReservasUserDashboard from "@/reservas/componentes/ReservasUserDashboard";
+import { buildPublicBusinessBySlugWhere } from "@/lib/business/publicBusinessVisibility";
+import prisma from "@/lib/prisma";
 import { Metadata } from "next";
 import { FaExclamationTriangle } from "react-icons/fa";
 import { auth } from "@/auth.config"; // 👈 importa tu helper de NextAuth
 import Link from "next/link";
 
 
-
-// Configuración de cache: ISR para optimizar rendimiento (revalida cada 1 hora)
-export const revalidate = 3600;
+export const dynamic = "force-dynamic";
 
 // SEO Dinámico: Genera metadatos basados en slug para visibilidad premium
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
+  const negocio = await prisma.negocio.findFirst({
+    where: buildPublicBusinessBySlugWhere(slug),
+    select: { nombre: true, slug: true },
+  });
+
+  if (!negocio) {
+    return {
+      title: "Reservas no disponibles | Myckeo",
+      description:
+        "La página de reservas solicitada no está disponible.",
+      robots: "noindex, nofollow",
+    };
+  }
+
   return {
-    title: `Reservas en ${slug.charAt(0).toUpperCase() + slug.slice(1)} | Plataforma Social-Comercial`,
-    description: `Agenda citas y reservas en el negocio ${slug}. Explora horarios disponibles, reseñas y más en nuestra plataforma interactiva para emprendedores y profesionales.`,
+    title: `Reservas en ${negocio.nombre} | Plataforma Social-Comercial`,
+    description: `Agenda citas y reservas en el negocio ${negocio.nombre}. Explora horarios disponibles, reseñas y más en nuestra plataforma interactiva para emprendedores y profesionales.`,
     openGraph: {
-      title: `Reservas en ${slug}`,
-      description: `Configura y gestiona reservas fácilmente para ${slug}.`,
-      url: `/reservas/${slug}`,
+      title: `Reservas en ${negocio.nombre}`,
+      description: `Configura y gestiona reservas fácilmente para ${negocio.nombre}.`,
+      url: `/reservas/${negocio.slug}`,
       type: "website",
       images: ["/og-image-reservas.jpg"], // Ajusta a imagen real para shares sociales
     },
+    robots: "index, follow",
   };
 }
 

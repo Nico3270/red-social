@@ -1,6 +1,11 @@
 "use server";
 
 import { ProductRedSocial } from "@/interfaces/productRedSocial.interface";
+import {
+  buildPublicBusinessByIdWhere,
+  buildPublicBusinessRelationWhere,
+} from "@/lib/business/publicBusinessVisibility";
+import { logProductImageDiagnostics } from "@/lib/media/productImageDiagnostics";
 import prisma from "@/lib/prisma";
 import { ProductStatus } from "@prisma/client";
 
@@ -29,8 +34,12 @@ export const getProductBySlug = async (
       };
     }
 
-    const product = await prisma.product.findUnique({
-      where: { slug },
+    const product = await prisma.product.findFirst({
+      where: {
+        slug,
+        status: ProductStatus.disponible,
+        negocio: buildPublicBusinessRelationWhere(),
+      },
       select: {
         id: true,
         nombre: true,
@@ -123,8 +132,8 @@ export const getProductBySlug = async (
       };
     }
 
-    const negocio = await prisma.negocio.findUnique({
-      where: { id: product.negocioId },
+    const negocio = await prisma.negocio.findFirst({
+      where: buildPublicBusinessByIdWhere(product.negocioId),
       select: {
         nombre: true,
         telefonoContacto: true,
@@ -180,6 +189,26 @@ export const getProductBySlug = async (
       })),
     };
 
+    logProductImageDiagnostics({
+      area: "product-detail-query",
+      event: "detail_images_loaded",
+      message: "Imágenes devueltas por getProductBySlug para el detalle público.",
+      product: {
+        id: productFormatted.id,
+        slug: productFormatted.slug,
+        nombre: productFormatted.nombre,
+        status: productFormatted.status,
+        negocioSlug: productFormatted.slugNegocio,
+      },
+      imageUrls: productFormatted.imagenes,
+      selectedImageUrl: productFormatted.imagenes[0],
+      context: {
+        source: "getProductBySlug",
+        requestedSlug: slug,
+      },
+      dedupeKey: `product-detail-images:${productFormatted.id}:${productFormatted.imagenes.join("|")}`,
+    });
+
     if (!negocio) {
       return {
         ok: true,
@@ -198,6 +227,7 @@ export const getProductBySlug = async (
         categoryId: product.categoryId,
         id: { not: product.id },
         status: ProductStatus.disponible,
+        negocio: buildPublicBusinessRelationWhere(),
       },
       select: {
         id: true,

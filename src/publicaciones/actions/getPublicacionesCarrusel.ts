@@ -1,5 +1,6 @@
 "use server";
 
+import { buildPublicBusinessRelationWhere } from "@/lib/business/publicBusinessVisibility";
 import prisma from "@/lib/prisma";
 import { PublicacionTipo } from "@prisma/client";
 
@@ -58,6 +59,8 @@ export const getPublicacionesCarrusel = async (currentUserId?: string): Promise<
     const resultado = await prisma.publicacion.findMany({
       where: {
         tipo: PublicacionTipo.CARRUSEL_IMAGENES,
+        visibilidad: "PUBLICA",
+        negocio: buildPublicBusinessRelationWhere(),
       },
       orderBy: {
         createdAt: "desc",

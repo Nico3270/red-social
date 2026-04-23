@@ -3,8 +3,9 @@
 import LayoutDashboardComponent from "@/ui/components/dashboard/perfil/LayoutDashboardComponent";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import React, {  useEffect } from "react";
+import React, { useEffect } from "react";
 
+const ALLOWED_ROLES = ["admin", "super_admin"] as const;
 
 export default function DashboardtLayout({
   children,
@@ -14,28 +15,29 @@ export default function DashboardtLayout({
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  // Protección de ruta
   useEffect(() => {
     if (status === "loading") return;
 
     if (status === "unauthenticated" || !session?.user) {
-      router.push("/"); // Redirige a la página principal
-    } else if (session.user.role !== "admin") {
-  router.push("/not_authorized");
-}
+      router.push("/");
+      return;
+    }
+
+    if (!ALLOWED_ROLES.includes(session.user.role as (typeof ALLOWED_ROLES)[number])) {
+      router.push("/not_authorized");
+    }
   }, [session, status, router]);
 
-  // Loader
   if (status === "loading") {
     return (
-      <div className="min-h-screen flex justify-center items-center">
-        <span className="text-gray-600 animate-pulse text-lg">Cargando...</span>
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <span className="text-lg text-gray-600 animate-pulse">Cargando...</span>
       </div>
     );
   }
 
   return (
-    <main className="bg-white min-h-screen">
+    <main className="min-h-screen bg-white">
       <LayoutDashboardComponent>{children}</LayoutDashboardComponent>
     </main>
   );

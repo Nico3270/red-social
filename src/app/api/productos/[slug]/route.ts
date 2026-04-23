@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ProductRedSocial } from "@/interfaces/productRedSocial.interface";
+import { buildPublicBusinessBySlugWhere } from "@/lib/business/publicBusinessVisibility";
 import prisma from "@/lib/prisma";
+import { ProductStatus } from "@prisma/client";
 
 
 
@@ -25,7 +27,12 @@ export async function GET(
     }
 
     const products = await prisma.product.findMany({
-      where: { negocio: { slug } },
+      where: {
+        status: ProductStatus.disponible,
+        negocio: {
+          is: buildPublicBusinessBySlugWhere(slug),
+        },
+      },
       skip,
       take,
       select: {

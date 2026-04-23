@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import { unstable_cache } from "next/cache";
 import { ServicioData } from "@/servicios/interfaces/servicios.interface";
+import { buildPublicBusinessBySlugWhere } from "@/lib/business/publicBusinessVisibility";
 
 export interface ServiciosNegocioResult {
   ok: boolean;
@@ -10,8 +11,8 @@ export interface ServiciosNegocioResult {
 
 export const getServiciosBySlug = async (slug: string, take: number = 4): Promise<ServiciosNegocioResult> => {
   try {
-    const negocio = await prisma.negocio.findUnique({
-      where: { slug },
+    const negocio = await prisma.negocio.findFirst({
+      where: buildPublicBusinessBySlugWhere(slug),
       select: {
         id: true,
         nombre: true,

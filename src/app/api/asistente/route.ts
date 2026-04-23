@@ -1,6 +1,7 @@
 // app/api/asistente/route.ts
 
 import prisma from "@/lib/prisma";
+import { buildPublicBusinessVisibilityWhere } from "@/lib/business/publicBusinessVisibility";
 import { ReservationStatus, type Prisma } from "@prisma/client";
 import { startOfDay, addDays, addMinutes, startOfWeek } from "date-fns";
 import { es } from "date-fns/locale";
@@ -447,7 +448,10 @@ async function getNegocioByTelefono(
 
   // 1) Exacto (mejor)
   const exact = await prisma.negocio.findFirst({
-    where: { telefonoContacto: telefono },
+    where: {
+      telefonoContacto: telefono,
+      ...buildPublicBusinessVisibilityWhere(),
+    },
     select,
   });
 
@@ -456,6 +460,7 @@ async function getNegocioByTelefono(
   // 2) Fallback por "contains" (útil si guardaste sin + o con separadores)
   const fallback = await prisma.negocio.findFirst({
     where: {
+      ...buildPublicBusinessVisibilityWhere(),
       telefonoContacto: {
         not: null,
         contains: last10,

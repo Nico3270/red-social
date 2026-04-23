@@ -1,3 +1,4 @@
+import { buildPublicBusinessRelationWhere } from "@/lib/business/publicBusinessVisibility";
 import prisma from "@/lib/prisma";
 import { MultimediaTipo } from "@prisma/client";
 
@@ -26,12 +27,12 @@ export const getResenasProductoTestimonio = async (productoId: string): Promise<
     }
     // Busqueda del producto
 
-    const producto = await prisma.product.findUnique(
-        {
-            where: { id: productoId }
-
+    const producto = await prisma.product.findFirst({
+        where: {
+            id: productoId,
+            negocio: buildPublicBusinessRelationWhere(),
         }
-    );
+    });
     if (!producto) {
         return { ok: false, message: "El producto no existe" }
     }
@@ -41,11 +42,13 @@ export const getResenasProductoTestimonio = async (productoId: string): Promise<
         const publicaciones = await prisma.publicacion.findMany({
             where: {
                 tipo: "TESTIMONIO",
-                
+                visibilidad: "PUBLICA",
+                negocio: buildPublicBusinessRelationWhere(),
                 productosEnPublicacion
                 : {
                     some: {
                         productoId: productoId,
+                        esResena: true,
                     },
                 },
             },

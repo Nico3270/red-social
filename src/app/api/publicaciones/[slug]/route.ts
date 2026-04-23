@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { EnhancedPublicacion } from "@/publicaciones/interfaces/enhancedPublicacion.interface";
 import { PublicacionTipo, InteraccionTipo } from "@prisma/client";
+import { buildPublicBusinessBySlugWhere } from "@/lib/business/publicBusinessVisibility";
 import prisma from "@/lib/prisma";
 
 // Tipos existentes
@@ -52,8 +53,8 @@ export async function GET(
   }
 
   try {
-    const negocio = await prisma.negocio.findUnique({
-      where: { slug },
+    const negocio = await prisma.negocio.findFirst({
+      where: buildPublicBusinessBySlugWhere(slug),
       select: {
         id: true,
         nombre: true,

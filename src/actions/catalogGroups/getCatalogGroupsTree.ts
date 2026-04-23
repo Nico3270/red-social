@@ -1,5 +1,6 @@
 "use server";
 
+import { buildPublicBusinessBySlugWhere } from "@/lib/business/publicBusinessVisibility";
 import prisma from "@/lib/prisma";
 
 export interface CatalogGroupTreeNode {
@@ -37,8 +38,8 @@ export async function getCatalogGroupsTreeByBusinessSlug(businessSlug: string) {
     }
 
     // Obtener el negocio
-    const negocio = await prisma.negocio.findUnique({
-      where: { slug: businessSlug },
+    const negocio = await prisma.negocio.findFirst({
+      where: buildPublicBusinessBySlugWhere(businessSlug),
       select: { id: true },
     });
 

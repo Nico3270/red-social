@@ -1,5 +1,6 @@
 // src/app/api/getBySlug/route.ts
 import { NextResponse } from "next/server";
+import { buildPublicBusinessBySlugWhere } from "@/lib/business/publicBusinessVisibility";
 import prisma from "@/lib/prisma";
 import { MultimediaTipo } from "@prisma/client";
 
@@ -17,8 +18,8 @@ export async function GET(req: Request) {
     }
 
 
-    const negocioId = await prisma.negocio.findUnique({
-      where: { slug },
+    const negocioId = await prisma.negocio.findFirst({
+      where: buildPublicBusinessBySlugWhere(slug),
       select: { id: true, nombre:true, telefonoContacto:true, fotoPerfil:true },
     });
 

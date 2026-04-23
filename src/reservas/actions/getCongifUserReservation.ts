@@ -1,5 +1,6 @@
 "use server";
 
+import { buildPublicBusinessBySlugWhere } from "@/lib/business/publicBusinessVisibility";
 import prisma from "@/lib/prisma";
 
 export interface BusinessAvailabilityData {
@@ -25,8 +26,8 @@ interface DataResponse {
 
 export const getConfigUserReservation = async (slug: string): Promise<DataResponse> => {
   try {
-    const negocio = await prisma.negocio.findUnique({
-      where: { slug },
+    const negocio = await prisma.negocio.findFirst({
+      where: buildPublicBusinessBySlugWhere(slug),
       select: { id: true },
     });
 

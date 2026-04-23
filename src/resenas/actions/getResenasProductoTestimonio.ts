@@ -1,5 +1,6 @@
 "use server";
 
+import { buildPublicBusinessRelationWhere } from "@/lib/business/publicBusinessVisibility";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth.config";
 import { PublicacionTipo, ReaccionTipo } from "@prisma/client";
@@ -54,8 +55,11 @@ export const getResenasProductoTestimonio = async (productSlug: string): Promise
 
   try {
     // Verificar existencia del producto
-    const producto = await prisma.product.findUnique({
-      where: { slug: productSlug },
+    const producto = await prisma.product.findFirst({
+      where: {
+        slug: productSlug,
+        negocio: buildPublicBusinessRelationWhere(),
+      },
       select: { id: true, negocioId: true },
     });
 
@@ -74,6 +78,7 @@ export const getResenasProductoTestimonio = async (productSlug: string): Promise
           },
         },
         visibilidad: "PUBLICA",
+        negocio: buildPublicBusinessRelationWhere(),
       },
       select: {
         id: true,

@@ -1,42 +1,40 @@
-"use client";
-
 import LayoutDashboardComponent from "@/ui/components/dashboard/perfil/LayoutDashboardComponent";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import React, {  useEffect } from "react";
+import { auth } from "@/auth.config";
+import { isBusinessSessionRestricted } from "@/lib/business/businessSessionState";
+import { redirect } from "next/navigation";
+import React from "react";
 
+const ALLOWED_ROLES = ["admin", "super_admin", "negocio", "user"] as const;
 
-export default function DashboardtLayout({
+export default async function DashboardtLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { data: session, status } = useSession();
-  const router = useRouter();
+  const session = await auth();
 
-  // Protección de ruta
-  useEffect(() => {
-    if (status === "loading") return;
-
-    if (status === "unauthenticated" || !session?.user) {
-      router.push("/"); // Redirige a la página principal
-    } else if (session.user.role !== "admin" && session.user.role !== "negocio" && session.user.role !== "user") {
-  router.push("/not_authorized");
-}
-  }, [session, status, router]);
-
-  // Loader
-  if (status === "loading") {
-    return (
-      <div className="min-h-screen flex justify-center items-center">
-        <span className="text-gray-600 animate-pulse text-lg">Cargando...</span>
-      </div>
-    );
+  if (!session?.user) {
+    redirect("/");
   }
 
+  const userRole = session.user.role as string;
+
+  if (!ALLOWED_ROLES.includes(userRole as (typeof ALLOWED_ROLES)[number])) {
+    redirect("/not_authorized");
+  }
+
+  const businessRestricted = isBusinessSessionRestricted(session.user);
+
   return (
-    <main className="bg-white min-h-screen">
-      <LayoutDashboardComponent>{children}</LayoutDashboardComponent>
+    <main className="min-h-screen bg-white">
+      <LayoutDashboardComponent
+        businessRestricted={businessRestricted}
+        businessName={session.user.managedBusinessName ?? session.user.negocioNombre ?? null}
+        businessRestrictionReason={session.user.businessRestrictionReason ?? null}
+        businessArchivedAt={session.user.businessArchivedAt ?? null}
+      >
+        {children}
+      </LayoutDashboardComponent>
     </main>
   );
 }

@@ -5,6 +5,13 @@ import OpenAI from "openai";
 import { Prisma, Product, ProductStatus } from "@prisma/client";
 import { auth } from "@/auth.config";
 import { revalidateTag } from "next/cache";
+import {
+  buildSlugBase,
+  generateShortSlugSuffix,
+  hasShortSlugSuffix,
+  normalizeUrlSlug,
+  withShortSlugSuffix,
+} from "@/lib/slug/slugUtils";
 
 interface CreacionProduct {
   ok: boolean;
@@ -41,6 +48,7 @@ const openaiDescriptionModel =
   process.env.OPENAI_PRODUCT_DESCRIPTION_MODEL || "gpt-4o";
 
 const cloudinaryUrlPattern = /^https:\/\/res\.cloudinary\.com\//;
+const MAX_SLUG_ATTEMPTS = 40;
 
 const normalizeString = (value: FormDataEntryValue | null): string => {
   return typeof value === "string" ? value.trim() : "";
@@ -73,6 +81,33 @@ const safeJsonParse = <T>(value: FormDataEntryValue | null, fallback: T): T => {
   }
 };
 
+async function buildUniqueProductSlug(slugInput: string, fallbackName: string) {
+  const baseSlug = buildSlugBase(slugInput, fallbackName);
+
+  if (!baseSlug) {
+    throw new Error("No fue posible construir un slug válido para el producto.");
+  }
+
+  const baseWithoutExistingSuffix = hasShortSlugSuffix(baseSlug)
+    ? baseSlug.slice(0, -5)
+    : baseSlug;
+
+  for (let attempt = 0; attempt < MAX_SLUG_ATTEMPTS; attempt += 1) {
+    const candidate =
+      attempt === 0
+        ? withShortSlugSuffix(baseSlug)
+        : `${normalizeUrlSlug(baseWithoutExistingSuffix, 135)}-${generateShortSlugSuffix()}`;
+    const existing = await prisma.product.findUnique({
+      where: { slug: candidate },
+      select: { id: true },
+    });
+
+    if (!existing) return candidate;
+  }
+
+  return `${normalizeUrlSlug(baseSlug, 128)}-${Date.now().toString(36)}`;
+}
+
 export async function createProduct(formData: FormData): Promise<CreacionProduct> {
   const session = await auth();
 
@@ -103,7 +138,7 @@ export async function createProduct(formData: FormData): Promise<CreacionProduct
     const descripcion = normalizeString(formData.get("descripcion"));
     const descripcionCortaRaw = normalizeString(formData.get("descripcionCorta"));
     const descripcionCorta = descripcionCortaRaw || null;
-    const slug = normalizeString(formData.get("slug"));
+    const slugInput = normalizeString(formData.get("slug"));
     const prioridad = parseOptionalNumber(formData.get("prioridad"));
     const statusRaw = normalizeString(formData.get("status")) as ProductStatus;
     const tagsRaw = normalizeString(formData.get("tags"));
@@ -174,11 +209,11 @@ export async function createProduct(formData: FormData): Promise<CreacionProduct
         );
       });
 
-    if (!nombre || !descripcion || precio === null || !categoryId || !slug) {
+    if (!nombre || !descripcion || precio === null || !categoryId) {
       return {
         ok: false,
         message:
-          "Faltan datos obligatorios: nombre, descripción, precio, slug o categoría.",
+          "Faltan datos obligatorios: nombre, descripción, precio o categoría.",
       };
     }
 
@@ -230,17 +265,7 @@ export async function createProduct(formData: FormData): Promise<CreacionProduct
       };
     }
 
-    const existingProduct = await prisma.product.findUnique({
-      where: { slug },
-      select: { id: true },
-    });
-
-    if (existingProduct) {
-      return {
-        ok: false,
-        message: "El slug ya está en uso. Por favor, genera un nuevo slug.",
-      };
-    }
+    const slug = await buildUniqueProductSlug(slugInput, nombre);
 
     if (seccionIds.length > 0) {
       const sectionsExist = await prisma.section.findMany({

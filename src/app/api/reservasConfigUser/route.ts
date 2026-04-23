@@ -1,5 +1,6 @@
 // /app/api/reservasUserConfig/route.ts
 import { NextResponse } from 'next/server';
+import { buildPublicBusinessByIdWhere } from '@/lib/business/publicBusinessVisibility';
 import prisma from '@/lib/prisma';
 import { startOfDay, endOfDay, parseISO } from 'date-fns'; // Para rangos de fecha
 
@@ -45,8 +46,8 @@ export async function GET(request: Request) {
 
   try {
     // Verificar si el negocio existe (para evitar queries inválidas)
-    const negocioExists = await prisma.negocio.findUnique({
-      where: { id: negocioId },
+    const negocioExists = await prisma.negocio.findFirst({
+      where: buildPublicBusinessByIdWhere(negocioId),
       select: { id: true }, // Select mínimo para eficiencia
     });
 

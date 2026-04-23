@@ -11,6 +11,7 @@ import { Suspense } from "react";
 import { unstable_cache } from "next/cache";
 import { getConteosSecciones } from "@/perfil/actions/getConteosSecciones";
 import { preloadProfileCatalogData } from "@/actions/catalogGroups/preloadProfileCatalog";
+import { buildPublicBusinessVisibilityWhere } from "@/lib/business/publicBusinessVisibility";
 import { ServicioData } from "@/servicios/interfaces/servicios.interface";
 import { EnhancedPublicacion } from "@/publicaciones/interfaces/enhancedPublicacion.interface";
 import {
@@ -32,6 +33,7 @@ interface Props {
 // Genera rutas estáticas iniciales
 export async function generateStaticParams() {
   const slugs = await prisma.negocio.findMany({
+    where: buildPublicBusinessVisibilityWhere(),
     select: { slug: true },
     take: 100,
   });
@@ -55,12 +57,6 @@ export default async function NegocioPage({ params, searchParams }: Props) {
     { revalidate: 60, tags: [`negocio-publications-${slug}`] }
   );
 
-  const getCachedProfile = unstable_cache(
-    async (slug: string) => getInfoPerfilBySlugNegocio(slug),
-    ["negocio-profile"],
-    { revalidate: 3600, tags: [`negocio-profile-${slug}`] }
-  );
-
   const getCachedCatalogData = unstable_cache(
     async (slug: string) => preloadProfileCatalogData(slug),
     ["negocio-catalog"],
@@ -68,24 +64,28 @@ export default async function NegocioPage({ params, searchParams }: Props) {
   );
 
   // === Llamadas cacheadas ===
-  const result = await getNegocioProductsBySlug(slug, 20);
-  const { negocio } = await getCachedProfile(slug);
-  const publicacionesIniciales = await getCachedPublications(slug, 20, userId);
-  const conteos = await getConteosSecciones(slug);
-  const catalogData = await getCachedCatalogData(slug);
+  const { negocio } = await getInfoPerfilBySlugNegocio(slug);
+
+  if (!negocio) {
+    return (
+      <div className="error-container text-center sm:mt-40">
+        Error al cargar el perfil del negocio.
+      </div>
+    );
+  }
+
+  const [result, publicacionesIniciales, conteos, catalogData] = await Promise.all([
+    getNegocioProductsBySlug(slug, 20),
+    getCachedPublications(slug, 20, userId),
+    getConteosSecciones(slug),
+    getCachedCatalogData(slug),
+  ]);
 
   // === Manejo de errores ===
   if (!result.ok) {
     return (
       <div className="error-container text-center sm:mt-40">
         Error al cargar productos: {result.message}
-      </div>
-    );
-  }
-  if (!negocio) {
-    return (
-      <div className="error-container text-center sm:mt-40">
-        Error al cargar el perfil del negocio.
       </div>
     );
   }
@@ -138,15 +138,19 @@ export const revalidate = 60;
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const siteUrl = (process.env.SITE_URL || "https://myckeo.com").replace(/\/$/, "");
+  const { negocio } = await getInfoPerfilBySlugNegocio(slug);
 
-  // Reutilizamos el cache del perfil
-  const getCachedProfile = unstable_cache(
-    async (slug: string) => getInfoPerfilBySlugNegocio(slug),
-    ["negocio-profile"],
-    { revalidate: 3600, tags: [`negocio-profile-${slug}`] }
-  );
-
-  const { negocio } = await getCachedProfile(slug);
+  if (!negocio) {
+    return {
+      title: "Perfil no disponible | Myckeo",
+      description:
+        "El perfil solicitado no está disponible en este momento.",
+      robots: "noindex, nofollow",
+      alternates: {
+        canonical: `${siteUrl}/perfil/${slug}`,
+      },
+    };
+  }
 
   const title = negocio
     ? `${negocio.nombreNegocio} | Myckeo`

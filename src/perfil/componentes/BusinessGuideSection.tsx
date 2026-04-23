@@ -15,7 +15,6 @@ import type {
 } from "@/perfil/guide/business-guide.types";
 import type { ProductRedSocial } from "@/interfaces/productRedSocial.interface";
 import type { ProfileCatalogPreloadData } from "@/actions/catalogGroups/preloadProfileCatalog";
-import { textosFont } from "@/config/fonts";
 import { trackAnalyticsEvent } from "@/analytics/events";
 
 interface Props {
@@ -169,18 +168,7 @@ export function BusinessGuideSection({
             })
           }
         />
-      ) : (
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.22 }}
-          className="rounded-[26px] border border-dashed border-stone-200 bg-stone-50/70 px-5 py-4 text-sm text-slate-500 sm:px-6"
-        >
-          <p className={textosFont.className}>
-            Elige una de las rutas rápidas de arriba y te mostramos entre 3 y 6 opciones recomendadas sin salir de esta landing.
-          </p>
-        </motion.div>
-      )}
+      ) : <h1></h1>}
     </section>
   );
 }

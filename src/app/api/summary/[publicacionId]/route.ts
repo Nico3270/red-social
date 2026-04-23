@@ -1,4 +1,5 @@
 import { NextResponse, NextRequest } from 'next/server';
+import { buildPublicBusinessRelationWhere } from '@/lib/business/publicBusinessVisibility';
 import prisma from '@/lib/prisma'; // Ajusta la ruta a tu Prisma client
 import { ReaccionTipo } from '@prisma/client'; // Importa el enum para tipado
 export const dynamic = "force-dynamic"; // Asegura que la acción no use caché
@@ -20,8 +21,12 @@ const params = await context.params;
 
   try {
     // Fetch contadores precomputados de Publicacion (eficiente, O(1) con índice)
-    const publicacion = await prisma.publicacion.findUnique({
-      where: { id: publicacionId },
+    const publicacion = await prisma.publicacion.findFirst({
+      where: {
+        id: publicacionId,
+        visibilidad: "PUBLICA",
+        negocio: buildPublicBusinessRelationWhere(),
+      },
       select: {
         numLikes: true,
         numComentarios: true,
@@ -87,7 +92,7 @@ const params = await context.params;
 
     return NextResponse.json(summary, {
       headers: {
-        'Cache-Control': 's-maxage=60, stale-while-revalidate=300', // Cache edge 1min, revalida background
+        'Cache-Control': 's-maxage=30, stale-while-revalidate=30',
       },
     });
   } catch (error) {

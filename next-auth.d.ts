@@ -22,6 +22,13 @@ declare module "next-auth" {
     fotoPerfil?: string | "/default-profile.png"; // Nuevo campo para la foto de perfil  
     perfilCompleto?: boolean; // Nuevo campo para indicar si el perfil está completo
     isPlaceholder?: boolean; // Nuevo campo para indicar si el usuario es placeholder
+    hasManagedBusiness?: boolean;
+    businessOperational?: boolean;
+    businessArchivedAt?: string | null;
+    businessEstado?: string | null;
+    businessRestrictionReason?: "archived" | "inactive" | "test_data" | null;
+    managedBusinessName?: string | null;
+    managedBusinessSlug?: string | null;
   }
 
   interface Session extends DefaultSession {
@@ -44,6 +51,13 @@ declare module "next-auth" {
     fotoPerfil?: string | "/default-profile.png"; // Nuevo campo para la foto de perfil 
     perfilCompleto?: boolean; // Nuevo campo para indicar si el perfil está completo
     isPlaceholder?: boolean; // Nuevo campo para indicar si el usuario es placeholder
+    hasManagedBusiness?: boolean;
+    businessOperational?: boolean;
+    businessArchivedAt?: string | null;
+    businessEstado?: string | null;
+    businessRestrictionReason?: "archived" | "inactive" | "test_data" | null;
+    managedBusinessName?: string | null;
+    managedBusinessSlug?: string | null;
   }
 
   interface CustomUser {
@@ -61,5 +75,12 @@ declare module "next-auth" {
     fotoPerfil?: string | "/default-profile.png"; // Nuevo campo para la foto de perfil 
     perfilCompleto?: boolean; // Nuevo campo para indicar si el perfil está completo
     isPlaceholder?: boolean; // Nuevo campo para indicar si el usuario es placeholder
+    hasManagedBusiness?: boolean;
+    businessOperational?: boolean;
+    businessArchivedAt?: string | null;
+    businessEstado?: string | null;
+    businessRestrictionReason?: "archived" | "inactive" | "test_data" | null;
+    managedBusinessName?: string | null;
+    managedBusinessSlug?: string | null;
   }
 }

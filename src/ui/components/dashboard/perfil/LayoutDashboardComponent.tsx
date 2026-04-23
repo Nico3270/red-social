@@ -1,20 +1,37 @@
 // LayoutDashboardComponent.tsx
 "use client";
 
+import {
+  isAllowedRestrictedDashboardPath,
+} from "@/lib/business/businessSessionState";
 import { useSidebarStore } from "@/store/sideBar/sideBar-store";
 import React, { useState, useEffect } from "react";
 import SideBarDashboard from "./SideBarDashboard";
 import { TopBarDashBoard } from "./TopBarDashBoard";
 import { Box } from "@mui/material";
+import { usePathname } from "next/navigation";
+import ArchivedBusinessDashboardState from "./ArchivedBusinessDashboardState";
 
 interface LayoutDashboardComponentProps {
   children: React.ReactNode;
+  businessRestricted?: boolean;
+  businessName?: string | null;
+  businessRestrictionReason?: string | null;
+  businessArchivedAt?: string | null;
 }
 
-const LayoutDashboardComponent: React.FC<LayoutDashboardComponentProps> = ({ children }) => {
+const LayoutDashboardComponent: React.FC<LayoutDashboardComponentProps> = ({
+  children,
+  businessRestricted = false,
+  businessName = null,
+  businessRestrictionReason = null,
+  businessArchivedAt = null,
+}) => {
   const { isSidebarOpen, setSidebarOpen } = useSidebarStore();
   const [isMobile, setIsMobile] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const pathname = usePathname();
+  const canRenderRestrictedRoute = isAllowedRestrictedDashboardPath(pathname);
 
   useEffect(() => {
     setIsMounted(true);
@@ -89,7 +106,27 @@ const LayoutDashboardComponent: React.FC<LayoutDashboardComponentProps> = ({ chi
         </Box>
 
         <Box component="main" sx={{ mt: "4rem", minHeight: "calc(100vh - 4rem)", bgcolor: "grey.100", p: { xs: 2, sm: 3, md: 4 }, overflowX: "hidden" }}>
-          {children}
+          {businessRestricted && !canRenderRestrictedRoute ? (
+            <ArchivedBusinessDashboardState
+              businessName={businessName}
+              reason={businessRestrictionReason}
+              archivedAt={businessArchivedAt}
+            />
+          ) : (
+            <>
+              {businessRestricted && canRenderRestrictedRoute && pathname !== "/dashboard" ? (
+                <div className="mb-4">
+                  <ArchivedBusinessDashboardState
+                    businessName={businessName}
+                    reason={businessRestrictionReason}
+                    archivedAt={businessArchivedAt}
+                    compact
+                  />
+                </div>
+              ) : null}
+              {children}
+            </>
+          )}
         </Box>
       </Box>
     </Box>

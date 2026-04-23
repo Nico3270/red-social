@@ -58,34 +58,23 @@ export const ProductGridWithSectionFilter = ({
   const observer = useRef<IntersectionObserver | null>(null);
 
   useEffect(() => {
-    if (!guideContext) {
-      return;
-    }
-
+    if (!guideContext) return;
     setActiveGuideContext(guideContext);
     setSelectedSectionId(guideContext.preferredSectionId ?? null);
   }, [guideContext]);
 
   useEffect(() => {
-    if (guideContext?.preferredSectionId || groupContext?.groupId) {
-      return;
-    }
-
+    if (guideContext?.preferredSectionId || groupContext?.groupId) return;
     setSelectedSectionId(initialSectionId ?? null);
   }, [groupContext?.groupId, guideContext?.preferredSectionId, initialSectionId]);
 
   useEffect(() => {
-    if (!groupContext?.groupId || guideContext?.preferredSectionId) {
-      return;
-    }
-
+    if (!groupContext?.groupId || guideContext?.preferredSectionId) return;
     setSelectedSectionId(null);
   }, [groupContext?.groupId, guideContext?.preferredSectionId]);
 
   const getKey = (pageIndex: number, previousPageData: ProductsPage | null) => {
-    if (hasReachedEndRef.current) {
-      return null;
-    }
+    if (hasReachedEndRef.current) return null;
 
     if (pageIndex === 0) {
       return `/api/productos/${slug}?skip=0&take=${take}`;
@@ -132,9 +121,7 @@ export const ProductGridWithSectionFilter = ({
       : initialProducts;
 
     const uniqueProducts = Array.from(
-      new Map(
-        [...spotlightProducts, ...allProducts].map((product) => [product.id, product])
-      ).values()
+      new Map([...spotlightProducts, ...allProducts].map((product) => [product.id, product])).values()
     );
 
     return uniqueProducts;
@@ -161,13 +148,8 @@ export const ProductGridWithSectionFilter = ({
         return leftSpotlightIndex - rightSpotlightIndex;
       }
 
-      if (typeof leftSpotlightIndex === "number") {
-        return -1;
-      }
-
-      if (typeof rightSpotlightIndex === "number") {
-        return 1;
-      }
+      if (typeof leftSpotlightIndex === "number") return -1;
+      if (typeof rightSpotlightIndex === "number") return 1;
 
       return (originalOrder.get(left.id) ?? 0) - (originalOrder.get(right.id) ?? 0);
     });
@@ -182,11 +164,11 @@ export const ProductGridWithSectionFilter = ({
   }, [orderedProducts]);
 
   useEffect(() => {
-    if (!selectedSectionId) {
-      return;
-    }
+    if (!selectedSectionId) return;
 
-    const hasVisibleSection = seccionesConProductos.some((section) => section.id === selectedSectionId);
+    const hasVisibleSection = seccionesConProductos.some(
+      (section) => section.id === selectedSectionId
+    );
 
     if (!hasVisibleSection) {
       setSelectedSectionId(null);
@@ -194,10 +176,7 @@ export const ProductGridWithSectionFilter = ({
   }, [seccionesConProductos, selectedSectionId]);
 
   const productosFiltrados = useMemo(() => {
-    if (!selectedSectionId) {
-      return orderedProducts;
-    }
-
+    if (!selectedSectionId) return orderedProducts;
     return orderedProducts.filter((product) => product.sections.includes(selectedSectionId));
   }, [orderedProducts, selectedSectionId]);
 
@@ -271,8 +250,9 @@ export const ProductGridWithSectionFilter = ({
   `;
 
   return (
-    <div className="mb-20 w-full sp:mb-0">
+    <div className="mb-2 w-full sp:mb-0">
       <style>{styles}</style>
+
       {activeGuideContext && (
         <div className="mb-3 rounded-2xl border border-amber-200/80 bg-amber-50/80 px-4 py-3 shadow-sm">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -305,7 +285,7 @@ export const ProductGridWithSectionFilter = ({
       {groupContext?.groupId && (
         <div className="mb-3 rounded-2xl border border-slate-200/90 bg-white px-4 py-3 shadow-sm">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
+            {/* <div>
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
                 Grupo editorial activo
               </p>
@@ -315,7 +295,7 @@ export const ProductGridWithSectionFilter = ({
               <p className="mt-1 text-sm text-slate-600">
                 Mostramos primero los productos de este grupo sin perder el catálogo completo ni las secciones.
               </p>
-            </div>
+            </div> */}
 
             <button
               type="button"
@@ -331,17 +311,27 @@ export const ProductGridWithSectionFilter = ({
         </div>
       )}
 
-      <div className="mb-2 flex justify-start gap-3 overflow-x-auto rounded-xl bg-white p-2 shadow sm:gap-4">
+      <div
+        className="
+          mb-2
+          flex justify-start gap-3 overflow-x-auto rounded-xl bg-white p-2 shadow
+          lg:grid lg:grid-cols-[repeat(auto-fit,minmax(110px,1fr))] lg:gap-3 lg:overflow-visible
+        "
+      >
         {seccionesConProductos.map((sec) => {
           const isSelected = selectedSectionId === sec.id;
+
           return (
             <button
               key={sec.id}
               data-testid={`catalog-section-chip-${sec.slug}`}
               onClick={() => setSelectedSectionId(isSelected ? null : sec.id)}
               className={clsx(
-                "flex flex-col items-center justify-center rounded-xl px-3 py-0 transition-colors",
-                isSelected ? "bg-gray-500 text-gray-100" : "hover:bg-gray-100 text-gray-600"
+                "flex shrink-0 flex-col items-center justify-center rounded-xl px-3 py-2 transition-colors",
+                "min-w-[92px] sm:min-w-[100px] lg:min-w-0 lg:w-full",
+                isSelected
+                  ? "bg-gray-500 text-gray-100"
+                  : "text-gray-600 hover:bg-gray-100"
               )}
             >
               <div
@@ -362,7 +352,10 @@ export const ProductGridWithSectionFilter = ({
                   }}
                 />
               </div>
-              <span className="text-center text-xs font-medium">{sec.nombre}</span>
+
+              <span className="line-clamp-2 text-center text-xs font-medium leading-tight">
+                {sec.nombre}
+              </span>
             </button>
           );
         })}

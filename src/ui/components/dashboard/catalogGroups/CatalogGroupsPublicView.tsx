@@ -6,7 +6,6 @@ import {
   reportOperationalError,
   reportOperationalWarning,
 } from "@/lib/observability/operationalLogger";
-import { FaChevronDown } from "react-icons/fa";
 import { getGroupProductsPublic } from "@/actions/catalogGroups/getGroupProductsPublic";
 import { mapPublicCatalogGroupProductToProductRedSocial } from "@/actions/catalogGroups/mapPublicCatalogGroupProduct";
 import type { CatalogGroupTreeNode } from "@/actions/catalogGroups/getCatalogGroupsTree";
@@ -16,6 +15,7 @@ import {
   findRootGroupIdForGroupId,
   getPreferredGroupIdFromNode,
 } from "@/perfil/helpers/catalog-group-url";
+import { getCatalogAccentTheme } from "@/perfil/helpers/catalogVisualThemes";
 import { ProductGridWithSectionFilter } from "../../sectonFilterBar/SectionFilterBar";
 import type { ProductGuideExploreContext } from "@/perfil/guide/business-guide.types";
 import { dedupeProductsById } from "./catalogPublicProducts";
@@ -85,12 +85,6 @@ const CatalogGroupsPublicView: React.FC<CatalogGroupsPublicViewProps> = ({
   );
   const [groupLoadErrors, setGroupLoadErrors] = useState<Record<string, string>>({});
   const [loadingGroups, setLoadingGroups] = useState<Set<string>>(new Set());
-  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(
-    () =>
-      initialSelection.selectedGroupId && initialSelection.selectedSubgroupId
-        ? new Set([initialSelection.selectedGroupId])
-        : new Set()
-  );
   const previousGroupIdRef = useRef<string | null>(null);
   const reportedGroupIdRef = useRef<string | null | undefined>(undefined);
 
@@ -102,11 +96,6 @@ const CatalogGroupsPublicView: React.FC<CatalogGroupsPublicViewProps> = ({
   useEffect(() => {
     setSelectedGroupId(initialSelection.selectedGroupId);
     setSelectedSubgroupId(initialSelection.selectedSubgroupId);
-    setExpandedGroups(
-      initialSelection.selectedGroupId && initialSelection.selectedSubgroupId
-        ? new Set([initialSelection.selectedGroupId])
-        : new Set()
-    );
   }, [initialSelection.selectedGroupId, initialSelection.selectedSubgroupId]);
 
   const handleGroupSelection = useCallback(
@@ -245,6 +234,12 @@ const CatalogGroupsPublicView: React.FC<CatalogGroupsPublicViewProps> = ({
   const currentGroupError = currentGroupId ? groupLoadErrors[currentGroupId] : null;
   const isLoading = currentGroupId ? loadingGroups.has(currentGroupId) : false;
   const selectedGroupNode = currentGroupId ? findGroupInTree(currentGroupId, groupsTree) : null;
+  const selectedRootGroup = selectedGroupId
+    ? findGroupInTree(selectedGroupId, groupsTree)
+    : null;
+  const selectedTheme = getCatalogAccentTheme(
+    selectedGroupId ?? currentGroupId ?? negocioSlug
+  );
   const isContainerSelection =
     !!selectedGroupNode &&
     (selectedGroupNode.productCount ?? 0) === 0 &&
@@ -260,42 +255,42 @@ const CatalogGroupsPublicView: React.FC<CatalogGroupsPublicViewProps> = ({
 
   return (
     <div
-      className="mx-auto w-full max-w-[1560px] space-y-6 px-4 sm:px-6 lg:px-8 2xl:px-10"
+      className="mx-auto w-full max-w-[1560px] space-y-4 px-4 sm:px-6 lg:px-8 2xl:px-10"
       data-testid="catalog-groups-public-view"
     >
-      <div className="rounded-lg border border-gray-200 bg-white p-4 md:p-6">
-        <div className="mb-4 flex items-center justify-between gap-3">
-          <h3 className="text-sm font-semibold text-gray-900">Colecciones</h3>
-
-          {(selectedGroupId || selectedSubgroupId) && (
-            <button
-              type="button"
-              onClick={clearSelection}
-              className="rounded-full border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
-            >
-              Ver todo
-            </button>
-          )}
+      <section className="overflow-hidden rounded-[32px] border border-slate-200 bg-white shadow-[0_24px_70px_rgba(15,23,42,0.07)]">
+        <div className="border-b border-slate-200 bg-[radial-gradient(circle_at_top_left,rgba(15,23,42,0.04),transparent_36%),linear-gradient(180deg,#ffffff,#f8fafc)] px-4 py-4 sm:px-6">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            {(selectedGroupId || selectedSubgroupId) && (
+              <button
+                type="button"
+                onClick={clearSelection}
+                className="inline-flex h-9 items-center justify-center rounded-full border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
+              >
+                Ver todo
+              </button>
+            )}
+          </div>
         </div>
 
-        <div className="max-h-96 space-y-2 overflow-y-auto">
-          {groupsTree.map((rootGroup) => {
-            const hasSubgroups = Boolean(rootGroup.children?.length);
-            const isExpanded = expandedGroups.has(rootGroup.id);
-            const isSelected = selectedGroupId === rootGroup.id && !selectedSubgroupId;
+        <div className="space-y-3 p-3 sm:p-4">
+          <div className="flex gap-2.5 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-visible sm:justify-center">
+            {groupsTree.map((rootGroup) => {
+              const theme = getCatalogAccentTheme(rootGroup.id || rootGroup.slug);
+              const isSelectedRoot = selectedGroupId === rootGroup.id;
+              const preferredGroupId =
+                rootGroup.productCount > 0
+                  ? rootGroup.id
+                  : getPreferredGroupIdFromNode(rootGroup) ?? rootGroup.id;
+              const nextSubgroupId =
+                preferredGroupId !== rootGroup.id ? preferredGroupId : null;
+              const nextGroupId = nextSubgroupId ?? rootGroup.id;
 
-            return (
-              <div key={rootGroup.id} className="space-y-1">
+              return (
                 <button
+                  key={rootGroup.id}
+                  type="button"
                   onClick={() => {
-                    const preferredGroupId =
-                      rootGroup.productCount > 0
-                        ? rootGroup.id
-                        : getPreferredGroupIdFromNode(rootGroup) ?? rootGroup.id;
-                    const nextSubgroupId =
-                      preferredGroupId !== rootGroup.id ? preferredGroupId : null;
-                    const nextGroupId = nextSubgroupId ?? rootGroup.id;
-
                     if (
                       selectedGroupId === rootGroup.id &&
                       currentGroupId === nextGroupId
@@ -306,68 +301,87 @@ const CatalogGroupsPublicView: React.FC<CatalogGroupsPublicViewProps> = ({
                     setSelectedGroupId(rootGroup.id);
                     setSelectedSubgroupId(nextSubgroupId);
                     handleGroupSelection(rootGroup.id, nextSubgroupId);
-
-                    if (hasSubgroups) {
-                      setExpandedGroups((prev) => new Set(prev).add(rootGroup.id));
-                    }
                   }}
-                  className={`flex w-full items-center justify-between rounded-lg px-3 py-2 transition-colors ${
-                    isSelected
-                      ? "border border-amber-300 bg-amber-100 font-semibold text-amber-950"
-                      : "text-gray-700 hover:bg-gray-100"
-                  }`}
+                  className="inline-flex h-11 flex-shrink-0 items-center gap-2.5 rounded-full border px-3.5 pr-4 text-sm font-semibold transition duration-200"
+                  style={
+                    isSelectedRoot
+                      ? {
+                          background: `linear-gradient(135deg, ${theme.surfaceStrong}, ${theme.surface})`,
+                          borderColor: theme.border,
+                          boxShadow: theme.shadow,
+                          color: theme.text,
+                        }
+                      : {
+                          background: `linear-gradient(135deg, ${theme.surfaceMuted}, rgba(255,255,255,0.96))`,
+                          borderColor: theme.border,
+                          color: theme.text,
+                        }
+                  }
                 >
-                  <span className="flex min-w-0 flex-1 items-center gap-2">
-                    <span className="truncate">{rootGroup.nombre}</span>
-                  </span>
-
-                  {hasSubgroups && (
-                    <FaChevronDown
-                      className={`flex-shrink-0 transition-transform ${
-                        isExpanded ? "rotate-180" : ""
-                      }`}
-                    />
-                  )}
+                  <span
+                    className="h-2.5 w-2.5 rounded-full"
+                    style={{ backgroundColor: isSelectedRoot ? theme.solid : theme.badgeText }}
+                  />
+                  <span className="whitespace-nowrap">{rootGroup.nombre}</span>
                 </button>
+              );
+            })}
+          </div>
 
-                {hasSubgroups && isExpanded && (
-                  <div className="ml-4 space-y-1">
-                    {rootGroup.children.map((subgroup) => {
-                      const isSubSelected =
-                        selectedSubgroupId === subgroup.id && selectedGroupId === rootGroup.id;
+          {selectedRootGroup && selectedRootGroup.children.length > 0 && (
+            <div
+              className="rounded-[24px] border px-3 py-3"
+              style={{
+                background: `linear-gradient(135deg, ${selectedTheme.surfaceMuted}, ${selectedTheme.surface})`,
+                borderColor: selectedTheme.border,
+              }}
+            >
+              <div className="flex gap-2 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-visible sm:justify-center md:justify-start">
+                {selectedRootGroup.children.map((subgroup) => {
+                  const isSubSelected =
+                    selectedSubgroupId === subgroup.id && selectedGroupId === selectedRootGroup.id;
 
-                      return (
-                        <button
-                          key={subgroup.id}
-                          onClick={() => {
-                            if (
-                              selectedGroupId === rootGroup.id &&
-                              selectedSubgroupId === subgroup.id
-                            ) {
-                              return;
+                  return (
+                    <button
+                      key={subgroup.id}
+                      type="button"
+                      onClick={() => {
+                        if (
+                          selectedGroupId === selectedRootGroup.id &&
+                          selectedSubgroupId === subgroup.id
+                        ) {
+                          return;
+                        }
+
+                        setSelectedGroupId(selectedRootGroup.id);
+                        setSelectedSubgroupId(subgroup.id);
+                        handleGroupSelection(selectedRootGroup.id, subgroup.id);
+                      }}
+                      className="whitespace-nowrap rounded-full border px-4 py-2 text-sm font-medium transition"
+                      style={
+                        isSubSelected
+                          ? {
+                              backgroundColor: selectedTheme.solid,
+                              borderColor: selectedTheme.solid,
+                              color: selectedTheme.solidText,
+                              boxShadow: selectedTheme.shadow,
                             }
-
-                            setSelectedGroupId(rootGroup.id);
-                            setSelectedSubgroupId(subgroup.id);
-                            handleGroupSelection(rootGroup.id, subgroup.id);
-                          }}
-                          className={`w-full rounded-lg px-3 py-2 text-left text-sm transition-colors ${
-                            isSubSelected
-                              ? "border border-amber-200 bg-amber-50 font-medium text-amber-900"
-                              : "text-gray-600 hover:bg-gray-50"
-                          }`}
-                        >
-                          {subgroup.nombre}
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
+                          : {
+                              backgroundColor: "rgba(255,255,255,0.86)",
+                              borderColor: selectedTheme.border,
+                              color: selectedTheme.text,
+                            }
+                      }
+                    >
+                      {subgroup.nombre}
+                    </button>
+                  );
+                })}
               </div>
-            );
-          })}
+            </div>
+          )}
         </div>
-      </div>
+      </section>
 
       {currentGroupError && (
         <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">

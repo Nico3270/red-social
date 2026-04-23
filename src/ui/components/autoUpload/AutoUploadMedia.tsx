@@ -7,7 +7,11 @@ import { FaTrashAlt } from "react-icons/fa";
 import { MdAddAPhoto } from "react-icons/md";
 import Image from "next/image";
 import { titleFont } from "@/config/fonts";
-
+import {
+  getCloudinaryAssetReference,
+  inferCloudinaryResourceType,
+  type CloudinaryResourceType,
+} from "@/lib/cloudinary/cloudinaryAsset";
 
 interface Media {
   id: string;
@@ -20,11 +24,14 @@ interface RenderMedia {
   url: string;
   file: File;
   publicId?: string;
+  resourceType?: CloudinaryResourceType | null;
+  isUploaded?: boolean;
 }
 
 type UploadedMedia = {
   url: string;
-  publicId: string;
+  publicId: string | null;
+  resourceType: CloudinaryResourceType | null;
 };
 
 interface AutoUploadMediaProps {
@@ -82,8 +89,12 @@ const AutoUploadMedia: React.FC<AutoUploadMediaProps> = ({
 
     setUploadedMedia(
       validUrls.map((url) => {
-        const publicId = url.split("/").slice(-2).join("/").split(".")[0];
-        return { url, publicId };
+        const assetReference = getCloudinaryAssetReference(url);
+        return {
+          url,
+          publicId: assetReference?.publicId ?? null,
+          resourceType: assetReference?.resourceType ?? null,
+        };
       })
     );
 
@@ -121,7 +132,9 @@ const AutoUploadMedia: React.FC<AutoUploadMediaProps> = ({
     if (!multiple && (media.length > 0 || uploadedMedia.length > 0)) {
       if (uploadedMedia.length > 0) {
         await Promise.all(
-          uploadedMedia.map((m) => handleRemoveFromCloudinary(m.publicId, m.url))
+          uploadedMedia.map((m) =>
+            handleRemoveFromCloudinary(m.publicId, m.url, m.resourceType)
+          )
         );
       }
       setMedia([]);
@@ -197,7 +210,13 @@ const AutoUploadMedia: React.FC<AutoUploadMediaProps> = ({
           throw new Error(`Error en la carga: ${data.error?.message || response.statusText}`);
         }
         if (data.secure_url) {
-          const newUploadedMedia = { url: data.secure_url, publicId: data.public_id };
+          const newUploadedMedia = {
+            url: data.secure_url,
+            publicId: data.public_id ?? null,
+            resourceType: mediaItem.file.type.startsWith("video/")
+              ? "video"
+              : "image",
+          } satisfies UploadedMedia;
           setUploadedMedia((prev) => (multiple ? [...prev, newUploadedMedia] : [newUploadedMedia]));
         }
         else {
@@ -229,16 +248,32 @@ const AutoUploadMedia: React.FC<AutoUploadMediaProps> = ({
   }, [media, multiple, onChange, onError, onLoading]);
 
   // Eliminar archivo de Cloudinary
-  const handleRemoveFromCloudinary = async (publicId: string, url: string) => {
+  const handleRemoveFromCloudinary = async (
+    publicId: string | null,
+    url: string,
+    resourceType?: CloudinaryResourceType | null
+  ) => {
     setLoading(true);
     onLoading?.(true);
     try {
+      const assetReference = !publicId ? getCloudinaryAssetReference(url) : null;
+      const resolvedPublicId = publicId || assetReference?.publicId || null;
+      const resolvedResourceType =
+        resourceType || assetReference?.resourceType || inferCloudinaryResourceType(url);
+
+      if (!resolvedPublicId) {
+        throw new Error(
+          "No fue posible resolver un publicId confiable para eliminar este asset."
+        );
+      }
+
       const response = await fetch("/api/cloudinary/delete", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          publicId,
-          resourceType: url.includes("video") ? "video" : "image",
+          publicId: resolvedPublicId,
+          resourceType: resolvedResourceType || "image",
+          url,
         }),
       });
       const data = await response.json();
@@ -268,11 +303,17 @@ const AutoUploadMedia: React.FC<AutoUploadMediaProps> = ({
   };
 
   // Manejar eliminación de archivos subidos
-  const handleRemoveUploadedMedia = async (publicId: string, url: string) => {
-    const success = await handleRemoveFromCloudinary(publicId, url);
+  const handleRemoveUploadedMedia = async (
+    publicId: string | null,
+    url: string,
+    resourceType?: CloudinaryResourceType | null
+  ) => {
+    const success = await handleRemoveFromCloudinary(publicId, url, resourceType);
     if (success) {
       setUploadedMedia((prev) => {
-        const updated = prev.filter((m) => m.publicId !== publicId);
+        const updated = prev.filter(
+          (m) => !(m.url === url && m.publicId === publicId)
+        );
         onChange(multiple ? updated.map((m) => m.url) : updated[0]?.url || undefined);
         return updated;
       });
@@ -281,8 +322,20 @@ const AutoUploadMedia: React.FC<AutoUploadMediaProps> = ({
 
   // Combinar media y uploadedMedia para renderizar
   const renderMedia: RenderMedia[] = [
-    ...media.map((m) => ({ ...m, publicId: undefined })),
-    ...uploadedMedia.map((m) => ({ id: m.publicId, url: m.url, file: {} as File, publicId: m.publicId })),
+    ...media.map((m) => ({
+      ...m,
+      publicId: undefined,
+      resourceType: null,
+      isUploaded: false,
+    })),
+    ...uploadedMedia.map((m) => ({
+      id: m.publicId || m.url,
+      url: m.url,
+      file: {} as File,
+      publicId: m.publicId ?? undefined,
+      resourceType: m.resourceType,
+      isUploaded: true,
+    })),
   ];
 
   // Justo antes del return en el componente
@@ -320,8 +373,12 @@ const AutoUploadMedia: React.FC<AutoUploadMediaProps> = ({
             <IconButton
               size="small"
               onClick={() =>
-                img.publicId
-                  ? handleRemoveUploadedMedia(img.publicId, img.url)
+                img.isUploaded
+                  ? handleRemoveUploadedMedia(
+                      img.publicId ?? null,
+                      img.url,
+                      img.resourceType ?? inferCloudinaryResourceType(img.url)
+                    )
                   : handleRemoveMedia(img.id)
               }
               className="absolute top-2 right-2 bg-white/80 hover:bg-red-100 rounded-full transition-all"

@@ -1,5 +1,6 @@
 "use server";
 
+import { buildPublicBusinessBySlugWhere } from "@/lib/business/publicBusinessVisibility";
 import prisma from "@/lib/prisma";
 import {
   reportOperationalError,
@@ -94,8 +95,8 @@ export async function getGroupProductsPublic(
       };
     }
 
-    const negocio = await prisma.negocio.findUnique({
-      where: { slug: negocioSlug },
+    const negocio = await prisma.negocio.findFirst({
+      where: buildPublicBusinessBySlugWhere(negocioSlug),
       select: { id: true },
     });
 

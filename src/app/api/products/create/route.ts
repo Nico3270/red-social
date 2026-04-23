@@ -3,6 +3,13 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { ProductStatus, Currency } from "@prisma/client";
+import {
+  buildSlugBase,
+  generateShortSlugSuffix,
+  hasShortSlugSuffix,
+  normalizeUrlSlug,
+  withShortSlugSuffix,
+} from "@/lib/slug/slugUtils";
 
 /* ============================================================
    Tipado del body esperado
@@ -38,24 +45,40 @@ function normalizePhone(phone: string): string {
   return phone.replace(/\s+/g, "").trim();
 }
 
-/* ============================================================
-   Crear slug básico
-   ============================================================ */
-function slugify(text: string): string {
-  return text
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9\s-]/g, "")
-    .trim()
-    .replace(/\s+/g, "-");
-}
+const MAX_SLUG_ATTEMPTS = 40;
 
 /* ============================================================
    Validar URL Cloudinary
    ============================================================ */
 function isCloudinaryUrl(url: string): boolean {
   return /^https:\/\/res\.cloudinary\.com\//.test(url);
+}
+
+async function buildUniqueProductSlug(nombre: string) {
+  const baseSlug = buildSlugBase(nombre, nombre);
+
+  if (!baseSlug) {
+    throw new Error("No fue posible construir un slug válido para el producto.");
+  }
+
+  const baseWithoutExistingSuffix = hasShortSlugSuffix(baseSlug)
+    ? baseSlug.slice(0, -5)
+    : baseSlug;
+
+  for (let attempt = 0; attempt < MAX_SLUG_ATTEMPTS; attempt += 1) {
+    const candidate =
+      attempt === 0
+        ? withShortSlugSuffix(baseSlug)
+        : `${normalizeUrlSlug(baseWithoutExistingSuffix, 135)}-${generateShortSlugSuffix()}`;
+    const existingSlug = await prisma.product.findUnique({
+      where: { slug: candidate },
+      select: { id: true },
+    });
+
+    if (!existingSlug) return candidate;
+  }
+
+  return `${normalizeUrlSlug(baseSlug, 128)}-${Date.now().toString(36)}`;
 }
 
 /* ============================================================
@@ -186,18 +209,7 @@ export async function POST(req: Request) {
       }
     }
 
-    /* ============================================================
-       Crear slug único
-       ============================================================ */
-    let slug = slugify(nombre);
-
-    const existingSlug = await prisma.product.findUnique({
-      where: { slug },
-    });
-
-    if (existingSlug) {
-      slug = `${slug}-${Date.now()}`;
-    }
+    const slug = await buildUniqueProductSlug(nombre);
 
     /* ============================================================
        Transacción completa

@@ -7,7 +7,9 @@ import Image from "next/image";
 import {
     PLACEHOLDER_PRODUCT_IMAGE,
     isRenderableImageSource,
+    resolveSafeImageSource,
 } from "@/lib/media/resolveSafeImageSource";
+import { logProductImageDiagnostics } from "@/lib/media/productImageDiagnostics";
 
 // Import Swiper styles
 import "swiper/css";
@@ -18,9 +20,68 @@ import "./slideshow.css";
 interface Props {
     images: string[];
     title: string;
+    productSlug?: string;
+    productId?: string;
 }
 
-export const ResponsiveSlideShow: React.FC<Props> = ({ images, title }) => {
+function ProductSlideImage({
+    image,
+    title,
+    productSlug,
+    productId,
+}: {
+    image: string;
+    title: string;
+    productSlug?: string;
+    productId?: string;
+}) {
+    const [src, setSrc] = React.useState(() =>
+        resolveSafeImageSource(image, PLACEHOLDER_PRODUCT_IMAGE)
+    );
+
+    React.useEffect(() => {
+        setSrc(resolveSafeImageSource(image, PLACEHOLDER_PRODUCT_IMAGE));
+    }, [image]);
+
+    const handleError = () => {
+        logProductImageDiagnostics({
+            area: "product-detail-slideshow",
+            event: "detail_image_render_failed",
+            message: "next/image no pudo renderizar una imagen del detalle.",
+            product: {
+                id: productId,
+                slug: productSlug,
+                nombre: title,
+            },
+            imageUrls: [image],
+            selectedImageUrl: src,
+            context: {
+                fallbackImage: PLACEHOLDER_PRODUCT_IMAGE,
+            },
+            level: "warn",
+            dedupeKey: `product-detail-slideshow-failed:${productId ?? productSlug ?? title}:${src}`,
+        });
+
+        if (src !== PLACEHOLDER_PRODUCT_IMAGE) {
+            setSrc(PLACEHOLDER_PRODUCT_IMAGE);
+        }
+    };
+
+    return (
+        <Image
+            priority
+            src={src}
+            alt={title}
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            quality={80}
+            onError={handleError}
+            className="object-cover rounded-xl shadow-xl border border-gray-100 "
+        />
+    );
+}
+
+export const ResponsiveSlideShow: React.FC<Props> = ({ images, title, productSlug, productId }) => {
     const renderableImages = images.filter(isRenderableImageSource);
     const slideshowImages = renderableImages.length > 0 ? renderableImages : [PLACEHOLDER_PRODUCT_IMAGE];
 
@@ -45,13 +106,11 @@ export const ResponsiveSlideShow: React.FC<Props> = ({ images, title }) => {
                     slideshowImages.map((image) => (
                         <SwiperSlide key={image}>
                             <div className="relative w-full h-[400px] md:h-[500px] slideshow-container">
-                                <Image
-                                    priority
-                                    src={image}
-                                    alt={title}
-                                    fill
-                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                                    className="object-cover rounded-xl shadow-xl border border-gray-100 "
+                                <ProductSlideImage
+                                    image={image}
+                                    title={title}
+                                    productSlug={productSlug}
+                                    productId={productId}
                                 />
                             </div>
                         </SwiperSlide>

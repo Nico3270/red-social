@@ -18,8 +18,7 @@ interface Props {
         { slug: string; }>
 }
 
-
-export const revalidate = 36000; // Revalida cada hora (ISR para performance; quita si fully dynamic)
+export const dynamic = "force-dynamic";
 
 export default async function CrearEncuestaNegocioPage({ params }: Props) {
     const { slug } = await params;

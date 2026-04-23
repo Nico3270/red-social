@@ -7,6 +7,7 @@ import {
   UpdateCatalogGroupInput,
   CatalogGroupResponse,
 } from "@/interfaces/catalogGroup.interface";
+import { revalidateCatalogGroupCache } from "./revalidateCatalogGroupCache";
 
 /**
  * Actualiza un grupo de catálogo
@@ -29,7 +30,7 @@ export async function updateCatalogGroup(
     // Obtener negocio del usuario
     const usuario = await prisma.usuario.findUnique({
       where: { id: session.user.id },
-      select: { negocio: { select: { id: true } } },
+      select: { negocio: { select: { id: true, slug: true } } },
     });
 
     if (!usuario?.negocio) {
@@ -161,6 +162,8 @@ export async function updateCatalogGroup(
       data: updateData,
     });
 
+    revalidateCatalogGroupCache(usuario.negocio.slug);
+
     return {
       ok: true,
       message: "Grupo actualizado exitosamente",
@@ -194,7 +197,7 @@ export async function deleteCatalogGroup(groupId: string): Promise<CatalogGroupR
     // Obtener negocio del usuario
     const usuario = await prisma.usuario.findUnique({
       where: { id: session.user.id },
-      select: { negocio: { select: { id: true } } },
+      select: { negocio: { select: { id: true, slug: true } } },
     });
 
     if (!usuario?.negocio) {
@@ -242,6 +245,8 @@ export async function deleteCatalogGroup(groupId: string): Promise<CatalogGroupR
         where: { id: groupId },
       });
     });
+
+    revalidateCatalogGroupCache(usuario.negocio.slug);
 
     return {
       ok: true,

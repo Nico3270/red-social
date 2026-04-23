@@ -1,6 +1,7 @@
 "use server";
 
 import { auth } from "@/auth.config";
+import { buildPublicBusinessBySlugWhere } from "@/lib/business/publicBusinessVisibility";
 import prisma from "@/lib/prisma";
 import { notifyReservaConfirmadaCliente } from "@/reservas/helpers/notifyReserva";
 import { PlantillaWhatsApp } from "@/reservas/interfaces/interfaces.whatsapp";
@@ -209,8 +210,8 @@ export const createNewPedido = async (
         }
       );
 
-      const negocio = await prisma.negocio.findUnique({
-        where: { slug: input.slug },
+      const negocio = await prisma.negocio.findFirst({
+        where: buildPublicBusinessBySlugWhere(input.slug),
         select: { id: true, telefonoContacto: true },
       });
 

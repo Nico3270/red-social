@@ -1,59 +1,65 @@
-import { v2 as cloudinary } from "cloudinary";
 import { NextResponse } from "next/server";
+import {
+  getCloudinaryAssetReference,
+  type CloudinaryResourceType,
+} from "@/lib/cloudinary/cloudinaryAsset";
+import { deleteCloudinaryAssets } from "@/lib/cloudinary/deleteCloudinaryAssets";
 
 export async function POST(req: Request) {
   try {
-    const { publicId, resourceType } = await req.json();
+    const {
+      publicId,
+      resourceType,
+      url,
+    }: {
+      publicId?: string;
+      resourceType?: CloudinaryResourceType;
+      url?: string;
+    } = await req.json();
 
-    if (!publicId) {
-      console.error("Delete request failed: publicId is required");
-      return NextResponse.json({ success: false, error: "publicId is required" }, { status: 400 });
-    }
+    const normalizedPublicId = typeof publicId === "string" ? publicId.trim() : "";
+    const assetFromUrl = !normalizedPublicId ? getCloudinaryAssetReference(url) : null;
+    const resolvedPublicId = normalizedPublicId || assetFromUrl?.publicId || "";
+    const resolvedResourceType =
+      resourceType || assetFromUrl?.resourceType || "image";
 
-    // Validar variables de entorno
-    const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
-    const apiKey = process.env.CLOUDINARY_API_KEY;
-    const apiSecret = process.env.CLOUDINARY_API_SECRET;
-
-    if (!cloudName || !apiKey || !apiSecret) {
-      console.error("Cloudinary configuration error:", {
-        cloudName: cloudName ? "[SET]" : undefined,
-        apiKey: apiKey ? "[SET]" : undefined,
-        apiSecret: apiSecret ? "[REDACTED]" : undefined,
-      });
+    if (!resolvedPublicId) {
+      console.error("Delete request failed: publicId or a parsable Cloudinary URL is required");
       return NextResponse.json(
-        { success: false, error: "Missing Cloudinary configuration (cloud_name, api_key, or api_secret)" },
-        { status: 500 }
-      );
-    }
-
-    cloudinary.config({
-      cloud_name: cloudName,
-      api_key: apiKey,
-      api_secret: apiSecret,
-    });
-
-    // console.log("Deleting resource:", { publicId, resourceType });
-    // console.log("Cloudinary config:", {
-    //   cloud_name: cloudName,
-    //   api_key: apiKey,
-    //   api_secret: apiSecret ? "[REDACTED]" : undefined,
-    // });
-
-    const result = await cloudinary.uploader.destroy(publicId, {
-      resource_type: resourceType || "image",
-    });
-    // console.log("Cloudinary delete result:", result);
-
-    if (result.result === "ok") {
-      return NextResponse.json({ success: true });
-    } else {
-      console.error("Cloudinary delete failed:", result);
-      return NextResponse.json(
-        { success: false, error: `Failed to delete: ${result.result || "Unknown error"}` },
+        {
+          success: false,
+          error: "publicId or a parsable Cloudinary URL is required",
+        },
         { status: 400 }
       );
     }
+
+    const result = await deleteCloudinaryAssets([
+      {
+        url: typeof url === "string" ? url.trim() : "",
+        publicId: resolvedPublicId,
+        resourceType: resolvedResourceType,
+      },
+    ]);
+
+    if (result.failed > 0) {
+      console.error("Cloudinary delete failed:", result.failedAssets[0]);
+      return NextResponse.json(
+        {
+          success: false,
+          error: result.failedAssets[0]?.error || "Failed to delete asset.",
+        },
+        { status: 400 }
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      deleted: result.deleted,
+      alreadyMissing: result.alreadyMissing,
+      resourceType: resolvedResourceType,
+      publicId: resolvedPublicId,
+    });
   } catch (error: unknown) {
     if (error instanceof Error) {
       console.error("Cloudinary delete error:", {

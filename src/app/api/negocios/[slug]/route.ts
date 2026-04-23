@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { buildPublicBusinessBySlugWhere } from "@/lib/business/publicBusinessVisibility";
 import prisma from "@/lib/prisma";
 
 
@@ -20,8 +21,8 @@ export async function GET(
       );
     }
 
-    const infoNegocio = await prisma.negocio.findUnique({
-        where:{slug},
+    const infoNegocio = await prisma.negocio.findFirst({
+        where: buildPublicBusinessBySlugWhere(slug),
         select:{
             nombre:true,
             id: true, descripcion:true

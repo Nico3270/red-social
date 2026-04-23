@@ -13,6 +13,7 @@ import {
   isRenderableImageSource,
   resolveSafeImageSource,
 } from "@/lib/media/resolveSafeImageSource";
+import { logProductImageDiagnostics } from "@/lib/media/productImageDiagnostics";
 import { reportOperationalWarning } from "@/lib/observability/operationalLogger";
 import { AddFavorites } from "./AddFavorites";
 import { Precio } from "./Precio";
@@ -58,9 +59,15 @@ const formatCurrency = (value: number) =>
   }).format(value);
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product, analyticsContext }) => {
-  const productImages = Array.isArray(product.imagenes)
-    ? product.imagenes.filter(isRenderableImageSource)
-    : [];
+  const rawProductImages = useMemo(
+    () => (Array.isArray(product.imagenes) ? product.imagenes : []),
+    [product.imagenes],
+  );
+  const productImages = useMemo(
+    () => rawProductImages.filter(isRenderableImageSource),
+    [rawProductImages],
+  );
+  const discardedImageCount = rawProductImages.length - productImages.length;
   const primaryImage = productImages[0] || FALLBACK_PRODUCT_IMAGE;
   const secondaryImage = productImages[1] || primaryImage;
 
@@ -70,6 +77,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, analyticsCont
   const [modalRoot, setModalRoot] = useState<Element | null>(null);
   const quickAddCloseReasonRef = useRef<"dismissed" | "cancelled" | "completed" | null>(null);
   const quickAddWasOpenRef = useRef(false);
+  const safeDisplayImage = resolveSafeImageSource(
+    displayImage,
+    FALLBACK_PRODUCT_IMAGE,
+  );
 
   const addProductToCart = useCartCatalogoStore((state) => state.addProductToCart);
   const analyticsNegocioSlug = analyticsContext?.negocioSlug ?? product.slugNegocio ?? "";
@@ -91,7 +102,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, analyticsCont
     modalDisplayPrice,
     shouldShowFromPrice,
     currentMaxStock,
-    areAllVariantsOutOfStock,
     isOutOfStock,
     isActionDisabled,
     requiresVariantSelection,
@@ -124,30 +134,90 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, analyticsCont
   const telefonoLimpio = product.telefonoContacto?.replace(/\D/g, "") ?? "";
   const hasSingleActiveVariant = hasVariants && activeVariants.length === 1 && !!selectedVariant;
   const hasMultipleVariantChoices = hasVariants && activeVariants.length > 1;
-  const simpleProductHasStock = !hasVariants && !isActionDisabled;
-  const limitedStockLabel =
-    !hasVariants && typeof currentMaxStock === "number"
-      ? currentMaxStock === 1
-        ? "Ultima unidad"
-        : `${currentMaxStock} disponibles`
-      : null;
-  const primaryCtaLabel = isActionDisabled
-    ? "Agotado"
-    : hasMultipleVariantChoices
-      ? "Elegir opciones"
-      : "Agregar";
-  const primaryCtaHint = isActionDisabled
-    ? "No disponible ahora"
-    : hasMultipleVariantChoices
-      ? `${activeVariants.length} opciones disponibles`
-      : hasSingleActiveVariant
-        ? `Compra directa de ${selectedVariantLabel}`
-        : limitedStockLabel ?? "Compra rápida";
   const pricePrefixLabel = shouldShowFromPrice ? "Desde" : "Precio";
 
   useEffect(() => {
     setDisplayImage(primaryImage);
   }, [primaryImage]);
+
+  useEffect(() => {
+    if (rawProductImages.length > 0 && discardedImageCount === 0) {
+      return;
+    }
+
+    logProductImageDiagnostics({
+      area: "product-card",
+      event: "card_images_received",
+      message: "Shape de imágenes recibido por ProductCard.",
+      product: {
+        id: product.id,
+        slug: product.slug,
+        nombre: product.nombre,
+        status: product.status,
+        negocioSlug: product.slugNegocio,
+      },
+      imageUrls: rawProductImages,
+      selectedImageUrl: primaryImage,
+      context: {
+        rawImageCount: rawProductImages.length,
+        renderableImageCount: productImages.length,
+        discardedImageCount,
+        analyticsSource,
+      },
+      level:
+        rawProductImages.length === 0 || discardedImageCount > 0
+          ? "warn"
+          : "info",
+      dedupeKey: `product-card-images:${product.id}:${rawProductImages.join("|")}`,
+    });
+  }, [
+    analyticsSource,
+    discardedImageCount,
+    primaryImage,
+    product.id,
+    product.nombre,
+    product.slug,
+    product.slugNegocio,
+    product.status,
+    productImages.length,
+    rawProductImages,
+  ]);
+
+  const handleProductImageError = useCallback(() => {
+    logProductImageDiagnostics({
+      area: "product-card",
+      event: "card_image_render_failed",
+      message: "next/image no pudo renderizar la imagen principal de la card.",
+      product: {
+        id: product.id,
+        slug: product.slug,
+        nombre: product.nombre,
+        status: product.status,
+        negocioSlug: product.slugNegocio,
+      },
+      imageUrls: rawProductImages,
+      selectedImageUrl: safeDisplayImage,
+      context: {
+        analyticsSource,
+        fallbackImage: FALLBACK_PRODUCT_IMAGE,
+      },
+      level: "warn",
+      dedupeKey: `product-card-render-failed:${product.id}:${safeDisplayImage}`,
+    });
+
+    if (safeDisplayImage !== FALLBACK_PRODUCT_IMAGE) {
+      setDisplayImage(FALLBACK_PRODUCT_IMAGE);
+    }
+  }, [
+    analyticsSource,
+    product.id,
+    product.nombre,
+    product.slug,
+    product.slugNegocio,
+    product.status,
+    rawProductImages,
+    safeDisplayImage,
+  ]);
 
   useEffect(() => {
     const root = document.getElementById("modal-root") || document.body;
@@ -363,6 +433,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, analyticsCont
     analyticsNavigationMode,
     analyticsNegocioSlug,
     analyticsSource,
+    displayPrice,
     effectivePrice,
     effectiveStock,
     effectiveStockIlimitado,
@@ -441,16 +512,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, analyticsCont
   ]);
 
   const handleOpenCartFlow = useCallback(() => {
-    if (!hasVariants) {
-      handleAddToCart(1, "direct");
-      return;
-    }
-
     resetQuantity();
     setIsModalOpen(true);
   }, [
-    handleAddToCart,
-    hasVariants,
     resetQuantity,
   ]);
 
@@ -544,10 +608,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, analyticsCont
           }}
         >
           <Image
-            src={displayImage}
+            src={safeDisplayImage}
             alt={product.nombre}
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            quality={80}
+            onError={handleProductImageError}
             className="object-cover transition-transform duration-300 hover:scale-[1.04]"
           />
 
@@ -556,7 +622,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, analyticsCont
           <div className="pointer-events-none absolute left-3 top-3 flex flex-wrap gap-2">
             {hasVariants && (
               <span className="rounded-full bg-white/90 px-2.5 py-1 text-[11px] font-semibold text-gray-800 shadow-sm backdrop-blur-sm">
-                {activeVariants.length === 1 ? "1 opcion" : `${activeVariants.length} opciones`}
+                {activeVariants.length === 1 ? "1 opcion" : "Variantes"}
               </span>
             )}
 
@@ -592,52 +658,34 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, analyticsCont
         </div>
 
         <div className="m-1">
-          <div className="rounded-2xl border border-gray-100 bg-gray-50/80 p-3">
-            <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0">
-                <div className="flex flex-col leading-tight">
-                  <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-gray-400">
-                    {pricePrefixLabel}
-                  </span>
-                  <Precio value={displayPrice} />
-                </div>
-
-                <div className="mt-1 flex flex-wrap gap-2">
-                  {hasMultipleVariantChoices && (
-                    <span className="rounded-full bg-blue-50 px-2 py-1 text-[11px] font-medium text-blue-700">
-                      Elige variante antes de comprar
-                    </span>
-                  )}
-                  {hasSingleActiveVariant && selectedVariantLabel && (
-                    <span className="rounded-full bg-emerald-50 px-2 py-1 text-[11px] font-medium text-emerald-700">
-                      {selectedVariantLabel}
-                    </span>
-                  )}
-                  {limitedStockLabel && (
-                    <span className="rounded-full bg-amber-50 px-2 py-1 text-[11px] font-medium text-amber-800">
-                      {limitedStockLabel}
-                    </span>
-                  )}
-                </div>
+          <div className="flex items-center justify-between gap-2">
+            <div className="min-w-0">
+              <div className="flex flex-col leading-tight">
+                <span className="text-xs font-medium uppercase tracking-wide text-gray-400">
+                  {pricePrefixLabel}
+                </span>
+                <Precio value={displayPrice} />
               </div>
 
-              <div className="flex items-center gap-3">
-                {product.telefonoContacto && telefonoLimpio && (
-                  <Link
-                    href={`https://wa.me/${telefonoLimpio}?text=${whatsappMessage}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={handleWhatsAppClick}
-                    aria-label={`Contactar por WhatsApp sobre ${product.nombre}`}
-                    className="flex items-center justify-center rounded-full bg-gradient-to-r from-green-500 to-green-600 p-3 transition-all duration-300 hover:from-green-600 hover:to-green-700"
-                  >
-                    <BsWhatsapp className="text-2xl text-white sm:text-xl" />
-                  </Link>
-                )}
-              </div>
+              {hasSingleActiveVariant && selectedVariantLabel && (
+                <p className="mt-1 text-xs text-gray-500">{selectedVariantLabel}</p>
+              )}
             </div>
 
-            <div className="mt-3 flex items-center gap-2">
+            <div className="flex items-center gap-3">
+              {product.telefonoContacto && telefonoLimpio && (
+                <Link
+                  href={`https://wa.me/${telefonoLimpio}?text=${whatsappMessage}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={handleWhatsAppClick}
+                  aria-label={`Contactar por WhatsApp sobre ${product.nombre}`}
+                  className="flex items-center justify-center rounded-full bg-gradient-to-r from-green-500 to-green-600 p-3 transition-all duration-300 hover:from-green-600 hover:to-green-700"
+                >
+                  <BsWhatsapp className="text-2xl text-white sm:text-xl" />
+                </Link>
+              )}
+
               <button
                 type="button"
                 onClick={handleOpenCartFlow}
@@ -649,30 +697,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, analyticsCont
                       ? `Elegir opciones de ${product.nombre}`
                       : `Agregar ${product.nombre} al carrito`
                 }
-                className={`flex flex-1 items-center justify-center gap-2 rounded-full px-4 py-3 text-sm font-semibold transition-all duration-300 ${
-                  isActionDisabled
-                    ? "cursor-not-allowed bg-gray-200 text-gray-500"
-                    : simpleProductHasStock || hasSingleActiveVariant
-                      ? "bg-gradient-to-r from-emerald-500 to-emerald-600 text-white hover:from-emerald-600 hover:to-emerald-700"
-                      : "bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700"
-                }`}
+                className="flex items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-blue-600 p-3 transition-all duration-300 hover:from-blue-600 hover:to-blue-700 disabled:cursor-not-allowed disabled:from-gray-300 disabled:to-gray-400 disabled:opacity-80"
               >
-                <FaShoppingCart className="text-base" />
-                <span>{primaryCtaLabel}</span>
+                <FaShoppingCart className="text-2xl text-white" />
               </button>
-
-              <Link
-                href={detailHref}
-                onClick={handleDetailLinkClick}
-                className="inline-flex shrink-0 items-center justify-center rounded-full border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-700 transition hover:border-gray-300 hover:bg-gray-100"
-              >
-                Ver detalle
-              </Link>
             </div>
-
-            <p className="mt-2 text-xs text-gray-500">
-              {primaryCtaHint}
-            </p>
           </div>
         </div>
       </div>

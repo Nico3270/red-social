@@ -3,6 +3,7 @@
 import { auth } from "@/auth.config";
 import prisma from "@/lib/prisma";
 import { CatalogGroupResponse } from "@/interfaces/catalogGroup.interface";
+import { revalidateCatalogGroupCache } from "./revalidateCatalogGroupCache";
 
 /**
  * Reordena un grupo dentro de su nivel (entre hermanos)
@@ -19,7 +20,7 @@ export async function reorderCatalogGroup(
 
     const usuario = await prisma.usuario.findUnique({
       where: { id: session.user.id },
-      select: { negocio: { select: { id: true } } },
+      select: { negocio: { select: { id: true, slug: true } } },
     });
 
     if (!usuario?.negocio) {
@@ -43,6 +44,8 @@ export async function reorderCatalogGroup(
       where: { id: groupId },
       data: { order: newOrder },
     });
+
+    revalidateCatalogGroupCache(usuario.negocio.slug);
 
     return {
       ok: true,
@@ -74,7 +77,7 @@ export async function moveCatalogGroup(
 
     const usuario = await prisma.usuario.findUnique({
       where: { id: session.user.id },
-      select: { negocio: { select: { id: true } } },
+      select: { negocio: { select: { id: true, slug: true } } },
     });
 
     if (!usuario?.negocio) {
@@ -123,6 +126,8 @@ export async function moveCatalogGroup(
       data: { parentId: newParentId },
     });
 
+    revalidateCatalogGroupCache(usuario.negocio.slug);
+
     return {
       ok: true,
       message: "Grupo movido exitosamente",
@@ -153,7 +158,7 @@ export async function toggleCatalogGroupActive(
 
     const usuario = await prisma.usuario.findUnique({
       where: { id: session.user.id },
-      select: { negocio: { select: { id: true } } },
+      select: { negocio: { select: { id: true, slug: true } } },
     });
 
     if (!usuario?.negocio) {
@@ -177,6 +182,8 @@ export async function toggleCatalogGroupActive(
       where: { id: groupId },
       data: { isActive },
     });
+
+    revalidateCatalogGroupCache(usuario.negocio.slug);
 
     return {
       ok: true,

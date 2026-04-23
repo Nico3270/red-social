@@ -72,6 +72,8 @@ export async function GET(request: Request) {
         FROM "Negocio"
         WHERE 
           estado = 'activo' AND
+          "isTestData" = false AND
+          "archivedAt" IS NULL AND
           (
             to_tsvector('spanish', coalesce(nombre, '') || ' ' || coalesce(descripcion, '') || ' ' || coalesce(tipo::text, '')) 
             @@ to_tsquery('spanish', ${tsQuery})
@@ -112,8 +114,12 @@ export async function GET(request: Request) {
             to_tsquery('spanish', ${tsQuery})
           ) AS rank
         FROM "Product" p
+        JOIN "Negocio" n ON p."negocioId" = n.id
         WHERE 
           p.status = 'disponible' AND
+          n.estado = 'activo' AND
+          n."isTestData" = false AND
+          n."archivedAt" IS NULL AND
           (
             to_tsvector('spanish', coalesce(p.nombre, '') || ' ' || coalesce(p.descripcion, '') || ' ' || coalesce(p."descripcionCorta", '')) 
             @@ to_tsquery('spanish', ${tsQuery})
@@ -138,7 +144,7 @@ export async function GET(request: Request) {
       const servicios = await prisma.$queryRaw<
         Array<{
           id: string;
-          titulo: string;
+          nombre: string;
           slug: string;
           negocioSlug: string;
           imagen?: string;
@@ -159,6 +165,8 @@ export async function GET(request: Request) {
         WHERE 
           s.status = 'disponible' AND
           n.estado = 'activo' AND
+          n."isTestData" = false AND
+          n."archivedAt" IS NULL AND
           (
             to_tsvector('spanish', coalesce(s.titulo, '') || ' ' || array_to_string(s.descripcion, ' ')) 
             @@ to_tsquery('spanish', ${tsQuery})
@@ -170,7 +178,7 @@ export async function GET(request: Request) {
       results.push(
         ...servicios.map((servicio) => ({
           id: servicio.id,
-          name: servicio.titulo,
+          name: servicio.nombre,
           type: 'servicio' as const,
           slug: servicio.negocioSlug,
           thumbnail: servicio.imagen,

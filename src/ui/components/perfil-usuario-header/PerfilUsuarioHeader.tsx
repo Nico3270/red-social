@@ -926,7 +926,7 @@ export default function PerfilUsuarioHeader({
           })}
         </div>
 
-        <div className="mt-4 space-y-6 transition-opacity duration-300 ease-in-out sm:mt-6">
+        <div className="mt-2 space-y-2 transition-opacity duration-300 ease-in-out sm:mt-6">
           {activeTab === "Inicio" && (
             <LandingPage
               informacionNegocio={informacionNegocio!}
@@ -1030,7 +1030,7 @@ export default function PerfilUsuarioHeader({
                   />
                 )
               ) : productos.length === 0 ? (
-                <div className="flex flex-col items-center justify-center pb-8">
+                <div className="flex flex-col items-center justify-center py-4">
                   <p className="mb-2 text-center text-lg font-bold text-gray-800">
                     No hay productos disponibles.
                   </p>

@@ -236,6 +236,8 @@ export default async function ProductPage({ params, searchParams }: Props) {
             <ResponsiveSlideShow
               images={product.imagenes}
               title={product.nombre || ""}
+              productSlug={product.slug}
+              productId={product.id}
             />
           </div>
         </div>

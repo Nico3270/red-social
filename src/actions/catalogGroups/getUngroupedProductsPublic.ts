@@ -1,5 +1,6 @@
 "use server";
 
+import { buildPublicBusinessBySlugWhere } from "@/lib/business/publicBusinessVisibility";
 import prisma from "@/lib/prisma";
 import { PLACEHOLDER_BUSINESS_IMAGE } from "@/lib/media/resolveSafeImageSource";
 import {
@@ -36,8 +37,8 @@ export async function getUngroupedProductsPublic(
       };
     }
 
-    const negocio = await prisma.negocio.findUnique({
-      where: { slug: negocioSlug },
+    const negocio = await prisma.negocio.findFirst({
+      where: buildPublicBusinessBySlugWhere(negocioSlug),
       select: { id: true },
     });
 

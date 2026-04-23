@@ -3,6 +3,7 @@
 
 "use server";
 
+import { buildPublicBusinessBySlugWhere } from "@/lib/business/publicBusinessVisibility";
 import prisma from "@/lib/prisma";
 import { unstable_cache } from "next/cache";
 
@@ -21,8 +22,8 @@ export const getConteosSecciones = async (slug: string) => {
     }
 
     // Consultar el negocio para verificar existencia
-    const negocio = await prisma.negocio.findUnique({
-      where: { slug },
+    const negocio = await prisma.negocio.findFirst({
+      where: buildPublicBusinessBySlugWhere(slug),
       select: { id: true },
     });
 

@@ -5,7 +5,178 @@ import prisma from "@/lib/prisma";
 import {
   AssignProductToCatalogGroupInput,
   AssignProductResponse,
+  CatalogGroupProduct,
 } from "@/interfaces/catalogGroup.interface";
+import { revalidateCatalogGroupCache } from "./revalidateCatalogGroupCache";
+
+export interface SaveCatalogGroupProductsBatchInput {
+  catalogGroupId: string;
+  products: Array<{
+    productId: string;
+    order?: number;
+    isFeatured?: boolean;
+  }>;
+}
+
+export interface SaveCatalogGroupProductsBatchResponse {
+  ok: boolean;
+  message: string;
+  catalogGroupProducts?: CatalogGroupProduct[];
+  summary?: {
+    added: number;
+    removed: number;
+    kept: number;
+  };
+  error?: string;
+}
+
+const normalizeBatchProducts = (
+  products: SaveCatalogGroupProductsBatchInput["products"]
+) =>
+  products.map((product, index) => ({
+    productId: product.productId,
+    order: index,
+    isFeatured: product.isFeatured ?? false,
+  }));
+
+/**
+ * Persiste el estado final de productos de un grupo en un solo golpe.
+ * El cliente puede editar localmente altas, bajas, orden y destacados y guardar al final.
+ */
+export async function saveCatalogGroupProductsBatch(
+  input: SaveCatalogGroupProductsBatchInput
+): Promise<SaveCatalogGroupProductsBatchResponse> {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return { ok: false, message: "No estás autenticado" };
+    }
+
+    const usuario = await prisma.usuario.findUnique({
+      where: { id: session.user.id },
+      select: { negocio: { select: { id: true, slug: true } } },
+    });
+
+    if (!usuario?.negocio) {
+      return { ok: false, message: "No tienes un negocio asociado" };
+    }
+
+    const negocioId = usuario.negocio.id;
+    const normalizedProducts = normalizeBatchProducts(input.products);
+    const finalProductIds = normalizedProducts.map((product) => product.productId);
+    const uniqueProductIds = new Set(finalProductIds);
+
+    if (uniqueProductIds.size !== finalProductIds.length) {
+      return {
+        ok: false,
+        message: "Hay productos duplicados en el grupo. Revisa la selección.",
+      };
+    }
+
+    const group = await prisma.catalogGroup.findUnique({
+      where: { id: input.catalogGroupId },
+      select: { negocioId: true },
+    });
+
+    if (!group || group.negocioId !== negocioId) {
+      return {
+        ok: false,
+        message: "Grupo no encontrado o no pertenece a tu negocio",
+      };
+    }
+
+    if (finalProductIds.length > 0) {
+      const validProducts = await prisma.product.findMany({
+        where: {
+          id: { in: finalProductIds },
+          negocioId,
+        },
+        select: { id: true },
+      });
+
+      if (validProducts.length !== uniqueProductIds.size) {
+        return {
+          ok: false,
+          message: "Uno o más productos no pertenecen a tu negocio",
+        };
+      }
+    }
+
+    const existingAssignments = await prisma.catalogGroupProduct.findMany({
+      where: { catalogGroupId: input.catalogGroupId },
+      select: { productId: true },
+    });
+    const existingProductIds = new Set(
+      existingAssignments.map((assignment) => assignment.productId)
+    );
+
+    const catalogGroupProducts = await prisma.$transaction(async (tx) => {
+      await tx.catalogGroupProduct.deleteMany({
+        where: {
+          catalogGroupId: input.catalogGroupId,
+          ...(finalProductIds.length > 0
+            ? { productId: { notIn: finalProductIds } }
+            : {}),
+        },
+      });
+
+      const savedAssignments = [];
+
+      for (const product of normalizedProducts) {
+        const assignment = await tx.catalogGroupProduct.upsert({
+          where: {
+            catalogGroupId_productId: {
+              catalogGroupId: input.catalogGroupId,
+              productId: product.productId,
+            },
+          },
+          create: {
+            catalogGroupId: input.catalogGroupId,
+            productId: product.productId,
+            order: product.order,
+            isFeatured: product.isFeatured,
+          },
+          update: {
+            order: product.order,
+            isFeatured: product.isFeatured,
+          },
+        });
+
+        savedAssignments.push(assignment);
+      }
+
+      return savedAssignments.sort((left, right) => left.order - right.order);
+    });
+
+    revalidateCatalogGroupCache(usuario.negocio.slug);
+
+    const finalProductIdSet = new Set(finalProductIds);
+    const added = finalProductIds.filter(
+      (productId) => !existingProductIds.has(productId)
+    ).length;
+    const removed = existingAssignments.filter(
+      (assignment) => !finalProductIdSet.has(assignment.productId)
+    ).length;
+
+    return {
+      ok: true,
+      message: "Cambios del grupo guardados exitosamente",
+      catalogGroupProducts,
+      summary: {
+        added,
+        removed,
+        kept: finalProductIds.length - added,
+      },
+    };
+  } catch (error) {
+    console.error("Error en saveCatalogGroupProductsBatch:", error);
+    return {
+      ok: false,
+      message: "Error al guardar productos del grupo",
+      error: error instanceof Error ? error.message : "Error desconocido",
+    };
+  }
+}
 
 /**
  * Asigna un producto a un grupo de catálogo
@@ -26,7 +197,7 @@ export async function assignProductToCatalogGroup(
 
     const usuario = await prisma.usuario.findUnique({
       where: { id: session.user.id },
-      select: { negocio: { select: { id: true } } },
+      select: { negocio: { select: { id: true, slug: true } } },
     });
 
     if (!usuario?.negocio) {
@@ -101,6 +272,8 @@ export async function assignProductToCatalogGroup(
       },
     });
 
+    revalidateCatalogGroupCache(usuario.negocio.slug);
+
     return {
       ok: true,
       message: "Producto asignado al grupo exitosamente",
@@ -130,7 +303,7 @@ export async function removeProductFromCatalogGroup(
 
     const usuario = await prisma.usuario.findUnique({
       where: { id: session.user.id },
-      select: { negocio: { select: { id: true } } },
+      select: { negocio: { select: { id: true, slug: true } } },
     });
 
     if (!usuario?.negocio) {
@@ -141,6 +314,8 @@ export async function removeProductFromCatalogGroup(
     const assignment = await prisma.catalogGroupProduct.findUnique({
       where: { id: catalogGroupProductId },
       select: {
+        catalogGroupId: true,
+        order: true,
         catalogGroup: { select: { negocioId: true } },
       },
     });
@@ -160,6 +335,8 @@ export async function removeProductFromCatalogGroup(
     await prisma.catalogGroupProduct.delete({
       where: { id: catalogGroupProductId },
     });
+
+    revalidateCatalogGroupCache(usuario.negocio.slug);
 
     return {
       ok: true,
@@ -190,7 +367,7 @@ export async function reorderCatalogGroupProduct(
 
     const usuario = await prisma.usuario.findUnique({
       where: { id: session.user.id },
-      select: { negocio: { select: { id: true } } },
+      select: { negocio: { select: { id: true, slug: true } } },
     });
 
     if (!usuario?.negocio) {
@@ -200,6 +377,8 @@ export async function reorderCatalogGroupProduct(
     const assignment = await prisma.catalogGroupProduct.findUnique({
       where: { id: catalogGroupProductId },
       select: {
+        catalogGroupId: true,
+        order: true,
         catalogGroup: { select: { negocioId: true } },
       },
     });
@@ -215,10 +394,30 @@ export async function reorderCatalogGroupProduct(
       };
     }
 
-    const updated = await prisma.catalogGroupProduct.update({
-      where: { id: catalogGroupProductId },
-      data: { order: newOrder },
+    const updated = await prisma.$transaction(async (tx) => {
+      const targetAssignment = await tx.catalogGroupProduct.findFirst({
+        where: {
+          catalogGroupId: assignment.catalogGroupId,
+          order: newOrder,
+          id: { not: catalogGroupProductId },
+        },
+        select: { id: true },
+      });
+
+      if (targetAssignment) {
+        await tx.catalogGroupProduct.update({
+          where: { id: targetAssignment.id },
+          data: { order: assignment.order },
+        });
+      }
+
+      return tx.catalogGroupProduct.update({
+        where: { id: catalogGroupProductId },
+        data: { order: newOrder },
+      });
     });
+
+    revalidateCatalogGroupCache(usuario.negocio.slug);
 
     return {
       ok: true,
@@ -250,7 +449,7 @@ export async function toggleCatalogGroupProductFeatured(
 
     const usuario = await prisma.usuario.findUnique({
       where: { id: session.user.id },
-      select: { negocio: { select: { id: true } } },
+      select: { negocio: { select: { id: true, slug: true } } },
     });
 
     if (!usuario?.negocio) {
@@ -279,6 +478,8 @@ export async function toggleCatalogGroupProductFeatured(
       where: { id: catalogGroupProductId },
       data: { isFeatured },
     });
+
+    revalidateCatalogGroupCache(usuario.negocio.slug);
 
     return {
       ok: true,

@@ -1,5 +1,6 @@
 "use server";
 
+import { buildPublicBusinessRelationWhere } from "@/lib/business/publicBusinessVisibility";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth.config";
 import { PublicacionTipo, ReaccionTipo } from "@prisma/client";
@@ -51,8 +52,11 @@ export const getPeoresResenasProducto = async (productSlug: string, take = 10): 
   const usuarioId = session?.user?.id || null;
 
   try {
-    const producto = await prisma.product.findUnique({
-      where: { slug: productSlug },
+    const producto = await prisma.product.findFirst({
+      where: {
+        slug: productSlug,
+        negocio: buildPublicBusinessRelationWhere(),
+      },
       select: { id: true, negocioId: true },
     });
 
@@ -71,6 +75,7 @@ export const getPeoresResenasProducto = async (productSlug: string, take = 10): 
         },
         visibilidad: "PUBLICA",
         calificacion: { not: null }, // Solo reseñas con calificación
+        negocio: buildPublicBusinessRelationWhere(),
       },
       select: {
         id: true,

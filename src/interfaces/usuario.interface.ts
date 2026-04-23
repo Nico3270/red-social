@@ -1,4 +1,4 @@
-export type Role = "navegante" | "creador" | "negocio" | "admin" | "user";
+export type Role = "navegante" | "creador" | "negocio" | "admin" | "user" | "super_admin";
 export type EstadoUsuario = "activo" | "suspendido" | "eliminado";
 
 export interface Usuario {

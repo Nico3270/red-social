@@ -9,6 +9,7 @@ import {
   reportOperationalError,
   reportOperationalWarning,
 } from "@/lib/observability/operationalLogger";
+import { buildPublicBusinessBySlugWhere } from "@/lib/business/publicBusinessVisibility";
 import prisma from "@/lib/prisma";
 import {
   hasNegocioCatalogGroupsActive,
@@ -282,8 +283,8 @@ export async function preloadProfileCatalogData(
     }
 
     // Obtener negocio
-    const negocio = await prisma.negocio.findUnique({
-      where: { slug: businessSlug },
+    const negocio = await prisma.negocio.findFirst({
+      where: buildPublicBusinessBySlugWhere(businessSlug),
       select: { 
         id: true, 
         slug: true,

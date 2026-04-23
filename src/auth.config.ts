@@ -8,6 +8,90 @@ import bcryptjs from "bcryptjs";
 import { randomBytes } from "crypto";
 import { Role } from "@prisma/client";
 
+async function buildSessionSnapshotByEmail(email: string) {
+  const usuarioConNegocio = await prisma.usuario.findUnique({
+    where: { email },
+    include: {
+      negocio: {
+        select: {
+          id: true,
+          slug: true,
+          nombre: true,
+          archivedAt: true,
+          estado: true,
+          isTestData: true,
+        },
+      },
+    },
+  });
+
+  if (!usuarioConNegocio) {
+    return null;
+  }
+
+  const managedBusiness = usuarioConNegocio.negocio;
+  const hasManagedBusiness = Boolean(managedBusiness);
+  const businessOperational = Boolean(
+    managedBusiness &&
+      managedBusiness.estado === "activo" &&
+      !managedBusiness.isTestData &&
+      !managedBusiness.archivedAt
+  );
+
+  let businessRestrictionReason: "archived" | "inactive" | "test_data" | null =
+    null;
+
+  if (managedBusiness?.archivedAt) {
+    businessRestrictionReason = "archived";
+  } else if (managedBusiness?.isTestData) {
+    businessRestrictionReason = "test_data";
+  } else if (managedBusiness && managedBusiness.estado !== "activo") {
+    businessRestrictionReason = "inactive";
+  }
+
+  let configReservation = false;
+  let configEncuestas = false;
+
+  if (managedBusiness?.id && businessOperational) {
+    const [availabilityCount, encuestaCount] = await Promise.all([
+      prisma.businessAvailability.count({
+        where: { negocioId: managedBusiness.id },
+      }),
+      prisma.encuesta.count({
+        where: { negocioId: managedBusiness.id },
+      }),
+    ]);
+
+    configReservation = availabilityCount > 0;
+    configEncuestas = encuestaCount > 0;
+  }
+
+  return {
+    id: usuarioConNegocio.id,
+    nombre: usuarioConNegocio.nombre,
+    apellido: usuarioConNegocio.apellido ?? "",
+    email: usuarioConNegocio.email,
+    role: usuarioConNegocio.role,
+    emailVerified: usuarioConNegocio.emailVerified ?? null,
+    ciudad: usuarioConNegocio.ciudad ?? null,
+    fotoPerfil: usuarioConNegocio.fotoPerfil || "/imgs/usuario-sin-foto.png",
+    perfilCompleto: usuarioConNegocio.perfilCompleto ?? false,
+    isPlaceholder: usuarioConNegocio.isPlaceholder ?? false,
+    hasManagedBusiness,
+    businessOperational,
+    businessArchivedAt: managedBusiness?.archivedAt?.toISOString() ?? null,
+    businessEstado: managedBusiness?.estado ?? null,
+    businessRestrictionReason,
+    managedBusinessName: managedBusiness?.nombre ?? null,
+    managedBusinessSlug: managedBusiness?.slug ?? null,
+    negocioId: businessOperational ? managedBusiness?.id ?? null : null,
+    negocioSlug: businessOperational ? managedBusiness?.slug ?? null : null,
+    negocioNombre: businessOperational ? managedBusiness?.nombre ?? null : null,
+    configReservation,
+    configEncuestas,
+  };
+}
+
 export const authConfig: NextAuthConfig = {
   pages: {
     signIn: "/auth/login",
@@ -50,72 +134,58 @@ export const authConfig: NextAuthConfig = {
     },
 
     async jwt({ token, user, trigger, session }) {
-      // Al iniciar sesión
-      if (user) { // Solo en sign-in inicial
-        // Fetch por email en lugar de id (funciona para ambos providers)
-        const usuarioConNegocio = await prisma.usuario.findUnique({
-          where: { email: user.email! },
-          include: {
-            negocio: {
-              select: { id: true, slug: true, nombre: true },
-            },
-          },
-        });
+      const email = user?.email || (typeof token.email === "string" ? token.email : null);
 
-        if (!usuarioConNegocio) {
-          // Esto no debería pasar si signIn crea el user, pero maneja error
+      if (email) {
+        const snapshot = await buildSessionSnapshotByEmail(email);
+
+        if (!snapshot) {
           throw new Error("Usuario no encontrado en DB después de signIn");
         }
 
-        // Verificar si el negocio tiene módulo de reservas activo
-        let configReservation = false;
-        if (usuarioConNegocio?.negocio?.id) {
-          const availabilityCount = await prisma.businessAvailability.count({
-            where: { negocioId: usuarioConNegocio.negocio.id },
-          });
-          configReservation = availabilityCount > 0;
-        }
-
-        let configEncuestas = false;
-        if (usuarioConNegocio?.negocio?.id) {
-          const availabilityCount = await prisma.encuesta.count({
-            where: { negocioId: usuarioConNegocio.negocio.id },
-          });
-          configEncuestas = availabilityCount > 0;
-        }
-
-        // Asigna desde DB para consistencia
-        token.id = usuarioConNegocio.id; // ¡Aquí el ID correcto de DB!
-        token.name = usuarioConNegocio.nombre;
-        token.apellido = usuarioConNegocio.apellido ?? "";
-        token.email = usuarioConNegocio.email;
-        token.role = usuarioConNegocio.role;
-        token.emailVerified = usuarioConNegocio.emailVerified ?? null;
-        token.ciudad = usuarioConNegocio.ciudad ?? null;
-        token.fotoPerfil = user.image || usuarioConNegocio.fotoPerfil || "/imgs/usuario-sin-foto.png"; // Prioriza image de Google si existe
-
-        // Nuevos campos
-        token.negocioId = usuarioConNegocio?.negocio?.id ?? null;
-        token.negocioSlug = usuarioConNegocio?.negocio?.slug ?? null;
-        token.negocioNombre = usuarioConNegocio?.negocio?.nombre ?? null;
-        token.configReservation = configReservation; // Nuevo campo agregado
-        token.configEncuestas = configEncuestas; // Nuevo campo agregado
-        token.perfilCompleto = usuarioConNegocio?.perfilCompleto ?? false;
-        token.isPlaceholder = usuarioConNegocio.isPlaceholder ?? false;
-
+        token.id = snapshot.id;
+        token.name = snapshot.nombre;
+        token.apellido = snapshot.apellido;
+        token.email = snapshot.email;
+        token.role = snapshot.role;
+        token.emailVerified = snapshot.emailVerified;
+        token.ciudad = snapshot.ciudad ?? undefined;
+        token.fotoPerfil =
+          (user?.image as string | undefined) || snapshot.fotoPerfil;
+        token.negocioId = snapshot.negocioId;
+        token.negocioSlug = snapshot.negocioSlug;
+        token.negocioNombre = snapshot.negocioNombre;
+        token.configReservation = snapshot.configReservation;
+        token.configEncuestas = snapshot.configEncuestas;
+        token.perfilCompleto = snapshot.perfilCompleto;
+        token.isPlaceholder = snapshot.isPlaceholder;
+        token.hasManagedBusiness = snapshot.hasManagedBusiness;
+        token.businessOperational = snapshot.businessOperational;
+        token.businessArchivedAt = snapshot.businessArchivedAt;
+        token.businessEstado = snapshot.businessEstado;
+        token.businessRestrictionReason = snapshot.businessRestrictionReason;
+        token.managedBusinessName = snapshot.managedBusinessName;
+        token.managedBusinessSlug = snapshot.managedBusinessSlug;
       }
 
       // Si se llama desde `update()`
       if (trigger === "update") {
         if (session?.role) token.role = session.role;
-        if (session?.negocioId) token.negocioId = session.negocioId;
-        if (session?.negocioSlug) token.negocioSlug = session.negocioSlug;
-        if (session?.negocioNombre) token.negocioNombre = session.negocioNombre;
+        if (session?.negocioId !== undefined) token.negocioId = session.negocioId;
+        if (session?.negocioSlug !== undefined) token.negocioSlug = session.negocioSlug;
+        if (session?.negocioNombre !== undefined) token.negocioNombre = session.negocioNombre;
         if (session?.configReservation !== undefined) token.configReservation = session.configReservation; // Permitir actualización
         if (session?.configEncuestas !== undefined) token.configEncuestas = session.configEncuestas; // Permitir actualización
         if (session?.fotoPerfil) token.fotoPerfil = session.fotoPerfil;
         if (session?.perfilCompleto !== undefined) token.perfilCompleto = session.perfilCompleto;
         if (session?.isPlaceholder !== undefined) token.isPlaceholder = session.isPlaceholder
+        if (session?.hasManagedBusiness !== undefined) token.hasManagedBusiness = session.hasManagedBusiness;
+        if (session?.businessOperational !== undefined) token.businessOperational = session.businessOperational;
+        if (session?.businessArchivedAt !== undefined) token.businessArchivedAt = session.businessArchivedAt;
+        if (session?.businessEstado !== undefined) token.businessEstado = session.businessEstado;
+        if (session?.businessRestrictionReason !== undefined) token.businessRestrictionReason = session.businessRestrictionReason;
+        if (session?.managedBusinessName !== undefined) token.managedBusinessName = session.managedBusinessName;
+        if (session?.managedBusinessSlug !== undefined) token.managedBusinessSlug = session.managedBusinessSlug;
       }
 
       return token;
@@ -138,6 +208,19 @@ export const authConfig: NextAuthConfig = {
         fotoPerfil: token.fotoPerfil as string,
         perfilCompleto: token.perfilCompleto as boolean,
         isPlaceholder: token.isPlaceholder as boolean,
+        hasManagedBusiness: token.hasManagedBusiness as boolean | undefined,
+        businessOperational: token.businessOperational as boolean | undefined,
+        businessArchivedAt: token.businessArchivedAt as string | null | undefined,
+        businessEstado: token.businessEstado as string | null | undefined,
+        businessRestrictionReason:
+          token.businessRestrictionReason as
+            | "archived"
+            | "inactive"
+            | "test_data"
+            | null
+            | undefined,
+        managedBusinessName: token.managedBusinessName as string | null | undefined,
+        managedBusinessSlug: token.managedBusinessSlug as string | null | undefined,
       };
       return session;
     },

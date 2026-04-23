@@ -1,15 +1,23 @@
 "use server";
 
 import { ProductRedSocial } from "@/interfaces/productRedSocial.interface";
+import { buildPublicBusinessRelationWhere } from "@/lib/business/publicBusinessVisibility";
 import { PLACEHOLDER_BUSINESS_IMAGE } from "@/lib/media/resolveSafeImageSource";
+import {
+  buildImageDiagnosticsSummary,
+  shouldLogProductImageDiagnostics,
+} from "@/lib/media/productImageDiagnostics";
 import { reportOperationalError } from "@/lib/observability/operationalLogger";
 import prisma from "@/lib/prisma";
+import { ProductStatus } from "@prisma/client";
 
 interface ProductosNegocioBySlug {
   ok: boolean;
   products?: ProductRedSocial[];
   message?: string;
 }
+
+const catalogImageDiagnosticsLogged = new Set<string>();
 
 export const getNegocioProductsBySlug = async (
   slug: string,
@@ -23,7 +31,16 @@ export const getNegocioProductsBySlug = async (
     // console.log("slug del negocio", { slug });
 
     const products = await prisma.product.findMany({
-      where: { negocio: { slug } },
+      where: {
+        status: ProductStatus.disponible,
+        negocio: {
+          ...buildPublicBusinessRelationWhere(),
+          is: {
+            ...buildPublicBusinessRelationWhere().is,
+            slug,
+          },
+        },
+      },
       take: take || 10,
       skip: skip || 0,
       select: {
@@ -153,6 +170,38 @@ export const getNegocioProductsBySlug = async (
         })),
       })),
     }));
+
+    const diagnosticsKey = `${slug}:${take || 10}:${skip || 0}:${formattedProducts
+      .map((product) => `${product.id}:${product.imagenes.length}`)
+      .join("|")}`;
+
+    if (
+      shouldLogProductImageDiagnostics() &&
+      !catalogImageDiagnosticsLogged.has(diagnosticsKey)
+    ) {
+      catalogImageDiagnosticsLogged.add(diagnosticsKey);
+
+      if (catalogImageDiagnosticsLogged.size > 50) {
+        catalogImageDiagnosticsLogged.clear();
+      }
+
+      console.info(
+        "[product-image-diagnostics][catalog-query][business_products_loaded] Productos devueltos para catálogo público.",
+        {
+          negocioSlug: slug,
+          take: take || 10,
+          skip: skip || 0,
+          productCount: formattedProducts.length,
+          products: formattedProducts.slice(0, 10).map((product) => ({
+            id: product.id,
+            slug: product.slug,
+            nombre: product.nombre,
+            status: product.status,
+            imageSummary: buildImageDiagnosticsSummary(product.imagenes),
+          })),
+        },
+      );
+    }
 
     return { ok: true, products: formattedProducts, message: "productos obtenidos exitosamente" };
   } catch (error) {

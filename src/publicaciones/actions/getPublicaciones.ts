@@ -1,5 +1,6 @@
 "use server";
 
+import { buildPublicBusinessBySlugWhere } from "@/lib/business/publicBusinessVisibility";
 import prisma from "@/lib/prisma";
 import { PublicacionTipo, ReaccionTipo } from "@prisma/client";
 import { EnhancedPublicacion } from "../interfaces/enhancedPublicacion.interface";
@@ -46,8 +47,8 @@ export const getPublicacionesNegocio = async ({
     // NO auth() aquí: userId se pasa desde Server Component (dinámico fuera de cache)
 
     // Find the business by slug, including the associated user
-    const negocio = await prisma.negocio.findUnique({
-      where: { slug },
+    const negocio = await prisma.negocio.findFirst({
+      where: buildPublicBusinessBySlugWhere(slug),
       select: {
         id: true,
         nombre: true,

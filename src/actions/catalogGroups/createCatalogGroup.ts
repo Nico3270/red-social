@@ -3,9 +3,17 @@
 import { auth } from "@/auth.config";
 import prisma from "@/lib/prisma";
 import {
+  buildSlugBase,
+  generateShortSlugSuffix,
+  hasShortSlugSuffix,
+  normalizeUrlSlug,
+  withShortSlugSuffix,
+} from "@/lib/slug/slugUtils";
+import {
   CreateCatalogGroupInput,
   CatalogGroupResponse,
 } from "@/interfaces/catalogGroup.interface";
+import { revalidateCatalogGroupCache } from "./revalidateCatalogGroupCache";
 
 /**
  * Crea un nuevo grupo de catálogo para el negocio del usuario autenticado
@@ -16,6 +24,42 @@ import {
  * - Si hay parentId, debe pertenecer al mismo negocio
  * - Sin validar parentId si es jerarquía inválida (eso lo valida DB)
  */
+const MAX_SLUG_ATTEMPTS = 40;
+
+async function buildUniqueCatalogGroupSlug(
+  negocioId: string,
+  slugInput: string | undefined,
+  fallbackName: string,
+) {
+  const baseSlug = buildSlugBase(slugInput ?? "", fallbackName);
+
+  if (!baseSlug) {
+    throw new Error("No fue posible construir un slug válido para el grupo.");
+  }
+
+  const baseWithoutExistingSuffix = hasShortSlugSuffix(baseSlug)
+    ? baseSlug.slice(0, -5)
+    : baseSlug;
+
+  for (let attempt = 0; attempt < MAX_SLUG_ATTEMPTS; attempt += 1) {
+    const candidate =
+      attempt === 0
+        ? withShortSlugSuffix(baseSlug)
+        : `${normalizeUrlSlug(baseWithoutExistingSuffix, 135)}-${generateShortSlugSuffix()}`;
+    const existingGroup = await prisma.catalogGroup.findFirst({
+      where: {
+        negocioId,
+        slug: candidate,
+      },
+      select: { id: true },
+    });
+
+    if (!existingGroup) return candidate;
+  }
+
+  return `${normalizeUrlSlug(baseSlug, 128)}-${Date.now().toString(36)}`;
+}
+
 export async function createCatalogGroup(
   input: CreateCatalogGroupInput
 ): Promise<CatalogGroupResponse> {
@@ -32,7 +76,7 @@ export async function createCatalogGroup(
     // Obtener negocio del usuario
     const usuario = await prisma.usuario.findUnique({
       where: { id: session.user.id },
-      select: { negocio: { select: { id: true } } },
+      select: { negocio: { select: { id: true, slug: true } } },
     });
 
     if (!usuario?.negocio) {
@@ -52,42 +96,11 @@ export async function createCatalogGroup(
       };
     }
 
-    if (!input.slug || input.slug.trim().length === 0) {
-      return {
-        ok: false,
-        message: "El slug es requerido",
-      };
-    }
-
-    // Normalizar slug
-    const normalizedSlug = input.slug
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9-]/g, "-")
-      .replace(/-+/g, "-")
-      .replace(/^-|-$/g, "");
-
-    if (normalizedSlug.length === 0) {
-      return {
-        ok: false,
-        message: "El slug debe contener caracteres válidos",
-      };
-    }
-
-    // Verificar que el slug sea único en este negocio
-    const existingGroup = await prisma.catalogGroup.findFirst({
-      where: {
-        negocioId,
-        slug: normalizedSlug,
-      },
-    });
-
-    if (existingGroup) {
-      return {
-        ok: false,
-        message: "Ya existe un grupo con ese slug en tu negocio",
-      };
-    }
+    const normalizedSlug = await buildUniqueCatalogGroupSlug(
+      negocioId,
+      input.slug,
+      input.nombre,
+    );
 
     // Si hay parentId, validar que pertenece al mismo negocio
     if (input.parentId) {
@@ -134,6 +147,8 @@ export async function createCatalogGroup(
         description: input.description?.trim() || null,
       },
     });
+
+    revalidateCatalogGroupCache(usuario.negocio.slug);
 
     return {
       ok: true,

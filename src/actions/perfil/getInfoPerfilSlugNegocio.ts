@@ -3,6 +3,7 @@ import { ProductRedSocial } from "@/interfaces/productRedSocial.interface";
 import { EnhancedPublicacion } from "@/publicaciones/interfaces/enhancedPublicacion.interface";
 import { PublicacionTipo } from "@prisma/client";
 import { EstadoNegocio } from "@prisma/client";
+import { buildPublicBusinessBySlugWhere } from "@/lib/business/publicBusinessVisibility";
 import { reportOperationalError } from "@/lib/observability/operationalLogger";
 import prisma from "@/lib/prisma";
 
@@ -63,16 +64,15 @@ export interface DatosPerfilNegocio {
 
 export const getInfoPerfilBySlugNegocio = async (slugNegocio: string): Promise<DatosPerfilNegocio> => {
   try {
-    const usuarioId = await prisma.negocio.findUnique({
-      where: {
-        slug: slugNegocio,
-      },
+    const negocio = await prisma.negocio.findFirst({
+      where: buildPublicBusinessBySlugWhere(slugNegocio),
       select: {
+        id: true,
         usuarioId: true,
       },
     });
 
-    if (!usuarioId) {
+    if (!negocio) {
       return {
         ok: false,
         message: "Negocio no encontrado",
@@ -81,7 +81,7 @@ export const getInfoPerfilBySlugNegocio = async (slugNegocio: string): Promise<D
 
     const result = await prisma.usuario.findUnique({
       where: {
-        id: usuarioId.usuarioId,
+        id: negocio.usuarioId,
       },
       select: {
         id: true,

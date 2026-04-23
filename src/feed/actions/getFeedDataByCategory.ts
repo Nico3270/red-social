@@ -1,6 +1,7 @@
 // src/actions/feed/getFeedDataByCategory.ts
 "use server";
 
+import { buildPublicBusinessVisibilityWhere } from "@/lib/business/publicBusinessVisibility";
 import prisma from "@/lib/prisma";
 import { FeedQueryParams, FeedResponse, FeedItem } from "../feed.interfaces";
 import { Prisma, ReaccionTipo } from "@prisma/client";
@@ -27,7 +28,12 @@ async function fetchProductsCity(params: ExtendedParams): Promise<RawProduct[]> 
     status: "disponible",
     id: { notIn: extractSeenRawIds(params.seenIds, "products") },
     category: { slug: params.categoriaSlug },
-    negocio: { ciudad: params.ciudad },
+    negocio: {
+      is: {
+        ...buildPublicBusinessVisibilityWhere(),
+        ciudad: params.ciudad,
+      },
+    },
   };
   return prisma.product.findMany({
     where,
@@ -44,7 +50,13 @@ async function fetchProductsDept(params: ExtendedParams): Promise<RawProduct[]> 
     status: "disponible",
     id: { notIn: extractSeenRawIds(params.seenIds, "products") },
     category: { slug: params.categoriaSlug },
-    negocio: { departamento: params.departamento, ciudad: { not: params.ciudad } },
+    negocio: {
+      is: {
+        ...buildPublicBusinessVisibilityWhere(),
+        departamento: params.departamento,
+        ciudad: { not: params.ciudad },
+      },
+    },
   };
   return prisma.product.findMany({
     where,
@@ -61,6 +73,9 @@ async function fetchProductsNational(params: ExtendedParams): Promise<RawProduct
     status: "disponible",
     id: { notIn: extractSeenRawIds(params.seenIds, "products") },
     category: { slug: params.categoriaSlug },
+    negocio: {
+      is: buildPublicBusinessVisibilityWhere(),
+    },
   };
   return prisma.product.findMany({
     where,
@@ -76,7 +91,13 @@ async function fetchServicesCity(params: ExtendedParams): Promise<RawService[]> 
   const where: Prisma.ServicioWhereInput = {
     status: "disponible",
     id: { notIn: extractSeenRawIds(params.seenIds, "services") },
-    negocio: { ciudad: params.ciudad, categorias: { some: { category: { slug: params.categoriaSlug } } } },
+    negocio: {
+      is: {
+        ...buildPublicBusinessVisibilityWhere(),
+        ciudad: params.ciudad,
+        categorias: { some: { category: { slug: params.categoriaSlug } } },
+      },
+    },
   };
   return prisma.servicio.findMany({
     where,
@@ -93,9 +114,12 @@ async function fetchServicesDept(params: ExtendedParams): Promise<RawService[]> 
     status: "disponible",
     id: { notIn: extractSeenRawIds(params.seenIds, "services") },
     negocio: {
-      departamento: params.departamento,
-      ciudad: { not: params.ciudad },
-      categorias: { some: { category: { slug: params.categoriaSlug } } },
+      is: {
+        ...buildPublicBusinessVisibilityWhere(),
+        departamento: params.departamento,
+        ciudad: { not: params.ciudad },
+        categorias: { some: { category: { slug: params.categoriaSlug } } },
+      },
     },
   };
   return prisma.servicio.findMany({
@@ -112,7 +136,12 @@ async function fetchServicesNational(params: ExtendedParams): Promise<RawService
   const where: Prisma.ServicioWhereInput = {
     status: "disponible",
     id: { notIn: extractSeenRawIds(params.seenIds, "services") },
-    negocio: { categorias: { some: { category: { slug: params.categoriaSlug } } } },
+    negocio: {
+      is: {
+        ...buildPublicBusinessVisibilityWhere(),
+        categorias: { some: { category: { slug: params.categoriaSlug } } },
+      },
+    },
   };
   return prisma.servicio.findMany({
     where,
@@ -126,7 +155,7 @@ async function fetchServicesNational(params: ExtendedParams): Promise<RawService
 
 async function fetchBusinessesCity(params: ExtendedParams): Promise<RawBusiness[]> {
   const where: Prisma.NegocioWhereInput = {
-    estado: "activo",
+    ...buildPublicBusinessVisibilityWhere(),
     id: { notIn: extractSeenRawIds(params.seenIds, "businesses") },
     ciudad: params.ciudad,
     categorias: { some: { category: { slug: params.categoriaSlug } } },
@@ -143,7 +172,7 @@ async function fetchBusinessesCity(params: ExtendedParams): Promise<RawBusiness[
 
 async function fetchBusinessesDept(params: ExtendedParams): Promise<RawBusiness[]> {
   const where: Prisma.NegocioWhereInput = {
-    estado: "activo",
+    ...buildPublicBusinessVisibilityWhere(),
     id: { notIn: extractSeenRawIds(params.seenIds, "businesses") },
     departamento: params.departamento,
     ciudad: { not: params.ciudad },
@@ -161,7 +190,7 @@ async function fetchBusinessesDept(params: ExtendedParams): Promise<RawBusiness[
 
 async function fetchBusinessesNational(params: ExtendedParams): Promise<RawBusiness[]> {
   const where: Prisma.NegocioWhereInput = {
-    estado: "activo",
+    ...buildPublicBusinessVisibilityWhere(),
     id: { notIn: extractSeenRawIds(params.seenIds, "businesses") },
     categorias: { some: { category: { slug: params.categoriaSlug } } },
   };
@@ -180,7 +209,13 @@ async function fetchPublicationsCity(params: ExtendedParams): Promise<RawPublica
     tipo: { in: ["TESTIMONIO", "CARRUSEL_IMAGENES"] },
     visibilidad: "PUBLICA",
     id: { notIn: extractSeenRawIds(params.seenIds, "publications") },
-    negocio: { ciudad: params.ciudad, categorias: { some: { category: { slug: params.categoriaSlug } } } },
+    negocio: {
+      is: {
+        ...buildPublicBusinessVisibilityWhere(),
+        ciudad: params.ciudad,
+        categorias: { some: { category: { slug: params.categoriaSlug } } },
+      },
+    },
   };
   return prisma.publicacion.findMany({
     where,
@@ -198,9 +233,12 @@ async function fetchPublicationsDept(params: ExtendedParams): Promise<RawPublica
     visibilidad: "PUBLICA",
     id: { notIn: extractSeenRawIds(params.seenIds, "publications") },
     negocio: {
-      departamento: params.departamento,
-      ciudad: { not: params.ciudad },
-      categorias: { some: { category: { slug: params.categoriaSlug } } },
+      is: {
+        ...buildPublicBusinessVisibilityWhere(),
+        departamento: params.departamento,
+        ciudad: { not: params.ciudad },
+        categorias: { some: { category: { slug: params.categoriaSlug } } },
+      },
     },
   };
   return prisma.publicacion.findMany({
@@ -218,7 +256,12 @@ async function fetchPublicationsNational(params: ExtendedParams): Promise<RawPub
     tipo: { in: ["TESTIMONIO", "CARRUSEL_IMAGENES"] },
     visibilidad: "PUBLICA",
     id: { notIn: extractSeenRawIds(params.seenIds, "publications") },
-    negocio: { categorias: { some: { category: { slug: params.categoriaSlug } } } },
+    negocio: {
+      is: {
+        ...buildPublicBusinessVisibilityWhere(),
+        categorias: { some: { category: { slug: params.categoriaSlug } } },
+      },
+    },
   };
   return prisma.publicacion.findMany({
     where,

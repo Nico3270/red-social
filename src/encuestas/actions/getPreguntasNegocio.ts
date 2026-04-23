@@ -1,5 +1,6 @@
 "use server"
 
+import { buildPublicBusinessBySlugWhere } from "@/lib/business/publicBusinessVisibility";
 import prisma from "@/lib/prisma";
 import { TipoPregunta } from "@prisma/client";
 
@@ -28,8 +29,8 @@ const getPreguntasNegocio = async (slug: string): Promise<ResponsePreguntasNegoc
     }
 
     // Fetch negocioId por slug (eficiente con índice en slug)
-    const negocio = await prisma.negocio.findUnique({
-      where: { slug },
+    const negocio = await prisma.negocio.findFirst({
+      where: buildPublicBusinessBySlugWhere(slug),
       select: { id: true, nombre: true }, // Solo id y nombre para eficiencia
     });
 

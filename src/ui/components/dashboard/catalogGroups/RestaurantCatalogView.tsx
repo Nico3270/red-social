@@ -16,6 +16,7 @@ import {
   findRootGroupIdForGroupId,
   getPreferredGroupIdFromNode,
 } from "@/perfil/helpers/catalog-group-url";
+import { getCatalogAccentTheme } from "@/perfil/helpers/catalogVisualThemes";
 import { dedupeProductsById } from "./catalogPublicProducts";
 import { ProductGridWithSectionFilter } from "../../sectonFilterBar/SectionFilterBar";
 import type { ProductGuideExploreContext } from "@/perfil/guide/business-guide.types";
@@ -244,6 +245,9 @@ const RestaurantCatalogView: React.FC<RestaurantCatalogViewProps> = ({
     [groupsTree]
   );
   const subgroups = selectedRootGroup?.children ?? [];
+  const selectedTheme = getCatalogAccentTheme(
+    selectedGroupId ?? currentGroupId ?? negocioSlug
+  );
 
   if (groupsTree.length === 0) {
     return (
@@ -280,48 +284,61 @@ const RestaurantCatalogView: React.FC<RestaurantCatalogViewProps> = ({
       />
 
       {subgroups.length > 0 && (
-        <div className="border-b border-amber-100 bg-amber-50/60">
-          <div className="mx-auto flex w-full max-w-[1560px] gap-2 overflow-x-auto px-4 py-3 sm:px-6 lg:px-8 2xl:px-10">
-            {subgroups.map((subgroup) => {
-              const isSelected = selectedSubgroupId === subgroup.id;
+        <div className="border-b border-slate-200/80 bg-white/88 backdrop-blur-xl">
+          <div className="mx-auto w-full max-w-[1560px] px-4 py-4 sm:px-6 lg:px-8 2xl:px-10">
+            <div
+              className="rounded-[24px] border px-3 py-3"
+              style={{
+                background: `linear-gradient(135deg, ${selectedTheme.surfaceMuted}, ${selectedTheme.surface})`,
+                borderColor: selectedTheme.border,
+              }}
+            >
+              <div className="flex gap-2 overflow-x-auto pb-1 md:flex-wrap md:overflow-visible md:justify-center xl:justify-start">
+                {subgroups.map((subgroup) => {
+                  const isSelected = selectedSubgroupId === subgroup.id;
 
-              return (
-                <button
-                  key={subgroup.id}
-                  type="button"
-                  onClick={() => {
-                    if (selectedSubgroupId === subgroup.id) {
-                      return;
-                    }
+                  return (
+                    <button
+                      key={subgroup.id}
+                      type="button"
+                      onClick={() => {
+                        if (selectedSubgroupId === subgroup.id) {
+                          return;
+                        }
 
-                    setSelectedSubgroupId(subgroup.id);
-                    handleGroupSelection(selectedGroupId ?? subgroup.id, subgroup.id);
-                  }}
-                  className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-                    isSelected
-                      ? "bg-amber-500 text-white shadow-sm"
-                      : "bg-white text-amber-900 hover:bg-amber-100"
-                  }`}
-                >
-                  {subgroup.nombre}
-                </button>
-              );
-            })}
+                        setSelectedSubgroupId(subgroup.id);
+                        handleGroupSelection(selectedGroupId ?? subgroup.id, subgroup.id);
+                      }}
+                      className="whitespace-nowrap rounded-full border px-4 py-2 text-sm font-medium transition"
+                      style={
+                        isSelected
+                          ? {
+                              backgroundColor: selectedTheme.solid,
+                              borderColor: selectedTheme.solid,
+                              color: selectedTheme.solidText,
+                              boxShadow: selectedTheme.shadow,
+                            }
+                          : {
+                              backgroundColor: "rgba(255,255,255,0.88)",
+                              borderColor: selectedTheme.border,
+                              color: selectedTheme.text,
+                            }
+                      }
+                    >
+                      {subgroup.nombre}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
           </div>
         </div>
       )}
 
-      <div className="mx-auto w-full max-w-[1560px] px-4 py-8 sm:px-6 lg:px-8 2xl:px-10">
+      <div className="mx-auto w-full max-w-[1560px] px-0 py-2 sm:px-6 lg:px-4 2xl:px-6">
         {currentGroupError && (
           <div className="mb-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
             No pudimos cargar esta colección ahora. El catálogo completo sigue visible abajo.
-          </div>
-        )}
-
-        {!selectedGroupNode && (
-          <div className="mb-4 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600 shadow-sm">
-            Usa el menú editorial para destacar categorías del restaurante, pero sigue explorando
-            el catálogo completo por secciones.
           </div>
         )}
 

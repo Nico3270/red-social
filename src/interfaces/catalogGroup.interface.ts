@@ -56,7 +56,7 @@ export interface CatalogGroupProduct {
  */
 export interface CreateCatalogGroupInput {
   nombre: string;
-  slug: string;
+  slug?: string;
   parentId?: string;
   order?: number;
   description?: string;
