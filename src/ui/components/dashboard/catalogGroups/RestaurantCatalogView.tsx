@@ -262,6 +262,7 @@ const RestaurantCatalogView: React.FC<RestaurantCatalogViewProps> = ({
       <RestaurantGroupNav
         groups={navGroups}
         selectedGroupId={selectedGroupId ?? undefined}
+        onClearSelection={clearSelection}
         onSelectGroup={(groupId) => {
           const rootGroup = findGroupInTree(groupId, groupsTree);
           const preferredGroupId = rootGroup
@@ -285,15 +286,15 @@ const RestaurantCatalogView: React.FC<RestaurantCatalogViewProps> = ({
 
       {subgroups.length > 0 && (
         <div className="border-b border-slate-200/80 bg-white/88 backdrop-blur-xl">
-          <div className="mx-auto w-full max-w-[1560px] px-4 py-4 sm:px-6 lg:px-8 2xl:px-10">
+          <div className="mx-auto w-full max-w-[1560px] px-4 py-2 sm:px-6 lg:px-8 2xl:px-10">
             <div
-              className="rounded-[24px] border px-3 py-3"
+              className="rounded-2xl border p-1.5"
               style={{
-                background: `linear-gradient(135deg, ${selectedTheme.surfaceMuted}, ${selectedTheme.surface})`,
+                background: `linear-gradient(135deg, ${selectedTheme.surfaceMuted}, rgba(255,255,255,0.96))`,
                 borderColor: selectedTheme.border,
               }}
             >
-              <div className="flex gap-2 overflow-x-auto pb-1 md:flex-wrap md:overflow-visible md:justify-center xl:justify-start">
+              <div className="flex gap-2 overflow-x-auto pb-1 md:flex-wrap md:overflow-visible lg:grid lg:grid-cols-[repeat(auto-fit,minmax(148px,1fr))] lg:gap-2.5 lg:overflow-visible">
                 {subgroups.map((subgroup) => {
                   const isSelected = selectedSubgroupId === subgroup.id;
 
@@ -309,14 +310,14 @@ const RestaurantCatalogView: React.FC<RestaurantCatalogViewProps> = ({
                         setSelectedSubgroupId(subgroup.id);
                         handleGroupSelection(selectedGroupId ?? subgroup.id, subgroup.id);
                       }}
-                      className="whitespace-nowrap rounded-full border px-4 py-2 text-sm font-medium transition"
+                      className="whitespace-nowrap rounded-full border px-3.5 py-2 text-sm font-medium transition lg:min-h-[48px] lg:w-full lg:text-center"
                       style={
                         isSelected
                           ? {
                               backgroundColor: selectedTheme.solid,
                               borderColor: selectedTheme.solid,
                               color: selectedTheme.solidText,
-                              boxShadow: selectedTheme.shadow,
+                              boxShadow: "0 8px 20px rgba(15,23,42,0.08)",
                             }
                           : {
                               backgroundColor: "rgba(255,255,255,0.88)",
@@ -335,7 +336,7 @@ const RestaurantCatalogView: React.FC<RestaurantCatalogViewProps> = ({
         </div>
       )}
 
-      <div className="mx-auto w-full max-w-[1560px] px-0 py-2 sm:px-6 lg:px-4 2xl:px-6">
+      <div className="mx-auto w-full max-w-[1560px] px-0 py-1 sm:px-6 lg:px-4 2xl:px-6">
         {currentGroupError && (
           <div className="mb-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
             No pudimos cargar esta colección ahora. El catálogo completo sigue visible abajo.

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { FaMapMarkerAlt, FaWhatsapp } from "react-icons/fa";
 import { SideBar } from "../side-bar/SideBar";
 import { MenuSectionsBar } from "../menu-section-bar/MenuSectionBar";
@@ -233,11 +234,13 @@ export const TopMenuMobile = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isCrearModalOpen, setIsCrearModalOpen] = useState(false);
   const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
+  const pathname = usePathname();
   const totalItemsInCart = useCartCatalogoStore((state) => state.getTotalItems());
   const totalFavorites = useFavoritesCatalogoStore((state) => state.getTotalItems());
   const { data: session } = useSession();
   const isNegocio = session?.user?.role === "negocio";
   const { ciudad, userLat, userLong } = usePreferencesStore();
+  const isBusinessProfilePage = pathname?.startsWith("/perfil/");
 
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
@@ -280,9 +283,13 @@ export const TopMenuMobile = () => {
         </div>
       </header>
 
-      <div className="mt-16">
-        <MenuSectionsBar />
-      </div>
+      {isBusinessProfilePage ? (
+        <div className="h-16" />
+      ) : (
+        <div className="mt-16">
+          <MenuSectionsBar />
+        </div>
+      )}
 
       {/* Barra inferior fija con botón de Ayuda WhatsApp */}
       <nav className="fixed bottom-0 w-full bg-white border-t shadow-lg z-50">

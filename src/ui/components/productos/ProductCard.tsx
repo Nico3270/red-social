@@ -45,6 +45,7 @@ interface ProductCardProps {
     sectionSlug?: string;
     position?: number;
   };
+  variant?: "default" | "business_profile";
 }
 
 const urlWebProduccion = empresa.linkWebProduccion;
@@ -58,7 +59,11 @@ const formatCurrency = (value: number) =>
     minimumFractionDigits: 0,
   }).format(value);
 
-export const ProductCard: React.FC<ProductCardProps> = ({ product, analyticsContext }) => {
+export const ProductCard: React.FC<ProductCardProps> = ({
+  product,
+  analyticsContext,
+  variant = "default",
+}) => {
   const rawProductImages = useMemo(
     () => (Array.isArray(product.imagenes) ? product.imagenes : []),
     [product.imagenes],
@@ -135,6 +140,17 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, analyticsCont
   const hasSingleActiveVariant = hasVariants && activeVariants.length === 1 && !!selectedVariant;
   const hasMultipleVariantChoices = hasVariants && activeVariants.length > 1;
   const pricePrefixLabel = shouldShowFromPrice ? "Desde" : "Precio";
+  const isBusinessProfileVariant = variant === "business_profile";
+  const shortDescription = product.descripcionCorta?.trim() ?? "";
+  const shouldRenderDescription = isBusinessProfileVariant ? shortDescription.length > 0 : true;
+  const shouldDirectAddFromCard = !hasVariants || hasSingleActiveVariant;
+  const cardActionLabel = isActionDisabled
+    ? "Agotado"
+    : shouldDirectAddFromCard
+      ? "Agregar"
+      : hasMultipleVariantChoices
+      ? "Elegir"
+      : "Opciones";
 
   useEffect(() => {
     setDisplayImage(primaryImage);
@@ -518,6 +534,20 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, analyticsCont
     resetQuantity,
   ]);
 
+  const handlePrimaryCartAction = useCallback(() => {
+    if (isBusinessProfileVariant && shouldDirectAddFromCard) {
+      handleAddToCart(1, "direct");
+      return;
+    }
+
+    handleOpenCartFlow();
+  }, [
+    handleAddToCart,
+    handleOpenCartFlow,
+    isBusinessProfileVariant,
+    shouldDirectAddFromCard,
+  ]);
+
   const ToastContent = (
     <AnimatePresence>
       {showSuccess && (
@@ -541,45 +571,125 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, analyticsCont
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.28 }}
-      className="relative mx-auto flex h-[480px] w-full flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white p-2 shadow-lg transition-all duration-300 hover:shadow-2xl"
+      className={
+        isBusinessProfileVariant
+          ? "relative mx-auto flex w-full self-start flex-col overflow-hidden rounded-[22px] border border-slate-200 bg-white p-1.5 shadow-sm transition-all duration-300 hover:border-slate-300 hover:shadow-md"
+          : "relative mx-auto flex h-[480px] w-full flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white p-2 shadow-lg transition-all duration-300 hover:shadow-2xl"
+      }
     >
-      <div className="mb-3 flex items-center justify-between px-3">
-        <div className="flex min-w-0 items-center gap-2">
-          <div className="relative h-8 w-8 overflow-hidden rounded-full">
-            <Image
-              src={resolveSafeImageSource(product.negocioFotoPerfil, FALLBACK_PROFILE_IMAGE)}
-              alt={`Perfil de ${product.nombreNegocio ?? "negocio"}`}
-              fill
-              sizes="32px"
-              className="object-cover"
-            />
+      {!isBusinessProfileVariant && (
+        <div className="mb-3 flex items-center justify-between px-3">
+          <div className="flex min-w-0 items-center gap-2">
+            <div className="relative h-8 w-8 overflow-hidden rounded-full">
+              <Image
+                src={resolveSafeImageSource(product.negocioFotoPerfil, FALLBACK_PROFILE_IMAGE)}
+                alt={`Perfil de ${product.nombreNegocio ?? "negocio"}`}
+                fill
+                sizes="32px"
+                className="object-cover"
+              />
+            </div>
+
+            {product.nombreNegocio && product.slugNegocio ? (
+              <Link
+                href={`/perfil/${product.slugNegocio}`}
+                className={`truncate text-md font-semibold text-gray-800 transition-colors duration-200 hover:text-blue-700 sm:text-sm ${tituloCard.className}`}
+              >
+                {product.nombreNegocio}
+              </Link>
+            ) : (
+              <span
+                className={`truncate text-md font-semibold text-gray-800 sm:text-sm ${tituloCard.className}`}
+              >
+                {product.nombreNegocio ?? "Negocio"}
+              </span>
+            )}
           </div>
 
-          {product.nombreNegocio && product.slugNegocio ? (
-            <Link
-              href={`/perfil/${product.slugNegocio}`}
-              className={`truncate text-md font-semibold text-gray-800 transition-colors duration-200 hover:text-blue-700 sm:text-sm ${tituloCard.className}`}
-            >
-              {product.nombreNegocio}
-            </Link>
-          ) : (
-            <span
-              className={`truncate text-md font-semibold text-gray-800 sm:text-sm ${tituloCard.className}`}
-            >
-              {product.nombreNegocio ?? "Negocio"}
-            </span>
-          )}
+          <div className="flex items-center">
+            <FollowButton
+              followedId={product.negocioId}
+              version={2}
+              type="USER_TO_BUSINESS"
+              className="text-sm"
+            />
+
+            <div className="z-20 ml-2">
+              <AddFavorites
+                id={product.id}
+                title={product.nombre}
+                price={product.precio}
+                description={product.descripcion}
+                slug={product.slug}
+                images={product.imagenes}
+                descripcionCorta={product.descripcionCorta ?? ""}
+                sections={product.sections}
+                slugNegocio={product.slugNegocio || ""}
+              />
+            </div>
+          </div>
         </div>
+      )}
 
-        <div className="flex items-center">
-          <FollowButton
-            followedId={product.negocioId}
-            version={2}
-            type="USER_TO_BUSINESS"
-            className="text-sm"
-          />
+      <div className="relative">
+        <Link href={detailHref} onClick={handleDetailLinkClick} className="relative block">
+          <div
+            className={
+              isBusinessProfileVariant
+                ? "relative h-48 w-full cursor-pointer overflow-hidden rounded-[18px] sm:h-52"
+                : "relative h-64 w-full cursor-pointer overflow-hidden rounded-xl"
+            }
+            onMouseEnter={() => {
+              if (secondaryImage !== displayImage) {
+                setDisplayImage(secondaryImage);
+              }
+            }}
+            onMouseLeave={() => {
+              setDisplayImage(primaryImage);
+            }}
+          >
+            <Image
+              src={safeDisplayImage}
+              alt={product.nombre}
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              quality={80}
+              onError={handleProductImageError}
+              className="object-cover transition-transform duration-300 hover:scale-[1.04]"
+            />
 
-          <div className="z-20 ml-2">
+            <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-100" />
+
+            <div
+              className={
+                isBusinessProfileVariant
+                  ? "pointer-events-none absolute left-2.5 top-2.5 flex max-w-[calc(100%-72px)] flex-wrap gap-1.5"
+                  : "pointer-events-none absolute left-3 top-3 flex flex-wrap gap-2"
+              }
+            >
+              {hasVariants && (
+                <span className="rounded-full bg-white/90 px-2.5 py-1 text-[11px] font-semibold text-gray-800 shadow-sm backdrop-blur-sm">
+                  {activeVariants.length === 1 ? "1 opcion" : "Variantes"}
+                </span>
+              )}
+
+              {product.etiquetaEspecial && product.etiquetaEspecial !== "ninguna" && (
+                <span className="rounded-full bg-blue-600/90 px-2.5 py-1 text-[11px] font-semibold text-white shadow-sm">
+                  {product.etiquetaEspecial.replaceAll("_", " ")}
+                </span>
+              )}
+
+              {isOutOfStock && (
+                <span className="rounded-full bg-red-600/90 px-2.5 py-1 text-[11px] font-semibold text-white shadow-sm">
+                  Agotado
+                </span>
+              )}
+            </div>
+          </div>
+        </Link>
+
+        {isBusinessProfileVariant && (
+          <div className="absolute right-2.5 top-2.5 z-20">
             <AddFavorites
               id={product.id}
               title={product.nombre}
@@ -592,87 +702,81 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, analyticsCont
               slugNegocio={product.slugNegocio || ""}
             />
           </div>
-        </div>
+        )}
       </div>
 
-      <Link href={detailHref} onClick={handleDetailLinkClick} className="relative block">
-        <div
-          className="relative h-64 w-full cursor-pointer overflow-hidden rounded-xl"
-          onMouseEnter={() => {
-            if (secondaryImage !== displayImage) {
-              setDisplayImage(secondaryImage);
-            }
-          }}
-          onMouseLeave={() => {
-            setDisplayImage(primaryImage);
-          }}
-        >
-          <Image
-            src={safeDisplayImage}
-            alt={product.nombre}
-            fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            quality={80}
-            onError={handleProductImageError}
-            className="object-cover transition-transform duration-300 hover:scale-[1.04]"
-          />
-
-          <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-100" />
-
-          <div className="pointer-events-none absolute left-3 top-3 flex flex-wrap gap-2">
-            {hasVariants && (
-              <span className="rounded-full bg-white/90 px-2.5 py-1 text-[11px] font-semibold text-gray-800 shadow-sm backdrop-blur-sm">
-                {activeVariants.length === 1 ? "1 opcion" : "Variantes"}
-              </span>
-            )}
-
-            {product.etiquetaEspecial && product.etiquetaEspecial !== "ninguna" && (
-              <span className="rounded-full bg-blue-600/90 px-2.5 py-1 text-[11px] font-semibold text-white shadow-sm">
-                {product.etiquetaEspecial.replaceAll("_", " ")}
-              </span>
-            )}
-
-            {isOutOfStock && (
-              <span className="rounded-full bg-red-600/90 px-2.5 py-1 text-[11px] font-semibold text-white shadow-sm">
-                Agotado
-              </span>
-            )}
-          </div>
-        </div>
-      </Link>
-
-      <div className="mt-2 flex flex-grow flex-col justify-between">
-        <div>
+      <div
+        className={
+          isBusinessProfileVariant
+            ? "mt-2 flex flex-col gap-2 px-1 pb-1.5"
+            : "mt-2 flex flex-grow flex-col justify-between"
+        }
+      >
+        <div className={isBusinessProfileVariant ? "space-y-1" : undefined}>
           <Link href={detailHref} onClick={handleDetailLinkClick} className="block">
             <h3
-              className={`text-lg font-extrabold text-gray-800 transition duration-300 hover:text-blue-700 ${tituloCard.className}`}
-              style={{ textShadow: "0.5px 0.5px 1px rgba(0, 0, 0, 0.08)" }}
+              className={
+                isBusinessProfileVariant
+                  ? `line-clamp-2 text-[15px] font-extrabold leading-tight text-gray-900 transition duration-300 hover:text-blue-700 sm:text-base ${tituloCard.className}`
+                  : `text-lg font-extrabold text-gray-800 transition duration-300 hover:text-blue-700 ${tituloCard.className}`
+              }
+              style={
+                isBusinessProfileVariant
+                  ? undefined
+                  : { textShadow: "0.5px 0.5px 1px rgba(0, 0, 0, 0.08)" }
+              }
             >
               {product.nombre}
             </h3>
           </Link>
 
-          <p className={`mt-1 line-clamp-2 text-lg text-gray-600 ${textosFont.className}`}>
-            {product.descripcionCorta || "Sin descripción disponible"}
-          </p>
+          {shouldRenderDescription && (
+            <p
+              className={
+                isBusinessProfileVariant
+                  ? `line-clamp-2 text-[13px] leading-[1.35] text-gray-600 ${textosFont.className}`
+                  : `mt-1 line-clamp-2 text-lg text-gray-600 ${textosFont.className}`
+              }
+            >
+              {shortDescription || "Sin descripción disponible"}
+            </p>
+          )}
         </div>
 
-        <div className="m-1">
-          <div className="flex items-center justify-between gap-2">
+        <div className={isBusinessProfileVariant ? "pt-0.5" : "m-1"}>
+          <div
+            className={
+              isBusinessProfileVariant
+                ? "flex items-center justify-between gap-2.5"
+                : "flex items-center justify-between gap-2"
+            }
+          >
             <div className="min-w-0">
-              <div className="flex flex-col leading-tight">
-                <span className="text-xs font-medium uppercase tracking-wide text-gray-400">
-                  {pricePrefixLabel}
-                </span>
-                <Precio value={displayPrice} />
+              <div className={isBusinessProfileVariant ? "flex flex-col gap-0.5 leading-none" : "flex flex-col leading-tight"}>
+                {(!isBusinessProfileVariant || shouldShowFromPrice) && (
+                  <span className={isBusinessProfileVariant ? "text-[10px] font-semibold uppercase tracking-[0.16em] text-gray-400" : "text-xs font-medium uppercase tracking-wide text-gray-400"}>
+                    {isBusinessProfileVariant ? "Desde" : pricePrefixLabel}
+                  </span>
+                )}
+                {isBusinessProfileVariant ? (
+                  <span
+                    className={`text-[22px] font-bold tracking-[-0.02em] text-gray-900 ${tituloCard.className}`}
+                  >
+                    {formatCurrency(displayPrice)}
+                  </span>
+                ) : (
+                  <Precio value={displayPrice} />
+                )}
               </div>
 
               {hasSingleActiveVariant && selectedVariantLabel && (
-                <p className="mt-1 text-xs text-gray-500">{selectedVariantLabel}</p>
+                <p className={isBusinessProfileVariant ? "mt-1 truncate text-[11px] text-gray-500" : "mt-1 text-xs text-gray-500"}>
+                  {selectedVariantLabel}
+                </p>
               )}
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className={isBusinessProfileVariant ? "flex shrink-0 items-center gap-1.5" : "flex items-center gap-3"}>
               {product.telefonoContacto && telefonoLimpio && (
                 <Link
                   href={`https://wa.me/${telefonoLimpio}?text=${whatsappMessage}`}
@@ -680,26 +784,45 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, analyticsCont
                   rel="noopener noreferrer"
                   onClick={handleWhatsAppClick}
                   aria-label={`Contactar por WhatsApp sobre ${product.nombre}`}
-                  className="flex items-center justify-center rounded-full bg-gradient-to-r from-green-500 to-green-600 p-3 transition-all duration-300 hover:from-green-600 hover:to-green-700"
+                  className={
+                    isBusinessProfileVariant
+                      ? "flex h-9 w-9 items-center justify-center rounded-full text-green-600 transition-all duration-300 hover:bg-green-50 hover:text-green-700"
+                      : "flex items-center justify-center rounded-full bg-gradient-to-r from-green-500 to-green-600 p-3 transition-all duration-300 hover:from-green-600 hover:to-green-700"
+                  }
                 >
-                  <BsWhatsapp className="text-2xl text-white sm:text-xl" />
+                  <BsWhatsapp
+                    className={
+                      isBusinessProfileVariant
+                        ? "text-[22px] text-current"
+                        : "text-2xl text-white sm:text-xl"
+                    }
+                  />
                 </Link>
               )}
 
               <button
                 type="button"
-                onClick={handleOpenCartFlow}
+                onClick={handlePrimaryCartAction}
                 disabled={isActionDisabled}
                 aria-label={
                   isActionDisabled
                     ? `${product.nombre} agotado`
-                    : hasMultipleVariantChoices
+                    : shouldDirectAddFromCard
+                      ? `Agregar ${product.nombre} al carrito`
+                      : hasMultipleVariantChoices
                       ? `Elegir opciones de ${product.nombre}`
-                      : `Agregar ${product.nombre} al carrito`
+                      : `Ver opciones de ${product.nombre}`
                 }
-                className="flex items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-blue-600 p-3 transition-all duration-300 hover:from-blue-600 hover:to-blue-700 disabled:cursor-not-allowed disabled:from-gray-300 disabled:to-gray-400 disabled:opacity-80"
+                className={
+                  isBusinessProfileVariant
+                    ? "inline-flex h-9 items-center justify-center gap-1.5 rounded-lg bg-slate-900 px-3.5 text-sm font-semibold text-white shadow-sm transition-all duration-300 hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-500"
+                    : "flex items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-blue-600 p-3 transition-all duration-300 hover:from-blue-600 hover:to-blue-700 disabled:cursor-not-allowed disabled:from-gray-300 disabled:to-gray-400 disabled:opacity-80"
+                }
               >
-                <FaShoppingCart className="text-2xl text-white" />
+                <FaShoppingCart
+                  className={isBusinessProfileVariant ? "text-base text-current" : "text-2xl text-white"}
+                />
+                {isBusinessProfileVariant && <span>{cardActionLabel}</span>}
               </button>
             </div>
           </div>

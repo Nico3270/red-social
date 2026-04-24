@@ -248,121 +248,80 @@ export const ProductGridWithSectionFilter = ({
     .delay-100 { animation-delay: 0.1s; }
     .delay-200 { animation-delay: 0.2s; }
   `;
+  const showSectionBar = seccionesConProductos.length > 0;
+  const clearSectionSelection = () => {
+    setActiveGuideContext(null);
+    setSelectedSectionId(null);
+  };
 
   return (
     <div className="mb-2 w-full sp:mb-0">
       <style>{styles}</style>
 
-      {activeGuideContext && (
-        <div className="mb-3 rounded-2xl border border-amber-200/80 bg-amber-50/80 px-4 py-3 shadow-sm">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber-700">
-                Llegaste desde la guía
-              </p>
-              <p className="mt-1 text-sm font-semibold text-slate-900">
-                {activeGuideContext.title}
-              </p>
-              <p className="mt-1 text-sm text-slate-600">
-                {activeGuideContext.summary}
-              </p>
-            </div>
+      {showSectionBar && (
+        <div className="mb-2 flex justify-start gap-1.5 overflow-x-auto rounded-[18px] border border-slate-200 bg-white/90 p-1.5 lg:grid lg:grid-cols-[repeat(auto-fit,minmax(96px,1fr))] lg:gap-2 lg:overflow-visible lg:p-2">
+          <button
+            type="button"
+            onClick={clearSectionSelection}
+            className={clsx(
+              "inline-flex min-w-[76px] shrink-0 items-center justify-center rounded-2xl px-3 py-2 text-xs font-semibold transition lg:min-h-[90px] lg:min-w-0 lg:w-full",
+              !selectedSectionId
+                ? "bg-slate-900 text-white shadow-sm"
+                : "bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+            )}
+          >
+            Todo
+          </button>
 
-            <button
-              type="button"
-              onClick={() => {
-                setActiveGuideContext(null);
-                setSelectedSectionId(null);
-              }}
-              className="inline-flex items-center justify-center rounded-full border border-amber-200 bg-white px-4 py-2 text-sm font-semibold text-amber-800 transition hover:border-amber-300 hover:bg-amber-100"
-            >
-              Ver todo el catálogo
-            </button>
-          </div>
-        </div>
-      )}
+          {seccionesConProductos.map((sec) => {
+            const isSelected = selectedSectionId === sec.id;
 
-      {groupContext?.groupId && (
-        <div className="mb-3 rounded-2xl border border-slate-200/90 bg-white px-4 py-3 shadow-sm">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            {/* <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
-                Grupo editorial activo
-              </p>
-              <p className="mt-1 text-sm font-semibold text-slate-900">
-                {groupContext.groupName}
-              </p>
-              <p className="mt-1 text-sm text-slate-600">
-                Mostramos primero los productos de este grupo sin perder el catálogo completo ni las secciones.
-              </p>
-            </div> */}
-
-            <button
-              type="button"
-              onClick={() => {
-                setSelectedSectionId(null);
-                groupContext.onClear?.();
-              }}
-              className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
-            >
-              Ver todo el catálogo
-            </button>
-          </div>
-        </div>
-      )}
-
-      <div
-        className="
-          mb-2
-          flex justify-start gap-3 overflow-x-auto rounded-xl bg-white p-2 shadow
-          lg:grid lg:grid-cols-[repeat(auto-fit,minmax(110px,1fr))] lg:gap-3 lg:overflow-visible
-        "
-      >
-        {seccionesConProductos.map((sec) => {
-          const isSelected = selectedSectionId === sec.id;
-
-          return (
-            <button
-              key={sec.id}
-              data-testid={`catalog-section-chip-${sec.slug}`}
-              onClick={() => setSelectedSectionId(isSelected ? null : sec.id)}
-              className={clsx(
-                "flex shrink-0 flex-col items-center justify-center rounded-xl px-3 py-2 transition-colors",
-                "min-w-[92px] sm:min-w-[100px] lg:min-w-0 lg:w-full",
-                isSelected
-                  ? "bg-gray-500 text-gray-100"
-                  : "text-gray-600 hover:bg-gray-100"
-              )}
-            >
-              <div
+            return (
+              <button
+                key={sec.id}
+                data-testid={`catalog-section-chip-${sec.slug}`}
+                onClick={() => {
+                  setActiveGuideContext(null);
+                  setSelectedSectionId(isSelected ? null : sec.id);
+                }}
                 className={clsx(
-                  "mb-1 flex h-8 w-8 items-center justify-center overflow-hidden rounded-full",
-                  isSelected ? "bg-gray-500 text-white" : "bg-gray-100"
+                  "flex min-w-[84px] shrink-0 flex-col items-center justify-center rounded-2xl px-2.5 py-2 transition-colors lg:min-h-[90px] lg:min-w-0 lg:w-full lg:px-3 lg:py-3",
+                  isSelected
+                    ? "bg-slate-900 text-white shadow-sm"
+                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                 )}
               >
-                <Image
-                  src={`/imgs/iconos/${sec.iconName}`}
-                  alt={sec.nombre}
-                  width={32}
-                  height={32}
-                  className="h-full w-full object-contain"
-                  loading="lazy"
-                  onError={(e) => {
-                    (e.currentTarget as HTMLImageElement).src = "/imgs/iconos/placeholder.png";
-                  }}
-                />
-              </div>
+                <div
+                  className={clsx(
+                    "mb-1 flex h-7 w-7 items-center justify-center overflow-hidden rounded-full lg:mb-1.5 lg:h-9 lg:w-9",
+                    isSelected ? "bg-white/15 text-white" : "bg-slate-100"
+                  )}
+                >
+                  <Image
+                    src={`/imgs/iconos/${sec.iconName}`}
+                    alt={sec.nombre}
+                    width={36}
+                    height={36}
+                    className="h-full w-full object-contain"
+                    loading="lazy"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).src = "/imgs/iconos/placeholder.png";
+                    }}
+                  />
+                </div>
 
-              <span className="line-clamp-2 text-center text-xs font-medium leading-tight">
-                {sec.nombre}
-              </span>
-            </button>
-          );
-        })}
-      </div>
+                <span className="line-clamp-2 text-center text-[11px] font-medium leading-tight lg:text-xs">
+                  {sec.nombre}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      )}
 
       <ProductGridProduct
         products={productosFiltrados}
+        cardVariant="business_profile"
         analyticsContextBuilder={
           analyticsContext
             ? (product, index) => {

@@ -182,9 +182,69 @@ export default function PerfilUsuarioHeader({
 
     return `https://${value}`;
   }, []);
+  const getCompactWebsiteLabel = useCallback(
+    (value?: string) => {
+      const href = buildExternalHref(value);
+
+      if (!href) {
+        return "";
+      }
+
+      try {
+        const parsedUrl = new URL(href);
+        const host = parsedUrl.hostname.replace(/^www\./i, "");
+        const path = parsedUrl.pathname && parsedUrl.pathname !== "/" ? parsedUrl.pathname : "";
+        const compactValue = `${host}${path}`.replace(/\/$/, "");
+
+        return compactValue.length > 28 ? `${compactValue.slice(0, 28)}…` : compactValue;
+      } catch {
+        const fallbackValue = href
+          .replace(/^https?:\/\//i, "")
+          .replace(/^www\./i, "")
+          .replace(/\/$/, "");
+
+        return fallbackValue.length > 28 ? `${fallbackValue.slice(0, 28)}…` : fallbackValue;
+      }
+    },
+    [buildExternalHref]
+  );
+  const shouldDefaultToProducts = useMemo(() => {
+    if (initialTab) {
+      return false;
+    }
+
+    const productCount = resumenPerfil?.productos ?? productos.length ?? 0;
+    const publicationCount = resumenPerfil?.publicaciones ?? 0;
+    const serviceCount = resumenPerfil?.servicios ?? 0;
+    const reviewCount = resumenPerfil?.reseñas ?? 0;
+    const maxNonProductCount = Math.max(publicationCount, serviceCount, reviewCount);
+    const hasCatalogGroups = Boolean(
+      catalogPreloadData?.hasCatalogGroups && (catalogPreloadData?.catalogGroupsTree?.length ?? 0) > 0
+    );
+    const hasRestaurantMenu = Boolean(catalogPreloadData?.isRestaurantMenuMode);
+    const hasStrongTraditionalCatalog =
+      productCount >= 12 && productCount >= Math.max(1, maxNonProductCount) * 2;
+
+    return hasRestaurantMenu || hasCatalogGroups || hasStrongTraditionalCatalog;
+  }, [
+    catalogPreloadData?.catalogGroupsTree,
+    catalogPreloadData?.hasCatalogGroups,
+    catalogPreloadData?.isRestaurantMenuMode,
+    initialTab,
+    productos.length,
+    resumenPerfil?.productos,
+    resumenPerfil?.publicaciones,
+    resumenPerfil?.reseñas,
+    resumenPerfil?.servicios,
+  ]);
   const requestedTab = useMemo(
-    () => ((initialTab ? urlParamToTab(initialTab) : activeTabComponent) as ProfileTab) || "Inicio",
-    [activeTabComponent, initialTab]
+    () =>
+      ((initialTab
+        ? urlParamToTab(initialTab)
+        : shouldDefaultToProducts
+          ? "Productos"
+          : activeTabComponent) as ProfileTab) || "Inicio",
+    [activeTabComponent, initialTab, shouldDefaultToProducts]
   );
   const requestedGroupIdFromUrl = useMemo(
     () => resolveGroupSlugToIdInTree(initialGroupSlug, catalogGroupsTree),
@@ -642,6 +702,7 @@ export default function PerfilUsuarioHeader({
   ];
 
   const visibleRedes = redes.filter(({ url }) => url?.trim() !== "");
+  const socialGridColumns = Math.min(Math.max(visibleRedes.length, 1), 6);
   const safeCoverImage = resolveSafeImageSource(
     informacionNegocio?.imagenPortada,
     PLACEHOLDER_BUSINESS_IMAGE
@@ -650,68 +711,12 @@ export default function PerfilUsuarioHeader({
     informacionNegocio?.imagenPerfil,
     PLACEHOLDER_BUSINESS_IMAGE
   );
-
-  const tabStyles: Record<
-    ProfileTab,
-    {
-      active: string;
-      inactive: string;
-      iconActive: string;
-      iconInactive: string;
-      underlineActive: string;
-      underlineInactive: string;
-    }
-  > = {
-    Inicio: {
-      active:
-        "scale-[1.02] border-slate-900 bg-slate-900 text-white shadow-[0_12px_26px_rgba(15,23,42,0.18)]",
-      inactive:
-        "border-slate-200 bg-white text-slate-600 shadow-[0_4px_14px_rgba(15,23,42,0.06)] hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900",
-      iconActive: "text-amber-200",
-      iconInactive: "text-slate-400 group-hover:text-slate-700",
-      underlineActive: "bg-white/70",
-      underlineInactive: "bg-slate-200/90 group-hover:bg-slate-300",
-    },
-    Publicaciones: {
-      active:
-        "scale-[1.02] border-sky-300 bg-[linear-gradient(135deg,rgba(239,246,255,0.98),rgba(219,234,254,0.98))] text-sky-900 shadow-[0_12px_26px_rgba(59,130,246,0.16)]",
-      inactive:
-        "border-sky-100 bg-white text-slate-600 shadow-[0_4px_14px_rgba(15,23,42,0.06)] hover:border-sky-200 hover:bg-sky-50/70 hover:text-sky-900",
-      iconActive: "text-sky-600",
-      iconInactive: "text-sky-400 group-hover:text-sky-600",
-      underlineActive: "bg-sky-500/80",
-      underlineInactive: "bg-sky-200/90 group-hover:bg-sky-300",
-    },
-    Productos: {
-      active:
-        "scale-[1.02] border-amber-300 bg-[linear-gradient(135deg,rgba(255,251,235,0.98),rgba(253,230,138,0.96))] text-amber-950 shadow-[0_12px_26px_rgba(245,158,11,0.18)]",
-      inactive:
-        "border-amber-100 bg-white text-slate-600 shadow-[0_4px_14px_rgba(15,23,42,0.06)] hover:border-amber-200 hover:bg-amber-50/80 hover:text-amber-900",
-      iconActive: "text-amber-600",
-      iconInactive: "text-amber-400 group-hover:text-amber-600",
-      underlineActive: "bg-amber-500/80",
-      underlineInactive: "bg-amber-200/90 group-hover:bg-amber-300",
-    },
-    Negocio: {
-      active:
-        "scale-[1.02] border-emerald-300 bg-[linear-gradient(135deg,rgba(236,253,245,0.98),rgba(209,250,229,0.98))] text-emerald-950 shadow-[0_12px_26px_rgba(16,185,129,0.16)]",
-      inactive:
-        "border-emerald-100 bg-white text-slate-600 shadow-[0_4px_14px_rgba(15,23,42,0.06)] hover:border-emerald-200 hover:bg-emerald-50/80 hover:text-emerald-900",
-      iconActive: "text-emerald-600",
-      iconInactive: "text-emerald-400 group-hover:text-emerald-600",
-      underlineActive: "bg-emerald-500/80",
-      underlineInactive: "bg-emerald-200/90 group-hover:bg-emerald-300",
-    },
-    Reseñas: {
-      active:
-        "scale-[1.02] border-violet-300 bg-[linear-gradient(135deg,rgba(245,243,255,0.98),rgba(237,233,254,0.98))] text-violet-950 shadow-[0_12px_26px_rgba(124,58,237,0.16)]",
-      inactive:
-        "border-violet-100 bg-white text-slate-600 shadow-[0_4px_14px_rgba(15,23,42,0.06)] hover:border-violet-200 hover:bg-violet-50/80 hover:text-violet-900",
-      iconActive: "text-violet-600",
-      iconInactive: "text-violet-400 group-hover:text-violet-600",
-      underlineActive: "bg-violet-500/80",
-      underlineInactive: "bg-violet-200/90 group-hover:bg-violet-300",
-    },
+  const tabAccentStyles: Record<ProfileTab, string> = {
+    Inicio: "text-slate-600",
+    Publicaciones: "text-sky-600",
+    Productos: "text-amber-600",
+    Negocio: "text-emerald-600",
+    Reseñas: "text-violet-600",
   };
 
   const tabs = [
@@ -727,15 +732,46 @@ export default function PerfilUsuarioHeader({
       setActiveTab(tabs[0]?.name ?? "Inicio");
     }
   }, [activeTab, tabs]);
+  const businessDescription =
+    informacionNegocio?.descripcionNegocio?.trim() ||
+    "Explora nuestros productos y servicios, diseñados para ofrecerte la mejor experiencia.";
+  const hasExpandableDescription = (informacionNegocio?.descripcionNegocio?.trim().length ?? 0) > 120;
+  const websiteHref = buildExternalHref(informacionNegocio?.sitioWeb);
+  const negocioSlug = informacionNegocio?.slugNegocio ?? "";
+  const compactWebsiteLabel = getCompactWebsiteLabel(informacionNegocio?.sitioWeb);
+  const shouldShowWebsiteLink = useMemo(() => {
+    if (!websiteHref || !compactWebsiteLabel) {
+      return false;
+    }
 
-  const truncateDescription = (description: string, maxLength: number) => {
-    if (description.length <= maxLength) return description;
-    return `${description.substring(0, maxLength).trim()}...`;
-  };
+    try {
+      const parsedUrl = new URL(websiteHref);
+      const normalizedHost = parsedUrl.hostname.replace(/^www\./i, "");
+      const isInternalProfileLink =
+        normalizedHost.includes("myckeo.com") && parsedUrl.pathname.startsWith("/perfil/");
+
+      return !isInternalProfileLink;
+    } catch {
+      return !/\/perfil\//i.test(websiteHref);
+    }
+  }, [compactWebsiteLabel, websiteHref]);
+  const primaryButtonBase =
+    "inline-flex min-h-10 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold shadow-sm transition focus:outline-none focus:ring-2 focus:ring-offset-2";
+  const secondaryButtonBase =
+    "inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-300 focus:ring-offset-2";
+  const showOwnerEditAction = Boolean(isNegocio);
+  const showReservationAction = !isNegocio && Boolean(informacionNegocio?.configReservation);
+  const showFollowAction = !isNegocio;
+  const showSurveyAction = !isNegocio && Boolean(informacionNegocio?.configEncuestas);
+  const showSecondaryActionRow = showFollowAction || showSurveyAction;
+  const secondaryActionGridClass =
+    showFollowAction && showSurveyAction ? "grid grid-cols-2 gap-2" : "grid grid-cols-1 gap-2";
+  const followButtonClass =
+    "mt-0 !min-w-0 !w-full !rounded-xl !px-4 !py-2.5 text-sm font-semibold focus:ring-slate-300";
 
   return (
     <div className="w-full overflow-auto rounded-b-3xl bg-white shadow-lg">
-      <div className="relative h-48 w-full bg-gray-200 sm:h-64 md:h-80 lg:h-96">
+      <div className="relative h-40 w-full bg-gray-200 sm:h-56 md:h-80 lg:h-96">
         <Image
           src={safeCoverImage}
           alt={`Portada de ${informacionNegocio?.nombreNegocio || "Negocio"}`}
@@ -747,11 +783,11 @@ export default function PerfilUsuarioHeader({
         />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/20" />
 
-        <div className="absolute bottom-[-20px] left-4 z-10 sm:left-6">
+        <div className="absolute bottom-[-16px] left-4 z-10 sm:left-6">
           <Image
             src={safeProfileImage}
             alt={`Perfil de ${informacionNegocio?.nombreNegocio || "Negocio"}`}
-            className="h-24 w-24 rounded-full border-4 border-white object-cover shadow-xl transition-transform duration-300 hover:scale-105 sm:h-32 sm:w-32 lg:h-40 lg:w-40"
+            className="h-20 w-20 rounded-full border-[3px] border-white object-cover shadow-lg transition-transform duration-300 hover:scale-105 sm:h-28 sm:w-28 lg:h-36 lg:w-36"
             width={160}
             height={160}
             loading="lazy"
@@ -759,37 +795,29 @@ export default function PerfilUsuarioHeader({
         </div>
       </div>
 
-      <div className="px-4 pt-8 sm:px-6 sm:pt-12 md:px-8 lg:px-12">
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between lg:gap-10">
-          <div className="flex max-w-2xl flex-col space-y-4">
-            <div className="flex items-center gap-3">
-              <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl lg:text-4xl">
+      <div className="px-4 pb-2 pt-6 sm:px-6 sm:pt-10 md:px-8 lg:px-12">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between lg:gap-8">
+          <div className="flex max-w-2xl flex-col space-y-3">
+            <div className="flex flex-wrap items-center gap-2.5">
+              <h1 className="text-[2rem] font-bold tracking-tight text-slate-900 sm:text-3xl lg:text-4xl">
                 {informacionNegocio?.nombreNegocio}
               </h1>
-              {isNegocio && (
-                <Link href="/dashboard/editar-perfil">
-                  <Button
-                    className="mx-4 flex items-center gap-2 rounded-full bg-yellow-400 px-4 py-2 text-sm font-semibold text-gray-900 shadow-md transition-all duration-300 ease-out hover:scale-105 hover:bg-yellow-500 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-yellow-300"
-                    aria-label="Editar Perfil"
-                  >
-                    <FaPencilAlt className="text-base text-gray-800" />
-                    Editar Perfil
-                  </Button>
-                </Link>
-              )}
             </div>
-            <p className="text-sm text-gray-600 sm:text-base">@{informacionNegocio?.slugNegocio}</p>
+            <p className="text-sm text-slate-500 sm:text-base">@{informacionNegocio?.slugNegocio}</p>
 
-            <div className="flex items-center gap-2">
-              <p className="text-base leading-relaxed text-gray-700 sm:text-lg">
-                {informacionNegocio?.descripcionNegocio
-                  ? truncateDescription(informacionNegocio.descripcionNegocio, 200)
-                  : "Explora nuestros productos y servicios, diseñados para ofrecerte la mejor experiencia."}
+            <div className="space-y-2">
+              <p
+                className={clsx(
+                  "text-sm leading-6 text-slate-700 sm:text-base",
+                  hasExpandableDescription && "line-clamp-2"
+                )}
+              >
+                {businessDescription}
               </p>
-              {informacionNegocio?.descripcionNegocio && informacionNegocio.descripcionNegocio.length > 200 && (
+              {hasExpandableDescription && (
                 <button
                   onClick={() => setIsDescriptionModalOpen(true)}
-                  className="rounded-full bg-blue-50 px-3 py-1.5 text-sm font-semibold text-blue-600 shadow-sm transition-all duration-200 hover:bg-blue-100 hover:text-blue-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-1 active:scale-95 sm:text-base"
+                  className="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-300 focus:ring-offset-1"
                   aria-label="Ver descripción completa"
                 >
                   Ver más
@@ -797,85 +825,111 @@ export default function PerfilUsuarioHeader({
               )}
             </div>
 
-            <div className="flex flex-col flex-wrap gap-4 text-sm text-gray-600 sm:flex-row sm:text-base">
-              <div className="flex items-center gap-2">
-                <FaMapMarkerAlt className="text-gray-500" />
+            <div className="space-y-2 text-sm text-slate-600 sm:text-base">
+              <div className="flex items-start gap-2.5">
+                <FaMapMarkerAlt className="mt-0.5 shrink-0 text-slate-400" />
                 <span>
                   {`${informacionNegocio?.ciudadNegocio}, ${informacionNegocio?.departamentoNegocio}`}
                   {informacionNegocio?.direccionNegocio && ` - ${informacionNegocio.direccionNegocio}`}
                 </span>
               </div>
-              {informacionNegocio?.sitioWeb && (
+              {shouldShowWebsiteLink && (
                 <Link
-                  href={buildExternalHref(informacionNegocio.sitioWeb)}
+                  href={websiteHref}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-blue-600 transition-colors hover:text-blue-700"
+                  className="inline-flex max-w-fit items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:border-slate-300 hover:bg-slate-100 hover:text-slate-900 sm:text-sm"
                 >
-                  <FaLink />
-                  <span className="max-w-xs truncate">{informacionNegocio.sitioWeb}</span>
+                  <FaLink className="text-slate-400" />
+                  <span className="truncate">{compactWebsiteLabel}</span>
                 </Link>
               )}
             </div>
           </div>
 
-          <div className="flex w-full flex-col items-stretch gap-4 sm:mt-8 sm:w-auto sm:items-center sm:gap-6">
-            <div className="flex w-full items-center justify-start gap-2 overflow-x-auto pb-1 sm:w-auto sm:justify-center sm:gap-3">
-              <FollowButton
-                followedId={informacionNegocio?.negocioId || ""}
-                type="USER_TO_BUSINESS"
-                className="mt-0 shrink-0"
-              />
-
-              {informacionNegocio?.configReservation && (
-                <Link href={`/reservas/${informacionNegocio.slugNegocio}`} className="flex shrink-0 justify-center">
+          <div className="flex w-full flex-col items-stretch gap-2.5 sm:w-auto sm:min-w-[280px] lg:min-w-[420px] xl:min-w-[480px]">
+            <div className="w-full space-y-2">
+              {showOwnerEditAction ? (
+                <Link href="/dashboard/editar-perfil" className="flex w-full">
                   <Button
-                    variant="outline"
-                    className="flex shrink-0 items-center gap-1.5 rounded-lg bg-green-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition-colors duration-200 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 sm:text-sm"
-                    aria-label="Solicitar reserva"
+                    className={clsx(
+                      primaryButtonBase,
+                      "w-full bg-slate-900 text-white hover:bg-slate-800 focus:ring-slate-400"
+                    )}
+                    aria-label="Editar perfil"
                   >
-                    <FaCalendarCheck className="text-base" />
-                    Solicitar Reserva
+                    <FaPencilAlt className="text-sm" />
+                    Editar perfil
                   </Button>
                 </Link>
-              )}
+              ) : (
+                <>
+                  {showReservationAction && (
+                    <Link href={`/reservas/${negocioSlug}`} className="flex w-full">
+                      <Button
+                        className={clsx(
+                          primaryButtonBase,
+                          "w-full bg-emerald-600 text-white hover:bg-emerald-700 focus:ring-emerald-400"
+                        )}
+                        aria-label="Solicitar reserva"
+                      >
+                        <FaCalendarCheck className="text-sm" />
+                        Solicitar reserva
+                      </Button>
+                    </Link>
+                  )}
 
-              {informacionNegocio?.configEncuestas && (
-                <Link href={`/encuestas/${informacionNegocio.slugNegocio}`} className="flex shrink-0 justify-center">
-                  <Button
-                    variant="outline"
-                    className="flex shrink-0 items-center gap-1.5 rounded-lg bg-gray-900 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition-colors duration-200 hover:bg-black focus:outline-none focus:ring-2 focus:ring-gray-700 sm:text-sm"
-                    aria-label="Deja tu opinión"
-                  >
-                    <FaRegCommentDots className="text-base" />
-                    Evalúanos
-                  </Button>
-                </Link>
+                  {showSecondaryActionRow && (
+                    <div className={secondaryActionGridClass}>
+                      {showFollowAction && (
+                        <FollowButton
+                          followedId={informacionNegocio?.negocioId || ""}
+                          type="USER_TO_BUSINESS"
+                          className={followButtonClass}
+                        />
+                      )}
+
+                      {showSurveyAction && (
+                        <Link href={`/encuestas/${negocioSlug}`} className="flex">
+                          <Button className={clsx(secondaryButtonBase, "w-full")} aria-label="Deja tu opinión">
+                            <FaRegCommentDots className="text-sm" />
+                            Evalúanos
+                          </Button>
+                        </Link>
+                      )}
+                    </div>
+                  )}
+                </>
               )}
             </div>
 
+            {!showOwnerEditAction && showReservationAction && showSurveyAction && (
+              <div className="flex items-center justify-start">
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-100 bg-emerald-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-emerald-700">
+                  <FaCalendarCheck className="text-[10px]" />
+                  Reserva y opiniones activas
+                </span>
+              </div>
+            )}
+
             {visibleRedes.length > 0 && (
-              <div className="flex w-full items-start justify-between gap-1.5 overflow-x-auto px-0.5 pb-1 pt-0 sm:w-auto sm:justify-center sm:gap-4 sm:px-1">
+              <div
+                className="grid w-full gap-2.5 pb-1 lg:gap-3.5 xl:gap-4"
+                style={{ gridTemplateColumns: `repeat(${socialGridColumns}, minmax(0, 1fr))` }}
+              >
                 {visibleRedes.map(({ icon, url, color, label }, index) => (
                   <Link
                     key={index}
                     href={url || ""}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group flex min-w-0 flex-1 flex-col items-center text-center sm:w-auto sm:flex-none"
+                    className={clsx(
+                      "group mx-auto inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-slate-50 text-[18px] shadow-sm transition hover:border-slate-300 hover:bg-slate-100 sm:h-11 sm:w-11 sm:text-[18px] lg:h-14 lg:w-14 lg:text-[22px] xl:h-[60px] xl:w-[60px] xl:text-2xl",
+                      color
+                    )}
                     aria-label={label}
                   >
-                    <div
-                      className={clsx(
-                        "flex h-10 w-10 items-center justify-center rounded-2xl border border-slate-200 bg-white text-[1.5rem] shadow-[0_6px_18px_rgba(15,23,42,0.08)] transition-all duration-200 group-hover:-translate-y-0.5 group-hover:scale-[1.03] group-hover:border-slate-300 group-hover:shadow-[0_10px_24px_rgba(15,23,42,0.12)] sm:h-11 sm:w-11 sm:text-[1.65rem]",
-                        color
-                      )}
-                    >
-                      {icon}
-                    </div>
-                    <span className="mt-1.5 max-w-full text-[10px] leading-3.5 text-gray-500 transition-colors group-hover:text-gray-700 sm:text-xs sm:leading-4">
-                      {label}
-                    </span>
+                    {icon}
                   </Link>
                 ))}
               </div>
@@ -883,21 +937,20 @@ export default function PerfilUsuarioHeader({
           </div>
         </div>
 
-        <div className="mt-1 flex justify-start gap-2 overflow-x-auto whitespace-nowrap rounded-[22px] border border-slate-200/90 bg-[linear-gradient(135deg,rgba(248,250,252,0.96),rgba(255,255,255,0.98),rgba(248,250,252,0.96))] px-1.5 py-1.5 shadow-[0_12px_30px_rgba(15,23,42,0.08)] backdrop-blur-md sm:justify-between sm:gap-3 sm:px-3 sm:py-2">
+        <div className="mt-3 flex justify-start gap-1 overflow-x-auto whitespace-nowrap rounded-2xl border border-slate-200 bg-slate-50/90 p-1 lg:grid lg:grid-cols-[repeat(auto-fit,minmax(160px,1fr))] lg:gap-2 lg:overflow-visible lg:p-2">
           {tabs.map((tab) => {
             const isActive = activeTab === tab.name;
-            const theme = tabStyles[tab.name];
             const icon =
               tab.name === "Inicio" ? (
-                <FaHome className={clsx("text-lg", isActive ? theme.iconActive : theme.iconInactive)} />
+                <FaHome className={clsx("text-base lg:text-lg", isActive ? tabAccentStyles[tab.name] : "text-slate-400")} />
               ) : tab.name === "Publicaciones" ? (
-                <FaRegNewspaper className={clsx("text-lg", isActive ? theme.iconActive : theme.iconInactive)} />
+                <FaRegNewspaper className={clsx("text-base lg:text-lg", isActive ? tabAccentStyles[tab.name] : "text-slate-400")} />
               ) : tab.name === "Productos" ? (
-                <FaStore className={clsx("text-lg", isActive ? theme.iconActive : theme.iconInactive)} />
+                <FaStore className={clsx("text-base lg:text-lg", isActive ? tabAccentStyles[tab.name] : "text-slate-400")} />
               ) : tab.name === "Negocio" ? (
-                <FaBriefcase className={clsx("text-lg", isActive ? theme.iconActive : theme.iconInactive)} />
+                <FaBriefcase className={clsx("text-base lg:text-lg", isActive ? tabAccentStyles[tab.name] : "text-slate-400")} />
               ) : (
-                <FaStar className={clsx("text-lg", isActive ? theme.iconActive : theme.iconInactive)} />
+                <FaStar className={clsx("text-base lg:text-lg", isActive ? tabAccentStyles[tab.name] : "text-slate-400")} />
               );
 
             return (
@@ -905,22 +958,16 @@ export default function PerfilUsuarioHeader({
                 key={tab.name}
                 onClick={() => handleChangeTab(tab.name)}
                 className={clsx(
-                  "group relative flex min-w-max shrink-0 items-center gap-2 rounded-[16px] border px-4 py-2 text-sm font-semibold transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 focus-visible:ring-offset-2 sm:px-6 sm:text-base",
-                  isActive ? theme.active : theme.inactive
+                  "group flex min-w-max shrink-0 items-center gap-2 rounded-[14px] px-3.5 py-2 text-sm font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 focus-visible:ring-offset-2 sm:px-4 lg:min-h-[54px] lg:min-w-0 lg:w-full lg:justify-center lg:gap-2.5 lg:px-5 lg:text-[15px]",
+                  isActive
+                    ? "bg-white text-slate-900 shadow-sm ring-1 ring-slate-200"
+                    : "text-slate-500 hover:bg-white/80 hover:text-slate-900"
                 )}
                 aria-current={isActive ? "page" : undefined}
                 aria-expanded={isActive}
               >
                 {icon}
                 <span>{tab.name}</span>
-                <span
-                  className={clsx(
-                    "absolute bottom-1 left-1/2 h-[3px] -translate-x-1/2 rounded-full transition-all duration-300",
-                    isActive
-                      ? `w-2/3 ${theme.underlineActive}`
-                      : `w-8 ${theme.underlineInactive} group-hover:w-10`
-                  )}
-                />
               </button>
             );
           })}
