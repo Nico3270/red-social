@@ -1,6 +1,7 @@
 "use client";
 
 import { CartProduct, useCartCatalogoStore } from "@/store/carro/carro-store";
+import { getCloudinaryImageUrl } from "@/lib/cloudinary/buildCloudinaryDeliveryUrl";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
@@ -109,6 +110,7 @@ export const ProductsInCart = () => {
               src="/imgs/emptyCar.png"
               alt="Carrito vacío"
               fill
+              sizes="192px"
               className="object-contain drop-shadow-lg"
             />
           </div>
@@ -299,6 +301,10 @@ export const ProductsInCart = () => {
                           item.stockIlimitado === false && typeof item.stock === "number";
                         const reachedStockLimit =
                           hasLimitedStock && item.cantidad >= (item.stock ?? 0);
+                        const optimizedCartItemImageUrl = getCloudinaryImageUrl(
+                          item.imagen,
+                          "thumbnail",
+                        );
 
                         return (
                           <motion.div
@@ -311,9 +317,10 @@ export const ProductsInCart = () => {
                           >
                             <div className="hidden md:block relative w-20 h-20 flex-shrink-0 overflow-hidden rounded-xl shadow-sm">
                               <Image
-                                src={item.imagen}
+                                src={optimizedCartItemImageUrl}
                                 alt={item.nombre}
                                 fill
+                                sizes="96px"
                                 className="object-cover"
                               />
                             </div>

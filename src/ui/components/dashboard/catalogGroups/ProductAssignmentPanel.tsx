@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { saveCatalogGroupProductsBatch } from "@/actions/catalogGroups/catalogGroupProducts";
 import { getAvailableProducts } from "@/actions/catalogGroups/getAvailableProducts";
 import type { AvailableProduct } from "@/actions/catalogGroups/getAvailableProducts";
+import { getCloudinaryImageUrl } from "@/lib/cloudinary/buildCloudinaryDeliveryUrl";
 import {
   FaArrowDown,
   FaArrowUp,
@@ -102,19 +103,26 @@ const ProductThumb = ({
   alt: string;
   className?: string;
   sizes?: string;
-}) => (
-  <div
-    className={`relative flex-shrink-0 overflow-hidden rounded-[22px] border border-slate-200 bg-slate-100 shadow-sm ${className ?? "h-12 w-12 sm:h-14 sm:w-14"}`}
-  >
-    <Image
-      src={src || PRODUCT_IMAGE_PLACEHOLDER}
-      alt={alt}
-      fill
-      sizes={sizes}
-      className="object-cover"
-    />
-  </div>
-);
+}) => {
+  const optimizedProductThumbnailUrl = getCloudinaryImageUrl(
+    src || PRODUCT_IMAGE_PLACEHOLDER,
+    "thumbnail",
+  );
+
+  return (
+    <div
+      className={`relative flex-shrink-0 overflow-hidden rounded-[22px] border border-slate-200 bg-slate-100 shadow-sm ${className ?? "h-12 w-12 sm:h-14 sm:w-14"}`}
+    >
+      <Image
+        src={optimizedProductThumbnailUrl}
+        alt={alt}
+        fill
+        sizes={sizes}
+        className="object-cover"
+      />
+    </div>
+  );
+};
 
 const EmptyState = ({
   title,

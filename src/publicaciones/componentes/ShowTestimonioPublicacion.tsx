@@ -6,6 +6,7 @@ import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
 import { Typography } from "@mui/material";
+import { FaPlayCircle } from "react-icons/fa";
 import Interactions from "@/interacciones/componentes/Interactions";
 import PublicationModal from "./PublicationModal";
 import { motion } from "framer-motion";
@@ -19,6 +20,7 @@ import {
   isLikelyVideoUrl,
   resolveSafeImageSource,
 } from "@/lib/media/resolveSafeImageSource";
+import { getCloudinaryImageUrl } from "@/lib/cloudinary/buildCloudinaryDeliveryUrl";
 import { reportOperationalWarning } from "@/lib/observability/operationalLogger";
 
 
@@ -45,12 +47,28 @@ export const ShowTestimonioPublicacion = ({ publicacion, productos, isInModal = 
   const mediaUrl = mediaIsVideo
     ? media?.url || ""
     : resolveSafeImageSource(media?.url, PLACEHOLDER_PRODUCT_IMAGE);
-  const aspectRatio = useMediaAspectRatio(mediaUrl, mediaIsVideo ? "VIDEO" : "IMAGEN");
+  const safeMediaImage = resolveSafeImageSource(media?.url, PLACEHOLDER_PRODUCT_IMAGE);
+  const optimizedPreviewImageUrl = getCloudinaryImageUrl(
+    safeMediaImage,
+    "publication-preview",
+  );
+  const optimizedDetailImageUrl = getCloudinaryImageUrl(
+    safeMediaImage,
+    "publication-detail",
+  );
+  const optimizedPosterUrl = getCloudinaryImageUrl(
+    safeMediaImage,
+    "publication-preview",
+  );
+  const imageSrc = isInModal ? optimizedDetailImageUrl : optimizedPreviewImageUrl;
+  const aspectRatioUrl = mediaIsVideo ? (isInModal ? mediaUrl : undefined) : imageSrc;
+  const aspectRatio = useMediaAspectRatio(aspectRatioUrl, mediaIsVideo ? "VIDEO" : "IMAGEN");
   const timeAgo = formatDistanceToNow(new Date(publicacion.createdAt), { addSuffix: true, locale: es });
   const safeBusinessImage = resolveSafeImageSource(
     publicacion.negocio?.fotoPerfil,
     PLACEHOLDER_BUSINESS_IMAGE
   );
+  const optimizedAvatarUrl = getCloudinaryImageUrl(safeBusinessImage, "avatar");
   const hasInvalidPublicationId = !publicacion.id || !/^c[0-9a-z]{24}$/.test(publicacion.id);
   const hasInvalidBusinessSlug = !publicacion.negocio?.slug || !/^[a-z0-9-]+$/i.test(publicacion.negocio.slug);
 
@@ -127,7 +145,7 @@ export const ShowTestimonioPublicacion = ({ publicacion, productos, isInModal = 
         <div className="flex items-center justify-between p-4 border-b border-gray-100"> {/* Fixed items-between a items-center para responsive */}
           <div className="relative w-12 h-12 rounded-full overflow-hidden mr-3">
             <Image
-              src={safeBusinessImage}
+              src={optimizedAvatarUrl}
               alt="Avatar del negocio"
               fill
               sizes="48px"
@@ -186,16 +204,32 @@ export const ShowTestimonioPublicacion = ({ publicacion, productos, isInModal = 
           aria-label={!isInModal ? "Abrir modal con detalle del testimonio" : undefined}
         >
           {mediaIsVideo ? (
-            <video
-              src={mediaUrl}
-              className="w-full h-full object-contain rounded-b-xl" // Contain para no distorsionar
-              controls
-              preload="metadata"
-              
-            />
+            isInModal ? (
+              <video
+                src={mediaUrl}
+                className="w-full h-full object-contain rounded-b-xl" // Contain para no distorsionar
+                controls
+                preload="metadata"
+              />
+            ) : (
+              <div className="relative flex h-full w-full items-center justify-center rounded-b-xl bg-slate-900 text-white">
+                <Image
+                  src={optimizedPosterUrl}
+                  alt={publicacion.titulo || "Video del testimonio"}
+                  fill
+                  className="rounded-b-xl object-cover opacity-45"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 420px"
+                  loading="lazy"
+                />
+                <div className="relative z-10 flex flex-col items-center gap-2">
+                  <FaPlayCircle className="text-4xl drop-shadow" />
+                  <span className="text-sm font-semibold drop-shadow">Ver video</span>
+                </div>
+              </div>
+            )
           ) : (
             <Image
-              src={mediaUrl}
+              src={imageSrc}
               alt={publicacion.titulo || "Publicación del testimonio"}
               fill
               className="object-contain rounded-b-xl hover:scale-105 transition-transform duration-300" // Hover sutil para engagement
@@ -219,32 +253,39 @@ export const ShowTestimonioPublicacion = ({ publicacion, productos, isInModal = 
                 Productos relacionados:
               </Typography>
               <div className="flex flex-wrap gap-3">
-                {productos.map((producto) => (
-                  <div
-                    key={producto.id}
-                    className="flex items-center gap-2 bg-gray-50 p-2 rounded-lg shadow-sm hover:bg-gray-100 transition-colors flex-1 min-w-[140px]" // Responsive min-width
-                  >
-                    <div className="relative w-12 h-12 flex-shrink-0">
-                      <Image
-                        src={resolveSafeImageSource(producto.imagen, PLACEHOLDER_PRODUCT_IMAGE)}
-                        alt={producto.nombre}
-                        fill
-                        sizes="48px"
-                        className="object-cover rounded-md"
-                      />
+                {productos.map((producto) => {
+                  const optimizedRelatedProductImageUrl = getCloudinaryImageUrl(
+                    resolveSafeImageSource(producto.imagen, PLACEHOLDER_PRODUCT_IMAGE),
+                    "publication-preview",
+                  );
+
+                  return (
+                    <div
+                      key={producto.id}
+                      className="flex items-center gap-2 bg-gray-50 p-2 rounded-lg shadow-sm hover:bg-gray-100 transition-colors flex-1 min-w-[140px]" // Responsive min-width
+                    >
+                      <div className="relative w-12 h-12 flex-shrink-0">
+                        <Image
+                          src={optimizedRelatedProductImageUrl}
+                          alt={producto.nombre}
+                          fill
+                          sizes="48px"
+                          className="object-cover rounded-md"
+                        />
+                      </div>
+                      <div className="flex flex-col min-w-0 flex-1">
+                        <Link href={`/producto/${producto.slug}`} passHref legacyBehavior>
+                          <a className="text-blue-600 hover:underline text-sm font-medium truncate">
+                            {producto.nombre}
+                          </a>
+                        </Link>
+                        <Typography variant="caption" className="text-gray-600 font-semibold">
+                          ${producto.precio.toFixed(2)}
+                        </Typography>
+                      </div>
                     </div>
-                    <div className="flex flex-col min-w-0 flex-1">
-                      <Link href={`/producto/${producto.slug}`} passHref legacyBehavior>
-                        <a className="text-blue-600 hover:underline text-sm font-medium truncate">
-                          {producto.nombre}
-                        </a>
-                      </Link>
-                      <Typography variant="caption" className="text-gray-600 font-semibold">
-                        ${producto.precio.toFixed(2)}
-                      </Typography>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           )}

@@ -15,6 +15,7 @@ import { usePublicacionModalStore } from "@/store/publicacionModal/publicacionMo
 import { useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
 import {  inter, textosFont } from "@/config/fonts";
+import { getCloudinaryImageUrl } from "@/lib/cloudinary/buildCloudinaryDeliveryUrl";
 
 interface CommentsPage {
   ok: boolean;
@@ -535,11 +536,14 @@ const Interactions: React.FC<InteractionsProps> = ({
           {/* Avatar */}
           <div className="relative w-10 h-10 rounded-full overflow-hidden ring-1 ring-gray-200 hover:ring-gray-300 transition-all">
             <Image
-              src={comment.usuario.fotoPerfil || "/default-profile.png"}
+              src={getCloudinaryImageUrl(
+                comment.usuario.fotoPerfil || "/default-profile.png",
+                "avatar",
+              )}
               alt={`${comment.usuario.nombre} ${comment.usuario.apellido}`}
               fill
+              sizes="40px"
               className="object-cover"
-              unoptimized
             />
           </div>
 

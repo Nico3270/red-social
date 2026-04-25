@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { BsWhatsapp } from "react-icons/bs";
 import { FaShoppingCart, FaStar } from "react-icons/fa";
 import type { ProductRedSocial } from "@/interfaces/productRedSocial.interface";
+import { getCloudinaryImageUrl } from "@/lib/cloudinary/buildCloudinaryDeliveryUrl";
 import {
   PLACEHOLDER_PRODUCT_IMAGE,
   isRenderableImageSource,
@@ -42,6 +43,10 @@ export const RestaurantMenuItem: React.FC<RestaurantMenuItemProps> = ({
 }) => {
   const primaryImage =
     product.imagenes?.find(isRenderableImageSource) || PLACEHOLDER_PRODUCT_IMAGE;
+  const optimizedProductThumbnailUrl = getCloudinaryImageUrl(
+    primaryImage,
+    "thumbnail",
+  );
   const productDescription = product.descripcionCorta || product.descripcion;
   const [showAddedFeedback, setShowAddedFeedback] = useState(false);
   const activeVariants = useMemo(
@@ -214,7 +219,7 @@ export const RestaurantMenuItem: React.FC<RestaurantMenuItemProps> = ({
               className="h-28 w-28 flex-shrink-0 overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 sm:h-32 sm:w-32"
             >
               <Image
-                src={primaryImage}
+                src={optimizedProductThumbnailUrl}
                 alt={product.nombre}
                 width={128}
                 height={128}

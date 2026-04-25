@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { FavoriteProduct } from "@/interfaces/product.interface"; // Asegúrate de que apunte a la interfaz actualizada
 import { useState } from "react";
+import { getCloudinaryImageUrl } from "@/lib/cloudinary/buildCloudinaryDeliveryUrl";
 import { AddFavorites } from "@/ui/components/productos/AddFavorites";
 import { Precio } from "@/ui/components/productos/Precio";
 import { motion, AnimatePresence } from "framer-motion"; // Nueva import para animaciones
@@ -15,10 +16,24 @@ interface FavoritesCardProps {
 }
 
 export const FavoritesCard: React.FC<FavoritesCardProps> = ({ product }) => {
-  const [displayImage, setDisplayImage] = useState(
+  const favoriteImageUrl =
     product.images && product.images.length > 0
       ? product.images[0]
-      : "/imgs/no-image.webp"
+      : "/imgs/no-image.webp";
+  const favoriteHoverImageUrl =
+    product.images && product.images.length > 1
+      ? product.images[1]
+      : favoriteImageUrl;
+  const optimizedFavoriteImageUrl = getCloudinaryImageUrl(
+    favoriteImageUrl,
+    "product-card",
+  );
+  const optimizedFavoriteHoverImageUrl = getCloudinaryImageUrl(
+    favoriteHoverImageUrl,
+    "product-card",
+  );
+  const [displayImage, setDisplayImage] = useState(
+    optimizedFavoriteImageUrl
   );
   const [isModalOpen, setIsModalOpen] = useState(false); // Nuevo: Para controlar el modal
   const [quantity, setQuantity] = useState(1); // Nuevo: Para la cantidad
@@ -62,8 +77,8 @@ export const FavoritesCard: React.FC<FavoritesCardProps> = ({ product }) => {
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             className="rounded-lg object-cover"
-            onMouseEnter={() => setDisplayImage(product.images[1] || product.images[0])}
-            onMouseLeave={() => setDisplayImage(product.images[0])}
+            onMouseEnter={() => setDisplayImage(optimizedFavoriteHoverImageUrl)}
+            onMouseLeave={() => setDisplayImage(optimizedFavoriteImageUrl)}
           />
         </div>
       </Link>

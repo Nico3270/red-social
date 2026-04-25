@@ -61,6 +61,7 @@ import {
   PLACEHOLDER_BUSINESS_IMAGE,
   resolveSafeImageSource,
 } from "@/lib/media/resolveSafeImageSource";
+import { getCloudinaryImageUrl } from "@/lib/cloudinary/buildCloudinaryDeliveryUrl";
 import {
   reportOperationalError,
   reportOperationalWarning,
@@ -694,6 +695,14 @@ export default function PerfilUsuarioHeader({
     informacionNegocio?.imagenPerfil,
     PLACEHOLDER_BUSINESS_IMAGE
   );
+  const optimizedCoverUrl = getCloudinaryImageUrl(
+    safeCoverImage,
+    "business-cover"
+  );
+  const optimizedAvatarUrl = getCloudinaryImageUrl(
+    safeProfileImage,
+    "avatar"
+  );
   const tabAccentStyles: Record<ProfileTab, string> = {
     Inicio: "text-slate-600",
     Publicaciones: "text-sky-600",
@@ -808,7 +817,7 @@ export default function PerfilUsuarioHeader({
     <div className="w-full overflow-auto rounded-b-3xl bg-white shadow-lg">
       <div className="relative h-40 w-full bg-gray-200 sm:h-56 md:h-80 lg:h-96">
         <Image
-          src={safeCoverImage}
+          src={optimizedCoverUrl}
           alt={`Portada de ${informacionNegocio?.nombreNegocio || "Negocio"}`}
           className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
           width={1200}
@@ -820,7 +829,7 @@ export default function PerfilUsuarioHeader({
 
         <div className="absolute bottom-[-16px] left-4 z-10 sm:left-6">
           <Image
-            src={safeProfileImage}
+            src={optimizedAvatarUrl}
             alt={`Perfil de ${informacionNegocio?.nombreNegocio || "Negocio"}`}
             className="h-20 w-20 rounded-full border-[3px] border-white object-cover shadow-lg transition-transform duration-300 hover:scale-105 sm:h-28 sm:w-28 lg:h-36 lg:w-36"
             width={160}

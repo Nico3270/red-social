@@ -4,6 +4,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { FaArrowRight, FaRegNewspaper } from "react-icons/fa";
 import { titleFont, textosFont } from "@/config/fonts";
+import { getCloudinaryImageUrl } from "@/lib/cloudinary/buildCloudinaryDeliveryUrl";
 
 export interface BusinessGuideSocialTeaserData {
   eyebrow: string;
@@ -20,6 +21,11 @@ interface Props {
 }
 
 export function BusinessGuideSocialTeaser({ teaser }: Props) {
+  const optimizedTeaserImageUrl = getCloudinaryImageUrl(
+    teaser.imageSrc,
+    "publication-preview",
+  );
+
   return (
     <motion.button
       type="button"
@@ -31,7 +37,7 @@ export function BusinessGuideSocialTeaser({ teaser }: Props) {
     >
       <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl bg-slate-100">
         <Image
-          src={teaser.imageSrc}
+          src={optimizedTeaserImageUrl}
           alt={teaser.title}
           fill
           sizes="80px"

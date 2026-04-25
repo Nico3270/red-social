@@ -9,6 +9,7 @@ import {
     isRenderableImageSource,
     resolveSafeImageSource,
 } from "@/lib/media/resolveSafeImageSource";
+import { getCloudinaryImageUrl } from "@/lib/cloudinary/buildCloudinaryDeliveryUrl";
 import { logProductImageDiagnostics } from "@/lib/media/productImageDiagnostics";
 
 // Import Swiper styles
@@ -43,6 +44,8 @@ function ProductSlideImage({
         setSrc(resolveSafeImageSource(image, PLACEHOLDER_PRODUCT_IMAGE));
     }, [image]);
 
+    const optimizedImageUrl = getCloudinaryImageUrl(src, "product-detail");
+
     const handleError = () => {
         logProductImageDiagnostics({
             area: "product-detail-slideshow",
@@ -70,7 +73,7 @@ function ProductSlideImage({
     return (
         <Image
             priority
-            src={src}
+            src={optimizedImageUrl}
             alt={title}
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"

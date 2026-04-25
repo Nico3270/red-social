@@ -3,7 +3,7 @@
 import React, { useMemo } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { FaStar } from "react-icons/fa";
+import { FaPlayCircle, FaStar } from "react-icons/fa";
 import {
   PLACEHOLDER_BUSINESS_IMAGE,
   PLACEHOLDER_PRODUCT_IMAGE,
@@ -12,6 +12,7 @@ import {
   resolveSafeImageSource,
 } from "@/lib/media/resolveSafeImageSource";
 import { EnhancedPublicacion } from "@/publicaciones/interfaces/enhancedPublicacion.interface";
+import { getCloudinaryImageUrl } from "@/lib/cloudinary/buildCloudinaryDeliveryUrl";
 import { getDeterministicFloatingCardStyle } from "./landing-section.utils";
 
 interface ResenasSectionProps {
@@ -55,6 +56,14 @@ const ResenasSection: React.FC<ResenasSectionProps> = ({
 
             const mediaIsVideo = media.tipo === "VIDEO" || isLikelyVideoUrl(media.url);
             const safeMediaImage = resolveSafeImageSource(media.url, PLACEHOLDER_PRODUCT_IMAGE);
+            const optimizedReviewImageUrl = getCloudinaryImageUrl(
+              safeMediaImage,
+              "publication-preview",
+            );
+            const optimizedPosterUrl = getCloudinaryImageUrl(
+              safeMediaImage,
+              "publication-preview",
+            );
 
             return (
               <motion.div
@@ -72,17 +81,19 @@ const ResenasSection: React.FC<ResenasSectionProps> = ({
                 style={getDeterministicFloatingCardStyle(r.id, i)}
               >
                 {mediaIsVideo ? (
-                  <video
-                    src={media.url}
-                    className="h-full w-full object-cover"
-                    muted
-                    playsInline
-                    loop
-                    autoPlay
-                  />
+                  <div className="relative flex h-full w-full items-center justify-center bg-slate-900 text-white">
+                    <Image
+                      src={optimizedPosterUrl}
+                      alt={r.titulo || "Video de reseña"}
+                      fill
+                      className="object-cover opacity-45"
+                      sizes="30vw"
+                    />
+                    <FaPlayCircle className="relative z-10 text-3xl" />
+                  </div>
                 ) : (
                   <Image
-                    src={safeMediaImage}
+                    src={optimizedReviewImageUrl}
                     alt={r.titulo || "Reseña"}
                     fill
                     className="object-cover"
@@ -131,6 +142,14 @@ const ResenasSection: React.FC<ResenasSectionProps> = ({
               const hasRenderableMedia =
                 !!media && (mediaIsVideo || isRenderableImageSource(media.url));
               const safeMediaImage = resolveSafeImageSource(media?.url, PLACEHOLDER_PRODUCT_IMAGE);
+              const optimizedReviewImageUrl = getCloudinaryImageUrl(
+                safeMediaImage,
+                "publication-preview",
+              );
+              const optimizedPosterUrl = getCloudinaryImageUrl(
+                safeMediaImage,
+                "publication-preview",
+              );
               const usuario =
                 resena.negocio?.nombre ||
                 `${resena.usuario.nombre} ${resena.usuario.apellido}`;
@@ -139,6 +158,10 @@ const ResenasSection: React.FC<ResenasSectionProps> = ({
               const safeProfileImage = resolveSafeImageSource(
                 fotoPerfil,
                 PLACEHOLDER_BUSINESS_IMAGE
+              );
+              const optimizedAvatarUrl = getCloudinaryImageUrl(
+                safeProfileImage,
+                "avatar",
               );
 
               return (
@@ -155,17 +178,22 @@ const ResenasSection: React.FC<ResenasSectionProps> = ({
                   <div className="relative w-full aspect-[4/5]">
                     {hasRenderableMedia ? (
                       mediaIsVideo ? (
-                        <video
-                          src={media?.url}
-                          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                          muted
-                          playsInline
-                          loop
-                          autoPlay
-                        />
+                        <div className="relative flex h-full w-full items-center justify-center bg-slate-900 text-white">
+                          <Image
+                            src={optimizedPosterUrl}
+                            alt={resena.titulo || "Video de reseña"}
+                            fill
+                            className="object-cover opacity-45 transition-transform duration-700 group-hover:scale-105"
+                            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                          />
+                          <div className="relative z-10 flex flex-col items-center gap-2">
+                            <FaPlayCircle className="text-4xl drop-shadow" />
+                            <span className="text-sm font-semibold drop-shadow">Ver video</span>
+                          </div>
+                        </div>
                       ) : (
                         <Image
-                          src={safeMediaImage}
+                          src={optimizedReviewImageUrl}
                           alt={resena.titulo || "Reseña"}
                           fill
                           className="object-cover transition-transform duration-700 group-hover:scale-105"
@@ -208,7 +236,7 @@ const ResenasSection: React.FC<ResenasSectionProps> = ({
 
                         <div className="flex items-center justify-center gap-2">
                           <Image
-                            src={safeProfileImage}
+                            src={optimizedAvatarUrl}
                             alt={usuario}
                             width={26}
                             height={26}

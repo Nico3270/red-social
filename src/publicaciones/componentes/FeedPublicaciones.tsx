@@ -9,6 +9,7 @@ import { FaStar } from "react-icons/fa";
 import useSWRInfinite from "swr/infinite";
 import { ShowTestimonioPublicacion } from "@/publicaciones/componentes/ShowTestimonioPublicacion";
 import { SocialMediaCarousel } from "@/publicaciones/componentes/SocialMediaPublicacion";
+import { getCloudinaryImageUrl } from "@/lib/cloudinary/buildCloudinaryDeliveryUrl";
 import {
   PLACEHOLDER_PRODUCT_IMAGE,
   resolveSafeImageSource,
@@ -65,28 +66,39 @@ const ProductosDestacados: React.FC<{ productos: ProductDestacado[] }> = ({ prod
       Productos Destacados
     </h3>
     <div className="space-y-4">
-      {productos.map((producto) => (
-        <Link
-          key={producto.id}
-          href={`/producto/${producto.slug}`}
-          className="flex items-center gap-3 hover:bg-gray-50 rounded-lg p-2 transition-colors"
-        >
-          <div className="relative w-16 h-16">
-            <Image
-              src={resolveSafeImageSource(producto.imagen, PLACEHOLDER_PRODUCT_IMAGE)}
-              alt={producto.nombre}
-              fill
-              className="object-cover rounded-md"
-              sizes="64px"
-              loading="lazy"
-            />
-          </div>
-          <div>
-            <p className="text-sm font-medium text-gray-900">{producto.nombre}</p>
-            <p className="text-sm text-gray-600">${producto.precio.toFixed(2)}</p>
-          </div>
-        </Link>
-      ))}
+      {productos.map((producto) => {
+        const productImageUrl = resolveSafeImageSource(
+          producto.imagen,
+          PLACEHOLDER_PRODUCT_IMAGE,
+        );
+        const optimizedProductThumbnailUrl = getCloudinaryImageUrl(
+          productImageUrl,
+          "thumbnail",
+        );
+
+        return (
+          <Link
+            key={producto.id}
+            href={`/producto/${producto.slug}`}
+            className="flex items-center gap-3 hover:bg-gray-50 rounded-lg p-2 transition-colors"
+          >
+            <div className="relative w-16 h-16">
+              <Image
+                src={optimizedProductThumbnailUrl}
+                alt={producto.nombre}
+                fill
+                className="object-cover rounded-md"
+                sizes="64px"
+                loading="lazy"
+              />
+            </div>
+            <div>
+              <p className="text-sm font-medium text-gray-900">{producto.nombre}</p>
+              <p className="text-sm text-gray-600">${producto.precio.toFixed(2)}</p>
+            </div>
+          </Link>
+        );
+      })}
     </div>
   </div>
 );

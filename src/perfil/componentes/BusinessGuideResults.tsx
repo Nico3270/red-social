@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { BsWhatsapp } from "react-icons/bs";
 import { FaArrowRight, FaRedoAlt, FaStar } from "react-icons/fa";
 import { titleFont, textosFont } from "@/config/fonts";
+import { getCloudinaryImageUrl } from "@/lib/cloudinary/buildCloudinaryDeliveryUrl";
 import {
   PLACEHOLDER_PRODUCT_IMAGE,
   isRenderableImageSource,
@@ -107,6 +108,10 @@ export function BusinessGuideResults({ selection, onExploreMore, onResultClick, 
         {selection.items.map((item, index) => {
           const primaryImage =
             item.product.imagenes.find(isRenderableImageSource) || PLACEHOLDER_PRODUCT_IMAGE;
+          const optimizedProductImageUrl = getCloudinaryImageUrl(
+            primaryImage,
+            "product-card",
+          );
           const telefonoLimpio = item.product.telefonoContacto?.replace(/\D/g, "") ?? "";
           const displayPrice = getDisplayPrice(
             item.product.precio,
@@ -131,7 +136,7 @@ export function BusinessGuideResults({ selection, onExploreMore, onResultClick, 
                 className="relative block aspect-[4/3] overflow-hidden"
               >
                 <Image
-                  src={primaryImage}
+                  src={optimizedProductImageUrl}
                   alt={item.product.nombre}
                   fill
                   sizes="(max-width: 640px) 100vw, (max-width: 1200px) 50vw, 25vw"

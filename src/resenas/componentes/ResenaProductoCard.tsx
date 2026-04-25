@@ -5,7 +5,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Navigation, Autoplay } from "swiper/modules";
 import Image from "next/image";
 import { motion} from "framer-motion";
-import { FaStar, FaGlobe, FaLock, FaUserFriends } from "react-icons/fa";
+import { FaPlay, FaStar, FaGlobe, FaLock, FaUserFriends } from "react-icons/fa";
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
 import Link from "next/link";
@@ -13,6 +13,7 @@ import { Swiper as SwiperType } from "swiper";
 import Interactions from "@/interacciones/componentes/Interactions";
 import PublicationModal from "@/publicaciones/componentes/PublicationModal";
 import { useMediaAspectRatio } from "@/hooks/useMediaAspectRatio";
+import { getCloudinaryImageUrl } from "@/lib/cloudinary/buildCloudinaryDeliveryUrl";
 
 interface EnhancedPublicacion {
   id: string;
@@ -77,7 +78,19 @@ const MediaSlide: React.FC<{
   isInModal: boolean;
   descripcion?: string;
 }> = ({ media, index, multimediaLength, onClick, isInModal, descripcion }) => {
-  const aspectRatio = useMediaAspectRatio(media.url, media.tipo);
+  const optimizedPreviewImageUrl = getCloudinaryImageUrl(
+    media.url,
+    "publication-preview",
+  );
+  const optimizedDetailImageUrl = getCloudinaryImageUrl(
+    media.url,
+    "publication-detail",
+  );
+  const imageSrc = isInModal
+    ? optimizedDetailImageUrl
+    : optimizedPreviewImageUrl;
+  const safeAspectRatioSource = media.tipo === "VIDEO" ? (isInModal ? media.url : undefined) : imageSrc;
+  const aspectRatio = useMediaAspectRatio(safeAspectRatioSource, media.tipo);
   const maxDescriptionLength = 100;
 
   const formattedDescription = useMemo(() => {
@@ -98,18 +111,29 @@ const MediaSlide: React.FC<{
       aria-label={`Media ${index + 1} de ${multimediaLength}`}
     >
       {media.tipo === "VIDEO" ? (
-        <video
-          src={media.url}
-          controls
-          preload="metadata"
-          playsInline
-          muted={false}
-          className="w-full h-full object-cover bg-gray-50 transition-transform duration-700 group-hover:scale-105"
-          aria-label={`Video ${index + 1} de ${multimediaLength}`}
-        />
+        isInModal ? (
+          <video
+            src={media.url}
+            controls
+            preload="metadata"
+            playsInline
+            muted={false}
+            className="w-full h-full object-cover bg-gray-50 transition-transform duration-700 group-hover:scale-105"
+            aria-label={`Video ${index + 1} de ${multimediaLength}`}
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center bg-slate-900 text-white transition-transform duration-700 group-hover:scale-105">
+            <div className="flex flex-col items-center gap-3 opacity-90">
+              <span className="flex h-14 w-14 items-center justify-center rounded-full bg-white/15">
+                <FaPlay className="ml-0.5 text-lg" />
+              </span>
+              <span className="text-sm font-medium">Ver video</span>
+            </div>
+          </div>
+        )
       ) : (
         <Image
-          src={media.url}
+          src={imageSrc}
           alt={`Imagen ${index + 1}`}
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -196,6 +220,11 @@ const ResenaProductoCard: React.FC<Props> = ({ publicacion, isInModal = false })
     setIsModalOpenLocal(false);
   }, []);
 
+  const optimizedAvatarUrl = getCloudinaryImageUrl(
+    publicacion.usuario.fotoPerfil || "/default-profile.png",
+    "avatar",
+  );
+
   if (loadingData) {
     return (
       <motion.div
@@ -236,7 +265,7 @@ const ResenaProductoCard: React.FC<Props> = ({ publicacion, isInModal = false })
         <div className="relative z-10 flex items-center p-4 border-b border-gray-100">
           <div className="relative w-10 h-10 rounded-full overflow-hidden mr-3 shadow-sm">
             <Image
-              src={publicacion.usuario.fotoPerfil || "/default-profile.png"}
+              src={optimizedAvatarUrl}
               alt={`Foto de perfil de ${publicacion.usuario.nombre} ${publicacion.usuario.apellido}`}
               fill
               sizes="40px"

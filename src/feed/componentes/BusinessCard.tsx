@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
 import { textosFont, titleFont } from "@/config/fonts";
+import { getCloudinaryImageUrl } from "@/lib/cloudinary/buildCloudinaryDeliveryUrl";
 import { BusinessCardData } from "../feed.interfaces";
 import { FollowButton } from "./FollowButton";
 import { motion, AnimatePresence } from "framer-motion";
@@ -40,8 +41,16 @@ export const BusinessCard: React.FC<BusinessCardProps> = ({ business }) => {
 
   const portadaImage = hasPortada ? business.imagenPortada! : DEFAULT_IMAGE;
   const perfilHoverImage = hasPerfil ? business.imagenPerfil! : DEFAULT_HOVER_IMAGE;
+  const optimizedBusinessCoverUrl = getCloudinaryImageUrl(
+    portadaImage,
+    "business-cover",
+  );
+  const optimizedBusinessAvatarUrl = getCloudinaryImageUrl(
+    perfilHoverImage,
+    "avatar",
+  );
 
-  const [displayImage, setDisplayImage] = useState<string>(portadaImage);
+  const [displayImage, setDisplayImage] = useState<string>(optimizedBusinessCoverUrl);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Mensaje para WhatsApp (similar a ProductCard, pero para negocio)
@@ -91,8 +100,8 @@ export const BusinessCard: React.FC<BusinessCardProps> = ({ business }) => {
         <Link href={`/perfil/${business.slug}`} className="block relative">
           <div
             className="relative h-64 w-full cursor-pointer rounded-lg overflow-hidden"
-            onMouseEnter={() => setDisplayImage(perfilHoverImage)} // switch a perfil o a crear-negocio2
-            onMouseLeave={() => setDisplayImage(portadaImage)} // vuelve a portada o crear-negocio
+            onMouseEnter={() => setDisplayImage(optimizedBusinessAvatarUrl)} // switch a perfil o a crear-negocio2
+            onMouseLeave={() => setDisplayImage(optimizedBusinessCoverUrl)} // vuelve a portada o crear-negocio
           >
             <Image
               src={displayImage}
@@ -195,7 +204,7 @@ export const BusinessCard: React.FC<BusinessCardProps> = ({ business }) => {
               {/* Imágenes (izquierda en desktop, arriba en mobile) */}
               <div className="relative w-full h-[300px] md:h-full rounded-2xl overflow-hidden">
                 <Image
-                  src={portadaImage}
+                  src={optimizedBusinessCoverUrl}
                   alt={`Portada de ${business.nombre}`}
                   fill
                   sizes="(max-width: 768px) 100vw, 50vw"

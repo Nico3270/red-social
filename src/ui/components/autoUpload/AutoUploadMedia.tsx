@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useId } from "react"; // Agregamos useRef
-import imageCompression from "browser-image-compression";
 import { IconButton, CircularProgress } from "@mui/material";
 import { FaTrashAlt } from "react-icons/fa";
 import { MdAddAPhoto } from "react-icons/md";
@@ -32,6 +31,179 @@ type UploadedMedia = {
   url: string;
   publicId: string | null;
   resourceType: CloudinaryResourceType | null;
+};
+
+type OptimizableImageMimeType =
+  | "image/jpeg"
+  | "image/jpg"
+  | "image/png"
+  | "image/webp";
+
+const OPTIMIZABLE_IMAGE_TYPES = new Set<string>([
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/webp",
+]);
+const MAX_IMAGE_WIDTH = 1600;
+const MAX_IMAGE_HEIGHT = 1600;
+const IMAGE_COMPRESSION_QUALITY = 0.82;
+
+const isOptimizableRasterImage = (file: File): file is File & { type: OptimizableImageMimeType } =>
+  OPTIMIZABLE_IMAGE_TYPES.has(file.type.toLowerCase());
+
+const getOutputImageType = (file: File): OptimizableImageMimeType => {
+  const normalizedType = file.type.toLowerCase();
+
+  if (normalizedType === "image/png") {
+    return "image/png";
+  }
+
+  if (normalizedType === "image/webp") {
+    return "image/webp";
+  }
+
+  return "image/jpeg";
+};
+
+const getExtensionForImageType = (type: OptimizableImageMimeType) => {
+  switch (type) {
+    case "image/png":
+      return "png";
+    case "image/webp":
+      return "webp";
+    case "image/jpg":
+    case "image/jpeg":
+    default:
+      return "jpg";
+  }
+};
+
+const buildOptimizedFileName = (file: File, outputType: OptimizableImageMimeType) => {
+  const safeOriginalName =
+    file.name
+      .split(/[\\/]/)
+      .pop()
+      ?.trim()
+      .replace(/[^\w.\-()\s]/g, "-") || "image";
+  const extension = getExtensionForImageType(outputType);
+  const extensionIndex = safeOriginalName.lastIndexOf(".");
+  const baseName =
+    extensionIndex > 0 ? safeOriginalName.slice(0, extensionIndex) : safeOriginalName;
+
+  return `${baseName}-optimized.${extension}`;
+};
+
+const warnImageOptimization = (message: string, error?: unknown) => {
+  if (process.env.NODE_ENV === "development") {
+    console.warn(`[AutoUploadMedia] ${message}`, error);
+  }
+};
+
+const loadImageFromFile = (file: File): Promise<{ image: HTMLImageElement; objectUrl: string }> =>
+  new Promise((resolve, reject) => {
+    const objectUrl = URL.createObjectURL(file);
+    const image = new window.Image();
+
+    image.decoding = "async";
+    image.onload = () => {
+      image.onload = null;
+      image.onerror = null;
+      resolve({ image, objectUrl });
+    };
+    image.onerror = () => {
+      image.onload = null;
+      image.onerror = null;
+      URL.revokeObjectURL(objectUrl);
+      reject(new Error("No fue posible decodificar la imagen antes de subirla."));
+    };
+    image.src = objectUrl;
+  });
+
+const canvasToBlob = (
+  canvas: HTMLCanvasElement,
+  outputType: OptimizableImageMimeType
+): Promise<Blob> =>
+  new Promise((resolve, reject) => {
+    canvas.toBlob(
+      (blob) => {
+        if (!blob) {
+          reject(new Error("No fue posible generar la imagen optimizada."));
+          return;
+        }
+
+        resolve(blob);
+      },
+      outputType,
+      outputType === "image/png" ? undefined : IMAGE_COMPRESSION_QUALITY
+    );
+  });
+
+const optimizeImageBeforeUpload = async (file: File): Promise<File> => {
+  if (!isOptimizableRasterImage(file)) {
+    return file;
+  }
+
+  let objectUrl: string | null = null;
+  let canvas: HTMLCanvasElement | null = null;
+
+  try {
+    const { image, objectUrl: imageObjectUrl } = await loadImageFromFile(file);
+    objectUrl = imageObjectUrl;
+
+    const sourceWidth = image.naturalWidth;
+    const sourceHeight = image.naturalHeight;
+
+    if (!sourceWidth || !sourceHeight) {
+      return file;
+    }
+
+    const scale = Math.min(
+      1,
+      MAX_IMAGE_WIDTH / sourceWidth,
+      MAX_IMAGE_HEIGHT / sourceHeight
+    );
+    const targetWidth = Math.max(1, Math.round(sourceWidth * scale));
+    const targetHeight = Math.max(1, Math.round(sourceHeight * scale));
+    const outputType = getOutputImageType(file);
+
+    canvas = document.createElement("canvas");
+    canvas.width = targetWidth;
+    canvas.height = targetHeight;
+
+    const context = canvas.getContext("2d", {
+      alpha: outputType === "image/png",
+    });
+
+    if (!context) {
+      return file;
+    }
+
+    context.drawImage(image, 0, 0, targetWidth, targetHeight);
+
+    const optimizedBlob = await canvasToBlob(canvas, outputType);
+
+    if (optimizedBlob.size >= file.size) {
+      return file;
+    }
+
+    return new File([optimizedBlob], buildOptimizedFileName(file, outputType), {
+      type: outputType,
+      lastModified: file.lastModified,
+    });
+  } catch (error) {
+    warnImageOptimization("Se usará la imagen original porque falló la optimización previa.", error);
+    return file;
+  } finally {
+    if (objectUrl) {
+      URL.revokeObjectURL(objectUrl);
+    }
+
+    if (canvas) {
+      canvas.width = 0;
+      canvas.height = 0;
+    }
+  }
 };
 
 interface AutoUploadMediaProps {
@@ -154,25 +326,19 @@ const AutoUploadMedia: React.FC<AutoUploadMediaProps> = ({
         }
         newMedia.push({ id: crypto.randomUUID(), file, url: URL.createObjectURL(file) });
       } else if (file.type.startsWith("image/")) {
-        if (file.size > maxImageSize) {
-          try {
-            onLoading?.(true);
-            const compressedFile = await imageCompression(file, {
-              maxSizeMB: 10,
-              maxWidthOrHeight: 1920,
-              useWebWorker: true,
-            });
-            newMedia.push({
-              id: crypto.randomUUID(),
-              file: compressedFile,
-              url: URL.createObjectURL(compressedFile),
-            });
-          } catch (error) {
-            onError?.(`Error al comprimir ${file.name}: ${error}`);
-          }
-        } else {
-          newMedia.push({ id: crypto.randomUUID(), file, url: URL.createObjectURL(file) });
+        onLoading?.(true);
+        const fileToUpload = await optimizeImageBeforeUpload(file);
+
+        if (fileToUpload.size > maxImageSize) {
+          onError?.(`La imagen ${file.name} excede el tamaño máximo de 10MB.`);
+          continue;
         }
+
+        newMedia.push({
+          id: crypto.randomUUID(),
+          file: fileToUpload,
+          url: URL.createObjectURL(fileToUpload),
+        });
       }
     }
 

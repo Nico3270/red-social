@@ -11,6 +11,7 @@ import {
   isRenderableImageSource,
   resolveSafeImageSource,
 } from "@/lib/media/resolveSafeImageSource";
+import { getCloudinaryImageUrl } from "@/lib/cloudinary/buildCloudinaryDeliveryUrl";
 import Divider from "@/ui/components/divider/Divider";
 import { getDeterministicFloatingCardStyle } from "./landing-section.utils";
 
@@ -54,6 +55,14 @@ const PublicacionesSection: React.FC<PublicacionesSectionProps> = ({
             ) || p.multimedia[0];
           const mediaIsVideo = media?.tipo === "VIDEO" || isLikelyVideoUrl(media?.url);
           const mediaImageSrc = resolveSafeImageSource(media?.url, PLACEHOLDER_PRODUCT_IMAGE);
+          const optimizedPublicationImageUrl = getCloudinaryImageUrl(
+            mediaImageSrc,
+            "publication-preview",
+          );
+          const optimizedPosterUrl = getCloudinaryImageUrl(
+            mediaImageSrc,
+            "publication-preview",
+          );
 
           return (
             <motion.div
@@ -72,17 +81,19 @@ const PublicacionesSection: React.FC<PublicacionesSectionProps> = ({
             >
               {media?.url &&
                 (mediaIsVideo ? (
-                  <video
-                    src={media.url}
-                    className="h-full w-full object-cover"
-                    muted
-                    playsInline
-                    loop
-                    autoPlay
-                  />
+                  <div className="relative flex h-full w-full items-center justify-center bg-slate-900 text-white">
+                    <Image
+                      src={optimizedPosterUrl}
+                      alt={p.titulo || "Video de publicación"}
+                      fill
+                      className="object-cover opacity-45"
+                      sizes="30vw"
+                    />
+                    <FaPlayCircle className="relative z-10 text-3xl" />
+                  </div>
                 ) : (
                   <Image
-                    src={mediaImageSrc}
+                    src={optimizedPublicationImageUrl}
                     alt={p.titulo || "Publicación"}
                     fill
                     className="object-cover"
@@ -128,6 +139,14 @@ const PublicacionesSection: React.FC<PublicacionesSectionProps> = ({
             ) || pub.multimedia[0];
           const mediaIsVideo = media?.tipo === "VIDEO" || isLikelyVideoUrl(media?.url);
           const mediaImageSrc = resolveSafeImageSource(media?.url, PLACEHOLDER_PRODUCT_IMAGE);
+          const optimizedPublicationImageUrl = getCloudinaryImageUrl(
+            mediaImageSrc,
+            "publication-preview",
+          );
+          const optimizedPosterUrl = getCloudinaryImageUrl(
+            mediaImageSrc,
+            "publication-preview",
+          );
           const descripcion = pub.descripcion || pub.titulo || "Publicación destacada";
 
           return (
@@ -142,17 +161,22 @@ const PublicacionesSection: React.FC<PublicacionesSectionProps> = ({
             >
               <div className="relative w-full aspect-[4/5]">
                 {mediaIsVideo ? (
-                  <video
-                    src={media.url}
-                    className="w-full h-full object-cover"
-                    muted
-                    playsInline
-                    loop
-                    autoPlay
-                  />
+                  <div className="relative flex h-full w-full items-center justify-center bg-slate-900 text-white">
+                    <Image
+                      src={optimizedPosterUrl}
+                      alt={pub.titulo || "Video de publicación"}
+                      fill
+                      className="object-cover opacity-45 transition-transform duration-700 group-hover:scale-105"
+                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                    />
+                    <div className="relative z-10 flex flex-col items-center gap-2">
+                      <FaPlayCircle className="text-4xl drop-shadow" />
+                      <span className="text-sm font-semibold drop-shadow">Ver video</span>
+                    </div>
+                  </div>
                 ) : (
                   <Image
-                    src={mediaImageSrc}
+                    src={optimizedPublicationImageUrl}
                     alt={pub.titulo || "Publicación"}
                     fill
                     className="object-cover transition-transform duration-700 group-hover:scale-105"

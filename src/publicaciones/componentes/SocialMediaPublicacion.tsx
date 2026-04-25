@@ -5,7 +5,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Navigation, Autoplay } from "swiper/modules";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { FaLock, FaGlobe, FaUserFriends } from "react-icons/fa";
+import { FaLock, FaGlobe, FaPlayCircle, FaUserFriends } from "react-icons/fa";
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
 import { Swiper as SwiperType } from "swiper";
@@ -29,6 +29,7 @@ import {
   isRenderableImageSource,
   resolveSafeImageSource,
 } from "@/lib/media/resolveSafeImageSource";
+import { getCloudinaryImageUrl } from "@/lib/cloudinary/buildCloudinaryDeliveryUrl";
 import { reportOperationalWarning } from "@/lib/observability/operationalLogger";
 
 interface Props {
@@ -45,7 +46,17 @@ const MediaSlide: React.FC<{
   isInModal: boolean; // Prop para evitar clicks en modal
 }> = ({ media, index, multimediaLength, onClick, isInModal }) => {
   const isVideo = media.tipo === "VIDEO" || isLikelyVideoUrl(media.url);
-  const aspectRatio = useMediaAspectRatio(media.url, isVideo ? "VIDEO" : "IMAGEN");
+  const safeImageUrl = resolveSafeImageSource(media.url, PLACEHOLDER_PRODUCT_IMAGE);
+  const optimizedImageUrl = getCloudinaryImageUrl(
+    safeImageUrl,
+    isInModal ? "publication-detail" : "publication-preview",
+  );
+  const optimizedPosterUrl = getCloudinaryImageUrl(
+    safeImageUrl,
+    "publication-preview",
+  );
+  const aspectRatioUrl = isVideo ? (isInModal ? media.url : undefined) : optimizedImageUrl;
+  const aspectRatio = useMediaAspectRatio(aspectRatioUrl, isVideo ? "VIDEO" : "IMAGEN");
 
   return (
     <motion.div
@@ -60,19 +71,35 @@ const MediaSlide: React.FC<{
       aria-label={!isInModal ? `Abrir modal con detalle de la media ${index + 1} de ${multimediaLength}` : undefined}
     >
       {isVideo ? (
-        <video
-          src={media.url}
-          controls
-          preload="metadata"
-          playsInline
-          muted={false}
-          className="w-full h-full object-contain rounded-xl"
-          aria-label={`Video ${index + 1} de ${multimediaLength} en carrusel`}
-          
-        />
+        isInModal ? (
+          <video
+            src={media.url}
+            controls
+            preload="metadata"
+            playsInline
+            muted={false}
+            className="w-full h-full object-contain rounded-xl"
+            aria-label={`Video ${index + 1} de ${multimediaLength} en carrusel`}
+          />
+        ) : (
+          <div className="relative flex h-full w-full items-center justify-center rounded-xl bg-slate-900 text-white">
+            <Image
+              src={optimizedPosterUrl}
+              alt={`Video ${index + 1} de carrusel`}
+              fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 420px"
+              className="rounded-xl object-cover opacity-45"
+              loading="lazy"
+            />
+            <div className="relative z-10 flex flex-col items-center gap-2">
+              <FaPlayCircle className="text-4xl drop-shadow" />
+              <span className="text-sm font-semibold drop-shadow">Ver video</span>
+            </div>
+          </div>
+        )
       ) : (
         <Image
-          src={resolveSafeImageSource(media.url, PLACEHOLDER_PRODUCT_IMAGE)}
+          src={optimizedImageUrl}
           alt={`Imagen ${index + 1} de carrusel`}
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -119,6 +146,7 @@ export const SocialMediaCarousel: React.FC<Props> = ({ publicacion, isInModal = 
     publicacion.negocio?.fotoPerfil || publicacion.usuario.fotoPerfil,
     PLACEHOLDER_BUSINESS_IMAGE
   );
+  const optimizedAuthorImage = getCloudinaryImageUrl(safeAuthorImage, "avatar");
 
   useEffect(() => {
     if (multimedia.length === publicacion.multimedia.length) {
@@ -183,7 +211,7 @@ export const SocialMediaCarousel: React.FC<Props> = ({ publicacion, isInModal = 
         <div className="flex items-center p-4 border-b border-gray-100">
           <div className="relative w-12 h-12 rounded-full overflow-hidden mr-3">
             <Image
-              src={safeAuthorImage}
+              src={optimizedAuthorImage}
               alt={`Foto de perfil de ${publicacion.negocio?.nombre || `${publicacion.usuario.nombre} ${publicacion.usuario.apellido}`}`}
               fill
               sizes="48px"

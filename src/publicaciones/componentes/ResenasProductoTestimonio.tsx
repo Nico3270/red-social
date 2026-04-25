@@ -3,9 +3,11 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Button, Modal, Box } from "@mui/material";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
+import { FaPlay } from "react-icons/fa";
 import { MultimediaTipo } from "@prisma/client";
 import Image from "next/image";
 import { titleFont } from "@/config/fonts";
+import { getCloudinaryImageUrl } from "@/lib/cloudinary/buildCloudinaryDeliveryUrl";
 
 interface ResenaProductoTestimonio {
     descripcion?: string;
@@ -49,6 +51,11 @@ export const ResenasProducto: React.FC<ResenasProductoProps> = ({ resenas }) => 
         setSelectedResena(null);
     };
 
+    const optimizedDetailImageUrl = getCloudinaryImageUrl(
+        selectedResena?.mediaUrl,
+        "publication-detail",
+    );
+
     const formatDate = (date: Date) => {
         const day = String(date.getDate()).padStart(2, "0");
         const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -77,6 +84,11 @@ export const ResenasProducto: React.FC<ResenasProductoProps> = ({ resenas }) => 
                         const hasMedia = !!resena.mediaUrl;
                         const isImage = resena.mediaTipo === MultimediaTipo.IMAGEN;
                         const isVideo = resena.mediaTipo === MultimediaTipo.VIDEO;
+                        const previewImageUrl = resena.mediaUrl || "/imgs/placeholder.png";
+                        const optimizedPreviewImageUrl = getCloudinaryImageUrl(
+                            previewImageUrl,
+                            "publication-preview",
+                        );
 
                         return (
                             <div
@@ -90,21 +102,22 @@ export const ResenasProducto: React.FC<ResenasProductoProps> = ({ resenas }) => 
                                             {isImage ? (
                                                 <div className="relative w-full h-80">
   <Image
-    src={resena.mediaUrl || "/imgs/placeholder.png"}
+    src={optimizedPreviewImageUrl}
     alt="Reseña"
     fill
+    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 420px"
     className="object-cover rounded-md"
   />
 </div>
                                             ) : isVideo ? (
-                                                <video
-                                                    ref={(el) => {
-                                                        videoRefs.current[index] = el;
-                                                    }}
-                                                    src={resena.mediaUrl}
-                                                    className="w-full h-80 object-cover"
-                                                    controls={false}
-                                                />
+                                                <div className="flex h-80 w-full items-center justify-center rounded-md bg-slate-900 text-white">
+                                                    <div className="flex flex-col items-center gap-3 opacity-90">
+                                                        <span className="flex h-14 w-14 items-center justify-center rounded-full bg-white/15">
+                                                            <FaPlay className="ml-0.5 text-lg" />
+                                                        </span>
+                                                        <span className="text-sm font-medium">Ver video</span>
+                                                    </div>
+                                                </div>
                                             ) : null}
                                         </div>
                                     ) : (
@@ -166,9 +179,10 @@ export const ResenasProducto: React.FC<ResenasProductoProps> = ({ resenas }) => 
                                     {selectedResena.mediaTipo === MultimediaTipo.IMAGEN ? (
                                         <div className="relative w-full max-h-[400px] md:max-h-[500px] mx-auto">
   <Image
-    src={selectedResena.mediaUrl}
+    src={optimizedDetailImageUrl || selectedResena.mediaUrl}
     alt="Reseña completa"
     fill
+    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 420px"
     className="object-contain rounded-md"
   />
 </div>
@@ -178,7 +192,7 @@ export const ResenasProducto: React.FC<ResenasProductoProps> = ({ resenas }) => 
                                             src={selectedResena.mediaUrl}
                                             className="w-full max-h-[400px] md:max-h-[500px] object-contain rounded-md mx-auto"
                                             controls
-                                            autoPlay
+                                            preload="metadata"
                                         />
                                     )}
                                 </div>

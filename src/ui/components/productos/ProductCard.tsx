@@ -13,6 +13,7 @@ import {
   isRenderableImageSource,
   resolveSafeImageSource,
 } from "@/lib/media/resolveSafeImageSource";
+import { getCloudinaryImageUrl } from "@/lib/cloudinary/buildCloudinaryDeliveryUrl";
 import { logProductImageDiagnostics } from "@/lib/media/productImageDiagnostics";
 import { reportOperationalWarning } from "@/lib/observability/operationalLogger";
 import { AddFavorites } from "./AddFavorites";
@@ -85,6 +86,18 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   const safeDisplayImage = resolveSafeImageSource(
     displayImage,
     FALLBACK_PRODUCT_IMAGE,
+  );
+  const optimizedProductImageUrl = getCloudinaryImageUrl(
+    safeDisplayImage,
+    "product-card",
+  );
+  const safeBusinessProfileImage = resolveSafeImageSource(
+    product.negocioFotoPerfil,
+    FALLBACK_PROFILE_IMAGE,
+  );
+  const optimizedBusinessProfileImageUrl = getCloudinaryImageUrl(
+    safeBusinessProfileImage,
+    "avatar",
   );
 
   const addProductToCart = useCartCatalogoStore((state) => state.addProductToCart);
@@ -582,7 +595,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           <div className="flex min-w-0 items-center gap-2">
             <div className="relative h-8 w-8 overflow-hidden rounded-full">
               <Image
-                src={resolveSafeImageSource(product.negocioFotoPerfil, FALLBACK_PROFILE_IMAGE)}
+                src={optimizedBusinessProfileImageUrl}
                 alt={`Perfil de ${product.nombreNegocio ?? "negocio"}`}
                 fill
                 sizes="32px"
@@ -649,7 +662,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             }}
           >
             <Image
-              src={safeDisplayImage}
+              src={optimizedProductImageUrl}
               alt={product.nombre}
               fill
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"

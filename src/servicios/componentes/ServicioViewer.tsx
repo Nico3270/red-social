@@ -13,9 +13,11 @@ import Link from "next/link";
 import { FollowButton } from "@/feed/componentes/FollowButton";
 import { InfoEmpresa as empresa } from "@/config/config";
 import { BsWhatsapp } from "react-icons/bs";
-import { FaTimes } from "react-icons/fa";
+import { FaPlayCircle, FaTimes } from "react-icons/fa";
 import { Precio } from "@/ui/components/productos/Precio";
 import { titleFont } from "@/config/fonts";
+import { isLikelyVideoUrl } from "@/lib/media/resolveSafeImageSource";
+import { getCloudinaryImageUrl } from "@/lib/cloudinary/buildCloudinaryDeliveryUrl";
 
 interface Props {
   servicio: ServicioData;
@@ -30,7 +32,7 @@ const useMediaDimensions = (url: string, tipo: "IMAGEN" | "VIDEO") => {
 
   React.useEffect(() => {
     if (!url) {
-      setAspectRatio(1); // Fallback si no hay URL
+      setAspectRatio(tipo === "VIDEO" ? 9 / 16 : 1); // Fallback si no hay URL
       return;
     }
 
@@ -87,8 +89,18 @@ const MediaSlide: React.FC<{
   media: ServicioData["multimedia"][0]; 
   index: number; 
   multimediaLength: number; 
-}> = ({ media, index, multimediaLength }) => {
-  const aspectRatio = useMediaDimensions(media.url, media.tipo as "IMAGEN" | "VIDEO");
+  isInModal?: boolean;
+}> = ({ media, index, multimediaLength, isInModal = false }) => {
+  const isVideo = media.tipo === "VIDEO" || isLikelyVideoUrl(media.url);
+  const optimizedPreviewImageUrl = isVideo
+    ? media.url
+    : getCloudinaryImageUrl(media.url, "publication-preview");
+  const optimizedDetailImageUrl = isVideo
+    ? media.url
+    : getCloudinaryImageUrl(media.url, "publication-detail");
+  const optimizedImageUrl = isInModal ? optimizedDetailImageUrl : optimizedPreviewImageUrl;
+  const safeAspectRatioSource = isVideo ? (isInModal ? media.url : "") : optimizedImageUrl;
+  const aspectRatio = useMediaDimensions(safeAspectRatioSource, isVideo ? "VIDEO" : "IMAGEN");
 
   return (
     <motion.div
@@ -98,19 +110,28 @@ const MediaSlide: React.FC<{
       className="relative w-full max-h-[500px] mx-auto"
       style={{ aspectRatio: aspectRatio || 1 }}
     >
-      {media.tipo === "VIDEO" ? (
-        <video
-          src={media.url}
-          controls
-          preload="metadata"
-          playsInline
-          muted={false}
-          className="w-full h-full object-contain rounded-xl"
-          aria-label={`Video ${index + 1} de ${multimediaLength} en carrusel`}
-        />
+      {isVideo ? (
+        isInModal ? (
+          <video
+            src={media.url}
+            controls
+            preload="metadata"
+            playsInline
+            muted={false}
+            className="w-full h-full object-contain rounded-xl"
+            aria-label={`Video ${index + 1} de ${multimediaLength} en carrusel`}
+          />
+        ) : (
+          <div className="relative flex h-full w-full items-center justify-center rounded-xl bg-slate-900 text-white">
+            <div className="relative z-10 flex flex-col items-center gap-2">
+              <FaPlayCircle className="text-4xl drop-shadow" />
+              <span className="text-sm font-semibold drop-shadow">Ver video</span>
+            </div>
+          </div>
+        )
       ) : (
         <Image
-          src={media.url}
+          src={optimizedImageUrl}
           alt={`Imagen ${index + 1} de carrusel`}
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -125,6 +146,9 @@ const MediaSlide: React.FC<{
 const ServicioViewer: React.FC<Props> = ({ servicio, version = 1 }) => {
   const { titulo, descripcion, precio,  multimedia = [], negocioSlug, telefonoNegocio, nombreNegocio, negocioFotoPerfil } = servicio;
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const optimizedAvatarUrl = negocioFotoPerfil
+    ? getCloudinaryImageUrl(negocioFotoPerfil, "avatar")
+    : "";
 
   const whatsappMessage = encodeURIComponent(
     `¡Hola! Estoy interesado en el servicio: *${titulo}*. ¿Podemos charlar?\n\nVer más en: ${urlWebProduccion}/perfil/${negocioSlug}`
@@ -172,7 +196,7 @@ const ServicioViewer: React.FC<Props> = ({ servicio, version = 1 }) => {
             {negocioFotoPerfil && (
               <div className="relative w-12 h-12 rounded-full overflow-hidden">
                 <Image
-                  src={negocioFotoPerfil}
+                  src={optimizedAvatarUrl}
                   alt={`Perfil de ${nombreNegocio}`}
                   fill
                   sizes="48px"
@@ -242,6 +266,7 @@ const ServicioViewer: React.FC<Props> = ({ servicio, version = 1 }) => {
                     media={media} 
                     index={index} 
                     multimediaLength={orderedMultimedia.length} 
+                    isInModal={false}
                   />
                 </SwiperSlide>
               ))
@@ -313,7 +338,7 @@ const ServicioViewer: React.FC<Props> = ({ servicio, version = 1 }) => {
                     {negocioFotoPerfil && (
                       <div className="relative w-12 h-12 rounded-full overflow-hidden">
                         <Image
-                          src={negocioFotoPerfil}
+                          src={optimizedAvatarUrl}
                           alt={`Perfil de ${nombreNegocio}`}
                           fill
                           sizes="48px"
@@ -363,6 +388,7 @@ const ServicioViewer: React.FC<Props> = ({ servicio, version = 1 }) => {
                             media={media} 
                             index={index} 
                             multimediaLength={orderedMultimedia.length} 
+                            isInModal
                           />
                         </SwiperSlide>
                       ))
