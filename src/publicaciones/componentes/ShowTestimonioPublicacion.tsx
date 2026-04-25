@@ -21,6 +21,7 @@ import {
   resolveSafeImageSource,
 } from "@/lib/media/resolveSafeImageSource";
 import { getCloudinaryImageUrl } from "@/lib/cloudinary/buildCloudinaryDeliveryUrl";
+import { getCloudinaryVideoPosterUrl } from "@/lib/cloudinary/buildCloudinaryVideoPosterUrl";
 import { reportOperationalWarning } from "@/lib/observability/operationalLogger";
 
 
@@ -56,13 +57,28 @@ export const ShowTestimonioPublicacion = ({ publicacion, productos, isInModal = 
     safeMediaImage,
     "publication-detail",
   );
-  const optimizedPosterUrl = getCloudinaryImageUrl(
-    safeMediaImage,
+  const videoPreviewPosterUrl = getCloudinaryVideoPosterUrl(
+    mediaUrl,
     "publication-preview",
   );
+  const videoDetailPosterUrl = getCloudinaryVideoPosterUrl(
+    mediaUrl,
+    "publication-detail",
+  );
   const imageSrc = isInModal ? optimizedDetailImageUrl : optimizedPreviewImageUrl;
-  const aspectRatioUrl = mediaIsVideo ? (isInModal ? mediaUrl : undefined) : imageSrc;
-  const aspectRatio = useMediaAspectRatio(aspectRatioUrl, mediaIsVideo ? "VIDEO" : "IMAGEN");
+  const aspectRatioUrl = mediaIsVideo
+    ? isInModal
+      ? mediaUrl
+      : videoPreviewPosterUrl ?? undefined
+    : imageSrc;
+  const aspectRatioType = mediaIsVideo
+    ? isInModal
+      ? "VIDEO"
+      : videoPreviewPosterUrl
+        ? "IMAGEN"
+        : "VIDEO"
+    : "IMAGEN";
+  const aspectRatio = useMediaAspectRatio(aspectRatioUrl, aspectRatioType);
   const timeAgo = formatDistanceToNow(new Date(publicacion.createdAt), { addSuffix: true, locale: es });
   const safeBusinessImage = resolveSafeImageSource(
     publicacion.negocio?.fotoPerfil,
@@ -210,17 +226,20 @@ export const ShowTestimonioPublicacion = ({ publicacion, productos, isInModal = 
                 className="w-full h-full object-contain rounded-b-xl" // Contain para no distorsionar
                 controls
                 preload="metadata"
+                poster={videoDetailPosterUrl ?? undefined}
               />
             ) : (
               <div className="relative flex h-full w-full items-center justify-center rounded-b-xl bg-slate-900 text-white">
-                <Image
-                  src={optimizedPosterUrl}
-                  alt={publicacion.titulo || "Video del testimonio"}
-                  fill
-                  className="rounded-b-xl object-cover opacity-45"
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 420px"
-                  loading="lazy"
-                />
+                {videoPreviewPosterUrl ? (
+                  <Image
+                    src={videoPreviewPosterUrl}
+                    alt={publicacion.titulo || "Video del testimonio"}
+                    fill
+                    className="rounded-b-xl object-cover opacity-45"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 420px"
+                    loading="lazy"
+                  />
+                ) : null}
                 <div className="relative z-10 flex flex-col items-center gap-2">
                   <FaPlayCircle className="text-4xl drop-shadow" />
                   <span className="text-sm font-semibold drop-shadow">Ver video</span>

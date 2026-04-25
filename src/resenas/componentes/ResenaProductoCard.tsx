@@ -14,6 +14,7 @@ import Interactions from "@/interacciones/componentes/Interactions";
 import PublicationModal from "@/publicaciones/componentes/PublicationModal";
 import { useMediaAspectRatio } from "@/hooks/useMediaAspectRatio";
 import { getCloudinaryImageUrl } from "@/lib/cloudinary/buildCloudinaryDeliveryUrl";
+import { getCloudinaryVideoPosterUrl } from "@/lib/cloudinary/buildCloudinaryVideoPosterUrl";
 
 interface EnhancedPublicacion {
   id: string;
@@ -78,6 +79,14 @@ const MediaSlide: React.FC<{
   isInModal: boolean;
   descripcion?: string;
 }> = ({ media, index, multimediaLength, onClick, isInModal, descripcion }) => {
+  const videoPreviewPosterUrl = getCloudinaryVideoPosterUrl(
+    media.url,
+    "publication-preview",
+  );
+  const videoDetailPosterUrl = getCloudinaryVideoPosterUrl(
+    media.url,
+    "publication-detail",
+  );
   const optimizedPreviewImageUrl = getCloudinaryImageUrl(
     media.url,
     "publication-preview",
@@ -89,8 +98,19 @@ const MediaSlide: React.FC<{
   const imageSrc = isInModal
     ? optimizedDetailImageUrl
     : optimizedPreviewImageUrl;
-  const safeAspectRatioSource = media.tipo === "VIDEO" ? (isInModal ? media.url : undefined) : imageSrc;
-  const aspectRatio = useMediaAspectRatio(safeAspectRatioSource, media.tipo);
+  const safeAspectRatioSource = media.tipo === "VIDEO"
+    ? isInModal
+      ? media.url
+      : videoPreviewPosterUrl ?? undefined
+    : imageSrc;
+  const aspectRatioType = media.tipo === "VIDEO"
+    ? isInModal
+      ? "VIDEO"
+      : videoPreviewPosterUrl
+        ? "IMAGEN"
+        : "VIDEO"
+    : "IMAGEN";
+  const aspectRatio = useMediaAspectRatio(safeAspectRatioSource, aspectRatioType);
   const maxDescriptionLength = 100;
 
   const formattedDescription = useMemo(() => {
@@ -118,11 +138,22 @@ const MediaSlide: React.FC<{
             preload="metadata"
             playsInline
             muted={false}
+            poster={videoDetailPosterUrl ?? undefined}
             className="w-full h-full object-cover bg-gray-50 transition-transform duration-700 group-hover:scale-105"
             aria-label={`Video ${index + 1} de ${multimediaLength}`}
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center bg-slate-900 text-white transition-transform duration-700 group-hover:scale-105">
+          <div className="relative flex h-full w-full items-center justify-center bg-slate-900 text-white transition-transform duration-700 group-hover:scale-105">
+            {videoPreviewPosterUrl ? (
+              <Image
+                src={videoPreviewPosterUrl}
+                alt={`Video ${index + 1}`}
+                fill
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 420px"
+                className="object-cover opacity-45"
+                loading="lazy"
+              />
+            ) : null}
             <div className="flex flex-col items-center gap-3 opacity-90">
               <span className="flex h-14 w-14 items-center justify-center rounded-full bg-white/15">
                 <FaPlay className="ml-0.5 text-lg" />

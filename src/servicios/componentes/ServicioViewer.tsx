@@ -18,6 +18,7 @@ import { Precio } from "@/ui/components/productos/Precio";
 import { titleFont } from "@/config/fonts";
 import { isLikelyVideoUrl } from "@/lib/media/resolveSafeImageSource";
 import { getCloudinaryImageUrl } from "@/lib/cloudinary/buildCloudinaryDeliveryUrl";
+import { getCloudinaryVideoPosterUrl } from "@/lib/cloudinary/buildCloudinaryVideoPosterUrl";
 
 interface Props {
   servicio: ServicioData;
@@ -92,6 +93,14 @@ const MediaSlide: React.FC<{
   isInModal?: boolean;
 }> = ({ media, index, multimediaLength, isInModal = false }) => {
   const isVideo = media.tipo === "VIDEO" || isLikelyVideoUrl(media.url);
+  const videoPreviewPosterUrl = getCloudinaryVideoPosterUrl(
+    media.url,
+    "publication-preview",
+  );
+  const videoDetailPosterUrl = getCloudinaryVideoPosterUrl(
+    media.url,
+    "publication-detail",
+  );
   const optimizedPreviewImageUrl = isVideo
     ? media.url
     : getCloudinaryImageUrl(media.url, "publication-preview");
@@ -99,8 +108,19 @@ const MediaSlide: React.FC<{
     ? media.url
     : getCloudinaryImageUrl(media.url, "publication-detail");
   const optimizedImageUrl = isInModal ? optimizedDetailImageUrl : optimizedPreviewImageUrl;
-  const safeAspectRatioSource = isVideo ? (isInModal ? media.url : "") : optimizedImageUrl;
-  const aspectRatio = useMediaDimensions(safeAspectRatioSource, isVideo ? "VIDEO" : "IMAGEN");
+  const safeAspectRatioSource = isVideo
+    ? isInModal
+      ? media.url
+      : videoPreviewPosterUrl ?? ""
+    : optimizedImageUrl;
+  const aspectRatioType = isVideo
+    ? isInModal
+      ? "VIDEO"
+      : videoPreviewPosterUrl
+        ? "IMAGEN"
+        : "VIDEO"
+    : "IMAGEN";
+  const aspectRatio = useMediaDimensions(safeAspectRatioSource, aspectRatioType);
 
   return (
     <motion.div
@@ -118,11 +138,22 @@ const MediaSlide: React.FC<{
             preload="metadata"
             playsInline
             muted={false}
+            poster={videoDetailPosterUrl ?? undefined}
             className="w-full h-full object-contain rounded-xl"
             aria-label={`Video ${index + 1} de ${multimediaLength} en carrusel`}
           />
         ) : (
           <div className="relative flex h-full w-full items-center justify-center rounded-xl bg-slate-900 text-white">
+            {videoPreviewPosterUrl ? (
+              <Image
+                src={videoPreviewPosterUrl}
+                alt={`Video ${index + 1} de carrusel`}
+                fill
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 420px"
+                className="rounded-xl object-cover opacity-45"
+                loading="lazy"
+              />
+            ) : null}
             <div className="relative z-10 flex flex-col items-center gap-2">
               <FaPlayCircle className="text-4xl drop-shadow" />
               <span className="text-sm font-semibold drop-shadow">Ver video</span>
