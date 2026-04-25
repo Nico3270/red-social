@@ -2,6 +2,14 @@ import { FeedItem } from "./feed.interfaces";
 import { buildSeenFeedId } from "./feed-ids";
 
 const CANDIDATE_WINDOW = 8;
+const DISCOVERY_LEAD_WINDOW = 18;
+
+type DiscoveryContext = "home" | "category";
+
+const DISCOVERY_LEAD_RECIPES: Record<DiscoveryContext, FeedItem["type"][]> = {
+  home: ["product", "product", "business", "product", "publication", "product", "business", "publication"],
+  category: ["product", "product", "product", "business", "product", "publication", "product", "publication"],
+};
 
 const getBusinessId = (item: FeedItem): string => {
   const data = item.data as { negocioId?: string };
@@ -76,4 +84,69 @@ export const buildForYouFeed = (items: FeedItem[]) => {
   }
 
   return result;
+};
+
+const isLeadCompatible = (candidate: FeedItem, lead: FeedItem[]) => {
+  const recentTypes = lead.slice(-2).map((item) => item.type);
+  const recentBusinesses = lead.slice(-2).map(getBusinessId);
+
+  const repeatsTypeTooMuch =
+    recentTypes.length === 2 && recentTypes.every((type) => type === candidate.type);
+  const repeatsBusinessTooMuch = recentBusinesses.includes(getBusinessId(candidate));
+
+  return !repeatsTypeTooMuch && !repeatsBusinessTooMuch;
+};
+
+const findLeadCandidateIndex = (
+  pool: FeedItem[],
+  lead: FeedItem[],
+  preferredType: FeedItem["type"]
+) => {
+  const candidatesWithinWindow = pool.slice(0, DISCOVERY_LEAD_WINDOW);
+
+  const preferredCompatibleIndex = candidatesWithinWindow.findIndex(
+    (candidate) => candidate.type === preferredType && isLeadCompatible(candidate, lead)
+  );
+  if (preferredCompatibleIndex !== -1) return preferredCompatibleIndex;
+
+  const productFallbackIndex = candidatesWithinWindow.findIndex(
+    (candidate) => candidate.type === "product" && isLeadCompatible(candidate, lead)
+  );
+  if (productFallbackIndex !== -1) return productFallbackIndex;
+
+  const nonServiceCompatibleIndex = candidatesWithinWindow.findIndex(
+    (candidate) => candidate.type !== "service" && isLeadCompatible(candidate, lead)
+  );
+  if (nonServiceCompatibleIndex !== -1) return nonServiceCompatibleIndex;
+
+  const compatibleIndex = candidatesWithinWindow.findIndex((candidate) => isLeadCompatible(candidate, lead));
+  if (compatibleIndex !== -1) return compatibleIndex;
+
+  const preferredAnywhereIndex = pool.findIndex((candidate) => candidate.type === preferredType);
+  if (preferredAnywhereIndex !== -1) return preferredAnywhereIndex;
+
+  const nonServiceAnywhereIndex = pool.findIndex((candidate) => candidate.type !== "service");
+  if (nonServiceAnywhereIndex !== -1) return nonServiceAnywhereIndex;
+
+  return 0;
+};
+
+export const buildDiscoveryFeed = (items: FeedItem[], context: DiscoveryContext) => {
+  const baseFeed = buildForYouFeed(items);
+
+  if (baseFeed.length <= 4) {
+    return baseFeed;
+  }
+
+  const pool = [...baseFeed];
+  const lead: FeedItem[] = [];
+
+  DISCOVERY_LEAD_RECIPES[context].forEach((preferredType) => {
+    if (pool.length === 0) return;
+
+    const selectedIndex = findLeadCandidateIndex(pool, lead, preferredType);
+    lead.push(pool.splice(selectedIndex, 1)[0]);
+  });
+
+  return [...lead, ...pool];
 };

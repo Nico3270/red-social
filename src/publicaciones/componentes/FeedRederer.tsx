@@ -2,21 +2,45 @@
 "use client";
 
 import React, { useState, useMemo, useEffect, useRef, useCallback } from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import Masonry from 'react-masonry-css';
-import { FeedItem, isBusinessItem, isProductItem, isPublicationItem, isServiceItem } from "@/feed/feed.interfaces";
+import { FeedItem, ProductRedSocial, isBusinessItem, isProductItem, isPublicationItem, isServiceItem } from "@/feed/feed.interfaces";
 import { ProductCard } from "@/ui/components/productos/ProductCard";
-import ServicioViewer from "@/servicios/componentes/ServicioViewer";
-import ShowTestimonioPublicacion from "@/publicaciones/componentes/ShowTestimonioPublicacion";
-
-import { BusinessCard } from "@/feed/componentes/BusinessCard";
-import SocialMediaCarousel from "@/publicaciones/componentes/SocialMediaPublicacion";
 import { FaNewspaper, FaShoppingBag, FaTools, FaBuilding, FaCompass } from "react-icons/fa";
 import Image from "next/image";
 import { initialData } from "@/seed/seed";
-import ResenaProductoCard from "@/resenas/componentes/ResenaProductoCard";
+import DiscoveryBusinessCard from "@/feed/componentes/DiscoveryBusinessCard";
+import DiscoveryPublicationCard from "@/feed/componentes/DiscoveryPublicationCard";
+import DiscoveryPulseModule, { DiscoveryPulseTone } from "@/feed/componentes/DiscoveryPulseModule";
+import DiscoveryServiceCard from "@/feed/componentes/DiscoveryServiceCard";
 
 type FeedTab = "Para ti" | "Publicaciones" | "Productos" | "Servicios" | "Negocios";
+type SupportType = "publication" | "business" | "service";
+type SupportFeedItem = FeedItem;
+type ProductFeedItem = FeedItem & { data: ProductRedSocial };
+
+interface SupportPlan {
+  size: number;
+  preferred: SupportType[];
+}
+
+type CadenceSection =
+  | {
+      kind: "products";
+      key: string;
+      emphasis: "lead" | "flow";
+      items: ProductFeedItem[];
+    }
+  | {
+      kind: "pulse";
+      key: string;
+      tone: DiscoveryPulseTone;
+      badge: string;
+      title: string;
+      description: string;
+      items: SupportFeedItem[];
+    };
 
 interface FeedRendererProps {
   items: FeedItem[];
@@ -25,6 +49,11 @@ interface FeedRendererProps {
   sentinelRef: React.RefCallback<HTMLDivElement>;
   activeTab: FeedTab;
   onTabChange: (tab: FeedTab) => void;
+  discoveryContext: "home" | "category";
+  categoriaSlug?: string;
+  categoriaNombre?: string;
+  categoriaIconName?: string;
+  ciudad?: string;
 }
 
 const SkeletonCard = React.memo(() => (
@@ -45,10 +74,180 @@ const PRODUCTOS_NEGOCIOS_BREAKPOINTS = {
 } as const;
 
 const PUBLICACIONES_SERVICIOS_BREAKPOINTS = {
-  default: 3,
+  default: 4,
+  1400: 3,
   1100: 2,
   768: 1,
 } as const;
+
+const MIXED_HOME_BREAKPOINTS = {
+  default: 4,
+  1480: 3,
+  1100: 2,
+  768: 1,
+} as const;
+
+const MIXED_CATEGORY_BREAKPOINTS = {
+  default: 4,
+  1480: 3,
+  1100: 2,
+  768: 1,
+} as const;
+
+const HOME_PRODUCT_PATTERN = [2, 2, 3] as const;
+const CATEGORY_PRODUCT_PATTERN = [3, 2, 3] as const;
+
+const HOME_SUPPORT_PATTERN: readonly SupportPlan[] = [
+  { size: 1, preferred: ["publication", "business", "service"] },
+  { size: 1, preferred: ["business", "publication", "service"] },
+  { size: 2, preferred: ["publication", "business", "service"] },
+] as const;
+
+const CATEGORY_SUPPORT_PATTERN: readonly SupportPlan[] = [
+  { size: 1, preferred: ["publication", "business", "service"] },
+  { size: 1, preferred: ["business", "publication", "service"] },
+] as const;
+
+const SUPPORT_FALLBACK_ORDER: readonly SupportType[] = [
+  "publication",
+  "business",
+  "service",
+] as const;
+
+const takeQueueItems = <T,>(queue: T[], count: number) => queue.splice(0, count);
+
+const hasSupportItems = (queues: Record<SupportType, SupportFeedItem[]>) =>
+  SUPPORT_FALLBACK_ORDER.some((type) => queues[type].length > 0);
+
+const takeSupportItems = (
+  queues: Record<SupportType, SupportFeedItem[]>,
+  plan: SupportPlan,
+) => {
+  const picked: SupportFeedItem[] = [];
+
+  const pullFromType = (type: SupportType) => {
+    const item = queues[type].shift();
+    if (item) {
+      picked.push(item);
+    }
+  };
+
+  plan.preferred.forEach((type) => {
+    if (picked.length >= plan.size) return;
+    pullFromType(type);
+  });
+
+  while (picked.length < plan.size && hasSupportItems(queues)) {
+    const nextType = SUPPORT_FALLBACK_ORDER.find((type) => queues[type].length > 0);
+    if (!nextType) break;
+    pullFromType(nextType);
+  }
+
+  return picked;
+};
+
+const buildPulseMeta = (
+  items: SupportFeedItem[],
+  context: "home" | "category",
+  categoriaNombre?: string,
+) => {
+  const hasPublication = items.some((item) => item.type === "publication");
+  const hasBusiness = items.some((item) => item.type === "business");
+  const hasService = items.some((item) => item.type === "service");
+  const categoryLabel = categoriaNombre || "esta categoría";
+
+  if (context === "home") {
+    if (hasPublication && hasBusiness) {
+      return {
+        tone: "mixed" as const,
+        badge: "Se mueve cerca",
+        title: "Myckeo se siente vivo entre productos",
+        description:
+          "Intercalamos reseñas y negocios activos para que el scroll mantenga contexto local y energía social.",
+      };
+    }
+
+    if (hasPublication) {
+      return {
+        tone: "social" as const,
+        badge: "Pulso local",
+        title: "Lo que la gente está compartiendo",
+        description:
+          "Un respiro social entre productos para que la experiencia se sienta más entretenida y menos catálogo puro.",
+      };
+    }
+
+    if (hasBusiness) {
+      return {
+        tone: "business" as const,
+        badge: "Negocio vivo",
+        title: "Negocios que vale la pena abrir",
+        description:
+          "Perfiles activos para seguir explorando más allá del producto y descubrir quién se está moviendo cerca.",
+      };
+    }
+
+    if (hasService) {
+      return {
+        tone: "service" as const,
+        badge: "A la mano",
+        title: "Servicios que suman utilidad al feed",
+        description:
+          "Entradas más puntuales para resolver necesidades concretas sin quitarle protagonismo al discovery comercial.",
+      };
+    }
+  }
+
+  if (hasPublication && hasBusiness) {
+    return {
+      tone: "mixed" as const,
+      badge: "Pulso de categoría",
+      title: `Lo que se mueve en ${categoryLabel}`,
+      description:
+        "Mantenemos viva la categoría con señales sociales y negocios activos, sin perder foco en producto.",
+    };
+  }
+
+  if (hasPublication) {
+    return {
+      tone: "social" as const,
+      badge: "Prueba social",
+      title: `Lo que recomiendan en ${categoryLabel}`,
+      description:
+        "Una capa breve de reseñas y publicaciones para que la categoría no se sienta seca ni puramente catálogo.",
+    };
+  }
+
+  if (hasBusiness) {
+    return {
+      tone: "business" as const,
+      badge: "Negocios de la categoría",
+      title: `Perfiles activos dentro de ${categoryLabel}`,
+      description:
+        "Negocios compactos que aportan contexto y continuidad al discovery de la categoría.",
+    };
+  }
+
+  return {
+    tone: "service" as const,
+    badge: "Complemento útil",
+    title: `Servicios relacionados con ${categoryLabel}`,
+    description:
+      "Un módulo breve para ampliar el tipo de soluciones visibles sin desviar el foco principal del feed.",
+  };
+};
+
+const getProductClusterGridClass = (count: number) => {
+  if (count >= 4) {
+    return "grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4";
+  }
+
+  if (count === 3) {
+    return "grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3";
+  }
+
+  return "grid grid-cols-1 gap-3 md:grid-cols-2";
+};
 
 const FeedRenderer: React.FC<FeedRendererProps> = ({
   items,
@@ -56,14 +255,21 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
   isLoadingNext,
   sentinelRef,
   activeTab,
-  onTabChange
+  onTabChange,
+  discoveryContext,
+  categoriaSlug,
+  categoriaNombre,
+  categoriaIconName,
+  ciudad,
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
   const [isLayoutReady, setIsLayoutReady] = useState(false);
+  const isCategoryFeed = discoveryContext === "category";
 
   const masonryWrapperRef = useRef<HTMLDivElement | null>(null);
   const resizeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const leadProductCount = isCategoryFeed ? 4 : 3;
 
   useEffect(() => setMounted(true), []);
 
@@ -127,6 +333,86 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
   }, [itemsPorTab, activeTab, selectedCategory]);
 
   const itemsHash = useMemo(() => filteredItems.map(item => `${item.type}-${item.id}`).join(','), [filteredItems]);
+  const cadenceSections = useMemo<CadenceSection[]>(() => {
+    if (activeTab !== "Para ti") return [];
+
+    const productQueue = filteredItems.filter(isProductItem);
+    const supportQueues: Record<SupportType, SupportFeedItem[]> = {
+      publication: filteredItems.filter(
+        (item): item is SupportFeedItem => isPublicationItem(item),
+      ),
+      business: filteredItems.filter(
+        (item): item is SupportFeedItem => isBusinessItem(item),
+      ),
+      service: filteredItems.filter(
+        (item): item is SupportFeedItem => isServiceItem(item),
+      ),
+    };
+
+    const productPattern = isCategoryFeed
+      ? CATEGORY_PRODUCT_PATTERN
+      : HOME_PRODUCT_PATTERN;
+    const supportPattern = isCategoryFeed
+      ? CATEGORY_SUPPORT_PATTERN
+      : HOME_SUPPORT_PATTERN;
+    const sections: CadenceSection[] = [];
+
+    const leadItems = takeQueueItems(productQueue, leadProductCount);
+    if (leadItems.length > 0) {
+      sections.push({
+        kind: "products",
+        key: "products-lead",
+        emphasis: "lead",
+        items: leadItems,
+      });
+    }
+
+    let productPatternIndex = 0;
+    let supportPatternIndex = 0;
+
+    while (productQueue.length > 0 || hasSupportItems(supportQueues)) {
+      const productCount = productPattern[productPatternIndex % productPattern.length];
+      const productItems = takeQueueItems(productQueue, productCount);
+
+      if (productItems.length > 0) {
+        sections.push({
+          kind: "products",
+          key: `products-${sections.length}`,
+          emphasis: "flow",
+          items: productItems,
+        });
+        productPatternIndex += 1;
+      }
+
+      if (!hasSupportItems(supportQueues)) {
+        if (productItems.length === 0) break;
+        continue;
+      }
+
+      if (productItems.length === 0 && productQueue.length > 0) {
+        continue;
+      }
+
+      const supportPlan = supportPattern[supportPatternIndex % supportPattern.length];
+      const supportItems = takeSupportItems(supportQueues, supportPlan);
+
+      if (supportItems.length > 0) {
+        sections.push({
+          kind: "pulse",
+          key: `pulse-${sections.length}`,
+          ...buildPulseMeta(supportItems, discoveryContext, categoriaNombre),
+          items: supportItems,
+        });
+        supportPatternIndex += 1;
+      }
+
+      if (productItems.length === 0 && !hasSupportItems(supportQueues)) {
+        break;
+      }
+    }
+
+    return sections;
+  }, [activeTab, categoriaNombre, discoveryContext, filteredItems, isCategoryFeed, leadProductCount]);
 
   // Efecto principal para manejar cambios de tab y relayout
   useEffect(() => {
@@ -150,6 +436,7 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
 
   // Efecto específico para manejar imágenes
   useEffect(() => {
+    if (activeTab === "Para ti") return;
     if (!masonryWrapperRef.current || !isLayoutReady) return;
 
     let loaded = 0;
@@ -191,7 +478,7 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
         img.removeEventListener("error", checkAllLoaded);
       });
     };
-  }, [filteredItems, activeTab, isLayoutReady, forceRelayout]);
+  }, [activeTab, filteredItems, isLayoutReady, forceRelayout]);
 
   // Cleanup de timeouts
   useEffect(() => {
@@ -202,13 +489,25 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
     };
   }, []);
 
-  const tabs = [
-    { label: "Para ti" as const, icon: <FaCompass className="text-sky-600" /> },
-    { label: "Publicaciones" as const, icon: <FaNewspaper className="text-blue-600" /> },
-    { label: "Productos" as const, icon: <FaShoppingBag className="text-green-600" /> },
-    { label: "Servicios" as const, icon: <FaTools className="text-orange-600" /> },
-    { label: "Negocios" as const, icon: <FaBuilding className="text-purple-600" /> },
-  ];
+  const tabs = useMemo(() => {
+    if (isCategoryFeed) {
+      return [
+        { label: "Productos" as const, icon: <FaShoppingBag className="text-green-600" /> },
+        { label: "Para ti" as const, icon: <FaCompass className="text-sky-600" /> },
+        { label: "Negocios" as const, icon: <FaBuilding className="text-purple-600" /> },
+        { label: "Publicaciones" as const, icon: <FaNewspaper className="text-blue-600" /> },
+        { label: "Servicios" as const, icon: <FaTools className="text-orange-600" /> },
+      ];
+    }
+
+    return [
+      { label: "Para ti" as const, icon: <FaCompass className="text-sky-600" /> },
+      { label: "Productos" as const, icon: <FaShoppingBag className="text-green-600" /> },
+      { label: "Negocios" as const, icon: <FaBuilding className="text-purple-600" /> },
+      { label: "Publicaciones" as const, icon: <FaNewspaper className="text-blue-600" /> },
+      { label: "Servicios" as const, icon: <FaTools className="text-orange-600" /> },
+    ];
+  }, [isCategoryFeed]);
 
   const todasCategorias = useMemo(() => initialData.categorias.filter(cat => cat.isActive), []);
 
@@ -233,36 +532,113 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
   }, [itemsPorTab, todasCategorias, activeTab]);
 
   const breakpointCols = useMemo(() => {
-    return (activeTab === "Productos" || activeTab === "Negocios")
-      ? PRODUCTOS_NEGOCIOS_BREAKPOINTS
-      : PUBLICACIONES_SERVICIOS_BREAKPOINTS;
-  }, [activeTab]);
+    if (activeTab === "Productos" || activeTab === "Negocios") {
+      return PRODUCTOS_NEGOCIOS_BREAKPOINTS;
+    }
 
-  const renderItem = (item: FeedItem, index: number) => {
+    if (activeTab === "Para ti") {
+      return isCategoryFeed ? MIXED_CATEGORY_BREAKPOINTS : MIXED_HOME_BREAKPOINTS;
+    }
+
+    return PUBLICACIONES_SERVICIOS_BREAKPOINTS;
+  }, [activeTab, isCategoryFeed]);
+
+  const renderCardContent = (item: FeedItem) => {
     if (!item) return null;
 
-    return (
-      <motion.div
-        key={`${item.type}-${item.id}`}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, delay: index * 0.05, ease: "easeOut" }}
-        className="motion-transition mb-3 rounded-xl bg-white shadow-sm hover:shadow-md transition-shadow duration-200"
-      >
-        {isProductItem(item) && <ProductCard product={item.data} />}
-        {isServiceItem(item) && <ServicioViewer version={2} servicio={item.data} />}
-        {isBusinessItem(item) && <BusinessCard business={item.data} />}
-        {isPublicationItem(item) && item.data.tipo === 'TESTIMONIO' && item.data.producto && (
-          <ResenaProductoCard publicacion={item.data} />
-        )}
-        {isPublicationItem(item) && item.data.tipo === 'TESTIMONIO' && !item.data.producto && (
-          <ShowTestimonioPublicacion publicacion={item.data} />
-        )}
-        {isPublicationItem(item) && item.data.tipo === 'CARRUSEL_IMAGENES' && (
-          <SocialMediaCarousel publicacion={item.data} />
-        )}
-      </motion.div>
-    );
+    if (isProductItem(item)) return <ProductCard product={item.data} />;
+    if (isServiceItem(item)) return <DiscoveryServiceCard servicio={item.data} />;
+    if (isBusinessItem(item)) return <DiscoveryBusinessCard business={item.data} />;
+    if (isPublicationItem(item)) return <DiscoveryPublicationCard publicacion={item.data} />;
+
+    return null;
+  };
+
+  const renderCadenceFeed = () => {
+    if (activeTab !== "Para ti" || cadenceSections.length === 0) return null;
+
+    return cadenceSections.map((section, sectionIndex) => {
+      if (section.kind === "products") {
+        const sectionTitle =
+          section.emphasis === "lead"
+            ? isCategoryFeed
+              ? `Productos para empezar en ${categoriaNombre || "esta categoría"}`
+              : "Productos para empezar"
+            : null;
+        const sectionDescription =
+          section.emphasis === "lead"
+            ? isCategoryFeed
+              ? "Abrimos con producto para que la categoría se sienta enfocada, y luego dejamos entrar ritmo social de forma dosificada."
+              : "Abrimos con producto para que el discovery siga siendo comercial, pero luego el feed gane respiración con señales de negocio vivo."
+            : null;
+
+        return (
+          <section
+            key={section.key}
+            className={section.emphasis === "lead" ? "mb-6" : "mb-5"}
+          >
+            {sectionTitle && (
+              <div className="mb-3 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                  <h2 className="text-base font-semibold text-slate-900 sm:text-lg">
+                    {sectionTitle}
+                  </h2>
+                  <p className="text-sm text-slate-600">{sectionDescription}</p>
+                </div>
+                <span className="text-xs font-medium uppercase tracking-[0.14em] text-slate-400">
+                  Discovery principal
+                </span>
+              </div>
+            )}
+
+            <div className={getProductClusterGridClass(section.items.length)}>
+              {section.items.map((item, itemIndex) => (
+                <motion.div
+                  key={item.id}
+                  initial={{ opacity: 0, y: 18 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{
+                    duration: 0.25,
+                    delay: Math.min((sectionIndex + itemIndex) * 0.03, 0.18),
+                    ease: "easeOut",
+                  }}
+                  className="h-full"
+                >
+                  {renderCardContent(item)}
+                </motion.div>
+              ))}
+            </div>
+          </section>
+        );
+      }
+
+      return (
+        <DiscoveryPulseModule
+          key={section.key}
+          badge={section.badge}
+          title={section.title}
+          description={section.description}
+          tone={section.tone}
+          city={ciudad}
+          itemCount={section.items.length}
+        >
+          {section.items.map((item, itemIndex) => (
+            <motion.div
+              key={`${section.key}-${item.id}`}
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.22,
+                delay: Math.min((sectionIndex + itemIndex) * 0.025, 0.16),
+                ease: "easeOut",
+              }}
+            >
+              {renderCardContent(item)}
+            </motion.div>
+          ))}
+        </DiscoveryPulseModule>
+      );
+    });
   };
 
   useEffect(() => {
@@ -277,8 +653,88 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
     "Negocios": "/imgs/no_negocios.png",
   };
 
+  const renderDiscoveryIntro = () => {
+    if (isCategoryFeed) {
+      return (
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.25 }}
+          className="mb-3 rounded-2xl border border-slate-200 bg-white/95 px-4 py-4 shadow-sm"
+        >
+          <div className="flex items-start gap-3">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-sky-50">
+              <Image
+                src={categoriaIconName ? `/imgs/iconos/${categoriaIconName}` : "/imgs/iconos/placeholder.png"}
+                alt={categoriaNombre || categoriaSlug || "Categoría"}
+                width={28}
+                height={28}
+                className="h-7 w-7 object-contain"
+              />
+            </div>
+
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="rounded-full bg-sky-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-sky-700">
+                  Categoría
+                </span>
+                {ciudad && (
+                  <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">
+                    {ciudad}
+                  </span>
+                )}
+              </div>
+
+              <h1 className="mt-2 text-lg font-semibold text-slate-900 sm:text-xl">
+                {categoriaNombre || "Explora esta categoría"}
+              </h1>
+              <p className="mt-1 text-sm leading-6 text-slate-600">
+                Empezamos por productos para que el discovery sea más claro y dejamos la mezcla de
+                negocios y publicaciones disponible en <span className="font-medium text-slate-700">Para ti</span>.
+              </p>
+            </div>
+
+            <Link
+              href="/"
+              className="hidden rounded-full border border-slate-200 px-3 py-1.5 text-sm font-medium text-slate-600 transition-colors hover:border-sky-200 hover:text-sky-700 sm:inline-flex"
+            >
+              Volver a explorar
+            </Link>
+          </div>
+        </motion.div>
+      );
+    }
+
+    if (activeTab !== "Para ti") return null;
+
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: -8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.25 }}
+        className="mb-3 rounded-2xl border border-slate-200 bg-white/95 px-4 py-4 shadow-sm"
+      >
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="inline-flex items-center gap-2 rounded-full bg-sky-50 px-3 py-1 text-xs font-semibold text-sky-700">
+            <FaCompass className="text-[11px]" />
+            Descubre primero
+          </div>
+          {ciudad && (
+            <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">
+              {ciudad}
+            </span>
+          )}
+        </div>
+        <p className="mt-2 text-sm leading-6 text-slate-600">
+          Este tramo prioriza productos para que encuentres opciones rápido. Luego entran negocios y
+          publicaciones para darte contexto social sin romper el ritmo de compra.
+        </p>
+      </motion.div>
+    );
+  };
+
   const renderCategoryFilter = () => {
-    if (activeTab === "Publicaciones" || activeTab === "Para ti" || categoriasDisponibles.length === 0) return null;
+    if (isCategoryFeed || activeTab === "Publicaciones" || activeTab === "Para ti" || categoriasDisponibles.length === 0) return null;
 
     return (
       <motion.div
@@ -329,14 +785,14 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
   };
 
   return (
-    <div className="w-full mx-auto px-1 sm:px-2 lg:px-6 xl:px-12 py-0 min-h-screen overflow-y-auto bg-gray-50">
+    <div className="min-h-screen w-full bg-gray-50 px-1 py-2 sm:px-2 sm:py-4 lg:px-6 xl:px-12">
+      {renderDiscoveryIntro()}
+
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
-        className="flex justify-between lg:justify-around w-full px-2 mx-auto my-2 sm:mt-8 
-             bg-white/80 backdrop-blur-md rounded-2xl shadow-sm border-b-2 border-gray-200 
-             overflow-x-auto lg:overflow-visible sticky top-0 z-10"
+        className="mx-auto mb-4 mt-2 flex w-full overflow-x-auto rounded-2xl border border-gray-200 bg-white/90 px-2 shadow-sm lg:justify-around lg:overflow-visible"
       >
         {tabs.map((tab) => (
           <button
@@ -357,24 +813,6 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
           </button>
         ))}
       </motion.div>
-
-      {activeTab === "Para ti" && (
-        <motion.div
-          initial={{ opacity: 0, y: -8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.25 }}
-          className="rounded-2xl border border-slate-200 bg-white/95 px-4 py-4 shadow-sm"
-        >
-          <div className=" inline-flex items-center  rounded-full bg-sky-50 px-3 py-1 text-xs font-semibold text-sky-700">
-            <FaCompass className="text-[11px]" />
-            Feed Inteligente
-          </div>
-          {/* <p className="text-sm leading-6 text-slate-600">
-            Mezclamos publicaciones, productos, servicios y negocios priorizando cercania,
-            cuentas que sigues, contenido con mejor respuesta y variedad real entre negocios.
-          </p> */}
-        </motion.div>
-      )}
 
       {renderCategoryFilter()}
 
@@ -412,16 +850,32 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
             
           </div>
         ) : (
-          <div ref={masonryWrapperRef} className="w-full">
-            <Masonry
-              key={`${activeTab}-${itemsHash}-${isLayoutReady ? 'ready' : 'loading'}`}
-              breakpointCols={breakpointCols}
-              className="masonry-container flex w-auto -ml-0 lg:-ml-2"
-              columnClassName="masonry-column pl-0 md:px-2 bg-clip-padding"
-            >
-              {filteredItems.map((item, index) => renderItem(item, index))}
-            </Masonry>
-          </div>
+          <>
+            {activeTab === "Para ti" ? (
+              renderCadenceFeed()
+            ) : (
+              <div ref={masonryWrapperRef} className="w-full">
+                <Masonry
+                  key={`${activeTab}-${itemsHash}-${isLayoutReady ? 'ready' : 'loading'}`}
+                  breakpointCols={breakpointCols}
+                  className="masonry-container flex w-auto -ml-0 lg:-ml-2"
+                  columnClassName="masonry-column pl-0 md:px-2 bg-clip-padding"
+                >
+                  {filteredItems.map((item, index) => (
+                    <motion.div
+                      key={`${item.type}-${item.id}`}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3, delay: index * 0.05, ease: "easeOut" }}
+                      className={`motion-transition ${isProductItem(item) ? "mb-4" : "mb-3"} transition-transform duration-200`}
+                    >
+                      {renderCardContent(item)}
+                    </motion.div>
+                  ))}
+                </Masonry>
+              </div>
+            )}
+          </>
         )}
       </motion.div>
 

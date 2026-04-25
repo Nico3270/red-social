@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { FaMapMarkerAlt, FaWhatsapp } from "react-icons/fa";
 import { SideBar } from "../side-bar/SideBar";
 import { MenuSectionsBar } from "../menu-section-bar/MenuSectionBar";
@@ -195,11 +196,13 @@ export const TopMenu = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isCrearModalOpen, setIsCrearModalOpen] = useState(false);
   const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
+  const pathname = usePathname();
   const totalItemsInCart = useCartCatalogoStore((state) => state.getTotalItems());
   const totalFavorites = useFavoritesCatalogoStore((state) => state.getTotalItems());
   const { data: session } = useSession();
   const isNegocio = session?.user?.role === "negocio";
   const { ciudad, userLat, userLong } = usePreferencesStore();
+  const isDiscoveryPage = pathname === "/" || pathname?.startsWith("/category/");
 
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
@@ -212,8 +215,16 @@ export const TopMenu = () => {
   };
 
   return (
-    <header className="fixed top-0 w-full z-50 bg-white shadow-md border-b">
-      <div className="max-w-7xl mx-auto px-4 flex justify-between items-center h-20">
+    <header
+      className={`top-0 w-full border-b bg-white/95 shadow-md backdrop-blur ${
+        isDiscoveryPage ? "sticky z-40" : "fixed z-50"
+      }`}
+    >
+      <div
+        className={`mx-auto flex max-w-7xl items-center justify-between px-4 ${
+          isDiscoveryPage ? "h-16 gap-3" : "h-20"
+        }`}
+      >
         {/* Logo a la izquierda */}
         <Link href="/" className="flex items-center space-x-1">
           <Image
@@ -233,13 +244,19 @@ export const TopMenu = () => {
         </Link>
 
         {/* Barra de búsqueda centrada con botón de ubicación al lado */}
-        <div className="flex items-center w-full max-w-md mx-4">
+        <div
+          className={`flex w-full items-center ${
+            isDiscoveryPage ? "mx-3 max-w-xl" : "mx-4 max-w-md"
+          }`}
+        >
           <div className="relative flex-1">
-            <SearchBar />
+            <SearchBar compact={isDiscoveryPage} />
           </div>
           <button
             onClick={() => setIsLocationModalOpen(true)}
-            className="ml-4 flex items-center bg-white rounded-full shadow-md border border-gray-300 px-4 py-2 text-gray-800 hover:bg-gray-100 transition-colors"
+            className={`ml-3 flex items-center rounded-full border border-gray-300 bg-white text-gray-800 shadow-md transition-colors hover:bg-gray-100 ${
+              isDiscoveryPage ? "px-3 py-1.5 text-sm" : "px-4 py-2"
+            }`}
           >
             <FaMapMarkerAlt className={`mr-2 ${showGpsIcon ? 'text-green-600' : 'text-gray-500'}`} />
             <span className="font-medium truncate max-w-[120px]">{ciudad || 'Seleccionar Ciudad'}</span>
@@ -439,7 +456,7 @@ export const TopMenu = () => {
 
       {/* Drawer lateral */}
       <SideBar open={isDrawerOpen} toggleDrawer={setIsDrawerOpen} />
-      <MenuSectionsBar />
+      <MenuSectionsBar compact={isDiscoveryPage} />
       <CrearModal isOpen={isCrearModalOpen} onClose={() => setIsCrearModalOpen(false)} />
       <UpdateLocationModal isOpen={isLocationModalOpen} onClose={() => setIsLocationModalOpen(false)} />
     </header>

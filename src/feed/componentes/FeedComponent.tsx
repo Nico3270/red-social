@@ -15,7 +15,7 @@ import FeedRenderer from "@/publicaciones/componentes/FeedRederer";
 import { CircularProgress } from "@mui/material";
 import { useUserLocation } from "@/hooks/useUserLocation"; // ← NUEVO: Hook de ubicación
 import { buildSeenFeedId, extractSeenRawIds } from "../feed-ids";
-import { buildForYouFeed, dedupeFeedItems } from "../feedForYou";
+import { buildDiscoveryFeed, dedupeFeedItems } from "../feedForYou";
 
 // EXTENSIÓN: Agrega categoriaSlug a params (para temático futuro)
 interface ExtendedFeedQueryParams extends FeedQueryParams {
@@ -29,6 +29,8 @@ interface ExtendedFeedQueryParams extends FeedQueryParams {
 interface FeedComponentProps {
   categoriaSlug?: string;
   categoriaNombre?: string;
+  categoriaIconName?: string;
+  discoveryContext?: "home" | "category";
 }
 
 type BackendExtendedParams = ExtendedFeedQueryParams & {
@@ -38,7 +40,15 @@ type BackendExtendedParams = ExtendedFeedQueryParams & {
 
 type FeedTab = "Para ti" | "Publicaciones" | "Productos" | "Servicios" | "Negocios";
 
-export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedComponentProps = {}) {
+const getDefaultTabForContext = (context: "home" | "category"): FeedTab =>
+  context === "category" ? "Productos" : "Para ti";
+
+export default function FeedComponent({
+  categoriaSlug,
+  categoriaNombre,
+  categoriaIconName,
+  discoveryContext,
+}: FeedComponentProps = {}) {
   const { data: session } = useSession();
   const {
     ciudad,
@@ -52,7 +62,8 @@ export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedCo
     resetSeenIds,
   } = usePreferencesStore();
   const [followedBusinessIds, setFollowedBusinessIds] = useState<string[]>([]);
-  const [activeTab, setActiveTab] = useState<FeedTab>("Para ti");
+  const resolvedDiscoveryContext = discoveryContext ?? (categoriaSlug ? "category" : "home");
+  const [activeTab, setActiveTab] = useState<FeedTab>(() => getDefaultTabForContext(resolvedDiscoveryContext));
   const [feedCycle, setFeedCycle] = useState(0);
   const recycledFeedKeysRef = useRef<Set<string>>(new Set());
 
@@ -111,6 +122,10 @@ export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedCo
       toast.info('Configura tu ciudad en preferencias para ver feeds locales.');
     }
   }, [ciudad, params]);
+
+  useEffect(() => {
+    setActiveTab(getDefaultTabForContext(resolvedDiscoveryContext));
+  }, [categoriaSlug, resolvedDiscoveryContext]);
 
   // Helpers (sin cambios)
   const getQueryKey = useCallback((type: string) => ([
@@ -324,11 +339,11 @@ export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedCo
         ...getItemsForQuery("Negocios"),
       ];
 
-      return buildForYouFeed(allItems);
+      return buildDiscoveryFeed(allItems, resolvedDiscoveryContext);
     }
 
     return getItemsForQuery(tab);
-  }, [getItemsForQuery]);
+  }, [getItemsForQuery, resolvedDiscoveryContext]);
 
   const markAsSeen = useCallback(() => {
     const currentItems = getItemsForTab(activeTab);
@@ -471,6 +486,11 @@ export default function FeedComponent({ categoriaSlug, categoriaNombre }: FeedCo
         sentinelRef={sentinelRef}
         activeTab={activeTab}
         onTabChange={setActiveTab}
+        discoveryContext={resolvedDiscoveryContext}
+        categoriaSlug={categoriaSlug}
+        categoriaNombre={categoriaNombre}
+        categoriaIconName={categoriaIconName}
+        ciudad={ciudad}
       />
     </div>
   );

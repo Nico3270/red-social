@@ -2,16 +2,50 @@
 
 import React, { useRef, useState, useEffect } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { motion } from "framer-motion"; // 🔥 Para animaciones
 import { initialData } from "@/seed/seed";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa"; // Icons elegantes para botones
 import { titleFont } from "@/config/fonts";
 
-export const MenuSectionsBar = () => {
+interface MenuSectionsBarProps {
+  compact?: boolean;
+}
+
+export const MenuSectionsBar = ({ compact = false }: MenuSectionsBarProps) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [isClient, setIsClient] = useState(false);
   const [showLeftButton, setShowLeftButton] = useState(false);
   const [showRightButton, setShowRightButton] = useState(false);
+  const pathname = usePathname();
+
+  const activeCategorySlug = pathname?.startsWith("/category/")
+    ? pathname.split("/")[2] ?? null
+    : null;
+  const isHomeDiscoveryPage = pathname === "/";
+  const shouldShowDiscoveryEntry = compact && (isHomeDiscoveryPage || Boolean(activeCategorySlug));
+  const navigationEntries = [
+    ...(shouldShowDiscoveryEntry
+      ? [
+          {
+            id: "discovery-home",
+            nombre: "Explorar",
+            iconName: "home.png",
+            href: "/",
+            isActive: isHomeDiscoveryPage,
+          },
+        ]
+      : []),
+    ...initialData.categorias
+      .filter((category) => category.isActive)
+      .map((category) => ({
+        id: category.id,
+        nombre: category.nombre,
+        iconName: category.iconName,
+        href: `/category/${category.slug}`,
+        isActive: activeCategorySlug === category.slug,
+      })),
+  ];
 
   useEffect(() => {
     setIsClient(true);
@@ -55,7 +89,9 @@ export const MenuSectionsBar = () => {
     <div className="relative w-full color-fondo-principal">
       <div
         ref={scrollContainerRef}
-        className="flex flex-nowrap overflow-x-auto gap-2 pt-2 pb-0 sm:pb-2 rounded-lg color-principal scrollbar-hide"
+        className={`flex flex-nowrap overflow-x-auto rounded-lg color-principal scrollbar-hide ${
+          compact ? "gap-1.5 px-2 pt-1 pb-1.5 sm:pb-1.5" : "gap-2 pt-2 pb-0 sm:pb-2"
+        }`}
         style={{ scrollBehavior: "smooth" }}
       >
         {initialData.categorias.length === 0
@@ -68,24 +104,36 @@ export const MenuSectionsBar = () => {
                 <div className="mt-2 h-3 w-8 bg-gray-300 rounded"></div>
               </div>
             ))
-          : initialData.categorias.map((section) => (
-              <Link key={section.id} href={`/category/${section.slug}`}>
-                <div className="flex flex-col items-center text-center min-w-[80px] sm:min-w-[90px] flex-shrink-0 cursor-pointer">
+          : navigationEntries.map((section) => (
+              <Link key={section.id} href={section.href}>
+                <div
+                  className={`flex flex-col items-center rounded-2xl border text-center transition-colors ${
+                    compact
+                      ? "min-w-[78px] px-2 py-2 sm:min-w-[88px]"
+                      : "min-w-[80px] px-2 py-1 sm:min-w-[90px]"
+                  } ${
+                    section.isActive
+                      ? "border-sky-200 bg-sky-50 shadow-sm"
+                      : "border-transparent hover:border-slate-200 hover:bg-white/70"
+                  }`}
+                >
                   <motion.img
                     src={`/imgs/iconos/${section.iconName}`}
                     alt={section.nombre}
-                    className="w-8 h-8 md:w-12 md:h-12 object-contain"
+                    className={compact ? "h-7 w-7 object-contain md:h-9 md:w-9" : "w-8 h-8 md:w-12 md:h-12 object-contain"}
                     whileHover={{ scale: 1.15, rotate: 5 }}
                     whileTap={{ scale: 0.9 }}
                     transition={{ type: "spring", stiffness: 300, damping: 15 }}
                   />
                   <span
-                    className={`text-xs md:text-xs mt-1 text-center leading-tight color-iconos ${titleFont.className}`}
+                    className={`mt-1 text-center leading-tight ${titleFont.className} ${
+                      section.isActive ? "text-sky-700" : "color-iconos"
+                    } ${compact ? "text-[11px] md:text-xs" : "text-xs md:text-xs"}`}
                     style={{
                       wordBreak: "break-word",
                       whiteSpace: "normal",
                       textWrap: "balance",
-                      minHeight: "32px",
+                      minHeight: compact ? "28px" : "32px",
                     }}
                   >
                     {section.nombre}

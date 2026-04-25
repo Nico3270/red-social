@@ -241,6 +241,7 @@ export const TopMenuMobile = () => {
   const isNegocio = session?.user?.role === "negocio";
   const { ciudad, userLat, userLong } = usePreferencesStore();
   const isBusinessProfilePage = pathname?.startsWith("/perfil/");
+  const isDiscoveryPage = !isBusinessProfilePage && (pathname === "/" || pathname?.startsWith("/category/"));
 
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
@@ -254,8 +255,8 @@ export const TopMenuMobile = () => {
   return (
     <div className="pb-0 sm:pb-10">
       {/* Barra superior fija */}
-      <header className="fixed top-0 w-full z-50 bg-white shadow-md border-b">
-        <div className="flex items-center justify-between px-4 h-16">
+      <header className="fixed top-0 z-50 w-full border-b bg-white/95 shadow-md backdrop-blur">
+        <div className={`flex items-center justify-between px-3 ${isDiscoveryPage ? "h-14" : "h-16"}`}>
           <Link href="/" className="flex items-center">
             <Image
               src="/imgs/Logo Final (1).png"
@@ -267,13 +268,15 @@ export const TopMenuMobile = () => {
             />
           </Link>
 
-          <div className="flex items-center flex-1 mx-4 gap-2">
+          <div className={`mx-3 flex flex-1 items-center ${isDiscoveryPage ? "gap-1.5" : "gap-2"}`}>
             <div className="flex-1">
-              <SearchBar />
+              <SearchBar compact={isDiscoveryPage} />
             </div>
             <button
               onClick={() => setIsLocationModalOpen(true)}
-              className="flex items-center bg-white rounded-full shadow-md border border-gray-300 px-3 py-1.5 text-sm text-gray-800 hover:bg-gray-50 transition"
+              className={`flex items-center rounded-full border border-gray-300 bg-white text-gray-800 shadow-md transition hover:bg-gray-50 ${
+                isDiscoveryPage ? "px-2.5 py-1.5 text-xs" : "px-3 py-1.5 text-sm"
+              }`}
             >
               <FaMapMarkerAlt className={`mr-1 ${showGpsIcon ? "text-green-600" : "text-gray-500"}`} />
               <span className="truncate max-w-20">{ciudad || "Ciudad"}</span>
@@ -286,8 +289,8 @@ export const TopMenuMobile = () => {
       {isBusinessProfilePage ? (
         <div className="h-16" />
       ) : (
-        <div className="mt-16">
-          <MenuSectionsBar />
+        <div className={isDiscoveryPage ? "mt-14" : "mt-16"}>
+          <MenuSectionsBar compact={isDiscoveryPage} />
         </div>
       )}
 
