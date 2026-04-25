@@ -69,6 +69,10 @@ export interface BusinessGuideBusinessInfo {
   descripcionNegocio: string;
   categoriaIds: string[];
   seccionesIds: string[];
+  telefonoNegocio?: string;
+  telefonoContacto?: string;
+  configReservation?: boolean;
+  configEncuestas?: boolean;
 }
 
 export interface BusinessGuidePreset {

@@ -5,6 +5,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   FaMapMarkerAlt,
   FaLink,
+  FaChevronDown,
   FaInstagram,
   FaFacebook,
   FaTiktok,
@@ -16,9 +17,9 @@ import {
   FaCalendarCheck,
   FaRegCommentDots,
   FaPencilAlt,
-  FaTimes,
   FaHome,
   FaStar,
+  FaInfoCircle,
 } from "react-icons/fa";
 import { Button } from "../button/Button";
 import clsx from "clsx";
@@ -33,7 +34,7 @@ import ServicioViewer from "@/servicios/componentes/ServicioViewer";
 import ResenaProductoCard from "@/resenas/componentes/ResenaProductoCard";
 import type { ServicioData } from "@/servicios/interfaces/servicios.interface";
 import { useSession } from "next-auth/react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { FollowButton } from "@/feed/componentes/FollowButton";
 import type { EnhancedPublicacion } from "@/publicaciones/interfaces/enhancedPublicacion.interface";
 import type { ResumenPerfil } from "@/perfil/interfaces/resumenPerfil.interface";
@@ -288,7 +289,7 @@ export default function PerfilUsuarioHeader({
   const [activeTab, setActiveTab] = useState<ProfileTab>(requestedTab);
   const [servicios, setServicios] = useState<ServicioData[]>([]);
   const [loadingServicios, setLoadingServicios] = useState(false);
-  const [isDescriptionModalOpen, setIsDescriptionModalOpen] = useState(false);
+  const [isInfoPanelOpen, setIsInfoPanelOpen] = useState(false);
   const [productGuideContext, setProductGuideContext] = useState<ProductGuideExploreContext | null>(null);
   const [selectedGroupIdFromNav, setSelectedGroupIdFromNav] = useState<string | null>(resolvedGroupId);
   const previousTabRef = useRef<string>(requestedTab === "Productos" ? "direct" : requestedTab);
@@ -485,24 +486,6 @@ export default function PerfilUsuarioHeader({
       selectedGroupNodeFromNav?.slug,
     ]
   );
-
-  useEffect(() => {
-    if (isDescriptionModalOpen) {
-      const modalElement = document.querySelector('[role="dialog"]');
-      if (modalElement) {
-        (modalElement as HTMLElement).focus();
-      }
-    }
-
-    const handleEsc = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && isDescriptionModalOpen) {
-        setIsDescriptionModalOpen(false);
-      }
-    };
-
-    window.addEventListener("keydown", handleEsc);
-    return () => window.removeEventListener("keydown", handleEsc);
-  }, [isDescriptionModalOpen]);
 
   useEffect(() => {
     if (
@@ -718,6 +701,35 @@ export default function PerfilUsuarioHeader({
     Negocio: "text-emerald-600",
     Reseñas: "text-violet-600",
   };
+  const tabActiveSurfaceStyles: Record<ProfileTab, string> = {
+    Inicio: "bg-slate-100 text-slate-900 shadow-sm ring-1 ring-slate-200",
+    Publicaciones: "bg-sky-50 text-slate-900 shadow-sm ring-1 ring-sky-100",
+    Productos: "bg-amber-50 text-slate-900 shadow-sm ring-1 ring-amber-100",
+    Negocio: "bg-emerald-50 text-slate-900 shadow-sm ring-1 ring-emerald-100",
+    Reseñas: "bg-violet-50 text-slate-900 shadow-sm ring-1 ring-violet-100",
+  };
+  const tabContextCopy: Record<ProfileTab, { description: string; dotClassName: string }> = {
+    Inicio: {
+      description: "Empieza por una ruta rápida y entra al contenido principal sin perder contexto.",
+      dotClassName: "bg-slate-400",
+    },
+    Publicaciones: {
+      description: "Novedades, promociones y señales de actividad reciente del negocio.",
+      dotClassName: "bg-sky-500",
+    },
+    Productos: {
+      description: "Catálogo activo del negocio, listo para explorar, elegir y comprar.",
+      dotClassName: "bg-amber-500",
+    },
+    Negocio: {
+      description: "Servicios y oferta complementaria para entender mejor todo lo que ofrece.",
+      dotClassName: "bg-emerald-500",
+    },
+    Reseñas: {
+      description: "Opiniones y experiencias que ayudan a decidir con más confianza.",
+      dotClassName: "bg-violet-500",
+    },
+  };
 
   const tabs = [
     { name: "Inicio", isActive: true },
@@ -732,13 +744,24 @@ export default function PerfilUsuarioHeader({
       setActiveTab(tabs[0]?.name ?? "Inicio");
     }
   }, [activeTab, tabs]);
-  const businessDescription =
-    informacionNegocio?.descripcionNegocio?.trim() ||
-    "Explora nuestros productos y servicios, diseñados para ofrecerte la mejor experiencia.";
-  const hasExpandableDescription = (informacionNegocio?.descripcionNegocio?.trim().length ?? 0) > 120;
+  const rawBusinessDescription = informacionNegocio?.descripcionNegocio?.trim() ?? "";
+  const compactDescriptionPreview =
+    rawBusinessDescription.length > 118
+      ? `${rawBusinessDescription.slice(0, 118).trim()}…`
+      : rawBusinessDescription;
   const websiteHref = buildExternalHref(informacionNegocio?.sitioWeb);
   const negocioSlug = informacionNegocio?.slugNegocio ?? "";
+  const mapsHref = buildExternalHref(informacionNegocio?.urlGoogleMaps);
   const compactWebsiteLabel = getCompactWebsiteLabel(informacionNegocio?.sitioWeb);
+  const compactLocationLabel = [informacionNegocio?.ciudadNegocio, informacionNegocio?.departamentoNegocio]
+    .filter(Boolean)
+    .join(", ");
+  const fullLocationLabel = [
+    compactLocationLabel,
+    informacionNegocio?.direccionNegocio?.trim() || "",
+  ]
+    .filter(Boolean)
+    .join(" - ");
   const shouldShowWebsiteLink = useMemo(() => {
     if (!websiteHref || !compactWebsiteLabel) {
       return false;
@@ -768,6 +791,18 @@ export default function PerfilUsuarioHeader({
     showFollowAction && showSurveyAction ? "grid grid-cols-2 gap-2" : "grid grid-cols-1 gap-2";
   const followButtonClass =
     "mt-0 !min-w-0 !w-full !rounded-xl !px-4 !py-2.5 text-sm font-semibold focus:ring-slate-300";
+  const hasExpandedProfileInfo = Boolean(
+    rawBusinessDescription ||
+      fullLocationLabel ||
+      shouldShowWebsiteLink ||
+      mapsHref ||
+      visibleRedes.length > 0
+  );
+  const infoPanelGridColumns = Math.min(Math.max(visibleRedes.length, 1), 6);
+  const hasLocationChip = Boolean(compactLocationLabel);
+  const hasInfoTrigger = hasExpandedProfileInfo;
+  const hasDualHeaderChips = hasLocationChip && hasInfoTrigger;
+  const activeTabContext = tabContextCopy[activeTab];
 
   return (
     <div className="w-full overflow-auto rounded-b-3xl bg-white shadow-lg">
@@ -806,44 +841,63 @@ export default function PerfilUsuarioHeader({
             <p className="text-sm text-slate-500 sm:text-base">@{informacionNegocio?.slugNegocio}</p>
 
             <div className="space-y-2">
-              <p
+              {compactDescriptionPreview && (
+                <p className="line-clamp-2 text-sm leading-6 text-slate-700 sm:text-base">
+                  {compactDescriptionPreview}
+                </p>
+              )}
+
+              <div
                 className={clsx(
-                  "text-sm leading-6 text-slate-700 sm:text-base",
-                  hasExpandableDescription && "line-clamp-2"
+                  "grid w-full gap-2 text-sm text-slate-600 sm:max-w-[440px] sm:text-base",
+                  hasDualHeaderChips ? "grid-cols-2" : "grid-cols-1"
                 )}
               >
-                {businessDescription}
-              </p>
-              {hasExpandableDescription && (
-                <button
-                  onClick={() => setIsDescriptionModalOpen(true)}
-                  className="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-300 focus:ring-offset-1"
-                  aria-label="Ver descripción completa"
-                >
-                  Ver más
-                </button>
-              )}
-            </div>
+                {compactLocationLabel && (
+                  <span
+                    className={clsx(
+                      "inline-flex min-h-[40px] w-full max-w-full items-center justify-center gap-2 rounded-full border border-slate-200 bg-slate-50/90 px-3 py-1.5 text-xs font-medium text-slate-600 shadow-[inset_0_1px_0_rgba(255,255,255,0.75)] sm:text-sm",
+                      !hasDualHeaderChips && "sm:max-w-[260px]"
+                    )}
+                  >
+                    <FaMapMarkerAlt className="shrink-0 text-slate-400" />
+                    <span className="truncate text-center">{compactLocationLabel}</span>
+                  </span>
+                )}
 
-            <div className="space-y-2 text-sm text-slate-600 sm:text-base">
-              <div className="flex items-start gap-2.5">
-                <FaMapMarkerAlt className="mt-0.5 shrink-0 text-slate-400" />
-                <span>
-                  {`${informacionNegocio?.ciudadNegocio}, ${informacionNegocio?.departamentoNegocio}`}
-                  {informacionNegocio?.direccionNegocio && ` - ${informacionNegocio.direccionNegocio}`}
-                </span>
+                {hasExpandedProfileInfo && (
+                  <button
+                    type="button"
+                    onClick={() => setIsInfoPanelOpen((current) => !current)}
+                    className={clsx(
+                      "group inline-flex min-h-[40px] w-full items-center justify-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold transition focus:outline-none focus:ring-2 focus:ring-offset-1 sm:text-sm",
+                      isInfoPanelOpen
+                        ? "border-[#5f1f2d] bg-[linear-gradient(135deg,#7b2738_0%,#551b27_100%)] text-white shadow-[0_12px_24px_rgba(93,38,51,0.28)] ring-1 ring-[#f2c8c5]/30 focus:ring-[#c48793]"
+                        : "border-[#6f2533] bg-[linear-gradient(135deg,#8b3142_0%,#6c2230_100%)] text-white shadow-[0_10px_22px_rgba(122,53,68,0.18)] hover:border-[#62202d] hover:bg-[linear-gradient(135deg,#7f2c3c_0%,#5e1d2a_100%)] focus:ring-[#d7a3a0]"
+                    )}
+                    aria-expanded={isInfoPanelOpen}
+                    aria-controls="profile-info-contact-panel"
+                  >
+                    <span
+                      className={clsx(
+                        "flex h-5 w-5 items-center justify-center rounded-full transition-colors",
+                        isInfoPanelOpen
+                          ? "bg-white/16 text-rose-50"
+                          : "bg-white/14 text-rose-50 group-hover:bg-white/18"
+                      )}
+                    >
+                      <FaInfoCircle className="text-[11px]" />
+                    </span>
+                    <span>Info y contacto</span>
+                    <FaChevronDown
+                      className={clsx(
+                        "text-[11px] transition-transform duration-200",
+                        isInfoPanelOpen ? "rotate-180 text-white" : "text-[#8a3d49]"
+                      )}
+                    />
+                  </button>
+                )}
               </div>
-              {shouldShowWebsiteLink && (
-                <Link
-                  href={websiteHref}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex max-w-fit items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:border-slate-300 hover:bg-slate-100 hover:text-slate-900 sm:text-sm"
-                >
-                  <FaLink className="text-slate-400" />
-                  <span className="truncate">{compactWebsiteLabel}</span>
-                </Link>
-              )}
             </div>
           </div>
 
@@ -911,31 +965,105 @@ export default function PerfilUsuarioHeader({
                 </span>
               </div>
             )}
-
-            {visibleRedes.length > 0 && (
-              <div
-                className="grid w-full gap-2.5 pb-1 lg:gap-3.5 xl:gap-4"
-                style={{ gridTemplateColumns: `repeat(${socialGridColumns}, minmax(0, 1fr))` }}
-              >
-                {visibleRedes.map(({ icon, url, color, label }, index) => (
-                  <Link
-                    key={index}
-                    href={url || ""}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={clsx(
-                      "group mx-auto inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-slate-50 text-[18px] shadow-sm transition hover:border-slate-300 hover:bg-slate-100 sm:h-11 sm:w-11 sm:text-[18px] lg:h-14 lg:w-14 lg:text-[22px] xl:h-[60px] xl:w-[60px] xl:text-2xl",
-                      color
-                    )}
-                    aria-label={label}
-                  >
-                    {icon}
-                  </Link>
-                ))}
-              </div>
-            )}
           </div>
         </div>
+
+        {hasExpandedProfileInfo && isInfoPanelOpen && (
+          <div
+            id="profile-info-contact-panel"
+            className="mt-3 rounded-[22px] border border-[#ead2cf] bg-[linear-gradient(180deg,rgba(255,248,247,0.96),rgba(248,250,252,0.98))] p-4 shadow-[0_14px_30px_rgba(15,23,42,0.05)] sm:p-5"
+          >
+            <div className="grid gap-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)]">
+              <div className="space-y-4">
+                {rawBusinessDescription && (
+                  <div>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
+                      Sobre el negocio
+                    </p>
+                    <p className="mt-2 text-sm leading-6 text-slate-700 sm:text-base">
+                      {rawBusinessDescription}
+                    </p>
+                  </div>
+                )}
+
+                {fullLocationLabel && (
+                  <div>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
+                      Ubicación
+                    </p>
+                    <div className="mt-2 flex items-start gap-2.5 text-sm text-slate-700 sm:text-base">
+                      <FaMapMarkerAlt className="mt-0.5 shrink-0 text-slate-400" />
+                      <span>{fullLocationLabel}</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-4">
+                {(shouldShowWebsiteLink || mapsHref) && (
+                  <div>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
+                      Enlaces útiles
+                    </p>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {shouldShowWebsiteLink && (
+                        <Link
+                          href={websiteHref}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-100"
+                        >
+                          <FaLink className="text-slate-400" />
+                          <span>{compactWebsiteLabel}</span>
+                        </Link>
+                      )}
+
+                      {mapsHref && (
+                        <Link
+                          href={mapsHref}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-100"
+                        >
+                          <SiGooglemaps className="text-rose-500" />
+                          <span>Cómo llegar</span>
+                        </Link>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {visibleRedes.length > 0 && (
+                  <div>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
+                      Contacto y redes
+                    </p>
+                    <div
+                      className="mt-2 grid gap-2.5"
+                      style={{ gridTemplateColumns: `repeat(${infoPanelGridColumns}, minmax(0, 1fr))` }}
+                    >
+                      {visibleRedes.map(({ icon, url, color, label }, index) => (
+                        <Link
+                          key={index}
+                          href={url || ""}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={clsx(
+                            "group mx-auto inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-base shadow-sm transition hover:border-slate-300 hover:bg-slate-100 sm:h-11 sm:w-11 sm:text-[18px]",
+                            color
+                          )}
+                          aria-label={label}
+                        >
+                          {icon}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="mt-3 flex justify-start gap-1 overflow-x-auto whitespace-nowrap rounded-2xl border border-slate-200 bg-slate-50/90 p-1 lg:grid lg:grid-cols-[repeat(auto-fit,minmax(160px,1fr))] lg:gap-2 lg:overflow-visible lg:p-2">
           {tabs.map((tab) => {
@@ -960,7 +1088,7 @@ export default function PerfilUsuarioHeader({
                 className={clsx(
                   "group flex min-w-max shrink-0 items-center gap-2 rounded-[14px] px-3.5 py-2 text-sm font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 focus-visible:ring-offset-2 sm:px-4 lg:min-h-[54px] lg:min-w-0 lg:w-full lg:justify-center lg:gap-2.5 lg:px-5 lg:text-[15px]",
                   isActive
-                    ? "bg-white text-slate-900 shadow-sm ring-1 ring-slate-200"
+                    ? tabActiveSurfaceStyles[tab.name]
                     : "text-slate-500 hover:bg-white/80 hover:text-slate-900"
                 )}
                 aria-current={isActive ? "page" : undefined}
@@ -973,7 +1101,12 @@ export default function PerfilUsuarioHeader({
           })}
         </div>
 
-        <div className="mt-2 space-y-2 transition-opacity duration-300 ease-in-out sm:mt-6">
+        <div className="mt-2 flex items-center gap-2 px-1 text-[12px] font-medium text-slate-500 sm:mt-3 sm:text-sm">
+          <span className={clsx("h-2 w-2 rounded-full", activeTabContext.dotClassName)} />
+          <span>{activeTabContext.description}</span>
+        </div>
+
+        <div className="mt-2.5 space-y-2.5 transition-opacity duration-300 ease-in-out sm:mt-5">
           {activeTab === "Inicio" && (
             <LandingPage
               informacionNegocio={informacionNegocio!}
@@ -1181,46 +1314,6 @@ export default function PerfilUsuarioHeader({
         </div>
       </div>
 
-      <AnimatePresence>
-        {isDescriptionModalOpen && informacionNegocio?.descripcionNegocio && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
-            onClick={() => setIsDescriptionModalOpen(false)}
-          >
-            <motion.div
-              initial={{ scale: 0.9, y: 50 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.9, y: 50 }}
-              transition={{ type: "spring", damping: 20, stiffness: 300 }}
-              className="relative mx-4 w-full max-w-2xl overflow-hidden rounded-xl bg-white shadow-2xl"
-              onClick={(e) => e.stopPropagation()}
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby="description-title"
-            >
-              <button
-                onClick={() => setIsDescriptionModalOpen(false)}
-                className="absolute right-4 top-4 z-10 text-gray-500 transition-colors duration-200 hover:text-gray-700"
-                aria-label="Cerrar modal"
-              >
-                <FaTimes size={20} />
-              </button>
-              <div className="max-h-[80vh] overflow-y-auto p-6">
-                <h2 id="description-title" className="mb-4 text-xl font-bold text-gray-900">
-                  Descripción Completa
-                </h2>
-                <p className="text-base leading-relaxed text-gray-700 sm:text-lg">
-                  {informacionNegocio.descripcionNegocio}
-                </p>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }

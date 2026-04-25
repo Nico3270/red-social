@@ -2,13 +2,16 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { FaFolder, FaArrowRight } from "react-icons/fa";
+import { FaArrowRight, FaFolder } from "react-icons/fa";
 import type { CatalogGroupPreview } from "@/actions/catalogGroups/preloadProfileCatalog";
 import { trackAnalyticsEvent } from "@/analytics/events";
 
 interface CatalogGroupsPreviewSectionProps {
   groups: CatalogGroupPreview[];
   negocioSlug?: string;
+  title?: string;
+  subtitle?: string;
+  viewAllLabel?: string;
   onNavigateToGroup: (groupId: string) => void;
   onViewAll?: () => void;
 }
@@ -16,51 +19,57 @@ interface CatalogGroupsPreviewSectionProps {
 const CatalogGroupsPreviewSection: React.FC<CatalogGroupsPreviewSectionProps> = ({
   groups,
   negocioSlug = "",
+  title = "Explora por tipo de producto",
+  subtitle,
+  viewAllLabel = "Ver catalogo",
   onNavigateToGroup,
   onViewAll,
 }) => {
-  // Mostrar máximo 4 grupos
-  const displayGroups = groups.slice(0, 4);
-
   if (!groups || groups.length === 0) {
     return null;
   }
 
+  const displayGroups = groups.slice(0, 4);
+  const hiddenGroupsCount = Math.max(groups.length - displayGroups.length, 0);
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
+    <motion.section
+      initial={{ opacity: 0, y: 16 }}
       whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
+      transition={{ duration: 0.35 }}
       viewport={{ once: true, margin: "-80px" }}
-      className="space-y-4"
+      className="rounded-[22px] border border-slate-200 bg-white/95 p-3 shadow-[0_10px_24px_rgba(15,23,42,0.045)] sm:p-4"
     >
-      {/* Encabezado */}
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <h3 className="flex items-center gap-2 text-lg font-bold text-gray-900 sm:text-xl">
-            <FaFolder className="text-amber-600" />
-            Explora nuestro catálogo
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">
+            Categorías
+          </p>
+          <h3 className="mt-1 text-base font-bold leading-tight text-slate-950 sm:text-lg">
+            {title}
           </h3>
-          <p className="mt-1 text-sm text-gray-600">
-            Organizado en {groups.length} secciones principales
+          <p className="mt-1 text-xs leading-4 text-slate-500 sm:text-sm">
+            {subtitle || `Atajos principales del catalogo${hiddenGroupsCount > 0 ? `, con ${hiddenGroupsCount} mas en productos.` : "."}`}
           </p>
         </div>
+
         {onViewAll && (
           <button
+            type="button"
             onClick={onViewAll}
-            className="flex items-center gap-2 whitespace-nowrap rounded-full bg-amber-50 px-3 py-2 text-sm font-semibold text-amber-900 transition hover:bg-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-300"
+            className="inline-flex shrink-0 items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700 transition hover:border-slate-300 hover:bg-white focus:outline-none focus:ring-2 focus:ring-slate-300"
           >
-            Ver todo
-            <FaArrowRight className="text-xs" />
+            {viewAllLabel}
+            <FaArrowRight className="text-[10px]" />
           </button>
         )}
       </div>
 
-      {/* Grid de grupos */}
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
         {displayGroups.map((group, index) => (
           <motion.button
             key={group.id}
+            type="button"
             onClick={() => {
               trackAnalyticsEvent({
                 event: "catalog_group_preview_clicked",
@@ -76,63 +85,32 @@ const CatalogGroupsPreviewSection: React.FC<CatalogGroupsPreviewSectionProps> = 
 
               onNavigateToGroup(group.id);
             }}
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 8 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: index * 0.05 }}
+            transition={{ duration: 0.24, delay: index * 0.04 }}
             viewport={{ once: true }}
-            className="group relative flex flex-col items-start justify-start gap-3 rounded-lg border border-gray-200 bg-white p-4 text-left transition hover:border-amber-300 hover:bg-amber-50 focus:outline-none focus:ring-2 focus:ring-amber-300"
+            className="group flex min-h-[58px] items-center gap-2 rounded-2xl border border-slate-200 bg-white px-2.5 py-2 text-left shadow-[0_6px_14px_rgba(15,23,42,0.04)] transition hover:-translate-y-0.5 hover:border-amber-200 hover:bg-amber-50/50 focus:outline-none focus:ring-2 focus:ring-amber-300 sm:px-3"
           >
-            {/* Ícono y nombre */}
-            <div className="flex items-start justify-between w-full">
-              <div className="flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-100 text-amber-700 group-hover:bg-amber-200">
-                  <FaFolder className="text-sm" />
-                </div>
-                <h4 className="font-semibold text-gray-900 text-sm leading-tight">
-                  {group.nombre}
-                </h4>
-              </div>
-            </div>
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-700 transition group-hover:bg-amber-100">
+              <FaFolder className="text-xs" />
+            </span>
 
-            {/* Información */}
-            <div className="flex min-h-[40px] flex-col items-start justify-center gap-1 text-xs text-gray-500">
-              {group.hasSubgroups && (
-                <span>
-                  {group.subgroupCount > 0 ? `${group.subgroupCount} subcategoría${group.subgroupCount !== 1 ? "s" : ""}` : "Subcategorías"}
-                </span>
-              )}
-              {group.productCount > 0 && (
-                <span>
-                  {group.productCount} producto{group.productCount !== 1 ? "s" : ""}
-                </span>
-              )}
-              
-              {/* Featured badge si existen */}
-              {group.featured && group.featured.length > 0 && (
-                <span className="inline-block mt-1 px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 text-xs font-medium">
-                  ⭐ {group.featured.length} destacado{group.featured.length !== 1 ? "s" : ""}
-                </span>
-              )}
-              
-              {/* Rango de precios si disponible */}
-              {group.stats?.minPrice !== undefined && group.stats?.maxPrice !== undefined && (
-                <span className="text-gray-600 font-medium">
-                  ${group.stats.minPrice.toLocaleString()} - ${group.stats.maxPrice.toLocaleString()}
-                </span>
-              )}
-            </div>
-
-            {/* CTA overlay */}
-            <div className="absolute bottom-2 right-2 opacity-0 transition group-hover:opacity-100">
-              <FaArrowRight className="text-xs text-amber-600" />
-            </div>
+            <span className="min-w-0">
+              <span className="block truncate text-xs font-bold leading-4 text-slate-900 sm:text-sm">
+                {group.nombre}
+              </span>
+              <span className="block truncate text-[11px] leading-4 text-slate-500">
+                {group.productCount > 0
+                  ? `${group.productCount} producto${group.productCount !== 1 ? "s" : ""}`
+                  : group.hasSubgroups
+                    ? `${group.subgroupCount} subcategoría${group.subgroupCount !== 1 ? "s" : ""}`
+                    : "Ver opciones"}
+              </span>
+            </span>
           </motion.button>
         ))}
       </div>
-
-      {/* Divider */}
-      <div className="border-t border-gray-100 pt-6" />
-    </motion.div>
+    </motion.section>
   );
 };
 

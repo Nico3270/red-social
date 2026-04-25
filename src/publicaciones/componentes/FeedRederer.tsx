@@ -363,16 +363,16 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.25 }}
-          className="mb-4 rounded-2xl border border-slate-200 bg-white/95 px-4 py-4 shadow-sm"
+          className="rounded-2xl border border-slate-200 bg-white/95 px-4 py-4 shadow-sm"
         >
-          <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-sky-50 px-3 py-1 text-xs font-semibold text-sky-700">
+          <div className=" inline-flex items-center  rounded-full bg-sky-50 px-3 py-1 text-xs font-semibold text-sky-700">
             <FaCompass className="text-[11px]" />
             Feed Inteligente
           </div>
-          <p className="text-sm leading-6 text-slate-600">
+          {/* <p className="text-sm leading-6 text-slate-600">
             Mezclamos publicaciones, productos, servicios y negocios priorizando cercania,
             cuentas que sigues, contenido con mejor respuesta y variedad real entre negocios.
-          </p>
+          </p> */}
         </motion.div>
       )}
 

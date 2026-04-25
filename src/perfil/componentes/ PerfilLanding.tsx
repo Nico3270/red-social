@@ -2,7 +2,7 @@
 
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { InformacionInicialNegocio } from "@/ui/components/perfil-usuario-header/PerfilUsuarioHeader";
 import { ProductRedSocial } from "@/interfaces/productRedSocial.interface";
@@ -10,7 +10,6 @@ import { EnhancedPublicacion } from "@/publicaciones/interfaces/enhancedPublicac
 import { ServicioData } from "@/servicios/interfaces/servicios.interface";
 import { ResumenPerfil } from "@/perfil/interfaces/resumenPerfil.interface";
 import PublicacionesSection from "./PublicacionesSection";
-import ProductosSection from "./ProductosSection";
 import ServiciosSection from "./ServiciosSection";
 import ResenasSection from "./ResenasSection";
 import CatalogGroupsPreviewSection from "./CatalogGroupsPreviewSection";
@@ -43,17 +42,50 @@ const LandingPage: React.FC<LandingPageProps> = ({
   onSelectGroupFromNav,
   catalogPreloadData,
 }) => {
+  const [isCommercialGuideOpen, setIsCommercialGuideOpen] = useState(false);
   // Filtrar publicaciones para excluir reseñas (TESTIMONIO con producto)
   const publicacionesFiltradas = useMemo(() => {
     return publicaciones.filter(pub => !(pub.tipo === 'TESTIMONIO' && pub.producto));
   }, [publicaciones]);
+  const featuredPublication = useMemo(
+    () =>
+      publicacionesFiltradas.find(
+        (publication) =>
+          Boolean(
+            publication.titulo?.trim() ||
+              publication.descripcion?.trim() ||
+              publication.multimedia?.length
+          )
+      ) ?? null,
+    [publicacionesFiltradas]
+  );
+  const isCatalogFirstBusiness = useMemo(() => {
+    const productCount = resumenPerfil.productos ?? productos.length ?? 0;
+    const publicationCount = resumenPerfil.publicaciones ?? 0;
+    const serviceCount = resumenPerfil.servicios ?? 0;
+    const reviewCount = resumenPerfil.reseñas ?? 0;
+    const maxNonProductCount = Math.max(publicationCount, serviceCount, reviewCount);
+
+    return Boolean(
+      catalogPreloadData?.hasCatalogGroups ||
+        catalogPreloadData?.isRestaurantMenuMode ||
+        (productCount >= 12 && productCount >= Math.max(1, maxNonProductCount) * 2)
+    );
+  }, [
+    catalogPreloadData?.hasCatalogGroups,
+    catalogPreloadData?.isRestaurantMenuMode,
+    productos.length,
+    resumenPerfil.productos,
+    resumenPerfil.publicaciones,
+    resumenPerfil.reseñas,
+    resumenPerfil.servicios,
+  ]);
 
   // Generar array dinámico de secciones con orden y isActive
   const sections = useMemo(() => {
     // Definir prioridades base para secciones
     const sectionPriorities: Record<string, number> = {
       servicios: (resumenPerfil.servicios ?? 0) > (resumenPerfil.productos ?? 0) ? 40 : 20,
-      productos: (resumenPerfil.productos ?? 0) >= (resumenPerfil.servicios ?? 0) ? 30 : 10,
       resenas: 15,
       publicaciones: 5,
     };
@@ -69,17 +101,6 @@ const LandingPage: React.FC<LandingPageProps> = ({
         ),
         orden: (resumenPerfil.publicaciones ?? 0) + sectionPriorities.publicaciones,
         isActive: (resumenPerfil.publicaciones ?? 0) > 0,
-      },
-      {
-        id: "productos",
-        component: (
-          <ProductosSection
-            productos={productos}
-            onSelectTab={() => onSelectTab("Productos")}
-          />
-        ),
-        orden: (resumenPerfil.productos ?? 0) + sectionPriorities.productos,
-        isActive: (resumenPerfil.productos ?? 0) > 0,
       },
       {
         id: "servicios",
@@ -105,28 +126,38 @@ const LandingPage: React.FC<LandingPageProps> = ({
       },
     ];
 
-    // Filtrar secciones activas y ordenar por orden descendente
-    return sectionConfigs
+    const activeSections = sectionConfigs
       .filter((section) => section.isActive)
       .sort((a, b) => b.orden - a.orden);
-  }, [resumenPerfil, productos, publicacionesFiltradas, servicios, resenas, onSelectTab]);
+
+    return isCatalogFirstBusiness ? activeSections.slice(0, 2) : activeSections;
+  }, [isCatalogFirstBusiness, publicacionesFiltradas, resenas, resumenPerfil, servicios, onSelectTab]);
 
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="w-full p-4 sm:p-6 space-y-6" // Apilado vertical con espaciado
+      className="w-full space-y-4 px-4 py-3 sm:space-y-5 sm:p-6"
     >
       <BusinessGuideSection
         business={informacionNegocio}
         products={productos}
         onExploreProducts={onExploreProducts}
+        onViewCatalog={() => onSelectTab("Productos")}
+        onViewBusiness={() => onSelectTab("Negocio")}
+        onViewPublications={() => onSelectTab("Publicaciones")}
+        serviceCount={Math.max(resumenPerfil.servicios ?? 0, servicios.length)}
+        publicationCount={publicacionesFiltradas.length}
+        recentPublication={featuredPublication}
+        isCommercialGuideOpen={isCommercialGuideOpen}
+        onOpenCommercialGuide={() => setIsCommercialGuideOpen(true)}
+        onCloseCommercialGuide={() => setIsCommercialGuideOpen(false)}
         catalogPreloadData={catalogPreloadData}
       />
 
       {/* Mostrar preview de grupos si el negocio usa CatalogGroups */}
-      {catalogPreloadData?.hasCatalogGroups && catalogPreloadData?.rootGroups && (
+      {isCommercialGuideOpen && catalogPreloadData?.hasCatalogGroups && catalogPreloadData?.rootGroups && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -135,13 +166,21 @@ const LandingPage: React.FC<LandingPageProps> = ({
         >
           <CatalogGroupsPreviewSection
             groups={catalogPreloadData.rootGroups}
+            negocioSlug={informacionNegocio.slugNegocio}
+            title={catalogPreloadData.isRestaurantMenuMode ? "Explora el menu por categorias" : undefined}
+            subtitle={
+              catalogPreloadData.isRestaurantMenuMode
+                ? "Platos, bebidas y otras rutas utiles para entrar directo a lo que buscas."
+                : undefined
+            }
+            viewAllLabel={catalogPreloadData.isRestaurantMenuMode ? "Ver menu" : undefined}
             onNavigateToGroup={(groupId: string) => onSelectGroupFromNav?.(groupId)}
             onViewAll={() => onSelectTab("Productos")}
           />
         </motion.div>
       )}
 
-      {/* Secciones apiladas verticalmente, full width */}
+      {/* Inicio ahora evita duplicar el catálogo; deja solo contenido complementario. */}
       {sections.map((section, index) => (
         <motion.div
           key={section.id}
