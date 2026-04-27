@@ -90,7 +90,7 @@ export const MenuSectionsBar = ({ compact = false }: MenuSectionsBarProps) => {
       <div
         ref={scrollContainerRef}
         className={`flex flex-nowrap overflow-x-auto rounded-lg color-principal scrollbar-hide ${
-          compact ? "gap-1.5 px-2 pt-1 pb-1.5 sm:pb-1.5" : "gap-2 pt-2 pb-0 sm:pb-2"
+          compact ? "gap-1.5 px-2 pt-1 " : "gap-2 "
         }`}
         style={{ scrollBehavior: "smooth" }}
       >

@@ -7,8 +7,30 @@ const DISCOVERY_LEAD_WINDOW = 18;
 type DiscoveryContext = "home" | "category";
 
 const DISCOVERY_LEAD_RECIPES: Record<DiscoveryContext, FeedItem["type"][]> = {
-  home: ["product", "product", "business", "product", "publication", "product", "business", "publication"],
-  category: ["product", "product", "product", "business", "product", "publication", "product", "publication"],
+  home: [
+    "product",
+    "publication",
+    "business",
+    "product",
+    "service",
+    "publication",
+    "product",
+    "business",
+    "publication",
+    "service",
+    "product",
+    "publication",
+  ],
+  category: [
+    "product",
+    "publication",
+    "product",
+    "business",
+    "product",
+    "service",
+    "product",
+    "publication",
+  ],
 };
 
 const getBusinessId = (item: FeedItem): string => {
@@ -109,24 +131,14 @@ const findLeadCandidateIndex = (
   );
   if (preferredCompatibleIndex !== -1) return preferredCompatibleIndex;
 
-  const productFallbackIndex = candidatesWithinWindow.findIndex(
-    (candidate) => candidate.type === "product" && isLeadCompatible(candidate, lead)
-  );
-  if (productFallbackIndex !== -1) return productFallbackIndex;
-
-  const nonServiceCompatibleIndex = candidatesWithinWindow.findIndex(
-    (candidate) => candidate.type !== "service" && isLeadCompatible(candidate, lead)
-  );
-  if (nonServiceCompatibleIndex !== -1) return nonServiceCompatibleIndex;
-
   const compatibleIndex = candidatesWithinWindow.findIndex((candidate) => isLeadCompatible(candidate, lead));
   if (compatibleIndex !== -1) return compatibleIndex;
 
   const preferredAnywhereIndex = pool.findIndex((candidate) => candidate.type === preferredType);
   if (preferredAnywhereIndex !== -1) return preferredAnywhereIndex;
 
-  const nonServiceAnywhereIndex = pool.findIndex((candidate) => candidate.type !== "service");
-  if (nonServiceAnywhereIndex !== -1) return nonServiceAnywhereIndex;
+  const compatibleAnywhereIndex = pool.findIndex((candidate) => isLeadCompatible(candidate, lead));
+  if (compatibleAnywhereIndex !== -1) return compatibleAnywhereIndex;
 
   return 0;
 };

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
@@ -16,6 +16,10 @@ import { titleFont, textosFont } from "@/config/fonts";
 import PublicationModal from "@/publicaciones/componentes/PublicationModal";
 import { EnhancedPublicacion } from "@/publicaciones/interfaces/enhancedPublicacion.interface";
 import {
+  buildCloudinaryVideoPosterUrl,
+  getCloudinaryVideoPosterUrl,
+} from "@/lib/cloudinary/buildCloudinaryVideoPosterUrl";
+import {
   PLACEHOLDER_BUSINESS_IMAGE,
   PLACEHOLDER_PRODUCT_IMAGE,
   isLikelyVideoUrl,
@@ -26,6 +30,21 @@ import { getCloudinaryImageUrl } from "@/lib/cloudinary/buildCloudinaryDeliveryU
 interface DiscoveryPublicationCardProps {
   publicacion: EnhancedPublicacion;
 }
+
+type MediaOrientation = "vertical" | "horizontal" | "square" | "unknown";
+
+const getMediaAspectClass = (orientation: MediaOrientation) => {
+  switch (orientation) {
+    case "vertical":
+      return "aspect-[4/5] sm:aspect-[3/4] lg:aspect-[4/5]";
+    case "horizontal":
+      return "aspect-[16/10] sm:aspect-[16/9]";
+    case "square":
+      return "aspect-square sm:aspect-[4/3]";
+    default:
+      return "aspect-[4/5] sm:aspect-[4/3]";
+  }
+};
 
 const buildAuthorName = (publicacion: EnhancedPublicacion) => {
   if (publicacion.negocio?.nombre) return publicacion.negocio.nombre;
@@ -45,6 +64,10 @@ export const DiscoveryPublicationCard: React.FC<
   DiscoveryPublicationCardProps
 > = ({ publicacion }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [mediaOrientation, setMediaOrientation] =
+    useState<MediaOrientation>("unknown");
+  const [videoPosterAttempt, setVideoPosterAttempt] = useState(0);
+  const [posterFailed, setPosterFailed] = useState(false);
 
   const authorName = buildAuthorName(publicacion);
   const authorHref = `/perfil/${publicacion.negocio?.slug || publicacion.usuario.id}`;
@@ -73,6 +96,34 @@ export const DiscoveryPublicationCard: React.FC<
   const optimizedPublicationImageUrl = isVideo
     ? safeMediaImage
     : getCloudinaryImageUrl(safeMediaImage, "publication-preview");
+  const videoPosterCandidates = useMemo(() => {
+    if (!isVideo || !primaryMedia?.url) {
+      return [] as string[];
+    }
+
+    return [
+      buildCloudinaryVideoPosterUrl(primaryMedia.url, {
+        preset: "publication-preview",
+        startOffset: 2,
+      }),
+      buildCloudinaryVideoPosterUrl(primaryMedia.url, {
+        preset: "publication-preview",
+        startOffset: 0,
+      }),
+      getCloudinaryVideoPosterUrl(primaryMedia.url, "publication-preview"),
+    ].filter((candidate, index, candidates): candidate is string => {
+      return Boolean(candidate) && candidates.indexOf(candidate) === index;
+    });
+  }, [isVideo, primaryMedia?.url]);
+  const videoPosterUrl = isVideo
+    ? !posterFailed
+      ? videoPosterCandidates[videoPosterAttempt] ?? null
+      : null
+    : null;
+  const visualMediaUrl = isVideo ? videoPosterUrl : optimizedPublicationImageUrl;
+  const mediaPreviewAlt = isVideo
+    ? publicacion.titulo || "Vista previa del video"
+    : publicacion.titulo || "Vista previa de la publicación";
   const previewText =
     publicacion.descripcion?.trim() ||
     publicacion.titulo ||
@@ -82,10 +133,73 @@ export const DiscoveryPublicationCard: React.FC<
   const descriptionClamp = hasMedia ? "line-clamp-3" : "line-clamp-4";
   const openModal = useCallback(() => setIsModalOpen(true), []);
   const closeModal = useCallback(() => setIsModalOpen(false), []);
+  const mediaAspectClass = useMemo(
+    () => getMediaAspectClass(mediaOrientation),
+    [mediaOrientation],
+  );
   const timeAgo = formatDistanceToNow(new Date(publicacion.createdAt), {
     addSuffix: true,
     locale: es,
   });
+
+  useEffect(() => {
+    setVideoPosterAttempt(0);
+    setPosterFailed(false);
+  }, [primaryMedia?.url]);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !visualMediaUrl) {
+      setMediaOrientation("unknown");
+      return;
+    }
+
+    let isCancelled = false;
+    const image = new window.Image();
+
+    image.onload = () => {
+      if (isCancelled) return;
+
+      const { naturalWidth, naturalHeight } = image;
+      if (!naturalWidth || !naturalHeight) {
+        setMediaOrientation("unknown");
+        return;
+      }
+
+      const ratio = naturalWidth / naturalHeight;
+      if (Math.abs(ratio - 1) <= 0.08) {
+        setMediaOrientation("square");
+        return;
+      }
+
+      setMediaOrientation(ratio > 1 ? "horizontal" : "vertical");
+    };
+
+    image.onerror = () => {
+      if (!isCancelled) {
+        setMediaOrientation("unknown");
+      }
+    };
+
+    image.src = visualMediaUrl;
+
+    return () => {
+      isCancelled = true;
+      image.onload = null;
+      image.onerror = null;
+    };
+  }, [visualMediaUrl]);
+
+  const handleVideoPosterError = useCallback(() => {
+    setVideoPosterAttempt((currentAttempt) => {
+      const nextAttempt = currentAttempt + 1;
+      if (nextAttempt < videoPosterCandidates.length) {
+        return nextAttempt;
+      }
+
+      setPosterFailed(true);
+      return currentAttempt;
+    });
+  }, [videoPosterCandidates.length]);
 
   return (
     <>
@@ -144,22 +258,45 @@ export const DiscoveryPublicationCard: React.FC<
             aria-label="Abrir publicación"
           >
             {isVideo ? (
-              <div className="flex aspect-[4/3] w-full items-center justify-center bg-slate-900 text-white">
-                <div className="flex flex-col items-center gap-2 opacity-90 transition-opacity duration-200 group-hover:opacity-100">
-                  <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white/15">
-                    <FaPlay className="ml-1 text-base" />
-                  </span>
-                  <span className="text-sm font-medium">Ver video</span>
+              videoPosterUrl ? (
+                <div className={`relative w-full overflow-hidden bg-slate-950 ${mediaAspectClass}`}>
+                  <Image
+                    src={videoPosterUrl}
+                    alt={mediaPreviewAlt}
+                    fill
+                    unoptimized
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 420px"
+                    className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                    onError={handleVideoPosterError}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/42 via-slate-950/12 to-transparent" />
+                  <div className="absolute inset-0 flex items-center justify-center text-white">
+                    <div className="flex flex-col items-center gap-2 opacity-90 transition-opacity duration-200 group-hover:opacity-100">
+                      <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white/15">
+                        <FaPlay className="ml-1 text-base" />
+                      </span>
+                      <span className="text-sm font-medium">Ver video</span>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className={`flex w-full items-center justify-center bg-slate-900 text-white ${mediaAspectClass}`}>
+                  <div className="flex flex-col items-center gap-2 opacity-90 transition-opacity duration-200 group-hover:opacity-100">
+                    <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white/15">
+                      <FaPlay className="ml-1 text-base" />
+                    </span>
+                    <span className="text-sm font-medium">Ver video</span>
+                  </div>
+                </div>
+              )
             ) : (
-              <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100">
+              <div className={`relative w-full overflow-hidden bg-slate-100 ${mediaAspectClass}`}>
                 <Image
                   src={optimizedPublicationImageUrl}
-                  alt={publicacion.titulo || "Vista previa de la publicación"}
+                  alt={mediaPreviewAlt}
                   fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 25vw"
-                  className="object-cover transition-transform duration-300 group-hover:scale-105"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 420px"
+                  className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
                 />
               </div>
             )}
@@ -200,21 +337,21 @@ export const DiscoveryPublicationCard: React.FC<
           )}
 
           <div className="mt-4 flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3 text-xs text-slate-500">
-              <span className="inline-flex items-center gap-1">
-                <FaHeart className="text-[11px]" />
-                {publicacion.numLikes}
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="inline-flex h-8 items-center gap-1.5 rounded-full bg-rose-50 px-3 text-sm font-semibold text-slate-700 ring-1 ring-rose-100">
+                <FaHeart className="text-[13px] text-rose-500" />
+                <span>{publicacion.numLikes}</span>
               </span>
-              <span className="inline-flex items-center gap-1">
-                <FaCommentDots className="text-[11px]" />
-                {publicacion.numComentarios}
+              <span className="inline-flex h-8 items-center gap-1.5 rounded-full bg-sky-50 px-3 text-sm font-semibold text-slate-700 ring-1 ring-sky-100">
+                <FaCommentDots className="text-[13px] text-sky-600" />
+                <span>{publicacion.numComentarios}</span>
               </span>
             </div>
 
             <button
               type="button"
               onClick={openModal}
-              className="rounded-full border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-700 transition-colors hover:border-sky-200 hover:text-sky-700"
+              className="inline-flex h-9 items-center justify-center rounded-full border border-slate-200 bg-white px-3.5 text-sm font-semibold text-slate-700 shadow-sm transition-colors hover:border-sky-200 hover:text-sky-700"
             >
               Ver publicación
             </button>

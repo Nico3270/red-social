@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { FaRegNewspaper, FaImages, FaPlayCircle, FaQuoteRight } from "react-icons/fa";
 import Image from "next/image";
 import { EnhancedPublicacion } from "@/publicaciones/interfaces/enhancedPublicacion.interface";
+import { getCloudinaryVideoPosterUrl } from "@/lib/cloudinary/buildCloudinaryVideoPosterUrl";
 import {
   PLACEHOLDER_PRODUCT_IMAGE,
   isLikelyVideoUrl,
@@ -59,8 +60,11 @@ const PublicacionesSection: React.FC<PublicacionesSectionProps> = ({
             mediaImageSrc,
             "publication-preview",
           );
-          const optimizedPosterUrl = getCloudinaryImageUrl(
-            mediaImageSrc,
+          const optimizedPosterUrl = mediaIsVideo
+            ? getCloudinaryVideoPosterUrl(media?.url, "publication-preview")
+            : null;
+          const fallbackVideoPreviewUrl = getCloudinaryImageUrl(
+            PLACEHOLDER_PRODUCT_IMAGE,
             "publication-preview",
           );
 
@@ -83,7 +87,7 @@ const PublicacionesSection: React.FC<PublicacionesSectionProps> = ({
                 (mediaIsVideo ? (
                   <div className="relative flex h-full w-full items-center justify-center bg-slate-900 text-white">
                     <Image
-                      src={optimizedPosterUrl}
+                      src={optimizedPosterUrl ?? fallbackVideoPreviewUrl}
                       alt={p.titulo || "Video de publicación"}
                       fill
                       className="object-cover opacity-45"
@@ -143,8 +147,11 @@ const PublicacionesSection: React.FC<PublicacionesSectionProps> = ({
             mediaImageSrc,
             "publication-preview",
           );
-          const optimizedPosterUrl = getCloudinaryImageUrl(
-            mediaImageSrc,
+          const optimizedPosterUrl = mediaIsVideo
+            ? getCloudinaryVideoPosterUrl(media?.url, "publication-preview")
+            : null;
+          const fallbackVideoPreviewUrl = getCloudinaryImageUrl(
+            PLACEHOLDER_PRODUCT_IMAGE,
             "publication-preview",
           );
           const descripcion = pub.descripcion || pub.titulo || "Publicación destacada";
@@ -161,14 +168,33 @@ const PublicacionesSection: React.FC<PublicacionesSectionProps> = ({
             >
               <div className="relative w-full aspect-[4/5]">
                 {mediaIsVideo ? (
-                  <div className="relative flex h-full w-full items-center justify-center bg-slate-900 text-white">
-                    <Image
-                      src={optimizedPosterUrl}
-                      alt={pub.titulo || "Video de publicación"}
-                      fill
-                      className="object-cover opacity-45 transition-transform duration-700 group-hover:scale-105"
-                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                    />
+                  <div className="relative flex h-full w-full items-center justify-center overflow-hidden bg-slate-900 text-white">
+                    {optimizedPosterUrl ? (
+                      <>
+                        <Image
+                          src={optimizedPosterUrl}
+                          alt=""
+                          fill
+                          className="object-cover opacity-25 blur-sm scale-110 transition-transform duration-700 group-hover:scale-[1.12]"
+                          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                        />
+                        <Image
+                          src={optimizedPosterUrl}
+                          alt={pub.titulo || "Video de publicación"}
+                          fill
+                          className="object-contain p-3 transition-transform duration-700 group-hover:scale-[1.02]"
+                          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                        />
+                      </>
+                    ) : (
+                      <Image
+                        src={fallbackVideoPreviewUrl}
+                        alt={pub.titulo || "Video de publicación"}
+                        fill
+                        className="object-cover opacity-45 transition-transform duration-700 group-hover:scale-105"
+                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                      />
+                    )}
                     <div className="relative z-10 flex flex-col items-center gap-2">
                       <FaPlayCircle className="text-4xl drop-shadow" />
                       <span className="text-sm font-semibold drop-shadow">Ver video</span>

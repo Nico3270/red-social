@@ -246,7 +246,11 @@ const getProductClusterGridClass = (count: number) => {
     return "grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3";
   }
 
-  return "grid grid-cols-1 gap-3 md:grid-cols-2";
+  if (count === 2) {
+    return "mx-auto grid w-full max-w-5xl grid-cols-1 gap-3 md:grid-cols-2";
+  }
+
+  return "mx-auto grid w-full max-w-2xl grid-cols-1 gap-3";
 };
 
 const FeedRenderer: React.FC<FeedRendererProps> = ({
@@ -356,6 +360,27 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
       ? CATEGORY_SUPPORT_PATTERN
       : HOME_SUPPORT_PATTERN;
     const sections: CadenceSection[] = [];
+    const pushSupportSection = (patternIndex: number) => {
+      if (!hasSupportItems(supportQueues)) {
+        return patternIndex;
+      }
+
+      const supportPlan = supportPattern[patternIndex % supportPattern.length];
+      const supportItems = takeSupportItems(supportQueues, supportPlan);
+
+      if (supportItems.length === 0) {
+        return patternIndex;
+      }
+
+      sections.push({
+        kind: "pulse",
+        key: `pulse-${sections.length}`,
+        ...buildPulseMeta(supportItems, discoveryContext, categoriaNombre),
+        items: supportItems,
+      });
+
+      return patternIndex + 1;
+    };
 
     const leadItems = takeQueueItems(productQueue, leadProductCount);
     if (leadItems.length > 0) {
@@ -369,6 +394,10 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
 
     let productPatternIndex = 0;
     let supportPatternIndex = 0;
+
+    if (!isCategoryFeed && leadItems.length > 0) {
+      supportPatternIndex = pushSupportSection(supportPatternIndex);
+    }
 
     while (productQueue.length > 0 || hasSupportItems(supportQueues)) {
       const productCount = productPattern[productPatternIndex % productPattern.length];
@@ -393,18 +422,7 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
         continue;
       }
 
-      const supportPlan = supportPattern[supportPatternIndex % supportPattern.length];
-      const supportItems = takeSupportItems(supportQueues, supportPlan);
-
-      if (supportItems.length > 0) {
-        sections.push({
-          kind: "pulse",
-          key: `pulse-${sections.length}`,
-          ...buildPulseMeta(supportItems, discoveryContext, categoriaNombre),
-          items: supportItems,
-        });
-        supportPatternIndex += 1;
-      }
+      supportPatternIndex = pushSupportSection(supportPatternIndex);
 
       if (productItems.length === 0 && !hasSupportItems(supportQueues)) {
         break;
@@ -557,7 +575,41 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
   const renderCadenceFeed = () => {
     if (activeTab !== "Para ti" || cadenceSections.length === 0) return null;
 
-    return cadenceSections.map((section, sectionIndex) => {
+    const renderPulseSection = (
+      section: Extract<CadenceSection, { kind: "pulse" }>,
+      sectionIndex: number,
+    ) => (
+      <DiscoveryPulseModule
+        key={section.key}
+        badge={section.badge}
+        title={section.title}
+        description={section.description}
+        tone={section.tone}
+        city={ciudad}
+        itemCount={section.items.length}
+      >
+        {section.items.map((item, itemIndex) => (
+          <motion.div
+            key={`${section.key}-${item.id}`}
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: 0.22,
+              delay: Math.min((sectionIndex + itemIndex) * 0.025, 0.16),
+              ease: "easeOut",
+            }}
+          >
+            {renderCardContent(item)}
+          </motion.div>
+        ))}
+      </DiscoveryPulseModule>
+    );
+
+    const renderedSections: React.ReactNode[] = [];
+
+    for (let sectionIndex = 0; sectionIndex < cadenceSections.length; sectionIndex += 1) {
+      const section = cadenceSections[sectionIndex];
+
       if (section.kind === "products") {
         const sectionTitle =
           section.emphasis === "lead"
@@ -572,7 +624,7 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
               : "Abrimos con producto para que el discovery siga siendo comercial, pero luego el feed gane respiración con señales de negocio vivo."
             : null;
 
-        return (
+        renderedSections.push(
           <section
             key={section.key}
             className={section.emphasis === "lead" ? "mb-6" : "mb-5"}
@@ -610,35 +662,46 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
             </div>
           </section>
         );
+
+        continue;
       }
 
-      return (
-        <DiscoveryPulseModule
-          key={section.key}
-          badge={section.badge}
-          title={section.title}
-          description={section.description}
-          tone={section.tone}
-          city={ciudad}
-          itemCount={section.items.length}
-        >
-          {section.items.map((item, itemIndex) => (
-            <motion.div
-              key={`${section.key}-${item.id}`}
-              initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{
-                duration: 0.22,
-                delay: Math.min((sectionIndex + itemIndex) * 0.025, 0.16),
-                ease: "easeOut",
-              }}
-            >
-              {renderCardContent(item)}
-            </motion.div>
-          ))}
-        </DiscoveryPulseModule>
-      );
-    });
+      const pulseSections = [section];
+      let nextSectionIndex = sectionIndex + 1;
+
+      while (nextSectionIndex < cadenceSections.length) {
+        const nextSection = cadenceSections[nextSectionIndex];
+        if (nextSection.kind !== "pulse") break;
+
+        pulseSections.push(nextSection);
+        nextSectionIndex += 1;
+      }
+
+      if (pulseSections.length === 1) {
+        renderedSections.push(
+          <div key={`${section.key}-compact`} className="xl:mx-auto xl:max-w-5xl 2xl:max-w-6xl">
+            {renderPulseSection(section, sectionIndex)}
+          </div>
+        );
+      } else {
+        renderedSections.push(
+          <div
+            key={`${section.key}-mosaic`}
+            className="xl:mx-auto xl:max-w-6xl xl:columns-2 xl:gap-4"
+          >
+            {pulseSections.map((pulseSection, pulseOffset) => (
+              <div key={`${pulseSection.key}-column`} className="xl:break-inside-avoid">
+                {renderPulseSection(pulseSection, sectionIndex + pulseOffset)}
+              </div>
+            ))}
+          </div>
+        );
+      }
+
+      sectionIndex = nextSectionIndex - 1;
+    }
+
+    return renderedSections;
   };
 
   useEffect(() => {
