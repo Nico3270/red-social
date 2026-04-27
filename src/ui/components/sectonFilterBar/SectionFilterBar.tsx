@@ -49,7 +49,7 @@ export const ProductGridWithSectionFilter = ({
   initialSectionId = null,
 }: Props) => {
   const [selectedSectionId, setSelectedSectionId] = useState<string | null>(null);
-  const [activeGuideContext, setActiveGuideContext] = useState<ProductGuideExploreContext | null>(
+  const [, setActiveGuideContext] = useState<ProductGuideExploreContext | null>(
     guideContext
   );
   const observerRef = useRef<HTMLDivElement>(null);

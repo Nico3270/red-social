@@ -169,7 +169,10 @@ const AddressNegocio: React.FC<AddressNegocioProps> = ({ slug }) => {
     trigger();
   }, [orderType, trigger]);
 
-  const cartItems = getCartForNegocio(slug) || [];
+  const cartItems = useMemo(
+    () => getCartForNegocio(slug) ?? [],
+    [getCartForNegocio, slug]
+  );
 
   const total = useMemo(() => {
     return cartItems.reduce(

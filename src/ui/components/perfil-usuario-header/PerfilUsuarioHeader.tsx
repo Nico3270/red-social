@@ -34,7 +34,6 @@ import ServicioViewer from "@/servicios/componentes/ServicioViewer";
 import ResenaProductoCard from "@/resenas/componentes/ResenaProductoCard";
 import type { ServicioData } from "@/servicios/interfaces/servicios.interface";
 import { useSession } from "next-auth/react";
-import { motion } from "framer-motion";
 import { FollowButton } from "@/feed/componentes/FollowButton";
 import type { EnhancedPublicacion } from "@/publicaciones/interfaces/enhancedPublicacion.interface";
 import type { ResumenPerfil } from "@/perfil/interfaces/resumenPerfil.interface";
@@ -686,7 +685,6 @@ export default function PerfilUsuarioHeader({
   ];
 
   const visibleRedes = redes.filter(({ url }) => url?.trim() !== "");
-  const socialGridColumns = Math.min(Math.max(visibleRedes.length, 1), 6);
   const safeCoverImage = resolveSafeImageSource(
     informacionNegocio?.imagenPortada,
     PLACEHOLDER_BUSINESS_IMAGE

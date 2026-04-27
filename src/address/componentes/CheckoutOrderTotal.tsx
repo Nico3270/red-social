@@ -263,6 +263,7 @@ const CheckoutOrderTotal: React.FC = () => {
     }
   }, [
     address,
+    carts,
     clearAddress,
     clearCart,
     clearRedirectTimeout,

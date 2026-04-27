@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   attachAdminProductImagesAction,
   type AttachAdminProductImagesActionResult,
@@ -20,6 +20,15 @@ import {
   type AdminProductDraftContextSummary,
 } from "@/actions/myckeoAdmin/generateAdminProductDraftAction";
 import AutoUploadMedia from "@/ui/components/autoUpload/AutoUploadMedia";
+import { useRouter } from "next/navigation";
+import {
+  EMPTY_ADMIN_IMAGE_PROMPT_OVERRIDES,
+  IMAGE_GENERATION_PURPOSES,
+  type AdminImagePromptOverrides,
+  type ProductImageGenerationPurposeValue,
+  getAdminImagePromptOverride,
+  resolveAdminProductImagePrompt,
+} from "./adminImageGeneration";
 import AdminProductBatchCreationPanel from "./AdminProductBatchCreationPanel";
 
 type AssistedProductCreationClientProps = {
@@ -118,6 +127,28 @@ const productLabelOptions = [
   "ninguna",
 ];
 
+const adminProductImagePurposeOptions: Array<{
+  value: ProductImageGenerationPurposeValue;
+  label: string;
+  description: string;
+}> = [
+  {
+    value: IMAGE_GENERATION_PURPOSES.CATALOG,
+    label: "Imagen de catálogo",
+    description: "Limpia, clara y pensada para ficha de producto.",
+  },
+  {
+    value: IMAGE_GENERATION_PURPOSES.PROMOTIONAL,
+    label: "Imagen publicitaria",
+    description: "Más comercial, sin perder realismo ni foco en el producto.",
+  },
+  {
+    value: IMAGE_GENERATION_PURPOSES.CUSTOM,
+    label: "Personalizada",
+    description: "Base editable para un uso visual específico.",
+  },
+];
+
 const inputClasses =
   "w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-sky-300 focus:ring-4 focus:ring-sky-100";
 
@@ -158,6 +189,11 @@ function cleanStringArray(items: string[]) {
   }
 
   return result;
+}
+
+function buildPublicProductUrl(productSlug?: string | null) {
+  const normalizedSlug = productSlug?.trim();
+  return normalizedSlug ? `/producto/${normalizedSlug}` : null;
 }
 
 function mapSuggestedOption(option: DraftSuggestedOption): SuggestedOptionForm {
@@ -297,6 +333,25 @@ function validateEditableDraftForm(form: EditableDraftFormState) {
   }
 
   return errors;
+}
+
+function mergeUniqueImageUrls(...sources: Array<string[] | string | undefined>) {
+  const seen = new Set<string>();
+  const result: string[] = [];
+
+  for (const source of sources) {
+    const values = Array.isArray(source) ? source : source ? [source] : [];
+
+    for (const value of values) {
+      const normalized = value.trim();
+      if (!normalized || seen.has(normalized)) continue;
+
+      seen.add(normalized);
+      result.push(normalized);
+    }
+  }
+
+  return result;
 }
 
 function formatPriceRange(
@@ -831,14 +886,27 @@ function ProductImagesAndPublishSection({
   publishError,
   publishValidationErrors,
   publishedProduct,
+  publicProductUrl,
   isUploadingImages,
   isAttachingImages,
   isPublishingProduct,
+  isRedirectingToPublishedProduct,
+  mediaUploaderVersion,
+  adminImagePurpose,
+  adminImagePrompt,
+  adminImageGenerationError,
+  adminImageGenerationValidationErrors,
+  adminImageGenerationSuccess,
+  isGeneratingAdminImage,
+  onAdminImagePurposeChange,
+  onAdminImagePromptChange,
+  onGenerateAdminImage,
   onImagesChange,
   onUploadError,
   onUploadLoading,
   onAttachImages,
   onPublishProduct,
+  onCreateAnotherProduct,
 }: {
   savedProduct: SavedProductState | null;
   imageUrls: string[];
@@ -850,14 +918,29 @@ function ProductImagesAndPublishSection({
   publishError: string | null;
   publishValidationErrors: string[];
   publishedProduct: PublishedProductState | null;
+  publicProductUrl: string | null;
   isUploadingImages: boolean;
   isAttachingImages: boolean;
   isPublishingProduct: boolean;
+  isRedirectingToPublishedProduct: boolean;
+  mediaUploaderVersion: number;
+  adminImagePurpose: ProductImageGenerationPurposeValue;
+  adminImagePrompt: string;
+  adminImageGenerationError: string | null;
+  adminImageGenerationValidationErrors: string[];
+  adminImageGenerationSuccess: string | null;
+  isGeneratingAdminImage: boolean;
+  onAdminImagePurposeChange: (
+    purpose: ProductImageGenerationPurposeValue,
+  ) => void;
+  onAdminImagePromptChange: (prompt: string) => void;
+  onGenerateAdminImage: () => void;
   onImagesChange: (urls: string[] | string | undefined) => void;
   onUploadError: (message: string) => void;
   onUploadLoading: (isLoading: boolean) => void;
   onAttachImages: () => void;
   onPublishProduct: () => void;
+  onCreateAnotherProduct: () => void;
 }) {
   if (!savedProduct) {
     return (
@@ -878,7 +961,7 @@ function ProductImagesAndPublishSection({
   return (
     <FormSection
       title="Imágenes del producto"
-      description="Sube imágenes generadas externamente y guárdalas en el producto antes de publicarlo."
+      description="Puedes combinar carga manual y generación con IA antes de publicar."
     >
       <div className="space-y-5">
         <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm leading-6 text-slate-700">
@@ -893,21 +976,131 @@ function ProductImagesAndPublishSection({
           </p>
         </div>
 
-        <AutoUploadMedia
-          key={savedProduct.product.id}
-          initialData={attachedImageUrls}
-          multiple
-          mediaType="image"
-          onChange={onImagesChange}
-          onError={onUploadError}
-          onLoading={onUploadLoading}
-        />
+        <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1.05fr)_minmax(320px,0.95fr)]">
+          <div className="rounded-[28px] border border-slate-200 bg-slate-50/90 p-4">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <p className="text-sm font-semibold text-slate-950">
+                  Subir imagen manual
+                </p>
+                <p className="mt-1 text-sm leading-6 text-slate-600">
+                  Mantiene el uploader actual para subir archivos a mano.
+                </p>
+              </div>
+              <span className="rounded-full border border-slate-200 bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">
+                Manual
+              </span>
+            </div>
 
-        {imageUploadError ? (
-          <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-            {imageUploadError}
+            <div className="mt-4">
+              <AutoUploadMedia
+                key={`${savedProduct.product.id}-${mediaUploaderVersion}`}
+                initialData={imageUrls}
+                multiple
+                mediaType="image"
+                onChange={onImagesChange}
+                onError={onUploadError}
+                onLoading={onUploadLoading}
+              />
+            </div>
+
+            {imageUploadError ? (
+              <div className="mt-4 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+                {imageUploadError}
+              </div>
+            ) : null}
           </div>
-        ) : null}
+
+          <div className="rounded-[28px] border border-slate-200 bg-[linear-gradient(180deg,rgba(240,249,255,0.95),rgba(248,250,252,0.92))] p-4 shadow-[0_18px_36px_-28px_rgba(14,165,233,0.35)]">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <p className="text-sm font-semibold text-slate-950">
+                  Generar imagen con IA
+                </p>
+                <p className="mt-1 text-sm leading-6 text-slate-600">
+                  Crea una imagen opcional y la agrega al producto sin reemplazar las existentes.
+                </p>
+              </div>
+              <span className="rounded-full border border-sky-200 bg-white/90 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-sky-700">
+                Opcional
+              </span>
+            </div>
+
+            <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-3">
+              {adminProductImagePurposeOptions.map((option) => {
+                const isActive = option.value === adminImagePurpose;
+
+                return (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => onAdminImagePurposeChange(option.value)}
+                    className={`rounded-2xl border px-3 py-3 text-left transition ${
+                      isActive
+                        ? "border-sky-300 bg-white text-slate-950 shadow-sm ring-4 ring-sky-100"
+                        : "border-slate-200 bg-white/70 text-slate-700 hover:border-slate-300 hover:bg-white"
+                    }`}
+                  >
+                    <span className="block text-sm font-semibold">
+                      {option.label}
+                    </span>
+                    <span className="mt-1 block text-xs leading-5 text-slate-500">
+                      {option.description}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="mt-4">
+              <TextAreaField
+                id="admin-generated-image-prompt"
+                label="Prompt editable"
+                value={adminImagePrompt}
+                onChange={onAdminImagePromptChange}
+                rows={8}
+              />
+              <p className="mt-2 text-xs leading-5 text-slate-500">
+                El prompt se puede editar antes de generar. La imagen queda disponible de inmediato en este flujo.
+              </p>
+            </div>
+
+            <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <button
+                type="button"
+                disabled={isGeneratingAdminImage}
+                onClick={onGenerateAdminImage}
+                className="inline-flex w-full items-center justify-center rounded-2xl border border-sky-600 bg-sky-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-sky-500 disabled:cursor-not-allowed disabled:border-slate-300 disabled:bg-slate-300 sm:w-auto"
+              >
+                {isGeneratingAdminImage
+                  ? "Generando imagen..."
+                  : "Generar imagen con IA"}
+              </button>
+              <p className="text-xs leading-5 text-slate-500">
+                No publica automáticamente ni reemplaza imágenes existentes.
+              </p>
+            </div>
+
+            {adminImageGenerationSuccess ? (
+              <div className="mt-4 rounded-2xl border border-emerald-200 bg-white/80 px-4 py-3 text-sm leading-6 text-emerald-800">
+                <p className="font-semibold">{adminImageGenerationSuccess}</p>
+              </div>
+            ) : null}
+
+            {adminImageGenerationError ? (
+              <div className="mt-4 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm leading-6 text-rose-700">
+                <p className="font-semibold">{adminImageGenerationError}</p>
+                {adminImageGenerationValidationErrors.length > 0 ? (
+                  <ul className="mt-2 space-y-1">
+                    {adminImageGenerationValidationErrors.map((error) => (
+                      <li key={error}>{error}</li>
+                    ))}
+                  </ul>
+                ) : null}
+              </div>
+            ) : null}
+          </div>
+        </div>
 
         <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm leading-6 text-slate-700">
           <p>
@@ -936,12 +1129,18 @@ function ProductImagesAndPublishSection({
           </button>
           <button
             type="button"
-            disabled={!canPublish || isPublishingProduct}
+            disabled={
+              !canPublish ||
+              isPublishingProduct ||
+              isRedirectingToPublishedProduct
+            }
             onClick={onPublishProduct}
             className="inline-flex w-full items-center justify-center rounded-2xl border border-emerald-900 bg-emerald-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-800 disabled:cursor-not-allowed disabled:border-slate-300 disabled:bg-slate-300 sm:w-auto"
           >
             {isPublishingProduct
               ? "Publicando..."
+              : isRedirectingToPublishedProduct
+                ? "Abriendo vista pública..."
               : publishedProduct
                 ? "Producto publicado"
                 : "Publicar producto"}
@@ -987,12 +1186,30 @@ function ProductImagesAndPublishSection({
 
         {publishedProduct ? (
           <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm leading-6 text-emerald-800">
-            <p className="font-semibold">Producto publicado correctamente.</p>
+            <p className="font-semibold">
+              {publicProductUrl
+                ? "Producto publicado. Te estamos llevando a la vista pública."
+                : "Producto publicado correctamente."}
+            </p>
             <p>
               {publishedProduct.product.nombre} · estado:{" "}
               {publishedProduct.product.status} · imágenes:{" "}
               {publishedProduct.product.imageCount}
             </p>
+            {!publicProductUrl ? (
+              <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center">
+                <p className="text-sm text-emerald-800/80">
+                  No pudimos construir la URL pública para redirigir automáticamente.
+                </p>
+                <button
+                  type="button"
+                  onClick={onCreateAnotherProduct}
+                  className="inline-flex items-center justify-center rounded-2xl border border-emerald-300 bg-white px-4 py-2.5 text-sm font-semibold text-emerald-900 transition hover:bg-emerald-100"
+                >
+                  Crear otro producto
+                </button>
+              </div>
+            ) : null}
           </div>
         ) : null}
       </div>
@@ -1028,14 +1245,27 @@ function EditableProductDraftForm({
   publishError,
   publishValidationErrors,
   publishedProduct,
+  publicProductUrl,
   isUploadingImages,
   isAttachingImages,
   isPublishingProduct,
+  isRedirectingToPublishedProduct,
+  mediaUploaderVersion,
+  adminImagePurpose,
+  adminImagePrompt,
+  adminImageGenerationError,
+  adminImageGenerationValidationErrors,
+  adminImageGenerationSuccess,
+  isGeneratingAdminImage,
+  onAdminImagePurposeChange,
+  onAdminImagePromptChange,
+  onGenerateAdminImage,
   onImagesChange,
   onUploadError,
   onUploadLoading,
   onAttachImages,
   onPublishProduct,
+  onCreateAnotherProduct,
 }: {
   selectedBusiness: AdminProductCreationBusiness | null;
   generatedDraft: GeneratedDraftState;
@@ -1066,14 +1296,29 @@ function EditableProductDraftForm({
   publishError: string | null;
   publishValidationErrors: string[];
   publishedProduct: PublishedProductState | null;
+  publicProductUrl: string | null;
   isUploadingImages: boolean;
   isAttachingImages: boolean;
   isPublishingProduct: boolean;
+  isRedirectingToPublishedProduct: boolean;
+  mediaUploaderVersion: number;
+  adminImagePurpose: ProductImageGenerationPurposeValue;
+  adminImagePrompt: string;
+  adminImageGenerationError: string | null;
+  adminImageGenerationValidationErrors: string[];
+  adminImageGenerationSuccess: string | null;
+  isGeneratingAdminImage: boolean;
+  onAdminImagePurposeChange: (
+    purpose: ProductImageGenerationPurposeValue,
+  ) => void;
+  onAdminImagePromptChange: (prompt: string) => void;
+  onGenerateAdminImage: () => void;
   onImagesChange: (urls: string[] | string | undefined) => void;
   onUploadError: (message: string) => void;
   onUploadLoading: (isLoading: boolean) => void;
   onAttachImages: () => void;
   onPublishProduct: () => void;
+  onCreateAnotherProduct: () => void;
 }) {
   return (
     <div className="space-y-5">
@@ -1447,14 +1692,27 @@ function EditableProductDraftForm({
           publishError={publishError}
           publishValidationErrors={publishValidationErrors}
           publishedProduct={publishedProduct}
+          publicProductUrl={publicProductUrl}
           isUploadingImages={isUploadingImages}
           isAttachingImages={isAttachingImages}
           isPublishingProduct={isPublishingProduct}
+          isRedirectingToPublishedProduct={isRedirectingToPublishedProduct}
+          mediaUploaderVersion={mediaUploaderVersion}
+          adminImagePurpose={adminImagePurpose}
+          adminImagePrompt={adminImagePrompt}
+          adminImageGenerationError={adminImageGenerationError}
+          adminImageGenerationValidationErrors={adminImageGenerationValidationErrors}
+          adminImageGenerationSuccess={adminImageGenerationSuccess}
+          isGeneratingAdminImage={isGeneratingAdminImage}
+          onAdminImagePurposeChange={onAdminImagePurposeChange}
+          onAdminImagePromptChange={onAdminImagePromptChange}
+          onGenerateAdminImage={onGenerateAdminImage}
           onImagesChange={onImagesChange}
           onUploadError={onUploadError}
           onUploadLoading={onUploadLoading}
           onAttachImages={onAttachImages}
           onPublishProduct={onPublishProduct}
+          onCreateAnotherProduct={onCreateAnotherProduct}
         />
 
         <FormSection title="Señales de contexto usadas" className="h-full">
@@ -1494,6 +1752,7 @@ export default function AssistedProductCreationClient({
   businesses,
   truncated,
 }: AssistedProductCreationClientProps) {
+  const router = useRouter();
   const [search, setSearch] = useState("");
   const [selectedBusinessId, setSelectedBusinessId] = useState<string>("");
   const [creationMode, setCreationMode] = useState<"single" | "batch">(
@@ -1535,13 +1794,47 @@ export default function AssistedProductCreationClient({
   >([]);
   const [publishedProduct, setPublishedProduct] =
     useState<PublishedProductState | null>(null);
+  const [publishedProductPublicUrl, setPublishedProductPublicUrl] = useState<
+    string | null
+  >(null);
   const [isPublishingProduct, setIsPublishingProduct] = useState(false);
+  const [isRedirectingToPublishedProduct, setIsRedirectingToPublishedProduct] =
+    useState(false);
+  const [mediaUploaderVersion, setMediaUploaderVersion] = useState(0);
+  const [adminImagePurpose, setAdminImagePurpose] =
+    useState<ProductImageGenerationPurposeValue>(
+      IMAGE_GENERATION_PURPOSES.CATALOG,
+    );
+  const [adminImagePromptOverrides, setAdminImagePromptOverrides] =
+    useState<AdminImagePromptOverrides>({
+      ...EMPTY_ADMIN_IMAGE_PROMPT_OVERRIDES,
+    });
+  const [adminImageGenerationError, setAdminImageGenerationError] = useState<
+    string | null
+  >(null);
+  const [adminImageGenerationValidationErrors, setAdminImageGenerationValidationErrors] =
+    useState<string[]>([]);
+  const [adminImageGenerationSuccess, setAdminImageGenerationSuccess] =
+    useState<string | null>(null);
+  const [isGeneratingAdminImage, setIsGeneratingAdminImage] = useState(false);
 
   const selectedBusiness = useMemo(
     () =>
       businesses.find((business) => business.id === selectedBusinessId) ?? null,
     [businesses, selectedBusinessId],
   );
+
+  useEffect(() => {
+    if (!isRedirectingToPublishedProduct || !publishedProductPublicUrl) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      router.push(publishedProductPublicUrl);
+    }, 900);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [isRedirectingToPublishedProduct, publishedProductPublicUrl, router]);
 
   const filteredBusinesses = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase();
@@ -1589,8 +1882,44 @@ export default function AssistedProductCreationClient({
     );
   }, [attachedImageUrls, productImageUrls, savedProduct]);
 
+  const adminImagePrompt = useMemo(() => {
+    if (!editableDraft) return "";
+
+    const promptOverride = getAdminImagePromptOverride(
+      adminImagePromptOverrides,
+      adminImagePurpose,
+    );
+
+    return (
+      promptOverride ||
+      resolveAdminProductImagePrompt({
+        purpose: adminImagePurpose,
+        source: {
+          nombre: editableDraft.nombre,
+          descripcion: editableDraft.descripcion,
+          descripcionCorta: editableDraft.descripcionCorta,
+          categoriaNombre: editableDraft.categoriaSugerida.nombre,
+          promptCatalogo: editableDraft.promptsImagen?.promptCatalogo,
+          promptPublicitario: editableDraft.promptsImagen?.promptPublicitario,
+        },
+        businessName: selectedBusiness?.nombre,
+      })
+    );
+  }, [
+    adminImagePromptOverrides,
+    adminImagePurpose,
+    editableDraft,
+    selectedBusiness,
+  ]);
+
   const updateBriefing = (field: keyof BriefingState, value: string) => {
     setBriefing((current) => ({ ...current, [field]: value }));
+  };
+
+  const clearAdminImageGenerationFeedback = () => {
+    setAdminImageGenerationError(null);
+    setAdminImageGenerationValidationErrors([]);
+    setAdminImageGenerationSuccess(null);
   };
 
   const clearMediaPublicationState = () => {
@@ -1604,7 +1933,12 @@ export default function AssistedProductCreationClient({
     setPublishError(null);
     setPublishValidationErrors([]);
     setPublishedProduct(null);
+    setPublishedProductPublicUrl(null);
     setIsPublishingProduct(false);
+    setIsRedirectingToPublishedProduct(false);
+    clearAdminImageGenerationFeedback();
+    setIsGeneratingAdminImage(false);
+    setMediaUploaderVersion(0);
   };
 
   const clearSaveFeedback = () => {
@@ -1623,6 +1957,10 @@ export default function AssistedProductCreationClient({
     setIsDraftDirty(false);
     setTagInput("");
     setComponentInput("");
+    setAdminImagePurpose(IMAGE_GENERATION_PURPOSES.CATALOG);
+    setAdminImagePromptOverrides({
+      ...EMPTY_ADMIN_IMAGE_PROMPT_OVERRIDES,
+    });
     clearSaveFeedback();
     clearSavedProductState();
   };
@@ -1713,6 +2051,22 @@ export default function AssistedProductCreationClient({
     setIsUploadingImages(isLoading);
     if (isLoading) setImageUploadError(null);
   }, []);
+
+  const handleAdminImagePurposeChange = (
+    nextPurpose: ProductImageGenerationPurposeValue,
+  ) => {
+    setAdminImagePurpose(nextPurpose);
+    clearAdminImageGenerationFeedback();
+  };
+
+  const handleAdminImagePromptChange = (prompt: string) => {
+    setAdminImagePromptOverrides((current) => ({
+      ...EMPTY_ADMIN_IMAGE_PROMPT_OVERRIDES,
+      ...(current ?? {}),
+      [adminImagePurpose]: prompt,
+    }));
+    clearAdminImageGenerationFeedback();
+  };
 
   const handleGenerateDraft = async () => {
     if (!selectedBusiness || !canPrepareAiDraft) return;
@@ -1849,6 +2203,85 @@ export default function AssistedProductCreationClient({
     }
   };
 
+  const handleGenerateAdminImage = async () => {
+    if (!editableDraft || !savedProduct?.product.id) {
+      setAdminImageGenerationError(
+        "Primero guarda el producto como oculto para generar la imagen.",
+      );
+      setAdminImageGenerationValidationErrors([]);
+      setAdminImageGenerationSuccess(null);
+      return;
+    }
+
+    const normalizedPrompt = adminImagePrompt.replace(/\s+/g, " ").trim();
+
+    if (normalizedPrompt.length < 10) {
+      setAdminImageGenerationError(
+        "El prompt editable debe tener al menos 10 caracteres.",
+      );
+      setAdminImageGenerationValidationErrors([]);
+      setAdminImageGenerationSuccess(null);
+      return;
+    }
+
+    setIsGeneratingAdminImage(true);
+    clearAdminImageGenerationFeedback();
+
+    try {
+      const { generateAdminProductImageAction } = await import(
+        "@/actions/myckeoAdmin/generateAdminProductImageAction"
+      );
+
+      const result = await generateAdminProductImageAction({
+        productId: savedProduct.product.id,
+        prompt: normalizedPrompt,
+        purpose: adminImagePurpose,
+      });
+
+      if (!result.ok) {
+        setAdminImageGenerationError(
+          result.error || "No fue posible generar la imagen.",
+        );
+        setAdminImageGenerationValidationErrors(result.validationErrors ?? []);
+        return;
+      }
+
+      const nextAttachedImageUrls = mergeUniqueImageUrls(
+        attachedImageUrls,
+        result.image.url,
+      );
+      const nextProductImageUrls = mergeUniqueImageUrls(
+        productImageUrls,
+        result.image.url,
+      );
+
+      setAttachedImages({
+        productId: savedProduct.product.id,
+        negocioId: savedProduct.product.negocioId,
+        imageUrls: nextAttachedImageUrls,
+        imageCount: nextAttachedImageUrls.length,
+      });
+      setProductImageUrls(nextProductImageUrls);
+      setMediaUploaderVersion((current) => current + 1);
+      setPublishError(null);
+      setPublishValidationErrors([]);
+      setPublishedProduct(null);
+      setAdminImageGenerationSuccess(
+        result.alreadyGenerated
+          ? "Esta imagen ya había sido generada, la reutilizamos."
+          : "Imagen generada y agregada al producto.",
+      );
+    } catch (error) {
+      setAdminImageGenerationError(
+        error instanceof Error
+          ? error.message
+          : "Ocurrió un error inesperado al generar la imagen.",
+      );
+    } finally {
+      setIsGeneratingAdminImage(false);
+    }
+  };
+
   const handlePublishProduct = async () => {
     if (!selectedBusiness || !savedProduct) return;
 
@@ -1858,8 +2291,10 @@ export default function AssistedProductCreationClient({
     }
 
     setIsPublishingProduct(true);
+    setIsRedirectingToPublishedProduct(false);
     setPublishError(null);
     setPublishValidationErrors([]);
+    setPublishedProductPublicUrl(null);
 
     try {
       const result = await publishAdminProductAction({
@@ -1874,8 +2309,13 @@ export default function AssistedProductCreationClient({
       }
 
       const publishedData = result.data;
+      const nextPublicProductUrl = buildPublicProductUrl(
+        publishedData.product.slug,
+      );
 
       setPublishedProduct(publishedData);
+      setPublishedProductPublicUrl(nextPublicProductUrl);
+      setIsRedirectingToPublishedProduct(Boolean(nextPublicProductUrl));
       setSavedProduct((current) =>
         current
           ? {
@@ -1896,6 +2336,13 @@ export default function AssistedProductCreationClient({
     } finally {
       setIsPublishingProduct(false);
     }
+  };
+
+  const handleCreateAnotherProduct = () => {
+    setBriefing(initialBriefing);
+    setGenerationError(null);
+    setValidationErrors([]);
+    clearDraftState();
   };
 
   return (
@@ -2250,14 +2697,27 @@ export default function AssistedProductCreationClient({
                   publishError={publishError}
                   publishValidationErrors={publishValidationErrors}
                   publishedProduct={publishedProduct}
+                  publicProductUrl={publishedProductPublicUrl}
                   isUploadingImages={isUploadingImages}
                   isAttachingImages={isAttachingImages}
                   isPublishingProduct={isPublishingProduct}
+                  isRedirectingToPublishedProduct={isRedirectingToPublishedProduct}
+                  mediaUploaderVersion={mediaUploaderVersion}
+                  adminImagePurpose={adminImagePurpose}
+                  adminImagePrompt={adminImagePrompt}
+                  adminImageGenerationError={adminImageGenerationError}
+                  adminImageGenerationValidationErrors={adminImageGenerationValidationErrors}
+                  adminImageGenerationSuccess={adminImageGenerationSuccess}
+                  isGeneratingAdminImage={isGeneratingAdminImage}
+                  onAdminImagePurposeChange={handleAdminImagePurposeChange}
+                  onAdminImagePromptChange={handleAdminImagePromptChange}
+                  onGenerateAdminImage={handleGenerateAdminImage}
                   onImagesChange={handleProductImagesChange}
                   onUploadError={handleProductImageUploadError}
                   onUploadLoading={handleProductImageUploadLoading}
                   onAttachImages={handleAttachImages}
                   onPublishProduct={handlePublishProduct}
+                  onCreateAnotherProduct={handleCreateAnotherProduct}
                 />
               ) : (
                 <div className="rounded-3xl border border-dashed border-slate-300 bg-slate-50 px-5 py-8 text-center">

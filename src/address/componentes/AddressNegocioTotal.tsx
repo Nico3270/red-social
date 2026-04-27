@@ -154,7 +154,7 @@ const AddressNegocioTotal: React.FC = () => {
     }
   }, [selectedDepartamento]);
 
-  const totalGlobal = useMemo(() => getTotalPrice(), [getTotalPrice, carts]);
+  const totalGlobal = useMemo(() => getTotalPrice(), [getTotalPrice]);
 
   const onSubmit = async (data: Address) => {
     try {

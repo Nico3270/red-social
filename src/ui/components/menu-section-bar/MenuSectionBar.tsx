@@ -90,7 +90,7 @@ export const MenuSectionsBar = ({ compact = false }: MenuSectionsBarProps) => {
       <div
         ref={scrollContainerRef}
         className={`flex flex-nowrap overflow-x-auto rounded-lg color-principal scrollbar-hide ${
-          compact ? "gap-1.5 px-2 pt-1 " : "gap-2 "
+          compact ? "gap-1.5 px-2 pt-2 " : "gap-1 "
         }`}
         style={{ scrollBehavior: "smooth" }}
       >
@@ -128,12 +128,12 @@ export const MenuSectionsBar = ({ compact = false }: MenuSectionsBarProps) => {
                   <span
                     className={`mt-1 text-center leading-tight ${titleFont.className} ${
                       section.isActive ? "text-sky-700" : "color-iconos"
-                    } ${compact ? "text-[11px] md:text-xs" : "text-xs md:text-xs"}`}
+                    } ${compact ? "text-[8x] md:text-xs" : "text-xs md:text-xs"}`}
                     style={{
                       wordBreak: "break-word",
                       whiteSpace: "normal",
                       textWrap: "balance",
-                      minHeight: compact ? "28px" : "32px",
+                      minHeight: compact ? "24px" : "28px",
                     }}
                   >
                     {section.nombre}

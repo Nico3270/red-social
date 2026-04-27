@@ -219,14 +219,15 @@ model Product {
   stockIlimitado Boolean @default(true)
   usaVariantes   Boolean @default(false)
 
-  imagenes                  Image[]               @relation("ProductImages")
+  imagenes                  Image[]                  @relation("ProductImages")
+  imageGenerations          ProductImageGeneration[] @relation("ProductImageGenerations")
   orderItems                OrderItem[]
-  category                  Category              @relation(fields: [categoryId], references: [id])
-  negocio                   Negocio               @relation(fields: [negocioId], references: [id], onDelete: Cascade)
+  category                  Category                 @relation(fields: [categoryId], references: [id])
+  negocio                   Negocio                  @relation(fields: [negocioId], references: [id], onDelete: Cascade)
   secciones                 ProductSection[]
   publicacionesRelacionadas PublicacionProducto[]
   ratingPromedio            Float?
-  numResenas                Int                   @default(0)
+  numResenas                Int                      @default(0)
 
   // Nuevas relaciones opcionales
   atributos            ProductAttribute[]
@@ -357,12 +358,44 @@ model CatalogGroupProduct {
 }
 
 model Image {
-  id        String  @id @default(uuid())
-  url       String
-  productId String
-  product   Product @relation("ProductImages", fields: [productId], references: [id], onDelete: Cascade)
+  id         String                  @id @default(uuid())
+  url        String
+  productId  String
+  product    Product                 @relation("ProductImages", fields: [productId], references: [id], onDelete: Cascade)
+  generation ProductImageGeneration? @relation("GeneratedProductImage")
 
   @@index([productId])
+}
+
+model ProductImageGeneration {
+  id                 String                         @id @default(uuid())
+  productId          String
+  imageId            String?                        @unique
+  prompt             String
+  promptHash         String
+  model              String
+  size               String
+  quality            String
+  purpose            ProductImageGenerationPurpose  @default(CATALOG)
+  variantIndex       Int                            @default(1)
+  status             ProductImageGenerationStatus   @default(PENDING)
+  provider           ProductImageGenerationProvider @default(OPENAI)
+  cloudinaryUrl      String?
+  cloudinaryPublicId String?                        @unique
+  errorMessage       String?
+  createdById        String?
+  createdAt          DateTime                       @default(now())
+  updatedAt          DateTime                       @updatedAt
+
+  product   Product  @relation("ProductImageGenerations", fields: [productId], references: [id], onDelete: Cascade)
+  image     Image?   @relation("GeneratedProductImage", fields: [imageId], references: [id], onDelete: SetNull)
+  createdBy Usuario? @relation("ProductImageGenerationCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+
+  @@unique([productId, provider, model, promptHash, size, quality, purpose, variantIndex])
+  @@index([productId, status])
+  @@index([productId, createdAt])
+  @@index([promptHash])
+  @@index([createdById, createdAt])
 }
 
 model Section {
@@ -474,45 +507,46 @@ model Interaccion {
 }
 
 model Usuario {
-  id                  String               @id @default(uuid())
-  nombre              String
-  apellido            String
-  username            String               @unique
-  contraseña         String
-  email               String               @unique
-  ciudad              String
-  departamento        String
-  pais                String?              @default("Colombia")
-  genero              Genero
-  fechaNacimiento     DateTime
-  fotoPerfil          String?
-  biografia           String?
-  role                Role                 @default(user)
-  facebook            String?
-  instagram           String?
-  tiktok              String?
-  youtube             String?
-  twitter             String?
-  createdAt           DateTime             @default(now())
-  updatedAt           DateTime             @updatedAt
-  ultimaActividad     DateTime             @default(now())
-  estado              EstadoUsuario        @default(activo)
-  emailVerified       DateTime?
-  preferencias        String[]
-  encuestas           Encuesta[]           @relation("UsuarioEncuestas")
-  followsOut          Follow[]             @relation("Follower")
-  followsIn           Follow[]             @relation("FollowedUser")
-  interacciones       Interaccion[]        @relation("UsuarioInteracciones")
-  negocio             Negocio?
-  orders              Order[]
-  publicaciones       Publicacion[]
-  resenas             Resena[]
-  reservations        Reservation[]
-  respuestas          Respuesta[]          @relation("UsuarioRespuestas")
-  Transaction         Transaction[]
-  perfilCompleto      Boolean              @default(false)
-  isPlaceholder       Boolean              @default(false)
-  passwordResetTokens PasswordResetToken[] @relation("UserPasswordResetTokens")
+  id                      String                   @id @default(uuid())
+  nombre                  String
+  apellido                String
+  username                String                   @unique
+  contraseña             String
+  email                   String                   @unique
+  ciudad                  String
+  departamento            String
+  pais                    String?                  @default("Colombia")
+  genero                  Genero
+  fechaNacimiento         DateTime
+  fotoPerfil              String?
+  biografia               String?
+  role                    Role                     @default(user)
+  facebook                String?
+  instagram               String?
+  tiktok                  String?
+  youtube                 String?
+  twitter                 String?
+  createdAt               DateTime                 @default(now())
+  updatedAt               DateTime                 @updatedAt
+  ultimaActividad         DateTime                 @default(now())
+  estado                  EstadoUsuario            @default(activo)
+  emailVerified           DateTime?
+  preferencias            String[]
+  encuestas               Encuesta[]               @relation("UsuarioEncuestas")
+  followsOut              Follow[]                 @relation("Follower")
+  followsIn               Follow[]                 @relation("FollowedUser")
+  interacciones           Interaccion[]            @relation("UsuarioInteracciones")
+  negocio                 Negocio?
+  orders                  Order[]
+  publicaciones           Publicacion[]
+  resenas                 Resena[]
+  reservations            Reservation[]
+  respuestas              Respuesta[]              @relation("UsuarioRespuestas")
+  Transaction             Transaction[]
+  perfilCompleto          Boolean                  @default(false)
+  isPlaceholder           Boolean                  @default(false)
+  passwordResetTokens     PasswordResetToken[]     @relation("UserPasswordResetTokens")
+  productImageGenerations ProductImageGeneration[] @relation("ProductImageGenerationCreatedBy")
 
   @@index([username])
   @@index([email])
@@ -813,6 +847,22 @@ enum ProductEtiquetaEspecial {
   promocion
   ultimos_dias
   ninguna
+}
+
+enum ProductImageGenerationStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+}
+
+enum ProductImageGenerationProvider {
+  OPENAI
+}
+
+enum ProductImageGenerationPurpose {
+  CATALOG
+  PROMOTIONAL
+  CUSTOM
 }
 
 enum Currency {

@@ -84,7 +84,7 @@ const CatalogGroupsPublicView: React.FC<CatalogGroupsPublicViewProps> = ({
     initialGroupId && initialGroupProducts ? { [initialGroupId]: initialGroupProducts } : {}
   );
   const [groupLoadErrors, setGroupLoadErrors] = useState<Record<string, string>>({});
-  const [loadingGroups, setLoadingGroups] = useState<Set<string>>(new Set());
+  const [, setLoadingGroups] = useState<Set<string>>(new Set());
   const previousGroupIdRef = useRef<string | null>(null);
   const reportedGroupIdRef = useRef<string | null | undefined>(undefined);
 
@@ -232,7 +232,6 @@ const CatalogGroupsPublicView: React.FC<CatalogGroupsPublicViewProps> = ({
     [currentGroupId, groupsWithProducts]
   );
   const currentGroupError = currentGroupId ? groupLoadErrors[currentGroupId] : null;
-  const isLoading = currentGroupId ? loadingGroups.has(currentGroupId) : false;
   const selectedGroupNode = currentGroupId ? findGroupInTree(currentGroupId, groupsTree) : null;
   const selectedRootGroup = selectedGroupId
     ? findGroupInTree(selectedGroupId, groupsTree)

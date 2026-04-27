@@ -1,5 +1,5 @@
-import { v2 as cloudinary } from "cloudinary";
 import type { CloudinaryAssetReference } from "./cloudinaryAsset";
+import { getServerCloudinary } from "./serverCloudinary";
 
 export interface CloudinaryAssetDeleteFailure {
   asset: CloudinaryAssetReference;
@@ -14,35 +14,14 @@ export interface DeleteCloudinaryAssetsResult {
   failedAssets: CloudinaryAssetDeleteFailure[];
 }
 
-let cloudinaryConfigured = false;
-
-function ensureCloudinaryConfig() {
-  const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
-  const apiKey = process.env.CLOUDINARY_API_KEY;
-  const apiSecret = process.env.CLOUDINARY_API_SECRET;
-
-  if (!cloudName || !apiKey || !apiSecret) {
-    throw new Error("Missing Cloudinary server configuration.");
-  }
-
-  if (!cloudinaryConfigured) {
-    cloudinary.config({
-      cloud_name: cloudName,
-      api_key: apiKey,
-      api_secret: apiSecret,
-    });
-    cloudinaryConfigured = true;
-  }
-}
-
 export async function deleteCloudinaryAssets(
   assets: CloudinaryAssetReference[]
 ): Promise<DeleteCloudinaryAssetsResult> {
-  ensureCloudinaryConfig();
+  const { cloudinary: configuredCloudinary } = getServerCloudinary();
 
   const settled = await Promise.allSettled(
     assets.map(async (asset) => {
-      const result = await cloudinary.uploader.destroy(asset.publicId, {
+      const result = await configuredCloudinary.uploader.destroy(asset.publicId, {
         resource_type: asset.resourceType,
       });
 

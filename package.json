@@ -22,6 +22,7 @@
     "env:check:smoke": "node scripts/check-env.mjs smoke",
     "env:check:deploy": "node scripts/check-env.mjs deploy",
     "env:check:pilot": "node scripts/check-env.mjs pilot",
+    "cloudinary:test-generated-upload": "pnpm exec tsx scripts/test-cloudinary-generated-upload.ts",
     "import-contacts": "ts-node src/seed/contactos-database.ts",
     "seed": "ts-node src/seed/seed-database.ts",
     "seed2": "ts-node src/seed/seed-database copy.ts",

@@ -102,7 +102,7 @@ const selectStyle = {
 
 const AddresOrdenNegocio: React.FC = () => {
   const router = useRouter();
-  const { removeProduct, cart, getTotalPrice } = useCartNegocioStore();
+  const { removeProduct, cart } = useCartNegocioStore();
   const { address, setAddress } = useAddressStore();
 
   const {
