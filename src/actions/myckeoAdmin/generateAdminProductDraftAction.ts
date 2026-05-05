@@ -129,12 +129,22 @@ export interface AdminProductDraftContextSummary {
   catalogGroupSignals: string[];
 }
 
+export interface AdminCatalogGroupOption {
+  id: string;
+  nombre: string;
+  slug: string;
+  parentId: string | null;
+  order: number;
+  description: string | null;
+}
+
 export interface GenerateAdminProductDraftActionResult {
   ok: boolean;
   data: {
     draft: AdminGeneratedProductDraft;
     contextSummary: AdminProductDraftContextSummary;
     model: string;
+    catalogGroupOptions: AdminCatalogGroupOption[];
   } | null;
   error: string | null;
   validationErrors?: string[];
@@ -396,6 +406,8 @@ async function buildBusinessContext(businessId: string) {
           id: true,
           nombre: true,
           slug: true,
+          parentId: true,
+          order: true,
           description: true,
           _count: {
             select: {
@@ -448,6 +460,17 @@ async function buildBusinessContext(businessId: string) {
     description: compactText(group.description, 180) || null,
     productCount: group._count.productos,
   }));
+
+  const catalogGroupOptions: AdminCatalogGroupOption[] = activeCatalogGroups.map(
+    (group) => ({
+      id: group.id,
+      nombre: group.nombre,
+      slug: group.slug,
+      parentId: group.parentId,
+      order: group.order,
+      description: compactText(group.description, 180) || null,
+    }),
+  );
 
   const contextSummary: AdminProductDraftContextSummary = {
     business: {
@@ -502,6 +525,7 @@ async function buildBusinessContext(businessId: string) {
       keywords: business.palabrasClave.slice(0, 16),
     },
     summary: contextSummary,
+    catalogGroupOptions,
   };
 }
 
@@ -650,6 +674,7 @@ export async function generateAdminProductDraftAction(
         draft: parsedDraft.data,
         contextSummary: context.summary,
         model: openaiDraftModel,
+        catalogGroupOptions: context.catalogGroupOptions,
       },
       error: null,
     };

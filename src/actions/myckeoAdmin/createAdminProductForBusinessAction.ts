@@ -80,6 +80,13 @@ const productEtiquetaEspecialInputSchema = z
 
 const createAdminProductForBusinessInputSchema = z.object({
   businessId: z.string().trim().min(1, "El negocio es obligatorio."),
+  categoryId: z.string().trim().min(1).max(120).optional(),
+  sectionIds: z
+    .array(z.string().trim().min(1).max(120))
+    .optional(),
+  catalogGroupIds: z
+    .array(z.string().trim().min(1).max(120))
+    .optional(),
   draft: z
     .object({
       nombre: z
@@ -200,6 +207,21 @@ function cleanStringArray(items: string[], limit: number) {
   return result;
 }
 
+function cleanIdArray(items: string[]) {
+  const seen = new Set<string>();
+  const result: string[] = [];
+
+  for (const item of items) {
+    const normalized = item.trim();
+    if (!normalized || seen.has(normalized)) continue;
+
+    seen.add(normalized);
+    result.push(normalized);
+  }
+
+  return result;
+}
+
 async function buildUniqueProductSlug(
   slugSuggestion: string,
   fallbackName: string,
@@ -264,6 +286,16 @@ async function resolveCategory(
   return null;
 }
 
+async function resolveExplicitCategoryId(categoryId: string) {
+  return prisma.category.findFirst({
+    where: {
+      id: categoryId,
+      isActive: true,
+    },
+    select: { id: true, nombre: true, slug: true },
+  });
+}
+
 async function resolveSection(option: ParsedInput["draft"]["seccionSugerida"]) {
   if (!option.id && !option.slug && !option.nombre) return null;
 
@@ -281,8 +313,58 @@ async function resolveSection(option: ParsedInput["draft"]["seccionSugerida"]) {
       isActive: true,
       OR: whereOptions,
     },
-    select: { id: true, nombre: true, slug: true },
+    select: { id: true, nombre: true, slug: true, categoryId: true },
   });
+}
+
+async function resolveExplicitSectionIds(
+  categoryId: string,
+  sectionIds: string[],
+) {
+  const uniqueSectionIds = cleanIdArray(sectionIds);
+
+  if (uniqueSectionIds.length === 0) {
+    return {
+      resolvedIds: [],
+      invalidIds: [],
+      incompatibleIds: [],
+    };
+  }
+
+  const sections = await prisma.section.findMany({
+    where: {
+      id: { in: uniqueSectionIds },
+      isActive: true,
+    },
+    select: {
+      id: true,
+      nombre: true,
+      categoryId: true,
+    },
+  });
+
+  const sectionById = new Map(sections.map((section) => [section.id, section]));
+  const invalidIds = uniqueSectionIds.filter((id) => !sectionById.has(id));
+  const incompatibleIds = uniqueSectionIds.filter((id) => {
+    const section = sectionById.get(id);
+
+    return Boolean(
+      section && section.categoryId && section.categoryId !== categoryId,
+    );
+  });
+
+  return {
+    resolvedIds: uniqueSectionIds.filter((id) => {
+      const section = sectionById.get(id);
+
+      if (!section) return false;
+      if (section.categoryId && section.categoryId !== categoryId) return false;
+
+      return true;
+    }),
+    invalidIds,
+    incompatibleIds,
+  };
 }
 
 async function resolveCatalogGroups(
@@ -326,6 +408,42 @@ async function resolveCatalogGroups(
   }
 
   return { resolvedIds, warnings };
+}
+
+async function resolveExplicitCatalogGroupIds(
+  businessId: string,
+  catalogGroupIds: string[],
+) {
+  const uniqueCatalogGroupIds = cleanIdArray(catalogGroupIds);
+
+  if (uniqueCatalogGroupIds.length === 0) {
+    return {
+      resolvedIds: [],
+      invalidIds: [],
+    };
+  }
+
+  const resolvedCatalogGroups = await prisma.catalogGroup.findMany({
+    where: {
+      negocioId: businessId,
+      isActive: true,
+      id: { in: uniqueCatalogGroupIds },
+    },
+    select: { id: true },
+  });
+
+  const resolvedCatalogGroupIdSet = new Set(
+    resolvedCatalogGroups.map((group) => group.id),
+  );
+
+  return {
+    resolvedIds: uniqueCatalogGroupIds.filter((id) =>
+      resolvedCatalogGroupIdSet.has(id),
+    ),
+    invalidIds: uniqueCatalogGroupIds.filter(
+      (id) => !resolvedCatalogGroupIdSet.has(id),
+    ),
+  };
 }
 
 export async function createAdminProductForBusinessAction(
@@ -374,7 +492,8 @@ export async function createAdminProductForBusinessAction(
       };
     }
 
-    const { businessId, draft } = parsedInput.data;
+    const { businessId, categoryId, sectionIds, catalogGroupIds, draft } =
+      parsedInput.data;
 
     const business = await prisma.negocio.findUnique({
       where: { id: businessId },
@@ -403,36 +522,109 @@ export async function createAdminProductForBusinessAction(
       };
     }
 
-    const category = await resolveCategory(draft.categoriaSugerida);
+    const category = categoryId
+      ? await resolveExplicitCategoryId(categoryId)
+      : await resolveCategory(draft.categoriaSugerida);
 
     if (!category) {
       return {
         ok: false,
         data: null,
-        error:
-          "No se pudo resolver la categoría a una categoría activa real. Corrige el ID, slug o nombre antes de guardar.",
+        error: categoryId
+          ? "La categoría seleccionada no existe o no está activa."
+          : "No se pudo resolver la categoría a una categoría activa real. Corrige el ID, slug o nombre antes de guardar.",
+        validationErrors: categoryId
+          ? [
+              `categoryId: La categoría \"${categoryId}\" no existe o no está activa.`,
+            ]
+          : undefined,
       };
     }
 
     const warnings: string[] = [];
-    const section = await resolveSection(draft.seccionSugerida);
+    let resolvedSectionIds: string[] = [];
+    let resolvedCatalogGroupIds: string[] = [];
 
-    if (
-      !section &&
-      (draft.seccionSugerida.id ||
-        draft.seccionSugerida.slug ||
-        draft.seccionSugerida.nombre)
-    ) {
-      warnings.push(
-        `No se vinculó la sección "${draft.seccionSugerida.nombre || draft.seccionSugerida.slug || draft.seccionSugerida.id}" porque no coincide con una sección activa.`,
+    if (sectionIds && sectionIds.length > 0) {
+      const explicitSections = await resolveExplicitSectionIds(
+        category.id,
+        sectionIds,
       );
+
+      if (
+        explicitSections.invalidIds.length > 0 ||
+        explicitSections.incompatibleIds.length > 0
+      ) {
+        return {
+          ok: false,
+          data: null,
+          error:
+            "Revisa las secciones seleccionadas antes de guardar el producto.",
+          validationErrors: [
+            ...explicitSections.invalidIds.map(
+              (id) =>
+                `sectionIds: La sección \"${id}\" no existe o no está activa.`,
+            ),
+            ...explicitSections.incompatibleIds.map(
+              (id) =>
+                `sectionIds: La sección \"${id}\" no pertenece a la categoría seleccionada.`,
+            ),
+          ],
+        };
+      }
+
+      resolvedSectionIds = explicitSections.resolvedIds;
+    } else {
+      const section = await resolveSection(draft.seccionSugerida);
+
+      if (
+        !section &&
+        (draft.seccionSugerida.id ||
+          draft.seccionSugerida.slug ||
+          draft.seccionSugerida.nombre)
+      ) {
+        warnings.push(
+          `No se vinculó la sección "${draft.seccionSugerida.nombre || draft.seccionSugerida.slug || draft.seccionSugerida.id}" porque no coincide con una sección activa.`,
+        );
+      } else if (section) {
+        if (section.categoryId && section.categoryId !== category.id) {
+          warnings.push(
+            `No se vinculó la sección "${section.nombre}" porque pertenece a otra categoría activa.`,
+          );
+        } else {
+          resolvedSectionIds = [section.id];
+        }
+      }
     }
 
-    const catalogGroups = await resolveCatalogGroups(
-      business.id,
-      draft.catalogGroupsSugeridos,
-    );
-    warnings.push(...catalogGroups.warnings);
+    if (catalogGroupIds && catalogGroupIds.length > 0) {
+      const explicitCatalogGroups = await resolveExplicitCatalogGroupIds(
+        business.id,
+        catalogGroupIds,
+      );
+
+      if (explicitCatalogGroups.invalidIds.length > 0) {
+        return {
+          ok: false,
+          data: null,
+          error:
+            "Revisa los CatalogGroups seleccionados antes de guardar el producto.",
+          validationErrors: explicitCatalogGroups.invalidIds.map(
+            (id) =>
+              `catalogGroupIds: El grupo \"${id}\" no existe, no está activo o no pertenece al negocio seleccionado.`,
+          ),
+        };
+      }
+
+      resolvedCatalogGroupIds = explicitCatalogGroups.resolvedIds;
+    } else {
+      const catalogGroups = await resolveCatalogGroups(
+        business.id,
+        draft.catalogGroupsSugeridos,
+      );
+      warnings.push(...catalogGroups.warnings);
+      resolvedCatalogGroupIds = catalogGroups.resolvedIds;
+    }
 
     const slug = await buildUniqueProductSlug(draft.slugSugerido, draft.nombre);
     const tags = cleanStringArray(draft.tags, 16);
@@ -495,16 +687,19 @@ export async function createAdminProductForBusinessAction(
         },
       });
 
-      if (section) {
+      if (resolvedSectionIds.length > 0) {
         await tx.productSection.createMany({
-          data: [{ productId: createdProduct.id, sectionId: section.id }],
+          data: resolvedSectionIds.map((sectionId) => ({
+            productId: createdProduct.id,
+            sectionId,
+          })),
           skipDuplicates: true,
         });
       }
 
-      if (catalogGroups.resolvedIds.length > 0) {
+      if (resolvedCatalogGroupIds.length > 0) {
         await tx.catalogGroupProduct.createMany({
-          data: catalogGroups.resolvedIds.map((catalogGroupId, index) => ({
+          data: resolvedCatalogGroupIds.map((catalogGroupId, index) => ({
             productId: createdProduct.id,
             catalogGroupId,
             order: index,

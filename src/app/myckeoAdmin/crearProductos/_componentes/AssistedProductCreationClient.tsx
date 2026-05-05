@@ -16,9 +16,11 @@ import {
 } from "@/actions/myckeoAdmin/publishAdminProductAction";
 import {
   generateAdminProductDraftAction,
+  type AdminCatalogGroupOption,
   type AdminGeneratedProductDraft,
   type AdminProductDraftContextSummary,
 } from "@/actions/myckeoAdmin/generateAdminProductDraftAction";
+import { initialData } from "@/seed/seed";
 import AutoUploadMedia from "@/ui/components/autoUpload/AutoUploadMedia";
 import { useRouter } from "next/navigation";
 import {
@@ -47,6 +49,7 @@ type GeneratedDraftState = {
   draft: AdminGeneratedProductDraft;
   contextSummary: AdminProductDraftContextSummary;
   model: string;
+  catalogGroupOptions: AdminCatalogGroupOption[];
   businessId: string;
   sourceBriefing: BriefingState;
 };
@@ -92,7 +95,10 @@ type EditableDraftFormState = {
   tags: string[];
   componentes: string[];
   categoriaSugerida: SuggestedOptionForm;
+  categoriaSeleccionada: SuggestedOptionForm;
   seccionSugerida: SuggestedOptionForm;
+  seccionesSeleccionadas: SuggestedOptionForm[];
+  selectedCatalogGroupIds: string[];
   catalogGroupsSugeridos: SuggestedOptionForm[];
   etiquetaEspecialSugerida: string;
   usaVariantesSugerido: boolean;
@@ -158,6 +164,235 @@ const compactInputClasses =
 const labelClasses =
   "mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500";
 
+type RealCategoryOption = (typeof initialData.categorias)[number];
+type RealSectionOption = (typeof initialData.secciones)[number];
+type RealCatalogGroupOption = AdminCatalogGroupOption;
+type OrderedCatalogGroupOption = AdminCatalogGroupOption & { depth: number };
+
+const EMPTY_SUGGESTED_OPTION: SuggestedOptionForm = {
+  id: "",
+  nombre: "",
+  slug: "",
+  razon: "",
+};
+
+const activeCategoryOptions = initialData.categorias.filter(
+  (category) => category.isActive,
+);
+
+const activeSectionOptions = initialData.secciones.filter(
+  (section) => section.isActive,
+);
+
+function normalizeOptionMatchValue(value: string | null | undefined) {
+  return (value ?? "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLowerCase();
+}
+
+function hasSuggestedOptionValue(option: SuggestedOptionForm) {
+  return Boolean(option.id.trim() || option.slug.trim() || option.nombre.trim());
+}
+
+function buildSuggestedOptionLabel(option: SuggestedOptionForm) {
+  return option.nombre.trim() || option.slug.trim() || option.id.trim();
+}
+
+function toSuggestedOptionForm(
+  option: Pick<SuggestedOptionForm, "id" | "nombre" | "slug">,
+  razon = "",
+): SuggestedOptionForm {
+  return {
+    id: option.id,
+    nombre: option.nombre,
+    slug: option.slug,
+    razon,
+  };
+}
+
+function findMatchingCategory(
+  option: SuggestedOptionForm,
+): RealCategoryOption | null {
+  if (!hasSuggestedOptionValue(option)) return null;
+
+  const normalizedId = option.id.trim();
+  const normalizedSlug = normalizeOptionMatchValue(option.slug);
+  const normalizedName = normalizeOptionMatchValue(option.nombre);
+
+  return (
+    activeCategoryOptions.find((category) => category.id === normalizedId) ??
+    activeCategoryOptions.find(
+      (category) => normalizeOptionMatchValue(category.slug) === normalizedSlug,
+    ) ??
+    activeCategoryOptions.find(
+      (category) =>
+        normalizeOptionMatchValue(category.nombre) === normalizedName,
+    ) ??
+    null
+  );
+}
+
+function findMatchingSection(
+  option: SuggestedOptionForm,
+  sections: RealSectionOption[] = activeSectionOptions,
+): RealSectionOption | null {
+  if (!hasSuggestedOptionValue(option)) return null;
+
+  const normalizedId = option.id.trim();
+  const normalizedSlug = normalizeOptionMatchValue(option.slug);
+  const normalizedName = normalizeOptionMatchValue(option.nombre);
+
+  return (
+    sections.find((section) => section.id === normalizedId) ??
+    sections.find(
+      (section) => normalizeOptionMatchValue(section.slug) === normalizedSlug,
+    ) ??
+    sections.find(
+      (section) => normalizeOptionMatchValue(section.nombre) === normalizedName,
+    ) ??
+    null
+  );
+}
+
+function findCategoryBySlug(categorySlug: string) {
+  const normalizedCategorySlug = normalizeOptionMatchValue(categorySlug);
+
+  return (
+    activeCategoryOptions.find(
+      (category) =>
+        normalizeOptionMatchValue(category.slug) === normalizedCategorySlug,
+    ) ?? null
+  );
+}
+
+function getSectionsForCategory(categorySlug: string) {
+  const normalizedCategorySlug = normalizeOptionMatchValue(categorySlug);
+
+  return activeSectionOptions.filter(
+    (section) =>
+      normalizeOptionMatchValue(section.categorySlug) === normalizedCategorySlug,
+  );
+}
+
+function findMatchingCatalogGroup(
+  option: SuggestedOptionForm,
+  catalogGroupOptions: RealCatalogGroupOption[],
+): RealCatalogGroupOption | null {
+  if (!hasSuggestedOptionValue(option)) return null;
+
+  const normalizedId = option.id.trim();
+  const normalizedSlug = normalizeOptionMatchValue(option.slug);
+  const normalizedName = normalizeOptionMatchValue(option.nombre);
+
+  return (
+    catalogGroupOptions.find((group) => group.id === normalizedId) ??
+    catalogGroupOptions.find(
+      (group) => normalizeOptionMatchValue(group.slug) === normalizedSlug,
+    ) ??
+    catalogGroupOptions.find(
+      (group) => normalizeOptionMatchValue(group.nombre) === normalizedName,
+    ) ??
+    null
+  );
+}
+
+function orderCatalogGroupOptions(
+  catalogGroupOptions: RealCatalogGroupOption[],
+): OrderedCatalogGroupOption[] {
+  const sortedOptions = [...catalogGroupOptions].sort(
+    (left, right) =>
+      left.order - right.order ||
+      left.nombre.localeCompare(right.nombre, "es", {
+        sensitivity: "base",
+      }),
+  );
+  const optionsById = new Map(sortedOptions.map((option) => [option.id, option]));
+  const childrenByParentId = new Map<string, RealCatalogGroupOption[]>();
+
+  for (const option of sortedOptions) {
+    if (!option.parentId || !optionsById.has(option.parentId)) continue;
+
+    const siblings = childrenByParentId.get(option.parentId) ?? [];
+    siblings.push(option);
+    childrenByParentId.set(option.parentId, siblings);
+  }
+
+  const orderedOptions: OrderedCatalogGroupOption[] = [];
+  const visited = new Set<string>();
+
+  const visit = (option: RealCatalogGroupOption, depth: number) => {
+    if (visited.has(option.id)) return;
+
+    visited.add(option.id);
+    orderedOptions.push({ ...option, depth });
+
+    const children = childrenByParentId.get(option.id) ?? [];
+    children.forEach((child) => visit(child, depth + 1));
+  };
+
+  sortedOptions
+    .filter((option) => !option.parentId || !optionsById.has(option.parentId))
+    .forEach((option) => visit(option, 0));
+
+  sortedOptions.forEach((option) => visit(option, 0));
+
+  return orderedOptions;
+}
+
+function buildInitialCatalogGroupSelectionState(
+  draft: AdminGeneratedProductDraft,
+  catalogGroupOptions: RealCatalogGroupOption[],
+) {
+  const selectedCatalogGroupIds: string[] = [];
+  const seen = new Set<string>();
+
+  for (const suggestedGroup of draft.catalogGroupsSugeridos.map(mapSuggestedOption)) {
+    const matchedGroup = findMatchingCatalogGroup(
+      suggestedGroup,
+      catalogGroupOptions,
+    );
+
+    if (!matchedGroup || seen.has(matchedGroup.id)) continue;
+
+    seen.add(matchedGroup.id);
+    selectedCatalogGroupIds.push(matchedGroup.id);
+  }
+
+  return selectedCatalogGroupIds;
+}
+
+function buildInitialClassificationState(draft: AdminGeneratedProductDraft) {
+  const categoriaSugerida = mapSuggestedOption(draft.categoriaSugerida);
+  const seccionSugerida = mapSuggestedOption(draft.seccionSugerida);
+  const matchedCategory = findMatchingCategory(categoriaSugerida);
+  const matchedSection = findMatchingSection(seccionSugerida);
+  const inferredCategory =
+    matchedCategory ??
+    (matchedSection ? findCategoryBySlug(matchedSection.categorySlug) : null);
+
+  const seccionesSeleccionadas =
+    matchedSection &&
+    inferredCategory &&
+    matchedSection.categorySlug === inferredCategory.slug
+      ? [toSuggestedOptionForm(matchedSection, seccionSugerida.razon)]
+      : [];
+
+  return {
+    categoriaSugerida,
+    categoriaSeleccionada: inferredCategory
+      ? toSuggestedOptionForm(
+          inferredCategory,
+          matchedCategory ? categoriaSugerida.razon : "",
+        )
+      : { ...EMPTY_SUGGESTED_OPTION },
+    seccionSugerida,
+    seccionesSeleccionadas,
+  };
+}
+
 function getBusinessStateLabel(business: AdminProductCreationBusiness) {
   if (business.archivedAt) return "Archivado";
   if (business.estado !== "activo") return business.estado;
@@ -208,7 +443,10 @@ function mapSuggestedOption(option: DraftSuggestedOption): SuggestedOptionForm {
 function toEditableDraftForm(
   draft: AdminGeneratedProductDraft,
   sourceBriefing: BriefingState,
+  catalogGroupOptions: RealCatalogGroupOption[],
 ): EditableDraftFormState {
+  const classification = buildInitialClassificationState(draft);
+
   return {
     nombre: draft.nombre,
     slugSugerido: draft.slugSugerido,
@@ -217,8 +455,14 @@ function toEditableDraftForm(
     descripcion: draft.descripcion,
     tags: cleanStringArray(draft.tags),
     componentes: cleanStringArray(draft.componentes),
-    categoriaSugerida: mapSuggestedOption(draft.categoriaSugerida),
-    seccionSugerida: mapSuggestedOption(draft.seccionSugerida),
+    categoriaSugerida: classification.categoriaSugerida,
+    categoriaSeleccionada: classification.categoriaSeleccionada,
+    seccionSugerida: classification.seccionSugerida,
+    seccionesSeleccionadas: classification.seccionesSeleccionadas,
+    selectedCatalogGroupIds: buildInitialCatalogGroupSelectionState(
+      draft,
+      catalogGroupOptions,
+    ),
     catalogGroupsSugeridos:
       draft.catalogGroupsSugeridos.map(mapSuggestedOption),
     etiquetaEspecialSugerida: draft.etiquetaEspecialSugerida,
@@ -274,6 +518,10 @@ function validateEditableDraftForm(form: EditableDraftFormState) {
   const errors: string[] = [];
   const price = parseClientPrice(form.precioBase);
   const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+  const selectedCategory = findMatchingCategory(form.categoriaSeleccionada);
+  const selectedSections = form.seccionesSeleccionadas
+    .map((section) => findMatchingSection(section))
+    .filter((section): section is RealSectionOption => Boolean(section));
 
   if (!form.nombre.trim())
     errors.push("El nombre del producto es obligatorio.");
@@ -295,6 +543,29 @@ function validateEditableDraftForm(form: EditableDraftFormState) {
 
   if (cleanStringArray(form.componentes).length !== form.componentes.length) {
     errors.push("Los componentes no deben estar vacíos ni duplicados.");
+  }
+
+  if (!selectedCategory) {
+    errors.push("Selecciona una categoría real antes de guardar.");
+  }
+
+  if (selectedSections.length === 0) {
+    errors.push("Selecciona al menos una sección real antes de guardar.");
+  } else if (selectedSections.length !== form.seccionesSeleccionadas.length) {
+    errors.push("Todas las secciones seleccionadas deben existir en el catálogo.");
+  }
+
+  if (
+    selectedCategory &&
+    selectedSections.some(
+      (section) =>
+        normalizeOptionMatchValue(section.categorySlug) !==
+        normalizeOptionMatchValue(selectedCategory.slug),
+    )
+  ) {
+    errors.push(
+      "Las secciones seleccionadas deben pertenecer a la categoría elegida.",
+    );
   }
 
   if (form.usaVariantesSugerido) {
@@ -550,48 +821,45 @@ function ChipEditor({
   );
 }
 
-function SuggestedOptionEditor({
+function SuggestionStatusCard({
   title,
   option,
-  onChange,
+  status,
+  message,
 }: {
   title: string;
   option: SuggestedOptionForm;
-  onChange: (nextOption: SuggestedOptionForm) => void;
+  status: "resolved" | "warning" | "empty";
+  message: string;
 }) {
-  const update = (patch: Partial<SuggestedOptionForm>) =>
-    onChange({ ...option, ...patch });
+  const displayValue = buildSuggestedOptionLabel(option);
+  const toneClasses =
+    status === "resolved"
+      ? "border-emerald-200 bg-emerald-50 text-emerald-900"
+      : status === "warning"
+        ? "border-amber-200 bg-amber-50 text-amber-900"
+        : "border-slate-200 bg-white text-slate-900";
+  const messageClasses =
+    status === "resolved"
+      ? "text-emerald-700"
+      : status === "warning"
+        ? "text-amber-700"
+        : "text-slate-500";
 
   return (
-    <div className="rounded-3xl border border-slate-100 bg-slate-50 px-4 py-4">
-      <p className="text-sm font-semibold text-slate-900">{title}</p>
-      <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
-        <input
-          value={option.nombre}
-          onChange={(event) => update({ nombre: event.target.value })}
-          placeholder="Nombre"
-          className={compactInputClasses}
-        />
-        <input
-          value={option.slug}
-          onChange={(event) => update({ slug: event.target.value })}
-          placeholder="slug"
-          className={compactInputClasses}
-        />
-        <input
-          value={option.id}
-          onChange={(event) => update({ id: event.target.value })}
-          placeholder="ID existente opcional"
-          className={`${compactInputClasses} sm:col-span-2`}
-        />
-        <textarea
-          value={option.razon}
-          onChange={(event) => update({ razon: event.target.value })}
-          placeholder="Razón de la sugerencia"
-          rows={3}
-          className={`${compactInputClasses} sm:col-span-2`}
-        />
-      </div>
+    <div className={`rounded-3xl border px-4 py-4 ${toneClasses}`}>
+      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
+        {title}
+      </p>
+      <p className="mt-2 text-sm font-semibold">
+        {displayValue || "Sin sugerencia usable"}
+      </p>
+      {option.razon.trim() ? (
+        <p className="mt-2 text-sm leading-6 text-slate-600">
+          {option.razon.trim()}
+        </p>
+      ) : null}
+      <p className={`mt-3 text-xs font-medium ${messageClasses}`}>{message}</p>
     </div>
   );
 }
@@ -616,10 +884,10 @@ function CatalogGroupsEditor({
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="text-sm font-semibold text-slate-900">
-            CatalogGroups sugeridos
+            Sugerencias IA para CatalogGroups
           </p>
           <p className="mt-1 text-sm text-slate-600">
-            Edita o descarta sugerencias sin crear grupos nuevos todavía.
+            Este bloque conserva el comportamiento actual del guardado. La selección real de arriba queda preparada para la siguiente fase.
           </p>
         </div>
         <button
@@ -1320,6 +1588,144 @@ function EditableProductDraftForm({
   onPublishProduct: () => void;
   onCreateAnotherProduct: () => void;
 }) {
+  const selectedCategory = findMatchingCategory(editableDraft.categoriaSeleccionada);
+  const compatibleSections = selectedCategory
+    ? getSectionsForCategory(selectedCategory.slug)
+    : [];
+  const orderedCatalogGroupOptions = orderCatalogGroupOptions(
+    generatedDraft.catalogGroupOptions,
+  );
+  const selectedCatalogGroupIdSet = new Set(
+    editableDraft.selectedCatalogGroupIds,
+  );
+  const selectedCatalogGroups = orderedCatalogGroupOptions.filter((group) =>
+    selectedCatalogGroupIdSet.has(group.id),
+  );
+  const matchedSuggestedCategory = findMatchingCategory(
+    editableDraft.categoriaSugerida,
+  );
+  const matchedSuggestedSection = findMatchingSection(
+    editableDraft.seccionSugerida,
+  );
+  const suggestedSectionCategory = matchedSuggestedSection
+    ? findCategoryBySlug(matchedSuggestedSection.categorySlug)
+    : null;
+  const selectedSections = editableDraft.seccionesSeleccionadas
+    .map((section) => findMatchingSection(section))
+    .filter((section): section is RealSectionOption => Boolean(section));
+  const selectedSectionIds = new Set(
+    selectedSections.map((section) => section.id),
+  );
+  const catalogGroupSuggestionEntries =
+    editableDraft.catalogGroupsSugeridos.length > 0
+      ? editableDraft.catalogGroupsSugeridos.map((group) => ({
+          group,
+          matchedGroup: findMatchingCatalogGroup(
+            group,
+            generatedDraft.catalogGroupOptions,
+          ),
+        }))
+      : [];
+
+  const handleSelectCategory = (category: RealCategoryOption) => {
+    updateEditableDraft((current) => {
+      const currentSections = current.seccionesSeleccionadas
+        .map((section) => findMatchingSection(section))
+        .filter(
+          (section): section is RealSectionOption =>
+            section !== null && section.categorySlug === category.slug,
+        )
+        .map((section) => toSuggestedOptionForm(section));
+      const suggestedSection = findMatchingSection(current.seccionSugerida);
+      const nextSections =
+        currentSections.length > 0
+          ? currentSections
+          : suggestedSection && suggestedSection.categorySlug === category.slug
+            ? [
+                toSuggestedOptionForm(
+                  suggestedSection,
+                  current.seccionSugerida.razon,
+                ),
+              ]
+            : [];
+
+      return {
+        ...current,
+        categoriaSeleccionada: toSuggestedOptionForm(category),
+        seccionesSeleccionadas: nextSections,
+      };
+    });
+  };
+
+  const handleToggleSection = (section: RealSectionOption) => {
+    updateEditableDraft((current) => {
+      const alreadySelected = current.seccionesSeleccionadas.some(
+        (item) => item.id === section.id,
+      );
+
+      return {
+        ...current,
+        seccionesSeleccionadas: alreadySelected
+          ? current.seccionesSeleccionadas.filter((item) => item.id !== section.id)
+          : [...current.seccionesSeleccionadas, toSuggestedOptionForm(section)],
+      };
+    });
+  };
+
+  const handleToggleCatalogGroup = (groupId: string) => {
+    updateEditableDraft((current) => {
+      const alreadySelected = current.selectedCatalogGroupIds.includes(groupId);
+
+      return {
+        ...current,
+        selectedCatalogGroupIds: alreadySelected
+          ? current.selectedCatalogGroupIds.filter((id) => id !== groupId)
+          : [...current.selectedCatalogGroupIds, groupId],
+      };
+    });
+  };
+
+  const categorySuggestionStatus = !hasSuggestedOptionValue(
+    editableDraft.categoriaSugerida,
+  )
+    ? {
+        status: "empty" as const,
+        message: "La IA no entregó una categoría usable. Selecciónala manualmente.",
+      }
+    : matchedSuggestedCategory
+      ? {
+          status: "resolved" as const,
+          message: `Coincide con la categoría real "${matchedSuggestedCategory.nombre}" y se usa como punto de partida.`,
+        }
+      : {
+          status: "warning" as const,
+          message:
+            "No coincide con una categoría real del catálogo cliente. Se muestra solo como referencia.",
+        };
+
+  const sectionSuggestionStatus = !hasSuggestedOptionValue(
+    editableDraft.seccionSugerida,
+  )
+    ? {
+        status: "empty" as const,
+        message: "La IA no entregó una sección usable. Elige una o varias manualmente.",
+      }
+    : matchedSuggestedSection
+      ? selectedCategory && matchedSuggestedSection.categorySlug !== selectedCategory.slug
+        ? {
+            status: "warning" as const,
+            message: `Coincide con una sección real, pero pertenece a "${suggestedSectionCategory?.nombre ?? matchedSuggestedSection.categorySlug}". No se toma como válida mientras la categoría elegida sea otra.`,
+          }
+        : {
+            status: "resolved" as const,
+            message: `Coincide con la sección real "${matchedSuggestedSection.nombre}" y se usa como selección inicial cuando aplica.`,
+          }
+      : {
+          status: "warning" as const,
+          message:
+            "No coincide con una sección real del catálogo cliente. Se conserva solo como advertencia contextual.",
+        };
+
   return (
     <div className="space-y-5">
       <div className="rounded-3xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm leading-6 text-emerald-800">
@@ -1492,31 +1898,260 @@ function EditableProductDraftForm({
       <div className="grid grid-cols-1 gap-5 2xl:grid-cols-[minmax(0,1.15fr)_minmax(360px,0.85fr)]">
         <FormSection
           title="Clasificación"
-          description="Sugerencias editables para conectar después con categorías, secciones y grupos reales."
+          description="Confirma categoría y secciones reales desde cliente. La sugerencia IA se conserva solo como ayuda inicial y no se guarda como válida si no coincide."
           className="h-full"
         >
           <div className="space-y-4">
-            <div className="grid grid-cols-1 gap-4 xl:grid-cols-2 2xl:grid-cols-1">
-              <SuggestedOptionEditor
-                title="Categoría sugerida"
-                option={editableDraft.categoriaSugerida}
-                onChange={(categoriaSugerida) =>
-                  updateEditableDraft((current) => ({
-                    ...current,
-                    categoriaSugerida,
-                  }))
-                }
-              />
-              <SuggestedOptionEditor
-                title="Sección sugerida"
-                option={editableDraft.seccionSugerida}
-                onChange={(seccionSugerida) =>
-                  updateEditableDraft((current) => ({
-                    ...current,
-                    seccionSugerida,
-                  }))
-                }
-              />
+            <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1.15fr)_minmax(280px,0.85fr)]">
+              <div className="space-y-4">
+                <div className="rounded-3xl border border-slate-100 bg-slate-50 px-4 py-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-semibold text-slate-900">
+                        Categoría real
+                      </p>
+                      <p className="mt-1 text-sm leading-6 text-slate-600">
+                        Selecciona una categoría válida. Las secciones se filtran con base en esta elección.
+                      </p>
+                    </div>
+                    {selectedCategory ? (
+                      <span className="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-xs font-semibold text-sky-700">
+                        {selectedCategory.nombre}
+                      </span>
+                    ) : null}
+                  </div>
+
+                  <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    {activeCategoryOptions.map((category) => {
+                      const isSelected = category.id === selectedCategory?.id;
+
+                      return (
+                        <button
+                          key={category.id}
+                          type="button"
+                          onClick={() => handleSelectCategory(category)}
+                          className={`rounded-3xl border px-4 py-3 text-left transition ${
+                            isSelected
+                              ? "border-sky-300 bg-sky-50 shadow-[0_14px_32px_-24px_rgba(14,165,233,0.45)]"
+                              : "border-slate-200 bg-white hover:border-sky-200 hover:bg-slate-50"
+                          }`}
+                        >
+                          <p className="text-sm font-semibold text-slate-950">
+                            {category.nombre}
+                          </p>
+                          <p className="mt-1 text-xs uppercase tracking-[0.16em] text-slate-500">
+                            {category.slug}
+                          </p>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="rounded-3xl border border-slate-100 bg-slate-50 px-4 py-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-semibold text-slate-900">
+                        Secciones reales
+                      </p>
+                      <p className="mt-1 text-sm leading-6 text-slate-600">
+                        Puedes seleccionar una o varias. Para el contrato actual de guardado se enviará la primera como sección principal; la persistencia completa de múltiples secciones queda para Fase 2.
+                      </p>
+                    </div>
+                    {selectedSections.length > 0 ? (
+                      <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+                        {selectedSections.length} seleccionada{selectedSections.length === 1 ? "" : "s"}
+                      </span>
+                    ) : null}
+                  </div>
+
+                  {!selectedCategory ? (
+                    <div className="mt-4 rounded-2xl border border-dashed border-slate-300 bg-white px-4 py-4 text-sm text-slate-500">
+                      Elige primero una categoría real para habilitar las secciones compatibles.
+                    </div>
+                  ) : compatibleSections.length === 0 ? (
+                    <div className="mt-4 rounded-2xl border border-dashed border-slate-300 bg-white px-4 py-4 text-sm text-slate-500">
+                      No encontramos secciones activas para la categoría seleccionada.
+                    </div>
+                  ) : (
+                    <>
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        {compatibleSections.map((section) => {
+                          const isSelected = selectedSectionIds.has(section.id);
+
+                          return (
+                            <button
+                              key={section.id}
+                              type="button"
+                              onClick={() => handleToggleSection(section)}
+                              className={`rounded-full border px-4 py-2 text-sm font-medium transition ${
+                                isSelected
+                                  ? "border-sky-300 bg-sky-600 text-white shadow-[0_12px_28px_-20px_rgba(2,132,199,0.6)]"
+                                  : "border-slate-200 bg-white text-slate-700 hover:border-sky-200 hover:bg-slate-50"
+                              }`}
+                            >
+                              {section.nombre}
+                            </button>
+                          );
+                        })}
+                      </div>
+
+                      {selectedSections.length > 0 ? (
+                        <p className="mt-3 text-xs text-slate-500">
+                          Sección principal enviada al guardar: {selectedSections[0]?.nombre}.
+                        </p>
+                      ) : null}
+                    </>
+                  )}
+                </div>
+
+                <div className="rounded-3xl border border-slate-100 bg-slate-50 px-4 py-4">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                    <div>
+                      <p className="text-sm font-semibold text-slate-900">
+                        CatalogGroups reales
+                      </p>
+                      <p className="mt-1 text-sm leading-6 text-slate-600">
+                        Selección editorial opcional. La coincidencia con IA se preselecciona, pero el guardado actual sigue dependiendo de las sugerencias hasta la Fase 2C.
+                      </p>
+                    </div>
+                    <span className="rounded-full border border-violet-200 bg-violet-50 px-3 py-1 text-xs font-semibold text-violet-700">
+                      {selectedCatalogGroups.length === 0
+                        ? "Opcional"
+                        : `${selectedCatalogGroups.length} seleccionado${selectedCatalogGroups.length === 1 ? "" : "s"}`}
+                    </span>
+                  </div>
+
+                  {orderedCatalogGroupOptions.length === 0 ? (
+                    <div className="mt-4 rounded-2xl border border-dashed border-slate-300 bg-white px-4 py-4 text-sm text-slate-500">
+                      Este negocio no tiene CatalogGroups activos para seleccionar.
+                    </div>
+                  ) : (
+                    <>
+                      <div className="mt-4 space-y-2">
+                        {orderedCatalogGroupOptions.map((group) => {
+                          const isSelected = selectedCatalogGroupIdSet.has(group.id);
+
+                          return (
+                            <div
+                              key={group.id}
+                              style={{ paddingLeft: `${group.depth * 18}px` }}
+                            >
+                              <button
+                                type="button"
+                                onClick={() => handleToggleCatalogGroup(group.id)}
+                                className={`w-full rounded-3xl border px-4 py-3 text-left transition ${
+                                  isSelected
+                                    ? "border-violet-300 bg-violet-50 shadow-[0_14px_32px_-24px_rgba(139,92,246,0.4)]"
+                                    : "border-slate-200 bg-white hover:border-violet-200 hover:bg-slate-50"
+                                }`}
+                              >
+                                <div className="flex items-start justify-between gap-3">
+                                  <div className="min-w-0">
+                                    {group.depth > 0 ? (
+                                      <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                                        Subgrupo
+                                      </p>
+                                    ) : null}
+                                    <p className="text-sm font-semibold text-slate-950">
+                                      {group.nombre}
+                                    </p>
+                                    <p className="mt-1 text-xs uppercase tracking-[0.16em] text-slate-500">
+                                      {group.slug}
+                                    </p>
+                                    {group.description ? (
+                                      <p className="mt-1 text-xs leading-5 text-slate-500">
+                                        {group.description}
+                                      </p>
+                                    ) : null}
+                                  </div>
+                                  <span
+                                    className={`rounded-full px-3 py-1 text-[11px] font-semibold ${
+                                      isSelected
+                                        ? "border border-violet-200 bg-violet-600 text-white"
+                                        : "border border-slate-200 bg-slate-50 text-slate-600"
+                                    }`}
+                                  >
+                                    {isSelected ? "Seleccionado" : "Disponible"}
+                                  </span>
+                                </div>
+                              </button>
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      {selectedCatalogGroups.length > 0 ? (
+                        <div className="mt-4 flex flex-wrap gap-2">
+                          {selectedCatalogGroups.map((group) => (
+                            <button
+                              key={group.id}
+                              type="button"
+                              onClick={() => handleToggleCatalogGroup(group.id)}
+                              className="rounded-full border border-violet-200 bg-white px-3 py-1.5 text-xs font-medium text-violet-700 transition hover:bg-violet-50"
+                            >
+                              {group.nombre} x
+                            </button>
+                          ))}
+                        </div>
+                      ) : null}
+                    </>
+                  )}
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <SuggestionStatusCard
+                  title="Categoría sugerida por IA"
+                  option={editableDraft.categoriaSugerida}
+                  status={categorySuggestionStatus.status}
+                  message={categorySuggestionStatus.message}
+                />
+                <SuggestionStatusCard
+                  title="Sección sugerida por IA"
+                  option={editableDraft.seccionSugerida}
+                  status={sectionSuggestionStatus.status}
+                  message={sectionSuggestionStatus.message}
+                />
+                {catalogGroupSuggestionEntries.length > 0 ? (
+                  catalogGroupSuggestionEntries.map(({ group, matchedGroup }, index) => {
+                    const isSelected = matchedGroup
+                      ? selectedCatalogGroupIdSet.has(matchedGroup.id)
+                      : false;
+
+                    return (
+                      <SuggestionStatusCard
+                        key={`${group.id || group.slug || group.nombre}-${index}`}
+                        title={`Grupo sugerido por IA ${index + 1}`}
+                        option={group}
+                        status={
+                          !hasSuggestedOptionValue(group)
+                            ? "empty"
+                            : matchedGroup
+                              ? "resolved"
+                              : "warning"
+                        }
+                        message={
+                          !hasSuggestedOptionValue(group)
+                            ? "La IA dejó esta sugerencia vacía. Puedes ignorarla o ajustarla abajo."
+                            : matchedGroup
+                              ? isSelected
+                                ? `Coincide con el grupo real "${matchedGroup.nombre}" y quedó preseleccionado.`
+                                : `Coincide con el grupo real "${matchedGroup.nombre}", pero puedes activarlo o quitarlo en la selección real.`
+                              : "No coincide con un CatalogGroup activo del negocio. Se conserva solo como ayuda contextual."
+                        }
+                      />
+                    );
+                  })
+                ) : (
+                  <SuggestionStatusCard
+                    title="Grupos sugeridos por IA"
+                    option={EMPTY_SUGGESTED_OPTION}
+                    status="empty"
+                    message="La IA no sugirió grupos editoriales para este borrador. La selección real sigue siendo opcional."
+                  />
+                )}
+              </div>
             </div>
             <CatalogGroupsEditor
               groups={editableDraft.catalogGroupsSugeridos}
@@ -1898,7 +2533,9 @@ export default function AssistedProductCreationClient({
           nombre: editableDraft.nombre,
           descripcion: editableDraft.descripcion,
           descripcionCorta: editableDraft.descripcionCorta,
-          categoriaNombre: editableDraft.categoriaSugerida.nombre,
+          categoriaNombre:
+            editableDraft.categoriaSeleccionada.nombre ||
+            editableDraft.categoriaSugerida.nombre,
           promptCatalogo: editableDraft.promptsImagen?.promptCatalogo,
           promptPublicitario: editableDraft.promptsImagen?.promptPublicitario,
         },
@@ -2109,7 +2746,13 @@ export default function AssistedProductCreationClient({
         businessId: selectedBusiness.id,
         sourceBriefing,
       });
-      setEditableDraft(toEditableDraftForm(result.data.draft, sourceBriefing));
+      setEditableDraft(
+        toEditableDraftForm(
+          result.data.draft,
+          sourceBriefing,
+          result.data.catalogGroupOptions,
+        ),
+      );
       setIsDraftDirty(false);
     } catch (error) {
       setGenerationError(
@@ -2140,9 +2783,32 @@ export default function AssistedProductCreationClient({
     setSavedProduct(null);
 
     try {
+      const primarySelectedSection = editableDraft.seccionesSeleccionadas[0] ?? {
+        ...EMPTY_SUGGESTED_OPTION,
+      };
+      const selectedCategoryId = editableDraft.categoriaSeleccionada.id.trim();
+      const selectedSectionIds = editableDraft.seccionesSeleccionadas
+        .map((section) => section.id.trim())
+        .filter(Boolean);
+      const {
+        selectedCatalogGroupIds,
+        ...draftForSave
+      } = editableDraft;
+
       const result = await createAdminProductForBusinessAction({
         businessId: selectedBusiness.id,
-        draft: editableDraft,
+        ...(selectedCategoryId ? { categoryId: selectedCategoryId } : {}),
+        ...(selectedSectionIds.length > 0
+          ? { sectionIds: selectedSectionIds }
+          : {}),
+        ...(selectedCatalogGroupIds.length > 0
+          ? { catalogGroupIds: selectedCatalogGroupIds }
+          : {}),
+        draft: {
+          ...draftForSave,
+          categoriaSugerida: editableDraft.categoriaSeleccionada,
+          seccionSugerida: primarySelectedSection,
+        },
       });
 
       if (!result.ok || !result.data) {
