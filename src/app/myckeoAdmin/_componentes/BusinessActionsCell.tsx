@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { archiveBusinessAction } from "@/actions/myckeoAdmin/archiveBusinessAction";
 import { unarchiveBusinessAction } from "@/actions/myckeoAdmin/unarchiveBusinessAction";
@@ -40,6 +41,13 @@ export default function BusinessActionsCell({
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
   const isArchived = Boolean(business.archivedAt);
+  const businessSlug = business.slug?.trim() ?? "";
+  const organizeHref = businessSlug
+    ? `/myckeoAdmin/organizar/${encodeURIComponent(businessSlug)}`
+    : null;
+  const editHref = businessSlug
+    ? `/myckeoAdmin/editar/${encodeURIComponent(businessSlug)}`
+    : null;
 
   const clearFeedback = () => {
     setFeedback(null);
@@ -143,23 +151,43 @@ export default function BusinessActionsCell({
     <>
       <div className="flex flex-col gap-2">
       <div className={containerClasses}>
-        <button
-          type="button"
-          disabled
-          className={`${baseButtonClasses} border-slate-200 bg-white text-slate-400 shadow-sm`}
-          title="Próximamente"
-        >
-          Ver
-        </button>
+        {organizeHref ? (
+          <Link
+            href={organizeHref}
+            className={`${baseButtonClasses} border-slate-200 bg-white text-slate-700 shadow-sm hover:border-slate-300 hover:bg-slate-50`}
+            title={`Organizar catálogo de ${business.nombre}`}
+          >
+            Organizar
+          </Link>
+        ) : (
+          <button
+            type="button"
+            disabled
+            className={`${baseButtonClasses} border-slate-200 bg-white text-slate-400 shadow-sm`}
+            title="Este negocio no tiene slug disponible"
+          >
+            Organizar
+          </button>
+        )}
 
-        <button
-          type="button"
-          disabled
-          className={`${baseButtonClasses} border-slate-200 bg-white text-slate-400 shadow-sm`}
-          title="Próximamente"
-        >
-          Editar
-        </button>
+        {editHref ? (
+          <Link
+            href={editHref}
+            className={`${baseButtonClasses} border-slate-200 bg-white text-slate-700 shadow-sm hover:border-slate-300 hover:bg-slate-50`}
+            title={`Editar ${business.nombre}`}
+          >
+            Editar
+          </Link>
+        ) : (
+          <button
+            type="button"
+            disabled
+            className={`${baseButtonClasses} border-slate-200 bg-white text-slate-400 shadow-sm`}
+            title="Este negocio no tiene slug disponible"
+          >
+            Editar
+          </button>
+        )}
 
         {isArchived ? (
           <button
