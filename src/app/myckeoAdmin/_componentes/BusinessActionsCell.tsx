@@ -48,6 +48,9 @@ export default function BusinessActionsCell({
   const editHref = businessSlug
     ? `/myckeoAdmin/editar/${encodeURIComponent(businessSlug)}`
     : null;
+  const productsHref = businessSlug
+    ? `/myckeoAdmin/productos/${encodeURIComponent(businessSlug)}`
+    : null;
 
   const clearFeedback = () => {
     setFeedback(null);
@@ -141,7 +144,7 @@ export default function BusinessActionsCell({
   };
 
   const baseButtonClasses =
-    "inline-flex h-10 items-center justify-center rounded-2xl border px-3.5 text-xs font-medium transition duration-200 disabled:cursor-not-allowed disabled:opacity-60";
+    "inline-flex h-9 items-center justify-center rounded-2xl border px-3 text-[11px] font-medium transition duration-200 disabled:cursor-not-allowed disabled:opacity-60 xl:h-10 xl:px-3.5 xl:text-xs";
 
   const containerClasses = compact
     ? "flex flex-wrap gap-2"
@@ -186,6 +189,25 @@ export default function BusinessActionsCell({
             title="Este negocio no tiene slug disponible"
           >
             Editar
+          </button>
+        )}
+
+        {productsHref ? (
+          <Link
+            href={productsHref}
+            className={`${baseButtonClasses} border-slate-200 bg-white text-slate-700 shadow-sm hover:border-slate-300 hover:bg-slate-50`}
+            title={`Ver productos de ${business.nombre}`}
+          >
+            Productos
+          </Link>
+        ) : (
+          <button
+            type="button"
+            disabled
+            className={`${baseButtonClasses} border-slate-200 bg-white text-slate-400 shadow-sm`}
+            title="Este negocio no tiene slug disponible"
+          >
+            Productos
           </button>
         )}
 
