@@ -31,6 +31,27 @@ export type PreviewAdminDeleteProductActionResult =
       blockers: string[];
       warnings: string[];
       recommendedAction: "delete_allowed" | "hide_or_discontinue" | "blocked";
+      cleanupPlan: {
+        canForceDelete: boolean;
+        strategy: "safe_delete" | "force_delete_without_orders" | "blocked_by_orders";
+        historicalImpact: {
+          hasOrderItems: boolean;
+          orderItemCount: number;
+          recommendation: string;
+        };
+        dbCleanup: Array<{
+          label: string;
+          count: number;
+          action: "delete" | "cascade_delete" | "detach" | "preserve";
+          description: string;
+        }>;
+        cloudinaryCleanup: {
+          hasRemoteAssets: boolean;
+          strategy: "not_in_this_phase" | "manual_or_job_later";
+          assetCountEstimate: number;
+          notes: string[];
+        };
+      };
     }
   | {
       ok: false;
@@ -179,11 +200,15 @@ export async function previewAdminDeleteProductAction(
     const [
       orderItemCount,
       variantCount,
+      variantOptionCount,
       imageCount,
+      cloudinaryImageCount,
       sectionRelationCount,
       catalogGroupRelationCount,
+      productAttributeCount,
       publicationLinkCount,
       generationCount,
+      generationWithCloudinaryCount,
     ] = await Promise.all([
       prisma.orderItem.count({
         where: {
@@ -204,9 +229,25 @@ export async function previewAdminDeleteProductAction(
           productId: product.id,
         },
       }),
+      prisma.productVariantOption.count({
+        where: {
+          variant: {
+            productId: product.id,
+          },
+        },
+      }),
       prisma.image.count({
         where: {
           productId: product.id,
+        },
+      }),
+      prisma.image.count({
+        where: {
+          productId: product.id,
+          url: {
+            contains: "res.cloudinary.com",
+            mode: "insensitive",
+          },
         },
       }),
       prisma.productSection.count({
@@ -219,6 +260,11 @@ export async function previewAdminDeleteProductAction(
           productId: product.id,
         },
       }),
+      prisma.productAttribute.count({
+        where: {
+          productId: product.id,
+        },
+      }),
       prisma.publicacionProducto.count({
         where: {
           productoId: product.id,
@@ -227,6 +273,24 @@ export async function previewAdminDeleteProductAction(
       prisma.productImageGeneration.count({
         where: {
           productId: product.id,
+        },
+      }),
+      prisma.productImageGeneration.count({
+        where: {
+          productId: product.id,
+          OR: [
+            {
+              cloudinaryPublicId: {
+                not: null,
+              },
+            },
+            {
+              cloudinaryUrl: {
+                contains: "res.cloudinary.com",
+                mode: "insensitive",
+              },
+            },
+          ],
         },
       }),
     ]);
@@ -271,6 +335,111 @@ export async function previewAdminDeleteProductAction(
           ? "hide_or_discontinue"
           : "delete_allowed";
 
+    const canForceDelete = orderItemCount === 0;
+    const hasNonHistoricalDbRelations =
+      variantCount > 0 ||
+      imageCount > 0 ||
+      sectionRelationCount > 0 ||
+      catalogGroupRelationCount > 0 ||
+      productAttributeCount > 0 ||
+      publicationLinkCount > 0 ||
+      generationCount > 0;
+
+    const strategy: "safe_delete" | "force_delete_without_orders" | "blocked_by_orders" =
+      !canForceDelete
+        ? "blocked_by_orders"
+        : hasNonHistoricalDbRelations
+          ? "force_delete_without_orders"
+          : "safe_delete";
+
+    const historicalRecommendation = canForceDelete
+      ? "No hay pedidos asociados. Se puede evaluar eliminación forzada con limpieza de relaciones no históricas."
+      : "Hay pedidos asociados. En esta fase, la eliminación forzada debe permanecer bloqueada para preservar historial.";
+
+    const hasRemoteAssets = cloudinaryImageCount > 0 || generationWithCloudinaryCount > 0;
+    const cloudinaryAssetCountEstimate =
+      cloudinaryImageCount + generationWithCloudinaryCount;
+    const cloudinaryStrategy: "not_in_this_phase" | "manual_or_job_later" =
+      hasRemoteAssets ? "manual_or_job_later" : "not_in_this_phase";
+
+    const cleanupPlan = {
+      canForceDelete,
+      strategy,
+      historicalImpact: {
+        hasOrderItems: orderItemCount > 0,
+        orderItemCount,
+        recommendation: historicalRecommendation,
+      },
+      dbCleanup: [
+        {
+          label: "OrderItem",
+          count: orderItemCount,
+          action: "preserve" as const,
+          description:
+            "Los pedidos no se eliminan. Si existen, bloquean la eliminación forzada en esta fase.",
+        },
+        {
+          label: "CatalogGroupProduct",
+          count: catalogGroupRelationCount,
+          action: "delete" as const,
+          description: "Se quitará el producto de los grupos de catálogo.",
+        },
+        {
+          label: "ProductSection",
+          count: sectionRelationCount,
+          action: "delete" as const,
+          description: "Se eliminarán las asignaciones a secciones.",
+        },
+        {
+          label: "ProductAttribute",
+          count: productAttributeCount,
+          action: "delete" as const,
+          description: "Se eliminarán atributos del producto.",
+        },
+        {
+          label: "PublicacionProducto",
+          count: publicationLinkCount,
+          action: "delete" as const,
+          description: "El producto dejará de estar asociado a publicaciones.",
+        },
+        {
+          label: "ProductImageGeneration",
+          count: generationCount,
+          action: "delete" as const,
+          description: "Se eliminará la trazabilidad de generación de imágenes.",
+        },
+        {
+          label: "Image",
+          count: imageCount,
+          action: "delete" as const,
+          description: "Se eliminarán registros de imágenes en base de datos.",
+        },
+        {
+          label: "ProductVariant",
+          count: variantCount,
+          action: "delete" as const,
+          description: "Se eliminarán variantes del producto.",
+        },
+        {
+          label: "ProductVariantOption",
+          count: variantOptionCount,
+          action: "delete" as const,
+          description:
+            "Se eliminarán opciones de variantes explícitamente antes de borrar variantes.",
+        },
+      ],
+      cloudinaryCleanup: {
+        hasRemoteAssets,
+        strategy: cloudinaryStrategy,
+        assetCountEstimate: cloudinaryAssetCountEstimate,
+        notes: [
+          "Esta fase no elimina archivos remotos de Cloudinary.",
+          "Los registros en base de datos pueden eliminarse, pero los assets remotos requerirán limpieza posterior.",
+          "Image no siempre guarda publicId directo; puede requerir extracción desde URL.",
+        ],
+      },
+    };
+
     console.info(`${LOG_PREFIX}[${traceId}] Resultado`, {
       actorUserId: session.user.id,
       businessId,
@@ -288,6 +457,11 @@ export async function previewAdminDeleteProductAction(
       blockersCount: blockers.length,
       warningsCount: warnings.length,
       recommendedAction,
+      cleanupPlan: {
+        canForceDelete: cleanupPlan.canForceDelete,
+        strategy: cleanupPlan.strategy,
+        hasRemoteAssets: cleanupPlan.cloudinaryCleanup.hasRemoteAssets,
+      },
       elapsedMs: Date.now() - startedAt,
     });
 
@@ -311,6 +485,7 @@ export async function previewAdminDeleteProductAction(
       blockers,
       warnings,
       recommendedAction,
+      cleanupPlan,
     };
   } catch (error) {
     console.error(`${LOG_PREFIX}[${traceId}] Error inesperado`, {

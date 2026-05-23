@@ -8,6 +8,10 @@ import {
   type PreviewAdminDeleteProductActionResult,
 } from "@/actions/myckeoAdmin/previewAdminDeleteProductAction";
 import { deleteAdminProductAction } from "@/actions/myckeoAdmin/deleteAdminProductAction";
+import {
+  forceDeleteAdminProductAction,
+  type ForceDeleteAdminProductActionResult,
+} from "@/actions/myckeoAdmin/forceDeleteAdminProductAction";
 
 type AdminProductDeletePreviewActionProps = {
   businessId: string;
@@ -82,6 +86,7 @@ export default function AdminProductDeletePreviewAction({
   const [mounted, setMounted] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [isDeletePending, startDeleteTransition] = useTransition();
+  const [isForceDeletePending, startForceDeleteTransition] = useTransition();
   const [isOpen, setIsOpen] = useState(false);
   const [state, setState] = useState<PreviewState>({
     status: "idle",
@@ -89,12 +94,20 @@ export default function AdminProductDeletePreviewAction({
     error: null,
   });
   const [confirmText, setConfirmText] = useState("");
+  const [confirmForceText, setConfirmForceText] = useState("");
   const [deleteOutcome, setDeleteOutcome] = useState<{
     status: "idle" | "success" | "error";
     message: string | null;
   }>({ status: "idle", message: null });
+  const [forceDeleteOutcome, setForceDeleteOutcome] = useState<{
+    status: "idle" | "success" | "error";
+    message: string | null;
+    cleanupSummary: Extract<ForceDeleteAdminProductActionResult, { ok: true }>[
+      "cleanupSummary"
+    ] | null;
+  }>({ status: "idle", message: null, cleanupSummary: null });
 
-  const isAnyPending = isPending || isDeletePending;
+  const isAnyPending = isPending || isDeletePending || isForceDeletePending;
 
   useEffect(() => {
     setMounted(true);
@@ -104,7 +117,9 @@ export default function AdminProductDeletePreviewAction({
     setIsOpen(false);
     setState({ status: "idle", data: null, error: null });
     setConfirmText("");
+    setConfirmForceText("");
     setDeleteOutcome({ status: "idle", message: null });
+    setForceDeleteOutcome({ status: "idle", message: null, cleanupSummary: null });
   }, [businessId, expectedSlug, productId]);
 
   useEffect(() => {
@@ -143,7 +158,9 @@ export default function AdminProductDeletePreviewAction({
     setIsOpen(true);
     setState({ status: "idle", data: null, error: null });
     setConfirmText("");
+    setConfirmForceText("");
     setDeleteOutcome({ status: "idle", message: null });
+    setForceDeleteOutcome({ status: "idle", message: null, cleanupSummary: null });
 
     startTransition(async () => {
       const result = await previewAdminDeleteProductAction({
@@ -178,13 +195,36 @@ export default function AdminProductDeletePreviewAction({
     state.status === "success" &&
     state.data.recommendedAction === "delete_allowed" &&
     state.data.blockers.length === 0 &&
-    state.data.warnings.length === 0 &&
     deleteOutcome.status !== "success";
+
+  const canShowForceDeleteSection =
+    state.status === "success" &&
+    state.data.cleanupPlan.canForceDelete === true &&
+    state.data.cleanupPlan.strategy === "force_delete_without_orders" &&
+    state.data.recommendedAction !== "delete_allowed";
+
+  const isBlockedByOrders =
+    state.status === "success" && state.data.cleanupPlan.strategy === "blocked_by_orders";
+
+  const forceDeleteItemsWithCount =
+    state.status === "success"
+      ? state.data.cleanupPlan.dbCleanup.filter((item) => item.count > 0)
+      : [];
 
   const canConfirmDelete =
     canShowDeleteSection &&
     confirmText === "ELIMINAR" &&
     !isAnyPending;
+
+  const canConfirmForceDelete =
+    canShowForceDeleteSection &&
+    confirmForceText === "ELIMINAR FORZADO" &&
+    state.status === "success" &&
+    state.data.cleanupPlan.canForceDelete === true &&
+    state.data.cleanupPlan.strategy === "force_delete_without_orders" &&
+    !isAnyPending &&
+    deleteOutcome.status !== "success" &&
+    forceDeleteOutcome.status !== "success";
 
   const handleDelete = () => {
     if (!canConfirmDelete) return;
@@ -204,6 +244,34 @@ export default function AdminProductDeletePreviewAction({
       setDeleteOutcome({
         status: "success",
         message: `"${result.deletedProduct.nombre}" fue eliminado definitivamente.`,
+      });
+      router.refresh();
+    });
+  };
+
+  const handleForceDelete = () => {
+    if (!canConfirmForceDelete) return;
+
+    startForceDeleteTransition(async () => {
+      const result = await forceDeleteAdminProductAction({
+        businessId,
+        expectedSlug,
+        productId,
+      });
+
+      if (!result.ok) {
+        setForceDeleteOutcome({
+          status: "error",
+          message: result.error,
+          cleanupSummary: null,
+        });
+        return;
+      }
+
+      setForceDeleteOutcome({
+        status: "success",
+        message: `"${result.deletedProduct.nombre}" fue eliminado forzadamente con limpieza segura.`,
+        cleanupSummary: result.cleanupSummary,
       });
       router.refresh();
     });
@@ -329,10 +397,149 @@ export default function AdminProductDeletePreviewAction({
                 </section>
               ) : null}
 
+              {canShowForceDeleteSection ? (
+                <section className="space-y-3 rounded-2xl border border-fuchsia-300 bg-fuchsia-50 px-4 py-3">
+                  <p className="text-xs font-semibold text-fuchsia-900 sm:text-sm">
+                    Eliminación forzada segura
+                  </p>
+                  <p className="text-xs leading-5 text-fuchsia-800">
+                    Este producto no tiene pedidos asociados, pero sí tiene relaciones no
+                    históricas. Se limpiarán relaciones internas antes de eliminar el producto.
+                  </p>
+
+                  <div className="space-y-2 rounded-xl border border-fuchsia-200 bg-white px-3 py-2">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-fuchsia-700">
+                      Plan de limpieza
+                    </p>
+                    {forceDeleteItemsWithCount.length > 0 ? (
+                      <ul className="space-y-2 text-xs text-slate-700">
+                        {forceDeleteItemsWithCount.map((item) => (
+                          <li key={item.label} className="rounded-lg border border-slate-200 px-2.5 py-2">
+                            <p className="font-semibold text-slate-900">
+                              {item.label}: {item.count}
+                            </p>
+                            <p className="text-[11px] uppercase tracking-[0.08em] text-slate-500">
+                              acción: {item.action}
+                            </p>
+                            <p className="mt-1 text-[11px] leading-4 text-slate-600">
+                              {item.description}
+                            </p>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="text-xs text-slate-600">
+                        No se detectaron relaciones con conteo mayor a cero para limpiar.
+                      </p>
+                    )}
+                  </div>
+
+                  {state.data.cleanupPlan.cloudinaryCleanup.hasRemoteAssets ? (
+                    <p className="rounded-xl border border-amber-300 bg-amber-50 px-3 py-2 text-xs leading-5 text-amber-800">
+                      Esta acción no elimina archivos remotos de Cloudinary. Puede quedar
+                      limpieza pendiente de assets.
+                    </p>
+                  ) : null}
+
+                  <p className="text-xs leading-5 text-fuchsia-800">
+                    Para confirmar, escribe exactamente{" "}
+                    <span className="font-mono font-bold tracking-wide">
+                      ELIMINAR FORZADO
+                    </span>
+                    .
+                  </p>
+
+                  <input
+                    type="text"
+                    value={confirmForceText}
+                    onChange={(e) => setConfirmForceText(e.target.value)}
+                    disabled={isForceDeletePending}
+                    placeholder="ELIMINAR FORZADO"
+                    autoComplete="off"
+                    spellCheck={false}
+                    className="w-full rounded-lg border border-fuchsia-200 bg-white px-3 py-2 text-sm font-mono text-slate-900 placeholder-fuchsia-200 outline-none focus:border-fuchsia-400 focus:ring-2 focus:ring-fuchsia-200 disabled:cursor-not-allowed disabled:opacity-60"
+                  />
+
+                  {forceDeleteOutcome.status === "error" ? (
+                    <p className="text-xs font-medium text-rose-700">
+                      {forceDeleteOutcome.message}
+                    </p>
+                  ) : null}
+
+                  <button
+                    type="button"
+                    onClick={handleForceDelete}
+                    disabled={!canConfirmForceDelete}
+                    className="inline-flex h-9 w-full items-center justify-center rounded-xl bg-fuchsia-700 px-4 text-sm font-semibold text-white transition hover:bg-fuchsia-800 disabled:cursor-not-allowed disabled:bg-fuchsia-200 disabled:text-fuchsia-500"
+                  >
+                    {isForceDeletePending
+                      ? "Eliminando forzadamente..."
+                      : "Eliminar forzadamente"}
+                  </button>
+                </section>
+              ) : null}
+
+              {isBlockedByOrders ? (
+                <section className="rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                  <p className="font-semibold">Eliminación forzada no permitida</p>
+                  <p className="mt-1 text-xs leading-5">
+                    Este producto tiene pedidos asociados. En esta fase no se permite eliminarlo
+                    forzadamente. Usa descontinuar.
+                  </p>
+                </section>
+              ) : null}
+
               {deleteOutcome.status === "success" ? (
                 <section className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
                   <p className="font-semibold">Producto eliminado</p>
                   <p className="mt-1 text-xs leading-5">{deleteOutcome.message}</p>
+                </section>
+              ) : null}
+
+              {forceDeleteOutcome.status === "success" ? (
+                <section className="space-y-2 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+                  <p className="font-semibold">Producto eliminado forzadamente</p>
+                  <p className="text-xs leading-5">{forceDeleteOutcome.message}</p>
+                  {forceDeleteOutcome.cleanupSummary ? (
+                    <div className="grid grid-cols-1 gap-1 text-[11px] leading-4 text-emerald-900 sm:grid-cols-2">
+                      <p>
+                        CatalogGroupProduct: {" "}
+                        {forceDeleteOutcome.cleanupSummary.catalogGroupRelationsDeleted}
+                      </p>
+                      <p>
+                        ProductSection: {" "}
+                        {forceDeleteOutcome.cleanupSummary.sectionRelationsDeleted}
+                      </p>
+                      <p>
+                        ProductAttribute: {" "}
+                        {forceDeleteOutcome.cleanupSummary.attributesDeleted}
+                      </p>
+                      <p>
+                        PublicacionProducto: {" "}
+                        {forceDeleteOutcome.cleanupSummary.publicationLinksDeleted}
+                      </p>
+                      <p>
+                        ProductImageGeneration: {" "}
+                        {forceDeleteOutcome.cleanupSummary.generationsDeleted}
+                      </p>
+                      <p>Image: {forceDeleteOutcome.cleanupSummary.imagesDeleted}</p>
+                      <p>ProductVariant: {forceDeleteOutcome.cleanupSummary.variantsDeleted}</p>
+                      <p>
+                        ProductVariantOption: {" "}
+                        {forceDeleteOutcome.cleanupSummary.variantOptionsDeleted}
+                      </p>
+                      <p>
+                        Cloudinary pendiente: {" "}
+                        {forceDeleteOutcome.cleanupSummary.cloudinaryCleanupPending
+                          ? "Sí"
+                          : "No"}
+                      </p>
+                      <p>
+                        Estimado assets: {" "}
+                        {forceDeleteOutcome.cleanupSummary.cloudinaryAssetEstimate}
+                      </p>
+                    </div>
+                  ) : null}
                 </section>
               ) : null}
             </div>
@@ -345,14 +552,14 @@ export default function AdminProductDeletePreviewAction({
   return (
     <>
       <div className={`flex min-w-0 flex-col gap-1.5 ${className ?? ""}`}>
-      <button
-        type="button"
-        onClick={handleOpenPreview}
-        disabled={isAnyPending}
-        className="inline-flex h-8 w-full items-center justify-center rounded-lg border border-rose-200 bg-rose-50 px-2.5 text-[11px] font-medium text-rose-700 transition hover:bg-rose-100 disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-400 sm:h-9"
-      >
-        {isPending ? "Revisando..." : "Revisar eliminación"}
-      </button>
+        <button
+          type="button"
+          onClick={handleOpenPreview}
+          disabled={isAnyPending}
+          className="inline-flex h-8 w-full items-center justify-center rounded-lg border border-rose-200 bg-rose-50 px-2.5 text-[11px] font-medium text-rose-700 transition hover:bg-rose-100 disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-400 sm:h-9"
+        >
+          {isPending ? "Revisando..." : "Revisar eliminación"}
+        </button>
 
       </div>
 
