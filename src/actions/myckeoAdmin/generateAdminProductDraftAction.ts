@@ -135,6 +135,7 @@ export interface AdminCatalogGroupOption {
   slug: string;
   parentId: string | null;
   order: number;
+  isActive: boolean;
   description: string | null;
 }
 
@@ -160,6 +161,19 @@ type CompactProductContext = {
   secciones: string[];
   etiquetaEspecial: string | null;
   usaVariantes: boolean;
+};
+
+type CatalogGroupContextRecord = {
+  id: string;
+  nombre: string;
+  slug: string;
+  parentId: string | null;
+  order: number;
+  isActive: boolean;
+  description: string | null;
+  _count: {
+    productos: number;
+  };
 };
 
 function buildTraceId() {
@@ -199,6 +213,65 @@ function uniqueStrings(values: Array<string | null | undefined>, limit = 12) {
 function formatPrice(value: number | null | undefined) {
   if (value === null || value === undefined || !Number.isFinite(value)) return null;
   return Math.round(value);
+}
+
+function sortCatalogGroupRecords(groups: CatalogGroupContextRecord[]) {
+  return [...groups].sort(
+    (left, right) =>
+      left.order - right.order ||
+      left.nombre.localeCompare(right.nombre, "es", {
+        sensitivity: "base",
+      })
+  );
+}
+
+function orderCatalogGroupRecordsForTree(groups: CatalogGroupContextRecord[]) {
+  const sortedGroups = sortCatalogGroupRecords(groups);
+  const groupsById = new Map(sortedGroups.map((group) => [group.id, group]));
+  const childrenByParentId = new Map<string, CatalogGroupContextRecord[]>();
+
+  for (const group of sortedGroups) {
+    if (!group.parentId || !groupsById.has(group.parentId)) continue;
+
+    const siblings = childrenByParentId.get(group.parentId) ?? [];
+    siblings.push(group);
+    childrenByParentId.set(group.parentId, siblings);
+  }
+
+  const orderedGroups: CatalogGroupContextRecord[] = [];
+  const visited = new Set<string>();
+
+  const visit = (group: CatalogGroupContextRecord) => {
+    if (visited.has(group.id)) return;
+
+    visited.add(group.id);
+    orderedGroups.push(group);
+
+    const children = childrenByParentId.get(group.id) ?? [];
+    children.forEach(visit);
+  };
+
+  sortedGroups
+    .filter((group) => !group.parentId || !groupsById.has(group.parentId))
+    .forEach(visit);
+
+  sortedGroups.forEach(visit);
+
+  return orderedGroups;
+}
+
+function toAdminCatalogGroupOptions(
+  groups: CatalogGroupContextRecord[]
+): AdminCatalogGroupOption[] {
+  return groups.map((group) => ({
+    id: group.id,
+    nombre: group.nombre,
+    slug: group.slug,
+    parentId: group.parentId,
+    order: group.order,
+    isActive: group.isActive,
+    description: compactText(group.description, 180) || null,
+  }));
 }
 
 function parseJsonObject(value: string) {
@@ -400,14 +473,14 @@ async function buildBusinessContext(businessId: string) {
           negocioId: business.id,
           isActive: true,
         },
-        orderBy: [{ parentId: "asc" }, { order: "asc" }],
-        take: MAX_CONTEXT_GROUPS,
+        orderBy: [{ order: "asc" }, { nombre: "asc" }],
         select: {
           id: true,
           nombre: true,
           slug: true,
           parentId: true,
           order: true,
+          isActive: true,
           description: true,
           _count: {
             select: {
@@ -453,7 +526,9 @@ async function buildBusinessContext(businessId: string) {
     .map((item) => item.section)
     .slice(0, MAX_CONTEXT_OPTIONS);
 
-  const catalogGroups = activeCatalogGroups.map((group) => ({
+  const orderedCatalogGroups = orderCatalogGroupRecordsForTree(activeCatalogGroups);
+  const catalogGroupsForAi = orderedCatalogGroups.slice(0, MAX_CONTEXT_GROUPS);
+  const catalogGroups = catalogGroupsForAi.map((group) => ({
     id: group.id,
     nombre: group.nombre,
     slug: group.slug,
@@ -461,16 +536,7 @@ async function buildBusinessContext(businessId: string) {
     productCount: group._count.productos,
   }));
 
-  const catalogGroupOptions: AdminCatalogGroupOption[] = activeCatalogGroups.map(
-    (group) => ({
-      id: group.id,
-      nombre: group.nombre,
-      slug: group.slug,
-      parentId: group.parentId,
-      order: group.order,
-      description: compactText(group.description, 180) || null,
-    }),
-  );
+  const catalogGroupOptions = toAdminCatalogGroupOptions(orderedCatalogGroups);
 
   const contextSummary: AdminProductDraftContextSummary = {
     business: {

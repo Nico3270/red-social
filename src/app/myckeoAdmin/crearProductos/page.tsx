@@ -13,7 +13,7 @@ export default async function MyckeoAdminCrearProductosPage() {
   if (!result.ok || !result.data) {
     return (
       <main className="min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#f1f5f9_100%)]">
-        <section className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
+        <section className="mx-auto flex w-full max-w-[1480px] flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
           <BusinessesErrorState
             title="Crear productos asistidos"
             description="No fue posible cargar los negocios disponibles para este flujo."
@@ -55,7 +55,7 @@ export default async function MyckeoAdminCrearProductosPage() {
 
   return (
     <main className="min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#f1f5f9_100%)]">
-      <section className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
+      <section className="mx-auto flex w-full max-w-[1480px] flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
         <MyckeoAdminSectionHeader
           title="Crear productos asistidos"
           description="Flujo administrativo para preparar productos con IA y vincularlos explícitamente al negocio seleccionado."

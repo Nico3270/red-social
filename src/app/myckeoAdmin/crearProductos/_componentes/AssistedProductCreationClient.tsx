@@ -651,7 +651,7 @@ function InlineChips({ items }: { items: string[] }) {
       {items.map((item) => (
         <span
           key={item}
-          className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-700"
+          className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-medium text-slate-700"
         >
           {item}
         </span>
@@ -673,7 +673,7 @@ function FormSection({
 }) {
   return (
     <div
-      className={`rounded-3xl border border-slate-200 bg-white px-5 py-5 shadow-[0_14px_32px_-28px_rgba(15,23,42,0.28)] ${className}`}
+      className={`rounded-3xl border border-slate-200 bg-white px-4 py-4 shadow-[0_14px_32px_-28px_rgba(15,23,42,0.28)] sm:px-5 sm:py-5 ${className}`}
     >
       <p className="text-sm font-semibold text-slate-950">{title}</p>
       {description ? (
@@ -845,21 +845,40 @@ function SuggestionStatusCard({
       : status === "warning"
         ? "text-amber-700"
         : "text-slate-500";
+  const statusLabel =
+    status === "resolved"
+      ? "Válida"
+      : status === "warning"
+        ? "Revisar"
+        : "Vacía";
+  const statusBadgeClasses =
+    status === "resolved"
+      ? "border-emerald-200 bg-emerald-100 text-emerald-800"
+      : status === "warning"
+        ? "border-amber-200 bg-amber-100 text-amber-800"
+        : "border-slate-200 bg-slate-100 text-slate-600";
 
   return (
-    <div className={`rounded-3xl border px-4 py-4 ${toneClasses}`}>
-      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
-        {title}
-      </p>
-      <p className="mt-2 text-sm font-semibold">
+    <div className={`rounded-2xl border px-3 py-3 ${toneClasses}`}>
+      <div className="flex items-start justify-between gap-3">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-500">
+          {title}
+        </p>
+        <span
+          className={`rounded-full border px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] ${statusBadgeClasses}`}
+        >
+          {statusLabel}
+        </span>
+      </div>
+      <p className="mt-2 text-sm font-semibold text-slate-950">
         {displayValue || "Sin sugerencia usable"}
       </p>
       {option.razon.trim() ? (
-        <p className="mt-2 text-sm leading-6 text-slate-600">
+        <p className="mt-1 text-xs leading-5 text-slate-600">
           {option.razon.trim()}
         </p>
       ) : null}
-      <p className={`mt-3 text-xs font-medium ${messageClasses}`}>{message}</p>
+      <p className={`mt-2 text-xs leading-5 ${messageClasses}`}>{message}</p>
     </div>
   );
 }
@@ -867,9 +886,11 @@ function SuggestionStatusCard({
 function CatalogGroupsEditor({
   groups,
   onChange,
+  embedded = false,
 }: {
   groups: SuggestedOptionForm[];
   onChange: (groups: SuggestedOptionForm[]) => void;
+  embedded?: boolean;
 }) {
   const updateGroup = (index: number, patch: Partial<SuggestedOptionForm>) => {
     onChange(
@@ -880,14 +901,20 @@ function CatalogGroupsEditor({
   };
 
   return (
-    <div className="rounded-3xl border border-slate-100 bg-slate-50 px-4 py-4">
+    <div
+      className={
+        embedded
+          ? "space-y-4"
+          : "rounded-3xl border border-slate-100 bg-slate-50 px-4 py-4"
+      }
+    >
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="text-sm font-semibold text-slate-900">
             Sugerencias IA para CatalogGroups
           </p>
           <p className="mt-1 text-sm text-slate-600">
-            Este bloque conserva el comportamiento actual del guardado. La selección real de arriba queda preparada para la siguiente fase.
+            Este bloque conserva las sugerencias editables de IA. La selección real de arriba es la que se usa al guardar.
           </p>
         </div>
         <button
@@ -988,128 +1015,159 @@ function VariantsEditor({
       ),
     );
   };
+  const [isExpanded, setIsExpanded] = useState(enabled);
+
+  useEffect(() => {
+    if (enabled) {
+      setIsExpanded(true);
+    }
+  }, [enabled]);
 
   return (
     <FormSection
       title="Variantes"
       description="Mantiene la estructura sugerida sin convertir esta fase en un configurador completo."
+      className="border-slate-200/80 bg-slate-50/60"
     >
       <div className="space-y-4">
-        <label className="inline-flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-800">
-          <input
-            type="checkbox"
-            checked={enabled}
-            onChange={(event) => onEnabledChange(event.target.checked)}
-            className="h-4 w-4 rounded border-slate-300 text-sky-600 focus:ring-sky-200"
-          />
-          Usar variantes sugeridas
-        </label>
-
-        {enabled ? (
-          <div className="space-y-3">
-            {variants.map((variant, index) => (
-              <div
-                key={`${variant.nombre}-${index}`}
-                className="rounded-3xl border border-slate-200 bg-slate-50 px-4 py-4"
-              >
-                <div className="mb-3 flex items-center justify-between gap-3">
-                  <p className="text-sm font-semibold text-slate-900">
-                    Variante {index + 1}
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      onChange(
-                        variants.filter((_, itemIndex) => itemIndex !== index),
-                      )
-                    }
-                    className="text-xs font-semibold text-rose-600 transition hover:text-rose-800"
-                  >
-                    Quitar
-                  </button>
-                </div>
-                <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-                  <input
-                    value={variant.nombre}
-                    onChange={(event) =>
-                      updateVariant(index, { nombre: event.target.value })
-                    }
-                    placeholder="Nombre de variante"
-                    className={compactInputClasses}
-                  />
-                  <input
-                    value={variant.skuSugerido}
-                    onChange={(event) =>
-                      updateVariant(index, { skuSugerido: event.target.value })
-                    }
-                    placeholder="SKU sugerido"
-                    className={compactInputClasses}
-                  />
-                  <input
-                    value={variant.precioSugerido}
-                    onChange={(event) =>
-                      updateVariant(index, {
-                        precioSugerido: event.target.value,
-                      })
-                    }
-                    placeholder="Precio sugerido opcional"
-                    inputMode="numeric"
-                    className={compactInputClasses}
-                  />
-                </div>
-                <label className="mt-3 inline-flex items-center gap-2 text-sm font-medium text-slate-700">
-                  <input
-                    type="checkbox"
-                    checked={variant.stockIlimitadoSugerido}
-                    onChange={(event) =>
-                      updateVariant(index, {
-                        stockIlimitadoSugerido: event.target.checked,
-                      })
-                    }
-                    className="h-4 w-4 rounded border-slate-300 text-sky-600 focus:ring-sky-200"
-                  />
-                  Stock ilimitado sugerido
-                </label>
-                <div className="mt-3">
-                  <label className={labelClasses}>
-                    Opciones, una por línea con formato nombre: valor
-                  </label>
-                  <textarea
-                    value={formatVariantOptions(variant.opciones)}
-                    onChange={(event) =>
-                      updateVariant(index, {
-                        opciones: parseVariantOptions(event.target.value),
-                      })
-                    }
-                    rows={3}
-                    placeholder="Tamaño: Grande"
-                    className={compactInputClasses}
-                  />
-                </div>
-              </div>
-            ))}
-
+        <div className="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+          <label className="inline-flex items-center gap-3 text-sm font-semibold text-slate-800">
+            <input
+              type="checkbox"
+              checked={enabled}
+              onChange={(event) => onEnabledChange(event.target.checked)}
+              className="h-4 w-4 rounded border-slate-300 text-sky-600 focus:ring-sky-200"
+            />
+            Usar variantes sugeridas
+          </label>
+          <div className="flex items-center gap-2 text-xs text-slate-500">
+            <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 font-semibold uppercase tracking-[0.12em] text-slate-600">
+              {enabled
+                ? `${variants.length} variante${variants.length === 1 ? "" : "s"}`
+                : "Desactivadas"}
+            </span>
             <button
               type="button"
-              onClick={() =>
-                onChange([
-                  ...variants,
-                  {
-                    nombre: "",
-                    skuSugerido: "",
-                    precioSugerido: "",
-                    stockIlimitadoSugerido: true,
-                    opciones: [],
-                  },
-                ])
-              }
-              className="rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
+              onClick={() => setIsExpanded((current) => !current)}
+              className="rounded-full border border-slate-200 bg-white px-3 py-1 font-semibold text-slate-700 transition hover:bg-slate-100"
             >
-              Agregar variante
+              {isExpanded ? "Ocultar detalle" : "Ver detalle"}
             </button>
           </div>
+        </div>
+
+        {enabled ? (
+          isExpanded ? (
+            <div className="space-y-3">
+              {variants.map((variant, index) => (
+                <div
+                  key={`${variant.nombre}-${index}`}
+                  className="rounded-2xl border border-slate-200 bg-white px-4 py-4"
+                >
+                  <div className="mb-3 flex items-center justify-between gap-3">
+                    <p className="text-sm font-semibold text-slate-900">
+                      Variante {index + 1}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        onChange(
+                          variants.filter((_, itemIndex) => itemIndex !== index),
+                        )
+                      }
+                      className="text-xs font-semibold text-rose-600 transition hover:text-rose-800"
+                    >
+                      Quitar
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+                    <input
+                      value={variant.nombre}
+                      onChange={(event) =>
+                        updateVariant(index, { nombre: event.target.value })
+                      }
+                      placeholder="Nombre de variante"
+                      className={compactInputClasses}
+                    />
+                    <input
+                      value={variant.skuSugerido}
+                      onChange={(event) =>
+                        updateVariant(index, { skuSugerido: event.target.value })
+                      }
+                      placeholder="SKU sugerido"
+                      className={compactInputClasses}
+                    />
+                    <input
+                      value={variant.precioSugerido}
+                      onChange={(event) =>
+                        updateVariant(index, {
+                          precioSugerido: event.target.value,
+                        })
+                      }
+                      placeholder="Precio sugerido opcional"
+                      inputMode="numeric"
+                      className={compactInputClasses}
+                    />
+                  </div>
+                  <label className="mt-3 inline-flex items-center gap-2 text-sm font-medium text-slate-700">
+                    <input
+                      type="checkbox"
+                      checked={variant.stockIlimitadoSugerido}
+                      onChange={(event) =>
+                        updateVariant(index, {
+                          stockIlimitadoSugerido: event.target.checked,
+                        })
+                      }
+                      className="h-4 w-4 rounded border-slate-300 text-sky-600 focus:ring-sky-200"
+                    />
+                    Stock ilimitado sugerido
+                  </label>
+                  <div className="mt-3">
+                    <label className={labelClasses}>
+                      Opciones, una por línea con formato nombre: valor
+                    </label>
+                    <textarea
+                      value={formatVariantOptions(variant.opciones)}
+                      onChange={(event) =>
+                        updateVariant(index, {
+                          opciones: parseVariantOptions(event.target.value),
+                        })
+                      }
+                      rows={3}
+                      placeholder="Tamaño: Grande"
+                      className={compactInputClasses}
+                    />
+                  </div>
+                </div>
+              ))}
+
+              <button
+                type="button"
+                onClick={() =>
+                  onChange([
+                    ...variants,
+                    {
+                      nombre: "",
+                      skuSugerido: "",
+                      precioSugerido: "",
+                      stockIlimitadoSugerido: true,
+                      opciones: [],
+                    },
+                  ])
+                }
+                className="rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
+              >
+                Agregar variante
+              </button>
+            </div>
+          ) : (
+            <p className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600">
+              Las variantes siguen activas, pero el detalle quedó colapsado para
+              no robar espacio en el flujo principal.
+            </p>
+          )
         ) : (
-          <p className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+          <p className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600">
             Las variantes quedan desactivadas para este borrador. Puedes
             activarlas si el producto necesita opciones.
           </p>
@@ -1588,6 +1646,7 @@ function EditableProductDraftForm({
   onPublishProduct: () => void;
   onCreateAnotherProduct: () => void;
 }) {
+  const [catalogGroupSearch, setCatalogGroupSearch] = useState("");
   const selectedCategory = findMatchingCategory(editableDraft.categoriaSeleccionada);
   const compatibleSections = selectedCategory
     ? getSectionsForCategory(selectedCategory.slug)
@@ -1595,12 +1654,38 @@ function EditableProductDraftForm({
   const orderedCatalogGroupOptions = orderCatalogGroupOptions(
     generatedDraft.catalogGroupOptions,
   );
+  const catalogGroupMap = useMemo(
+    () =>
+      new Map(orderedCatalogGroupOptions.map((group) => [group.id, group] as const)),
+    [orderedCatalogGroupOptions],
+  );
   const selectedCatalogGroupIdSet = new Set(
     editableDraft.selectedCatalogGroupIds,
   );
   const selectedCatalogGroups = orderedCatalogGroupOptions.filter((group) =>
     selectedCatalogGroupIdSet.has(group.id),
   );
+  const filteredCatalogGroupOptions = useMemo(() => {
+    const normalizedSearch = normalizeOptionMatchValue(catalogGroupSearch);
+
+    if (!normalizedSearch) return orderedCatalogGroupOptions;
+
+    return orderedCatalogGroupOptions.filter((group) => {
+      const parentName = group.parentId
+        ? catalogGroupMap.get(group.parentId)?.nombre ?? ""
+        : "";
+      const searchableText = [
+        group.nombre,
+        group.slug,
+        group.description ?? "",
+        parentName,
+      ]
+        .map((value) => normalizeOptionMatchValue(value))
+        .join(" ");
+
+      return searchableText.includes(normalizedSearch);
+    });
+  }, [catalogGroupMap, catalogGroupSearch, orderedCatalogGroupOptions]);
   const matchedSuggestedCategory = findMatchingCategory(
     editableDraft.categoriaSugerida,
   );
@@ -1895,293 +1980,351 @@ function EditableProductDraftForm({
         </div>
       </FormSection>
 
-      <div className="grid grid-cols-1 gap-5 2xl:grid-cols-[minmax(0,1.15fr)_minmax(360px,0.85fr)]">
-        <FormSection
-          title="Clasificación"
-          description="Confirma categoría y secciones reales desde cliente. La sugerencia IA se conserva solo como ayuda inicial y no se guarda como válida si no coincide."
-          className="h-full"
-        >
-          <div className="space-y-4">
-            <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1.15fr)_minmax(280px,0.85fr)]">
-              <div className="space-y-4">
-                <div className="rounded-3xl border border-slate-100 bg-slate-50 px-4 py-4">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="text-sm font-semibold text-slate-900">
-                        Categoría real
-                      </p>
-                      <p className="mt-1 text-sm leading-6 text-slate-600">
-                        Selecciona una categoría válida. Las secciones se filtran con base en esta elección.
-                      </p>
-                    </div>
-                    {selectedCategory ? (
-                      <span className="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-xs font-semibold text-sky-700">
-                        {selectedCategory.nombre}
-                      </span>
-                    ) : null}
-                  </div>
+      <FormSection
+        title="Categoría"
+        description="Confirma la categoría real y conserva la sugerencia IA como referencia contextual."
+      >
+        <div className="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1.45fr)_minmax(280px,0.75fr)]">
+          <div>
+            <div className="flex flex-wrap items-center gap-2">
+              {selectedCategory ? (
+                <span className="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-xs font-semibold text-sky-700">
+                  {selectedCategory.nombre}
+                </span>
+              ) : (
+                <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-600">
+                  Sin categoría real
+                </span>
+              )}
+            </div>
 
-                  <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                    {activeCategoryOptions.map((category) => {
-                      const isSelected = category.id === selectedCategory?.id;
+            <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+              {activeCategoryOptions.map((category) => {
+                const isSelected = category.id === selectedCategory?.id;
 
-                      return (
-                        <button
-                          key={category.id}
-                          type="button"
-                          onClick={() => handleSelectCategory(category)}
-                          className={`rounded-3xl border px-4 py-3 text-left transition ${
+                return (
+                  <button
+                    key={category.id}
+                    type="button"
+                    onClick={() => handleSelectCategory(category)}
+                    className={`rounded-2xl border px-4 py-3 text-left transition ${
+                      isSelected
+                        ? "border-sky-300 bg-sky-50 shadow-[0_14px_32px_-24px_rgba(14,165,233,0.45)]"
+                        : "border-slate-200 bg-white hover:border-sky-200 hover:bg-slate-50"
+                    }`}
+                  >
+                    <p className="text-sm font-semibold text-slate-950">
+                      {category.nombre}
+                    </p>
+                    <p className="mt-1 text-xs uppercase tracking-[0.16em] text-slate-500">
+                      {category.slug}
+                    </p>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <SuggestionStatusCard
+            title="Categoría sugerida por IA"
+            option={editableDraft.categoriaSugerida}
+            status={categorySuggestionStatus.status}
+            message={categorySuggestionStatus.message}
+          />
+        </div>
+      </FormSection>
+
+      <FormSection
+        title="Secciones"
+        description="Selecciona una o varias secciones compatibles. La primera sigue siendo la sección principal enviada al guardar."
+      >
+        <div className="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1.45fr)_minmax(280px,0.75fr)]">
+          <div>
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+                {selectedSections.length === 0
+                  ? "Sin secciones seleccionadas"
+                  : `${selectedSections.length} seleccionada${selectedSections.length === 1 ? "" : "s"}`}
+              </span>
+              {selectedSections.length > 0 ? (
+                <span className="text-xs text-slate-500">
+                  Principal actual: {selectedSections[0]?.nombre}
+                </span>
+              ) : null}
+            </div>
+
+            {!selectedCategory ? (
+              <div className="mt-4 rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-4 text-sm text-slate-500">
+                Elige primero una categoría real para habilitar las secciones compatibles.
+              </div>
+            ) : compatibleSections.length === 0 ? (
+              <div className="mt-4 rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-4 text-sm text-slate-500">
+                No encontramos secciones activas para la categoría seleccionada.
+              </div>
+            ) : (
+              <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                {compatibleSections.map((section) => {
+                  const isSelected = selectedSectionIds.has(section.id);
+
+                  return (
+                    <button
+                      key={section.id}
+                      type="button"
+                      onClick={() => handleToggleSection(section)}
+                      className={`rounded-2xl border px-4 py-3 text-left transition ${
+                        isSelected
+                          ? "border-sky-300 bg-sky-600 text-white shadow-[0_12px_28px_-20px_rgba(2,132,199,0.6)]"
+                          : "border-slate-200 bg-white text-slate-700 hover:border-sky-200 hover:bg-slate-50"
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="text-sm font-semibold">
+                            {section.nombre}
+                          </p>
+                          <p
+                            className={`mt-1 text-xs uppercase tracking-[0.16em] ${
+                              isSelected ? "text-sky-100" : "text-slate-500"
+                            }`}
+                          >
+                            {section.slug}
+                          </p>
+                        </div>
+                        <span
+                          className={`rounded-full border px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] ${
                             isSelected
-                              ? "border-sky-300 bg-sky-50 shadow-[0_14px_32px_-24px_rgba(14,165,233,0.45)]"
-                              : "border-slate-200 bg-white hover:border-sky-200 hover:bg-slate-50"
+                              ? "border-sky-200/60 bg-white/15 text-white"
+                              : "border-slate-200 bg-slate-50 text-slate-600"
                           }`}
                         >
-                          <p className="text-sm font-semibold text-slate-950">
-                            {category.nombre}
-                          </p>
-                          <p className="mt-1 text-xs uppercase tracking-[0.16em] text-slate-500">
-                            {category.slug}
-                          </p>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                <div className="rounded-3xl border border-slate-100 bg-slate-50 px-4 py-4">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="text-sm font-semibold text-slate-900">
-                        Secciones reales
-                      </p>
-                      <p className="mt-1 text-sm leading-6 text-slate-600">
-                        Puedes seleccionar una o varias. Para el contrato actual de guardado se enviará la primera como sección principal; la persistencia completa de múltiples secciones queda para Fase 2.
-                      </p>
-                    </div>
-                    {selectedSections.length > 0 ? (
-                      <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
-                        {selectedSections.length} seleccionada{selectedSections.length === 1 ? "" : "s"}
-                      </span>
-                    ) : null}
-                  </div>
-
-                  {!selectedCategory ? (
-                    <div className="mt-4 rounded-2xl border border-dashed border-slate-300 bg-white px-4 py-4 text-sm text-slate-500">
-                      Elige primero una categoría real para habilitar las secciones compatibles.
-                    </div>
-                  ) : compatibleSections.length === 0 ? (
-                    <div className="mt-4 rounded-2xl border border-dashed border-slate-300 bg-white px-4 py-4 text-sm text-slate-500">
-                      No encontramos secciones activas para la categoría seleccionada.
-                    </div>
-                  ) : (
-                    <>
-                      <div className="mt-4 flex flex-wrap gap-2">
-                        {compatibleSections.map((section) => {
-                          const isSelected = selectedSectionIds.has(section.id);
-
-                          return (
-                            <button
-                              key={section.id}
-                              type="button"
-                              onClick={() => handleToggleSection(section)}
-                              className={`rounded-full border px-4 py-2 text-sm font-medium transition ${
-                                isSelected
-                                  ? "border-sky-300 bg-sky-600 text-white shadow-[0_12px_28px_-20px_rgba(2,132,199,0.6)]"
-                                  : "border-slate-200 bg-white text-slate-700 hover:border-sky-200 hover:bg-slate-50"
-                              }`}
-                            >
-                              {section.nombre}
-                            </button>
-                          );
-                        })}
+                          {isSelected ? "Activa" : "Disponible"}
+                        </span>
                       </div>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
 
-                      {selectedSections.length > 0 ? (
-                        <p className="mt-3 text-xs text-slate-500">
-                          Sección principal enviada al guardar: {selectedSections[0]?.nombre}.
-                        </p>
-                      ) : null}
-                    </>
-                  )}
-                </div>
+          <SuggestionStatusCard
+            title="Sección sugerida por IA"
+            option={editableDraft.seccionSugerida}
+            status={sectionSuggestionStatus.status}
+            message={sectionSuggestionStatus.message}
+          />
+        </div>
+      </FormSection>
 
-                <div className="rounded-3xl border border-slate-100 bg-slate-50 px-4 py-4">
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                    <div>
-                      <p className="text-sm font-semibold text-slate-900">
-                        CatalogGroups reales
-                      </p>
-                      <p className="mt-1 text-sm leading-6 text-slate-600">
-                        Selección editorial opcional. La coincidencia con IA se preselecciona, pero el guardado actual sigue dependiendo de las sugerencias hasta la Fase 2C.
-                      </p>
-                    </div>
-                    <span className="rounded-full border border-violet-200 bg-violet-50 px-3 py-1 text-xs font-semibold text-violet-700">
-                      {selectedCatalogGroups.length === 0
-                        ? "Opcional"
-                        : `${selectedCatalogGroups.length} seleccionado${selectedCatalogGroups.length === 1 ? "" : "s"}`}
-                    </span>
-                  </div>
+      <FormSection
+        title="Grupos relacionados"
+        description="Primero ves lo que sugirió la IA y luego todo el catálogo activo del negocio para seleccionar con libertad."
+      >
+        <div className="space-y-5">
+          <div>
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-sm font-semibold text-slate-950">
+                  Grupos sugeridos por IA
+                </p>
+                <p className="mt-1 text-sm text-slate-600">
+                  Referencia ligera para acelerar la selección editorial.
+                </p>
+              </div>
+              <span className="rounded-full border border-violet-200 bg-violet-50 px-3 py-1 text-xs font-semibold text-violet-700">
+                {catalogGroupSuggestionEntries.length === 0
+                  ? "Sin sugerencias"
+                  : `${catalogGroupSuggestionEntries.length} sugerencia${catalogGroupSuggestionEntries.length === 1 ? "" : "s"}`}
+              </span>
+            </div>
 
-                  {orderedCatalogGroupOptions.length === 0 ? (
-                    <div className="mt-4 rounded-2xl border border-dashed border-slate-300 bg-white px-4 py-4 text-sm text-slate-500">
-                      Este negocio no tiene CatalogGroups activos para seleccionar.
-                    </div>
-                  ) : (
-                    <>
-                      <div className="mt-4 space-y-2">
-                        {orderedCatalogGroupOptions.map((group) => {
-                          const isSelected = selectedCatalogGroupIdSet.has(group.id);
+            <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
+              {catalogGroupSuggestionEntries.length > 0 ? (
+                catalogGroupSuggestionEntries.map(({ group, matchedGroup }, index) => {
+                  const isSelected = matchedGroup
+                    ? selectedCatalogGroupIdSet.has(matchedGroup.id)
+                    : false;
 
-                          return (
-                            <div
-                              key={group.id}
-                              style={{ paddingLeft: `${group.depth * 18}px` }}
-                            >
-                              <button
-                                type="button"
-                                onClick={() => handleToggleCatalogGroup(group.id)}
-                                className={`w-full rounded-3xl border px-4 py-3 text-left transition ${
-                                  isSelected
-                                    ? "border-violet-300 bg-violet-50 shadow-[0_14px_32px_-24px_rgba(139,92,246,0.4)]"
-                                    : "border-slate-200 bg-white hover:border-violet-200 hover:bg-slate-50"
-                                }`}
-                              >
-                                <div className="flex items-start justify-between gap-3">
-                                  <div className="min-w-0">
-                                    {group.depth > 0 ? (
-                                      <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
-                                        Subgrupo
-                                      </p>
-                                    ) : null}
-                                    <p className="text-sm font-semibold text-slate-950">
-                                      {group.nombre}
-                                    </p>
-                                    <p className="mt-1 text-xs uppercase tracking-[0.16em] text-slate-500">
-                                      {group.slug}
-                                    </p>
-                                    {group.description ? (
-                                      <p className="mt-1 text-xs leading-5 text-slate-500">
-                                        {group.description}
-                                      </p>
-                                    ) : null}
-                                  </div>
-                                  <span
-                                    className={`rounded-full px-3 py-1 text-[11px] font-semibold ${
-                                      isSelected
-                                        ? "border border-violet-200 bg-violet-600 text-white"
-                                        : "border border-slate-200 bg-slate-50 text-slate-600"
-                                    }`}
-                                  >
-                                    {isSelected ? "Seleccionado" : "Disponible"}
-                                  </span>
-                                </div>
-                              </button>
-                            </div>
-                          );
-                        })}
-                      </div>
+                  return (
+                    <SuggestionStatusCard
+                      key={`${group.id || group.slug || group.nombre}-${index}`}
+                      title={`Grupo sugerido ${index + 1}`}
+                      option={group}
+                      status={
+                        !hasSuggestedOptionValue(group)
+                          ? "empty"
+                          : matchedGroup
+                            ? "resolved"
+                            : "warning"
+                      }
+                      message={
+                        !hasSuggestedOptionValue(group)
+                          ? "La IA dejó esta sugerencia vacía. Puedes ignorarla o ajustarla manualmente."
+                          : matchedGroup
+                            ? isSelected
+                              ? `Coincide con "${matchedGroup.nombre}" y ya quedó seleccionado.`
+                              : `Coincide con "${matchedGroup.nombre}". Puedes activarlo abajo.`
+                            : "No coincide con un CatalogGroup activo del negocio. Se conserva solo como ayuda contextual."
+                      }
+                    />
+                  );
+                })
+              ) : (
+                <SuggestionStatusCard
+                  title="Grupos sugeridos por IA"
+                  option={EMPTY_SUGGESTED_OPTION}
+                  status="empty"
+                  message="La IA no sugirió grupos editoriales para este borrador. La selección real sigue siendo opcional."
+                />
+              )}
+            </div>
+          </div>
 
-                      {selectedCatalogGroups.length > 0 ? (
-                        <div className="mt-4 flex flex-wrap gap-2">
-                          {selectedCatalogGroups.map((group) => (
-                            <button
-                              key={group.id}
-                              type="button"
-                              onClick={() => handleToggleCatalogGroup(group.id)}
-                              className="rounded-full border border-violet-200 bg-white px-3 py-1.5 text-xs font-medium text-violet-700 transition hover:bg-violet-50"
-                            >
-                              {group.nombre} x
-                            </button>
-                          ))}
-                        </div>
-                      ) : null}
-                    </>
-                  )}
-                </div>
+          <div className="space-y-4">
+            <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+              <div className="flex flex-wrap items-center gap-2">
+                <p className="text-sm font-semibold text-slate-950">
+                  Todos los grupos disponibles
+                </p>
+                <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-600">
+                  {filteredCatalogGroupOptions.length} visible{filteredCatalogGroupOptions.length === 1 ? "" : "s"}
+                </span>
+                <span className="rounded-full border border-violet-200 bg-violet-50 px-3 py-1 text-xs font-semibold text-violet-700">
+                  {selectedCatalogGroups.length === 0
+                    ? "Opcional"
+                    : `${selectedCatalogGroups.length} seleccionado${selectedCatalogGroups.length === 1 ? "" : "s"}`}
+                </span>
               </div>
 
-              <div className="space-y-4">
-                <SuggestionStatusCard
-                  title="Categoría sugerida por IA"
-                  option={editableDraft.categoriaSugerida}
-                  status={categorySuggestionStatus.status}
-                  message={categorySuggestionStatus.message}
+              <div className="w-full lg:max-w-sm">
+                <input
+                  value={catalogGroupSearch}
+                  onChange={(event) => setCatalogGroupSearch(event.target.value)}
+                  placeholder="Buscar grupo por nombre, slug o padre"
+                  className={compactInputClasses}
                 />
-                <SuggestionStatusCard
-                  title="Sección sugerida por IA"
-                  option={editableDraft.seccionSugerida}
-                  status={sectionSuggestionStatus.status}
-                  message={sectionSuggestionStatus.message}
-                />
-                {catalogGroupSuggestionEntries.length > 0 ? (
-                  catalogGroupSuggestionEntries.map(({ group, matchedGroup }, index) => {
-                    const isSelected = matchedGroup
-                      ? selectedCatalogGroupIdSet.has(matchedGroup.id)
-                      : false;
-
-                    return (
-                      <SuggestionStatusCard
-                        key={`${group.id || group.slug || group.nombre}-${index}`}
-                        title={`Grupo sugerido por IA ${index + 1}`}
-                        option={group}
-                        status={
-                          !hasSuggestedOptionValue(group)
-                            ? "empty"
-                            : matchedGroup
-                              ? "resolved"
-                              : "warning"
-                        }
-                        message={
-                          !hasSuggestedOptionValue(group)
-                            ? "La IA dejó esta sugerencia vacía. Puedes ignorarla o ajustarla abajo."
-                            : matchedGroup
-                              ? isSelected
-                                ? `Coincide con el grupo real "${matchedGroup.nombre}" y quedó preseleccionado.`
-                                : `Coincide con el grupo real "${matchedGroup.nombre}", pero puedes activarlo o quitarlo en la selección real.`
-                              : "No coincide con un CatalogGroup activo del negocio. Se conserva solo como ayuda contextual."
-                        }
-                      />
-                    );
-                  })
-                ) : (
-                  <SuggestionStatusCard
-                    title="Grupos sugeridos por IA"
-                    option={EMPTY_SUGGESTED_OPTION}
-                    status="empty"
-                    message="La IA no sugirió grupos editoriales para este borrador. La selección real sigue siendo opcional."
-                  />
-                )}
               </div>
             </div>
-            <CatalogGroupsEditor
-              groups={editableDraft.catalogGroupsSugeridos}
-              onChange={(catalogGroupsSugeridos) =>
-                updateEditableDraft((current) => ({
-                  ...current,
-                  catalogGroupsSugeridos,
-                }))
-              }
-            />
-          </div>
-        </FormSection>
 
-        <VariantsEditor
-          enabled={editableDraft.usaVariantesSugerido}
-          variants={editableDraft.variantesSugeridas}
-          onEnabledChange={(usaVariantesSugerido) =>
-            updateEditableDraft((current) => ({
-              ...current,
-              usaVariantesSugerido,
-            }))
-          }
-          onChange={(variantesSugeridas) =>
-            updateEditableDraft((current) => ({
-              ...current,
-              variantesSugeridas,
-            }))
-          }
-        />
-      </div>
+            {selectedCatalogGroups.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {selectedCatalogGroups.map((group) => (
+                  <button
+                    key={group.id}
+                    type="button"
+                    onClick={() => handleToggleCatalogGroup(group.id)}
+                    className="rounded-full border border-violet-200 bg-white px-3 py-1.5 text-xs font-medium text-violet-700 transition hover:bg-violet-50"
+                  >
+                    {group.nombre} x
+                  </button>
+                ))}
+              </div>
+            ) : null}
+
+            {orderedCatalogGroupOptions.length === 0 ? (
+              <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-4 text-sm text-slate-500">
+                Este negocio no tiene CatalogGroups activos para seleccionar.
+              </div>
+            ) : filteredCatalogGroupOptions.length === 0 ? (
+              <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-4 text-sm text-slate-500">
+                No encontramos grupos que coincidan con esa búsqueda.
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+                {filteredCatalogGroupOptions.map((group) => {
+                  const isSelected = selectedCatalogGroupIdSet.has(group.id);
+                  const parentName = group.parentId
+                    ? catalogGroupMap.get(group.parentId)?.nombre ?? null
+                    : null;
+
+                  return (
+                    <button
+                      key={group.id}
+                      type="button"
+                      onClick={() => handleToggleCatalogGroup(group.id)}
+                      className={`h-full rounded-2xl border px-4 py-3 text-left transition ${
+                        isSelected
+                          ? "border-violet-300 bg-violet-50 shadow-[0_14px_32px_-24px_rgba(139,92,246,0.4)]"
+                          : "border-slate-200 bg-white hover:border-violet-200 hover:bg-slate-50"
+                      }`}
+                    >
+                      <div className="flex h-full flex-col justify-between gap-3">
+                        <div className="min-w-0">
+                          <div className="flex flex-wrap gap-2">
+                            <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-500">
+                              {group.parentId ? "Subgrupo" : "Raíz"}
+                            </span>
+                            {parentName ? (
+                              <span className="rounded-full border border-slate-200 bg-white px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-500">
+                                {parentName}
+                              </span>
+                            ) : null}
+                          </div>
+                          <p className="mt-2 text-sm font-semibold text-slate-950">
+                            {group.nombre}
+                          </p>
+                          <p className="mt-1 text-xs uppercase tracking-[0.16em] text-slate-500">
+                            {group.slug}
+                          </p>
+                          {group.description ? (
+                            <p className="mt-2 text-xs leading-5 text-slate-500">
+                              {group.description}
+                            </p>
+                          ) : null}
+                        </div>
+                        <span
+                          className={`inline-flex w-fit rounded-full border px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] ${
+                            isSelected
+                              ? "border-violet-200 bg-violet-600 text-white"
+                              : "border-slate-200 bg-slate-50 text-slate-600"
+                          }`}
+                        >
+                          {isSelected ? "Seleccionado" : "Disponible"}
+                        </span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          <details className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+            <summary className="cursor-pointer text-sm font-semibold text-slate-800">
+              Ajustar sugerencias IA manualmente
+            </summary>
+            <div className="mt-4">
+              <CatalogGroupsEditor
+                embedded
+                groups={editableDraft.catalogGroupsSugeridos}
+                onChange={(catalogGroupsSugeridos) =>
+                  updateEditableDraft((current) => ({
+                    ...current,
+                    catalogGroupsSugeridos,
+                  }))
+                }
+              />
+            </div>
+          </details>
+        </div>
+      </FormSection>
+
+      <VariantsEditor
+        enabled={editableDraft.usaVariantesSugerido}
+        variants={editableDraft.variantesSugeridas}
+        onEnabledChange={(usaVariantesSugerido) =>
+          updateEditableDraft((current) => ({
+            ...current,
+            usaVariantesSugerido,
+          }))
+        }
+        onChange={(variantesSugeridas) =>
+          updateEditableDraft((current) => ({
+            ...current,
+            variantesSugeridas,
+          }))
+        }
+      />
 
       <FormSection
         title="Prompts de imagen"
@@ -2315,7 +2458,7 @@ function EditableProductDraftForm({
         ) : null}
       </div>
 
-      <div className="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]">
+      <div className="space-y-5">
         <ProductImagesAndPublishSection
           savedProduct={savedProduct}
           imageUrls={imageUrls}
@@ -2350,7 +2493,7 @@ function EditableProductDraftForm({
           onCreateAnotherProduct={onCreateAnotherProduct}
         />
 
-        <FormSection title="Señales de contexto usadas" className="h-full">
+        <FormSection title="Señales de contexto usadas">
           <div className="space-y-4">
             <div>
               <p className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
