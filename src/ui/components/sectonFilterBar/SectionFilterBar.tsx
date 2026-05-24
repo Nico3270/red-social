@@ -259,17 +259,21 @@ export const ProductGridWithSectionFilter = ({
       <style>{styles}</style>
 
       {showSectionBar && (
-        <div className="mb-2 flex justify-start gap-1.5 overflow-x-auto rounded-[18px] border border-slate-200 bg-white/90 p-1.5 lg:grid lg:grid-cols-[repeat(auto-fit,minmax(96px,1fr))] lg:gap-2 lg:overflow-visible lg:p-2">
+        <div className="mb-2 flex justify-start gap-1.5 overflow-x-auto rounded-xl border border-slate-200 bg-slate-50/80 p-1 pb-1.5 sm:flex-wrap sm:justify-center sm:overflow-visible lg:gap-2 lg:px-1.5 lg:py-2">
           <button
             type="button"
             onClick={clearSectionSelection}
             className={clsx(
-              "inline-flex min-w-[76px] shrink-0 items-center justify-center rounded-2xl px-3 py-2 text-xs font-semibold transition lg:min-h-[90px] lg:min-w-0 lg:w-full",
+              "inline-flex h-8 min-w-max shrink-0 items-center justify-center gap-1.5 rounded-full border px-3 text-xs font-medium transition-colors sm:h-9 sm:text-sm lg:h-10 lg:gap-2 lg:px-4 lg:text-[14px]",
               !selectedSectionId
-                ? "bg-slate-900 text-white shadow-sm"
-                : "bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                ? "border-slate-900 bg-slate-900 text-white shadow-sm"
+                : "border-slate-200 bg-white text-slate-500 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900"
             )}
           >
+            <span className={clsx(
+              "h-1.5 w-1.5 rounded-full",
+              !selectedSectionId ? "bg-white/85" : "bg-slate-300"
+            )} />
             Todo
           </button>
 
@@ -285,32 +289,29 @@ export const ProductGridWithSectionFilter = ({
                   setSelectedSectionId(isSelected ? null : sec.id);
                 }}
                 className={clsx(
-                  "flex min-w-[84px] shrink-0 flex-col items-center justify-center rounded-2xl px-2.5 py-2 transition-colors lg:min-h-[90px] lg:min-w-0 lg:w-full lg:px-3 lg:py-3",
+                  "inline-flex h-8 min-w-max shrink-0 items-center justify-center gap-1.5 rounded-full border px-3 text-xs font-medium transition-colors sm:h-9 sm:text-sm lg:h-10 lg:gap-2 lg:px-4 lg:text-[14px]",
                   isSelected
-                    ? "bg-slate-900 text-white shadow-sm"
-                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                    ? "border-slate-300 bg-white text-slate-900 shadow-sm"
+                    : "border-transparent bg-transparent text-slate-500 hover:border-slate-200 hover:bg-white hover:text-slate-900"
                 )}
               >
-                <div
+                <Image
+                  src={`/imgs/iconos/${sec.iconName}`}
+                  alt=""
+                  aria-hidden="true"
+                  width={14}
+                  height={14}
                   className={clsx(
-                    "mb-1 flex h-7 w-7 items-center justify-center overflow-hidden rounded-full lg:mb-1.5 lg:h-9 lg:w-9",
-                    isSelected ? "bg-white/15 text-white" : "bg-slate-100"
+                    "h-3.5 w-3.5 shrink-0 object-contain opacity-70 lg:h-4 lg:w-4",
+                    isSelected && "opacity-85"
                   )}
-                >
-                  <Image
-                    src={`/imgs/iconos/${sec.iconName}`}
-                    alt={sec.nombre}
-                    width={36}
-                    height={36}
-                    className="h-full w-full object-contain"
-                    loading="lazy"
-                    onError={(e) => {
-                      (e.currentTarget as HTMLImageElement).src = "/imgs/iconos/placeholder.png";
-                    }}
-                  />
-                </div>
-
-                <span className="line-clamp-2 text-center text-[11px] font-medium leading-tight lg:text-xs">
+                  loading="lazy"
+                  onError={(e) => {
+                    const target = e.currentTarget as HTMLImageElement;
+                    target.style.display = "none";
+                  }}
+                />
+                <span className="whitespace-nowrap leading-none">
                   {sec.nombre}
                 </span>
               </button>

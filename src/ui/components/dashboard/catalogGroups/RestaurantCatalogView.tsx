@@ -16,7 +16,6 @@ import {
   findRootGroupIdForGroupId,
   getPreferredGroupIdFromNode,
 } from "@/perfil/helpers/catalog-group-url";
-import { getCatalogAccentTheme } from "@/perfil/helpers/catalogVisualThemes";
 import { dedupeProductsById } from "./catalogPublicProducts";
 import { ProductGridWithSectionFilter } from "../../sectonFilterBar/SectionFilterBar";
 import type { ProductGuideExploreContext } from "@/perfil/guide/business-guide.types";
@@ -245,9 +244,6 @@ const RestaurantCatalogView: React.FC<RestaurantCatalogViewProps> = ({
     [groupsTree]
   );
   const subgroups = selectedRootGroup?.children ?? [];
-  const selectedTheme = getCatalogAccentTheme(
-    selectedGroupId ?? currentGroupId ?? negocioSlug
-  );
 
   if (groupsTree.length === 0) {
     return (
@@ -286,15 +282,9 @@ const RestaurantCatalogView: React.FC<RestaurantCatalogViewProps> = ({
 
       {subgroups.length > 0 && (
         <div className="border-b border-slate-200/80 bg-white/88 backdrop-blur-xl">
-          <div className="mx-auto w-full max-w-[1560px] px-4 py-2 sm:px-6 lg:px-8 2xl:px-10">
-            <div
-              className="rounded-2xl border p-1.5"
-              style={{
-                background: `linear-gradient(135deg, ${selectedTheme.surfaceMuted}, rgba(255,255,255,0.96))`,
-                borderColor: selectedTheme.border,
-              }}
-            >
-              <div className="flex gap-2 overflow-x-auto pb-1 md:flex-wrap md:overflow-visible lg:grid lg:grid-cols-[repeat(auto-fit,minmax(148px,1fr))] lg:gap-2.5 lg:overflow-visible">
+          <div className="mx-auto w-full max-w-[1560px] px-4 py-1.5 sm:px-6 lg:px-8 2xl:px-10">
+            <div className="rounded-xl border border-slate-200 bg-slate-50/80 p-1">
+              <div className="flex gap-1.5 overflow-x-auto pb-1 md:flex-wrap md:justify-center md:overflow-visible">
                 {subgroups.map((subgroup) => {
                   const isSelected = selectedSubgroupId === subgroup.id;
 
@@ -310,22 +300,17 @@ const RestaurantCatalogView: React.FC<RestaurantCatalogViewProps> = ({
                         setSelectedSubgroupId(subgroup.id);
                         handleGroupSelection(selectedGroupId ?? subgroup.id, subgroup.id);
                       }}
-                      className="whitespace-nowrap rounded-full border px-3.5 py-2 text-sm font-medium transition lg:min-h-[48px] lg:w-full lg:text-center"
-                      style={
+                      className={`inline-flex h-8 min-w-max shrink-0 items-center gap-1.5 rounded-full border px-3 text-[13px] font-medium transition-colors md:h-9 ${
                         isSelected
-                          ? {
-                              backgroundColor: selectedTheme.solid,
-                              borderColor: selectedTheme.solid,
-                              color: selectedTheme.solidText,
-                              boxShadow: "0 8px 20px rgba(15,23,42,0.08)",
-                            }
-                          : {
-                              backgroundColor: "rgba(255,255,255,0.88)",
-                              borderColor: selectedTheme.border,
-                              color: selectedTheme.text,
-                            }
-                      }
+                          ? "border-slate-300 bg-white text-slate-900 shadow-sm"
+                          : "border-transparent bg-transparent text-slate-500 hover:border-slate-200 hover:bg-white hover:text-slate-900"
+                      }`}
                     >
+                      <span
+                        className={`h-1.5 w-1.5 rounded-full ${
+                          isSelected ? "bg-slate-500" : "bg-slate-300"
+                        }`}
+                      />
                       {subgroup.nombre}
                     </button>
                   );

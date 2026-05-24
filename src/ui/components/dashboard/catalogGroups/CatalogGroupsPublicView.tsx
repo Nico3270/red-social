@@ -15,7 +15,6 @@ import {
   findRootGroupIdForGroupId,
   getPreferredGroupIdFromNode,
 } from "@/perfil/helpers/catalog-group-url";
-import { getCatalogAccentTheme } from "@/perfil/helpers/catalogVisualThemes";
 import { ProductGridWithSectionFilter } from "../../sectonFilterBar/SectionFilterBar";
 import type { ProductGuideExploreContext } from "@/perfil/guide/business-guide.types";
 import { dedupeProductsById } from "./catalogPublicProducts";
@@ -236,9 +235,6 @@ const CatalogGroupsPublicView: React.FC<CatalogGroupsPublicViewProps> = ({
   const selectedRootGroup = selectedGroupId
     ? findGroupInTree(selectedGroupId, groupsTree)
     : null;
-  const selectedTheme = getCatalogAccentTheme(
-    selectedGroupId ?? currentGroupId ?? negocioSlug
-  );
 
   if (groupsTree.length === 0) {
     return (
@@ -250,23 +246,23 @@ const CatalogGroupsPublicView: React.FC<CatalogGroupsPublicViewProps> = ({
 
   return (
     <div
-      className="mx-auto w-full max-w-[1560px] space-y-3 px-4 sm:px-6 lg:px-8 2xl:px-10"
+      className="mx-auto w-full max-w-[1560px] space-y-2.5 px-4 sm:px-6 lg:px-8 2xl:px-10"
       data-testid="catalog-groups-public-view"
     >
-      <section className="space-y-2">
-        <div className="flex gap-2 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-visible lg:grid lg:grid-cols-[repeat(auto-fit,minmax(160px,1fr))] lg:gap-3">
+      <section className="space-y-1.5">
+        <div className="flex gap-1.5 overflow-x-auto pb-1 sm:flex-wrap sm:justify-center sm:overflow-visible">
           {(selectedGroupId || selectedSubgroupId) && (
             <button
               type="button"
               onClick={clearSelection}
-              className="inline-flex h-10 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white px-3.5 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 lg:min-h-[52px] lg:w-full"
+              className="inline-flex h-9 shrink-0 items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-3.5 text-sm font-medium text-slate-600 transition-colors hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900"
             >
+              <span className="h-2 w-2 rounded-full bg-slate-300" />
               Todo
             </button>
           )}
 
           {groupsTree.map((rootGroup) => {
-            const theme = getCatalogAccentTheme(rootGroup.id || rootGroup.slug);
             const isSelectedRoot = selectedGroupId === rootGroup.id;
             const preferredGroupId =
               rootGroup.productCount > 0
@@ -292,34 +288,25 @@ const CatalogGroupsPublicView: React.FC<CatalogGroupsPublicViewProps> = ({
                   setSelectedSubgroupId(nextSubgroupId);
                   handleGroupSelection(rootGroup.id, nextSubgroupId);
                 }}
-                className="inline-flex h-10 shrink-0 items-center gap-2 rounded-full border px-3.5 text-sm font-semibold transition duration-200 lg:min-h-[52px] lg:w-full lg:justify-center"
-                style={{
-                  background: isSelectedRoot
-                    ? `linear-gradient(135deg, ${theme.surfaceMuted}, rgba(255,255,255,0.96))`
-                    : "rgba(255,255,255,0.96)",
-                  borderColor: theme.border,
-                  color: theme.text,
-                  boxShadow: isSelectedRoot ? "0 8px 20px rgba(15,23,42,0.08)" : "none",
-                }}
+                className={`inline-flex h-9 shrink-0 items-center gap-2 rounded-full border px-3.5 text-sm font-medium transition-colors duration-200 ${
+                  isSelectedRoot
+                    ? "border-slate-900 bg-slate-900 text-white shadow-sm"
+                    : "border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900"
+                }`}
               >
                 <span
-                  className="h-2.5 w-2.5 rounded-full"
-                  style={{ backgroundColor: isSelectedRoot ? theme.solid : theme.badgeText }}
+                  className={`h-2 w-2 rounded-full ${
+                    isSelectedRoot ? "bg-white/85" : "bg-slate-300"
+                  }`}
                 />
-                <span className="whitespace-nowrap lg:text-center">{rootGroup.nombre}</span>
+                <span className="whitespace-nowrap">{rootGroup.nombre}</span>
               </button>
             );
           })}
         </div>
 
         {selectedRootGroup && selectedRootGroup.children.length > 0 && (
-          <div
-            className="flex gap-2 overflow-x-auto rounded-2xl border p-1.5 lg:grid lg:grid-cols-[repeat(auto-fit,minmax(148px,1fr))] lg:gap-2.5 lg:overflow-visible lg:p-2"
-            style={{
-              background: `linear-gradient(135deg, ${selectedTheme.surfaceMuted}, rgba(255,255,255,0.96))`,
-              borderColor: selectedTheme.border,
-            }}
-          >
+          <div className="flex gap-1.5 overflow-x-auto rounded-xl border border-slate-200 bg-slate-50/80 p-1 sm:flex-wrap sm:justify-center sm:overflow-visible">
             {selectedRootGroup.children.map((subgroup) => {
               const isSubSelected =
                 selectedSubgroupId === subgroup.id && selectedGroupId === selectedRootGroup.id;
@@ -336,26 +323,21 @@ const CatalogGroupsPublicView: React.FC<CatalogGroupsPublicViewProps> = ({
                       return;
                     }
 
-                    setSelectedGroupId(selectedRootGroup.id);
-                    setSelectedSubgroupId(subgroup.id);
-                    handleGroupSelection(selectedRootGroup.id, subgroup.id);
-                  }}
-                  className="whitespace-nowrap rounded-full border px-3.5 py-2 text-sm font-medium transition lg:min-h-[48px] lg:w-full lg:text-center"
-                  style={
+                      setSelectedGroupId(selectedRootGroup.id);
+                      setSelectedSubgroupId(subgroup.id);
+                      handleGroupSelection(selectedRootGroup.id, subgroup.id);
+                    }}
+                  className={`inline-flex h-8 min-w-max shrink-0 items-center gap-1.5 rounded-full border px-3 text-[13px] font-medium transition-colors sm:h-9 ${
                     isSubSelected
-                      ? {
-                          backgroundColor: selectedTheme.solid,
-                          borderColor: selectedTheme.solid,
-                          color: selectedTheme.solidText,
-                          boxShadow: "0 8px 20px rgba(15,23,42,0.08)",
-                        }
-                      : {
-                          backgroundColor: "rgba(255,255,255,0.88)",
-                          borderColor: selectedTheme.border,
-                          color: selectedTheme.text,
-                        }
-                  }
+                      ? "border-slate-300 bg-white text-slate-900 shadow-sm"
+                      : "border-transparent bg-transparent text-slate-500 hover:border-slate-200 hover:bg-white hover:text-slate-900"
+                  }`}
                 >
+                  <span
+                    className={`h-1.5 w-1.5 rounded-full ${
+                      isSubSelected ? "bg-slate-500" : "bg-slate-300"
+                    }`}
+                  />
                   {subgroup.nombre}
                 </button>
               );

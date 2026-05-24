@@ -9,7 +9,6 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { getCatalogAccentTheme } from "@/perfil/helpers/catalogVisualThemes";
 
 interface GroupNavItem {
   id: string;
@@ -35,13 +34,13 @@ export const RestaurantGroupNav: React.FC<RestaurantGroupNavProps> = ({
 }) => {
   if (isLoading) {
     return (
-      <div className="sticky top-0 z-10 border-b border-slate-200/80 bg-white/92 backdrop-blur-xl">
-        <div className="mx-auto w-full max-w-[1560px] px-4 py-2 sm:px-6 lg:px-8 2xl:px-10">
-          <div className="flex gap-2 overflow-hidden">
+      <div className="sticky top-0 z-10 border-b border-slate-200/80 bg-white/95 backdrop-blur-xl">
+        <div className="mx-auto w-full max-w-[1560px] px-4 py-1.5 sm:px-6 lg:px-8 2xl:px-10">
+          <div className="flex gap-1.5 overflow-hidden">
             {[1, 2, 3, 4].map((i) => (
               <div
                 key={i}
-                className="h-10 min-w-[128px] animate-pulse rounded-full bg-slate-100"
+                className="h-9 min-w-[112px] animate-pulse rounded-full bg-slate-100"
               />
             ))}
           </div>
@@ -52,25 +51,25 @@ export const RestaurantGroupNav: React.FC<RestaurantGroupNavProps> = ({
 
   return (
     <div
-      className="sticky top-0 z-10 w-full border-b border-slate-200/80 bg-white/92 backdrop-blur-xl"
+      className="sticky top-0 z-10 w-full border-b border-slate-200/80 bg-white/95 backdrop-blur-xl"
       data-testid="restaurant-group-nav"
       aria-label="Secciones del menu"
     >
-      <div className="mx-auto w-full max-w-[1560px] px-4 py-2 sm:px-6 lg:px-8 2xl:px-10">
-        <div className="flex gap-2 overflow-x-auto pb-1 md:flex-wrap md:overflow-visible lg:grid lg:grid-cols-[repeat(auto-fit,minmax(160px,1fr))] lg:gap-3 lg:overflow-visible">
+      <div className="mx-auto w-full max-w-[1560px] px-4 py-1.5 sm:px-6 lg:px-8 2xl:px-10">
+        <div className="flex gap-1.5 overflow-x-auto pb-1 md:flex-wrap md:justify-center md:overflow-visible">
           {selectedGroupId && onClearSelection && (
             <button
               type="button"
               onClick={onClearSelection}
-              className="inline-flex h-10 min-w-max shrink-0 items-center rounded-full border border-slate-200 bg-white px-3.5 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 lg:min-h-[52px] lg:min-w-0 lg:w-full lg:justify-center"
+              className="inline-flex h-9 min-w-max shrink-0 items-center gap-2 rounded-full border border-slate-200 bg-white px-3.5 text-sm font-medium text-slate-600 transition-colors hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900"
             >
+              <span className="h-2 w-2 rounded-full bg-slate-300" />
               Todo
             </button>
           )}
 
           {groups.map((group, index) => {
             const isSelected = selectedGroupId === group.id;
-            const theme = getCatalogAccentTheme(group.id || group.slug);
 
             return (
               <motion.button
@@ -79,27 +78,18 @@ export const RestaurantGroupNav: React.FC<RestaurantGroupNavProps> = ({
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
                 onClick={() => onSelectGroup(group.id)}
-                className="inline-flex h-10 min-w-max flex-shrink-0 items-center gap-2 rounded-full border px-3.5 text-sm font-semibold transition-all duration-200 lg:min-h-[52px] lg:min-w-0 lg:w-full lg:justify-center"
-                style={
+                className={`inline-flex h-9 min-w-max flex-shrink-0 items-center gap-2 rounded-full border px-3.5 text-sm font-medium transition-colors duration-200 ${
                   isSelected
-                    ? {
-                        background: `linear-gradient(135deg, ${theme.surfaceMuted}, rgba(255,255,255,0.96))`,
-                        borderColor: theme.border,
-                        boxShadow: "0 8px 20px rgba(15,23,42,0.08)",
-                        color: theme.text,
-                      }
-                    : {
-                        background: "rgba(255,255,255,0.96)",
-                        borderColor: theme.border,
-                        color: theme.text,
-                      }
-                }
+                    ? "border-slate-900 bg-slate-900 text-white shadow-sm"
+                    : "border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900"
+                }`}
               >
                 <span
-                  className="h-2.5 w-2.5 rounded-full"
-                  style={{ backgroundColor: isSelected ? theme.solid : theme.badgeText }}
+                  className={`h-2 w-2 rounded-full ${
+                    isSelected ? "bg-white/85" : "bg-slate-300"
+                  }`}
                 />
-                <span className="whitespace-nowrap lg:text-center">{group.nombre}</span>
+                <span className="whitespace-nowrap">{group.nombre}</span>
               </motion.button>
             );
           })}
