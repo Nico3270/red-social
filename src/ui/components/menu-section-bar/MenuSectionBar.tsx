@@ -89,8 +89,8 @@ export const MenuSectionsBar = ({ compact = false }: MenuSectionsBarProps) => {
     <div className="relative w-full color-fondo-principal">
       <div
         ref={scrollContainerRef}
-        className={`flex flex-nowrap overflow-x-auto rounded-lg color-principal scrollbar-hide ${
-          compact ? "gap-1.5 px-2 pt-2 " : "gap-1 "
+        className={`flex flex-nowrap overflow-x-auto overflow-y-hidden rounded-xl color-principal scrollbar-hide ${
+          compact ? "gap-1 px-1.5 py-1 md:gap-1.5 md:px-3 md:py-2" : "gap-1.5 px-2 py-2 md:px-3"
         }`}
         style={{ scrollBehavior: "smooth" }}
       >
@@ -98,43 +98,41 @@ export const MenuSectionsBar = ({ compact = false }: MenuSectionsBarProps) => {
           ? Array.from({ length: 5 }).map((_, index) => (
               <div
                 key={index}
-                className="animate-pulse flex flex-col items-center text-center min-w-[6px] sm:min-w-[100px] flex-shrink-0"
+                className="animate-pulse flex w-[68px] flex-shrink-0 flex-col items-center text-center md:w-[88px]"
               >
                 <div className="w-6 h-6 bg-gray-300 rounded-full"></div>
-                <div className="mt-2 h-3 w-8 bg-gray-300 rounded"></div>
+                <div className="mt-1.5 h-3 w-8 bg-gray-300 rounded"></div>
               </div>
             ))
           : navigationEntries.map((section) => (
-              <Link key={section.id} href={section.href}>
+              <Link key={section.id} href={section.href} className="flex-none">
                 <div
-                  className={`flex flex-col items-center rounded-2xl border text-center transition-colors ${
+                  className={`flex flex-col items-center justify-start rounded-xl border text-center transition-all duration-200 ${
                     compact
-                      ? "min-w-[78px] px-2 py-2 sm:min-w-[88px]"
-                      : "min-w-[80px] px-2 py-1 sm:min-w-[90px]"
+                      ? "w-[68px] min-h-[74px] max-h-[74px] px-1 py-1.5 md:w-[88px] md:min-h-[90px] md:max-h-[90px] md:px-2 md:py-2.5"
+                      : "w-[76px] min-h-[80px] max-h-[80px] px-1.5 py-2 md:w-[90px] md:min-h-[92px] md:max-h-[92px] md:px-2.5 md:py-2.5"
                   } ${
                     section.isActive
                       ? "border-sky-200 bg-sky-50 shadow-sm"
-                      : "border-transparent hover:border-slate-200 hover:bg-white/70"
+                      : "border-transparent hover:border-slate-200 hover:bg-white/80"
                   }`}
                 >
                   <motion.img
                     src={`/imgs/iconos/${section.iconName}`}
                     alt={section.nombre}
-                    className={compact ? "h-7 w-7 object-contain md:h-9 md:w-9" : "w-8 h-8 md:w-12 md:h-12 object-contain"}
+                    className={compact ? "h-6 w-6 object-contain md:h-7 md:w-7" : "h-6 w-6 object-contain md:h-8 md:w-8"}
                     whileHover={{ scale: 1.15, rotate: 5 }}
                     whileTap={{ scale: 0.9 }}
                     transition={{ type: "spring", stiffness: 300, damping: 15 }}
                   />
                   <span
-                    className={`mt-1 text-center leading-tight ${titleFont.className} ${
+                    className={`mt-0.5 block w-full overflow-hidden text-center leading-tight line-clamp-2 ${titleFont.className} ${
                       section.isActive ? "text-sky-700" : "color-iconos"
-                    } ${compact ? "text-[8x] md:text-xs" : "text-xs md:text-xs"}`}
-                    style={{
-                      wordBreak: "break-word",
-                      whiteSpace: "normal",
-                      textWrap: "balance",
-                      minHeight: compact ? "24px" : "28px",
-                    }}
+                    } ${
+                      compact
+                        ? "min-h-[1.65rem] max-h-[1.65rem] text-[10px] md:min-h-[2.1rem] md:max-h-[2.1rem] md:text-xs"
+                        : "min-h-[1.9rem] max-h-[1.9rem] text-[11px] md:min-h-[2.15rem] md:max-h-[2.15rem] md:text-[13px]"
+                    }`}
                   >
                     {section.nombre}
                   </span>
