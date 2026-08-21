@@ -75,7 +75,7 @@ model BusinessAvailability {
 }
 
 model Reservation {
-  id              String            @id @default(cuid())
+  id              String                  @id @default(cuid())
   negocioId       String
   usuarioId       String?
   nombre          String
@@ -83,14 +83,48 @@ model Reservation {
   fechaHoraInicio DateTime
   fechaHoraFin    DateTime?
   notas           String?
-  estado          ReservationStatus @default(PENDIENTE)
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-  negocio         Negocio           @relation(fields: [negocioId], references: [id], onDelete: Cascade)
-  usuario         Usuario?          @relation(fields: [usuarioId], references: [id])
+  estado          ReservationStatus       @default(PENDIENTE)
+  createdAt       DateTime                @default(now())
+  updatedAt       DateTime                @updatedAt
+  negocio         Negocio                 @relation(fields: [negocioId], references: [id], onDelete: Cascade)
+  usuario         Usuario?                @relation(fields: [usuarioId], references: [id])
+  capabilities    ReservationCapability[]
+  operations      ReservationOperation[]
 
   @@index([negocioId, fechaHoraInicio])
   @@index([estado])
+}
+
+model ReservationCapability {
+  id            String    @id @default(cuid())
+  reservationId String
+  tokenHash     String    @unique
+  expiresAt     DateTime
+  usedAt        DateTime?
+  revokedAt     DateTime?
+  createdAt     DateTime  @default(now())
+
+  reservation Reservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+
+  @@index([reservationId])
+}
+
+model ReservationOperation {
+  id                     String                      @id @default(cuid())
+  negocioId              String
+  reservationId          String
+  action                 ReservationOperationAction
+  sourceReference        String                      @db.VarChar(255)
+  requestFingerprint     String                      @db.VarChar(67)
+  managementLinkRequired Boolean
+  outcome                ReservationOperationOutcome
+  createdAt              DateTime                    @default(now())
+
+  negocio     Negocio     @relation(fields: [negocioId], references: [id], onDelete: Cascade)
+  reservation Reservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+
+  @@unique([negocioId, action, sourceReference])
+  @@index([reservationId])
 }
 
 model Transaction {
@@ -577,45 +611,46 @@ model PasswordResetToken {
 }
 
 model Negocio {
-  id               String                @id @default(uuid())
-  usuarioId        String                @unique
-  nombre           String
-  descripcion      String?
-  ciudad           String
-  departamento     String
-  direccion        String?
-  urlGoogleMaps    String?
-  horarios         Json?
-  imagenes         String[]
-  sitioWeb         String?
-  telefonoContacto String?
-  estado           EstadoNegocio         @default(activo)
-  isTestData       Boolean               @default(false)
-  archivedAt       DateTime?
-  createdAt        DateTime              @default(now())
-  updatedAt        DateTime              @updatedAt
-  slug             String                @unique
-  fotoPerfil       String?
-  fotoPortada      String?
-  latitud          Float?
-  longitud         Float?
-  palabrasClave    String[]              @default([])
-  availability     BusinessAvailability?
-  encuestas        Encuesta[]            @relation("NegocioEncuestas")
-  followsIn        Follow[]              @relation("FollowedBusiness")
-  usuario          Usuario               @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
-  categorias       NegocioCategory[]
-  secciones        NegocioSection[]
-  orden            Float                 @default(8.0)
-  orders           Order[]
-  preguntas        Pregunta[]            @relation("NegocioPreguntas")
-  Product          Product[]
-  publicaciones    Publicacion[]
-  reservations     Reservation[]
-  Servicio         Servicio[]
-  tipo             TipoNegocio           @default(NEGOCIO)
-  contactos        Contactos[]
-  catalogGroups    CatalogGroup[] // NUEVA: Relación con grupos de catálogo
+  id                    String                 @id @default(uuid())
+  usuarioId             String                 @unique
+  nombre                String
+  descripcion           String?
+  ciudad                String
+  departamento          String
+  direccion             String?
+  urlGoogleMaps         String?
+  horarios              Json?
+  imagenes              String[]
+  sitioWeb              String?
+  telefonoContacto      String?
+  estado                EstadoNegocio          @default(activo)
+  isTestData            Boolean                @default(false)
+  archivedAt            DateTime?
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  slug                  String                 @unique
+  fotoPerfil            String?
+  fotoPortada           String?
+  latitud               Float?
+  longitud              Float?
+  palabrasClave         String[]               @default([])
+  availability          BusinessAvailability?
+  encuestas             Encuesta[]             @relation("NegocioEncuestas")
+  followsIn             Follow[]               @relation("FollowedBusiness")
+  usuario               Usuario                @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  categorias            NegocioCategory[]
+  secciones             NegocioSection[]
+  orden                 Float                  @default(8.0)
+  orders                Order[]
+  preguntas             Pregunta[]             @relation("NegocioPreguntas")
+  Product               Product[]
+  publicaciones         Publicacion[]
+  reservations          Reservation[]
+  reservationOperations ReservationOperation[]
+  Servicio              Servicio[]
+  tipo                  TipoNegocio            @default(NEGOCIO)
+  contactos             Contactos[]
+  catalogGroups         CatalogGroup[] // NUEVA: Relación con grupos de catálogo
 
   @@index([ciudad])
   @@index([departamento])
@@ -783,6 +818,20 @@ enum ReservationStatus {
   CANCELADA
   COMPLETADA
   BLOQUEADA
+}
+
+enum ReservationOperationAction {
+  CREATE
+  UPDATE
+  CANCEL
+}
+
+enum ReservationOperationOutcome {
+  CREATED
+  UPDATED
+  UNCHANGED
+  CANCELLED
+  ALREADY_CANCELLED
 }
 
 enum TransactionType {
