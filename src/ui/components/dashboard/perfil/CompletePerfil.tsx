@@ -3,7 +3,7 @@
 import { EstadoNegocio } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import React, { useEffect,  useState, useMemo } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
   Alert,
@@ -12,9 +12,6 @@ import {
   Button,
   FormControl,
   FormLabel,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
   CircularProgress,
   Typography,
   Box,
@@ -64,11 +61,20 @@ interface Props {
   informacionNegocio?: InformacionInicialNegocio;
 }
 
+type SocialMediaKeys =
+  | "facebook"
+  | "instagram"
+  | "twitter"
+  | "tiktok"
+  | "youtube";
+type SubmitPhase = "idle" | "saving" | "redirecting";
 
-
-type SocialMediaKeys = "facebook" | "instagram" | "twitter" | "tiktok" | "youtube";
-
-const socialMediaFields: { name: SocialMediaKeys; placeholder: string; pattern: RegExp; message: string }[] = [
+const socialMediaFields: {
+  name: SocialMediaKeys;
+  placeholder: string;
+  pattern: RegExp;
+  message: string;
+}[] = [
   {
     name: "facebook",
     placeholder: "https://www.facebook.com/tu-negocio",
@@ -137,33 +143,52 @@ export const CompletePerfil = ({ informacionNegocio }: Props) => {
   });
 
   // 🔴 NUEVO: Estado para manejar alertas (soluciona el error de 'setAlert')
-  const [alert, setAlert] = useState<{ type: 'error' | 'success'; message: string } | null>(null);
+  const [alert, setAlert] = useState<{
+    type: "error" | "success";
+    message: string;
+  } | null>(null);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [responseType, setResponseType] = useState<"loading" | "success" | "error" | null>(null);
+  const [responseType, setResponseType] = useState<
+    "loading" | "success" | "error" | null
+  >(null);
   const [message, setMessage] = useState("");
   const [newSlug, setNewSlug] = useState("");
   const [selectedDepartamento, setSelectedDepartamento] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
   const [cities, setCities] = useState<string[]>([]);
-  const [selectedCategorySlugs, setSelectedCategorySlugs] = useState<Set<string>>(new Set());
-  const [selectedSections, setSelectedSections] = useState<Set<string>>(new Set());
+  const [selectedCategorySlugs, setSelectedCategorySlugs] = useState<
+    Set<string>
+  >(new Set());
+  const [selectedSections, setSelectedSections] = useState<Set<string>>(
+    new Set(),
+  );
   const [loading, setLoading] = useState(false);
+  const [submitPhase, setSubmitPhase] = useState<SubmitPhase>("idle");
   const router = useRouter();
   const { data: session, update } = useSession();
+  const redirectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const allCities = useMemo(
-    () => colombia.flatMap((d) => d.ciudades.map((ciudad) => `${ciudad} - ${d.departamento}`)),
-    []
+    () =>
+      colombia.flatMap((d) =>
+        d.ciudades.map((ciudad) => `${ciudad} - ${d.departamento}`),
+      ),
+    [],
   );
 
   const selectedCountryCode = "+57";
+  const isRedirecting = submitPhase === "redirecting";
+  const isSubmitting = submitPhase === "saving";
+  const isFormLocked = loading || isSubmitting || isRedirecting;
+  const shouldRedirectToAdminProfile = session?.user?.isPlaceholder === true;
 
   const filteredSections = initialData.secciones.filter((section) =>
-    selectedCategorySlugs.has(section.categorySlug)
+    selectedCategorySlugs.has(section.categorySlug),
   );
 
-  const removeAccents = (str: string) => str.normalize("NFD").replace(/\p{Diacritic}/gu, "");
+  const removeAccents = (str: string) =>
+    str.normalize("NFD").replace(/\p{Diacritic}/gu, "");
 
   const generateSlug = (name: string) =>
     removeAccents(name)
@@ -172,6 +197,8 @@ export const CompletePerfil = ({ informacionNegocio }: Props) => {
       .replace(/^-+|-+$/g, "");
 
   const toggleSection = (id: string) => {
+    if (isFormLocked) return;
+
     setSelectedSections((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(id)) newSet.delete(id);
@@ -182,6 +209,8 @@ export const CompletePerfil = ({ informacionNegocio }: Props) => {
   };
 
   const handleCategoryChange = (slug: string) => {
+    if (isFormLocked) return;
+
     setSelectedCategorySlugs((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(slug)) newSet.delete(slug);
@@ -191,7 +220,11 @@ export const CompletePerfil = ({ informacionNegocio }: Props) => {
     });
   };
 
-  const handleNombreNegocioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleNombreNegocioChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    if (isFormLocked) return;
+
     const nombre = e.target.value;
     setValue("nombreNegocio", nombre);
     setValue("slugNegocio", generateSlug(nombre), { shouldValidate: true });
@@ -199,7 +232,9 @@ export const CompletePerfil = ({ informacionNegocio }: Props) => {
 
   useEffect(() => {
     if (selectedDepartamento) {
-      const departmentData = colombia.find((dept) => dept.departamento === selectedDepartamento);
+      const departmentData = colombia.find(
+        (dept) => dept.departamento === selectedDepartamento,
+      );
       setCities(departmentData ? departmentData.ciudades : []);
     } else {
       setCities([]);
@@ -209,7 +244,9 @@ export const CompletePerfil = ({ informacionNegocio }: Props) => {
   useEffect(() => {
     if (selectedCity && selectedDepartamento) {
       setValue("ciudadNegocio", selectedCity, { shouldValidate: true });
-      setValue("departamentoNegocio", selectedDepartamento, { shouldValidate: true });
+      setValue("departamentoNegocio", selectedDepartamento, {
+        shouldValidate: true,
+      });
     } else {
       setValue("ciudadNegocio", "", { shouldValidate: true });
       setValue("departamentoNegocio", "", { shouldValidate: true });
@@ -237,7 +274,8 @@ export const CompletePerfil = ({ informacionNegocio }: Props) => {
       required: "El slug del negocio es obligatorio",
       pattern: {
         value: /^[a-z0-9-]+$/,
-        message: "El slug solo puede contener letras minúsculas, números y guiones",
+        message:
+          "El slug solo puede contener letras minúsculas, números y guiones",
       },
     });
   }, [register]);
@@ -255,11 +293,13 @@ export const CompletePerfil = ({ informacionNegocio }: Props) => {
         new Set(
           informacionNegocio.categoriaIds
             .map((id) => {
-              const category = initialData.categorias.find((cat) => cat.id === id);
+              const category = initialData.categorias.find(
+                (cat) => cat.id === id,
+              );
               return category ? category.slug : "";
             })
-            .filter((slug) => slug)
-        )
+            .filter((slug) => slug),
+        ),
       );
       setSelectedSections(new Set(informacionNegocio.seccionesIds));
     }
@@ -273,7 +313,22 @@ export const CompletePerfil = ({ informacionNegocio }: Props) => {
     }
   }, [alert]);
 
+  useEffect(() => {
+    return () => {
+      if (redirectTimeoutRef.current) {
+        clearTimeout(redirectTimeoutRef.current);
+      }
+    };
+  }, []);
+
   const onSubmit = async (data: InformacionInicialNegocio) => {
+    if (loading || submitPhase !== "idle") {
+      return;
+    }
+
+    let keepLockedAfterSubmit = false;
+
+    setSubmitPhase("saving");
     setLoading(true);
     setIsModalOpen(true);
     setResponseType("loading");
@@ -291,7 +346,11 @@ export const CompletePerfil = ({ informacionNegocio }: Props) => {
       }
 
       // Validar ciudad
-      if (!allCities.includes(`${data.ciudadNegocio} - ${data.departamentoNegocio}`)) {
+      if (
+        !allCities.includes(
+          `${data.ciudadNegocio} - ${data.departamentoNegocio}`,
+        )
+      ) {
         setResponseType("error");
         setMessage("Selecciona una ciudad válida de la lista.");
         setLoading(false);
@@ -321,18 +380,24 @@ export const CompletePerfil = ({ informacionNegocio }: Props) => {
         normalizedTelefono = `${selectedCountryCode}${digitsOnly}`;
         if (!/^\+57\d{10}$/.test(normalizedTelefono)) {
           setResponseType("error");
-          setMessage("El teléfono debe tener exactamente 10 dígitos (por ejemplo, +573123456789).");
+          setMessage(
+            "El teléfono debe tener exactamente 10 dígitos (por ejemplo, +573123456789).",
+          );
           setLoading(false);
           return;
         }
       }
 
       // Normalizar imagenPerfil e imagenPortada si vienen como array
-      const imagenPerfilNormalizada: string | undefined = Array.isArray(data.imagenPerfil)
+      const imagenPerfilNormalizada: string | undefined = Array.isArray(
+        data.imagenPerfil,
+      )
         ? data.imagenPerfil[0]
         : data.imagenPerfil;
 
-      const imagenPortadaNormalizada: string | undefined = Array.isArray(data.imagenPortada)
+      const imagenPortadaNormalizada: string | undefined = Array.isArray(
+        data.imagenPortada,
+      )
         ? data.imagenPortada[0]
         : data.imagenPortada;
 
@@ -364,53 +429,71 @@ export const CompletePerfil = ({ informacionNegocio }: Props) => {
 
       // console.log("Enviando datos a actualizarPerfilNegocio:", submitData);
       // Llamar a la server action
-      const response = await actualizarPerfilNegocio(session.user.id, submitData);
+      const response = await actualizarPerfilNegocio(
+        session.user.id,
+        submitData,
+      );
 
       if (!response.ok) {
         // console.log("Error en la server action:", response.message);
         setResponseType("error");
         setMessage(response.message || "Error al guardar la información.");
-        setLoading(false);
         return;
       }
 
-      // Actualizar el rol si es un nuevo negocio
-      if (!informacionNegocio) {
-        // console.log("Actualizando rol a 'negocio'");
-        await update({ role: "negocio" });
-      }
-
-      if (!informacionNegocio) {
-        // console.log("Actualizando rol y datos de negocio en sesión");
-        await update({
-          role: "negocio",
-          negocioId: response.negocio?.idNegocio,
-          negocioSlug: response.negocio?.slugNegocio,
-          negocioNombre: response.negocio?.nombreNegocio,
-        });
-      }
+      // Refrescar la sesión desde DB para sincronizar slug, nombre y estado operativo actual.
+      await update();
 
       // Mostrar mensaje de éxito
+      keepLockedAfterSubmit = true;
       setResponseType("success");
-      setMessage(response.message);
+      setSubmitPhase("redirecting");
 
-      // Redirigir después de 4000ms si no se cierra manualmente
-      const timeoutId = setTimeout(() => {
-        router.push(`/perfil/${data.slugNegocio}`);
-      }, 4000);
+      const nextUrl = shouldRedirectToAdminProfile
+        ? "/dashboard/editar-usuario"
+        : `/perfil/${data.slugNegocio}`;
 
-      // Limpieza del timeout si se cierra manualmente
-      return () => clearTimeout(timeoutId);
+      setMessage(
+        shouldRedirectToAdminProfile
+          ? "Perfil del negocio actualizado. Ahora completa los datos del administrador."
+          : response.message,
+      );
+
+      redirectTimeoutRef.current = setTimeout(
+        () => {
+          if (shouldRedirectToAdminProfile) {
+            router.replace(nextUrl);
+            return;
+          }
+
+          router.push(nextUrl);
+        },
+        shouldRedirectToAdminProfile ? 1500 : 4000,
+      );
     } catch (error) {
       setResponseType("error");
-      setMessage(`Error: ${error instanceof Error ? error.message : "No se pudo guardar la información."}`);
+      setMessage(
+        `Error: ${error instanceof Error ? error.message : "No se pudo guardar la información."}`,
+      );
     } finally {
-      setLoading(false);
+      if (!keepLockedAfterSubmit) {
+        setLoading(false);
+        setSubmitPhase("idle");
+      }
     }
   };
 
   const handleCloseModal = () => {
+    if (responseType === "loading" || isRedirecting) {
+      return;
+    }
+
     if (responseType === "success") {
+      if (shouldRedirectToAdminProfile) {
+        router.replace("/dashboard/editar-usuario");
+        return;
+      }
+
       router.push(`/perfil/${newSlug}`);
     } else {
       setIsModalOpen(false);
@@ -430,31 +513,44 @@ export const CompletePerfil = ({ informacionNegocio }: Props) => {
     <>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="w-full max-w-3xl mx-auto p-4 bg-white rounded-lg shadow-md"
+        aria-busy={isFormLocked}
+        className={clsx(
+          "w-full max-w-3xl mx-auto rounded-lg bg-white p-4 shadow-md",
+          isFormLocked && "pointer-events-none select-none opacity-95",
+        )}
       >
         {/* 🔴 NUEVO: Renderizado de la alerta si existe */}
         {alert && (
-          <Alert severity={alert.type} onClose={() => setAlert(null)} sx={{ mb: 2 }}>
+          <Alert
+            severity={alert.type}
+            onClose={() => setAlert(null)}
+            sx={{ mb: 2 }}
+          >
             {alert.message}
           </Alert>
         )}
 
         <Typography
-  variant="h5"
-  sx={{
-    mb: 2,
-    fontWeight: "bold",
-    color: "#000" // ← Fuerza el color negro
-  }}
->
-  {informacionNegocio ? "Editar Información de usuario" : "Crear Nuevo Usuario"}
-</Typography>
-
+          variant="h5"
+          sx={{
+            mb: 2,
+            fontWeight: "bold",
+            color: "#000", // ← Fuerza el color negro
+          }}
+        >
+          {informacionNegocio
+            ? "Editar Información de usuario"
+            : "Crear Nuevo Usuario"}
+        </Typography>
 
         <FormControl fullWidth sx={{ mb: 2 }}>
-          <FormLabel sx={{ mb: 1, fontWeight: "bold" }}>Nombre del Negocio</FormLabel>
+          <FormLabel sx={{ mb: 1, fontWeight: "bold" }}>
+            Nombre del Negocio
+          </FormLabel>
           <TextField
-            {...register("nombreNegocio", { required: "El nombre del negocio es obligatorio" })}
+            {...register("nombreNegocio", {
+              required: "El nombre del negocio es obligatorio",
+            })}
             onChange={handleNombreNegocioChange}
             error={!!errors.nombreNegocio}
             helperText={errors.nombreNegocio?.message}
@@ -462,19 +558,28 @@ export const CompletePerfil = ({ informacionNegocio }: Props) => {
         </FormControl>
 
         <FormControl fullWidth sx={{ mb: 2 }}>
-          <FormLabel sx={{ mb: 1, fontWeight: "bold" }}>Slug del Negocio</FormLabel>
+          <FormLabel sx={{ mb: 1, fontWeight: "bold" }}>
+            Slug del Negocio
+          </FormLabel>
           <TextField
             {...register("slugNegocio")}
             error={!!errors.slugNegocio}
-            helperText={errors.slugNegocio?.message || "Se genera automáticamente a partir del nombre"}
+            helperText={
+              errors.slugNegocio?.message ||
+              "Se genera automáticamente a partir del nombre"
+            }
             InputProps={{ readOnly: true }}
           />
         </FormControl>
 
         <FormControl fullWidth sx={{ mb: 2 }}>
-          <FormLabel sx={{ mb: 1, fontWeight: "bold" }}>Descripción del Negocio</FormLabel>
+          <FormLabel sx={{ mb: 1, fontWeight: "bold" }}>
+            Descripción del Negocio
+          </FormLabel>
           <TextField
-            {...register("descripcionNegocio", { required: "La descripción del negocio es obligatoria" })}
+            {...register("descripcionNegocio", {
+              required: "La descripción del negocio es obligatoria",
+            })}
             multiline
             rows={4}
             placeholder="Escribe una breve descripción del negocio"
@@ -485,9 +590,12 @@ export const CompletePerfil = ({ informacionNegocio }: Props) => {
 
         <FormControl fullWidth margin="normal">
           <Alert severity="info" sx={{ mb: 1 }}>
-            Por favor selecciona una o varias categorías a las que pertenezca tu negocio
+            Por favor selecciona una o varias categorías a las que pertenezca tu
+            negocio
           </Alert>
-          <FormLabel sx={{ mb: 1, color: "info.main", fontWeight: "bold" }}>Categorías</FormLabel>
+          <FormLabel sx={{ mb: 1, color: "info.main", fontWeight: "bold" }}>
+            Categorías
+          </FormLabel>
           <Controller
             name="categoriaIds"
             control={control}
@@ -516,7 +624,9 @@ export const CompletePerfil = ({ informacionNegocio }: Props) => {
                         minWidth: "140px",
                         "&:hover": {
                           boxShadow: 3,
-                          backgroundColor: isSelected ? "primary.dark" : "grey.100",
+                          backgroundColor: isSelected
+                            ? "primary.dark"
+                            : "grey.100",
                           borderColor: "primary.main",
                         },
                       }}
@@ -538,19 +648,25 @@ export const CompletePerfil = ({ informacionNegocio }: Props) => {
             )}
           />
           {errors.categoriaIds && (
-            <span className="text-red-500 text-sm">{errors.categoriaIds.message}</span>
+            <span className="text-red-500 text-sm">
+              {errors.categoriaIds.message}
+            </span>
           )}
         </FormControl>
         <Divider />
 
         <FormControl fullWidth margin="normal">
           <Alert severity="info" sx={{ mb: 1 }}>
-            Por favor selecciona una o varias de los tipos de productos que ofrece tu negocio
+            Por favor selecciona una o varias de los tipos de productos que
+            ofrece tu negocio
           </Alert>
-          <FormLabel sx={{ mb: 1, color: "info.main", fontWeight: "bold" }}>Secciones</FormLabel>
+          <FormLabel sx={{ mb: 1, color: "info.main", fontWeight: "bold" }}>
+            Secciones
+          </FormLabel>
           {selectedCategorySlugs.size === 0 ? (
             <Typography color="textSecondary">
-              Selecciona al menos una categoría para ver las secciones disponibles.
+              Selecciona al menos una categoría para ver las secciones
+              disponibles.
             </Typography>
           ) : filteredSections.length === 0 ? (
             <Typography color="textSecondary">
@@ -622,11 +738,17 @@ export const CompletePerfil = ({ informacionNegocio }: Props) => {
         <FormControl fullWidth sx={{ mb: 2 }}>
           <FormLabel sx={{ mb: 1, fontWeight: "bold" }}>Ciudad</FormLabel>
           <Alert severity="info" sx={{ mb: 1 }}>
-            Por favor seleccione una ciudad válida de la lista que aparece al escribir
+            Por favor seleccione una ciudad válida de la lista que aparece al
+            escribir
           </Alert>
         </FormControl>
 
-        <FormControl fullWidth variant="outlined" error={!!errors.departamentoNegocio && !selectedDepartamento} sx={{ mb: 2 }} >
+        <FormControl
+          fullWidth
+          variant="outlined"
+          error={!!errors.departamentoNegocio && !selectedDepartamento}
+          sx={{ mb: 2 }}
+        >
           <InputLabel id="departamento-label">Departamento</InputLabel>
           <Select
             value={selectedDepartamento}
@@ -644,10 +766,18 @@ export const CompletePerfil = ({ informacionNegocio }: Props) => {
               </MenuItem>
             ))}
           </Select>
-          {errors.departamentoNegocio && !selectedDepartamento && <FormHelperText>Departamento requerido</FormHelperText>}
+          {errors.departamentoNegocio && !selectedDepartamento && (
+            <FormHelperText>Departamento requerido</FormHelperText>
+          )}
         </FormControl>
 
-        <FormControl fullWidth variant="outlined" error={!!errors.ciudadNegocio} disabled={!selectedDepartamento} sx={{ mb: 2 }}>
+        <FormControl
+          fullWidth
+          variant="outlined"
+          error={!!errors.ciudadNegocio}
+          disabled={!selectedDepartamento}
+          sx={{ mb: 2 }}
+        >
           <InputLabel id="ciudad-label">Ciudad</InputLabel>
           <Select
             value={selectedCity}
@@ -662,11 +792,15 @@ export const CompletePerfil = ({ informacionNegocio }: Props) => {
               </MenuItem>
             ))}
           </Select>
-          {errors.ciudadNegocio && <FormHelperText>{errors.ciudadNegocio.message}</FormHelperText>}
+          {errors.ciudadNegocio && (
+            <FormHelperText>{errors.ciudadNegocio.message}</FormHelperText>
+          )}
         </FormControl>
 
         <FormControl fullWidth sx={{ mb: 2 }}>
-          <FormLabel sx={{ mb: 1, fontWeight: "bold" }}>Dirección del Negocio (Opcional)</FormLabel>
+          <FormLabel sx={{ mb: 1, fontWeight: "bold" }}>
+            Dirección del Negocio (Opcional)
+          </FormLabel>
           <TextField
             {...register("direccionNegocio")}
             placeholder="Ingresa la dirección del negocio"
@@ -676,98 +810,106 @@ export const CompletePerfil = ({ informacionNegocio }: Props) => {
         </FormControl>
 
         <FormControl fullWidth sx={{ mb: 2 }}>
-  <FormLabel sx={{ mb: 1, fontWeight: "bold", color: "#000" }}>Teléfono de Contacto (Opcional)</FormLabel>
+          <FormLabel sx={{ mb: 1, fontWeight: "bold", color: "#000" }}>
+            Teléfono de Contacto (Opcional)
+          </FormLabel>
 
-  <div className="flex items-center border rounded-lg focus-within:ring-2 focus-within:ring-red-600">
-    {/* Contenedor del ícono y código de país */}
-    <span className="flex items-center bg-gray-100 px-3 py-2 border-r border-gray-300 text-black">
-      <GiColombia className="mr-2 text-black" /> 
-      {selectedCountryCode}
-    </span>
+          <div className="flex items-center border rounded-lg focus-within:ring-2 focus-within:ring-red-600">
+            {/* Contenedor del ícono y código de país */}
+            <span className="flex items-center bg-gray-100 px-3 py-2 border-r border-gray-300 text-black">
+              <GiColombia className="mr-2 text-black" />
+              {selectedCountryCode}
+            </span>
 
-    {/* INPUT */}
-    <input
-      type="text"
-      {...register("telefonoContacto", {
-        pattern: {
-          value: /^\d{10}$/,
-          message: "El número debe tener exactamente 10 dígitos (sin el código de país).",
-        },
-      })}
-      className={clsx(
-        "w-full border-none p-2 focus:outline-none text-black placeholder-gray-500",
-        { "border-red-500": errors.telefonoContacto }
-      )}
-      placeholder="Ej. 3123456789"
-    />
-  </div>
+            {/* INPUT */}
+            <input
+              type="text"
+              {...register("telefonoContacto", {
+                pattern: {
+                  value: /^\d{10}$/,
+                  message:
+                    "El número debe tener exactamente 10 dígitos (sin el código de país).",
+                },
+              })}
+              className={clsx(
+                "w-full border-none p-2 focus:outline-none text-black placeholder-gray-500",
+                { "border-red-500": errors.telefonoContacto },
+              )}
+              placeholder="Ej. 3123456789"
+            />
+          </div>
 
-  {errors.telefonoContacto && (
-    <span className="text-red-500 text-sm">{errors.telefonoContacto.message}</span>
-  )}
-</FormControl>
+          {errors.telefonoContacto && (
+            <span className="text-red-500 text-sm">
+              {errors.telefonoContacto.message}
+            </span>
+          )}
+        </FormControl>
 
+        <Divider />
 
-        <Divider/>
+        <Box
+          display="grid"
+          gridTemplateColumns={{ xs: "1fr", sm: "1fr 1fr" }}
+          gap={3}
+        >
+          <FormControl>
+            <FormLabel sx={{ mb: 1, fontWeight: "bold", textAlign: "center" }}>
+              Imagen de Perfil
+            </FormLabel>
+            <AutoUploadMedia
+              initialData={
+                multiple
+                  ? Array.isArray(dataEntrada)
+                    ? dataEntrada
+                    : dataEntrada
+                      ? [dataEntrada]
+                      : []
+                  : Array.isArray(dataEntrada)
+                    ? dataEntrada[0]
+                    : dataEntrada
+              }
+              multiple={multiple}
+              onChange={(urls) =>
+                setValue("imagenPerfil", Array.isArray(urls) ? urls[0] : urls)
+              }
+              onError={(message) => setAlert({ type: "error", message })} // 🔴 Ahora usa el nuevo setAlert
+              onLoading={setLoading}
+              mediaType="image"
+            />
+          </FormControl>
 
-        <Box display="grid" gridTemplateColumns={{ xs: "1fr", sm: "1fr 1fr" }} gap={3}>
-    <FormControl>
-      <FormLabel sx={{ mb: 1, fontWeight: "bold", textAlign: "center" }}>
-        Imagen de Perfil
-      </FormLabel>
-      <AutoUploadMedia
-        initialData={
-          multiple
-            ? Array.isArray(dataEntrada)
-              ? dataEntrada
-              : dataEntrada
-              ? [dataEntrada]
-              : []
-            : Array.isArray(dataEntrada)
-            ? dataEntrada[0]
-            : dataEntrada
-        }
-        multiple={multiple}
-        onChange={(urls) =>
-          setValue("imagenPerfil", Array.isArray(urls) ? urls[0] : urls)
-        }
-        onError={(message) => setAlert({ type: "error", message })} // 🔴 Ahora usa el nuevo setAlert
-        onLoading={setLoading}
-        mediaType="image"
-      />
-    </FormControl>
-
-    <FormControl>
-      <FormLabel sx={{ mb: 1, fontWeight: "bold", textAlign: "center" }}>
-        Imagen de Portada
-      </FormLabel>
-      <AutoUploadMedia
-        initialData={
-          multiple
-            ? Array.isArray(dataEntrada2)
-              ? dataEntrada2
-              : dataEntrada2
-              ? [dataEntrada2]
-              : []
-            : Array.isArray(dataEntrada2)
-            ? dataEntrada2[0]
-            : dataEntrada2
-        }
-        multiple={multiple}
-        onChange={(urls) =>
-          setValue("imagenPortada", Array.isArray(urls) ? urls[0] : urls)
-        }
-        onError={(message) => setAlert({ type: "error", message })} // 🔴 Ahora usa el nuevo setAlert
-        onLoading={setLoading}
-        mediaType="image"
-      />
-    </FormControl>
-  </Box>
-
+          <FormControl>
+            <FormLabel sx={{ mb: 1, fontWeight: "bold", textAlign: "center" }}>
+              Imagen de Portada
+            </FormLabel>
+            <AutoUploadMedia
+              initialData={
+                multiple
+                  ? Array.isArray(dataEntrada2)
+                    ? dataEntrada2
+                    : dataEntrada2
+                      ? [dataEntrada2]
+                      : []
+                  : Array.isArray(dataEntrada2)
+                    ? dataEntrada2[0]
+                    : dataEntrada2
+              }
+              multiple={multiple}
+              onChange={(urls) =>
+                setValue("imagenPortada", Array.isArray(urls) ? urls[0] : urls)
+              }
+              onError={(message) => setAlert({ type: "error", message })} // 🔴 Ahora usa el nuevo setAlert
+              onLoading={setLoading}
+              mediaType="image"
+            />
+          </FormControl>
+        </Box>
 
         <Divider />
         <Alert severity="info" sx={{ mb: 1 }}>
-          Por favor desplace el marcador en el mapa para seleccionar la ubicación exacta de tu negocio.
+          Por favor desplace el marcador en el mapa para seleccionar la
+          ubicación exacta de tu negocio.
         </Alert>
         <Divider />
         <MapPicker
@@ -776,8 +918,12 @@ export const CompletePerfil = ({ informacionNegocio }: Props) => {
             setValue("longitudNegocio", lng, { shouldValidate: true });
           }}
           initialLocation={
-            informacionNegocio?.latitudNegocio && informacionNegocio?.longitudNegocio
-              ? { lat: informacionNegocio.latitudNegocio, lng: informacionNegocio.longitudNegocio }
+            informacionNegocio?.latitudNegocio &&
+            informacionNegocio?.longitudNegocio
+              ? {
+                  lat: informacionNegocio.latitudNegocio,
+                  lng: informacionNegocio.longitudNegocio,
+                }
               : { lat: 4.710989, lng: -74.07209 }
           }
         />
@@ -802,15 +948,21 @@ export const CompletePerfil = ({ informacionNegocio }: Props) => {
           })}
         />
         {errors.latitudNegocio && (
-          <span className="text-red-500 text-sm">{errors.latitudNegocio.message}</span>
+          <span className="text-red-500 text-sm">
+            {errors.latitudNegocio.message}
+          </span>
         )}
         {errors.longitudNegocio && (
-          <span className="text-red-500 text-sm">{errors.longitudNegocio.message}</span>
+          <span className="text-red-500 text-sm">
+            {errors.longitudNegocio.message}
+          </span>
         )}
         <Divider />
 
         <FormControl fullWidth sx={{ mb: 2 }}>
-          <FormLabel sx={{ mb: 1, fontWeight: "bold" }}>Sitio Web (Opcional)</FormLabel>
+          <FormLabel sx={{ mb: 1, fontWeight: "bold" }}>
+            Sitio Web (Opcional)
+          </FormLabel>
           <TextField
             {...register("sitioWeb", {
               pattern: {
@@ -825,7 +977,9 @@ export const CompletePerfil = ({ informacionNegocio }: Props) => {
         </FormControl>
 
         <FormControl fullWidth sx={{ mb: 2 }}>
-          <FormLabel sx={{ mb: 1, fontWeight: "bold" }}>URL de Google Maps (Opcional)</FormLabel>
+          <FormLabel sx={{ mb: 1, fontWeight: "bold" }}>
+            URL de Google Maps (Opcional)
+          </FormLabel>
           <TextField
             {...register("urlGoogleMaps", {
               pattern: {
@@ -837,10 +991,11 @@ export const CompletePerfil = ({ informacionNegocio }: Props) => {
             error={!!errors.urlGoogleMaps}
             helperText={errors.urlGoogleMaps?.message}
           />
-
         </FormControl>
 
-        <h1 className="text-2xl font-bold mb-4 text-blue-500">Redes Sociales</h1>
+        <h1 className="text-2xl font-bold mb-4 text-blue-500">
+          Redes Sociales
+        </h1>
         {socialMediaFields.map((social) => (
           <FormControl fullWidth sx={{ mb: 2 }} key={social.name}>
             <FormLabel sx={{ mb: 1, fontWeight: "bold" }}>
@@ -860,51 +1015,26 @@ export const CompletePerfil = ({ informacionNegocio }: Props) => {
           </FormControl>
         ))}
 
-        <FormControl component="fieldset" sx={{ mt: 4 }}>
-  <FormLabel component="legend" sx={{ fontWeight: "bold", color: "#000" }}>
-    Estado del Negocio
-  </FormLabel>
-
-  <Controller
-    name="estadoNegocio"
-    control={control}
-    rules={{ required: "El estado del negocio es obligatorio" }}
-    render={({ field }) => (
-      <RadioGroup {...field} row>
-
-        <FormControlLabel
-          value={EstadoNegocio.activo}
-          control={<Radio sx={{ color: "#000" }} />}
-          label="Activo"
-          sx={{ color: "#000" }} // ← color del texto
-        />
-
-        <FormControlLabel
-          value={EstadoNegocio.suspendido}
-          control={<Radio sx={{ color: "#000" }} />}
-          label="Inactivo"
-          sx={{ color: "#000" }} // ← color del texto
-        />
-
-      </RadioGroup>
-    )}
-  />
-
-  {errors.estadoNegocio && (
-    <span className="text-red-500 text-sm">{errors.estadoNegocio.message}</span>
-  )}
-</FormControl>
-
-
         <Button
           type="submit"
           variant="contained"
           color="primary"
           fullWidth
-          disabled={loading}
+          disabled={isFormLocked}
           sx={{ mt: 4 }}
         >
-          {loading ? <CircularProgress size={24} /> : informacionNegocio ? "Actualizar" : "Crear"}
+          {isFormLocked ? <CircularProgress size={24} /> : null}
+          <span className={isFormLocked ? "ml-2" : ""}>
+            {isRedirecting
+              ? "Redirigiendo..."
+              : isSubmitting
+                ? "Guardando perfil..."
+                : loading
+                  ? "Procesando..."
+                  : informacionNegocio
+                    ? "Actualizar"
+                    : "Crear"}
+          </span>
         </Button>
       </form>
 
@@ -925,7 +1055,12 @@ export const CompletePerfil = ({ informacionNegocio }: Props) => {
             >
               <button
                 onClick={handleCloseModal}
-                className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+                disabled={responseType === "loading" || isRedirecting}
+                className={clsx(
+                  "absolute top-2 right-2 text-gray-500 hover:text-gray-700",
+                  (responseType === "loading" || isRedirecting) &&
+                    "cursor-not-allowed opacity-50",
+                )}
                 aria-label="Cerrar modal"
               >
                 <FaTimes size={20} />
@@ -945,13 +1080,22 @@ export const CompletePerfil = ({ informacionNegocio }: Props) => {
                     <Typography variant="h6" sx={{ mb: 2, color: "green" }}>
                       {message}
                     </Typography>
-                    <Button
-                      variant="contained"
-                      color="success"
-                      onClick={handleCloseModal}
-                    >
-                      Cerrar
-                    </Button>
+                    {isRedirecting ? (
+                      <Typography
+                        variant="body2"
+                        sx={{ color: "text.secondary" }}
+                      >
+                        Te llevaremos al siguiente paso en un momento.
+                      </Typography>
+                    ) : (
+                      <Button
+                        variant="contained"
+                        color="success"
+                        onClick={handleCloseModal}
+                      >
+                        Cerrar
+                      </Button>
+                    )}
                   </>
                 )}
                 {responseType === "error" && (

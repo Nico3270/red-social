@@ -1,12 +1,12 @@
 "use server";
 
 import { auth } from "@/auth.config";
-import { buildPublicBusinessBySlugWhere } from "@/lib/business/publicBusinessVisibility";
+import { buildPublishedBusinessWhere } from "@/lib/business/business-visibility-policy";
 import prisma from "@/lib/prisma";
 import { notifyReservaConfirmadaCliente } from "@/reservas/helpers/notifyReserva";
 import { PlantillaWhatsApp } from "@/reservas/interfaces/interfaces.whatsapp";
 import { buildVariantLabel } from "@/ui/components/productos/variantDisplay";
-import { TipoUsuario } from "@prisma/client";
+import { ProductStatus, TipoUsuario } from "@prisma/client";
 import { Decimal } from "@prisma/client/runtime/library";
 
 interface ItemInput {
@@ -42,6 +42,33 @@ interface PedidoInput {
 interface ActionResult {
   ok: boolean;
   message: string;
+  code?: "BUSINESS_NOT_AVAILABLE" | "ORDER_ITEMS_NOT_AVAILABLE";
+}
+
+const BUSINESS_NOT_AVAILABLE = "BUSINESS_NOT_AVAILABLE" as const;
+const BUSINESS_NOT_AVAILABLE_MESSAGE =
+  "Este negocio no está disponible para esta acción.";
+
+class BusinessNotAvailableError extends Error {
+  readonly code = BUSINESS_NOT_AVAILABLE;
+
+  constructor() {
+    super(BUSINESS_NOT_AVAILABLE_MESSAGE);
+    this.name = "BusinessNotAvailableError";
+  }
+}
+
+const ORDER_ITEMS_NOT_AVAILABLE = "ORDER_ITEMS_NOT_AVAILABLE" as const;
+const ORDER_ITEMS_NOT_AVAILABLE_MESSAGE =
+  "Uno o más productos no están disponibles para este pedido.";
+
+class OrderItemsNotAvailableError extends Error {
+  readonly code = ORDER_ITEMS_NOT_AVAILABLE;
+
+  constructor() {
+    super(ORDER_ITEMS_NOT_AVAILABLE_MESSAGE);
+    this.name = "OrderItemsNotAvailableError";
+  }
 }
 
 interface NotifyResultLike {
@@ -119,6 +146,10 @@ function isPositiveInteger(value: number): boolean {
   return Number.isInteger(value) && value > 0;
 }
 
+function isPositiveSafeInteger(value: number): boolean {
+  return Number.isSafeInteger(value) && value > 0;
+}
+
 function summarizeNotifyResult(params: {
   result: unknown;
   target: "negocio" | "cliente";
@@ -194,59 +225,25 @@ export const createNewPedido = async (
       negocioSlug: session?.user?.negocioSlug ?? null,
     });
 
-    let negocioId = "";
-    let tipoUsuario: TipoUsuario = TipoUsuario.negocio;
-    let telefonoNegocio = "";
+    const publicSlug = input.slug;
+    let ownerNegocioId = "";
     const negocioSlug = session?.user.negocioSlug;
 
     // ============================
-    // VALIDACIONES NEGOCIO
+    // VALIDACIÓN NEGOCIO OWNER
     // ============================
-    if (input.slug) {
-      console.log(
-        `[createNewPedido][${actionTraceId}] Buscando negocio por slug...`,
-        {
-          slug: input.slug,
-        }
-      );
-
-      const negocio = await prisma.negocio.findFirst({
-        where: buildPublicBusinessBySlugWhere(input.slug),
-        select: { id: true, telefonoContacto: true },
-      });
-
-      console.log(
-        `[createNewPedido][${actionTraceId}] Resultado búsqueda negocio por slug:`,
-        {
-          found: !!negocio,
-          negocioId: negocio?.id ?? null,
-          telefonoNegocioMasked: maskPhone(negocio?.telefonoContacto ?? null),
-        }
-      );
-
-      if (!negocio) {
-        console.warn(
-          `[createNewPedido][${actionTraceId}] Negocio no encontrado para slug`
-        );
-        return { ok: false, message: "Negocio no encontrado." };
-      }
-
-      negocioId = negocio.id;
-      tipoUsuario = TipoUsuario.usuario;
-      telefonoNegocio = negocio.telefonoContacto || "+573132390868";
-    } else {
-      negocioId = session?.user.negocioId || "";
-      tipoUsuario = TipoUsuario.negocio;
+    if (!publicSlug) {
+      ownerNegocioId = session?.user.negocioId || "";
 
       console.log(
         `[createNewPedido][${actionTraceId}] Usando negocio desde sesión`,
         {
-          negocioId,
+          negocioId: ownerNegocioId,
           role: session?.user?.role ?? null,
         }
       );
 
-      if (!negocioId) {
+      if (!ownerNegocioId) {
         console.warn(
           `[createNewPedido][${actionTraceId}] No se encontró negocioId en la sesión`
         );
@@ -342,46 +339,75 @@ export const createNewPedido = async (
       descripcionCompra,
       direccionCompra,
       ciudadCompra,
+      negocioId,
+      tipoUsuario,
+      telefonoNegocio,
     } = await prisma.$transaction(async (tx) => {
+      let negocioId = ownerNegocioId;
+      let tipoUsuario: TipoUsuario = TipoUsuario.negocio;
+      let telefonoNegocio = "";
+
+      if (publicSlug) {
+        console.log(
+          `[createNewPedido][${actionTraceId}] Buscando negocio por slug...`,
+          {
+            slug: publicSlug,
+          }
+        );
+
+        const negocio = await tx.negocio.findFirst({
+          where: {
+            AND: [
+              buildPublishedBusinessWhere(),
+              { slug: publicSlug },
+            ],
+          },
+          select: { id: true, telefonoContacto: true },
+        });
+
+        console.log(
+          `[createNewPedido][${actionTraceId}] Resultado búsqueda negocio por slug:`,
+          {
+            found: !!negocio,
+            negocioId: negocio?.id ?? null,
+            telefonoNegocioMasked: maskPhone(negocio?.telefonoContacto ?? null),
+          }
+        );
+
+        if (!negocio) {
+          console.warn(
+            `[createNewPedido][${actionTraceId}] Negocio no disponible para pedido público`
+          );
+          throw new BusinessNotAvailableError();
+        }
+
+        negocioId = negocio.id;
+        tipoUsuario = TipoUsuario.usuario;
+        telefonoNegocio = negocio.telefonoContacto || "+573132390868";
+      }
+
       const normalizedItems: NormalizedOrderItem[] = [];
 
-      for (const item of input.items) {
-        if (!isPositiveInteger(item.quantity)) {
-          throw new Error("La cantidad de uno de los productos es inválida.");
-        }
-
-        if (!item.productId) {
-          if (item.productVariantId) {
-            throw new Error(
-              "No se puede validar una variante sin un producto asociado."
-            );
+      if (publicSlug) {
+        const requestedProductIds = input.items.map((item) => {
+          if (
+            typeof item.productId !== "string" ||
+            item.productId.trim().length === 0 ||
+            !isPositiveSafeInteger(item.quantity)
+          ) {
+            throw new OrderItemsNotAvailableError();
           }
 
-          const normalizedDescription = sanitizeParam(item.description);
+          return item.productId.trim();
+        });
+        const uniqueProductIds = [...new Set(requestedProductIds)];
 
-          if (!normalizedDescription) {
-            throw new Error("Uno de los productos no tiene descripción válida.");
-          }
-
-          if (typeof item.price !== "number" || Number.isNaN(item.price) || item.price < 0) {
-            throw new Error("Uno de los productos tiene un precio inválido.");
-          }
-
-          normalizedItems.push({
-            description: normalizedDescription,
-            quantity: item.quantity,
-            price: item.price,
-            subtotal: item.price * item.quantity,
-            productId: undefined,
-            productVariantId: null,
-            variantLabel: null,
-          });
-
-          continue;
-        }
-
-        const product = await tx.product.findUnique({
-          where: { id: item.productId },
+        const products = await tx.product.findMany({
+          where: {
+            id: { in: uniqueProductIds },
+            negocioId,
+            status: ProductStatus.disponible,
+          },
           select: {
             id: true,
             nombre: true,
@@ -415,67 +441,227 @@ export const createNewPedido = async (
           },
         });
 
-        if (!product || product.negocioId !== negocioId) {
-          throw new Error("Uno de los productos del pedido ya no está disponible.");
+        if (products.length !== uniqueProductIds.length) {
+          throw new OrderItemsNotAvailableError();
         }
 
-        const activeVariants = product.variantes;
-        const hasActiveVariants = product.usaVariantes === true && activeVariants.length > 0;
-        const selectedVariant = item.productVariantId
-          ? activeVariants.find((variant) => variant.id === item.productVariantId) ?? null
-          : null;
+        const productsById = new Map(
+          products.map((product) => [product.id, product])
+        );
+        const requestedQuantityByCatalogKey = new Map<string, number>();
 
-        if (item.productVariantId && !selectedVariant) {
-          throw new Error(
-            `La variante seleccionada para ${sanitizeParam(product.nombre)} ya no está disponible.`
+        const resolvedItems = input.items.map((item, index) => {
+          const product = productsById.get(requestedProductIds[index]);
+
+          if (!product) {
+            throw new OrderItemsNotAvailableError();
+          }
+
+          const activeVariants = product.variantes;
+          const hasActiveVariants =
+            product.usaVariantes === true && activeVariants.length > 0;
+          const selectedVariant = item.productVariantId
+            ? activeVariants.find(
+                (variant) => variant.id === item.productVariantId
+              ) ?? null
+            : null;
+
+          if (
+            (item.productVariantId && !selectedVariant) ||
+            (hasActiveVariants && !item.productVariantId) ||
+            (!hasActiveVariants && item.productVariantId)
+          ) {
+            throw new OrderItemsNotAvailableError();
+          }
+
+          const catalogKey = `${product.id}:${selectedVariant?.id ?? "base"}`;
+          requestedQuantityByCatalogKey.set(
+            catalogKey,
+            (requestedQuantityByCatalogKey.get(catalogKey) ?? 0) +
+              item.quantity
           );
-        }
 
-        if (hasActiveVariants && !item.productVariantId) {
-          throw new Error(
-            `Debes seleccionar una variante válida para ${sanitizeParam(product.nombre)}.`
-          );
-        }
-
-        if (!hasActiveVariants && item.productVariantId) {
-          throw new Error(
-            `El producto ${sanitizeParam(product.nombre)} ya no usa la variante seleccionada.`
-          );
-        }
-
-        const effectiveStock = selectedVariant?.stock ?? product.stock ?? null;
-        const effectiveStockIlimitado = selectedVariant
-          ? selectedVariant.stockIlimitado ?? true
-          : (product.stockIlimitado ?? true);
-
-        if (
-          effectiveStockIlimitado === false &&
-          typeof effectiveStock === "number" &&
-          effectiveStock < item.quantity
-        ) {
-          throw new Error(
-            `No hay stock suficiente para ${sanitizeParam(product.nombre)}${
-              selectedVariant ? ` (${buildVariantLabel(selectedVariant)})` : ""
-            }.`
-          );
-        }
-
-        const normalizedDescription =
-          sanitizeParam(item.description) || sanitizeParam(product.nombre);
-        const normalizedPrice = selectedVariant?.precio ?? product.precio;
-        const normalizedVariantLabel = selectedVariant
-          ? buildVariantLabel(selectedVariant)
-          : null;
-
-        normalizedItems.push({
-          description: normalizedDescription,
-          quantity: item.quantity,
-          price: normalizedPrice,
-          subtotal: normalizedPrice * item.quantity,
-          productId: product.id,
-          productVariantId: selectedVariant?.id ?? null,
-          variantLabel: normalizedVariantLabel,
+          return { item, product, selectedVariant, catalogKey };
         });
+
+        for (const { product, selectedVariant, catalogKey } of resolvedItems) {
+          const effectiveStock = selectedVariant?.stock ?? product.stock ?? null;
+          const effectiveStockIlimitado = selectedVariant
+            ? selectedVariant.stockIlimitado ?? true
+            : (product.stockIlimitado ?? true);
+          const requestedQuantity =
+            requestedQuantityByCatalogKey.get(catalogKey) ?? 0;
+
+          if (
+            effectiveStockIlimitado === false &&
+            typeof effectiveStock === "number" &&
+            effectiveStock < requestedQuantity
+          ) {
+            throw new OrderItemsNotAvailableError();
+          }
+        }
+
+        for (const { item, product, selectedVariant } of resolvedItems) {
+          const normalizedDescription = sanitizeParam(product.nombre);
+          const normalizedPrice = selectedVariant?.precio ?? product.precio;
+          const normalizedVariantLabel = selectedVariant
+            ? buildVariantLabel(selectedVariant)
+            : null;
+
+          normalizedItems.push({
+            description: normalizedDescription,
+            quantity: item.quantity,
+            price: normalizedPrice,
+            subtotal: normalizedPrice * item.quantity,
+            productId: product.id,
+            productVariantId: selectedVariant?.id ?? null,
+            variantLabel: normalizedVariantLabel,
+          });
+        }
+      } else {
+        for (const item of input.items) {
+          if (!isPositiveInteger(item.quantity)) {
+            throw new Error("La cantidad de uno de los productos es inválida.");
+          }
+
+          if (!item.productId) {
+            if (item.productVariantId) {
+              throw new Error(
+                "No se puede validar una variante sin un producto asociado."
+              );
+            }
+
+            const normalizedDescription = sanitizeParam(item.description);
+
+            if (!normalizedDescription) {
+              throw new Error("Uno de los productos no tiene descripción válida.");
+            }
+
+            if (
+              typeof item.price !== "number" ||
+              Number.isNaN(item.price) ||
+              item.price < 0
+            ) {
+              throw new Error("Uno de los productos tiene un precio inválido.");
+            }
+
+            normalizedItems.push({
+              description: normalizedDescription,
+              quantity: item.quantity,
+              price: item.price,
+              subtotal: item.price * item.quantity,
+              productId: undefined,
+              productVariantId: null,
+              variantLabel: null,
+            });
+
+            continue;
+          }
+
+          const product = await tx.product.findUnique({
+            where: { id: item.productId },
+            select: {
+              id: true,
+              nombre: true,
+              precio: true,
+              negocioId: true,
+              stock: true,
+              stockIlimitado: true,
+              usaVariantes: true,
+              variantes: {
+                where: { isActive: true },
+                select: {
+                  id: true,
+                  nombre: true,
+                  precio: true,
+                  stock: true,
+                  stockIlimitado: true,
+                  isActive: true,
+                  orden: true,
+                  options: {
+                    select: {
+                      id: true,
+                      nombre: true,
+                      valor: true,
+                      orden: true,
+                    },
+                    orderBy: { orden: "asc" },
+                  },
+                },
+                orderBy: { orden: "asc" },
+              },
+            },
+          });
+
+          if (!product || product.negocioId !== negocioId) {
+            throw new Error(
+              "Uno de los productos del pedido ya no está disponible."
+            );
+          }
+
+          const activeVariants = product.variantes;
+          const hasActiveVariants =
+            product.usaVariantes === true && activeVariants.length > 0;
+          const selectedVariant = item.productVariantId
+            ? activeVariants.find(
+                (variant) => variant.id === item.productVariantId
+              ) ?? null
+            : null;
+
+          if (item.productVariantId && !selectedVariant) {
+            throw new Error(
+              `La variante seleccionada para ${sanitizeParam(product.nombre)} ya no está disponible.`
+            );
+          }
+
+          if (hasActiveVariants && !item.productVariantId) {
+            throw new Error(
+              `Debes seleccionar una variante válida para ${sanitizeParam(product.nombre)}.`
+            );
+          }
+
+          if (!hasActiveVariants && item.productVariantId) {
+            throw new Error(
+              `El producto ${sanitizeParam(product.nombre)} ya no usa la variante seleccionada.`
+            );
+          }
+
+          const effectiveStock = selectedVariant?.stock ?? product.stock ?? null;
+          const effectiveStockIlimitado = selectedVariant
+            ? selectedVariant.stockIlimitado ?? true
+            : (product.stockIlimitado ?? true);
+
+          if (
+            effectiveStockIlimitado === false &&
+            typeof effectiveStock === "number" &&
+            effectiveStock < item.quantity
+          ) {
+            throw new Error(
+              `No hay stock suficiente para ${sanitizeParam(product.nombre)}${
+                selectedVariant
+                  ? ` (${buildVariantLabel(selectedVariant)})`
+                  : ""
+              }.`
+            );
+          }
+
+          const normalizedDescription =
+            sanitizeParam(item.description) || sanitizeParam(product.nombre);
+          const normalizedPrice = selectedVariant?.precio ?? product.precio;
+          const normalizedVariantLabel = selectedVariant
+            ? buildVariantLabel(selectedVariant)
+            : null;
+
+          normalizedItems.push({
+            description: normalizedDescription,
+            quantity: item.quantity,
+            price: normalizedPrice,
+            subtotal: normalizedPrice * item.quantity,
+            productId: product.id,
+            productVariantId: selectedVariant?.id ?? null,
+            variantLabel: normalizedVariantLabel,
+          });
+        }
       }
 
       const normalizedTotalAmount = normalizedItems.reduce(
@@ -573,6 +759,9 @@ export const createNewPedido = async (
         descripcionCompra,
         direccionCompra,
         ciudadCompra,
+        negocioId,
+        tipoUsuario,
+        telefonoNegocio,
       };
     });
 
@@ -599,8 +788,8 @@ export const createNewPedido = async (
     let enviarANegocio = true;
 
     if (session?.user.role === "negocio") {
-      if (input.slug) {
-        if (input.slug === negocioSlug) {
+      if (publicSlug) {
+        if (publicSlug === negocioSlug) {
           enviarANegocio = false;
         }
       } else {
@@ -615,7 +804,7 @@ export const createNewPedido = async (
       {
         enviarANegocio,
         sessionRole: session?.user?.role ?? null,
-        inputSlug: input.slug ?? null,
+        inputSlug: publicSlug ?? null,
         negocioSlugSesion: negocioSlug ?? null,
         telefonoNegocioMasked: maskPhone(telefonoNegocio),
       }
@@ -817,6 +1006,22 @@ export const createNewPedido = async (
 
     return { ok: true, message: "Pedido creado exitosamente." };
   } catch (error) {
+    if (error instanceof BusinessNotAvailableError) {
+      return {
+        ok: false,
+        code: error.code,
+        message: error.message,
+      };
+    }
+
+    if (error instanceof OrderItemsNotAvailableError) {
+      return {
+        ok: false,
+        code: error.code,
+        message: error.message,
+      };
+    }
+
     console.error(
       `[createNewPedido][${actionTraceId}] Error al crear el pedido:`,
       error

@@ -1,7 +1,10 @@
 // app/api/negocio/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { createNegocio } from "@/actions/auth/createHegocio";
+import {
+  createNegocioCore,
+  type CreateNegocioCoreInput,
+} from "@/lib/business/create-negocio-core";
 export const dynamic = "force-dynamic";
 
 
@@ -66,20 +69,20 @@ export async function POST(request: NextRequest) {
       urlGoogleMaps = `https://www.google.com/maps/search/?api=1&query=${latitud},${longitud}`;
     }
 
-    // Crear FormData para la server action
-    const formData = new FormData();
-    formData.append("nombre", nombre);
-    formData.append("descripcion", descripcion);
-    formData.append("ciudad", ciudad);
-    formData.append("departamento", departamento);
-    formData.append("direccion", direccion);
-    if (telefonoContacto) formData.append("telefonoContacto", telefonoContacto);
-    formData.append("usuarioId", usuarioId);
-    categoriaIds.forEach(id => formData.append("categoriaIds", id));
-    seccionIds.forEach(id => formData.append("seccionIds", id));
+    const coreInput: CreateNegocioCoreInput = {
+      usuarioId,
+      nombre,
+      descripcion,
+      ciudad,
+      departamento,
+      direccion,
+      telefonoContacto: telefonoContacto || null,
+      categoriaIds,
+      seccionIds,
+    };
 
     // Ejecutar creación del negocio
-    const result = await createNegocio(formData);
+    const result = await createNegocioCore(coreInput);
 
     if (!result.ok) {
       return NextResponse.json({ ok: false, message: result.message }, { status: 400 });

@@ -1,4 +1,4 @@
-// app/dashboard/editarUsuario/page.tsx
+// app/dashboard/editar-usuario/page.tsx
 import { EditarUsuarioForm } from "@/app/auth/login/ui/EditarUsuarioForm";
 import { auth } from "@/auth.config";
 import prisma from "@/lib/prisma";
@@ -14,7 +14,7 @@ export default async function EditarUsuarioPage() {
   const session = await auth();
 
   if (!session?.user?.id) {
-    redirect("/auth/login?callbackUrl=/dashboard/editarUsuario");
+    redirect("/auth/login?callbackUrl=/dashboard/editar-usuario");
   }
 
   const userId = session.user.id;
@@ -46,47 +46,13 @@ export default async function EditarUsuarioPage() {
   const esModoObligatorio = usuario.isPlaceholder;
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
-      <div className="max-w-5xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-10">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
-            {esModoObligatorio ? "¡Completa tu perfil!" : "Editar Perfil"}
-          </h1>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            {esModoObligatorio
-              ? "Para comenzar a usar Myckeo, necesitamos tus datos reales"
-              : "Mantén tu información actualizada"}
-          </p>
-        </div>
-
-        {/* Tarjeta principal */}
-        <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-    
-          
-          <div className="relative p-6">
-            {/* Foto de perfil (placeholder) */}
-            
-
-            {/* Formulario */}
-            <div className="mt-4">
-              <EditarUsuarioForm 
-                usuario={usuario} 
-                esModoObligatorio={esModoObligatorio} 
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Nota para placeholders */}
-        {esModoObligatorio && (
-          <div className="mt-8 p-6 bg-amber-50 border border-amber-200 rounded-xl text-center">
-            <p className="text-amber-800 font-medium">
-              Este es tu perfil temporal. Una vez completes tus datos, podrás gestionar tu negocio completamente
-            </p>
-          </div>
-        )}
+    <main className="min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#fff7f7_100%)]">
+      <div className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
+        <EditarUsuarioForm
+          usuario={usuario}
+          esModoObligatorio={esModoObligatorio}
+        />
       </div>
-    </div>
+    </main>
   );
 }

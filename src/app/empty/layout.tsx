@@ -12,10 +12,15 @@ export default function CatalogoLayout({ children }: { children: React.ReactNode
   const { data: session } = useSession();
   const router = useRouter();
 
-  // Redirección si el perfil está incompleto
+  // Redirección alineada con el onboarding moderno
   useEffect(() => {
-    if (session?.user && !session.user.perfilCompleto) {
-      router.replace("/config/completePerfil");
+    if (session?.user?.isPlaceholder === true) {
+      router.replace("/dashboard/editar-perfil");
+      return;
+    }
+
+    if (session?.user && session.user.perfilCompleto === false) {
+      router.replace("/dashboard/editar-usuario");
     }
   }, [session, router]);
 

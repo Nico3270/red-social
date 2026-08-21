@@ -4,6 +4,10 @@ import { EnhancedPublicacion } from "@/publicaciones/interfaces/enhancedPublicac
 import { PublicacionTipo } from "@prisma/client";
 import { EstadoNegocio } from "@prisma/client";
 import { buildPublicBusinessBySlugWhere } from "@/lib/business/publicBusinessVisibility";
+import {
+  classifyBusinessVisibility,
+  type BusinessVisibility,
+} from "@/lib/business/business-visibility-policy";
 import { reportOperationalError } from "@/lib/observability/operationalLogger";
 import prisma from "@/lib/prisma";
 
@@ -50,6 +54,7 @@ export interface InformacionInicialNegocio {
   categoriaIds: string[];
   seccionesIds: string[];
   estadoNegocio: EstadoNegocio;
+  visibility: BusinessVisibility;
   configReservation: boolean; // Indica si el negocio tiene reservas configuradas
   configEncuestas: boolean; // Indica si el negocio tiene encuestas configuradas
   negocioId:string
@@ -69,6 +74,16 @@ export const getInfoPerfilBySlugNegocio = async (slugNegocio: string): Promise<D
       select: {
         id: true,
         usuarioId: true,
+        estado: true,
+        isTestData: true,
+        archivedAt: true,
+        usuario: {
+          select: {
+            estado: true,
+            isPlaceholder: true,
+            perfilCompleto: true,
+          },
+        },
       },
     });
 
@@ -78,6 +93,8 @@ export const getInfoPerfilBySlugNegocio = async (slugNegocio: string): Promise<D
         message: "Negocio no encontrado",
       };
     }
+
+    const visibility = classifyBusinessVisibility(negocio);
 
     const result = await prisma.usuario.findUnique({
       where: {
@@ -166,6 +183,7 @@ export const getInfoPerfilBySlugNegocio = async (slugNegocio: string): Promise<D
       categoriaIds: result.negocio.categorias.map((categoria) => categoria.categoryId) || [],
       seccionesIds: result.negocio.secciones.map((seccion) => seccion.sectionId) || [],
       estadoNegocio: result.negocio.estado || EstadoNegocio.activo,
+      visibility,
       configReservation, 
       configEncuestas,
       negocioId: result.negocio.id

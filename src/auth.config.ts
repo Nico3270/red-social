@@ -70,10 +70,12 @@ async function buildSessionSnapshotByEmail(email: string) {
     id: usuarioConNegocio.id,
     nombre: usuarioConNegocio.nombre,
     apellido: usuarioConNegocio.apellido ?? "",
+    username: usuarioConNegocio.username,
     email: usuarioConNegocio.email,
     role: usuarioConNegocio.role,
     emailVerified: usuarioConNegocio.emailVerified ?? null,
     ciudad: usuarioConNegocio.ciudad ?? null,
+    departamento: usuarioConNegocio.departamento ?? null,
     fotoPerfil: usuarioConNegocio.fotoPerfil || "/imgs/usuario-sin-foto.png",
     perfilCompleto: usuarioConNegocio.perfilCompleto ?? false,
     isPlaceholder: usuarioConNegocio.isPlaceholder ?? false,
@@ -135,6 +137,11 @@ export const authConfig: NextAuthConfig = {
 
     async jwt({ token, user, trigger, session }) {
       const email = user?.email || (typeof token.email === "string" ? token.email : null);
+      const tokenWithProfile = token as typeof token & {
+        nombre?: string;
+        username?: string;
+        departamento?: string | null;
+      };
 
       if (email) {
         const snapshot = await buildSessionSnapshotByEmail(email);
@@ -145,11 +152,14 @@ export const authConfig: NextAuthConfig = {
 
         token.id = snapshot.id;
         token.name = snapshot.nombre;
+        tokenWithProfile.nombre = snapshot.nombre;
         token.apellido = snapshot.apellido;
+        tokenWithProfile.username = snapshot.username;
         token.email = snapshot.email;
         token.role = snapshot.role;
         token.emailVerified = snapshot.emailVerified;
         token.ciudad = snapshot.ciudad ?? undefined;
+        tokenWithProfile.departamento = snapshot.departamento ?? undefined;
         token.fotoPerfil =
           (user?.image as string | undefined) || snapshot.fotoPerfil;
         token.negocioId = snapshot.negocioId;
@@ -170,28 +180,43 @@ export const authConfig: NextAuthConfig = {
 
       // Si se llama desde `update()`
       if (trigger === "update") {
-        if (session?.role) token.role = session.role;
-        if (session?.negocioId !== undefined) token.negocioId = session.negocioId;
-        if (session?.negocioSlug !== undefined) token.negocioSlug = session.negocioSlug;
-        if (session?.negocioNombre !== undefined) token.negocioNombre = session.negocioNombre;
-        if (session?.configReservation !== undefined) token.configReservation = session.configReservation; // Permitir actualización
-        if (session?.configEncuestas !== undefined) token.configEncuestas = session.configEncuestas; // Permitir actualización
-        if (session?.fotoPerfil) token.fotoPerfil = session.fotoPerfil;
-        if (session?.perfilCompleto !== undefined) token.perfilCompleto = session.perfilCompleto;
-        if (session?.isPlaceholder !== undefined) token.isPlaceholder = session.isPlaceholder
-        if (session?.hasManagedBusiness !== undefined) token.hasManagedBusiness = session.hasManagedBusiness;
-        if (session?.businessOperational !== undefined) token.businessOperational = session.businessOperational;
-        if (session?.businessArchivedAt !== undefined) token.businessArchivedAt = session.businessArchivedAt;
-        if (session?.businessEstado !== undefined) token.businessEstado = session.businessEstado;
-        if (session?.businessRestrictionReason !== undefined) token.businessRestrictionReason = session.businessRestrictionReason;
-        if (session?.managedBusinessName !== undefined) token.managedBusinessName = session.managedBusinessName;
-        if (session?.managedBusinessSlug !== undefined) token.managedBusinessSlug = session.managedBusinessSlug;
+        if (!email) {
+          if (session?.name) {
+            token.name = session.name;
+          }
+          if ("nombre" in session && session.nombre) {
+            tokenWithProfile.nombre = session.nombre as string;
+          } else if (session?.name) {
+            tokenWithProfile.nombre = session.name;
+          }
+          if ("apellido" in session && session.apellido !== undefined) {
+            token.apellido = session.apellido as string;
+          }
+          if ("username" in session && session.username !== undefined) {
+            tokenWithProfile.username = session.username as string;
+          }
+          if ("ciudad" in session && session.ciudad !== undefined) {
+            token.ciudad = session.ciudad as string;
+          }
+          if ("departamento" in session && session.departamento !== undefined) {
+            tokenWithProfile.departamento = session.departamento as string;
+          }
+          if ("fotoPerfil" in session && session.fotoPerfil !== undefined) {
+            token.fotoPerfil = session.fotoPerfil as string;
+          }
+        }
       }
 
       return token;
     },
 
     async session({ session, token }) {
+      const tokenWithProfile = token as typeof token & {
+        nombre?: string;
+        username?: string;
+        departamento?: string | null;
+      };
+
       session.user = {
         id: token.id as string,
         name: token.name as string,
@@ -222,6 +247,17 @@ export const authConfig: NextAuthConfig = {
         managedBusinessName: token.managedBusinessName as string | null | undefined,
         managedBusinessSlug: token.managedBusinessSlug as string | null | undefined,
       };
+
+      const sessionUser = session.user as typeof session.user & {
+        nombre?: string;
+        username?: string;
+        departamento?: string | null;
+      };
+
+      sessionUser.nombre = tokenWithProfile.nombre ?? (token.name as string);
+      sessionUser.username = tokenWithProfile.username;
+      sessionUser.departamento = tokenWithProfile.departamento ?? null;
+
       return session;
     },
   },

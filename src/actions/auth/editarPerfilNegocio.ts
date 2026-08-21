@@ -1,3 +1,4 @@
+import { auth } from "@/auth.config";
 import prisma from "@/lib/prisma";
 import { EstadoNegocio } from "@prisma/client";
 
@@ -34,9 +35,26 @@ interface DatosPerfilNegocio {
 
 export const editarPerfilNegocio = async (idNegocio: string):Promise<DatosPerfilNegocio> => {
   try {
+    const session = await auth();
+    const authenticatedUserId = session?.user?.id;
+
+    if (!authenticatedUserId) {
+      return {
+        ok: false,
+        message: "No autorizado. Debes iniciar sesión.",
+      } as DatosPerfilNegocio;
+    }
+
+    if (idNegocio && idNegocio !== authenticatedUserId) {
+      return {
+        ok: false,
+        message: "No tienes permiso para consultar este perfil.",
+      } as DatosPerfilNegocio;
+    }
+
     const result = await prisma.usuario.findUnique({
       where: {
-        id: idNegocio,
+        id: authenticatedUserId,
       },
       select: {
         id: true,
@@ -125,4 +143,3 @@ export const editarPerfilNegocio = async (idNegocio: string):Promise<DatosPerfil
     } as DatosPerfilNegocio;
   }
 };
-
