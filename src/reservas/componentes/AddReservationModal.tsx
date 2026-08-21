@@ -7,7 +7,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { FaTimes, FaFlag } from "react-icons/fa"; // Agregado FaFlag para el icono de bandera
 import { motion, AnimatePresence } from "framer-motion";
-import { createEditarReserva } from "../actions/createEditarReserva";
+import { createOwnerReservation } from "../actions/createOwnerReservation";
+import { createPublicReservation } from "../actions/createPublicReservation";
+import { updateOwnerReservation } from "../actions/updateOwnerReservation";
 import { format, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
 import { useSession } from "next-auth/react";
@@ -25,11 +27,99 @@ export interface ReservationFormData {
 
 interface AddReservationModalProps {
   negocioId?: string;
+  publicSlug?: string;
   horaInicio: string;
   horaFin: string;
   data?: ReservationFormData;
   onClose: () => void;
   onSuccess?: () => void;
+}
+
+type ReservationSubmitContext =
+  | {
+      kind: "public";
+      slug: string;
+    }
+  | {
+      kind: "owner-create";
+    }
+  | {
+      kind: "owner-edit";
+      reservationId: string;
+    };
+
+type ReservationSubmitResult = {
+  ok: boolean;
+  message: string;
+  code?: string;
+};
+
+const INVALID_CONTEXT_RESULT: ReservationSubmitResult = {
+  ok: false,
+  code: "INVALID_INPUT",
+  message: "No fue posible procesar la reserva.",
+};
+
+function resolveReservationSubmitContext(
+  publicSlug: string | undefined,
+  reservationId: string | undefined,
+): ReservationSubmitContext | null {
+  const normalizedSlug = publicSlug?.trim() ?? "";
+  const normalizedReservationId = reservationId?.trim() ?? "";
+
+  if (normalizedSlug && normalizedReservationId) return null;
+  if (normalizedSlug) return { kind: "public", slug: normalizedSlug };
+  if (normalizedReservationId) {
+    return { kind: "owner-edit", reservationId: normalizedReservationId };
+  }
+
+  return { kind: "owner-create" };
+}
+
+async function submitReservation(
+  context: ReservationSubmitContext,
+  formData: ReservationFormData,
+): Promise<ReservationSubmitResult> {
+  const telefono = `+57${formData.telefono}`;
+  const fechaHoraFin = formData.fechaHoraFin ?? null;
+  const notas = formData.notas ?? null;
+
+  switch (context.kind) {
+    case "public":
+      return createPublicReservation({
+        slug: context.slug,
+        nombre: formData.nombre,
+        telefono,
+        fechaHoraInicio: formData.fechaHoraInicio,
+        fechaHoraFin,
+        notas,
+      });
+    case "owner-create":
+      if (
+        formData.estado !== "PENDIENTE" &&
+        formData.estado !== "CONFIRMADA"
+      ) {
+        return INVALID_CONTEXT_RESULT;
+      }
+
+      return createOwnerReservation({
+        nombre: formData.nombre,
+        telefono,
+        fechaHoraInicio: formData.fechaHoraInicio,
+        fechaHoraFin,
+        notas,
+        estado: formData.estado,
+      });
+    case "owner-edit":
+      return updateOwnerReservation({
+        id: context.reservationId,
+        nombre: formData.nombre,
+        telefono,
+        fechaHoraInicio: formData.fechaHoraInicio,
+        fechaHoraFin,
+        notas,
+      });
+  }
 }
 
 // Schema Zod actualizado con validación estricta para teléfono
@@ -43,7 +133,8 @@ const formSchema = z.object({
   notas: z.string().optional(),
 });
 
-export default function AddReservationModal({ negocioId, horaInicio, horaFin, data, onClose, onSuccess }: AddReservationModalProps) {
+export default function AddReservationModal({ publicSlug, horaInicio, horaFin, data, onClose, onSuccess }: AddReservationModalProps) {
+  const submitContext = resolveReservationSubmitContext(publicSlug, data?.id);
   const { register, handleSubmit, formState: { errors }, reset, setValue } = useForm<ReservationFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -62,7 +153,6 @@ export default function AddReservationModal({ negocioId, horaInicio, horaFin, da
   const [isError, setIsError] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const { data: session, status } = useSession();
-  const roleUser = status === "authenticated" && session?.user?.role === "negocio" && session.user.negocioId === negocioId;
 
   // Pre-llenar si data para edit
   useEffect(() => {
@@ -85,30 +175,37 @@ export default function AddReservationModal({ negocioId, horaInicio, horaFin, da
 
   const onSubmit: SubmitHandler<ReservationFormData> = async (formData) => {
     setLoading(true);
-    // Concatenar el indicativo +57 al número
-    const formattedData = {
-      ...formData,
-      telefono: `+57${formData.telefono}`,
-      estado: roleUser ? formData.estado : "PENDIENTE", // Forzar PENDIENTE si no es negocio
-    };
 
-    const result = await createEditarReserva({ ...formattedData, negocioId: negocioId || undefined });
-    setLoading(false);
-    setResponseMessage(result.message);
-    setIsError(!result.ok);
+    try {
+      const result = submitContext
+        ? await submitReservation(submitContext, formData)
+        : INVALID_CONTEXT_RESULT;
 
-    if (result.ok) {
-      reset();
-      setSubmitted(true);
-      if (onSuccess) onSuccess();
-      setTimeout(() => {
-        onClose();
-        setResponseMessage(null);
-      }, 1500);
-    } else {
+      setResponseMessage(result.message);
+      setIsError(!result.ok);
+
+      if (result.ok) {
+        reset();
+        setSubmitted(true);
+        if (onSuccess) onSuccess();
+        setTimeout(() => {
+          onClose();
+          setResponseMessage(null);
+        }, 1500);
+        return;
+      }
+
       setTimeout(() => {
         setResponseMessage(null);
       }, 3000);
+    } catch {
+      setResponseMessage(INVALID_CONTEXT_RESULT.message);
+      setIsError(true);
+      setTimeout(() => {
+        setResponseMessage(null);
+      }, 3000);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -179,7 +276,7 @@ export default function AddReservationModal({ negocioId, horaInicio, horaFin, da
             {errors.telefono && <p className="text-red-500 text-xs mt-1">{errors.telefono.message}</p>}
           </div>
 
-          {roleUser && (
+          {submitContext?.kind === "owner-create" && (
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Estado</label>
               <select
@@ -188,14 +285,13 @@ export default function AddReservationModal({ negocioId, horaInicio, horaFin, da
               >
                 <option value="PENDIENTE">Pendiente</option>
                 <option value="CONFIRMADA">Confirmada</option>
-                <option value="CANCELADA">Cancelada</option>
-                <option value="COMPLETADA">Completada</option>
-                <option value="BLOQUEADA">Bloqueada</option>
               </select>
               {errors.estado && <p className="text-red-500 text-xs mt-1">{errors.estado.message}</p>}
             </div>
           )}
-          {!roleUser && <input type="hidden" {...register("estado")} value="PENDIENTE" />}
+          {submitContext?.kind !== "owner-create" && (
+            <input type="hidden" {...register("estado")} />
+          )}
 
           <div>
             <label className="block text-sm font-medium text-gray-800 mb-1">Notas (opcional)</label>

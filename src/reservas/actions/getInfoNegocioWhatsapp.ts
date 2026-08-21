@@ -11,12 +11,8 @@ interface InfoNegociowhatsapp {
 }
 
 export async function getInfoNegocioWhatsapp(negocioId: string): Promise<InfoNegociowhatsapp | null> {
-    // Aquí deberías implementar la lógica para obtener la información del negocio
-    // Por ejemplo, podrías hacer una consulta a tu base de datos o API
-    // Este es un ejemplo básico que retorna un objeto simulado
-
     if (!negocioId) {
-        return { ok: false, message: "ID de negocio no proporcionado" };
+        return null;
     }
 
     const información = await prisma.negocio.findUnique({
@@ -28,16 +24,17 @@ export async function getInfoNegocioWhatsapp(negocioId: string): Promise<InfoNeg
         }
     });
 
-    // Simulación de datos obtenidos
-    const negocioData = {
+    if (!información) {
+        return null;
+    }
+
+    return {
         ok: true,
         message: "Información del negocio obtenida correctamente",
-        nombreNegocio: información?.nombre || "Negocio Desconocido",
-        telefonoNegocio: información?.telefonoContacto || "+573182293083",
-        slugNegocio: información?.slug || "negocio-desconocido",
+        nombreNegocio: información.nombre,
+        telefonoNegocio: información.telefonoContacto ?? undefined,
+        slugNegocio: información.slug,
     };
-
-    return negocioData;
 }
 
 interface ReservaInformacion {

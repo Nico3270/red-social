@@ -13,15 +13,10 @@ import { sendWhatsApp } from "@/servicios/whatsapp/sender";
    CONFIGURACIÓN
 ======================================================================== */
 const ADMIN_KEY = process.env.MYCKEO_ADMIN_KEY ?? "";
-const MYCKEO_ADMIN_BASE =
-  process.env.MYCKEO_ADMIN_URL ?? "https://myckeo-admin.vercel.app";
 
 if (!ADMIN_KEY) throw new Error("Falta MYCKEO_ADMIN_KEY");
 
-/* ========================================================================
-   CONSTANTES
-======================================================================== */
-const FALLBACK_COMENTARIOS_ADICIONALES = "Sin comentarios adicionales";
+const SIN_COMENTARIOS_ADICIONALES = "Sin comentarios adicionales";
 
 /* ========================================================================
    TIPOS
@@ -76,8 +71,73 @@ interface WindowResponse {
 /* ========================================================================
    HELPERS
 ======================================================================== */
+function isProductionLoopback(hostname: string): boolean {
+  if (process.env.NODE_ENV !== "production") return false;
+
+  const normalizedHostname = hostname.toLowerCase();
+  return (
+    normalizedHostname === "localhost" ||
+    normalizedHostname.endsWith(".localhost") ||
+    normalizedHostname.startsWith("127.") ||
+    normalizedHostname === "::1" ||
+    normalizedHostname === "[::1]"
+  );
+}
+
+function getExplicitOrigin(raw: string | undefined): string | null {
+  if (!raw || raw !== raw.trim()) return null;
+
+  try {
+    const url = new URL(raw);
+
+    if (url.protocol !== "http:" && url.protocol !== "https:") return null;
+    if (url.username || url.password) return null;
+    if (url.search || url.hash) return null;
+    if (url.pathname !== "/") return null;
+    if (isProductionLoopback(url.hostname)) return null;
+
+    return url.origin;
+  } catch {
+    return null;
+  }
+}
+
+function getMyckeoAdminOrigin(): string | null {
+  return getExplicitOrigin(process.env.MYCKEO_ADMIN_URL);
+}
+
+function getPublicSiteOrigin(): string | null {
+  return getExplicitOrigin(process.env.SITE_URL);
+}
+
+function templateUsesDashboardLink(template: PlantillaWhatsApp): boolean {
+  return (
+    template === PlantillaWhatsApp.CONFIRMAR_NEGOCIO_RESERVA ||
+    template === PlantillaWhatsApp.RESERVA_CANCELADA_NEGOCIO
+  );
+}
+
+function templateUsesReservationBookingLink(
+  template: PlantillaWhatsApp,
+): boolean {
+  return template === PlantillaWhatsApp.RESERVA_CANCELADA_USUARIO;
+}
+
+function templateRequiresPublicSiteOrigin(
+  template: PlantillaWhatsApp,
+): boolean {
+  return (
+    templateUsesDashboardLink(template) ||
+    templateUsesReservationBookingLink(template)
+  );
+}
+
 function normalizeText(value?: string | null): string {
   return typeof value === "string" ? value.trim() : "";
+}
+
+function isValidE164(value?: string | null): boolean {
+  return /^\+\d{10,15}$/.test(normalizeText(value));
 }
 
 function createTraceId() {
@@ -93,12 +153,8 @@ function maskPhone(phone?: string | null) {
   return `***${digits.slice(-4)}`;
 }
 
-function safeStringify(value: unknown) {
-  try {
-    return JSON.stringify(value, null, 2);
-  } catch {
-    return "[unserializable]";
-  }
+function getErrorName(value: unknown): string {
+  return value instanceof Error ? value.name : typeof value;
 }
 
 function asRecord(value: unknown): Record<string, unknown> | null {
@@ -143,6 +199,9 @@ function getProviderSummary(result: unknown) {
   const data = asRecord(root.data);
   const messages = Array.isArray(data?.messages) ? data.messages : [];
   const contacts = Array.isArray(data?.contacts) ? data.contacts : [];
+  const rootError = asRecord(root.error);
+  const dataError = asRecord(data?.error);
+  const providerError = rootError ?? dataError;
 
   return {
     kind: "object",
@@ -151,14 +210,19 @@ function getProviderSummary(result: unknown) {
     hasData: !!data,
     messagesCount: messages.length,
     contactsCount: contacts.length,
-    error:
-      typeof root.errorMessage === "string"
-        ? root.errorMessage
-        : typeof root.error === "string"
-        ? root.error
-        : typeof root.message === "string" && root.ok === false
-        ? root.message
+    errorCode:
+      typeof providerError?.code === "string" ||
+      typeof providerError?.code === "number"
+        ? providerError.code
         : null,
+    errorType:
+      typeof providerError?.type === "string" ? providerError.type : null,
+    httpStatus:
+      typeof root.status === "number"
+        ? root.status
+        : typeof root.statusCode === "number"
+          ? root.statusCode
+          : null,
   };
 }
 
@@ -180,38 +244,57 @@ function isProviderAccepted(result: unknown): boolean {
 
 function buildValidationErrorMessage(
   template: PlantillaWhatsApp,
-  missingFields: string[]
+  missingFields: string[],
 ) {
   return `Datos incompletos para la plantilla ${template}: faltan ${missingFields.join(
-    ", "
+    ", ",
   )}`;
 }
 
+function buildConfigurationError(
+  traceId: string,
+  template: PlantillaWhatsApp,
+  errorMessage: string,
+): NotifyResult {
+  console.error(`[notifyReserva][${traceId}] ${errorMessage}`, {
+    template,
+  });
+
+  return {
+    ok: false,
+    free: false,
+    message: null,
+    errorMessage,
+    result: null,
+    traceId,
+    status: "validation_error",
+    providerAccepted: false,
+    templateName: template,
+    messageId: null,
+  };
+}
+
 async function logWhatsAppEvent(params: {
+  adminOrigin: string;
   traceId: string;
   template: PlantillaWhatsApp;
   phone: string;
-  content: string | null;
   free: boolean;
-  placeholders: string[];
-  extras: Record<string, unknown>;
   providerResult: unknown;
   providerAccepted: boolean;
 }) {
   const {
+    adminOrigin,
     traceId,
     template,
     phone,
-    content,
     free,
-    placeholders,
-    extras,
     providerResult,
     providerAccepted,
   } = params;
 
   try {
-    const response = await fetch(`${MYCKEO_ADMIN_BASE}/api/events`, {
+    const response = await fetch(new URL("/api/events", adminOrigin), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -220,12 +303,9 @@ async function logWhatsAppEvent(params: {
       body: JSON.stringify({
         eventType: template,
         phone,
-        content,
         data: {
           traceId,
           free,
-          placeholders,
-          extras,
           providerAccepted,
           providerSummary: getProviderSummary(providerResult),
         },
@@ -238,8 +318,10 @@ async function logWhatsAppEvent(params: {
     });
   } catch (err) {
     console.error(
-      `[notifyReserva][${traceId}] Error registrando evento /api/events:`,
-      err
+      `[notifyReserva][${traceId}] Error registrando evento /api/events`,
+      {
+        errorName: getErrorName(err),
+      },
     );
   }
 }
@@ -248,15 +330,37 @@ async function logWhatsAppEvent(params: {
    FUNCIÓN PRINCIPAL
 ======================================================================== */
 export async function notifyReservaConfirmadaCliente(
-  props: NotifyReservaConfirmadaClienteProps
+  props: NotifyReservaConfirmadaClienteProps,
 ): Promise<NotifyResult> {
   const traceId = createTraceId();
+  const adminOrigin = getMyckeoAdminOrigin();
 
-  console.log(`[notifyReserva][${traceId}] Inicio`);
-  console.log(`[notifyReserva][${traceId}] Props recibidas:`, {
-    ...props,
+  if (!adminOrigin) {
+    return buildConfigurationError(
+      traceId,
+      props.template,
+      "MYCKEO_ADMIN_URL inválida",
+    );
+  }
+
+  const requiresPublicSiteOrigin = templateRequiresPublicSiteOrigin(
+    props.template,
+  );
+  const publicSiteOrigin = requiresPublicSiteOrigin
+    ? getPublicSiteOrigin()
+    : null;
+
+  if (requiresPublicSiteOrigin && !publicSiteOrigin) {
+    return buildConfigurationError(
+      traceId,
+      props.template,
+      "SITE_URL inválida",
+    );
+  }
+
+  console.log(`[notifyReserva][${traceId}] Inicio`, {
+    template: props.template,
     toMasked: maskPhone(props.to),
-    telefono_cliente_masked: maskPhone(props.telefono_cliente),
   });
 
   try {
@@ -280,7 +384,8 @@ export async function notifyReservaConfirmadaCliente(
 
     const direccionNormalizada = normalizeText(direccion);
     const ciudadNormalizada =
-      normalizeText(ciudad) || (orderType === "ON_SITE" ? "Consumo en sitio" : "");
+      normalizeText(ciudad) ||
+      (orderType === "ON_SITE" ? "Consumo en sitio" : "");
 
     console.log(`[notifyReserva][${traceId}] Plantilla exacta solicitada:`, {
       template,
@@ -289,24 +394,28 @@ export async function notifyReservaConfirmadaCliente(
         template === PlantillaWhatsApp.PEDIDO_CREADO_USUARIO_USUARIO,
     });
 
-    const descripcionNormalizada =
-      template === PlantillaWhatsApp.PEDIDO_CREADO_NEGOCIO
-        ? normalizeText(descripcion) || FALLBACK_COMENTARIOS_ADICIONALES
-        : typeof descripcion === "string"
-        ? descripcion
-        : "";
+    const descripcionNormalizada = normalizeText(descripcion);
+    const templateRequiereDescripcion =
+      template === PlantillaWhatsApp.CONFIRMACION_RESERVA_CLIENTE ||
+      template === PlantillaWhatsApp.PEDIDO_CREADO_NEGOCIO;
+    const descripcionParaNotificacion = templateRequiereDescripcion
+      ? descripcionNormalizada || SIN_COMENTARIOS_ADICIONALES
+      : descripcionNormalizada;
+    const telefonoClienteNormalizado = normalizeText(telefono_cliente);
 
     /* ============================================================
        1. INFO DEL NEGOCIO
     ============================================================ */
     console.log(
       `[notifyReserva][${traceId}] Obteniendo información del negocio...`,
-      { negocioId }
+      { negocioId },
     );
 
     const negocioInfo = await getInfoNegocioWhatsapp(negocioId);
 
-    console.log(`[notifyReserva][${traceId}] negocioInfo:`, negocioInfo);
+    console.log(`[notifyReserva][${traceId}] Consulta de negocio completada`, {
+      found: !!negocioInfo,
+    });
 
     if (!negocioInfo) {
       const errorMessage = "Información del negocio no encontrada";
@@ -327,24 +436,58 @@ export async function notifyReservaConfirmadaCliente(
       };
     }
 
-    const slugNegocio = negocioInfo.slugNegocio;
-    const reservas_negocio = `https://myckeo.com/reservas/${slugNegocio}`;
-    const nombre_negocio = negocioInfo.nombreNegocio || "Negocio Desconocido";
-    const enlace_reserva = "https://myckeo.com/dashboard/reservas";
+    const nombre_negocio = normalizeText(negocioInfo.nombreNegocio);
+    const slugNegocio = normalizeText(negocioInfo.slugNegocio);
+
+    if (!nombre_negocio || !slugNegocio) {
+      const missingBusinessFields = [
+        !nombre_negocio ? "nombreNegocio" : null,
+        !slugNegocio ? "slugNegocio" : null,
+      ].filter((field): field is string => field !== null);
+      const errorMessage = `Información real del negocio incompleta: faltan ${missingBusinessFields.join(
+        ", ",
+      )}`;
+      console.error(`[notifyReserva][${traceId}] ${errorMessage}`);
+
+      return {
+        ok: false,
+        free: false,
+        message: null,
+        errorMessage,
+        result: null,
+        traceId,
+        status: "validation_error",
+        providerAccepted: false,
+        templateName: template,
+        phone: to,
+        messageId: null,
+      };
+    }
+
+    const reservas_negocio = templateUsesReservationBookingLink(template)
+      ? new URL(
+          `/reservas/${encodeURIComponent(slugNegocio)}`,
+          publicSiteOrigin!,
+        ).toString()
+      : "";
+    const enlace_reserva = templateUsesDashboardLink(template)
+      ? new URL("/dashboard/reservas", publicSiteOrigin!).toString()
+      : "";
 
     /* ============================================================
        2. VALIDAR TELÉFONO
     ============================================================ */
-    console.log(`[notifyReserva][${traceId}] Validando teléfono destino...`, {
-      to,
+    console.log(`[notifyReserva][${traceId}] Validando teléfono destino`, {
       toMasked: maskPhone(to),
     });
 
     const normalizedTo = normalizeText(to);
 
-    if (!normalizedTo.startsWith("+") || !/^\+\d{10,15}$/.test(normalizedTo)) {
+    if (!isValidE164(normalizedTo)) {
       const errorMessage = `Número inválido (E.164 requerido): ${normalizedTo}`;
-      console.error(`[notifyReserva][${traceId}] ${errorMessage}`);
+      console.error(`[notifyReserva][${traceId}] Teléfono destino inválido`, {
+        toMasked: maskPhone(normalizedTo),
+      });
 
       return {
         ok: false,
@@ -366,7 +509,7 @@ export async function notifyReservaConfirmadaCliente(
     ============================================================ */
     console.log(
       `[notifyReserva][${traceId}] Construyendo variables para plantilla...`,
-      { template }
+      { template },
     );
 
     let variables: string[] = [];
@@ -403,7 +546,7 @@ export async function notifyReservaConfirmadaCliente(
           nombre_negocio,
           fechaHora!,
           enlace_cancelar!,
-          descripcionNormalizada ?? "",
+          descripcionParaNotificacion,
         ];
         placeholderNames = [
           "nombre_cliente",
@@ -418,7 +561,8 @@ export async function notifyReservaConfirmadaCliente(
       case PlantillaWhatsApp.CONFIRMAR_NEGOCIO_RESERVA: {
         const missing: string[] = [];
         if (!nombre_cliente) missing.push("nombre_cliente");
-        if (!telefono_cliente) missing.push("telefono_cliente");
+        if (!isValidE164(telefonoClienteNormalizado))
+          missing.push("telefono_cliente");
         if (!fechaHora) missing.push("fechaHora");
 
         if (missing.length > 0) {
@@ -442,7 +586,7 @@ export async function notifyReservaConfirmadaCliente(
         variables = [
           nombre_negocio,
           nombre_cliente!,
-          telefono_cliente!,
+          telefonoClienteNormalizado,
           fechaHora!,
           enlace_reserva,
         ];
@@ -499,7 +643,8 @@ export async function notifyReservaConfirmadaCliente(
         const missing: string[] = [];
         if (!nombre_cliente) missing.push("nombre_cliente");
         if (!fechaHora) missing.push("fechaHora");
-        if (!telefono_cliente) missing.push("telefono_cliente");
+        if (!isValidE164(telefonoClienteNormalizado))
+          missing.push("telefono_cliente");
 
         if (missing.length > 0) {
           const errorMessage = buildValidationErrorMessage(template, missing);
@@ -523,7 +668,7 @@ export async function notifyReservaConfirmadaCliente(
           nombre_cliente!,
           nombre_negocio,
           fechaHora!,
-          telefono_cliente!,
+          telefonoClienteNormalizado,
           enlace_reserva,
         ];
         placeholderNames = [
@@ -583,7 +728,8 @@ export async function notifyReservaConfirmadaCliente(
         if (!valor_compra) missing.push("valor_compra");
         if (!datos_pedido) missing.push("datos_pedido");
         if (!nombre_cliente) missing.push("nombre_cliente");
-        if (!telefono_cliente) missing.push("telefono_cliente");
+        if (!isValidE164(telefonoClienteNormalizado))
+          missing.push("telefono_cliente");
         if (!direccion) missing.push("direccion");
 
         if (missing.length > 0) {
@@ -609,9 +755,9 @@ export async function notifyReservaConfirmadaCliente(
           datos_pedido!,
           valor_compra!,
           nombre_cliente!,
-          telefono_cliente!,
+          telefonoClienteNormalizado,
           direccion!,
-          descripcionNormalizada,
+          descripcionParaNotificacion,
         ];
         placeholderNames = [
           "nombre_negocio",
@@ -776,14 +922,12 @@ export async function notifyReservaConfirmadaCliente(
       template,
       languageCode,
       placeholderNames,
-      variables,
+      variableCount: variables.length,
     });
 
     if (variables.some((v) => !v || v.trim() === "")) {
       const errorMessage = `Variables vacías o inválidas para plantilla ${template}`;
-      console.error(`[notifyReserva][${traceId}] ${errorMessage}`, {
-        variables,
-      });
+      console.error(`[notifyReserva][${traceId}] ${errorMessage}`);
 
       return {
         ok: false,
@@ -804,9 +948,7 @@ export async function notifyReservaConfirmadaCliente(
        4. VERIFICAR VENTANA 24H
     ============================================================ */
     console.log(`[notifyReserva][${traceId}] Revisando ventana de 24h...`, {
-      phone: normalizedTo,
       phoneMasked: maskPhone(normalizedTo),
-      adminKeyLast6: ADMIN_KEY.slice(-6),
     });
 
     let isWindowOpen = false;
@@ -823,32 +965,26 @@ export async function notifyReservaConfirmadaCliente(
       console.log(
         `[notifyReserva][${traceId}] Enviando POST a /api/whatsapp/window`,
         {
-          url: `${MYCKEO_ADMIN_BASE}/api/whatsapp/window`,
-          bodyPreview: {
-            phone: normalizedTo,
-            keyLast6: ADMIN_KEY.slice(-6),
-          },
-        }
+          phoneMasked: maskPhone(normalizedTo),
+        },
       );
 
-      const response = await fetch(`${MYCKEO_ADMIN_BASE}/api/whatsapp/window`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
+      const response = await fetch(
+        new URL("/api/whatsapp/window", adminOrigin),
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: requestBody,
         },
-        body: requestBody,
-      });
+      );
 
       windowRawResponse = await response.text();
 
-      console.log(
-        `[notifyReserva][${traceId}] Respuesta RAW /api/whatsapp/window:`
-      );
-      console.log(windowRawResponse);
       console.log(`[notifyReserva][${traceId}] Status HTTP ventana:`, {
         status: response.status,
-        statusText: response.statusText,
         ok: response.ok,
       });
 
@@ -860,16 +996,12 @@ export async function notifyReservaConfirmadaCliente(
 
           console.log(
             `[notifyReserva][${traceId}] JSON ventana parseado correctamente:`,
-            windowJsonResponse
+            { isOpen: isWindowOpen },
           );
         } catch (parseErr) {
           console.error(
             `[notifyReserva][${traceId}] Error parseando JSON de ventana:`,
-            parseErr
-          );
-          console.error(
-            `[notifyReserva][${traceId}] Contenido recibido:`,
-            windowRawResponse
+            { errorName: getErrorName(parseErr) },
           );
         }
       } else {
@@ -877,50 +1009,27 @@ export async function notifyReservaConfirmadaCliente(
           `[notifyReserva][${traceId}] Error HTTP en verificación de ventana`,
           {
             status: response.status,
-            body: windowRawResponse,
-          }
+          },
         );
       }
     } catch (err) {
       console.error(
         `[notifyReserva][${traceId}] Error de red al consultar ventana 24h:`,
-        err
+        { errorName: getErrorName(err) },
       );
     }
 
     console.log(`[notifyReserva][${traceId}] Resultado ventana 24h:`, {
       windowCheckOk,
       isWindowOpen,
-      windowJsonResponse,
     });
-
-    /* ============================================================
-       EXTRAS PARA EVENTOS
-    ============================================================ */
-    const extras = {
-      nombre_cliente,
-      telefono_cliente,
-      datos_pedido,
-      valor_compra,
-      direccion: direccionNormalizada,
-      ciudad: ciudadNormalizada,
-      descripcion: descripcionNormalizada,
-      fechaHora,
-      fecha_anterior,
-      fecha_nueva,
-      enlace_cancelar,
-      nombre_negocio,
-      slugNegocio,
-      template,
-      languageCode,
-    };
 
     /* ============================================================
        5. SI HAY VENTANA → MENSAJE GRATIS
     ============================================================ */
     if (windowCheckOk && isWindowOpen) {
       console.log(
-        `[notifyReserva][${traceId}] Ventana ABIERTA → enviando mensaje GRATIS`
+        `[notifyReserva][${traceId}] Ventana ABIERTA → enviando mensaje GRATIS`,
       );
 
       const builder =
@@ -959,11 +1068,8 @@ export async function notifyReservaConfirmadaCliente(
         valor_compra,
         direccion: direccionNormalizada,
         ciudad: ciudadNormalizada,
-        descripcion: descripcionNormalizada,
+        descripcion: descripcionParaNotificacion,
       } as TemplateVariables);
-
-      console.log(`[notifyReserva][${traceId}] Texto generado GRATIS:`);
-      console.log(messageText);
 
       const freeRes = await sendWhatsApp({
         to: normalizedTo,
@@ -974,22 +1080,16 @@ export async function notifyReservaConfirmadaCliente(
       const freeMessageId = extractMessageId(freeRes);
 
       console.log(
-        `[notifyReserva][${traceId}] Resultado envío GRATIS (raw):`,
-        freeRes
-      );
-      console.log(
         `[notifyReserva][${traceId}] Resultado envío GRATIS (summary):`,
-        getProviderSummary(freeRes)
+        getProviderSummary(freeRes),
       );
 
       await logWhatsAppEvent({
+        adminOrigin,
         traceId,
         template,
         phone: normalizedTo,
-        content: messageText,
         free: true,
-        placeholders: variables,
-        extras,
         providerResult: freeRes,
         providerAccepted: freeAccepted,
       });
@@ -1000,7 +1100,6 @@ export async function notifyReservaConfirmadaCliente(
 
         console.error(`[notifyReserva][${traceId}] ${errorMessage}`, {
           providerSummary: getProviderSummary(freeRes),
-          providerRaw: safeStringify(freeRes),
         });
 
         return {
@@ -1022,9 +1121,8 @@ export async function notifyReservaConfirmadaCliente(
         `[notifyReserva][${traceId}] Mensaje GRATIS aceptado por el provider`,
         {
           messageId: freeMessageId,
-          to: normalizedTo,
           toMasked: maskPhone(normalizedTo),
-        }
+        },
       );
 
       return {
@@ -1046,7 +1144,7 @@ export async function notifyReservaConfirmadaCliente(
        6. SIN VENTANA → PLANTILLA PAGA
     ============================================================ */
     console.log(
-      `[notifyReserva][${traceId}] Ventana CERRADA o fallo en API → enviando PLANTILLA PAGA`
+      `[notifyReserva][${traceId}] Ventana CERRADA o fallo en API → enviando PLANTILLA PAGA`,
     );
 
     const templatePayload = {
@@ -1058,10 +1156,14 @@ export async function notifyReservaConfirmadaCliente(
       languageCode,
     };
 
-    console.log(
-      `[notifyReserva][${traceId}] Payload sendWhatsAppMessage:`,
-      templatePayload
-    );
+    console.log(`[notifyReserva][${traceId}] Enviando template`, {
+      template,
+      languageCode,
+      placeholderNames,
+      variableCount: variables.length,
+      ttl: templatePayload.ttl,
+      toMasked: maskPhone(normalizedTo),
+    });
 
     const paidRes = await sendWhatsAppMessage(templatePayload);
 
@@ -1069,22 +1171,16 @@ export async function notifyReservaConfirmadaCliente(
     const paidMessageId = extractMessageId(paidRes);
 
     console.log(
-      `[notifyReserva][${traceId}] Resultado PLANTILLA (raw):`,
-      paidRes
-    );
-    console.log(
       `[notifyReserva][${traceId}] Resultado PLANTILLA (summary):`,
-      getProviderSummary(paidRes)
+      getProviderSummary(paidRes),
     );
 
     await logWhatsAppEvent({
+      adminOrigin,
       traceId,
       template,
       phone: normalizedTo,
-      content: null,
       free: false,
-      placeholders: variables,
-      extras,
       providerResult: paidRes,
       providerAccepted: paidAccepted,
     });
@@ -1094,7 +1190,6 @@ export async function notifyReservaConfirmadaCliente(
 
       console.error(`[notifyReserva][${traceId}] ${errorMessage}`, {
         providerSummary: getProviderSummary(paidRes),
-        providerRaw: safeStringify(paidRes),
       });
 
       return {
@@ -1118,9 +1213,8 @@ export async function notifyReservaConfirmadaCliente(
         template,
         languageCode,
         messageId: paidMessageId,
-        to: normalizedTo,
         toMasked: maskPhone(normalizedTo),
-      }
+      },
     );
 
     return {
@@ -1139,12 +1233,10 @@ export async function notifyReservaConfirmadaCliente(
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Error desconocido";
 
-    console.error(`[notifyReserva][${traceId}] ERROR general:`, msg);
-    if (err instanceof Error) {
-      console.error(`[notifyReserva][${traceId}] Stack:`, err.stack);
-    } else {
-      console.error(`[notifyReserva][${traceId}] Error raw:`, err);
-    }
+    console.error(`[notifyReserva][${traceId}] ERROR general`, {
+      errorName: getErrorName(err),
+      template: props.template,
+    });
 
     return {
       ok: false,

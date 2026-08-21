@@ -1,115 +1,157 @@
-// /app/api/reservasUserConfig/route.ts
-import { NextResponse } from 'next/server';
-import { buildPublicBusinessByIdWhere } from '@/lib/business/publicBusinessVisibility';
-import prisma from '@/lib/prisma';
-import { startOfDay, endOfDay, parseISO } from 'date-fns'; // Para rangos de fecha
+import { ReservationStatus } from "@prisma/client";
+import { endOfDay, isMatch, isValid, parseISO, startOfDay } from "date-fns";
+import { NextResponse } from "next/server";
 
-export interface ReservationDayData {
-  id: string;
-  nombre: string;
-  telefono: string;
-  fechaHoraInicio: string;
-  fechaHoraFin?: string | null; // Permite null de DB
-  notas?: string | null; // Ajuste clave: permite null, que Prisma devuelve para campos ?
-  estado: 'PENDIENTE' | 'CONFIRMADA' | 'CANCELADA' | 'COMPLETADA' | "BLOQUEADA";
-  usuarioId?: string | null;
-}
+import { buildPublishedBusinessWhere } from "@/lib/business/business-visibility-policy";
+import prisma from "@/lib/prisma";
 
-export interface ReservationsResponse {
-  ok: boolean;
-  message?: string;
-  reservas: ReservationDayData[];
-}
+type OccupancySlot = {
+  start: string;
+  end?: string;
+  count: number;
+  blocked: boolean;
+};
+
+type OccupancyResponse = {
+  ok: true;
+  date: string;
+  occupancy: OccupancySlot[];
+};
+
+type ErrorResponse = {
+  ok: false;
+  code?: "BUSINESS_NOT_AVAILABLE";
+  message: string;
+};
+
+const BUSINESS_NOT_AVAILABLE: ErrorResponse = {
+  ok: false,
+  code: "BUSINESS_NOT_AVAILABLE",
+  message: "Este negocio no está disponible para esta acción.",
+};
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const dateStr = searchParams.get('date');
-  const negocioId = searchParams.get('negocioId'); // Nuevo param: negocioId requerido
+  const dateStr = searchParams.get("date");
+  const negocioId = searchParams.get("negocioId");
 
-  // Validación de params requeridos
   if (!dateStr || !negocioId) {
-    return NextResponse.json<ReservationsResponse>({
-      ok: false,
-      message: 'Parámetros requeridos: ?date=YYYY-MM-DD&negocioId=ID_DEL_NEGOCIO',
-      reservas: [],
-    }, { status: 400 });
+    return NextResponse.json<ErrorResponse>(
+      {
+        ok: false,
+        message:
+          "Parámetros requeridos: ?date=YYYY-MM-DD&negocioId=ID_DEL_NEGOCIO",
+      },
+      { status: 400 }
+    );
   }
 
-  // Validación adicional: negocioId debe ser string válido (e.g., CUID o UUID)
-  if (typeof negocioId !== 'string' || negocioId.trim() === '') {
-    return NextResponse.json<ReservationsResponse>({
-      ok: false,
-      message: 'negocioId inválido',
-      reservas: [],
-    }, { status: 400 });
+  const normalizedNegocioId = negocioId.trim();
+  const date = parseISO(dateStr);
+
+  if (
+    !normalizedNegocioId ||
+    !isMatch(dateStr, "yyyy-MM-dd") ||
+    !isValid(date)
+  ) {
+    return NextResponse.json<ErrorResponse>(
+      {
+        ok: false,
+        message: "Parámetros inválidos. Usa date=YYYY-MM-DD y un negocioId válido.",
+      },
+      { status: 400 }
+    );
   }
 
   try {
-    // Verificar si el negocio existe (para evitar queries inválidas)
-    const negocioExists = await prisma.negocio.findFirst({
-      where: buildPublicBusinessByIdWhere(negocioId),
-      select: { id: true }, // Select mínimo para eficiencia
+    const negocio = await prisma.negocio.findFirst({
+      where: {
+        AND: [
+          buildPublishedBusinessWhere(),
+          { id: normalizedNegocioId },
+        ],
+      },
+      select: { id: true },
     });
 
-    if (!negocioExists) {
-      return NextResponse.json<ReservationsResponse>({
-        ok: false,
-        message: 'Negocio no encontrado',
-        reservas: [],
-      }, { status: 404 });
+    if (!negocio) {
+      return NextResponse.json<ErrorResponse>(BUSINESS_NOT_AVAILABLE, {
+        status: 409,
+      });
     }
 
-    const date = parseISO(dateStr);
-    const start = startOfDay(date);
-    const end = endOfDay(date);
-
-    const reservas = await prisma.reservation.findMany({
+    const rangeStart = startOfDay(date);
+    const rangeEnd = endOfDay(date);
+    const reservations = await prisma.reservation.findMany({
       where: {
-        negocioId,
+        negocioId: negocio.id,
         fechaHoraInicio: {
-          gte: start,
-          lt: end,
+          gte: rangeStart,
+          lt: rangeEnd,
+        },
+        estado: {
+          in: [
+            ReservationStatus.PENDIENTE,
+            ReservationStatus.CONFIRMADA,
+            ReservationStatus.BLOQUEADA,
+          ],
         },
       },
       select: {
-        id: true,
-        nombre: true,
-        telefono: true,
         fechaHoraInicio: true,
         fechaHoraFin: true,
-        notas: true,
         estado: true,
-        usuarioId: true,
-      },
-      orderBy: {
-        fechaHoraInicio: 'asc', // Ordena por hora para dashboard secuencial
       },
     });
 
-    // Map a interface (conversión de DateTime a ISO string para JSON)
-    const formattedReservas: ReservationDayData[] = reservas.map(res => ({
-      id: res.id,
-      nombre: res.nombre,
-      telefono: res.telefono,
-      fechaHoraInicio: res.fechaHoraInicio.toISOString(),
-      fechaHoraFin: res.fechaHoraFin ? res.fechaHoraFin.toISOString() : undefined, // Maneja null a undefined
-      notas: res.notas ?? undefined, // ?? coalesce: null o undefined a undefined
-      estado: res.estado,
-      usuarioId: res.usuarioId ?? undefined,
-    }));
+    const occupancyByRange = new Map<string, OccupancySlot>();
 
-    // console.log("reservas encontradas para el día:", dateStr, formattedReservas);
+    for (const reservation of reservations) {
+      if (
+        reservation.estado === ReservationStatus.CANCELADA ||
+        reservation.estado === ReservationStatus.COMPLETADA
+      ) {
+        continue;
+      }
 
-    return NextResponse.json<ReservationsResponse>({
+      const start = reservation.fechaHoraInicio.toISOString();
+      const end = reservation.fechaHoraFin?.toISOString();
+      const key = `${start}\u0000${end ?? ""}`;
+      const current = occupancyByRange.get(key) ?? {
+        start,
+        ...(end ? { end } : {}),
+        count: 0,
+        blocked: false,
+      };
+
+      if (reservation.estado === ReservationStatus.BLOQUEADA) {
+        current.blocked = true;
+      } else {
+        current.count += 1;
+      }
+
+      occupancyByRange.set(key, current);
+    }
+
+    const occupancy = Array.from(occupancyByRange.values()).sort(
+      (left, right) =>
+        left.start.localeCompare(right.start) ||
+        (left.end ?? "").localeCompare(right.end ?? "")
+    );
+
+    return NextResponse.json<OccupancyResponse>({
       ok: true,
-      reservas: formattedReservas,
+      date: dateStr,
+      occupancy,
     });
-  } catch (error) {
-    console.error('Error al obtener reservas:', error);
-    return NextResponse.json<ReservationsResponse>({
-      ok: false,
-      message: 'Error interno al consultar reservas',
-      reservas: [],
-    }, { status: 500 });
+  } catch {
+    console.error("Error al consultar disponibilidad pública de reservas");
+    return NextResponse.json<ErrorResponse>(
+      {
+        ok: false,
+        message: "Error interno al consultar disponibilidad",
+      },
+      { status: 500 }
+    );
   }
 }

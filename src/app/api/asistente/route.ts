@@ -2,8 +2,26 @@
 
 import prisma from "@/lib/prisma";
 import { buildPublicBusinessVisibilityWhere } from "@/lib/business/publicBusinessVisibility";
-import { ReservationStatus, type Prisma } from "@prisma/client";
-import { startOfDay, addDays, addMinutes, startOfWeek } from "date-fns";
+import {
+  revokeActiveReservationCapabilitiesInTx,
+  rotateReservationCapabilityInTx,
+} from "@/reservas/lib/reservation-capability";
+import {
+  buildCancelReservationOperationFingerprint,
+  buildCreateReservationOperationFingerprint,
+  buildUpdateReservationOperationFingerprint,
+  isValidReservationOperationSourceReference,
+  type ReservationCancelOperationPayload,
+  type ReservationCreateOperationPayload,
+  type ReservationUpdateOperationPayload,
+} from "@/reservas/lib/reservation-operation";
+import {
+  Prisma,
+  ReservationOperationAction,
+  ReservationOperationOutcome,
+  ReservationStatus,
+} from "@prisma/client";
+import { startOfDay, addDays, startOfWeek } from "date-fns";
 import { es } from "date-fns/locale";
 import { formatInTimeZone, toZonedTime, fromZonedTime } from "date-fns-tz";
 
@@ -13,7 +31,7 @@ export const dynamic = "force-dynamic";
 const ADMIN_KEY = process.env.MYCKEO_ADMIN_KEY;
 if (!ADMIN_KEY) {
   throw new Error(
-    "No es correcta o no está definida la api key de administrador."
+    "No es correcta o no está definida la api key de administrador.",
   );
 }
 
@@ -22,6 +40,12 @@ if (!ADMIN_KEY) {
 ============================================================ */
 
 const TZ = "America/Bogota";
+const SERIALIZABLE_CANCEL_MAX_ATTEMPTS = 3;
+const SERIALIZABLE_CREATE_MAX_ATTEMPTS = 3;
+const SERIALIZABLE_UPDATE_MAX_ATTEMPTS = 3;
+const RESERVATION_CAPABILITY_EXPIRY_MARGIN_MS = 24 * 60 * 60 * 1000;
+const RESERVATION_OPERATION_UNIQUE_CONSTRAINT =
+  "ReservationOperation_negocioId_action_sourceReference_key";
 
 /**
  * Formatea SIEMPRE en hora Colombia, independientemente del TZ del servidor.
@@ -147,6 +171,67 @@ type BusinessAvailabilityLite = {
   duracionMinimaIntervalos: number | null;
 };
 
+type AvailabilityRange = {
+  startMinutes: number;
+  endMinutes: number;
+};
+
+type OccupancyRow = {
+  fechaHoraInicio: Date;
+  fechaHoraFin: Date | null;
+  estado: ReservationStatus;
+};
+
+type CreateReservationBoundaryErrorCode =
+  | "IDEMPOTENCY_CONFLICT"
+  | "RESERVATION_NOT_AVAILABLE"
+  | "CREATE_RETRY_EXHAUSTED"
+  | "INTERNAL_ERROR";
+
+class CreateReservationBoundaryError extends Error {
+  readonly code: CreateReservationBoundaryErrorCode;
+
+  constructor(code: CreateReservationBoundaryErrorCode) {
+    super("Create reservation operation failed.");
+    this.name = "CreateReservationBoundaryError";
+    this.code = code;
+  }
+}
+
+type UpdateReservationBoundaryErrorCode =
+  | "IDEMPOTENCY_CONFLICT"
+  | "RESERVATION_NOT_FOUND"
+  | "RESERVATION_NOT_AVAILABLE"
+  | "UPDATE_RETRY_EXHAUSTED"
+  | "INTERNAL_ERROR";
+
+class UpdateReservationBoundaryError extends Error {
+  readonly code: UpdateReservationBoundaryErrorCode;
+
+  constructor(code: UpdateReservationBoundaryErrorCode) {
+    super("Update reservation operation failed.");
+    this.name = "UpdateReservationBoundaryError";
+    this.code = code;
+  }
+}
+
+type CancelReservationBoundaryErrorCode =
+  | "IDEMPOTENCY_CONFLICT"
+  | "RESERVATION_NOT_FOUND"
+  | "RESERVATION_NOT_AVAILABLE"
+  | "CANCEL_RETRY_EXHAUSTED"
+  | "INTERNAL_ERROR";
+
+class CancelReservationBoundaryError extends Error {
+  readonly code: CancelReservationBoundaryErrorCode;
+
+  constructor(code: CancelReservationBoundaryErrorCode) {
+    super("Cancel reservation operation failed.");
+    this.name = "CancelReservationBoundaryError";
+    this.code = code;
+  }
+}
+
 /* ============================================================
    HELPERS: VALIDACIÓN / JSON / TELÉFONO
 ============================================================ */
@@ -168,9 +253,7 @@ function asNonEmptyString(value: unknown): string | null {
   return typeof value === "string" && value.trim() ? value.trim() : null;
 }
 
-function asNullableTrimmedString(
-  value: unknown
-): string | null | undefined {
+function asNullableTrimmedString(value: unknown): string | null | undefined {
   if (value === undefined) return undefined;
   if (value === null) return null;
   if (typeof value !== "string") return undefined;
@@ -193,7 +276,7 @@ function hasAnyKey(record: JsonRecord, keys: string[]): boolean {
 
 function firstNonEmptyString(
   record: JsonRecord,
-  keys: string[]
+  keys: string[],
 ): string | null {
   for (const key of keys) {
     const value = asNonEmptyString(record[key]);
@@ -228,164 +311,8 @@ function normalizePhone(raw: string): string {
   return `+${normalizedDigits}`;
 }
 
-function parseDateInput(value: string, fieldName: string): Date {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) {
-    throw new Error(`${fieldName} inválida. Usa formato ISO 8601.`);
-  }
-
-  return date;
-}
-
 function capitalize(value: string): string {
   return value ? value.charAt(0).toUpperCase() + value.slice(1) : value;
-}
-
-function hhmmToMinutes(value: string): number {
-  const [hours, minutes] = value.split(":").map(Number);
-  return hours * 60 + minutes;
-}
-
-function defaultReservationDurationMinutes(
-  config: BusinessAvailabilityLite | null
-): number {
-  const intervalo = config?.intervaloMinutos ?? 30;
-  const bloques = config?.duracionMinimaIntervalos ?? 1;
-  return Math.max(intervalo * bloques, 5);
-}
-
-function buildCoveredSlotRanges(
-  start: Date,
-  end: Date,
-  intervalMinutes: number
-): Array<{ start: Date; end: Date }> {
-  const slots: Array<{ start: Date; end: Date }> = [];
-  let cursor = new Date(start);
-
-  while (cursor < end) {
-    const slotEnd = addMinutes(cursor, intervalMinutes);
-    slots.push({
-      start: new Date(cursor),
-      end: slotEnd,
-    });
-    cursor = slotEnd;
-  }
-
-  return slots;
-}
-
-function resolveCreateReservationEnd(
-  start: Date,
-  explicitEnd: string | null | undefined,
-  config: BusinessAvailabilityLite | null
-): Date {
-  if (explicitEnd) {
-    return parseDateInput(explicitEnd, "fechaHoraFin");
-  }
-
-  return addMinutes(start, defaultReservationDurationMinutes(config));
-}
-
-function resolveUpdatedReservationEnd(args: {
-  existingStart: Date;
-  existingEnd: Date | null;
-  nextStart: Date;
-  explicitEnd: string | null | undefined;
-  hasFechaHoraInicio: boolean;
-  hasFechaHoraFin: boolean;
-  config: BusinessAvailabilityLite | null;
-}): Date | null {
-  const {
-    existingStart,
-    existingEnd,
-    nextStart,
-    explicitEnd,
-    hasFechaHoraInicio,
-    hasFechaHoraFin,
-    config,
-  } = args;
-
-  if (hasFechaHoraFin && explicitEnd) {
-    return parseDateInput(explicitEnd, "fechaHoraFin");
-  }
-
-  if (hasFechaHoraFin || hasFechaHoraInicio) {
-    if (existingEnd) {
-      const durationMs = existingEnd.getTime() - existingStart.getTime();
-      if (durationMs > 0) {
-        return new Date(nextStart.getTime() + durationMs);
-      }
-    }
-
-    return addMinutes(nextStart, defaultReservationDurationMinutes(config));
-  }
-
-  if (existingEnd) {
-    return existingEnd;
-  }
-
-  return null;
-}
-
-function validateReservationAgainstAvailability(
-  config: BusinessAvailabilityLite,
-  start: Date,
-  end: Date
-) {
-  if (end <= start) {
-    throw new Error("fechaHoraFin debe ser posterior a fechaHoraInicio.");
-  }
-
-  const startDay = fmtCO(start, "yyyy-MM-dd");
-  const endDay = fmtCO(end, "yyyy-MM-dd");
-  if (startDay !== endDay) {
-    throw new Error(
-      "La reserva debe iniciar y terminar el mismo día en hora Colombia."
-    );
-  }
-
-  const dayName = capitalize(fmtCO(start, "EEEE"));
-  if (!config.diasAtencion.includes(dayName)) {
-    throw new Error(
-      `El negocio no atiende los ${dayName.toLowerCase()}.`
-    );
-  }
-
-  const startTime = fmtCO(start, "HH:mm");
-  const endTime = fmtCO(end, "HH:mm");
-  const startMinutes = hhmmToMinutes(startTime);
-  const endMinutes = hhmmToMinutes(endTime);
-  const durationMinutes = endMinutes - startMinutes;
-
-  if (durationMinutes <= 0) {
-    throw new Error("La duración de la reserva debe ser mayor a cero.");
-  }
-
-  const fitsRange = (rangeStart: string | null, rangeEnd: string | null) => {
-    if (!rangeStart || !rangeEnd) return false;
-
-    const rangeStartMinutes = hhmmToMinutes(rangeStart);
-    const rangeEndMinutes = hhmmToMinutes(rangeEnd);
-
-    if (startMinutes < rangeStartMinutes || endMinutes > rangeEndMinutes) {
-      return false;
-    }
-
-    if ((startMinutes - rangeStartMinutes) % config.intervaloMinutos !== 0) {
-      return false;
-    }
-
-    return durationMinutes % config.intervaloMinutos === 0;
-  };
-
-  if (
-    !fitsRange(config.franjaMananaInicio, config.franjaMananaFin) &&
-    !fitsRange(config.franjaTardeInicio, config.franjaTardeFin)
-  ) {
-    throw new Error(
-      "La reserva no cae en una franja válida o no coincide con el intervalo configurado."
-    );
-  }
 }
 
 /* ============================================================
@@ -426,7 +353,7 @@ function formatMoney(value: unknown): string {
 ============================================================ */
 
 async function getNegocioByTelefono(
-  telefonoRaw: string
+  telefonoRaw: string,
 ): Promise<NegocioLite | null> {
   const telefono = normalizePhone(telefonoRaw);
   if (!telefono) return null;
@@ -472,66 +399,6 @@ async function getNegocioByTelefono(
   return fallback ?? null;
 }
 
-async function getBusinessAvailability(
-  negocioId: string
-): Promise<BusinessAvailabilityLite | null> {
-  return prisma.businessAvailability.findUnique({
-    where: { negocioId },
-    select: {
-      diasAtencion: true,
-      franjaMananaInicio: true,
-      franjaMananaFin: true,
-      franjaTardeInicio: true,
-      franjaTardeFin: true,
-      intervaloMinutos: true,
-      capacidadPorIntervalo: true,
-      duracionMinimaIntervalos: true,
-    },
-  });
-}
-
-async function assertReservationCapacity(args: {
-  negocioId: string;
-  start: Date;
-  end: Date;
-  config: BusinessAvailabilityLite;
-  excludeReservationId?: string;
-}) {
-  const { negocioId, start, end, config, excludeReservationId } = args;
-  const slotRanges = buildCoveredSlotRanges(start, end, config.intervaloMinutos);
-
-  const counts = await Promise.all(
-    slotRanges.map((slot) =>
-      prisma.reservation.count({
-        where: {
-          negocioId,
-          fechaHoraInicio: { gte: slot.start, lt: slot.end },
-          estado: {
-            notIn: [ReservationStatus.CANCELADA, ReservationStatus.BLOQUEADA],
-          },
-          ...(excludeReservationId
-            ? { id: { not: excludeReservationId } }
-            : {}),
-        },
-      })
-    )
-  );
-
-  const exceededIndex = counts.findIndex(
-    (count) => count >= config.capacidadPorIntervalo
-  );
-
-  if (exceededIndex >= 0) {
-    const slotStart = slotRanges[exceededIndex]?.start ?? start;
-    throw new Error(
-      `El horario ${fmtCO(
-        slotStart,
-        "hh:mm a"
-      )} ya alcanzó la capacidad máxima (${config.capacidadPorIntervalo}).`
-    );
-  }
-}
-
 function buildReservationMessage(
   prefix: string,
   reserva: {
@@ -541,7 +408,7 @@ function buildReservationMessage(
     fechaHoraFin: Date | null;
     estado: ReservationStatus;
     notas: string | null;
-  }
+  },
 ) {
   const rangoFin = reserva.fechaHoraFin
     ? ` a las ${fmtCO(reserva.fechaHoraFin, "hh:mm a")}`
@@ -553,7 +420,7 @@ function buildReservationMessage(
     `📞 ${reserva.telefono}\n` +
     `📅 ${fmtCO(
       reserva.fechaHoraInicio,
-      "EEEE d 'de' MMMM, hh:mm a"
+      "EEEE d 'de' MMMM, hh:mm a",
     )}${rangoFin}\n` +
     `📝 ${reserva.notas || "Sin notas"}\n` +
     `Estado: ${reserva.estado}`
@@ -562,211 +429,1011 @@ function buildReservationMessage(
 
 function buildCancellationNotes(
   currentNotes: string | null,
-  reason: string | null | undefined
+  reason: string | null | undefined,
 ): string | null {
   const cancellationLabel = reason
     ? `Cancelada por asistente: ${reason}`
     : "Cancelada por asistente";
 
-  return currentNotes ? `${currentNotes}\n${cancellationLabel}` : cancellationLabel;
+  return currentNotes
+    ? `${currentNotes}\n${cancellationLabel}`
+    : cancellationLabel;
 }
 
-async function crearReservaAsistente(
-  negocioId: string,
-  input: Pick<
-    ReservationMutationInput,
-    | "nombreCliente"
-    | "telefonoCliente"
-    | "fechaHoraInicio"
-    | "fechaHoraFin"
-    | "notas"
-    | "estado"
-    | "permitirSobrecupo"
-  >
-) {
-  const config = await getBusinessAvailability(negocioId);
-  const nombreCliente = asNonEmptyString(input.nombreCliente);
-  const telefonoCliente = input.telefonoCliente
-    ? normalizePhone(input.telefonoCliente)
-    : "";
+function isProductionLoopback(hostname: string): boolean {
+  if (process.env.NODE_ENV !== "production") return false;
 
-  if (!nombreCliente) {
-    throw new Error("nombreCliente requerido");
-  }
+  const normalizedHostname = hostname.toLowerCase();
+  return (
+    normalizedHostname === "localhost" ||
+    normalizedHostname.endsWith(".localhost") ||
+    normalizedHostname.startsWith("127.") ||
+    normalizedHostname === "::1" ||
+    normalizedHostname === "[::1]"
+  );
+}
 
-  if (!telefonoCliente) {
-    throw new Error("telefonoCliente inválido");
-  }
+function getCanonicalSiteOrigin(): string | null {
+  const raw = process.env.SITE_URL;
+  if (!raw || raw !== raw.trim()) return null;
 
-  if (!input.fechaHoraInicio) {
-    throw new Error("fechaHoraInicio requerida");
-  }
-
-  const start = parseDateInput(input.fechaHoraInicio, "fechaHoraInicio");
-  const end = resolveCreateReservationEnd(start, input.fechaHoraFin, config);
-
-  if (config) {
-    validateReservationAgainstAvailability(config, start, end);
+  try {
+    const siteUrl = new URL(raw);
 
     if (
-      !input.permitirSobrecupo &&
-      input.estado !== ReservationStatus.CANCELADA
+      (siteUrl.protocol !== "https:" && siteUrl.protocol !== "http:") ||
+      siteUrl.username ||
+      siteUrl.password ||
+      siteUrl.search ||
+      siteUrl.hash ||
+      siteUrl.pathname !== "/" ||
+      isProductionLoopback(siteUrl.hostname)
     ) {
-      await assertReservationCapacity({
-        negocioId,
-        start,
-        end,
-        config,
-      });
+      return null;
     }
+
+    return siteUrl.origin;
+  } catch {
+    return null;
   }
-
-  const reserva = await prisma.reservation.create({
-    data: {
-      negocioId,
-      nombre: nombreCliente,
-      telefono: telefonoCliente,
-      fechaHoraInicio: start,
-      fechaHoraFin: end,
-      notas: input.notas ?? null,
-      estado: input.estado ?? ReservationStatus.PENDIENTE,
-    },
-  });
-
-  return {
-    ok: true,
-    mensaje: buildReservationMessage("Reserva creada exitosamente ✅", reserva),
-    reserva,
-  };
 }
 
-async function modificarReservaAsistente(
-  negocioId: string,
-  reservaId: string,
-  input: ReservationMutationInput
-) {
-  const reservaActual = await prisma.reservation.findFirst({
-    where: { id: reservaId, negocioId },
-  });
+function createAvailabilityRanges(
+  config: BusinessAvailabilityLite,
+): AvailabilityRange[] | null {
+  const rawRanges = [
+    [config.franjaMananaInicio, config.franjaMananaFin],
+    [config.franjaTardeInicio, config.franjaTardeFin],
+  ] as const;
+  const ranges: AvailabilityRange[] = [];
 
-  if (!reservaActual) {
-    throw new Error("Reserva no encontrada");
-  }
+  for (const [rawStart, rawEnd] of rawRanges) {
+    if (rawStart === null && rawEnd === null) continue;
+    if (rawStart === null || rawEnd === null) return null;
 
-  const config = await getBusinessAvailability(negocioId);
-  const nextStart = input.hasFechaHoraInicio && input.fechaHoraInicio
-    ? parseDateInput(input.fechaHoraInicio, "fechaHoraInicio")
-    : reservaActual.fechaHoraInicio;
-  const nextEnd = resolveUpdatedReservationEnd({
-    existingStart: reservaActual.fechaHoraInicio,
-    existingEnd: reservaActual.fechaHoraFin,
-    nextStart,
-    explicitEnd: input.fechaHoraFin,
-    hasFechaHoraInicio: input.hasFechaHoraInicio,
-    hasFechaHoraFin: input.hasFechaHoraFin,
-    config,
-  });
-  const effectiveEnd =
-    nextEnd ?? addMinutes(nextStart, defaultReservationDurationMinutes(config));
-  const nextNombre = input.hasNombreCliente
-    ? input.nombreCliente
-    : reservaActual.nombre;
-  const nextTelefono = input.hasTelefonoCliente && input.telefonoCliente
-    ? normalizePhone(input.telefonoCliente)
-    : reservaActual.telefono;
-  const nextEstado = input.hasEstado
-    ? input.estado ?? reservaActual.estado
-    : reservaActual.estado;
-  const nextNotas = input.hasNotas
-    ? input.notas ?? null
-    : reservaActual.notas;
+    const matchStart = /^(\d{1,2}):(\d{2})$/.exec(rawStart);
+    const matchEnd = /^(\d{1,2}):(\d{2})$/.exec(rawEnd);
+    if (!matchStart || !matchEnd) return null;
 
-  if (!nextNombre) {
-    throw new Error("nombreCliente inválido");
-  }
+    const startHours = Number(matchStart[1]);
+    const startMinutes = Number(matchStart[2]);
+    const endHours = Number(matchEnd[1]);
+    const endMinutes = Number(matchEnd[2]);
+    if (
+      !Number.isInteger(startHours) ||
+      !Number.isInteger(startMinutes) ||
+      !Number.isInteger(endHours) ||
+      !Number.isInteger(endMinutes) ||
+      startHours < 0 ||
+      startHours > 23 ||
+      endHours < 0 ||
+      endHours > 23 ||
+      startMinutes < 0 ||
+      startMinutes > 59 ||
+      endMinutes < 0 ||
+      endMinutes > 59
+    ) {
+      return null;
+    }
 
-  if (!nextTelefono) {
-    throw new Error("telefonoCliente inválido");
-  }
+    const startMinuteOfDay = startHours * 60 + startMinutes;
+    const endMinuteOfDay = endHours * 60 + endMinutes;
+    if (endMinuteOfDay <= startMinuteOfDay) return null;
 
-  const shouldValidateSchedule = Boolean(
-    config && (input.hasFechaHoraInicio || input.hasFechaHoraFin)
-  );
-  const shouldValidateCapacity = Boolean(
-    config &&
-      !input.permitirSobrecupo &&
-      nextEstado !== ReservationStatus.CANCELADA &&
-      (input.hasFechaHoraInicio ||
-        input.hasFechaHoraFin ||
-        (input.hasEstado &&
-          reservaActual.estado === ReservationStatus.CANCELADA))
-  );
-
-  if (config && shouldValidateSchedule) {
-    validateReservationAgainstAvailability(config, nextStart, effectiveEnd);
-  }
-
-  if (config && shouldValidateCapacity) {
-    await assertReservationCapacity({
-      negocioId,
-      start: nextStart,
-      end: effectiveEnd,
-      config,
-      excludeReservationId: reservaId,
+    ranges.push({
+      startMinutes: startMinuteOfDay,
+      endMinutes: endMinuteOfDay,
     });
   }
 
-  const reserva = await prisma.reservation.update({
-    where: { id: reservaId },
-    data: {
-      nombre: nextNombre,
-      telefono: nextTelefono,
-      fechaHoraInicio: nextStart,
-      fechaHoraFin: nextEnd,
-      notas: nextNotas,
-      estado: nextEstado,
-    },
-  });
-
-  return {
-    ok: true,
-    mensaje: buildReservationMessage(
-      "Reserva actualizada exitosamente ✏️",
-      reserva
-    ),
-    reserva,
-  };
+  return ranges.length > 0 ? ranges : null;
 }
 
-async function cancelarReservaAsistente(
-  negocioId: string,
-  reservaId: string,
-  reason?: string | null
-) {
-  const reservaActual = await prisma.reservation.findFirst({
-    where: { id: reservaId, negocioId },
-  });
+function bogotaDayName(date: Date): string {
+  return capitalize(fmtCO(date, "EEEE"));
+}
 
-  if (!reservaActual) {
-    throw new Error("Reserva no encontrada");
+function bogotaMinuteOfDay(date: Date): number {
+  return Number(fmtCO(date, "HH")) * 60 + Number(fmtCO(date, "mm"));
+}
+
+function validateAnaCreateSchedule(
+  start: Date,
+  explicitEnd: Date | null,
+  config: BusinessAvailabilityLite,
+  now: Date,
+): { end: Date; intervalMilliseconds: number } {
+  const minimumIntervals = config.duracionMinimaIntervalos ?? 1;
+  if (
+    !Number.isSafeInteger(config.intervaloMinutos) ||
+    config.intervaloMinutos <= 0 ||
+    !Number.isSafeInteger(config.capacidadPorIntervalo) ||
+    config.capacidadPorIntervalo <= 0 ||
+    !Number.isSafeInteger(minimumIntervals) ||
+    minimumIntervals <= 0 ||
+    start <= now
+  ) {
+    throw new CreateReservationBoundaryError("RESERVATION_NOT_AVAILABLE");
   }
 
-  const reserva = await prisma.reservation.update({
-    where: { id: reservaId },
-    data: {
-      estado: ReservationStatus.CANCELADA,
-      notas: buildCancellationNotes(reservaActual.notas, reason),
-    },
-  });
+  const intervalMilliseconds = config.intervaloMinutos * 60_000;
+  const minimumDurationMilliseconds = intervalMilliseconds * minimumIntervals;
+  if (!Number.isSafeInteger(minimumDurationMilliseconds)) {
+    throw new CreateReservationBoundaryError("RESERVATION_NOT_AVAILABLE");
+  }
 
-  return {
-    ok: true,
-    mensaje: buildReservationMessage(
-      "Reserva cancelada exitosamente ❌",
-      reserva
-    ),
-    reserva,
-  };
+  const end =
+    explicitEnd ?? new Date(start.getTime() + minimumDurationMilliseconds);
+  if (
+    !Number.isFinite(start.getTime()) ||
+    !Number.isFinite(end.getTime()) ||
+    end <= start ||
+    fmtCO(start, "yyyy-MM-dd") !== fmtCO(end, "yyyy-MM-dd") ||
+    start.getUTCSeconds() !== 0 ||
+    start.getUTCMilliseconds() !== 0
+  ) {
+    throw new CreateReservationBoundaryError("RESERVATION_NOT_AVAILABLE");
+  }
+
+  if (!config.diasAtencion.includes(bogotaDayName(start))) {
+    throw new CreateReservationBoundaryError("RESERVATION_NOT_AVAILABLE");
+  }
+
+  const ranges = createAvailabilityRanges(config);
+  if (!ranges) {
+    throw new CreateReservationBoundaryError("RESERVATION_NOT_AVAILABLE");
+  }
+
+  const startMinutes = bogotaMinuteOfDay(start);
+  const endMinutes = bogotaMinuteOfDay(end);
+  const matchingRange = ranges.find(
+    (range) =>
+      startMinutes >= range.startMinutes && endMinutes <= range.endMinutes,
+  );
+  const durationMilliseconds = end.getTime() - start.getTime();
+
+  if (
+    !matchingRange ||
+    (startMinutes - matchingRange.startMinutes) % config.intervaloMinutos !==
+      0 ||
+    durationMilliseconds % intervalMilliseconds !== 0 ||
+    durationMilliseconds < minimumDurationMilliseconds
+  ) {
+    throw new CreateReservationBoundaryError("RESERVATION_NOT_AVAILABLE");
+  }
+
+  return { end, intervalMilliseconds };
+}
+
+function overlapsReservationInterval(
+  row: OccupancyRow,
+  intervalStart: Date,
+  intervalEnd: Date,
+): boolean {
+  if (row.fechaHoraFin) {
+    return (
+      row.fechaHoraInicio < intervalEnd && row.fechaHoraFin > intervalStart
+    );
+  }
+
+  return (
+    row.fechaHoraInicio >= intervalStart && row.fechaHoraInicio < intervalEnd
+  );
+}
+
+function assertAnaCreateAvailability(
+  rows: OccupancyRow[],
+  start: Date,
+  end: Date,
+  intervalMilliseconds: number,
+  capacity: number,
+): void {
+  if (
+    rows.some(
+      (row) =>
+        row.estado === ReservationStatus.BLOQUEADA &&
+        overlapsReservationInterval(row, start, end),
+    )
+  ) {
+    throw new CreateReservationBoundaryError("RESERVATION_NOT_AVAILABLE");
+  }
+
+  for (
+    let intervalStartMs = start.getTime();
+    intervalStartMs < end.getTime();
+    intervalStartMs += intervalMilliseconds
+  ) {
+    const intervalStart = new Date(intervalStartMs);
+    const intervalEnd = new Date(intervalStartMs + intervalMilliseconds);
+    const count = rows.reduce((total, row) => {
+      const consumesCapacity =
+        row.estado === ReservationStatus.PENDIENTE ||
+        row.estado === ReservationStatus.CONFIRMADA;
+      return consumesCapacity &&
+        overlapsReservationInterval(row, intervalStart, intervalEnd)
+        ? total + 1
+        : total;
+    }, 0);
+
+    if (count >= capacity) {
+      throw new CreateReservationBoundaryError("RESERVATION_NOT_AVAILABLE");
+    }
+  }
+}
+
+function isSerializableConflict(error: unknown): boolean {
+  return (
+    error instanceof Prisma.PrismaClientKnownRequestError &&
+    error.code === "P2034"
+  );
+}
+
+function isReservationOperationUniqueConflict(error: unknown): boolean {
+  if (
+    !(error instanceof Prisma.PrismaClientKnownRequestError) ||
+    error.code !== "P2002"
+  ) {
+    return false;
+  }
+
+  const meta = error.meta;
+  if (
+    meta?.modelName !== undefined &&
+    meta.modelName !== "ReservationOperation"
+  ) {
+    return false;
+  }
+
+  const expectedFields = ["negocioId", "action", "sourceReference"];
+  const target = meta?.target;
+  const targetMatches =
+    Array.isArray(target) &&
+    target.length === expectedFields.length &&
+    expectedFields.every((field) => target.includes(field));
+  const namedConstraintMatches =
+    target === RESERVATION_OPERATION_UNIQUE_CONSTRAINT ||
+    meta?.constraint === RESERVATION_OPERATION_UNIQUE_CONSTRAINT;
+
+  return targetMatches || namedConstraintMatches;
+}
+
+function isReplayManagementEligible(
+  reservation: {
+    estado: ReservationStatus;
+    fechaHoraInicio: Date;
+    fechaHoraFin: Date | null;
+  },
+  now: Date,
+): boolean {
+  if (
+    reservation.estado !== ReservationStatus.PENDIENTE &&
+    reservation.estado !== ReservationStatus.CONFIRMADA
+  ) {
+    return false;
+  }
+
+  const startTimestamp = reservation.fechaHoraInicio.getTime();
+  const endTimestamp = reservation.fechaHoraFin?.getTime() ?? startTimestamp;
+  const horizonTimestamp =
+    Math.max(startTimestamp, endTimestamp) +
+    RESERVATION_CAPABILITY_EXPIRY_MARGIN_MS;
+
+  return (
+    Number.isFinite(startTimestamp) &&
+    Number.isFinite(endTimestamp) &&
+    Number.isFinite(horizonTimestamp) &&
+    horizonTimestamp > now.getTime()
+  );
+}
+
+async function crearReservaAsistente(args: {
+  negocioId: string;
+  sourceReference: string;
+  requestFingerprint: string;
+  payload: ReservationCreateOperationPayload;
+}) {
+  const { negocioId, sourceReference, requestFingerprint, payload } = args;
+
+  for (
+    let attempt = 1;
+    attempt <= SERIALIZABLE_CREATE_MAX_ATTEMPTS;
+    attempt += 1
+  ) {
+    try {
+      return await prisma.$transaction(
+        async (tx) => {
+          const existingOperation = await tx.reservationOperation.findUnique({
+            where: {
+              negocioId_action_sourceReference: {
+                negocioId,
+                action: ReservationOperationAction.CREATE,
+                sourceReference,
+              },
+            },
+            include: {
+              reservation: true,
+            },
+          });
+
+          if (existingOperation) {
+            if (existingOperation.requestFingerprint !== requestFingerprint) {
+              throw new CreateReservationBoundaryError("IDEMPOTENCY_CONFLICT");
+            }
+
+            const existingReservation = existingOperation.reservation;
+            if (existingReservation.negocioId !== negocioId) {
+              throw new CreateReservationBoundaryError("INTERNAL_ERROR");
+            }
+
+            if (!isReplayManagementEligible(existingReservation, new Date())) {
+              return {
+                reserva: existingReservation,
+                capabilityToken: null,
+              };
+            }
+
+            const capability = await rotateReservationCapabilityInTx(tx, {
+              reservationId: existingReservation.id,
+              fechaHoraInicio: existingReservation.fechaHoraInicio,
+              fechaHoraFin: existingReservation.fechaHoraFin,
+            });
+
+            return {
+              reserva: existingReservation,
+              capabilityToken: capability.token,
+            };
+          }
+
+          const config = await tx.businessAvailability.findUnique({
+            where: { negocioId },
+            select: {
+              diasAtencion: true,
+              franjaMananaInicio: true,
+              franjaMananaFin: true,
+              franjaTardeInicio: true,
+              franjaTardeFin: true,
+              intervaloMinutos: true,
+              capacidadPorIntervalo: true,
+              duracionMinimaIntervalos: true,
+            },
+          });
+          if (!config) {
+            throw new CreateReservationBoundaryError(
+              "RESERVATION_NOT_AVAILABLE",
+            );
+          }
+
+          const fechaHoraInicio = new Date(payload.fechaHoraInicio);
+          const fechaHoraFin = payload.fechaHoraFin
+            ? new Date(payload.fechaHoraFin)
+            : null;
+          if (
+            !Number.isFinite(fechaHoraInicio.getTime()) ||
+            (fechaHoraFin && !Number.isFinite(fechaHoraFin.getTime()))
+          ) {
+            throw new CreateReservationBoundaryError("INTERNAL_ERROR");
+          }
+
+          const { end, intervalMilliseconds } = validateAnaCreateSchedule(
+            fechaHoraInicio,
+            fechaHoraFin,
+            config,
+            new Date(),
+          );
+          const occupancyRows = await tx.reservation.findMany({
+            where: {
+              negocioId,
+              estado: {
+                in: [
+                  ReservationStatus.PENDIENTE,
+                  ReservationStatus.CONFIRMADA,
+                  ReservationStatus.BLOQUEADA,
+                ],
+              },
+              fechaHoraInicio: {
+                lt: end,
+              },
+              OR: [
+                {
+                  fechaHoraFin: {
+                    gt: fechaHoraInicio,
+                  },
+                },
+                {
+                  fechaHoraFin: null,
+                  fechaHoraInicio: {
+                    gte: fechaHoraInicio,
+                  },
+                },
+              ],
+            },
+            select: {
+              fechaHoraInicio: true,
+              fechaHoraFin: true,
+              estado: true,
+            },
+          });
+
+          assertAnaCreateAvailability(
+            occupancyRows,
+            fechaHoraInicio,
+            end,
+            intervalMilliseconds,
+            config.capacidadPorIntervalo,
+          );
+
+          const reserva = await tx.reservation.create({
+            data: {
+              negocioId,
+              nombre: payload.nombreCliente,
+              telefono: payload.telefonoCliente,
+              fechaHoraInicio,
+              fechaHoraFin: end,
+              notas: payload.notas,
+              estado: payload.estado,
+            },
+          });
+          const capability = await rotateReservationCapabilityInTx(tx, {
+            reservationId: reserva.id,
+            fechaHoraInicio: reserva.fechaHoraInicio,
+            fechaHoraFin: reserva.fechaHoraFin,
+          });
+
+          await tx.reservationOperation.create({
+            data: {
+              negocioId,
+              reservationId: reserva.id,
+              action: ReservationOperationAction.CREATE,
+              sourceReference,
+              requestFingerprint,
+              managementLinkRequired: true,
+              outcome: ReservationOperationOutcome.CREATED,
+            },
+          });
+
+          return {
+            reserva,
+            capabilityToken: capability.token,
+          };
+        },
+        {
+          isolationLevel: Prisma.TransactionIsolationLevel.Serializable,
+        },
+      );
+    } catch (error) {
+      const retryable =
+        isSerializableConflict(error) ||
+        isReservationOperationUniqueConflict(error);
+      if (retryable && attempt < SERIALIZABLE_CREATE_MAX_ATTEMPTS) {
+        continue;
+      }
+      if (retryable) {
+        throw new CreateReservationBoundaryError("CREATE_RETRY_EXHAUSTED");
+      }
+
+      throw error;
+    }
+  }
+
+  throw new CreateReservationBoundaryError("CREATE_RETRY_EXHAUSTED");
+}
+
+function hasUpdateChange(
+  cambios: ReservationUpdateOperationPayload["cambios"],
+  field: keyof ReservationUpdateOperationPayload["cambios"],
+): boolean {
+  return Object.prototype.hasOwnProperty.call(cambios, field);
+}
+
+function nullableDatesEqual(left: Date | null, right: Date | null): boolean {
+  if (left === null || right === null) return left === right;
+  return left.getTime() === right.getTime();
+}
+
+async function modificarReservaAsistente(args: {
+  negocioId: string;
+  sourceReference: string;
+  requestFingerprint: string;
+  payload: ReservationUpdateOperationPayload;
+}) {
+  const { negocioId, sourceReference, requestFingerprint, payload } = args;
+
+  for (
+    let attempt = 1;
+    attempt <= SERIALIZABLE_UPDATE_MAX_ATTEMPTS;
+    attempt += 1
+  ) {
+    try {
+      return await prisma.$transaction(
+        async (tx) => {
+          const existingOperation = await tx.reservationOperation.findUnique({
+            where: {
+              negocioId_action_sourceReference: {
+                negocioId,
+                action: ReservationOperationAction.UPDATE,
+                sourceReference,
+              },
+            },
+            select: {
+              reservationId: true,
+              requestFingerprint: true,
+              managementLinkRequired: true,
+              outcome: true,
+            },
+          });
+
+          if (existingOperation) {
+            if (existingOperation.requestFingerprint !== requestFingerprint) {
+              throw new UpdateReservationBoundaryError("IDEMPOTENCY_CONFLICT");
+            }
+            if (
+              existingOperation.outcome !==
+                ReservationOperationOutcome.UPDATED &&
+              existingOperation.outcome !==
+                ReservationOperationOutcome.UNCHANGED
+            ) {
+              throw new UpdateReservationBoundaryError("INTERNAL_ERROR");
+            }
+
+            const existingReservation = await tx.reservation.findFirst({
+              where: {
+                id: existingOperation.reservationId,
+                negocioId,
+              },
+            });
+            if (!existingReservation) {
+              throw new UpdateReservationBoundaryError("INTERNAL_ERROR");
+            }
+
+            if (
+              !existingOperation.managementLinkRequired ||
+              !isReplayManagementEligible(existingReservation, new Date())
+            ) {
+              return {
+                reserva: existingReservation,
+                outcome: existingOperation.outcome,
+                capabilityToken: null,
+              };
+            }
+
+            const capability = await rotateReservationCapabilityInTx(tx, {
+              reservationId: existingReservation.id,
+              fechaHoraInicio: existingReservation.fechaHoraInicio,
+              fechaHoraFin: existingReservation.fechaHoraFin,
+            });
+
+            return {
+              reserva: existingReservation,
+              outcome: existingOperation.outcome,
+              capabilityToken: capability.token,
+            };
+          }
+
+          const reservaActual = await tx.reservation.findFirst({
+            where: {
+              id: payload.reservaId,
+              negocioId,
+            },
+          });
+          if (!reservaActual) {
+            throw new UpdateReservationBoundaryError("RESERVATION_NOT_FOUND");
+          }
+          if (
+            reservaActual.estado !== ReservationStatus.PENDIENTE &&
+            reservaActual.estado !== ReservationStatus.CONFIRMADA
+          ) {
+            throw new UpdateReservationBoundaryError(
+              "RESERVATION_NOT_AVAILABLE",
+            );
+          }
+
+          const cambios = payload.cambios;
+          const hasNombre = hasUpdateChange(cambios, "nombreCliente");
+          const hasTelefono = hasUpdateChange(cambios, "telefonoCliente");
+          const hasInicio = hasUpdateChange(cambios, "fechaHoraInicio");
+          const hasFin = hasUpdateChange(cambios, "fechaHoraFin");
+          const hasNotas = hasUpdateChange(cambios, "notas");
+          const hasEstado = hasUpdateChange(cambios, "estado");
+
+          const nextNombre = hasNombre
+            ? cambios.nombreCliente!
+            : reservaActual.nombre;
+          const normalizedCurrentPhone =
+            normalizePhone(reservaActual.telefono) || reservaActual.telefono;
+          const phoneChanged =
+            hasTelefono && cambios.telefonoCliente !== normalizedCurrentPhone;
+          const nextTelefono = phoneChanged
+            ? cambios.telefonoCliente!
+            : reservaActual.telefono;
+          const nextNotas = hasNotas
+            ? (cambios.notas ?? null)
+            : reservaActual.notas;
+          const nextEstado = hasEstado ? cambios.estado! : reservaActual.estado;
+
+          let nextInicio = reservaActual.fechaHoraInicio;
+          if (hasInicio) {
+            nextInicio = new Date(cambios.fechaHoraInicio!);
+            if (!Number.isFinite(nextInicio.getTime())) {
+              throw new UpdateReservationBoundaryError("INTERNAL_ERROR");
+            }
+          }
+
+          let nextFin = reservaActual.fechaHoraFin;
+          if (hasFin && cambios.fechaHoraFin !== null) {
+            nextFin = new Date(cambios.fechaHoraFin!);
+            if (!Number.isFinite(nextFin.getTime())) {
+              throw new UpdateReservationBoundaryError("INTERNAL_ERROR");
+            }
+          }
+
+          if (hasInicio || hasFin) {
+            const config = await tx.businessAvailability.findUnique({
+              where: { negocioId },
+              select: {
+                diasAtencion: true,
+                franjaMananaInicio: true,
+                franjaMananaFin: true,
+                franjaTardeInicio: true,
+                franjaTardeFin: true,
+                intervaloMinutos: true,
+                capacidadPorIntervalo: true,
+                duracionMinimaIntervalos: true,
+              },
+            });
+            if (!config) {
+              throw new UpdateReservationBoundaryError(
+                "RESERVATION_NOT_AVAILABLE",
+              );
+            }
+
+            let schedule: {
+              end: Date;
+              intervalMilliseconds: number;
+            };
+            try {
+              schedule = validateAnaCreateSchedule(
+                nextInicio,
+                hasFin && cambios.fechaHoraFin === null ? null : nextFin,
+                config,
+                new Date(),
+              );
+            } catch {
+              throw new UpdateReservationBoundaryError(
+                "RESERVATION_NOT_AVAILABLE",
+              );
+            }
+            if (hasFin) {
+              nextFin = schedule.end;
+            }
+
+            const occupancyRows = await tx.reservation.findMany({
+              where: {
+                id: { not: reservaActual.id },
+                negocioId,
+                estado: {
+                  in: [
+                    ReservationStatus.PENDIENTE,
+                    ReservationStatus.CONFIRMADA,
+                    ReservationStatus.BLOQUEADA,
+                  ],
+                },
+                fechaHoraInicio: {
+                  lt: schedule.end,
+                },
+                OR: [
+                  {
+                    fechaHoraFin: {
+                      gt: nextInicio,
+                    },
+                  },
+                  {
+                    fechaHoraFin: null,
+                    fechaHoraInicio: {
+                      gte: nextInicio,
+                    },
+                  },
+                ],
+              },
+              select: {
+                fechaHoraInicio: true,
+                fechaHoraFin: true,
+                estado: true,
+              },
+            });
+
+            try {
+              assertAnaCreateAvailability(
+                occupancyRows,
+                nextInicio,
+                schedule.end,
+                schedule.intervalMilliseconds,
+                config.capacidadPorIntervalo,
+              );
+            } catch {
+              throw new UpdateReservationBoundaryError(
+                "RESERVATION_NOT_AVAILABLE",
+              );
+            }
+          }
+
+          const nombreChanged =
+            hasNombre && nextNombre !== reservaActual.nombre;
+          const inicioChanged =
+            hasInicio &&
+            nextInicio.getTime() !== reservaActual.fechaHoraInicio.getTime();
+          const finChanged =
+            hasFin && !nullableDatesEqual(nextFin, reservaActual.fechaHoraFin);
+          const notasChanged = hasNotas && nextNotas !== reservaActual.notas;
+          const estadoChanged =
+            hasEstado && nextEstado !== reservaActual.estado;
+          const hasEffectiveChanges =
+            nombreChanged ||
+            phoneChanged ||
+            inicioChanged ||
+            finChanged ||
+            notasChanged ||
+            estadoChanged;
+
+          if (!hasEffectiveChanges) {
+            await tx.reservationOperation.create({
+              data: {
+                negocioId,
+                reservationId: reservaActual.id,
+                action: ReservationOperationAction.UPDATE,
+                sourceReference,
+                requestFingerprint,
+                managementLinkRequired: false,
+                outcome: ReservationOperationOutcome.UNCHANGED,
+              },
+            });
+
+            return {
+              reserva: reservaActual,
+              outcome: ReservationOperationOutcome.UNCHANGED,
+              capabilityToken: null,
+            };
+          }
+
+          const reserva = await tx.reservation.update({
+            where: {
+              id: reservaActual.id,
+              negocioId,
+              estado: reservaActual.estado,
+            },
+            data: {
+              nombre: nextNombre,
+              telefono: nextTelefono,
+              fechaHoraInicio: nextInicio,
+              fechaHoraFin: nextFin,
+              notas: nextNotas,
+              estado: nextEstado,
+            },
+          });
+
+          let capabilityToken: string | null = null;
+          let managementLinkRequired = false;
+          if (nextEstado === ReservationStatus.COMPLETADA) {
+            await revokeActiveReservationCapabilitiesInTx(tx, reserva.id);
+          } else if (phoneChanged || inicioChanged || finChanged) {
+            const capability = await rotateReservationCapabilityInTx(tx, {
+              reservationId: reserva.id,
+              fechaHoraInicio: reserva.fechaHoraInicio,
+              fechaHoraFin: reserva.fechaHoraFin,
+            });
+            capabilityToken = capability.token;
+            managementLinkRequired = true;
+          }
+
+          await tx.reservationOperation.create({
+            data: {
+              negocioId,
+              reservationId: reserva.id,
+              action: ReservationOperationAction.UPDATE,
+              sourceReference,
+              requestFingerprint,
+              managementLinkRequired,
+              outcome: ReservationOperationOutcome.UPDATED,
+            },
+          });
+
+          return {
+            reserva,
+            outcome: ReservationOperationOutcome.UPDATED,
+            capabilityToken,
+          };
+        },
+        {
+          isolationLevel: Prisma.TransactionIsolationLevel.Serializable,
+        },
+      );
+    } catch (error) {
+      const retryable =
+        isSerializableConflict(error) ||
+        isReservationOperationUniqueConflict(error);
+      if (retryable && attempt < SERIALIZABLE_UPDATE_MAX_ATTEMPTS) {
+        continue;
+      }
+      if (retryable) {
+        throw new UpdateReservationBoundaryError("UPDATE_RETRY_EXHAUSTED");
+      }
+
+      throw error;
+    }
+  }
+
+  throw new UpdateReservationBoundaryError("UPDATE_RETRY_EXHAUSTED");
+}
+
+async function cancelarReservaAsistente(args: {
+  negocioId: string;
+  sourceReference: string;
+  requestFingerprint: string;
+  payload: ReservationCancelOperationPayload;
+}) {
+  const { negocioId, sourceReference, requestFingerprint, payload } = args;
+
+  for (
+    let attempt = 1;
+    attempt <= SERIALIZABLE_CANCEL_MAX_ATTEMPTS;
+    attempt += 1
+  ) {
+    try {
+      return await prisma.$transaction(
+        async (tx) => {
+          const existingOperation = await tx.reservationOperation.findUnique({
+            where: {
+              negocioId_action_sourceReference: {
+                negocioId,
+                action: ReservationOperationAction.CANCEL,
+                sourceReference,
+              },
+            },
+            select: {
+              reservationId: true,
+              requestFingerprint: true,
+              outcome: true,
+            },
+          });
+
+          if (existingOperation) {
+            if (existingOperation.requestFingerprint !== requestFingerprint) {
+              throw new CancelReservationBoundaryError("IDEMPOTENCY_CONFLICT");
+            }
+            if (
+              existingOperation.outcome !==
+                ReservationOperationOutcome.CANCELLED &&
+              existingOperation.outcome !==
+                ReservationOperationOutcome.ALREADY_CANCELLED
+            ) {
+              throw new CancelReservationBoundaryError("INTERNAL_ERROR");
+            }
+
+            const existingReservation = await tx.reservation.findFirst({
+              where: {
+                id: existingOperation.reservationId,
+                negocioId,
+              },
+            });
+            if (!existingReservation) {
+              throw new CancelReservationBoundaryError("INTERNAL_ERROR");
+            }
+
+            return {
+              reserva: existingReservation,
+              outcome: existingOperation.outcome,
+            };
+          }
+
+          const reservaActual = await tx.reservation.findFirst({
+            where: {
+              id: payload.reservaId,
+              negocioId,
+            },
+          });
+          if (!reservaActual) {
+            throw new CancelReservationBoundaryError("RESERVATION_NOT_FOUND");
+          }
+
+          if (reservaActual.estado === ReservationStatus.CANCELADA) {
+            await revokeActiveReservationCapabilitiesInTx(tx, reservaActual.id);
+            await tx.reservationOperation.create({
+              data: {
+                negocioId,
+                reservationId: reservaActual.id,
+                action: ReservationOperationAction.CANCEL,
+                sourceReference,
+                requestFingerprint,
+                managementLinkRequired: false,
+                outcome: ReservationOperationOutcome.ALREADY_CANCELLED,
+              },
+            });
+
+            return {
+              reserva: reservaActual,
+              outcome: ReservationOperationOutcome.ALREADY_CANCELLED,
+            };
+          }
+
+          if (
+            reservaActual.estado !== ReservationStatus.PENDIENTE &&
+            reservaActual.estado !== ReservationStatus.CONFIRMADA
+          ) {
+            throw new CancelReservationBoundaryError(
+              "RESERVATION_NOT_AVAILABLE",
+            );
+          }
+
+          const notas = buildCancellationNotes(
+            reservaActual.notas,
+            payload.motivo,
+          );
+          const updated = await tx.reservation.updateMany({
+            where: {
+              id: reservaActual.id,
+              negocioId,
+              estado: {
+                in: [ReservationStatus.PENDIENTE, ReservationStatus.CONFIRMADA],
+              },
+            },
+            data: {
+              estado: ReservationStatus.CANCELADA,
+              notas,
+            },
+          });
+          if (updated.count !== 1) {
+            throw new CancelReservationBoundaryError(
+              "RESERVATION_NOT_AVAILABLE",
+            );
+          }
+
+          await revokeActiveReservationCapabilitiesInTx(tx, reservaActual.id);
+          await tx.reservationOperation.create({
+            data: {
+              negocioId,
+              reservationId: reservaActual.id,
+              action: ReservationOperationAction.CANCEL,
+              sourceReference,
+              requestFingerprint,
+              managementLinkRequired: false,
+              outcome: ReservationOperationOutcome.CANCELLED,
+            },
+          });
+
+          const reserva = await tx.reservation.findFirst({
+            where: {
+              id: reservaActual.id,
+              negocioId,
+            },
+          });
+          if (!reserva) {
+            throw new CancelReservationBoundaryError("INTERNAL_ERROR");
+          }
+
+          return {
+            reserva,
+            outcome: ReservationOperationOutcome.CANCELLED,
+          };
+        },
+        {
+          isolationLevel: Prisma.TransactionIsolationLevel.Serializable,
+        },
+      );
+    } catch (error) {
+      const retryable =
+        isSerializableConflict(error) ||
+        isReservationOperationUniqueConflict(error);
+      if (retryable && attempt < SERIALIZABLE_CANCEL_MAX_ATTEMPTS) {
+        continue;
+      }
+      if (retryable) {
+        throw new CancelReservationBoundaryError("CANCEL_RETRY_EXHAUSTED");
+      }
+
+      throw error;
+    }
+  }
+
+  throw new CancelReservationBoundaryError("CANCEL_RETRY_EXHAUSTED");
 }
 
 /* ============================================================
@@ -780,7 +1447,7 @@ export async function POST(request: Request) {
     if (!isObject(rawBody)) {
       return Response.json(
         { error: "Body inválido", mensaje: "Body inválido" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -793,6 +1460,7 @@ export async function POST(request: Request) {
     const telefono = asNonEmptyString(rawBody.telefono);
     const pedidoId = asNonEmptyString(rawBody.pedidoId);
     const reservaId = asNonEmptyString(rawBody.reservaId);
+    const sourceReference = rawBody.sourceReference;
     const hasNombreCliente = hasAnyKey(rawBody, [
       "nombreCliente",
       "clienteNombre",
@@ -830,7 +1498,7 @@ export async function POST(request: Request) {
     if (!key || key !== ADMIN_KEY) {
       return Response.json(
         { error: "Unauthorized", mensaje: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -840,7 +1508,7 @@ export async function POST(request: Request) {
           error: "Falta telefono en el body",
           mensaje: "Falta telefono en el body",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -850,7 +1518,7 @@ export async function POST(request: Request) {
           error: "nombreCliente inválido",
           mensaje: "nombreCliente inválido",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -860,7 +1528,7 @@ export async function POST(request: Request) {
           error: "telefonoCliente inválido",
           mensaje: "telefonoCliente inválido",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -870,7 +1538,7 @@ export async function POST(request: Request) {
           error: "fechaHoraInicio inválida",
           mensaje: "fechaHoraInicio inválida",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -880,7 +1548,7 @@ export async function POST(request: Request) {
           error: "fechaHoraFin inválida",
           mensaje: "fechaHoraFin inválida",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -890,7 +1558,7 @@ export async function POST(request: Request) {
           error: "notas inválidas",
           mensaje: "notas inválidas",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -901,7 +1569,7 @@ export async function POST(request: Request) {
           mensaje:
             "estado inválido. Usa PENDIENTE, CONFIRMADA, CANCELADA o COMPLETADA.",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -913,7 +1581,7 @@ export async function POST(request: Request) {
           mensaje: "Acción no encontrada",
           allowedActions: ALLOWED_ACTIONS,
         },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -959,7 +1627,7 @@ export async function POST(request: Request) {
           businessName: null,
           datos: null,
         },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -1030,7 +1698,7 @@ export async function POST(request: Request) {
         if (!body.pedidoId) {
           return Response.json(
             { error: "pedidoId requerido", mensaje: "pedidoId requerido" },
-            { status: 400 }
+            { status: 400 },
           );
         }
         return Response.json({
@@ -1042,7 +1710,7 @@ export async function POST(request: Request) {
         if (!body.reservaId) {
           return Response.json(
             { error: "reservaId requerido", mensaje: "reservaId requerido" },
-            { status: 400 }
+            { status: 400 },
           );
         }
         return Response.json({
@@ -1050,39 +1718,222 @@ export async function POST(request: Request) {
           ...(await detalleReserva(negocio.id, body.reservaId)),
         });
 
-      case "crear-reserva":
-        if (!body.nombreCliente || !body.telefonoCliente || !body.fechaHoraInicio) {
+      case "crear-reserva": {
+        if (!isValidReservationOperationSourceReference(sourceReference)) {
+          const message = "La referencia de operación no es válida.";
           return Response.json(
             {
+              ok: false,
+              code: "INVALID_SOURCE_REFERENCE",
+              error: message,
+              mensaje: message,
+            },
+            { status: 400 },
+          );
+        }
+
+        if (
+          !body.nombreCliente ||
+          !body.telefonoCliente ||
+          !body.fechaHoraInicio
+        ) {
+          return Response.json(
+            {
+              ok: false,
+              code: "INVALID_RESERVATION_INPUT",
               error:
                 "nombreCliente, telefonoCliente y fechaHoraInicio son requeridos",
               mensaje:
                 "nombreCliente, telefonoCliente y fechaHoraInicio son requeridos",
             },
-            { status: 400 }
+            { status: 400 },
           );
         }
-        return Response.json(
-          {
-            ...baseMeta,
-            ...(await crearReservaAsistente(negocio.id, {
-              nombreCliente: body.nombreCliente,
-              telefonoCliente: body.telefonoCliente,
-              fechaHoraInicio: body.fechaHoraInicio,
-              fechaHoraFin: body.fechaHoraFin,
-              notas: body.notas,
-              estado: body.estado,
-              permitirSobrecupo: body.permitirSobrecupo,
-            })),
-          },
-          { status: 201 }
-        );
 
-      case "modificar-reserva":
+        const fingerprintInput: JsonRecord = {
+          nombreCliente: body.nombreCliente,
+          telefonoCliente: body.telefonoCliente,
+          fechaHoraInicio: body.fechaHoraInicio,
+          ...(body.hasFechaHoraFin
+            ? { fechaHoraFin: body.fechaHoraFin ?? null }
+            : {}),
+          ...(body.hasNotas ? { notas: body.notas ?? null } : {}),
+          ...(body.hasEstado ? { estado: body.estado } : {}),
+          ...(hasOwn(rawBody, "permitirSobrecupo")
+            ? { permitirSobrecupo: rawBody.permitirSobrecupo }
+            : {}),
+        };
+        const fingerprintResult =
+          buildCreateReservationOperationFingerprint(fingerprintInput);
+        if (!fingerprintResult) {
+          const message = "Los datos de la reserva no son válidos.";
+          return Response.json(
+            {
+              ok: false,
+              code: "INVALID_RESERVATION_INPUT",
+              error: message,
+              mensaje: message,
+            },
+            { status: 400 },
+          );
+        }
+
+        if (
+          fingerprintResult.payload.estado !== ReservationStatus.PENDIENTE &&
+          fingerprintResult.payload.estado !== ReservationStatus.CONFIRMADA
+        ) {
+          const message = "El estado inicial de la reserva no es válido.";
+          return Response.json(
+            {
+              ok: false,
+              code: "INVALID_RESERVATION_STATUS",
+              error: message,
+              mensaje: message,
+            },
+            { status: 400 },
+          );
+        }
+
+        if (fingerprintResult.payload.permitirSobrecupo) {
+          const message = "No se permite crear reservas con sobrecupo.";
+          return Response.json(
+            {
+              ok: false,
+              code: "OVERCAPACITY_NOT_ALLOWED",
+              error: message,
+              mensaje: message,
+            },
+            { status: 400 },
+          );
+        }
+
+        const siteOrigin = getCanonicalSiteOrigin();
+        if (!siteOrigin) {
+          const message = "No fue posible crear la reserva.";
+          return Response.json(
+            {
+              ok: false,
+              code: "INTERNAL_ERROR",
+              error: message,
+              mensaje: message,
+            },
+            { status: 500 },
+          );
+        }
+
+        try {
+          const result = await crearReservaAsistente({
+            negocioId: negocio.id,
+            sourceReference,
+            requestFingerprint: fingerprintResult.fingerprint,
+            payload: fingerprintResult.payload,
+          });
+          const managementUrl = result.capabilityToken
+            ? `${siteOrigin}/reservas/gestionar/${encodeURIComponent(
+                result.capabilityToken,
+              )}`
+            : null;
+
+          return Response.json(
+            {
+              ...baseMeta,
+              ok: true,
+              mensaje: buildReservationMessage(
+                "Reserva creada exitosamente ✅",
+                result.reserva,
+              ),
+              reserva: result.reserva,
+              managementUrl,
+            },
+            { status: 201 },
+          );
+        } catch (error) {
+          if (
+            error instanceof CreateReservationBoundaryError &&
+            error.code === "IDEMPOTENCY_CONFLICT"
+          ) {
+            const message =
+              "La referencia de idempotencia ya fue utilizada con datos diferentes.";
+            return Response.json(
+              {
+                ok: false,
+                code: "IDEMPOTENCY_CONFLICT",
+                error: message,
+                mensaje: message,
+              },
+              { status: 409 },
+            );
+          }
+
+          if (
+            error instanceof CreateReservationBoundaryError &&
+            error.code === "RESERVATION_NOT_AVAILABLE"
+          ) {
+            const message =
+              "La reserva no está disponible para el horario seleccionado.";
+            return Response.json(
+              {
+                ok: false,
+                code: "RESERVATION_NOT_AVAILABLE",
+                error: message,
+                mensaje: message,
+              },
+              { status: 400 },
+            );
+          }
+
+          if (
+            error instanceof CreateReservationBoundaryError &&
+            error.code === "CREATE_RETRY_EXHAUSTED"
+          ) {
+            const message = "No fue posible crear la reserva en este momento.";
+            return Response.json(
+              {
+                ok: false,
+                code: "RESERVATION_CREATE_RETRY_EXHAUSTED",
+                error: message,
+                mensaje: message,
+              },
+              { status: 503 },
+            );
+          }
+
+          const message = "No fue posible crear la reserva.";
+          return Response.json(
+            {
+              ok: false,
+              code: "INTERNAL_ERROR",
+              error: message,
+              mensaje: message,
+            },
+            { status: 500 },
+          );
+        }
+      }
+
+      case "modificar-reserva": {
+        if (!isValidReservationOperationSourceReference(sourceReference)) {
+          const message = "La referencia de operación no es válida.";
+          return Response.json(
+            {
+              ok: false,
+              code: "INVALID_SOURCE_REFERENCE",
+              error: message,
+              mensaje: message,
+            },
+            { status: 400 },
+          );
+        }
+
         if (!body.reservaId) {
           return Response.json(
-            { error: "reservaId requerido", mensaje: "reservaId requerido" },
-            { status: 400 }
+            {
+              ok: false,
+              code: "INVALID_RESERVATION_INPUT",
+              error: "reservaId requerido",
+              mensaje: "reservaId requerido",
+            },
+            { status: 400 },
           );
         }
         if (
@@ -1095,37 +1946,343 @@ export async function POST(request: Request) {
         ) {
           return Response.json(
             {
+              ok: false,
+              code: "INVALID_RESERVATION_INPUT",
               error: "No hay cambios para aplicar",
               mensaje:
                 "Envía al menos uno de estos campos: nombreCliente, telefonoCliente, fechaHoraInicio, fechaHoraFin, notas o estado.",
             },
-            { status: 400 }
+            { status: 400 },
           );
         }
-        return Response.json({
-          ...baseMeta,
-          ...(await modificarReservaAsistente(
-            negocio.id,
-            body.reservaId,
-            body
-          )),
-        });
 
-      case "cancelar-reserva":
+        const fingerprintInput: JsonRecord = {
+          reservaId: body.reservaId,
+          ...(body.hasNombreCliente
+            ? { nombreCliente: body.nombreCliente }
+            : {}),
+          ...(body.hasTelefonoCliente
+            ? { telefonoCliente: body.telefonoCliente }
+            : {}),
+          ...(body.hasFechaHoraInicio
+            ? { fechaHoraInicio: body.fechaHoraInicio }
+            : {}),
+          ...(body.hasFechaHoraFin
+            ? { fechaHoraFin: body.fechaHoraFin ?? null }
+            : {}),
+          ...(body.hasNotas ? { notas: body.notas ?? null } : {}),
+          ...(body.hasEstado ? { estado: body.estado } : {}),
+          ...(hasOwn(rawBody, "permitirSobrecupo")
+            ? { permitirSobrecupo: rawBody.permitirSobrecupo }
+            : {}),
+        };
+        const fingerprintResult =
+          buildUpdateReservationOperationFingerprint(fingerprintInput);
+        if (!fingerprintResult) {
+          const message = "Los datos de la reserva no son válidos.";
+          return Response.json(
+            {
+              ok: false,
+              code: "INVALID_RESERVATION_INPUT",
+              error: message,
+              mensaje: message,
+            },
+            { status: 400 },
+          );
+        }
+
+        const requestedStatus = fingerprintResult.payload.cambios.estado;
+        if (requestedStatus === ReservationStatus.CANCELADA) {
+          const message = "El estado solicitado para la reserva no es válido.";
+          return Response.json(
+            {
+              ok: false,
+              code: "INVALID_RESERVATION_STATUS",
+              error: message,
+              mensaje: message,
+            },
+            { status: 400 },
+          );
+        }
+
+        if (fingerprintResult.payload.permitirSobrecupo) {
+          const message = "No se permite modificar reservas con sobrecupo.";
+          return Response.json(
+            {
+              ok: false,
+              code: "OVERCAPACITY_NOT_ALLOWED",
+              error: message,
+              mensaje: message,
+            },
+            { status: 400 },
+          );
+        }
+
+        const siteOrigin = getCanonicalSiteOrigin();
+        if (!siteOrigin) {
+          const message = "No fue posible modificar la reserva.";
+          return Response.json(
+            {
+              ok: false,
+              code: "INTERNAL_ERROR",
+              error: message,
+              mensaje: message,
+            },
+            { status: 500 },
+          );
+        }
+
+        try {
+          const result = await modificarReservaAsistente({
+            negocioId: negocio.id,
+            sourceReference,
+            requestFingerprint: fingerprintResult.fingerprint,
+            payload: fingerprintResult.payload,
+          });
+          const managementUrl = result.capabilityToken
+            ? `${siteOrigin}/reservas/gestionar/${encodeURIComponent(
+                result.capabilityToken,
+              )}`
+            : null;
+          const mensaje =
+            result.outcome === ReservationOperationOutcome.UNCHANGED
+              ? "La reserva ya tiene esos datos."
+              : buildReservationMessage(
+                  "Reserva actualizada exitosamente ✏️",
+                  result.reserva,
+                );
+
+          return Response.json({
+            ...baseMeta,
+            ok: true,
+            mensaje,
+            reserva: result.reserva,
+            managementUrl,
+          });
+        } catch (error) {
+          if (
+            error instanceof UpdateReservationBoundaryError &&
+            error.code === "IDEMPOTENCY_CONFLICT"
+          ) {
+            const message =
+              "La referencia de idempotencia ya fue utilizada con datos diferentes.";
+            return Response.json(
+              {
+                ok: false,
+                code: "IDEMPOTENCY_CONFLICT",
+                error: message,
+                mensaje: message,
+              },
+              { status: 409 },
+            );
+          }
+
+          if (
+            error instanceof UpdateReservationBoundaryError &&
+            error.code === "RESERVATION_NOT_FOUND"
+          ) {
+            const message = "Reserva no encontrada";
+            return Response.json(
+              {
+                ok: false,
+                code: "RESERVATION_NOT_FOUND",
+                error: message,
+                mensaje: message,
+              },
+              { status: 400 },
+            );
+          }
+
+          if (
+            error instanceof UpdateReservationBoundaryError &&
+            error.code === "RESERVATION_NOT_AVAILABLE"
+          ) {
+            const message = "La reserva ya no se puede modificar.";
+            return Response.json(
+              {
+                ok: false,
+                code: "RESERVATION_NOT_AVAILABLE",
+                error: message,
+                mensaje: message,
+              },
+              { status: 400 },
+            );
+          }
+
+          if (
+            error instanceof UpdateReservationBoundaryError &&
+            error.code === "UPDATE_RETRY_EXHAUSTED"
+          ) {
+            const message =
+              "No fue posible modificar la reserva en este momento.";
+            return Response.json(
+              {
+                ok: false,
+                code: "RESERVATION_UPDATE_RETRY_EXHAUSTED",
+                error: message,
+                mensaje: message,
+              },
+              { status: 503 },
+            );
+          }
+
+          const message = "No fue posible modificar la reserva.";
+          return Response.json(
+            {
+              ok: false,
+              code: "INTERNAL_ERROR",
+              error: message,
+              mensaje: message,
+            },
+            { status: 500 },
+          );
+        }
+      }
+
+      case "cancelar-reserva": {
+        if (!isValidReservationOperationSourceReference(sourceReference)) {
+          const message = "La referencia de operación no es válida.";
+          return Response.json(
+            {
+              ok: false,
+              code: "INVALID_SOURCE_REFERENCE",
+              error: message,
+              mensaje: message,
+            },
+            { status: 400 },
+          );
+        }
+
         if (!body.reservaId) {
           return Response.json(
-            { error: "reservaId requerido", mensaje: "reservaId requerido" },
-            { status: 400 }
+            {
+              ok: false,
+              code: "INVALID_RESERVATION_INPUT",
+              error: "reservaId requerido",
+              mensaje: "reservaId requerido",
+            },
+            { status: 400 },
           );
         }
-        return Response.json({
-          ...baseMeta,
-          ...(await cancelarReservaAsistente(
-            negocio.id,
-            body.reservaId,
-            body.hasNotas ? body.notas : undefined
-          )),
+
+        const fingerprintResult = buildCancelReservationOperationFingerprint({
+          reservaId: body.reservaId,
+          ...(body.hasNotas ? { notas: body.notas ?? null } : {}),
         });
+        if (!fingerprintResult) {
+          const message = "Los datos de la reserva no son válidos.";
+          return Response.json(
+            {
+              ok: false,
+              code: "INVALID_RESERVATION_INPUT",
+              error: message,
+              mensaje: message,
+            },
+            { status: 400 },
+          );
+        }
+
+        try {
+          const result = await cancelarReservaAsistente({
+            negocioId: negocio.id,
+            sourceReference,
+            requestFingerprint: fingerprintResult.fingerprint,
+            payload: fingerprintResult.payload,
+          });
+          const mensaje =
+            result.outcome === ReservationOperationOutcome.ALREADY_CANCELLED
+              ? "La reserva ya estaba cancelada."
+              : buildReservationMessage(
+                  "Reserva cancelada exitosamente ❌",
+                  result.reserva,
+                );
+
+          return Response.json({
+            ...baseMeta,
+            ok: true,
+            mensaje,
+            reserva: result.reserva,
+            managementUrl: null,
+          });
+        } catch (error) {
+          if (
+            error instanceof CancelReservationBoundaryError &&
+            error.code === "IDEMPOTENCY_CONFLICT"
+          ) {
+            const message =
+              "La referencia de idempotencia ya fue utilizada con datos diferentes.";
+            return Response.json(
+              {
+                ok: false,
+                code: "IDEMPOTENCY_CONFLICT",
+                error: message,
+                mensaje: message,
+              },
+              { status: 409 },
+            );
+          }
+
+          if (
+            error instanceof CancelReservationBoundaryError &&
+            error.code === "RESERVATION_NOT_FOUND"
+          ) {
+            const message = "Reserva no encontrada";
+            return Response.json(
+              {
+                ok: false,
+                code: "RESERVATION_NOT_FOUND",
+                error: message,
+                mensaje: message,
+              },
+              { status: 400 },
+            );
+          }
+
+          if (
+            error instanceof CancelReservationBoundaryError &&
+            error.code === "RESERVATION_NOT_AVAILABLE"
+          ) {
+            const message = "La reserva ya no se puede cancelar.";
+            return Response.json(
+              {
+                ok: false,
+                code: "RESERVATION_NOT_AVAILABLE",
+                error: message,
+                mensaje: message,
+              },
+              { status: 400 },
+            );
+          }
+
+          if (
+            error instanceof CancelReservationBoundaryError &&
+            error.code === "CANCEL_RETRY_EXHAUSTED"
+          ) {
+            const message =
+              "No fue posible cancelar la reserva en este momento.";
+            return Response.json(
+              {
+                ok: false,
+                code: "RESERVATION_CANCEL_RETRY_EXHAUSTED",
+                error: message,
+                mensaje: message,
+              },
+              { status: 503 },
+            );
+          }
+
+          const message = "No fue posible cancelar la reserva.";
+          return Response.json(
+            {
+              ok: false,
+              code: "INTERNAL_ERROR",
+              error: message,
+              mensaje: message,
+            },
+            { status: 500 },
+          );
+        }
+      }
 
       default:
         return Response.json(
@@ -1135,7 +2292,7 @@ export async function POST(request: Request) {
             mensaje: "Acción no encontrada",
             allowedActions: ALLOWED_ACTIONS,
           },
-          { status: 404 }
+          { status: 404 },
         );
     }
   } catch (error: unknown) {
@@ -1249,7 +2406,8 @@ async function reservasProximas(negocioId: string) {
 
   const lista = reservas
     .map(
-      (r) => `• ${fmtCO(r.fechaHoraInicio, "EEE d MMM, hh:mm a")} - ${r.nombre}`
+      (r) =>
+        `• ${fmtCO(r.fechaHoraInicio, "EEE d MMM, hh:mm a")} - ${r.nombre}`,
     )
     .join("\n");
 
@@ -1312,7 +2470,8 @@ async function pedidosHoy(negocioId: string) {
     take: 20,
   });
 
-  if (!pedidos.length) return { mensaje: "Hoy no tienes pedidos 🛒", pedidos: [] };
+  if (!pedidos.length)
+    return { mensaje: "Hoy no tienes pedidos 🛒", pedidos: [] };
 
   const lista = pedidos
     .map((p) => {
@@ -1355,7 +2514,7 @@ async function detallePedido(negocioId: string, pedidoId: string) {
       quantity: i.quantity,
       description: i.description ?? null,
       product: i.product ? { nombre: i.product.nombre } : null,
-    }))
+    })),
   );
 
   const deliveryDate = pedido.datosDeEntrega?.deliveryDate ?? null;
@@ -1392,12 +2551,18 @@ async function proximosPedidos(negocioId: string) {
       orderType: true,
       datosDeEntrega: { select: { deliveryDate: true } },
     },
-    orderBy: [{ datosDeEntrega: { deliveryDate: "asc" } }, { createdAt: "asc" }],
+    orderBy: [
+      { datosDeEntrega: { deliveryDate: "asc" } },
+      { createdAt: "asc" },
+    ],
     take: 25,
   });
 
   if (!pedidos.length) {
-    return { mensaje: "No tienes pedidos próximos programados 😊", pedidos: [] };
+    return {
+      mensaje: "No tienes pedidos próximos programados 😊",
+      pedidos: [],
+    };
   }
 
   const lista = pedidos
@@ -1422,7 +2587,9 @@ async function pedidosManana(negocioId: string) {
   const pedidos = await prisma.order.findMany({
     where: {
       negocioId,
-      datosDeEntrega: { is: { deliveryDate: { gte: mananaUtc, lt: pasadoUtc } } },
+      datosDeEntrega: {
+        is: { deliveryDate: { gte: mananaUtc, lt: pasadoUtc } },
+      },
     },
     select: {
       id: true,
@@ -1431,11 +2598,15 @@ async function pedidosManana(negocioId: string) {
       orderType: true,
       datosDeEntrega: { select: { deliveryDate: true } },
     },
-    orderBy: [{ datosDeEntrega: { deliveryDate: "asc" } }, { createdAt: "asc" }],
+    orderBy: [
+      { datosDeEntrega: { deliveryDate: "asc" } },
+      { createdAt: "asc" },
+    ],
     take: 20,
   });
 
-  if (!pedidos.length) return { mensaje: "Mañana no tienes pedidos 🛒", pedidos: [] };
+  if (!pedidos.length)
+    return { mensaje: "Mañana no tienes pedidos 🛒", pedidos: [] };
 
   const lista = pedidos
     .map((p) => {
