@@ -28,6 +28,23 @@ const nextConfig = withBundleAnalyzer({
   reactStrictMode: true,
   productionBrowserSourceMaps: false,
   compress: true,
+  async headers() {
+    if (process.env.MYCKEO_NO_INDEX !== "true") {
+      return [];
+    }
+
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          {
+            key: "X-Robots-Tag",
+            value: "noindex, nofollow, noarchive, nosnippet",
+          },
+        ],
+      },
+    ];
+  },
 });
 
 module.exports = nextConfig;
