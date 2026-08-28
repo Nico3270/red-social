@@ -8,6 +8,8 @@ const originalAdminUrl = process.env.MYCKEO_ADMIN_URL;
 const originalSiteUrl = process.env.SITE_URL;
 const originalNodeEnv = process.env.NODE_ENV;
 const originalWhatsAppToken = process.env.WHATSAPP_TOKEN;
+const originalOutboundNotificationsFlag =
+  process.env.MYCKEO_DISABLE_OUTBOUND_NOTIFICATIONS;
 const originalFetch = global.fetch;
 
 const ADMIN_STAGING_ORIGIN = "https://admin.staging.test";
@@ -142,6 +144,7 @@ function restoreEnv(name: string, value: string | undefined) {
 
 beforeEach(() => {
   jest.clearAllMocks();
+  delete process.env.MYCKEO_DISABLE_OUTBOUND_NOTIFICATIONS;
   process.env.MYCKEO_ADMIN_URL = ADMIN_STAGING_ORIGIN;
   process.env.SITE_URL = SITE_STAGING_ORIGIN;
   restoreEnv("NODE_ENV", "test");
@@ -162,6 +165,13 @@ beforeEach(() => {
   });
   mockWindow(true);
   global.fetch = mockFetch as typeof fetch;
+});
+
+afterEach(() => {
+  restoreEnv(
+    "MYCKEO_DISABLE_OUTBOUND_NOTIFICATIONS",
+    originalOutboundNotificationsFlag,
+  );
 });
 
 afterAll(() => {
@@ -381,6 +391,60 @@ describe("notifyReserva without fictitious data", () => {
 });
 
 describe("notifyReserva environment isolation", () => {
+  it("suprime todo outbound cuando el flag es true", async () => {
+    process.env.MYCKEO_DISABLE_OUTBOUND_NOTIFICATIONS = "true";
+
+    const result = await notifyReservaConfirmadaCliente(cancelacionProps());
+
+    expect(result).toEqual({
+      ok: false,
+      free: false,
+      message: null,
+      errorMessage: null,
+      result: null,
+      status: "SUPPRESSED_BY_ENV",
+      providerAccepted: false,
+    });
+    expect(mockGetInfoNegocio).not.toHaveBeenCalled();
+    expectNoExternalEffects();
+  });
+
+  it("falla cerrado sin outbound cuando el flag es inválido", async () => {
+    process.env.MYCKEO_DISABLE_OUTBOUND_NOTIFICATIONS = "invalid";
+
+    const result = await notifyReservaConfirmadaCliente(cancelacionProps());
+
+    expect(result).toEqual({
+      ok: false,
+      free: false,
+      message: null,
+      errorMessage: null,
+      result: null,
+      status: "SUPPRESSED_INVALID_ENV",
+      providerAccepted: false,
+    });
+    expect(mockGetInfoNegocio).not.toHaveBeenCalled();
+    expectNoExternalEffects();
+  });
+
+  it("mantiene el flujo normal cuando el flag es false", async () => {
+    process.env.MYCKEO_DISABLE_OUTBOUND_NOTIFICATIONS = "false";
+
+    const result = await notifyReservaConfirmadaCliente(cancelacionProps());
+
+    expect(result).toEqual(
+      expect.objectContaining({
+        ok: true,
+        status: "free_sent",
+        providerAccepted: true,
+      }),
+    );
+    expect(mockGetInfoNegocio).toHaveBeenCalledTimes(1);
+    expect(mockFetch).toHaveBeenCalledTimes(2);
+    expect(mockSendWhatsApp).toHaveBeenCalledTimes(1);
+    expect(mockSendWhatsAppMessage).not.toHaveBeenCalled();
+  });
+
   it("falla cerrado cuando MYCKEO_ADMIN_URL está ausente", async () => {
     delete process.env.MYCKEO_ADMIN_URL;
 

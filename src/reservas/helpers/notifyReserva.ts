@@ -36,7 +36,9 @@ interface NotifyResult {
     | "template_sent"
     | "template_failed"
     | "validation_error"
-    | "exception";
+    | "exception"
+    | "SUPPRESSED_BY_ENV"
+    | "SUPPRESSED_INVALID_ENV";
   providerAccepted?: boolean;
   templateName?: string;
   phone?: string;
@@ -71,6 +73,19 @@ interface WindowResponse {
 /* ========================================================================
    HELPERS
 ======================================================================== */
+function resolveOutboundNotificationState():
+  | "ENABLED_OUTBOUND"
+  | "SUPPRESSED"
+  | "SUPPRESSED_INVALID_ENV" {
+  const rawValue = process.env.MYCKEO_DISABLE_OUTBOUND_NOTIFICATIONS;
+
+  if (rawValue === undefined || rawValue === "false") {
+    return "ENABLED_OUTBOUND";
+  }
+
+  return rawValue === "true" ? "SUPPRESSED" : "SUPPRESSED_INVALID_ENV";
+}
+
 function isProductionLoopback(hostname: string): boolean {
   if (process.env.NODE_ENV !== "production") return false;
 
@@ -332,6 +347,23 @@ async function logWhatsAppEvent(params: {
 export async function notifyReservaConfirmadaCliente(
   props: NotifyReservaConfirmadaClienteProps,
 ): Promise<NotifyResult> {
+  const outboundNotificationState = resolveOutboundNotificationState();
+
+  if (outboundNotificationState !== "ENABLED_OUTBOUND") {
+    return {
+      ok: false,
+      free: false,
+      message: null,
+      errorMessage: null,
+      result: null,
+      status:
+        outboundNotificationState === "SUPPRESSED"
+          ? "SUPPRESSED_BY_ENV"
+          : "SUPPRESSED_INVALID_ENV",
+      providerAccepted: false,
+    };
+  }
+
   const traceId = createTraceId();
   const adminOrigin = getMyckeoAdminOrigin();
 
