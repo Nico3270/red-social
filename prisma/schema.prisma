@@ -541,51 +541,69 @@ model Interaccion {
 }
 
 model Usuario {
-  id                      String                   @id @default(uuid())
-  nombre                  String
-  apellido                String
-  username                String                   @unique
-  contraseña             String
-  email                   String                   @unique
-  ciudad                  String
-  departamento            String
-  pais                    String?                  @default("Colombia")
-  genero                  Genero
-  fechaNacimiento         DateTime
-  fotoPerfil              String?
-  biografia               String?
-  role                    Role                     @default(user)
-  facebook                String?
-  instagram               String?
-  tiktok                  String?
-  youtube                 String?
-  twitter                 String?
-  createdAt               DateTime                 @default(now())
-  updatedAt               DateTime                 @updatedAt
-  ultimaActividad         DateTime                 @default(now())
-  estado                  EstadoUsuario            @default(activo)
-  emailVerified           DateTime?
-  preferencias            String[]
-  encuestas               Encuesta[]               @relation("UsuarioEncuestas")
-  followsOut              Follow[]                 @relation("Follower")
-  followsIn               Follow[]                 @relation("FollowedUser")
-  interacciones           Interaccion[]            @relation("UsuarioInteracciones")
-  negocio                 Negocio?
-  orders                  Order[]
-  publicaciones           Publicacion[]
-  resenas                 Resena[]
-  reservations            Reservation[]
-  respuestas              Respuesta[]              @relation("UsuarioRespuestas")
-  Transaction             Transaction[]
-  perfilCompleto          Boolean                  @default(false)
-  isPlaceholder           Boolean                  @default(false)
-  passwordResetTokens     PasswordResetToken[]     @relation("UserPasswordResetTokens")
-  productImageGenerations ProductImageGeneration[] @relation("ProductImageGenerationCreatedBy")
+  id                             String                   @id @default(uuid())
+  nombre                         String
+  apellido                       String
+  username                       String                   @unique
+  contraseña                    String
+  email                          String                   @unique
+  ciudad                         String
+  departamento                   String
+  pais                           String?                  @default("Colombia")
+  genero                         Genero
+  fechaNacimiento                DateTime
+  fotoPerfil                     String?
+  biografia                      String?
+  role                           Role                     @default(user)
+  facebook                       String?
+  instagram                      String?
+  tiktok                         String?
+  youtube                        String?
+  twitter                        String?
+  createdAt                      DateTime                 @default(now())
+  updatedAt                      DateTime                 @updatedAt
+  ultimaActividad                DateTime                 @default(now())
+  estado                         EstadoUsuario            @default(activo)
+  emailVerified                  DateTime?
+  preferencias                   String[]
+  encuestas                      Encuesta[]               @relation("UsuarioEncuestas")
+  followsOut                     Follow[]                 @relation("Follower")
+  followsIn                      Follow[]                 @relation("FollowedUser")
+  interacciones                  Interaccion[]            @relation("UsuarioInteracciones")
+  negocio                        Negocio?
+  orders                         Order[]
+  publicaciones                  Publicacion[]
+  resenas                        Resena[]
+  reservations                   Reservation[]
+  respuestas                     Respuesta[]              @relation("UsuarioRespuestas")
+  Transaction                    Transaction[]
+  perfilCompleto                 Boolean                  @default(false)
+  isPlaceholder                  Boolean                  @default(false)
+  placeholderProvisioningKeyHash String?                  @unique
+  accountClaims                  AccountClaim[]
+  passwordResetTokens            PasswordResetToken[]     @relation("UserPasswordResetTokens")
+  productImageGenerations        ProductImageGeneration[] @relation("ProductImageGenerationCreatedBy")
 
   @@index([username])
   @@index([email])
   @@index([role])
   @@index([preferencias], type: Gin)
+}
+
+model AccountClaim {
+  id         String    @id @default(cuid())
+  usuarioId  String
+  /// SHA-256 del token CSPRNG; el token original nunca se almacena.
+  tokenHash  String    @unique
+  expiresAt  DateTime
+  consumedAt DateTime?
+  revokedAt  DateTime?
+  createdAt  DateTime  @default(now())
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@index([usuarioId])
+  @@index([expiresAt])
 }
 
 enum Role {
