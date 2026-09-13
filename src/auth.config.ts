@@ -285,7 +285,7 @@ export const authConfig: NextAuthConfig = {
           where: { email: email.toLowerCase() },
         });
 
-        if (!user) return null;
+        if (!user || user.isPlaceholder) return null;
 
         const isValidPassword = bcryptjs.compareSync(password, user.contraseña);
         if (!isValidPassword) return null;
