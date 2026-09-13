@@ -10,6 +10,13 @@ const mockCookieDelete = jest.fn();
 const mockGetCookieName = jest.fn();
 const mockReadActivationSession = jest.fn();
 const mockAuth = jest.fn();
+const mockActivationForm = jest.fn(({ csrfNonce }: { csrfNonce: string }) =>
+  createElement(
+    "form",
+    { "data-testid": "activation-form" },
+    createElement("input", { type: "hidden", name: "csrfNonce", value: csrfNonce }),
+  ),
+);
 
 jest.mock(
   "next/headers",
@@ -43,6 +50,10 @@ jest.mock(
   }),
   { virtual: true },
 );
+jest.mock("./ActivationForm", () => ({
+  __esModule: true,
+  default: mockActivationForm,
+}));
 
 import AccountActivationPage, {
   dynamic,
@@ -65,7 +76,6 @@ function expectNoSensitiveData(html: string): void {
   for (const value of [
     cookieValue,
     rawToken,
-    csrfNonce,
     usuarioId,
     claimId,
   ]) {
@@ -75,6 +85,10 @@ function expectNoSensitiveData(html: string): void {
 
 function expectState(html: string, state: string): void {
   expect(html).toContain(`data-activation-state="${state}"`);
+  if (state !== "READY") {
+    expect(mockActivationForm).not.toHaveBeenCalled();
+    expect(html).not.toContain(csrfNonce);
+  }
 }
 
 describe("/activar Server Component", () => {
@@ -237,23 +251,38 @@ describe("/activar Server Component", () => {
   });
 
   describe("estado READY", () => {
-    it("muestra sólo el estado provisional seguro cuando no hay Auth", async () => {
+    it("renderiza ActivationForm una sola vez cuando no hay Auth", async () => {
       const html = await renderPage();
 
       expectState(html, "READY");
       expect(html).toContain("Tu cuenta está lista para ser activada.");
-      expect(html).toContain(
-        "El formulario seguro de activación estará disponible aquí",
-      );
+      expect(mockActivationForm).toHaveBeenCalledTimes(1);
+      expect(html).toContain('data-testid="activation-form"');
+      expect(html).not.toContain("El formulario seguro de activación estará disponible aquí");
       expect(html).not.toContain("Activación no disponible");
       expectNoSensitiveData(html);
     });
 
-    it("no incluye formulario, inputs, scripts ni atributos con secretos", async () => {
+    it("pasa exclusivamente csrfNonce al Client Component", async () => {
+      await renderPage();
+
+      const props = mockActivationForm.mock.calls[0][0];
+      expect(Object.keys(props)).toEqual(["csrfNonce"]);
+      expect(props.csrfNonce).toBe(csrfNonce);
+      expect(props).not.toHaveProperty("rawToken");
+      expect(props).not.toHaveProperty("cookieValue");
+      expect(props).not.toHaveProperty("expiresAt");
+      expect(props).not.toHaveProperty("session");
+      expect(props).not.toHaveProperty("usuarioId");
+      expect(props).not.toHaveProperty("claimId");
+    });
+
+    it("mantiene el nonce sólo en el input oculto y no renderiza otros secretos", async () => {
       const html = await renderPage();
 
-      expect(html).not.toMatch(/<form|<input|<script/i);
-      expect(html).not.toMatch(/csrf|raw[_-]?token|usuario[_-]?id|claim[_-]?id/i);
+      expect(html).toContain(`<input type="hidden" name="csrfNonce" value="${csrfNonce}"/>`);
+      expect(html.match(new RegExp(csrfNonce, "g"))).toHaveLength(1);
+      expect(html).not.toMatch(/<script|data-csrf|raw[_-]?token|usuario[_-]?id|claim[_-]?id/i);
       expectNoSensitiveData(html);
     });
 
@@ -300,7 +329,10 @@ describe("/activar Server Component", () => {
       expect(source).not.toMatch(
         /useState|useEffect|localStorage|sessionStorage|window\.|document\./,
       );
-      expect(source).not.toMatch(/rawToken|csrfNonce|expiresAt|usuarioId|claimId/);
+      expect(source).not.toMatch(/rawToken|expiresAt|usuarioId|claimId/);
+      expect(source).toContain("csrfNonce: activationSession.csrfNonce");
+      expect(source).toContain("<ActivationForm csrfNonce={result.csrfNonce} />");
+      expect(source).not.toMatch(/<ActivationForm\s+\{\.\.\.|session=|cookieValue=/);
       expect(source).not.toMatch(/console\.|\blogger\b|JSON\.stringify/);
     });
 

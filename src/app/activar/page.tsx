@@ -1,4 +1,5 @@
 import { auth } from "@/auth.config";
+import ActivationForm from "./ActivationForm";
 import {
   getAccountActivationCookieName,
   readAccountActivationSession,
@@ -24,6 +25,10 @@ type ActivationPageState =
   | "AUTH_SESSION_PRESENT"
   | "TEMPORARY_ERROR"
   | "READY";
+
+type ActivationPageResult =
+  | { state: Exclude<ActivationPageState, "READY"> }
+  | { state: "READY"; csrfNonce: string };
 
 type ActivationPageContent = {
   eyebrow: string;
@@ -67,8 +72,7 @@ const STATE_CONTENT = {
   READY: {
     eyebrow: "Activación de cuenta",
     title: "Tu cuenta está lista para ser activada.",
-    description:
-      "En el siguiente paso podrás completar tus datos y establecer tus credenciales de acceso.",
+    description: "Completa tus datos y establece tus credenciales de acceso.",
     actionHref: "/auth/login",
     actionLabel: "Ya tengo una cuenta",
     icon: "✓",
@@ -76,18 +80,18 @@ const STATE_CONTENT = {
   },
 } as const satisfies Record<ActivationPageState, ActivationPageContent>;
 
-async function getActivationPageState(): Promise<ActivationPageState> {
+async function getActivationPageState(): Promise<ActivationPageResult> {
   let cookieValue: string | undefined;
 
   try {
     const cookieStore = await cookies();
     cookieValue = cookieStore.get(getAccountActivationCookieName())?.value;
   } catch {
-    return "TEMPORARY_ERROR";
+    return { state: "TEMPORARY_ERROR" };
   }
 
   if (!cookieValue) {
-    return "UNAVAILABLE";
+    return { state: "UNAVAILABLE" };
   }
 
   let activationSession: ReturnType<typeof readAccountActivationSession>;
@@ -95,29 +99,31 @@ async function getActivationPageState(): Promise<ActivationPageState> {
   try {
     activationSession = readAccountActivationSession(cookieValue);
   } catch {
-    return "TEMPORARY_ERROR";
+    return { state: "TEMPORARY_ERROR" };
   }
 
   if (!activationSession?.valid) {
-    return "UNAVAILABLE";
+    return { state: "UNAVAILABLE" };
   }
 
   try {
     const existingSession = await auth();
-    return existingSession ? "AUTH_SESSION_PRESENT" : "READY";
+    return existingSession
+      ? { state: "AUTH_SESSION_PRESENT" }
+      : { state: "READY", csrfNonce: activationSession.csrfNonce };
   } catch {
-    return "TEMPORARY_ERROR";
+    return { state: "TEMPORARY_ERROR" };
   }
 }
 
 export default async function AccountActivationPage(): Promise<React.ReactElement> {
-  const state = await getActivationPageState();
-  const content = STATE_CONTENT[state];
+  const result = await getActivationPageState();
+  const content = STATE_CONTENT[result.state];
 
   return (
     <main
       className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-slate-50 via-white to-blue-50 px-4 py-12 sm:px-6"
-      data-activation-state={state}
+      data-activation-state={result.state}
     >
       <div
         aria-hidden="true"
@@ -160,11 +166,8 @@ export default async function AccountActivationPage(): Promise<React.ReactElemen
           {content.description}
         </p>
 
-        {state === "READY" ? (
-          <p className="mt-5 rounded-2xl border border-blue-100 bg-blue-50/70 px-4 py-3 text-sm leading-6 text-blue-800">
-            El formulario seguro de activación estará disponible aquí en el
-            siguiente paso.
-          </p>
+        {result.state === "READY" ? (
+          <ActivationForm csrfNonce={result.csrfNonce} />
         ) : null}
 
         <Link
