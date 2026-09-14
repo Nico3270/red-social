@@ -5,6 +5,10 @@ import { renderToStaticMarkup } from "react-dom/server";
 const mockActivateAccount = jest.fn();
 const mockHookValues: unknown[] = [];
 let mockHookIndex = 0;
+type MockEffect = {
+  deps: readonly unknown[] | undefined;
+  cleanup: void | (() => void);
+};
 
 jest.mock("@/actions/auth/activateAccount", () => ({
   activateAccount: mockActivateAccount,
@@ -19,7 +23,9 @@ jest.mock("react", () => {
       return [
         mockHookValues[index],
         (value: unknown) => {
-          mockHookValues[index] = value;
+          mockHookValues[index] = typeof value === "function"
+            ? (value as (previous: unknown) => unknown)(mockHookValues[index])
+            : value;
         },
       ];
     },
@@ -27,6 +33,20 @@ jest.mock("react", () => {
       const index = mockHookIndex++;
       if (!(index in mockHookValues)) mockHookValues[index] = { current: initial };
       return mockHookValues[index];
+    },
+    useEffect: (effect: () => void | (() => void), deps?: readonly unknown[]) => {
+      const index = mockHookIndex++;
+      const previous = mockHookValues[index] as MockEffect | undefined;
+      if (
+        previous &&
+        deps &&
+        previous.deps?.length === deps.length &&
+        deps.every((value, position) => Object.is(value, previous.deps?.[position]))
+      ) {
+        return;
+      }
+      previous?.cleanup?.();
+      mockHookValues[index] = { deps, cleanup: effect() } satisfies MockEffect;
     },
   };
 });
@@ -124,6 +144,10 @@ describe("ActivationForm aislado", () => {
   });
 
   afterEach(() => {
+    for (const value of mockHookValues) {
+      (value as MockEffect | undefined)?.cleanup?.();
+    }
+    jest.useRealTimers();
     jest.restoreAllMocks();
   });
 
@@ -136,9 +160,9 @@ describe("ActivationForm aislado", () => {
     expect(source).toMatch(/type ActivationFormProps = \{\s*csrfNonce: string;\s*\}/);
     expect(source).toContain('from "@/actions/auth/activateAccount"');
     expect(source).not.toMatch(
-      /@\/lib\/prisma|@prisma\/client|AccountClaim|account-activation-session|bcrypt|node:crypto|\bfetch\s*\(/,
+      /@\/lib\/prisma|@prisma\/client|@upstash\/(redis|ratelimit)|AccountClaim|account-activation-session|bcrypt|node:crypto|next\/headers|\bcookies\b|\bfetch\s*\(/,
     );
-    expect(source).not.toMatch(/console\.|\blogger\b|localStorage|sessionStorage/);
+    expect(source).not.toMatch(/console\.|\blogger\b|localStorage|sessionStorage|indexedDB/);
   });
 
   it("renderiza exactamente nueve campos de usuario y nonce hidden", () => {
@@ -295,6 +319,140 @@ describe("ActivationForm aislado", () => {
     expect(html()).toContain("Este correo no está disponible.");
     const source = readFileSync(join(process.cwd(), "src/app/activar/ActivationForm.tsx"), "utf8");
     expect(source).not.toMatch(/\breset\s*\(|form\.reset/);
+  });
+
+  it("muestra espera accesible, conserva campos editables y vacía contraseñas", async () => {
+    jest.useFakeTimers();
+    const { passwordInput, confirmationInput } = setPasswordRefs();
+    mockActivateAccount.mockResolvedValue({
+      ok: false,
+      code: "ACTIVATION_THROTTLED",
+      retryAfterSeconds: 3,
+    });
+
+    await submit();
+    const output = html();
+
+    expect(output).toContain('role="status" aria-live="polite"');
+    expect(output).toContain("Podrás continuar en 3 s.");
+    expect(output).toContain("Intenta de nuevo en 3 s");
+    expectButtonDisabled(output, true);
+    expect(output).not.toMatch(/<fieldset[^>]*disabled/);
+    expect(passwordInput.value).toBe("");
+    expect(confirmationInput.value).toBe("");
+    expect(output).not.toMatch(/LIMITED|UNAVAILABLE|Redis|Upstash|infraestructura|rate limit/i);
+    const source = readFileSync(join(process.cwd(), "src/app/activar/ActivationForm.tsx"), "utf8");
+    expect(source).not.toMatch(/\breset\s*\(|form\.reset/);
+  });
+
+  it("descuenta cada segundo y permite reintento manual al llegar a cero", async () => {
+    jest.useFakeTimers();
+    mockActivateAccount.mockResolvedValue({
+      ok: false,
+      code: "ACTIVATION_THROTTLED",
+      retryAfterSeconds: 3,
+    });
+
+    await submit();
+    expect(html()).toContain("Intenta de nuevo en 3 s");
+    await submit(false);
+    expect(mockActivateAccount).toHaveBeenCalledTimes(1);
+
+    jest.advanceTimersByTime(1000);
+    expect(html()).toContain("Intenta de nuevo en 2 s");
+    jest.advanceTimersByTime(1000);
+    expect(html()).toContain("Intenta de nuevo en 1 s");
+    jest.advanceTimersByTime(1000);
+    const finished = html();
+    expect(finished).not.toContain('role="status"');
+    expect(finished).toContain("Activar mi cuenta");
+    expectButtonDisabled(finished, false);
+    expect(jest.getTimerCount()).toBe(0);
+    expect(mockActivateAccount).toHaveBeenCalledTimes(1);
+
+    mockActivateAccount.mockResolvedValueOnce({ ok: false, code: "INTERNAL_ERROR" });
+    await submit();
+    expect(mockActivateAccount).toHaveBeenCalledTimes(2);
+  });
+
+  it("reemplaza el countdown anterior por el nuevo valor tras reintentar", async () => {
+    jest.useFakeTimers();
+    mockActivateAccount
+      .mockResolvedValueOnce({ ok: false, code: "ACTIVATION_THROTTLED", retryAfterSeconds: 3 })
+      .mockResolvedValueOnce({ ok: false, code: "ACTIVATION_THROTTLED", retryAfterSeconds: 5 });
+
+    await submit();
+    html();
+    for (let second = 0; second < 3; second += 1) {
+      jest.advanceTimersByTime(1000);
+      html();
+    }
+    expectButtonDisabled(html(), false);
+
+    await submit();
+    const output = html();
+    expect(output).toContain("Intenta de nuevo en 5 s");
+    expect(output).not.toContain("8 s");
+    expect(mockActivateAccount).toHaveBeenCalledTimes(2);
+  });
+
+  it("mantiene un solo timer y lo limpia al desmontar", async () => {
+    jest.useFakeTimers();
+    mockActivateAccount.mockResolvedValue({
+      ok: false,
+      code: "ACTIVATION_THROTTLED",
+      retryAfterSeconds: 3,
+    });
+
+    await submit();
+    html();
+    html();
+    expect(jest.getTimerCount()).toBe(1);
+
+    jest.advanceTimersByTime(1000);
+    html();
+    expect(jest.getTimerCount()).toBe(1);
+
+    (mockHookValues[7] as MockEffect).cleanup?.();
+    expect(jest.getTimerCount()).toBe(0);
+  });
+
+  it.each([
+    [0, "1 s"],
+    [-10, "1 s"],
+    [Number.NaN, "1 s"],
+    [1.2, "2 s"],
+    [10_000, "60 min"],
+  ])("normaliza retryAfterSeconds %s a %s", async (retryAfterSeconds, expected) => {
+    jest.useFakeTimers();
+    mockActivateAccount.mockResolvedValue({
+      ok: false,
+      code: "ACTIVATION_THROTTLED",
+      retryAfterSeconds,
+    });
+
+    await submit();
+    const output = html();
+    expect(output).toContain(`Intenta de nuevo en ${expected}`);
+    expectButtonDisabled(output, true);
+  });
+
+  it.each([
+    [1, "1 s"],
+    [45, "45 s"],
+    [60, "1 min"],
+    [61, "1 min 1 s"],
+    [120, "2 min"],
+  ])("formatea %s segundos como %s", async (retryAfterSeconds, expected) => {
+    jest.useFakeTimers();
+    mockActivateAccount.mockResolvedValue({
+      ok: false,
+      code: "ACTIVATION_THROTTLED",
+      retryAfterSeconds,
+    });
+
+    await submit();
+    expect(html()).toContain(`Intenta de nuevo en ${expected}`);
   });
 
   it("no renderiza bearer, cookie, IDs ni password enviados", async () => {

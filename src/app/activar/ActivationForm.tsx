@@ -4,7 +4,7 @@ import {
   activateAccount,
   type ActivateAccountResult,
 } from "@/actions/auth/activateAccount";
-import { useRef, useState, type FormEvent, type ReactNode } from "react";
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 
 type ActivationFormProps = {
   csrfNonce: string;
@@ -23,6 +23,22 @@ type FieldName =
 
 const inputClassName =
   "mt-1.5 w-full rounded-xl border border-slate-300 bg-white px-3.5 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-500";
+const MAX_THROTTLE_SECONDS = 3600;
+
+function normalizeRetryAfterSeconds(value: number): number {
+  if (typeof value !== "number" || Number.isNaN(value)) return 1;
+  return Math.min(MAX_THROTTLE_SECONDS, Math.max(1, Math.ceil(value)));
+}
+
+function formatWait(seconds: number): string {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+
+  if (minutes === 0) return `${seconds} s`;
+  return remainingSeconds === 0
+    ? `${minutes} min`
+    : `${minutes} min ${remainingSeconds} s`;
+}
 
 function Field({
   name,
@@ -70,6 +86,22 @@ export default function ActivationForm({ csrfNonce }: ActivationFormProps) {
   const submittingRef = useRef(false);
   const passwordRef = useRef<HTMLInputElement>(null);
   const confirmPasswordRef = useRef<HTMLInputElement>(null);
+  const [throttleSecondsRemaining, setThrottleSecondsRemaining] = useState(0);
+  const throttleSecondsRef = useRef(0);
+
+  useEffect(() => {
+    if (throttleSecondsRemaining === 0) return;
+
+    const timeout = setTimeout(() => {
+      setThrottleSecondsRemaining((seconds) => {
+        const next = Math.max(0, seconds - 1);
+        throttleSecondsRef.current = next;
+        return next;
+      });
+    }, 1000);
+
+    return () => clearTimeout(timeout);
+  }, [throttleSecondsRemaining]);
 
   const terminal =
     result?.code === "ACTIVATION_UNAVAILABLE" ||
@@ -99,7 +131,12 @@ export default function ActivationForm({ csrfNonce }: ActivationFormProps) {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (submittingRef.current || terminal) {
+    if (
+      submittingRef.current ||
+      terminal ||
+      throttleSecondsRemaining > 0 ||
+      throttleSecondsRef.current > 0
+    ) {
       return;
     }
 
@@ -110,7 +147,13 @@ export default function ActivationForm({ csrfNonce }: ActivationFormProps) {
 
     try {
       // El éxito navega desde el Server Action y no devuelve un resultado.
-      setResult(await activateAccount(formData));
+      const actionResult = await activateAccount(formData);
+      if (actionResult.code === "ACTIVATION_THROTTLED") {
+        const seconds = normalizeRetryAfterSeconds(actionResult.retryAfterSeconds);
+        throttleSecondsRef.current = seconds;
+        setThrottleSecondsRemaining(seconds);
+      }
+      setResult(actionResult);
     } catch {
       setResult({ ok: false, code: "INTERNAL_ERROR" });
     } finally {
@@ -133,6 +176,8 @@ export default function ActivationForm({ csrfNonce }: ActivationFormProps) {
             : result?.code === "INTERNAL_ERROR"
               ? "No pudimos completar la activación en este momento. Inténtalo nuevamente."
               : null;
+  const waiting = throttleSecondsRemaining > 0;
+  const waitText = waiting ? formatWait(throttleSecondsRemaining) : null;
 
   return (
     <form onSubmit={handleSubmit} aria-busy={isPending} className="mt-8 text-left">
@@ -205,9 +250,15 @@ export default function ActivationForm({ csrfNonce }: ActivationFormProps) {
         </p>
       ) : null}
 
-      <button type="submit" disabled={isPending || terminal}
+      {waiting ? (
+        <p role="status" aria-live="polite" className="mt-5 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm leading-6 text-blue-900">
+          Espera un momento antes de volver a intentarlo. Podrás continuar en {waitText}.
+        </p>
+      ) : null}
+
+      <button type="submit" disabled={isPending || terminal || waiting}
         className="mt-7 inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60">
-        {isPending ? "Activando..." : "Activar mi cuenta"}
+        {isPending ? "Activando..." : waiting ? `Intenta de nuevo en ${waitText}` : "Activar mi cuenta"}
       </button>
     </form>
   );
