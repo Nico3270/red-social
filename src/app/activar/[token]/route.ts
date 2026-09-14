@@ -7,6 +7,7 @@ import {
   getAccountActivationCookieOptions,
 } from "@/lib/auth/account-activation-session";
 import { validateAccountClaim } from "@/lib/auth/account-claim";
+import { checkAccountActivationBootstrapRateLimit } from "@/lib/security/account-activation-rate-limit";
 
 export const runtime = "nodejs";
 
@@ -58,6 +59,16 @@ export async function GET(
   const response = createCleanRedirect(request);
 
   try {
+    const rateLimit = await checkAccountActivationBootstrapRateLimit(
+      request.headers,
+    );
+
+    if (!rateLimit.allowed) {
+      clearActivationCookie(response);
+      response.headers.set("Retry-After", String(rateLimit.retryAfterSeconds));
+      return response;
+    }
+
     const { token } = await context.params;
 
     if (!ACCOUNT_CLAIM_TOKEN_PATTERN.test(token)) {

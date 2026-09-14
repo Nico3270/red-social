@@ -6,6 +6,7 @@ const mockCreateAccountActivationSession = jest.fn();
 const mockGetAccountActivationCookieName = jest.fn();
 const mockGetAccountActivationCookieOptions = jest.fn();
 const mockGetAccountActivationCookieClearOptions = jest.fn();
+const mockCheckAccountActivationBootstrapRateLimit = jest.fn();
 
 jest.mock(
   "@/lib/auth/account-claim",
@@ -25,6 +26,10 @@ jest.mock(
   }),
   { virtual: true },
 );
+jest.mock("@/lib/security/account-activation-rate-limit", () => ({
+  checkAccountActivationBootstrapRateLimit:
+    mockCheckAccountActivationBootstrapRateLimit,
+}));
 
 import { GET, HEAD, runtime } from "./route";
 
@@ -117,6 +122,9 @@ function externalResponseText(response: Response): Promise<string> {
 describe("GET/HEAD /activar/[token]", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockCheckAccountActivationBootstrapRateLimit
+      .mockReset()
+      .mockResolvedValue({ allowed: true });
 
     mockValidateAccountClaim.mockResolvedValue({
       valid: true,
@@ -167,6 +175,12 @@ describe("GET/HEAD /activar/[token]", () => {
       expect(mockValidateAccountClaim).not.toHaveBeenCalled();
     });
 
+    it("no consume rate limit", async () => {
+      await HEAD(request("scanner-preview"));
+
+      expect(mockCheckAccountActivationBootstrapRateLimit).not.toHaveBeenCalled();
+    });
+
     it("no crea una sesión", async () => {
       await HEAD(request("scanner-preview"));
 
@@ -210,6 +224,7 @@ describe("GET/HEAD /activar/[token]", () => {
       const response = await GET(request(token), context(token));
 
       await expectCleanRedirect(response);
+      expect(mockCheckAccountActivationBootstrapRateLimit).toHaveBeenCalledTimes(1);
       expect(mockValidateAccountClaim).not.toHaveBeenCalled();
       expect(mockCreateAccountActivationSession).not.toHaveBeenCalled();
       expectClearedActivationCookie(response);
@@ -282,6 +297,21 @@ describe("GET/HEAD /activar/[token]", () => {
   });
 
   describe("GET con claim válido", () => {
+    it("consulta el límite una vez con sólo request.headers, antes del claim", async () => {
+      const incomingRequest = request();
+
+      await GET(incomingRequest, context());
+
+      expect(mockCheckAccountActivationBootstrapRateLimit).toHaveBeenCalledTimes(1);
+      expect(mockCheckAccountActivationBootstrapRateLimit).toHaveBeenCalledWith(
+        incomingRequest.headers,
+      );
+      expect(mockCheckAccountActivationBootstrapRateLimit.mock.calls[0]).toHaveLength(1);
+      expect(
+        mockCheckAccountActivationBootstrapRateLimit.mock.invocationCallOrder[0],
+      ).toBeLessThan(mockValidateAccountClaim.mock.invocationCallOrder[0]);
+    });
+
     it("crea la sesión con bearer y expiración del claim", async () => {
       await GET(request(), context());
 
@@ -296,6 +326,7 @@ describe("GET/HEAD /activar/[token]", () => {
       const response = await GET(request(), context());
 
       await expectCleanRedirect(response);
+      expect(response.headers.get("retry-after")).toBeNull();
     });
 
     it("usa el nombre canónico de cookie", async () => {
@@ -369,6 +400,45 @@ describe("GET/HEAD /activar/[token]", () => {
       const response = await GET(request(), context());
 
       expectSecurityHeaders(response);
+    });
+  });
+
+  describe("GET con rate limit bloqueado", () => {
+    it.each([
+      ["LIMITED", 321],
+      ["UNAVAILABLE", 60],
+    ])("%s falla cerrado y limpia la cookie", async (reason, retryAfterSeconds) => {
+      mockCheckAccountActivationBootstrapRateLimit.mockResolvedValue({
+        allowed: false,
+        reason,
+        retryAfterSeconds,
+      });
+
+      const response = await GET(request(), context());
+
+      await expectCleanRedirect(response);
+      expect(response.headers.get("retry-after")).toBe(String(retryAfterSeconds));
+      expectClearedActivationCookie(response);
+      expect(mockValidateAccountClaim).not.toHaveBeenCalled();
+      expect(mockCreateAccountActivationSession).not.toHaveBeenCalled();
+      const external = await externalResponseText(response);
+      expect(external).not.toContain(rawToken);
+      expect(external).not.toContain(reason);
+      expect(external).not.toContain(sessionValue);
+    });
+
+    it("oculta un fallo inesperado del helper y limpia la cookie", async () => {
+      mockCheckAccountActivationBootstrapRateLimit.mockRejectedValue(
+        new Error(`synthetic rate limit failure ${rawToken}`),
+      );
+
+      const response = await GET(request(), context());
+
+      await expectCleanRedirect(response);
+      expectClearedActivationCookie(response);
+      expect(mockValidateAccountClaim).not.toHaveBeenCalled();
+      expect(mockCreateAccountActivationSession).not.toHaveBeenCalled();
+      expect(await externalResponseText(response)).not.toContain(rawToken);
     });
   });
 
@@ -459,14 +529,15 @@ describe("GET/HEAD /activar/[token]", () => {
       expect(source).not.toMatch(/console\.|logger|Analytics|react|page\.tsx/);
     });
 
-    it("no duplica flags de cookie ni implementa rate limit", () => {
+    it("no duplica flags de cookie ni importa Upstash directamente", () => {
       const source = readFileSync(
         join(process.cwd(), "src/app/activar/[token]/route.ts"),
         "utf8",
       );
 
       expect(source).not.toMatch(/httpOnly\s*:|sameSite\s*:|secure\s*:|maxAge\s*:/);
-      expect(source).not.toMatch(/ratelimit|rateLimit|upstash/i);
+      expect(source).not.toMatch(/@upstash\/ratelimit|@upstash\/redis|Redis\.fromEnv|Ratelimit\./);
+      expect(source).toContain("checkAccountActivationBootstrapRateLimit");
     });
 
     it("usa sólo validateAccountClaim como operación del servicio", () => {
