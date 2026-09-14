@@ -48,7 +48,7 @@ function restoreEnv(name: string, value: string | undefined): void {
   else process.env[name] = value;
 }
 
-beforeEach(() => {
+beforeEach(async () => {
   jest.resetModules();
   mockFromEnv.mockReset().mockReturnValue({});
   mockLimiterLimit.mockReset().mockImplementation(async () => allowed());
@@ -57,7 +57,7 @@ beforeEach(() => {
   process.env.ACCOUNT_ACTIVATION_SESSION_SECRET = secret;
   process.env.UPSTASH_REDIS_REST_URL = "https://redis.test.invalid";
   process.env.UPSTASH_REDIS_REST_TOKEN = "synthetic-test-token";
-  rateLimit = require("./account-activation-rate-limit") as RateLimitModule;
+  rateLimit = await import("./account-activation-rate-limit");
 });
 
 afterAll(() => {
