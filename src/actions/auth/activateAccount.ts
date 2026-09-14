@@ -13,6 +13,7 @@ import {
   getAccountActivationCookieName,
   readAccountActivationSession,
 } from "@/lib/auth/account-activation-session";
+import { checkAccountActivationSubmitRateLimit } from "@/lib/security/account-activation-rate-limit";
 import {
   type AccountActivationInput,
   validateAccountActivationInput,
@@ -25,6 +26,7 @@ import { redirect } from "next/navigation";
 const SUCCESS_REDIRECT = "/auth/login?callbackUrl=%2Fdashboard";
 const CSRF_NONCE_PATTERN = /^[A-Za-z0-9_-]{43}$/;
 const BCRYPT_COST = 10;
+const THROTTLE_FALLBACK_RETRY_SECONDS = 60;
 const ACTION_METADATA_PREFIX = "$ACTION_";
 const EMAIL_UNIQUE_CONSTRAINT = "Usuario_email_key";
 const USERNAME_UNIQUE_CONSTRAINT = "Usuario_username_key";
@@ -61,6 +63,11 @@ export type ActivateAccountResult =
       ok: false;
       code: "VALIDATION_ERROR";
       fieldErrors: ActivationFieldErrors;
+    }
+  | {
+      ok: false;
+      code: "ACTIVATION_THROTTLED";
+      retryAfterSeconds: number;
     };
 
 type ActivationCookieStore = Awaited<ReturnType<typeof cookies>>;
@@ -115,9 +122,25 @@ const RESULTS = {
     code: "INTERNAL_ERROR",
   },
 } as const satisfies Record<
-  Exclude<ActivateAccountResult["code"], "VALIDATION_ERROR">,
+  Exclude<
+    ActivateAccountResult["code"],
+    "VALIDATION_ERROR" | "ACTIVATION_THROTTLED"
+  >,
   ActivateAccountResult
 >;
+
+function throttledResult(
+  retryAfterSeconds: number,
+): Extract<ActivateAccountResult, { code: "ACTIVATION_THROTTLED" }> {
+  return {
+    ok: false,
+    code: "ACTIVATION_THROTTLED",
+    retryAfterSeconds:
+      Number.isSafeInteger(retryAfterSeconds) && retryAfterSeconds >= 1
+        ? retryAfterSeconds
+        : THROTTLE_FALLBACK_RETRY_SECONDS,
+  };
+}
 
 function isProductionLoopback(hostname: string): boolean {
   if (process.env.NODE_ENV !== "production") {
@@ -369,10 +392,11 @@ export async function activateAccount(
   }
 
   let requestOrigin: string | null;
+  let requestHeaders: Headers;
 
   try {
-    const headerStore = await headers();
-    requestOrigin = headerStore.get("origin");
+    requestHeaders = await headers();
+    requestOrigin = requestHeaders.get("origin");
   } catch {
     clearActivationCookie(cookieStore);
     return RESULTS.INVALID_ORIGIN;
@@ -429,6 +453,19 @@ export async function activateAccount(
 
   if (!location) {
     return RESULTS.INTERNAL_ERROR;
+  }
+
+  try {
+    const rateLimit = await checkAccountActivationSubmitRateLimit(
+      requestHeaders,
+      activationSession.csrfNonce,
+    );
+
+    if (!rateLimit.allowed) {
+      return throttledResult(rateLimit.retryAfterSeconds);
+    }
+  } catch {
+    return throttledResult(THROTTLE_FALLBACK_RETRY_SECONDS);
   }
 
   let passwordHash: string;

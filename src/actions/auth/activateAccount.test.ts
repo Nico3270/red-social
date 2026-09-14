@@ -13,6 +13,7 @@ const mockReadActivationSession = jest.fn();
 const mockGetCookieName = jest.fn();
 const mockGetCookieClearOptions = jest.fn();
 const mockValidateActivationInput = jest.fn();
+const mockCheckAccountActivationSubmitRateLimit = jest.fn();
 const mockBcryptHash = jest.fn();
 const mockConsumeAccountClaim = jest.fn();
 const mockUsuarioUpdateMany = jest.fn();
@@ -68,6 +69,10 @@ jest.mock(
   }),
   { virtual: true },
 );
+jest.mock("@/lib/security/account-activation-rate-limit", () => ({
+  checkAccountActivationSubmitRateLimit:
+    mockCheckAccountActivationSubmitRateLimit,
+}));
 jest.mock(
   "@/lib/auth/account-claim",
   () => ({
@@ -101,6 +106,7 @@ const clearCookieOptions = {
   expires: new Date(0),
   maxAge: 0 as const,
 };
+const requestHeaderStore = { get: mockHeaderGet };
 
 const normalizedData = {
   nombre: "María José",
@@ -242,6 +248,9 @@ describe("activateAccount Server Action", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    mockCheckAccountActivationSubmitRateLimit
+      .mockReset()
+      .mockResolvedValue({ allowed: true });
     events = [];
     transactionActive = false;
     process.env.SITE_URL = TEST_ORIGIN;
@@ -254,7 +263,7 @@ describe("activateAccount Server Action", () => {
     mockCookieSet.mockImplementation(() => {
       events.push("cookie:clear");
     });
-    mockHeaders.mockResolvedValue({ get: mockHeaderGet });
+    mockHeaders.mockResolvedValue(requestHeaderStore);
     mockHeaderGet.mockImplementation((name: string) =>
       name.toLowerCase() === "origin" ? TEST_ORIGIN : null,
     );
@@ -403,6 +412,7 @@ describe("activateAccount Server Action", () => {
 
       expect(result).toEqual({ ok: false, code: "AUTH_SESSION_PRESENT" });
       expect(mockHeaders).not.toHaveBeenCalled();
+      expect(mockCheckAccountActivationSubmitRateLimit).not.toHaveBeenCalled();
       expectNoHashOrConsume();
       expectActivationCookiePreserved();
     });
@@ -473,6 +483,7 @@ describe("activateAccount Server Action", () => {
       const result = await activateAccount(buildFormData());
 
       expect(result).toEqual({ ok: false, code: "INVALID_ORIGIN" });
+      expect(mockCheckAccountActivationSubmitRateLimit).not.toHaveBeenCalled();
       expectNoHashOrConsume();
       expectActivationCookieCleared();
     });
@@ -549,6 +560,7 @@ describe("activateAccount Server Action", () => {
       const result = await activateAccount(buildFormData(options));
 
       expect(result).toEqual({ ok: false, code: "INVALID_CSRF" });
+      expect(mockCheckAccountActivationSubmitRateLimit).not.toHaveBeenCalled();
       expect(mockValidateActivationInput).not.toHaveBeenCalled();
       expectNoHashOrConsume();
       expectActivationCookieCleared();
@@ -691,6 +703,7 @@ describe("activateAccount Server Action", () => {
       expect(serialized).not.toContain(baseFormValues.confirmPassword);
       expect(serialized).not.toContain(csrfNonce);
       expect(serialized).not.toContain(rawToken);
+      expect(mockCheckAccountActivationSubmitRateLimit).not.toHaveBeenCalled();
       expectNoHashOrConsume();
       expectActivationCookiePreserved();
     });
@@ -729,6 +742,121 @@ describe("activateAccount Server Action", () => {
       expect(JSON.stringify(result)).not.toContain(baseFormValues.password);
       expectNoHashOrConsume();
       expectActivationCookiePreserved();
+    });
+  });
+
+  describe("submit rate limit", () => {
+    it("recibe sólo los request headers y el nonce de la sesión después de validar", async () => {
+      await expectSuccessRedirect();
+
+      expect(mockHeaders).toHaveBeenCalledTimes(1);
+      expect(mockCheckAccountActivationSubmitRateLimit).toHaveBeenCalledTimes(1);
+      expect(mockCheckAccountActivationSubmitRateLimit).toHaveBeenCalledWith(
+        requestHeaderStore,
+        csrfNonce,
+      );
+      expect(mockCheckAccountActivationSubmitRateLimit.mock.calls[0]).toHaveLength(2);
+      const rateCall = mockCheckAccountActivationSubmitRateLimit.mock.invocationCallOrder[0];
+      expect(mockValidateActivationInput.mock.invocationCallOrder[0]).toBeLessThan(rateCall);
+      expect(rateCall).toBeLessThan(mockBcryptHash.mock.invocationCallOrder[0]);
+      expect(rateCall).toBeLessThan(mockConsumeAccountClaim.mock.invocationCallOrder[0]);
+      expect(mockCheckAccountActivationSubmitRateLimit.mock.calls[0]).not.toContain(rawToken);
+      expect(mockCheckAccountActivationSubmitRateLimit.mock.calls[0]).not.toContain(
+        normalizedData.password,
+      );
+      expect(mockCheckAccountActivationSubmitRateLimit.mock.calls[0]).not.toContain(
+        normalizedData.email,
+      );
+      expect(mockCheckAccountActivationSubmitRateLimit.mock.calls[0]).not.toContain(usuarioId);
+    });
+
+    it.each([
+      ["LIMITED", 321],
+      ["UNAVAILABLE", 60],
+    ])("%s retorna el mismo código público y conserva el claim/cookie", async (
+      reason,
+      retryAfterSeconds,
+    ) => {
+      mockCheckAccountActivationSubmitRateLimit.mockResolvedValue({
+        allowed: false,
+        reason,
+        retryAfterSeconds,
+      });
+
+      const result = await activateAccount(buildFormData());
+
+      expect(result).toEqual({
+        ok: false,
+        code: "ACTIVATION_THROTTLED",
+        retryAfterSeconds,
+      });
+      expect(JSON.stringify(result)).not.toContain(reason);
+      expectNoHashOrConsume();
+      expectNoNegocioWrites();
+      expectActivationCookiePreserved();
+      expect(mockRedirect).not.toHaveBeenCalled();
+    });
+
+    it("falla cerrado con 60 segundos si el helper lanza", async () => {
+      mockCheckAccountActivationSubmitRateLimit.mockRejectedValue(
+        new Error(`synthetic Redis failure ${rawToken}`),
+      );
+
+      const result = await activateAccount(buildFormData());
+
+      expect(result).toEqual({
+        ok: false,
+        code: "ACTIVATION_THROTTLED",
+        retryAfterSeconds: 60,
+      });
+      expectNoHashOrConsume();
+      expectActivationCookiePreserved();
+      expect(mockRedirect).not.toHaveBeenCalled();
+      expect(JSON.stringify(result)).not.toContain(rawToken);
+    });
+
+    it("normaliza retry inválido a un entero conservador", async () => {
+      mockCheckAccountActivationSubmitRateLimit.mockResolvedValue({
+        allowed: false,
+        reason: "LIMITED",
+        retryAfterSeconds: 0,
+      });
+
+      await expect(activateAccount(buildFormData())).resolves.toEqual({
+        ok: false,
+        code: "ACTIVATION_THROTTLED",
+        retryAfterSeconds: 60,
+      });
+      expectNoHashOrConsume();
+      expectActivationCookiePreserved();
+    });
+
+    it("no consume cuota cuando el formulario falla la validación", async () => {
+      mockValidateActivationInput.mockReturnValue({
+        success: false,
+        error: { issues: [{ path: ["nombre"], message: "Nombre inválido" }] },
+      });
+
+      await expect(activateAccount(buildFormData())).resolves.toMatchObject({
+        ok: false,
+        code: "VALIDATION_ERROR",
+      });
+      expect(mockCheckAccountActivationSubmitRateLimit).not.toHaveBeenCalled();
+      expectNoHashOrConsume();
+    });
+
+    it("no consume cuota si la ciudad canónica no puede separarse", async () => {
+      mockValidateActivationInput.mockReturnValue({
+        success: true,
+        data: { ...normalizedData, ciudadCompleta: "Tunja" },
+      });
+
+      await expect(activateAccount(buildFormData())).resolves.toEqual({
+        ok: false,
+        code: "INTERNAL_ERROR",
+      });
+      expect(mockCheckAccountActivationSubmitRateLimit).not.toHaveBeenCalled();
+      expectNoHashOrConsume();
     });
   });
 
