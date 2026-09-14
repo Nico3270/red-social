@@ -240,7 +240,7 @@ describe("POST /api/negocio", () => {
     expect(mockUsuarioUpdate).not.toHaveBeenCalled();
   });
 
-  it("conserva el postprocesamiento y el response legacy tras éxito", async () => {
+  it("conserva el postprocesamiento y devuelve un response sin credenciales", async () => {
     const { request } = makeRequest("route-test-api-key");
 
     const response = await POST(request as never);
@@ -268,7 +268,8 @@ describe("POST /api/negocio", () => {
       },
     });
     expect(response.status).toBe(201);
-    await expect(responseBody(response)).resolves.toEqual({
+    const body = await responseBody(response);
+    expect(body).toEqual({
       ok: true,
       message: "Negocio creado exitosamente con todos los detalles",
       negocioId: "negocio-1",
@@ -276,13 +277,12 @@ describe("POST /api/negocio", () => {
       url: "https://myckeo.com/negocio-demo-bogota-abcd",
       googleMapsUrl:
         "https://www.google.com/maps/search/?api=1&query=4.711,-74.0721",
-      credencialesParaEnviar: {
-        email: "negociodemo@myckeo.com",
-        contraseña_temporal: "negociodemo2025*",
-        mensaje:
-          "Tu negocio ya está creado. Ingresa con estas credenciales y completa tu perfil real.",
-      },
     });
+    expect(body).not.toHaveProperty("credencialesParaEnviar");
+    const serializedBody = JSON.stringify(body);
+    expect(serializedBody).not.toContain("contraseña_temporal");
+    expect(serializedBody).not.toContain("2025*");
+    expect(serializedBody).not.toContain("negociodemo@myckeo.com");
   });
 
   it("conserva el error HTTP 500 ante una excepción inesperada", async () => {
@@ -312,5 +312,9 @@ describe("POST /api/negocio", () => {
     expect(source).not.toMatch(/new\s+FormData\s*\(/);
     expect(source).not.toContain("createHegocio");
     expect(source).not.toMatch(/\bcreateNegocio\s*\(/);
+    expect(source).not.toContain("credencialesParaEnviar");
+    expect(source).not.toContain("contraseña_temporal");
+    expect(source).not.toContain("2025*");
+    expect(source).not.toContain("@myckeo.com");
   });
 });

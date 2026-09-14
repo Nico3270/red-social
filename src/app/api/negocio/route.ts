@@ -120,11 +120,6 @@ export async function POST(request: NextRequest) {
       slug: result.slugNegocio,
       url: `https://myckeo.com/${result.slugNegocio}`,
       googleMapsUrl: urlGoogleMaps,
-      credencialesParaEnviar: {
-        email: `${nombre.toLowerCase().replace(/[^a-z0-9]/g, "")}@myckeo.com`,
-        contraseña_temporal: `${nombre.toLowerCase().replace(/[^a-z0-9]/g, "")}2025*`,
-        mensaje: "Tu negocio ya está creado. Ingresa con estas credenciales y completa tu perfil real."
-      }
     }, { status: 201 });
 
   } catch (error) {
