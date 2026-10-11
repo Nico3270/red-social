@@ -4,11 +4,33 @@ import {
   activateAccount,
   type ActivateAccountResult,
 } from "@/actions/auth/activateAccount";
+import colombia from "@/config/colombia.json";
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
+import {
+  IoCheckmarkOutline,
+  IoChevronDownOutline,
+  IoEyeOffOutline,
+  IoEyeOutline,
+} from "react-icons/io5";
 
 type ActivationFormProps = {
   csrfNonce: string;
 };
+
+type ColombiaDepartment = {
+  id: number;
+  departamento: string;
+  ciudades: string[];
+};
+
+const departments: ColombiaDepartment[] = colombia;
+
+const passwordRequirements = [
+  { label: "Mínimo 8 caracteres", test: (value: string) => value.length >= 8 },
+  { label: "Al menos una letra mayúscula", test: (value: string) => /[A-Z]/.test(value) },
+  { label: "Al menos una letra minúscula", test: (value: string) => /[a-z]/.test(value) },
+  { label: "Al menos un número", test: (value: string) => /[0-9]/.test(value) },
+];
 
 type FieldName =
   | "nombre"
@@ -23,6 +45,8 @@ type FieldName =
 
 const inputClassName =
   "mt-1.5 w-full rounded-xl border border-slate-300 bg-white px-3.5 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-500";
+const passwordToggleClassName =
+  "absolute bottom-0.5 right-0.5 flex h-11 w-11 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50";
 const MAX_THROTTLE_SECONDS = 3600;
 
 function normalizeRetryAfterSeconds(value: number): number {
@@ -88,6 +112,20 @@ export default function ActivationForm({ csrfNonce }: ActivationFormProps) {
   const confirmPasswordRef = useRef<HTMLInputElement>(null);
   const [throttleSecondsRemaining, setThrottleSecondsRemaining] = useState(0);
   const throttleSecondsRef = useRef(0);
+  const [selectedDepartamento, setSelectedDepartamento] = useState("");
+  const [selectedCity, setSelectedCity] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const cities = departments.find(
+    (department) => department.departamento === selectedDepartamento,
+  )?.ciudades ?? [];
+  const ciudadCompleta = selectedDepartamento && selectedCity && cities.includes(selectedCity)
+    ? `${selectedCity} - ${selectedDepartamento}`
+    : "";
+  const passwordsMatch = password === confirmPassword;
 
   useEffect(() => {
     if (throttleSecondsRemaining === 0) return;
@@ -135,7 +173,8 @@ export default function ActivationForm({ csrfNonce }: ActivationFormProps) {
       submittingRef.current ||
       terminal ||
       throttleSecondsRemaining > 0 ||
-      throttleSecondsRef.current > 0
+      throttleSecondsRef.current > 0 ||
+      !ciudadCompleta
     ) {
       return;
     }
@@ -159,6 +198,10 @@ export default function ActivationForm({ csrfNonce }: ActivationFormProps) {
     } finally {
       if (passwordRef.current) passwordRef.current.value = "";
       if (confirmPasswordRef.current) confirmPasswordRef.current.value = "";
+      setPassword("");
+      setConfirmPassword("");
+      setShowPassword(false);
+      setShowConfirmPassword(false);
       submittingRef.current = false;
       setIsPending(false);
     }
@@ -205,12 +248,70 @@ export default function ActivationForm({ csrfNonce }: ActivationFormProps) {
               aria-invalid={!!fieldError("username")}
               aria-describedby={errorDescription("username")} className={inputClassName} />
           </Field>
-          <Field name="ciudadCompleta" label="Ciudad y departamento" error={fieldError("ciudadCompleta")}>
-            <input id="activation-ciudadCompleta" name="ciudadCompleta" type="text"
-              placeholder="Tunja - Boyacá" maxLength={200} required
-              aria-invalid={!!fieldError("ciudadCompleta")}
-              aria-describedby={errorDescription("ciudadCompleta")} className={inputClassName} />
-          </Field>
+          <div className="min-w-0 sm:col-span-2">
+            <input type="hidden" name="ciudadCompleta" value={ciudadCompleta} />
+            <div className="grid gap-5 sm:grid-cols-2">
+              <div className="min-w-0">
+                <label htmlFor="activation-departamento" className="block text-sm font-medium text-slate-700">
+                  Departamento
+                </label>
+                <div className="relative">
+                  <select
+                    id="activation-departamento"
+                    autoComplete="address-level1"
+                    value={selectedDepartamento}
+                    onChange={(event) => {
+                      setSelectedDepartamento(event.target.value);
+                      setSelectedCity("");
+                    }}
+                    required
+                    aria-invalid={!!fieldError("ciudadCompleta")}
+                    aria-describedby={errorDescription("ciudadCompleta")}
+                    className={`${inputClassName} appearance-none pr-10`}
+                  >
+                    <option value="" disabled>Selecciona un departamento</option>
+                    {departments.map((department) => (
+                      <option key={department.id} value={department.departamento}>
+                        {department.departamento}
+                      </option>
+                    ))}
+                  </select>
+                  <IoChevronDownOutline aria-hidden="true" className="pointer-events-none absolute bottom-3.5 right-3.5 h-4 w-4 text-slate-500" />
+                </div>
+              </div>
+              <div className="min-w-0">
+                <label htmlFor="activation-ciudadCompleta" className="block text-sm font-medium text-slate-700">
+                  Ciudad
+                </label>
+                <div className="relative">
+                  <select
+                    id="activation-ciudadCompleta"
+                    autoComplete="address-level2"
+                    value={selectedCity}
+                    onChange={(event) => setSelectedCity(event.target.value)}
+                    disabled={!selectedDepartamento}
+                    required
+                    aria-invalid={!!fieldError("ciudadCompleta")}
+                    aria-describedby={errorDescription("ciudadCompleta")}
+                    className={`${inputClassName} appearance-none pr-10`}
+                  >
+                    <option value="" disabled>
+                      {selectedDepartamento ? "Selecciona una ciudad" : "Selecciona primero un departamento"}
+                    </option>
+                    {cities.map((city) => (
+                      <option key={city} value={city}>{city}</option>
+                    ))}
+                  </select>
+                  <IoChevronDownOutline aria-hidden="true" className="pointer-events-none absolute bottom-3.5 right-3.5 h-4 w-4 text-slate-500" />
+                </div>
+              </div>
+            </div>
+            {fieldError("ciudadCompleta") ? (
+              <p id="activation-ciudadCompleta-error" role="alert" className="mt-1.5 text-sm text-rose-700">
+                {fieldError("ciudadCompleta")}
+              </p>
+            ) : null}
+          </div>
           <Field name="genero" label="Género" error={fieldError("genero")}>
             <select id="activation-genero" name="genero" defaultValue="" required
               aria-invalid={!!fieldError("genero")}
@@ -228,18 +329,71 @@ export default function ActivationForm({ csrfNonce }: ActivationFormProps) {
           </Field>
         </div>
         <div className="grid gap-5 sm:grid-cols-2">
-          <Field name="password" label="Nueva contraseña" error={fieldError("password")}
-            hint="Mínimo 8 caracteres, una mayúscula, una minúscula y un número.">
-            <input ref={passwordRef} id="activation-password" name="password" type="password"
-              autoComplete="new-password" minLength={8} required
-              aria-invalid={!!fieldError("password")}
-              aria-describedby={errorDescription("password", true)} className={inputClassName} />
+          <Field name="password" label="Nueva contraseña" error={fieldError("password")}>
+            <div className="relative">
+              <input ref={passwordRef} id="activation-password" name="password"
+                type={showPassword ? "text" : "password"}
+                onChange={(event) => setPassword(event.target.value)}
+                autoComplete="new-password" minLength={8} required
+                aria-invalid={!!fieldError("password")}
+                aria-describedby={errorDescription("password", true)} className={`${inputClassName} pr-12`} />
+              <button
+                type="button"
+                onClick={() => setShowPassword((visible) => !visible)}
+                aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                aria-controls="activation-password"
+                className={passwordToggleClassName}
+              >
+                {showPassword ? <IoEyeOffOutline aria-hidden="true" size={20} /> : <IoEyeOutline aria-hidden="true" size={20} />}
+              </button>
+            </div>
+            <div id="activation-password-help" className="mt-3 rounded-xl border border-slate-200 bg-slate-50/70 p-3">
+              <ul aria-label="Requisitos de la contraseña" className="space-y-1.5 text-xs leading-5">
+                {passwordRequirements.map(({ label, test }) => {
+                  const met = test(password);
+                  return (
+                    <li key={label} className={`flex items-start gap-2 ${met ? "text-emerald-700" : "text-slate-500"}`}>
+                      <span aria-hidden="true" className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border ${met ? "border-emerald-200 bg-emerald-100" : "border-slate-300 bg-white"}`}>
+                        {met ? <IoCheckmarkOutline size={12} /> : null}
+                      </span>
+                      <span><span className="sr-only">{met ? "Cumplido: " : "Pendiente: "}</span>{label}</span>
+                    </li>
+                  );
+                })}
+              </ul>
+              <p className="mt-2 border-t border-slate-200 pt-2 text-xs leading-5 text-slate-500">
+                Usa letras A–Z, a–z, números o @$!%*?&amp;. Máximo 72 caracteres; los símbolos son opcionales.
+              </p>
+            </div>
           </Field>
           <Field name="confirmPassword" label="Confirma tu contraseña" error={fieldError("confirmPassword")}>
-            <input ref={confirmPasswordRef} id="activation-confirmPassword" name="confirmPassword"
-              type="password" autoComplete="new-password" minLength={8} required
-              aria-invalid={!!fieldError("confirmPassword")}
-              aria-describedby={errorDescription("confirmPassword")} className={inputClassName} />
+            <div className="relative">
+              <input ref={confirmPasswordRef} id="activation-confirmPassword" name="confirmPassword"
+                type={showConfirmPassword ? "text" : "password"}
+                onChange={(event) => setConfirmPassword(event.target.value)}
+                autoComplete="new-password" minLength={8} required
+                aria-invalid={!!fieldError("confirmPassword") || (!!confirmPassword && !passwordsMatch)}
+                aria-describedby={[
+                  errorDescription("confirmPassword"),
+                  confirmPassword ? "activation-confirmPassword-match" : null,
+                ].filter(Boolean).join(" ") || undefined}
+                className={`${inputClassName} pr-12`} />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword((visible) => !visible)}
+                aria-label={showConfirmPassword ? "Ocultar confirmación de contraseña" : "Mostrar confirmación de contraseña"}
+                aria-controls="activation-confirmPassword"
+                className={passwordToggleClassName}
+              >
+                {showConfirmPassword ? <IoEyeOffOutline aria-hidden="true" size={20} /> : <IoEyeOutline aria-hidden="true" size={20} />}
+              </button>
+            </div>
+            {confirmPassword ? (
+              <p id="activation-confirmPassword-match" role="status" aria-live="polite"
+                className={`mt-2 text-xs leading-5 ${passwordsMatch ? "text-emerald-700" : "text-rose-700"}`}>
+                {passwordsMatch ? "Las contraseñas coinciden" : "Las contraseñas no coinciden"}
+              </p>
+            ) : null}
           </Field>
         </div>
       </fieldset>
@@ -256,7 +410,7 @@ export default function ActivationForm({ csrfNonce }: ActivationFormProps) {
         </p>
       ) : null}
 
-      <button type="submit" disabled={isPending || terminal || waiting}
+      <button type="submit" disabled={isPending || terminal || waiting || !ciudadCompleta}
         className="mt-7 inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60">
         {isPending ? "Activando..." : waiting ? `Intenta de nuevo en ${waitText}` : "Activar mi cuenta"}
       </button>
