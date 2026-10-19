@@ -41,6 +41,7 @@ export async function POST(request: NextRequest) {
       twitter,
       // Campos nuevos
       sitioWeb,
+      horarios,
       latitud,
       longitud,
       palabrasClave = [], // array de strings para SEO
@@ -79,6 +80,8 @@ export async function POST(request: NextRequest) {
       telefonoContacto: telefonoContacto || null,
       categoriaIds,
       seccionIds,
+      sitioWeb,
+      horarios,
     };
 
     // Ejecutar creación del negocio
@@ -92,7 +95,6 @@ export async function POST(request: NextRequest) {
     await prisma.negocio.update({
       where: { id: result.negocioId },
       data: {
-        sitioWeb: sitioWeb || null,
         latitud: latitud ? parseFloat(latitud) : null,
         longitud: longitud ? parseFloat(longitud) : null,
         urlGoogleMaps,
@@ -115,12 +117,16 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       ok: true,
-      message: "Negocio creado exitosamente con todos los detalles",
+      status: result.status,
+      negocio: result.negocio,
+      message: result.status === "CREATED"
+        ? "Negocio creado exitosamente con todos los detalles"
+        : result.message,
       negocioId: result.negocioId,
       slug: result.slugNegocio,
       url: `https://myckeo.com/${result.slugNegocio}`,
       googleMapsUrl: urlGoogleMaps,
-    }, { status: 201 });
+    }, { status: result.status === "CREATED" ? 201 : 200 });
 
   } catch (error) {
     console.error("Error en API /api/negocio:", error);
