@@ -22,12 +22,13 @@ jest.mock("bcryptjs", () => ({
     hash: mockBcryptHash,
   },
 }));
+// Mock the existing module by its resolved path so a prior suite's resolver
+// cache and this factory use the same identity (not a virtual module ID).
 jest.mock(
   "@/helpers/usuario/funcionesUsuario",
   () => ({
     separarCiudadDepartamento: mockSepararCiudadDepartamento,
   }),
-  { virtual: true },
 );
 jest.mock(
   "@/lib/prisma",

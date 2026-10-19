@@ -600,6 +600,10 @@ model AccountClaim {
   revokedAt  DateTime?
   createdAt  DateTime  @default(now())
 
+  idempotencyKey  String? @unique
+  negocioId       String?
+  derivationKeyId String?
+
   usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
 
   @@index([usuarioId])

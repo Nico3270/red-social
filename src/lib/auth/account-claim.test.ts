@@ -606,3 +606,535 @@ describe("account-claim", () => {
     );
   });
 });
+
+/**
+ * Contrato futuro: issueOrRecoverAccountClaim(input, { keyring }).
+ * No cambia issueAccountClaim/validateAccountClaim/consumeAccountClaim legacy.
+ *
+ * Opción A: HMAC-SHA256, salida base64url de 32 bytes; SHA-256 sigue siendo el
+ * verificador de consumo. Mensaje canónico: "myckeo:account-claim:v1\n" seguido
+ * de keyId, idempotencyKey, userId y businessId, cada uno en UTF-8 con prefijo
+ * decimal de longitud EN BYTES + ":". El framing evita colisiones por concatenación.
+ * El keyring es configuración server-only; todas las claves de este test son
+ * sintéticas. No se recupera un bearer desde su hash ni se almacena plaintext.
+ *
+ * Schema futuro mínimo (nullable para claims legacy):
+ *   idempotencyKey String? @unique
+ *   negocioId String?
+ *   derivationKeyId String?
+ * El id CUID, usuarioId, tokenHash @unique y timestamps existentes se conservan.
+ * negocioId fija identidad, no necesita una nueva relación para este contrato.
+ * Las filas de operaciones se conservan: no borrar/reutilizar keys expiradas.
+ *
+ * Transacción Serializable + unique(idempotencyKey): P2002 se recupera FUERA
+ * de la transacción abortada; P2034 reintenta la decisión completa. Una operación
+ * distinta no revoca un claim vigente (también protege claims legacy sin key).
+ * Rotación: las claves antiguas deben conservarse hasta vencer sus claims;
+ * si faltan/no verifican el hash, RECOVERY_UNAVAILABLE, jamás emitir otro token.
+ * ACCOUNT_ACTIVE exige !isPlaceholder && perfilCompleto, como el flujo real de
+ * activación; !isPlaceholder solo NO demuestra activación.
+ */
+
+type IdempotentClaimInput = {
+  userId: string;
+  businessId: string;
+  idempotencyKey: string;
+};
+type ClaimKeyring = { activeKeyId: string; keys: Record<string, Buffer> };
+type RecoverableClaimResult =
+  | { status: "CREATED" | "RECOVERED"; claimId: string; rawToken: string; expiresAt: Date }
+  | { status: "ALREADY_CONSUMED" | "ACCOUNT_ACTIVE" | "EXPIRED" | "REVOKED" |
+      "CONFLICT" | "NOT_CLAIMABLE" | "ACTIVE_CLAIM_EXISTS" | "RECOVERY_UNAVAILABLE" };
+type IssueOrRecover = (
+  input: IdempotentClaimInput,
+  options: { keyring: ClaimKeyring },
+) => Promise<RecoverableClaimResult>;
+
+// Export aún ausente: falla cada caso explícitamente, sin romper el typecheck ni
+// sustituir la implementación por un stub que haga pasar este contrato.
+function idempotentIssuer(): IssueOrRecover {
+  const exports = jest.requireActual<typeof import("./account-claim")>("./account-claim") as
+    typeof import("./account-claim") & { issueOrRecoverAccountClaim?: IssueOrRecover };
+  expect(typeof exports.issueOrRecoverAccountClaim).toBe("function");
+  return exports.issueOrRecoverAccountClaim!;
+}
+
+type ContractClaimRow = {
+  id: string;
+  usuarioId: string;
+  negocioId: string | null;
+  idempotencyKey: string | null;
+  derivationKeyId: string | null;
+  tokenHash: string;
+  expiresAt: Date;
+  consumedAt: Date | null;
+  revokedAt: Date | null;
+  createdAt: Date;
+};
+type ClaimWhere = Record<string, unknown>;
+function isClaimDate(value: unknown): boolean {
+  return Object.prototype.toString.call(value) === "[object Date]";
+}
+
+function claimDateTimestamp(value: unknown): number {
+  if (!isClaimDate(value)) return Number.NaN;
+  try {
+    // El getter nativo reconoce Dates de otro realm y rechaza objetos impostores.
+    return Date.prototype.getTime.call(value);
+  } catch {
+    return Number.NaN;
+  }
+}
+
+function compareClaimValue(actual: unknown, expected: unknown, operator: string): boolean {
+  const actualIsDate = isClaimDate(actual);
+  const expectedIsDate = isClaimDate(expected);
+  const actualTime = claimDateTimestamp(actual);
+  const expectedTime = claimDateTimestamp(expected);
+  if ((actualIsDate && !Number.isFinite(actualTime)) ||
+      (expectedIsDate && !Number.isFinite(expectedTime))) return false;
+
+  if (operator === "equals" || operator === "not") {
+    const equal = actualIsDate && expectedIsDate
+      ? actualTime === expectedTime
+      : actual === expected;
+    return operator === "equals" ? equal : !equal;
+  }
+  if (["lt", "lte", "gt", "gte"].includes(operator)) {
+    if (!Number.isFinite(actualTime) || !Number.isFinite(expectedTime)) return false;
+    if (operator === "lt") return actualTime < expectedTime;
+    if (operator === "lte") return actualTime <= expectedTime;
+    if (operator === "gt") return actualTime > expectedTime;
+    return actualTime >= expectedTime;
+  }
+  throw new Error(`Operador no modelado por el mock: ${operator}`);
+}
+
+function matchesClaim(row: ContractClaimRow, where: ClaimWhere): boolean {
+  return Object.entries(where).every(([key, value]) => {
+    if (key === "AND") return (Array.isArray(value) ? value : [value]).every(w => matchesClaim(row, w));
+    if (key === "OR") return (value as ClaimWhere[]).some(w => matchesClaim(row, w));
+    const actual = row[key as keyof ContractClaimRow];
+    if (value && typeof value === "object" && !isClaimDate(value)) {
+      return Object.entries(value).every(([operator, operand]) =>
+        compareClaimValue(actual, operand, operator));
+    }
+    return compareClaimValue(actual, value, "equals");
+  });
+}
+
+// Mock de persistencia, no de la máquina de dominio. Trabaja sobre snapshots
+// aislados, publica al commit y aplica unicidad; una transacción fallida no publica.
+function claimStore() {
+  let rows: ContractClaimRow[] = [];
+  let revision = 0;
+  let sequence = 0;
+  const creates = jest.fn();
+  const updates = jest.fn();
+  const user = { id: usuarioId, isPlaceholder: true, perfilCompleto: false };
+  const business = { id: "negocio-1", usuarioId, slug: "negocio-confirmado" };
+  const readUser = jest.fn(async () => user as typeof user | null);
+  const readBusiness = jest.fn(async () => business as typeof business | null);
+  let arrive: (() => void) | undefined;
+  let readsToSynchronize = 0;
+  let barrier: Promise<void> = Promise.resolve();
+  const store = {
+    creates, updates, readUser, readBusiness, user, business,
+    get rows() { return rows; },
+    seed(row: ContractClaimRow) { rows.push(structuredClone(row)); revision++; },
+    clear() { rows = []; revision++; },
+    synchronizeFirstTwoReads() {
+      readsToSynchronize = 2;
+      barrier = new Promise<void>(resolve => { arrive = resolve; });
+    },
+  };
+  mockGlobalClaimFindUnique.mockImplementation(async ({ where }: { where: ClaimWhere }) =>
+    structuredClone(rows.find(row => matchesClaim(row, where)) ?? null));
+  mockTransaction.mockImplementation(async (callback: (tx: unknown) => Promise<unknown>) => {
+    const initialRevision = revision;
+    const initialIds = new Set(rows.map(row => row.id));
+    const local = structuredClone(rows);
+    let dirty = false;
+    const find = async ({ where }: { where: ClaimWhere }) => {
+      const found = structuredClone(local.find(row => matchesClaim(row, where)) ?? null);
+      if (readsToSynchronize > 0) {
+        readsToSynchronize--;
+        if (readsToSynchronize === 0) arrive!();
+        await barrier;
+      }
+      return found;
+    };
+    const result = await callback({
+      usuario: { findUnique: readUser },
+      negocio: { findUnique: readBusiness },
+      accountClaim: {
+        findUnique: jest.fn(find), findFirst: jest.fn(find),
+        create: async ({ data }: { data: Omit<ContractClaimRow, "id" | "createdAt" | "consumedAt" | "revokedAt"> }) => {
+          creates({ data });
+          const row: ContractClaimRow = {
+            id: `idempotent-claim-${++sequence}`, createdAt: new Date(),
+            consumedAt: null, revokedAt: null, ...data,
+          };
+          if (local.some(r => r.tokenHash === row.tokenHash ||
+            (row.idempotencyKey !== null && r.idempotencyKey === row.idempotencyKey))) {
+            throw knownPrismaError("P2002");
+          }
+          local.push(row); dirty = true;
+          return structuredClone(row);
+        },
+        updateMany: async (args: { where: ClaimWhere; data: Partial<ContractClaimRow> }) => {
+          updates(args);
+          let count = 0;
+          for (const row of local.filter(r => matchesClaim(r, args.where))) {
+            Object.assign(row, args.data); count++; dirty = true;
+          }
+          return { count };
+        },
+      },
+    });
+    if (dirty) {
+      for (const inserted of local.filter(row => !initialIds.has(row.id))) {
+        if (rows.some(row => row.tokenHash === inserted.tokenHash ||
+          (inserted.idempotencyKey !== null && row.idempotencyKey === inserted.idempotencyKey))) {
+          throw knownPrismaError("P2002");
+        }
+      }
+      if (initialRevision !== revision) throw knownPrismaError("P2034");
+      rows = local; revision++;
+    }
+    return result;
+  });
+  return store;
+}
+
+function successfulClaim(result: RecoverableClaimResult) {
+  if (result.status !== "CREATED" && result.status !== "RECOVERED") {
+    throw new Error(`Se esperaba un claim recuperable; recibido ${result.status}`);
+  }
+  return result;
+}
+
+describe("issueOrRecoverAccountClaim — contrato futuro de operación idempotente", () => {
+  const input: IdempotentClaimInput = {
+    userId: usuarioId, businessId: "negocio-1",
+    idempotencyKey: "send-profile-activation:pending-business:123",
+  };
+  // Vector conocido HMAC-SHA256 con clave sintética 0x11 repetida 32 veces.
+  const vectorToken = "lyXh3Pt5pAhqJjAdokSV149k5hZ2grNe76mTm2su49A";
+  let store: ReturnType<typeof claimStore>;
+  let keyring: ClaimKeyring;
+  beforeEach(() => {
+    jest.resetAllMocks();
+    jest.useFakeTimers(); jest.setSystemTime(now);
+    keyring = { activeKeyId: "test-v1", keys: { "test-v1": Buffer.alloc(32, 17) } };
+    store = claimStore();
+  });
+  afterEach(() => { jest.useRealTimers(); });
+  const issue = (args = input) => idempotentIssuer()(args, { keyring });
+  async function issued() { return successfulClaim(await issue()); }
+  function unchanged(before: ContractClaimRow[]) {
+    expect(store.rows).toEqual(before);
+    expect(store.updates).not.toHaveBeenCalled();
+  }
+
+  it("primera emisión CREATED: HMAC conocido, hash y TTL existentes, identidad durable mínima", async () => {
+    const result = await issued();
+    expect(result).toEqual({ status: "CREATED", claimId: expect.any(String), rawToken: vectorToken, expiresAt });
+    expect(store.rows).toEqual([{
+      id: result.claimId, usuarioId, negocioId: input.businessId,
+      idempotencyKey: input.idempotencyKey, derivationKeyId: "test-v1",
+      tokenHash: expectedHash(result.rawToken), expiresAt, createdAt: now,
+      consumedAt: null, revokedAt: null,
+    }]);
+    expect(store.creates).toHaveBeenCalledTimes(1);
+    expect(store.updates).not.toHaveBeenCalled();
+    expect(mockRandomBytes).not.toHaveBeenCalled();
+    expect(mockTransaction).toHaveBeenCalledWith(expect.any(Function), {
+      isolationLevel: Prisma.TransactionIsolationLevel.Serializable,
+    });
+  });
+
+  it("misma key devuelve RECOVERED con mismo id/token/expiry y sin create ni revocación", async () => {
+    const first = await issued();
+    const before = structuredClone(store.rows);
+    jest.setSystemTime(new Date(now.getTime() + 30_000));
+    expect(await issue()).toEqual({ ...first, status: "RECOVERED" });
+    expect(store.creates).toHaveBeenCalledTimes(1);
+    unchanged(before);
+  });
+
+  it("respuesta perdida: otro caller reconstruye exactamente el bearer desde keyring + referencias, no hash", async () => {
+    await issue(); // Caller descarta la primera respuesta; sólo queda la fila persistida.
+    const row = structuredClone(store.rows[0]);
+    const freshStore = claimStore(); freshStore.seed(row);
+    const recovered = successfulClaim(await issue());
+    expect(recovered).toEqual({ status: "RECOVERED", claimId: row.id, rawToken: vectorToken, expiresAt });
+    expect(expectedHash(recovered.rawToken)).toBe(row.tokenHash);
+    expect(freshStore.creates).not.toHaveBeenCalled();
+    expect(freshStore.updates).not.toHaveBeenCalled();
+  });
+
+  it("dos llamadas simultáneas ven ausencia; unique/P2002 converge sin dos claims ni revocación", async () => {
+    const fn = idempotentIssuer();
+    store.synchronizeFirstTwoReads();
+    const results = await Promise.all([fn(input, { keyring }), fn(input, { keyring })]);
+    expect(results.map(r => r.status).sort()).toEqual(["CREATED", "RECOVERED"]);
+    const [first, second] = results.map(successfulClaim);
+    expect(first.rawToken).toBe(second.rawToken);
+    expect(first.claimId).toBe(second.claimId);
+    expect(store.rows).toHaveLength(1);
+    expect(store.creates).toHaveBeenCalledTimes(2); // La carrera llega al insert real simulado.
+    expect(store.updates).not.toHaveBeenCalled();
+  });
+
+  it("P2034 reintenta transacción completa sin regenerar/revocar", async () => {
+    idempotentIssuer();
+    mockTransaction.mockRejectedValueOnce(knownPrismaError("P2034"));
+    expect((await issued()).rawToken).toBe(vectorToken);
+    expect(mockTransaction).toHaveBeenCalledTimes(2);
+    expect(store.rows).toHaveLength(1);
+    expect(store.updates).not.toHaveBeenCalled();
+  });
+
+  it("error DB distinto de P2002/P2034 no se disfraza de recovery o cuenta activa", async () => {
+    idempotentIssuer();
+    const error = knownPrismaError("P1001");
+    mockTransaction.mockRejectedValueOnce(error);
+    await expect(issue()).rejects.toBe(error);
+    expect(store.rows).toHaveLength(0);
+  });
+
+  it.each(["userId", "businessId"] as const)("misma key + %s diferente => CONFLICT aun si ya consumido", async field => {
+    await issued(); store.rows[0].consumedAt = now;
+    const before = structuredClone(store.rows);
+    expect(await issue({ ...input, [field]: "otra-identidad" })).toEqual({ status: "CONFLICT" });
+    expect(store.creates).toHaveBeenCalledTimes(1);
+    unchanged(before);
+  });
+
+  it.each([
+    ["consumedAt", "ALREADY_CONSUMED"], ["revokedAt", "REVOKED"], ["expiresAt", "EXPIRED"],
+  ] as const)("%s impide devolver/reemitir bearer con la misma key: %s", async (field, status) => {
+    await issued(); store.rows[0][field] = now;
+    const before = structuredClone(store.rows);
+    expect(await issue()).toEqual({ status });
+    expect(store.creates).toHaveBeenCalledTimes(1);
+    unchanged(before);
+  });
+
+  it("consumido prevalece sobre expirado y usuario activado: nunca devolver token reutilizable", async () => {
+    await issued(); store.rows[0].consumedAt = now; store.rows[0].expiresAt = now;
+    store.user.isPlaceholder = false; store.user.perfilCompleto = true;
+    expect(await issue()).toEqual({ status: "ALREADY_CONSUMED" });
+    expect(store.creates).toHaveBeenCalledTimes(1);
+  });
+
+  it.each([false, true])("cuenta activa (con claim previo=%s) es no-op sin emitir/revocar", async existing => {
+    if (existing) await issued();
+    const before = structuredClone(store.rows);
+    store.user.isPlaceholder = false; store.user.perfilCompleto = true;
+    expect(await issue()).toEqual({ status: "ACCOUNT_ACTIVE" });
+    expect(store.creates).toHaveBeenCalledTimes(existing ? 1 : 0);
+    unchanged(before);
+  });
+
+  it.each(["usuario ausente", "negocio ausente", "negocio ajeno", "no-placeholder incompleto"])(
+    "%s => NOT_CLAIMABLE, no token ni escrituras", async scenario => {
+      if (scenario === "usuario ausente") store.readUser.mockResolvedValue(null);
+      if (scenario === "negocio ausente") store.readBusiness.mockResolvedValue(null);
+      if (scenario === "negocio ajeno") store.business.usuarioId = "otro-usuario";
+      if (scenario === "no-placeholder incompleto") store.user.isPlaceholder = false;
+      expect(await issue()).toEqual({ status: "NOT_CLAIMABLE" });
+      expect(store.creates).not.toHaveBeenCalled();
+      unchanged([]);
+    },
+  );
+
+  it("key diferente no revoca claim vigente de otra operación", async () => {
+    await issued(); const before = structuredClone(store.rows);
+    expect(await issue({ ...input, idempotencyKey: "otra-operacion-explicita" })).toEqual({ status: "ACTIVE_CLAIM_EXISTS" });
+    expect(store.creates).toHaveBeenCalledTimes(1);
+    unchanged(before);
+  });
+
+  it("claim legacy vigente sin idempotencyKey también impide revocación silenciosa", async () => {
+    store.seed({ id: claimId, usuarioId, negocioId: null, idempotencyKey: null,
+      derivationKeyId: null, tokenHash: expectedHash(), expiresAt, consumedAt: null,
+      revokedAt: null, createdAt: now });
+    const before = structuredClone(store.rows);
+    expect(await issue()).toEqual({ status: "ACTIVE_CLAIM_EXISTS" });
+    expect(store.creates).not.toHaveBeenCalled();
+    unchanged(before);
+  });
+
+  it.each(["expiresAt", "revokedAt"] as const)("nueva key explícita después de %s permite nuevo token sin modificar fila anterior", async field => {
+    const first = await issued(); store.rows[0][field] = now;
+    const old = structuredClone(store.rows[0]);
+    const next = successfulClaim(await issue({ ...input, idempotencyKey: "otra-operacion-explicita" }));
+    expect(next.status).toBe("CREATED");
+    expect(next.rawToken).not.toBe(first.rawToken);
+    expect(store.rows).toHaveLength(2);
+    expect(store.rows[0]).toEqual(old);
+    expect(store.updates).not.toHaveBeenCalled();
+    expect(await issue()).toEqual({ status: field === "expiresAt" ? "EXPIRED" : "REVOKED" });
+  });
+
+  it("dos keys diferentes concurrentes no dejan dos claims vigentes del mismo usuario", async () => {
+    const fn = idempotentIssuer(); store.synchronizeFirstTwoReads();
+    const results = await Promise.all([
+      fn(input, { keyring }), fn({ ...input, idempotencyKey: "otra-operacion-explicita" }, { keyring }),
+    ]);
+    expect(results.map(r => r.status).sort()).toEqual(["ACTIVE_CLAIM_EXISTS", "CREATED"]);
+    expect(store.rows).toHaveLength(1);
+    expect(store.updates).not.toHaveBeenCalled();
+  });
+
+  it("rotar clave activa conserva recuperación exacta usando derivationKeyId persistido", async () => {
+    const first = await issued();
+    keyring.keys["test-v2"] = Buffer.alloc(32, 34); keyring.activeKeyId = "test-v2";
+    expect(await issue()).toEqual({ ...first, status: "RECOVERED" });
+    expect(store.rows[0].derivationKeyId).toBe("test-v1");
+    expect(store.creates).toHaveBeenCalledTimes(1);
+  });
+
+  it.each(["clave retirada", "material equivocado", "hash corrupto", "fila sin keyId"])(
+    "%s => RECOVERY_UNAVAILABLE; jamás derivar un reemplazo ni devolver hash como token", async scenario => {
+      await issued();
+      if (scenario === "clave retirada") {
+        delete keyring.keys["test-v1"];
+        keyring.keys["test-v2"] = Buffer.alloc(32, 34); keyring.activeKeyId = "test-v2";
+      }
+      if (scenario === "material equivocado") keyring.keys["test-v1"] = Buffer.alloc(32, 34);
+      if (scenario === "hash corrupto") store.rows[0].tokenHash = "0".repeat(64);
+      if (scenario === "fila sin keyId") store.rows[0].derivationKeyId = null;
+      const before = structuredClone(store.rows);
+      expect(await issue()).toEqual({ status: "RECOVERY_UNAVAILABLE" });
+      expect(store.creates).toHaveBeenCalledTimes(1);
+      unchanged(before);
+    },
+  );
+
+  it.each(["ausente", "corta"])("clave activa %s: no emitir con secreto por defecto ni aleatoriedad", async scenario => {
+    if (scenario === "ausente") delete keyring.keys["test-v1"];
+    else keyring.keys["test-v1"] = Buffer.alloc(8, 17);
+    expect(await issue()).toEqual({ status: "RECOVERY_UNAVAILABLE" });
+    expect(store.creates).not.toHaveBeenCalled();
+    expect(mockRandomBytes).not.toHaveBeenCalled();
+  });
+
+  it("el secreto afecta el bearer: referencias públicas y hash solos no permiten reconstruirlo", async () => {
+    const first = await issued(); store.clear();
+    keyring.keys["test-v1"] = Buffer.alloc(32, 34);
+    const second = await issued();
+    expect(second.rawToken).not.toBe(first.rawToken);
+    expect(second.rawToken).not.toBe(expectedHash(input.idempotencyKey));
+  });
+
+  it("no persiste ni retorna secreto/hash; el único bearer sale en éxito, sin logs", async () => {
+    const spies = [jest.spyOn(console, "log"), jest.spyOn(console, "error"), jest.spyOn(console, "warn")];
+    try {
+      const result = await issued();
+      const persisted = JSON.stringify({ rows: store.rows, creates: store.creates.mock.calls, updates: store.updates.mock.calls });
+      expect(persisted).not.toContain(result.rawToken);
+      expect(persisted).not.toContain(keyring.keys["test-v1"].toString("hex"));
+      expect(persisted).not.toContain('"type":"Buffer"');
+      expect(Object.keys(result).sort()).toEqual(["claimId", "expiresAt", "rawToken", "status"]);
+      for (const spy of spies) expect(spy).not.toHaveBeenCalled();
+    } finally { for (const spy of spies) spy.mockRestore(); }
+  });
+
+  it("bearer derivado mantiene el contrato de validateAccountClaim: SHA-256, formato y expiración", async () => {
+    const result = await issued();
+    expect(result.rawToken).toMatch(/^[A-Za-z0-9_-]{43}$/);
+    mockGlobalClaimFindUnique.mockResolvedValue(validValidationRow());
+    expect(await validateAccountClaim(result.rawToken)).toEqual({ valid: true, usuarioId, expiresAt });
+    expect(mockGlobalClaimFindUnique).toHaveBeenLastCalledWith(expect.objectContaining({
+      where: { tokenHash: expectedHash(result.rawToken) },
+    }));
+    mockGlobalClaimFindUnique.mockResolvedValue(validValidationRow({ expiresAt: now }));
+    expect(await validateAccountClaim(result.rawToken)).toEqual({ valid: false });
+  });
+
+  it("consumeAccountClaim acepta el bearer derivado y luego recovery retorna ALREADY_CONSUMED", async () => {
+    const result = await issued();
+    const callback = jest.fn(async ({ usuarioId: id }: { usuarioId: string }) => id);
+    expect(await consumeAccountClaim(result.rawToken, callback)).toBe(usuarioId);
+    expect(callback).toHaveBeenCalledTimes(1);
+    expect(store.rows[0].consumedAt).toEqual(now);
+    expect(await issue()).toEqual({ status: "ALREADY_CONSUMED" });
+    expect(store.creates).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("matchesClaim — fechas del mock entre realms", () => {
+  const row: ContractClaimRow = {
+    id: claimId, usuarioId, negocioId: null, idempotencyKey: null,
+    derivationKeyId: null, tokenHash: expectedHash(), expiresAt,
+    consumedAt: null, revokedAt: null, createdAt: now,
+  };
+
+  it("structuredClone conserva igualdad temporal directa, equals y not sin identidad de objeto", () => {
+    const cloned = structuredClone(row);
+    const equivalent = new Date(expiresAt.getTime());
+    expect(cloned.expiresAt).not.toBe(equivalent);
+    expect(matchesClaim(cloned, { expiresAt: equivalent })).toBe(true);
+    expect(matchesClaim(cloned, { expiresAt: { equals: structuredClone(equivalent) } })).toBe(true);
+    expect(matchesClaim(cloned, { expiresAt: { not: equivalent } })).toBe(false);
+    expect(matchesClaim(cloned, { expiresAt: { not: new Date(expiresAt.getTime() + 1) } })).toBe(true);
+  });
+
+  it("lt/lte/gt/gte respetan todos los límites con fechas clonadas en ambos lados", () => {
+    const cloned = structuredClone(row);
+    const cases = [
+      { offset: -1, lt: false, lte: false, gt: true, gte: true },
+      { offset: 0, lt: false, lte: true, gt: false, gte: true },
+      { offset: 1, lt: true, lte: true, gt: false, gte: false },
+    ];
+    for (const boundary of cases) {
+      for (const operator of ["lt", "lte", "gt", "gte"] as const) {
+        const value = structuredClone(new Date(expiresAt.getTime() + boundary.offset));
+        expect(matchesClaim(cloned, { expiresAt: { [operator]: value } })).toBe(boundary[operator]);
+      }
+    }
+  });
+
+  it("null, undefined y epoch cero siguen siendo valores diferentes", () => {
+    const cloned = structuredClone({ ...row, expiresAt: new Date(0) });
+    expect(matchesClaim(cloned, { consumedAt: null, revokedAt: null })).toBe(true);
+    expect(matchesClaim(cloned, { consumedAt: undefined })).toBe(false);
+    expect(matchesClaim(cloned, { consumedAt: { equals: null } })).toBe(true);
+    expect(matchesClaim(cloned, { revokedAt: { not: null } })).toBe(false);
+    expect(matchesClaim(cloned, { expiresAt: new Date(0) })).toBe(true);
+    expect(matchesClaim(cloned, { expiresAt: null })).toBe(false);
+    expect(matchesClaim(cloned, { expiresAt: { gt: null } })).toBe(false);
+    expect(compareClaimValue(undefined, undefined, "equals")).toBe(true);
+    expect(compareClaimValue(undefined, null, "equals")).toBe(false);
+    expect(compareClaimValue(undefined, null, "not")).toBe(true);
+  });
+
+  it("rechaza Invalid Date incluso clonado, como valor y como operando", () => {
+    const invalid = structuredClone(new Date(Number.NaN));
+    const corrupted = structuredClone({ ...row, expiresAt: invalid });
+    expect(matchesClaim(row, { expiresAt: invalid })).toBe(false);
+    expect(matchesClaim(corrupted, { expiresAt: invalid })).toBe(false);
+    for (const operator of ["equals", "not", "lt", "lte", "gt", "gte"]) {
+      expect(matchesClaim(row, { expiresAt: { [operator]: invalid } })).toBe(false);
+      expect(matchesClaim(corrupted, { expiresAt: { [operator]: expiresAt } })).toBe(false);
+    }
+  });
+
+  it("no convierte strings/números ni acepta una etiqueta Date falsa", () => {
+    for (const value of [expiresAt.toISOString(), expiresAt.getTime(), undefined, null]) {
+      expect(compareClaimValue(expiresAt, value, "equals")).toBe(false);
+      for (const operator of ["lt", "lte", "gt", "gte"]) {
+        expect(compareClaimValue(expiresAt, value, operator)).toBe(false);
+        expect(compareClaimValue(value, expiresAt, operator)).toBe(false);
+      }
+    }
+    const fake = { [Symbol.toStringTag]: "Date", getTime: () => expiresAt.getTime() };
+    expect(compareClaimValue(fake, expiresAt, "equals")).toBe(false);
+    expect(matchesClaim(row, { expiresAt: fake })).toBe(false);
+    expect(matchesClaim(row, { usuarioId })).toBe(true);
+    expect(matchesClaim(row, { usuarioId: { not: "otra-identidad" } })).toBe(true);
+  });
+});
