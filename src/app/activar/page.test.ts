@@ -17,6 +17,9 @@ const mockActivationForm = jest.fn(({ csrfNonce }: { csrfNonce: string }) =>
     createElement("input", { type: "hidden", name: "csrfNonce", value: csrfNonce }),
   ),
 );
+const mockActivationBootstrap = jest.fn(() =>
+  createElement("div", { "data-testid": "activation-bootstrap" }),
+);
 
 jest.mock(
   "next/headers",
@@ -53,6 +56,10 @@ jest.mock(
 jest.mock("./ActivationForm", () => ({
   __esModule: true,
   default: mockActivationForm,
+}));
+jest.mock("./ActivationBootstrap", () => ({
+  __esModule: true,
+  default: mockActivationBootstrap,
 }));
 
 import AccountActivationPage, {
@@ -291,6 +298,142 @@ describe("/activar Server Component", () => {
 
       expect(html).toContain('href="/auth/login"');
       expect(html).not.toMatch(/callbackUrl|https?:\/\//);
+    });
+  });
+
+  describe("integración con ActivationBootstrap independiente del estado SSR", () => {
+    it.each([
+      {
+        name: "cookie ausente",
+        state: "UNAVAILABLE",
+        setup: () => mockCookieGet.mockReturnValue(undefined),
+      },
+      {
+        name: "sesión de activación inválida",
+        state: "UNAVAILABLE",
+        setup: () => mockReadActivationSession.mockReturnValue({ valid: false }),
+      },
+      {
+        name: "fallo al leer cookies",
+        state: "TEMPORARY_ERROR",
+        setup: () => mockCookies.mockRejectedValue(
+          new Error(`synthetic cookie failure ${cookieValue}`),
+        ),
+      },
+      {
+        name: "fallo al descifrar sesión",
+        state: "TEMPORARY_ERROR",
+        setup: () => mockReadActivationSession.mockImplementation(() => {
+          throw new Error(`synthetic session failure ${rawToken}`);
+        }),
+      },
+      {
+        name: "fallo de auth",
+        state: "TEMPORARY_ERROR",
+        setup: () => mockAuth.mockRejectedValue(
+          new Error(`synthetic auth failure ${usuarioId}`),
+        ),
+      },
+      {
+        name: "sesión Auth presente",
+        state: "AUTH_SESSION_PRESENT",
+        setup: () => mockAuth.mockResolvedValue({ user: { id: "another-user" } }),
+      },
+      {
+        name: "activación preparada",
+        state: "READY",
+        setup: () => mockAuth.mockResolvedValue(null),
+      },
+    ])("$name: bootstrap una vez en $state, formulario sólo en READY", async ({ state, setup }) => {
+      setup();
+
+      const html = await renderPage();
+
+      expectState(html, state);
+      expectNoSensitiveData(html);
+      expect(html).not.toContain("2026-09-12T20:00:00.000Z");
+      expect(mockCookieSet).not.toHaveBeenCalled();
+      expect(mockCookieDelete).not.toHaveBeenCalled();
+      if (state === "READY") {
+        expect(mockActivationForm).toHaveBeenCalledTimes(1);
+        expect(html.match(/data-testid="activation-form"/g)).toHaveLength(1);
+        expect(mockActivationForm.mock.calls[0][0]).toEqual({ csrfNonce });
+        expect(html.match(new RegExp(csrfNonce, "g"))).toHaveLength(1);
+      } else {
+        expect(mockActivationForm).not.toHaveBeenCalled();
+        expect(html).not.toContain('data-testid="activation-form"');
+        expect(html).not.toContain(csrfNonce);
+      }
+
+      // In particular UNAVAILABLE must mount it before a cookie can exist.
+      // Rendering it inside the READY branch must fail these cases.
+      expect(mockActivationBootstrap).toHaveBeenCalledTimes(1);
+      expect(html.match(/data-testid="activation-bootstrap"/g)).toHaveLength(1);
+      // React invokes a component with an empty props object, not zero args.
+      const props = (mockActivationBootstrap.mock.calls[0] as unknown[])[0];
+      expect(props).toEqual({});
+    });
+
+    it("monta ActivationBootstrap sin props ni children", async () => {
+      const html = await renderPage();
+
+      expect(mockActivationBootstrap).toHaveBeenCalledTimes(1);
+      const props = (mockActivationBootstrap.mock.calls[0] as unknown[])[0];
+      expect(props).toEqual({});
+      expect(Object.keys(props as object)).toHaveLength(0);
+      expect(html).toContain('<div data-testid="activation-bootstrap"></div>');
+    });
+
+    it("no pasa secretos, sesión ni identificadores al bootstrap", async () => {
+      const html = await renderPage();
+
+      expectNoSensitiveData(html);
+      expect(mockActivationBootstrap).toHaveBeenCalledTimes(1);
+      const props = (mockActivationBootstrap.mock.calls[0] as unknown[])[0];
+      for (const key of [
+        "rawToken", "csrfNonce", "cookieValue", "expiresAt",
+        "usuarioId", "claimId", "session",
+      ]) {
+        expect(props).not.toHaveProperty(key);
+      }
+      expect(props).toEqual({});
+      // The nonce remains exclusively with the READY form, as before.
+      expect(mockActivationForm.mock.calls[0][0]).toEqual({ csrfNonce });
+      expect(html.match(new RegExp(csrfNonce, "g"))).toHaveLength(1);
+    });
+
+    it("importa el Client Component desde ./ActivationBootstrap", () => {
+      const source = readFileSync(
+        join(process.cwd(), "src/app/activar/page.tsx"),
+        "utf8",
+      );
+
+      expect(source).toContain(
+        'import ActivationBootstrap from "./ActivationBootstrap";',
+      );
+    });
+
+    it("incluye exactamente un <ActivationBootstrap /> sin props", () => {
+      const source = readFileSync(
+        join(process.cwd(), "src/app/activar/page.tsx"),
+        "utf8",
+      );
+
+      expect(source).toContain("<ActivationBootstrap />");
+      expect(source.match(/<ActivationBootstrap\b/g)).toHaveLength(1);
+      expect(source).not.toMatch(/<ActivationBootstrap\s+(?:\{\.\.\.|[A-Za-z_$][\w$]*\s*=)/);
+    });
+
+    it("mantiene parsing y transporte fuera del Server Component", () => {
+      const source = readFileSync(
+        join(process.cwd(), "src/app/activar/page.tsx"),
+        "utf8",
+      );
+
+      expect(source).not.toMatch(/["']use client["']/);
+      expect(source).not.toMatch(/\bwindow\b|location\.hash|\bfetch\b|\buseEffect\b/);
+      expect(source).not.toMatch(/\brawToken\b/);
+      expect(source).toContain("<ActivationForm csrfNonce={result.csrfNonce} />");
     });
   });
 

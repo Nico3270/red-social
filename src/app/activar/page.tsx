@@ -1,4 +1,5 @@
 import { auth } from "@/auth.config";
+import ActivationBootstrap from "./ActivationBootstrap";
 import ActivationForm from "./ActivationForm";
 import {
   getAccountActivationCookieName,
@@ -125,6 +126,7 @@ export default async function AccountActivationPage(): Promise<React.ReactElemen
       className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-slate-50 via-white to-blue-50 px-4 py-12 sm:px-6"
       data-activation-state={result.state}
     >
+      <ActivationBootstrap />
       <div
         aria-hidden="true"
         className="absolute -left-24 top-10 h-64 w-64 rounded-full bg-blue-200/30 blur-3xl"
