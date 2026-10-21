@@ -20,12 +20,7 @@ jest.mock("@/lib/security/account-activation-rate-limit", () => ({
     mockCheckAccountActivationBootstrapRateLimit,
 }));
 
-// Deliberately unresolved in the RED phase. Do not mock ./route or skip tests.
-// require keeps the expected failure at module resolution, without suppressing
-// TypeScript diagnostics elsewhere in this suite.
-const { POST } = require("./route") as {
-  POST: (request: Request) => Promise<Response>;
-};
+import { POST } from "./route";
 
 const ORIGIN = "https://myckeo-red-social-staging.vercel.app";
 const ENDPOINT = `${ORIGIN}/api/account-activation/bootstrap`;

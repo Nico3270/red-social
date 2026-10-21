@@ -39,11 +39,7 @@ jest.mock("react", () => ({
   },
 }));
 
-// Intentionally missing in this TDD phase. No virtual component or fallback:
-// Jest must discover this TSX suite and fail specifically on this require.
-const ActivationBootstrap = (
-  require("./ActivationBootstrap") as { default: () => React.ReactNode }
-).default;
+import ActivationBootstrap from "./ActivationBootstrap";
 
 const ORIGIN = "https://myckeo-red-social-staging.vercel.app";
 const ENDPOINT = "/api/account-activation/bootstrap";
