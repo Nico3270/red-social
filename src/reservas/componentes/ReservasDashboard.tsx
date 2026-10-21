@@ -9,7 +9,8 @@ import { ReservationDayData, ReservationsResponse } from "@/app/api/reservasConf
 import AddReservationModal from "./AddReservationModal";
 import ResumeReservations from "./ResumeReservations";
 import { toast } from "react-hot-toast"; // Asume uso de react-hot-toast para toasts elegantes (instala si no)
-import { blockSlot, deleteReserva } from "../actions/reservasActions";
+import { blockSlot } from "../actions/reservasActions";
+import { unblockSlot } from "@/reservas/actions/unblockSlot";
 import { motion } from "framer-motion";
 import { CircularProgress } from "@mui/material"; // Agregamos para loader
 
@@ -182,8 +183,8 @@ export const ReservasDashboard = ({ negocioId }: { negocioId: string }) => {
   };
 
   // Función para desbloquear slot (elimina la reserva BLOQUEADA)
-  const handleUnblockSlot = async (blockedReservaId: string) => {
-    const res = await deleteReserva({ negocioId, reservaId: blockedReservaId });
+  const handleUnblockSlot = async (reservationId: string) => {
+    const res = await unblockSlot({ reservationId });
     if (res.ok) {
       toast.success(res.message, { duration: 3000 });
       await fetchReservas(); // Refresca

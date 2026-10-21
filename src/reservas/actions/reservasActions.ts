@@ -3,11 +3,10 @@
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth.config";
 import * as z from "zod";
-import { getInformacionReserva } from "./getInfoNegocioWhatsapp";
 import { notifyReservaConfirmadaCliente } from "../helpers/notifyReserva";
 import { PlantillaWhatsApp } from "../interfaces/interfaces.whatsapp";
-import { ReservationStatus } from "@prisma/client";
-
+import { revokeActiveReservationCapabilitiesInTx } from "../lib/reservation-capability";
+import { Prisma, ReservationStatus, Role } from "@prisma/client";
 
 // Interface compartida para respuestas estandarizadas (elegante y reusable)
 interface ActionResponse {
@@ -15,11 +14,23 @@ interface ActionResponse {
   message: string;
 }
 
-// Schema para validación de deleteReserva
-const deleteSchema = z.object({
-  negocioId: z.string().min(1, "ID del negocio requerido"),
-  reservaId: z.string().min(1, "ID de la reserva requerido"), // Corregí "id de la transaccion" a "reservaId" para claridad
-});
+type ChangeStatusErrorCode =
+  | "UNAUTHENTICATED"
+  | "RESERVATION_ACCESS_DENIED"
+  | "RESERVATION_NOT_AVAILABLE"
+  | "INVALID_INPUT"
+  | "INTERNAL_ERROR";
+
+type ChangeStatusResponse =
+  | {
+      ok: true;
+      message: string;
+    }
+  | {
+      ok: false;
+      code: ChangeStatusErrorCode;
+      message: string;
+    };
 
 function formatearFecha(fechaInput?: string | Date): string {
   if (!fechaInput){
@@ -42,149 +53,248 @@ function formatearFecha(fechaInput?: string | Date): string {
   return `${fechaStr} a las ${horaStr}`;
 }
 
-
-
 // Schema para validación de changeStatusReservations
-const changeStatusSchema = z.object({
-  negocioId: z.string().min(1, "ID del negocio requerido"),
-  reservaId: z.string().min(1, "ID de la reserva requerido"),
-  nuevoStatus: z.enum(["PENDIENTE", "CONFIRMADA", "CANCELADA", "COMPLETADA"]),
-});
+const changeStatusSchema = z
+  .object({
+    negocioId: z.string().trim().min(1, "ID del negocio requerido"),
+    reservaId: z.string().trim().min(1, "ID de la reserva requerido"),
+    nuevoStatus: z.enum([
+      ReservationStatus.PENDIENTE,
+      ReservationStatus.CONFIRMADA,
+      ReservationStatus.CANCELADA,
+      ReservationStatus.COMPLETADA,
+    ]),
+  })
+  .strict();
 
+const CHANGE_STATUS_MAX_ATTEMPTS = 3;
 
+class ChangeStatusBoundaryError extends Error {
+  readonly code: "RESERVATION_ACCESS_DENIED" | "RESERVATION_NOT_AVAILABLE";
 
-// Server Action: Eliminar una reserva (con verificación de ownership)
-export async function deleteReserva(data: unknown): Promise<ActionResponse> {
-  const session = await auth();
-  if (!session || !session.user?.id && !session.user.negocioId) {
-    return { ok: false, message: "Usuario no autenticado" };
-  }
-
-  const parsed = deleteSchema.safeParse(data);
-  if (!parsed.success) {
-    return { ok: false, message: `Datos inválidos: ${parsed.error.errors[0].message}` };
-  }
-
-  const { negocioId, reservaId } = parsed.data;
-
-  try {
-    // Verificar si la reserva existe y pertenece al negocio
-    const reserva = await prisma.reservation.findUnique({
-      where: { id: reservaId },
-      select: { id: true, negocioId: true },
-    });
-
-    if (!reserva) {
-      return { ok: false, message: "Reserva no encontrada" };
-    }
-
-    if (reserva.negocioId !== negocioId) {
-      return { ok: false, message: "No tienes permiso para eliminar esta reserva (no pertenece al negocio)" };
-    }
-
-    
-
-    const info = await getInformacionReserva(reservaId);
-    const nombre_cliente = info.nombre_cliente || "Cliente desconocido"
-    const fecha_hora = formatearFecha(info.fecha_hora)
- 
-
-    // Eliminar la reserva (transacción atómica)
-    await prisma.reservation.delete({
-      where: { id: reservaId },
-    });
-    
-
-    const notificacionUsuario = await notifyReservaConfirmadaCliente(
-      {
-        to: info.telefono_cliente || "+573182293083",
-        nombre_cliente,
-        fechaHora: fecha_hora,
-        template: PlantillaWhatsApp.RESERVA_CANCELADA_USUARIO,
-        negocioId: negocioId || "", // Incluye negocioId para contexto
-
-      }
-    )
-    if (!notificacionUsuario.ok) {
-      console.warn('Notificación WhatsApp fallida, pero reserva creada:', notificacionUsuario.message);
-      // Opcional: Envía fallback por email o log a un servicio como Sentry para monitoreo pro
-    }
-
-    return { ok: true, message: "Reserva eliminada exitosamente" };
-    // Notificación al usuario de reserva cancelada
-
-
-
-
-  } catch (error) {
-    console.error("Error al eliminar reserva:", error);
-    return { ok: false, message: "Error interno al eliminar la reserva" };
+  constructor(code: "RESERVATION_ACCESS_DENIED" | "RESERVATION_NOT_AVAILABLE") {
+    super("Reservation status operation failed.");
+    this.name = "ChangeStatusBoundaryError";
+    this.code = code;
   }
 }
 
-// Server Action: Cambiar el status de una reserva (con verificación de ownership)
-export async function changeStatusReservations(data: unknown): Promise<ActionResponse> {
+const CHANGE_STATUS_ERRORS = {
+  UNAUTHENTICATED: {
+    ok: false,
+    code: "UNAUTHENTICATED",
+    message: "Debes iniciar sesión para realizar esta acción.",
+  },
+  RESERVATION_ACCESS_DENIED: {
+    ok: false,
+    code: "RESERVATION_ACCESS_DENIED",
+    message: "No tienes permiso para realizar esta acción.",
+  },
+  RESERVATION_NOT_AVAILABLE: {
+    ok: false,
+    code: "RESERVATION_NOT_AVAILABLE",
+    message: "La reserva no está disponible para esta acción.",
+  },
+  INVALID_INPUT: {
+    ok: false,
+    code: "INVALID_INPUT",
+    message: "Los datos para cambiar el estado no son válidos.",
+  },
+  INTERNAL_ERROR: {
+    ok: false,
+    code: "INTERNAL_ERROR",
+    message: "No fue posible cambiar el estado de la reserva.",
+  },
+} as const satisfies Record<ChangeStatusErrorCode, ChangeStatusResponse>;
+
+// Server Action legacy: exportada temporalmente, pero completamente inerte.
+export async function deleteReserva(data: unknown): Promise<ActionResponse> {
+  void data;
+  return {
+    ok: false,
+    message: "La eliminación directa de reservas ya no está disponible.",
+  };
+}
+
+type StatusChangeTransactionResult = {
+  changed: boolean;
+  reservation: {
+    id: string;
+    estado: ReservationStatus;
+    nombre: string;
+    telefono: string;
+    fechaHoraInicio: Date;
+  };
+};
+
+function isTerminalReservationStatus(status: ReservationStatus): boolean {
+  return (
+    status === ReservationStatus.CANCELADA ||
+    status === ReservationStatus.COMPLETADA
+  );
+}
+
+function isSerializableStatusConflict(error: unknown): boolean {
+  return (
+    error instanceof Prisma.PrismaClientKnownRequestError &&
+    error.code === "P2034"
+  );
+}
+
+async function changeStatusWithinSerializableTransaction(
+  ownerBusinessId: string,
+  reservationId: string,
+  newStatus: ReservationStatus,
+): Promise<StatusChangeTransactionResult> {
+  for (let attempt = 1; attempt <= CHANGE_STATUS_MAX_ATTEMPTS; attempt += 1) {
+    try {
+      return await prisma.$transaction(
+        async (tx) => {
+          const reservation = await tx.reservation.findFirst({
+            where: {
+              id: reservationId,
+              negocioId: ownerBusinessId,
+            },
+            select: {
+              id: true,
+              estado: true,
+              nombre: true,
+              telefono: true,
+              fechaHoraInicio: true,
+            },
+          });
+
+          if (!reservation) {
+            throw new ChangeStatusBoundaryError("RESERVATION_ACCESS_DENIED");
+          }
+
+          if (reservation.estado === ReservationStatus.BLOQUEADA) {
+            throw new ChangeStatusBoundaryError("RESERVATION_NOT_AVAILABLE");
+          }
+
+          if (reservation.estado === newStatus) {
+            return {
+              changed: false,
+              reservation,
+            };
+          }
+
+          if (isTerminalReservationStatus(reservation.estado)) {
+            throw new ChangeStatusBoundaryError("RESERVATION_NOT_AVAILABLE");
+          }
+
+          const updated = await tx.reservation.update({
+            where: {
+              id: reservation.id,
+            },
+            data: {
+              estado: newStatus,
+            },
+            select: {
+              id: true,
+              estado: true,
+              nombre: true,
+              telefono: true,
+              fechaHoraInicio: true,
+            },
+          });
+
+          if (isTerminalReservationStatus(newStatus)) {
+            await revokeActiveReservationCapabilitiesInTx(tx, updated.id);
+          }
+
+          return {
+            changed: true,
+            reservation: updated,
+          };
+        },
+        {
+          isolationLevel: Prisma.TransactionIsolationLevel.Serializable,
+        },
+      );
+    } catch (error) {
+      if (
+        isSerializableStatusConflict(error) &&
+        attempt < CHANGE_STATUS_MAX_ATTEMPTS
+      ) {
+        continue;
+      }
+
+      throw error;
+    }
+  }
+
+  throw new Error("Reservation status retry invariant failed.");
+}
+
+async function notifyCancellationWithoutChangingCommittedResult(
+  input: Parameters<typeof notifyReservaConfirmadaCliente>[0],
+): Promise<void> {
+  try {
+    await notifyReservaConfirmadaCliente(input);
+  } catch {
+    // El estado y la revocación de capabilities ya fueron confirmados.
+  }
+}
+
+// Server Action: cambiar exclusivamente el estado de una reserva del owner.
+export async function changeStatusReservations(
+  data: unknown,
+): Promise<ChangeStatusResponse> {
   const session = await auth();
-  if (!session || !session.user?.id) {
-    return { ok: false, message: "Usuario no autenticado" };
+  if (!session?.user?.id) {
+    return CHANGE_STATUS_ERRORS.UNAUTHENTICATED;
+  }
+
+  const ownerBusinessId =
+    typeof session.user.negocioId === "string"
+      ? session.user.negocioId.trim()
+      : "";
+  if (session.user.role !== Role.negocio || !ownerBusinessId) {
+    return CHANGE_STATUS_ERRORS.RESERVATION_ACCESS_DENIED;
   }
 
   const parsed = changeStatusSchema.safeParse(data);
   if (!parsed.success) {
-    return { ok: false, message: `Datos inválidos: ${parsed.error.errors[0].message}` };
+    return CHANGE_STATUS_ERRORS.INVALID_INPUT;
   }
 
-  const { negocioId, reservaId, nuevoStatus } = parsed.data;
-
+  let committed: StatusChangeTransactionResult;
   try {
-    // Verificar si la reserva existe y pertenece al negocio
-    const reserva = await prisma.reservation.findUnique({
-      where: { id: reservaId },
-      select: { id: true, negocioId: true, nombre:true, telefono:true, fechaHoraInicio:true },
-    });
-
-    if (!reserva) {
-      return { ok: false, message: "Reserva no encontrada" };
-    }
-
-    if (reserva.negocioId !== negocioId) {
-      return { ok: false, message: "No tienes permiso para cambiar el status de esta reserva (no pertenece al negocio)" };
-    }
-
-    // Actualizar el status (transacción atómica)
-    await prisma.reservation.update({
-      where: { id: reservaId },
-      data: { estado: nuevoStatus },
-    });
-
-    // Notificación a whatsapp cliente de reserva cancelada
-    if(nuevoStatus === "CANCELADA"){
-      const fechaHora = formatearFecha(reserva.fechaHoraInicio)
-      const notificacionUsuario = await notifyReservaConfirmadaCliente(
-      {
-        to: reserva.telefono || "+573182293083",
-        nombre_cliente: reserva.nombre,
-        fechaHora ,
-        template: PlantillaWhatsApp.RESERVA_CANCELADA_USUARIO,
-        negocioId: negocioId || "", // Incluye negocioId para contexto
-
-      }
-    )
-    if (!notificacionUsuario.ok) {
-      console.warn('Notificación WhatsApp fallida, pero reserva creada:', notificacionUsuario.message);
-      // Opcional: Envía fallback por email o log a un servicio como Sentry para monitoreo pro
-    }
-
-    }
-
-    return { ok: true, message: `Status cambiado a ${nuevoStatus} exitosamente, se enviará una notificación al usuario` };
+    committed = await changeStatusWithinSerializableTransaction(
+      ownerBusinessId,
+      parsed.data.reservaId,
+      parsed.data.nuevoStatus,
+    );
   } catch (error) {
-    console.error("Error al cambiar status de reserva:", error);
-    return { ok: false, message: "Error interno al cambiar el status de la reserva" };
+    if (error instanceof ChangeStatusBoundaryError) {
+      return CHANGE_STATUS_ERRORS[error.code];
+    }
+
+    return CHANGE_STATUS_ERRORS.INTERNAL_ERROR;
   }
+
+  if (
+    committed.changed &&
+    committed.reservation.estado === ReservationStatus.CANCELADA &&
+    committed.reservation.telefono
+  ) {
+    await notifyCancellationWithoutChangingCommittedResult({
+      to: committed.reservation.telefono,
+      nombre_cliente: committed.reservation.nombre,
+      fechaHora: formatearFecha(committed.reservation.fechaHoraInicio),
+      template: PlantillaWhatsApp.RESERVA_CANCELADA_USUARIO,
+      negocioId: ownerBusinessId,
+    });
+  }
+
+  return {
+    ok: true,
+    message: committed.changed
+      ? `Estado cambiado a ${committed.reservation.estado} exitosamente.`
+      : `La reserva ya se encuentra en estado ${committed.reservation.estado}.`,
+  };
 }
-
-
 
 // Schema para bloquear
 const blockSchema = z.object({

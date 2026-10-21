@@ -1,8 +1,9 @@
 "use server";
 
-
+import { auth } from "@/auth.config";
 import prisma from "@/lib/prisma";
 import { EstadoNegocio } from "@prisma/client";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 interface InformacionInicialNegocio {
   nombreNegocio: string;
@@ -44,34 +45,52 @@ export const actualizarPerfilNegocio = async (
   usuarioId: string,
   data: InformacionInicialNegocio
 ): Promise<DatosPerfilNegocio> => {
-  // const session = await auth();
-
-  // console.log("Validando sesión y usuarioId:", session, usuarioId);
-
-  // // Validar autenticación
-  // if (!session || !session.user) {
-  //   return { ok: false, message: "No estás autenticado. Por favor, inicia sesión." };
-  // }
-
-  // if (session.user.id !== usuarioId) {
-  //   return { ok: false, message: "No tienes permiso para actualizar el perfil de este usuario." };
-  // }
-
-  // console.log("Validando que el negocio existe para el usuario:", usuarioId);
-  // Verificar si el negocio existe
-  const negocio = await prisma.negocio.findUnique({
-    where: { usuarioId },
-    select: { id: true, slug: true },
-  });
-  // console.log("Negocio encontrado:", negocio);
-
-  if (!negocio) {
-    return { ok: false, message: "El usuario no tiene ningún negocio asociado." };
-  }
-
-
-
   try {
+    const session = await auth();
+    const authenticatedUserId = session?.user?.id;
+
+    if (!authenticatedUserId) {
+      return {
+        ok: false,
+        message: "No autorizado. Debes iniciar sesión.",
+      };
+    }
+
+    if (usuarioId && usuarioId !== authenticatedUserId) {
+      return {
+        ok: false,
+        message: "No tienes permiso para actualizar el perfil de este usuario.",
+      };
+    }
+
+    const negocio = data.idNegocio
+      ? await prisma.negocio.findUnique({
+          where: { id: data.idNegocio },
+          select: { id: true, slug: true, usuarioId: true },
+        })
+      : await prisma.negocio.findUnique({
+          where: { usuarioId: authenticatedUserId },
+          select: { id: true, slug: true, usuarioId: true },
+        });
+
+    if (!negocio) {
+      return {
+        ok: false,
+        message: data.idNegocio
+          ? "El negocio especificado no existe."
+          : "El usuario no tiene ningún negocio asociado.",
+      };
+    }
+
+    if (negocio.usuarioId !== authenticatedUserId) {
+      return {
+        ok: false,
+        message: "No tienes permiso para actualizar este negocio.",
+      };
+    }
+
+    const oldSlug = negocio.slug;
+
     // Validaciones adicionales
     // console.log("Validación del slug del negocio, coordenadas y categorías...");
 
@@ -140,7 +159,8 @@ export const actualizarPerfilNegocio = async (
       fotoPerfil: data.imagenPerfil ?? null,
       fotoPortada: data.imagenPortada ?? null,
       sitioWeb: data.sitioWeb ?? null,
-      estado: data.estadoNegocio,
+      // El estado operacional del negocio es administrado por Myckeo/admin.
+      // La edición normal del dueño acepta el campo por compatibilidad, pero no lo persiste.
     };
 
     const usuarioData = {
@@ -198,13 +218,24 @@ export const actualizarPerfilNegocio = async (
 
       // Actualizar el usuario
       await tx.usuario.update({
-        where: { id: usuarioId },
+        where: { id: authenticatedUserId },
         data: usuarioData,
       });
 
       return negocioActualizado;
     });
 
+    const newSlug = updatedNegocio.slug;
+    const slugsToRevalidate = new Set([oldSlug, newSlug].filter(Boolean));
+
+    revalidatePath("/dashboard");
+    revalidatePath("/dashboard/editar-perfil");
+
+    for (const slug of slugsToRevalidate) {
+      revalidatePath(`/perfil/${slug}`);
+      revalidateTag(`negocio-catalog-${slug}`);
+      revalidateTag(`negocio-publications-${slug}`);
+    }
 
     // console.log("Perfil del negocio actualizado correctamente:", updatedNegocio);
     // Formatear el negocio actualizado para el frontend

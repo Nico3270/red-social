@@ -11,7 +11,7 @@ import { Suspense } from "react";
 import { unstable_cache } from "next/cache";
 import { getConteosSecciones } from "@/perfil/actions/getConteosSecciones";
 import { preloadProfileCatalogData } from "@/actions/catalogGroups/preloadProfileCatalog";
-import { buildPublicBusinessVisibilityWhere } from "@/lib/business/publicBusinessVisibility";
+import { buildPublishedBusinessWhere } from "@/lib/business/business-visibility-policy";
 import { ServicioData } from "@/servicios/interfaces/servicios.interface";
 import { EnhancedPublicacion } from "@/publicaciones/interfaces/enhancedPublicacion.interface";
 import {
@@ -33,7 +33,7 @@ interface Props {
 // Genera rutas estáticas iniciales
 export async function generateStaticParams() {
   const slugs = await prisma.negocio.findMany({
-    where: buildPublicBusinessVisibilityWhere(),
+    where: buildPublishedBusinessWhere(),
     select: { slug: true },
     take: 100,
   });
@@ -167,6 +167,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     );
 
   const canonicalUrl = `${siteUrl}/perfil/${slug}`;
+  const isPublished = negocio.visibility === "PUBLISHED";
 
   // === JSON-LD estructurado (para Google Rich Results) ===
   const structuredData = negocio
@@ -213,11 +214,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description,
       images: [image],
     },
-    robots: "index, follow",
+    robots: isPublished
+      ? "index, follow"
+      : {
+          index: false,
+          follow: false,
+        },
     alternates: {
       canonical: canonicalUrl,
     },
-    other: structuredData
+    other: isPublished && structuredData
       ? {
           "script:ld+json": JSON.stringify(structuredData),
         }

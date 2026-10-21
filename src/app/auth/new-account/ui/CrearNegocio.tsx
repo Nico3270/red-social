@@ -6,7 +6,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import clsx from "clsx";
 import colombia from "@/config/colombia.json";
-import "react-datepicker/dist/react-datepicker.css";
+
 import { initialData } from "@/seed/seed";
 import {
   Alert,
@@ -52,7 +52,7 @@ interface ColombiaDepartment {
   ciudades: string[];
 }
 
-export const CreateNegocioForm = ({ id }: IdUsuario) => {
+export const CreateNegocioForm: React.FC<IdUsuario> = () => {
   const [isPending, setIsPending] = useState(false);
   const [selectedDepartamento, setSelectedDepartamento] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
@@ -183,7 +183,6 @@ export const CreateNegocioForm = ({ id }: IdUsuario) => {
       if (normalizedTelefono) formData.append("telefonoContacto", normalizedTelefono);
       data.categoriaIds.forEach((id) => formData.append("categoriaIds", id));
       data.seccionIds.forEach((id) => formData.append("seccionIds", id));
-      formData.append("usuarioId", id);
 
       const response = await createNegocio(formData);
 

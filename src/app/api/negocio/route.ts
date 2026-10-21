@@ -1,7 +1,10 @@
 // app/api/negocio/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { createNegocio } from "@/actions/auth/createHegocio";
+import {
+  createNegocioCore,
+  type CreateNegocioCoreInput,
+} from "@/lib/business/create-negocio-core";
 export const dynamic = "force-dynamic";
 
 
@@ -38,6 +41,7 @@ export async function POST(request: NextRequest) {
       twitter,
       // Campos nuevos
       sitioWeb,
+      horarios,
       latitud,
       longitud,
       palabrasClave = [], // array de strings para SEO
@@ -66,20 +70,22 @@ export async function POST(request: NextRequest) {
       urlGoogleMaps = `https://www.google.com/maps/search/?api=1&query=${latitud},${longitud}`;
     }
 
-    // Crear FormData para la server action
-    const formData = new FormData();
-    formData.append("nombre", nombre);
-    formData.append("descripcion", descripcion);
-    formData.append("ciudad", ciudad);
-    formData.append("departamento", departamento);
-    formData.append("direccion", direccion);
-    if (telefonoContacto) formData.append("telefonoContacto", telefonoContacto);
-    formData.append("usuarioId", usuarioId);
-    categoriaIds.forEach(id => formData.append("categoriaIds", id));
-    seccionIds.forEach(id => formData.append("seccionIds", id));
+    const coreInput: CreateNegocioCoreInput = {
+      usuarioId,
+      nombre,
+      descripcion,
+      ciudad,
+      departamento,
+      direccion,
+      telefonoContacto: telefonoContacto || null,
+      categoriaIds,
+      seccionIds,
+      sitioWeb,
+      horarios,
+    };
 
     // Ejecutar creación del negocio
-    const result = await createNegocio(formData);
+    const result = await createNegocioCore(coreInput);
 
     if (!result.ok) {
       return NextResponse.json({ ok: false, message: result.message }, { status: 400 });
@@ -89,7 +95,6 @@ export async function POST(request: NextRequest) {
     await prisma.negocio.update({
       where: { id: result.negocioId },
       data: {
-        sitioWeb: sitioWeb || null,
         latitud: latitud ? parseFloat(latitud) : null,
         longitud: longitud ? parseFloat(longitud) : null,
         urlGoogleMaps,
@@ -112,17 +117,16 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       ok: true,
-      message: "Negocio creado exitosamente con todos los detalles",
+      status: result.status,
+      negocio: result.negocio,
+      message: result.status === "CREATED"
+        ? "Negocio creado exitosamente con todos los detalles"
+        : result.message,
       negocioId: result.negocioId,
       slug: result.slugNegocio,
       url: `https://myckeo.com/${result.slugNegocio}`,
       googleMapsUrl: urlGoogleMaps,
-      credencialesParaEnviar: {
-        email: `${nombre.toLowerCase().replace(/[^a-z0-9]/g, "")}@myckeo.com`,
-        contraseña_temporal: `${nombre.toLowerCase().replace(/[^a-z0-9]/g, "")}2025*`,
-        mensaje: "Tu negocio ya está creado. Ingresa con estas credenciales y completa tu perfil real."
-      }
-    }, { status: 201 });
+    }, { status: result.status === "CREATED" ? 201 : 200 });
 
   } catch (error) {
     console.error("Error en API /api/negocio:", error);

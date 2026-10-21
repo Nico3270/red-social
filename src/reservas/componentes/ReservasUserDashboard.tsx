@@ -18,65 +18,359 @@ import {
   FaCalendarAlt
 } from "react-icons/fa";
 
-import { ReservationsResponse, ReservationDayData } from "@/app/api/reservasConfig/route";
 import AddReservationModal from "./AddReservationModal";
-import { BusinessAvailabilityData } from "../actions/getCongifUserReservation";
+import type { BusinessAvailabilityData } from "../actions/getCongifUserReservation";
 
 interface ReservasUserDashboardProps {
   config: BusinessAvailabilityData;
+  publicSlug?: string;
 }
 
-const ReservasUserDashboard = ({ config }: ReservasUserDashboardProps) => {
+export type OccupancySlot = {
+  start: string;
+  end?: string;
+  count: number;
+  blocked: boolean;
+};
+
+export type PublicReservationSlot = {
+  label: string;
+  start: Date;
+  end: Date;
+  available: boolean;
+};
+
+type AvailabilityRange = {
+  start: Date;
+  end: Date;
+};
+
+type LegacyReservationStatus =
+  | "PENDIENTE"
+  | "CONFIRMADA"
+  | "CANCELADA"
+  | "COMPLETADA"
+  | "BLOQUEADA";
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function isDateTimeString(value: unknown): value is string {
+  return (
+    typeof value === "string" &&
+    value.trim().length > 0 &&
+    !Number.isNaN(new Date(value).getTime())
+  );
+}
+
+function isLegacyReservationStatus(
+  value: unknown
+): value is LegacyReservationStatus {
+  return (
+    value === "PENDIENTE" ||
+    value === "CONFIRMADA" ||
+    value === "CANCELADA" ||
+    value === "COMPLETADA" ||
+    value === "BLOQUEADA"
+  );
+}
+
+function normalizeFutureOccupancy(value: unknown): OccupancySlot[] | null {
+  if (!Array.isArray(value)) return null;
+
+  const normalized: OccupancySlot[] = [];
+
+  for (const candidate of value) {
+    if (
+      !isRecord(candidate) ||
+      !isDateTimeString(candidate.start) ||
+      !Number.isSafeInteger(candidate.count) ||
+      (candidate.count as number) < 0 ||
+      typeof candidate.blocked !== "boolean"
+    ) {
+      return null;
+    }
+
+    let end: string | undefined;
+    if (candidate.end !== undefined && candidate.end !== null) {
+      if (!isDateTimeString(candidate.end)) return null;
+      end = candidate.end;
+    }
+
+    normalized.push({
+      start: candidate.start,
+      ...(end ? { end } : {}),
+      count: candidate.count as number,
+      blocked: candidate.blocked,
+    });
+  }
+
+  return normalized;
+}
+
+function normalizeLegacyReservations(value: unknown): OccupancySlot[] | null {
+  if (!Array.isArray(value)) return null;
+
+  const occupancyByRange = new Map<string, OccupancySlot>();
+
+  for (const candidate of value) {
+    if (
+      !isRecord(candidate) ||
+      !isDateTimeString(candidate.fechaHoraInicio) ||
+      !isLegacyReservationStatus(candidate.estado)
+    ) {
+      return null;
+    }
+
+    let end: string | undefined;
+    if (candidate.fechaHoraFin !== undefined && candidate.fechaHoraFin !== null) {
+      if (!isDateTimeString(candidate.fechaHoraFin)) return null;
+      end = candidate.fechaHoraFin;
+    }
+
+    const start = candidate.fechaHoraInicio;
+    const key = `${start}\u0000${end ?? ""}`;
+    const current = occupancyByRange.get(key) ?? {
+      start,
+      ...(end ? { end } : {}),
+      count: 0,
+      blocked: false,
+    };
+
+    if (candidate.estado === "BLOQUEADA") {
+      current.blocked = true;
+    } else {
+      // Compatibilidad temporal: conserva el conteo legacy para todos los
+      // estados distintos de BLOQUEADA hasta que la API entregue el agregado.
+      current.count += 1;
+    }
+
+    occupancyByRange.set(key, current);
+  }
+
+  return Array.from(occupancyByRange.values());
+}
+
+function normalizeOccupancyResponse(
+  payload: unknown,
+  expectedDate: string
+): OccupancySlot[] | null {
+  if (!isRecord(payload) || payload.ok !== true) return null;
+
+  if ("occupancy" in payload) {
+    if (payload.date !== expectedDate) return null;
+    return normalizeFutureOccupancy(payload.occupancy);
+  }
+
+  if ("reservas" in payload) {
+    return normalizeLegacyReservations(payload.reservas);
+  }
+
+  return null;
+}
+
+function parseConfiguredTime(value: string, baseDate: Date): Date | null {
+  if (!/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(value)) return null;
+
+  const parsed = parse(value, "HH:mm", baseDate);
+  return Number.isFinite(parsed.getTime()) ? parsed : null;
+}
+
+function configuredRanges(
+  config: BusinessAvailabilityData,
+  baseDate: Date,
+): AvailabilityRange[] | null {
+  const rawRanges = [
+    [config.franjaMananaInicio, config.franjaMananaFin],
+    [config.franjaTardeInicio, config.franjaTardeFin],
+  ] as const;
+  const ranges: AvailabilityRange[] = [];
+
+  for (const [rawStart, rawEnd] of rawRanges) {
+    if (rawStart == null && rawEnd == null) continue;
+    if (rawStart == null || rawEnd == null) return null;
+
+    const start = parseConfiguredTime(rawStart, baseDate);
+    const end = parseConfiguredTime(rawEnd, baseDate);
+    if (!start || !end || start >= end) return null;
+
+    ranges.push({ start, end });
+  }
+
+  return ranges.length > 0 ? ranges : null;
+}
+
+function occupancyRange(
+  item: OccupancySlot,
+  intervalMinutes: number,
+): { start: Date; end: Date } | null {
+  const start = new Date(item.start);
+  const end = item.end
+    ? new Date(item.end)
+    : addMinutes(start, intervalMinutes);
+
+  if (
+    !Number.isFinite(start.getTime()) ||
+    !Number.isFinite(end.getTime()) ||
+    end <= start
+  ) {
+    return null;
+  }
+
+  return { start, end };
+}
+
+function intervalsOverlap(
+  leftStart: Date,
+  leftEnd: Date,
+  rightStart: Date,
+  rightEnd: Date,
+): boolean {
+  return leftStart < rightEnd && leftEnd > rightStart;
+}
+
+function isCandidateAvailable(
+  start: Date,
+  minimumIntervals: number,
+  intervalMinutes: number,
+  capacity: number,
+  occupancy: OccupancySlot[],
+): boolean {
+  const normalizedOccupancy = occupancy.map((item) => ({
+    item,
+    range: occupancyRange(item, intervalMinutes),
+  }));
+
+  if (normalizedOccupancy.some(({ range }) => range === null)) return false;
+
+  for (let index = 0; index < minimumIntervals; index += 1) {
+    const intervalStart = addMinutes(start, index * intervalMinutes);
+    const intervalEnd = addMinutes(intervalStart, intervalMinutes);
+    let occupiedCount = 0;
+    let blocked = false;
+
+    for (const { item, range } of normalizedOccupancy) {
+      if (
+        range &&
+        intervalsOverlap(range.start, range.end, intervalStart, intervalEnd)
+      ) {
+        occupiedCount += item.count;
+        blocked = blocked || item.blocked;
+      }
+    }
+
+    if (blocked || occupiedCount >= capacity) return false;
+  }
+
+  return true;
+}
+
+export function buildPublicReservationSlots(
+  config: BusinessAvailabilityData,
+  baseDate: Date,
+  occupancy: OccupancySlot[],
+): PublicReservationSlot[] {
+  const minimumIntervals = config.duracionMinimaIntervalos ?? 1;
+  if (
+    !Number.isSafeInteger(config.intervaloMinutos) ||
+    config.intervaloMinutos <= 0 ||
+    !Number.isSafeInteger(config.capacidadPorIntervalo) ||
+    config.capacidadPorIntervalo <= 0 ||
+    !Number.isSafeInteger(minimumIntervals) ||
+    minimumIntervals <= 0
+  ) {
+    return [];
+  }
+
+  const minimumDurationMinutes = config.intervaloMinutos * minimumIntervals;
+  const minimumDurationMilliseconds = minimumDurationMinutes * 60_000;
+  if (
+    !Number.isSafeInteger(minimumDurationMinutes) ||
+    minimumDurationMinutes <= 0 ||
+    !Number.isSafeInteger(minimumDurationMilliseconds)
+  ) {
+    return [];
+  }
+
+  const ranges = configuredRanges(config, baseDate);
+  if (!ranges) return [];
+
+  const slots: PublicReservationSlot[] = [];
+  for (const range of ranges) {
+    for (
+      let candidateStart = range.start;
+      candidateStart < range.end;
+      candidateStart = addMinutes(candidateStart, config.intervaloMinutos)
+    ) {
+      const requestedEnd = addMinutes(candidateStart, minimumDurationMinutes);
+      if (requestedEnd > range.end) continue;
+
+      slots.push({
+        label: format(candidateStart, "HH:mm"),
+        start: candidateStart,
+        end: requestedEnd,
+        available: isCandidateAvailable(
+          candidateStart,
+          minimumIntervals,
+          config.intervaloMinutos,
+          config.capacidadPorIntervalo,
+          occupancy,
+        ),
+      });
+    }
+  }
+
+  return slots;
+}
+
+const ReservasUserDashboard = ({ config, publicSlug }: ReservasUserDashboardProps) => {
   const [currentDate, setCurrentDate] = useState(startOfDay(new Date()));
-  const [reservas, setReservas] = useState<ReservationDayData[]>([]);
-  const [slots, setSlots] = useState<string[]>([]);
+  const [occupancy, setOccupancy] = useState<OccupancySlot[]>([]);
   const [showModal, setShowModal] = useState(false);
-  const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
+  const [selectedSlot, setSelectedSlot] = useState<PublicReservationSlot | null>(null);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const today = useMemo(() => startOfDay(new Date()), []);
 
-  useEffect(() => {
-    const generateSlots = () => {
-      const newSlots: string[] = [];
-      const intervalo = config.intervaloMinutos;
+  const slots = useMemo(
+    () => buildPublicReservationSlots(config, currentDate, occupancy),
+    [config, currentDate, occupancy],
+  );
 
-      const addSlotsInRange = (inicio?: string | null, fin?: string | null) => {
-        if (!inicio || !fin) return;
-        let current = parse(inicio, "HH:mm", new Date());
-        const end = parse(fin, "HH:mm", new Date());
-
-        while (current < end) {
-          newSlots.push(format(current, "HH:mm"));
-          current = addMinutes(current, intervalo);
-        }
-      };
-
-      addSlotsInRange(config.franjaMananaInicio, config.franjaMananaFin);
-      addSlotsInRange(config.franjaTardeInicio, config.franjaTardeFin);
-      setSlots(newSlots);
-    };
-    generateSlots();
-  }, [config]);
-
-  const fetchReservas = useCallback(async () => {
+  const fetchOccupancy = useCallback(async () => {
     setLoading(true);
     const dateStr = format(currentDate, "yyyy-MM-dd");
 
-    const res = await fetch(
-      `/api/reservasConfigUser?date=${dateStr}&negocioId=${config.negocioId}`
-    );
-    const data: ReservationsResponse = await res.json();
-    setLoading(false);
+    try {
+      const response = await fetch(
+        `/api/reservasConfigUser?date=${dateStr}&negocioId=${config.negocioId}`
+      );
+      const payload: unknown = await response.json();
+      const normalized = response.ok
+        ? normalizeOccupancyResponse(payload, dateStr)
+        : null;
 
-    if (data.ok) setReservas(data.reservas);
-    else setReservas([]);
+      if (!normalized) {
+        setOccupancy([]);
+        setErrorMessage("No pudimos cargar la disponibilidad.");
+        return;
+      }
+
+      setOccupancy(normalized);
+      setErrorMessage(null);
+    } catch {
+      setOccupancy([]);
+      setErrorMessage("No pudimos cargar la disponibilidad.");
+    } finally {
+      setLoading(false);
+    }
   }, [currentDate, config.negocioId]);
 
   useEffect(() => {
     if (isBefore(currentDate, today)) {
-      setReservas([]);
+      setOccupancy([]);
       setLoading(false);
       setErrorMessage("No hay reservas disponibles para períodos pasados.");
       return;
@@ -90,12 +384,12 @@ const ReservasUserDashboard = ({ config }: ReservasUserDashboardProps) => {
 
     const isAttendingDay = config.diasAtencion.includes(capitalizedDay);
 
-    if (isAttendingDay) fetchReservas();
+    if (isAttendingDay) fetchOccupancy();
     else {
-      setReservas([]);
+      setOccupancy([]);
       setLoading(false);
     }
-  }, [currentDate, config, fetchReservas, today]);
+  }, [currentDate, config, fetchOccupancy, today]);
 
   const prevDay = () => {
     const newDate = subDays(currentDate, 1);
@@ -117,37 +411,11 @@ const ReservasUserDashboard = ({ config }: ReservasUserDashboardProps) => {
     }
   };
 
-  const getReservasForSlot = (slotTime: string) => {
-    const slotStart = parse(slotTime, "HH:mm", currentDate);
-    const slotEnd = addMinutes(slotStart, config.intervaloMinutos);
-
-    return reservas.filter((res) => {
-      const resStart = new Date(res.fechaHoraInicio);
-      return resStart >= slotStart && resStart < slotEnd;
-    });
-  };
-
-  const openAddModal = (slot: string) => {
-    const slotReservas = getReservasForSlot(slot);
-    const maxCapacidad = config.capacidadPorIntervalo;
-    const isBlocked = slotReservas.some((res) => res.estado === "BLOQUEADA");
-    const nonBlocked = slotReservas.filter((r) => r.estado !== "BLOQUEADA");
-    const isFull = nonBlocked.length >= maxCapacidad;
-
-    if (isBlocked || isFull) return;
+  const openAddModal = (slot: PublicReservationSlot) => {
+    if (!slot.available) return;
 
     setSelectedSlot(slot);
     setShowModal(true);
-  };
-
-  const getSlotTimes = (slot: string) => {
-    const startDate = parse(slot, "HH:mm", currentDate);
-    const endDate = addMinutes(startDate, config.intervaloMinutos);
-
-    return {
-      horaInicio: startDate.toISOString(),
-      horaFin: endDate.toISOString(),
-    };
   };
 
   const dayName = format(currentDate, "EEEE", { locale: es });
@@ -159,10 +427,7 @@ const ReservasUserDashboard = ({ config }: ReservasUserDashboardProps) => {
   const filteredSlots = useMemo(() => {
     if (!isSameDay(currentDate, new Date())) return slots;
     const now = new Date();
-    return slots.filter((slot) => {
-      const slotDate = parse(slot, "HH:mm", currentDate);
-      return slotDate > now;
-    });
+    return slots.filter((slot) => slot.start > now);
   }, [slots, currentDate]);
 
   return (
@@ -223,12 +488,7 @@ const ReservasUserDashboard = ({ config }: ReservasUserDashboardProps) => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
             {filteredSlots.map((slot) => {
-              const slotReservas = getReservasForSlot(slot);
-              const isBlocked = slotReservas.some((r) => r.estado === "BLOQUEADA");
-              const nonBlocked = slotReservas.filter((r) => r.estado !== "BLOQUEADA");
-              const isFull = nonBlocked.length >= config.capacidadPorIntervalo;
-
-              const isAvailable = !isBlocked && !isFull;
+              const isAvailable = slot.available;
 
               const classesAvailable = `
                 bg-white border border-gray-200 rounded-xl 
@@ -247,13 +507,13 @@ const ReservasUserDashboard = ({ config }: ReservasUserDashboardProps) => {
 
               return (
                 <div
-                  key={slot}
+                  key={`${slot.start.toISOString()}-${slot.end.toISOString()}`}
                   onClick={() => isAvailable && openAddModal(slot)}
                   className={`p-5 text-center ${
                     isAvailable ? classesAvailable : classesDisabled
                   }`}
                 >
-                  <h3 className="text-xl font-semibold text-gray-800">{slot}</h3>
+                  <h3 className="text-xl font-semibold text-gray-800">{slot.label}</h3>
                   <p className="text-sm text-gray-500 mt-2">
                     {isAvailable ? "Disponible" : "No disponible"}
                   </p>
@@ -267,10 +527,11 @@ const ReservasUserDashboard = ({ config }: ReservasUserDashboardProps) => {
       {showModal && selectedSlot && (
         <AddReservationModal
           negocioId={config.negocioId}
-          horaInicio={getSlotTimes(selectedSlot).horaInicio}
-          horaFin={getSlotTimes(selectedSlot).horaFin}
+          publicSlug={publicSlug}
+          horaInicio={selectedSlot.start.toISOString()}
+          horaFin={selectedSlot.end.toISOString()}
           onClose={() => setShowModal(false)}
-          onSuccess={fetchReservas}
+          onSuccess={fetchOccupancy}
         />
       )}
     </div>

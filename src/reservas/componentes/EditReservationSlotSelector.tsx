@@ -269,7 +269,7 @@ export const EditReservationSlotSelector = ({ reservaData, negocioId, onClose, o
             telefono: reservaData.telefono,
             estado: reservaData.estado,
             fechaHoraInicio: startDate.toISOString(),
-            fechaHoraFin: reservaData.fechaHoraFin ?? undefined, // Convierte null a undefined
+            fechaHoraFin: endDate.toISOString(),
             notas: reservaData.notas ?? undefined,
           };
 

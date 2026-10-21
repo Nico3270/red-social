@@ -1,6 +1,7 @@
 // actions/updateUserProfile.ts
 "use server";
 
+import { auth } from "@/auth.config";
 import prisma from "@/lib/prisma";
 import bcryptjs from "bcryptjs";
 import { updateUserSchema } from "@/lib/validators/updateUserSchema";
@@ -16,6 +17,23 @@ export const updateUserProfile = async (
   formData: FormData | FormDataObject
 ) => {
   try {
+    const session = await auth();
+    const authenticatedUserId = session?.user?.id;
+
+    if (!authenticatedUserId) {
+      return {
+        ok: false,
+        message: "No autorizado",
+      };
+    }
+
+    if (userId && userId !== authenticatedUserId) {
+      return {
+        ok: false,
+        message: "No autorizado",
+      };
+    }
+
     // Convertir FormData a objeto plano
     const rawData: FormDataObject = formData instanceof FormData
       ? Object.fromEntries(
@@ -56,7 +74,7 @@ export const updateUserProfile = async (
     const existingEmail = await prisma.usuario.findUnique({
       where: { email },
     });
-    if (existingEmail && existingEmail.id !== userId) {
+    if (existingEmail && existingEmail.id !== authenticatedUserId) {
       return {
         ok: false,
         message: "Este correo ya está registrado por otro usuario",
@@ -67,7 +85,7 @@ export const updateUserProfile = async (
     const existingUsername = await prisma.usuario.findUnique({
       where: { username },
     });
-    if (existingUsername && existingUsername.id !== userId) {
+    if (existingUsername && existingUsername.id !== authenticatedUserId) {
       return {
         ok: false,
         message: "Este nombre de usuario ya está en uso",
@@ -76,44 +94,44 @@ export const updateUserProfile = async (
 
     // Preparar datos para Prisma
     const updateData: {
-      nombre: string;
-      apellido: string;
-      email: string;
-      username: string;
-      ciudad: string;
-      departamento: string;
-      genero: Genero;
-      fechaNacimiento: Date;
-      perfilCompleto: boolean;
-      isPlaceholder: boolean;
-      contraseña?: string;
-    } = {
-      nombre,
-      apellido,
-      email,
-      username,
-      ciudad,
-      departamento,
-      genero: genero as Genero,
-      fechaNacimiento: fechaNacimiento ? new Date(fechaNacimiento) : new Date(), // ← SOLUCIÓN
-      perfilCompleto: true,
-      isPlaceholder: false,
-    };
+  nombre: string;
+  apellido: string;
+  email: string;
+  username: string;
+  ciudad: string;
+  departamento: string;
+  genero: Genero;
+  fechaNacimiento: Date;
+  perfilCompleto: boolean;
+  isPlaceholder: boolean;
+  contraseña?: string;
+} = {
+  nombre,
+  apellido,
+  email,
+  username,
+  ciudad,
+  departamento,
+  genero: genero as Genero,
+  fechaNacimiento,
+  perfilCompleto: true,
+  isPlaceholder: false,
+};
 
     // Encriptar contraseña si se ingresó
     if (nuevaContraseña && nuevaContraseña.trim() !== "") {
-      updateData.contraseña = bcryptjs.hashSync(nuevaContraseña, 10);
+      updateData.contraseña = await bcryptjs.hash(nuevaContraseña, 10);
     }
 
     // Actualizar usuario
     await prisma.usuario.update({
-      where: { id: userId },
+      where: { id: authenticatedUserId },
       data: updateData,
     });
 
     // Revalidar rutas
     revalidatePath("/dashboard");
-    revalidatePath("/dashboard/editarUsuario");
+    revalidatePath("/dashboard/editar-usuario");
     revalidatePath(`/perfil/${username}`);
 
     return {

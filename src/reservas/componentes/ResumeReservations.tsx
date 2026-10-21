@@ -2,9 +2,9 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaEdit, FaTrash, FaChevronDown, FaTimes, FaSpinner } from "react-icons/fa";
+import { FaEdit, FaChevronDown, FaTimes, FaSpinner } from "react-icons/fa";
 import { ReservationDayData } from "@/app/api/reservasConfig/route"; // Ajusta la ruta según tu estructura
-import { changeStatusReservations, deleteReserva } from "../actions/reservasActions";
+import { changeStatusReservations } from "../actions/reservasActions";
 import { EditReservationSlotSelector } from "./EditReservationSlotSelector"; // Importa el nuevo componente (ajusta ruta si es necesario)
 
 interface ResumeReservationsProps {
@@ -25,6 +25,9 @@ const statusDisplayMap: Record<ReservationDayData["estado"], string> = {
   BLOQUEADA: "Bloqueada",
 };
 
+const isCancellableStatus = (status: ReservationDayData["estado"]) =>
+  status === "PENDIENTE" || status === "CONFIRMADA";
+
 const ResumeReservations: React.FC<ResumeReservationsProps> = ({
   slotTime,
   reservas: initialReservas, // Renombrado para claridad (usamos local state para optimistic)
@@ -34,7 +37,7 @@ const ResumeReservations: React.FC<ResumeReservationsProps> = ({
 }) => {
   const [localReservas, setLocalReservas] = useState<ReservationDayData[]>(initialReservas); // State local para optimistic updates
   const [openStatusMenus, setOpenStatusMenus] = useState<Record<string, boolean>>({});
-  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [confirmCancelId, setConfirmCancelId] = useState<string | null>(null);
   const [confirmChange, setConfirmChange] = useState<{ reservaId: string; newStatus: ReservationDayData["estado"] } | null>(null);
   const [loading, setLoading] = useState(false);
   const [responseMessage, setResponseMessage] = useState<{ message: string; isError: boolean } | null>(null);
@@ -66,26 +69,33 @@ const ResumeReservations: React.FC<ResumeReservationsProps> = ({
     setOpenStatusMenus((prev) => ({ ...prev, [reservaId]: !prev[reservaId] }));
   };
 
-  const handleDelete = (reservaId: string) => {
-    setConfirmDeleteId(reservaId);
+  const handleCancel = (reservaId: string) => {
+    setConfirmCancelId(reservaId);
     setResponseMessage(null);
   };
 
-  const confirmDelete = async () => {
-    if (!confirmDeleteId) return;
+  const confirmCancel = async () => {
+    if (!confirmCancelId) return;
 
-    // Optimistic update: Remover localmente primero (UX moderna)
-    setLocalReservas((prev) => prev.filter((r) => r.id !== confirmDeleteId));
+    // Optimistic update: conservar historial y reflejar el estado terminal.
+    setLocalReservas((prev) =>
+      prev.map((r) =>
+        r.id === confirmCancelId ? { ...r, estado: "CANCELADA" } : r,
+      ),
+    );
 
     setLoading(true);
-    const res = await deleteReserva({ negocioId, reservaId: confirmDeleteId });
+    const res = await changeStatusReservations({
+      negocioId,
+      reservaId: confirmCancelId,
+      nuevoStatus: "CANCELADA",
+    });
     setLoading(false);
     setResponseMessage({ message: res.message, isError: !res.ok });
 
     if (res.ok) {
-      // console.log("Eliminación exitosa, llamando onSuccess y cerrando modal en 1.5s");
       onSuccess(); // Notifica al padre para refrescar global (sync DB)
-      setConfirmDeleteId(null);
+      setConfirmCancelId(null);
       // Cierre automático con delay para ver mensaje
       setTimeout(() => {
         onClose();
@@ -173,7 +183,9 @@ const ResumeReservations: React.FC<ResumeReservationsProps> = ({
           ) : (
             <div className="space-y-4">
               {localReservas.map((reserva, index) => {
-                const filteredOptions = statusOptions.filter((status) => status !== reserva.estado);
+                const filteredOptions = isCancellableStatus(reserva.estado)
+                  ? statusOptions.filter((status) => status !== reserva.estado)
+                  : [];
                 return (
                   <div
                     key={reserva.id}
@@ -198,40 +210,45 @@ const ResumeReservations: React.FC<ResumeReservationsProps> = ({
                         >
                           <FaEdit />
                         </button>
-                        <button
-                          onClick={() => handleDelete(reserva.id)}
-                          className="p-2 text-red-600 hover:bg-red-100 rounded-full transition-colors"
-                          aria-label="Eliminar reserva"
-                        >
-                          <FaTrash />
-                        </button>
-                        <div className="relative" ref={(el) => { menuRefs.current[reserva.id] = el; }}>
+                        {isCancellableStatus(reserva.estado) && (
                           <button
-                            onClick={() => toggleStatusMenu(reserva.id)}
-                            className="p-2 text-gray-600 hover:bg-gray-100 rounded-full transition-colors flex items-center gap-1"
-                            aria-label="Cambiar estado"
+                            onClick={() => handleCancel(reserva.id)}
+                            className="p-2 text-red-600 hover:bg-red-100 rounded-full transition-colors"
+                            aria-label="Cancelar reserva"
+                            title="Cancelar reserva"
                           >
-                            <FaChevronDown size={12} />
+                            <FaTimes />
                           </button>
-                          {openStatusMenus[reserva.id] && (
-                            <motion.ul
-                              initial={{ opacity: 0, y: -10 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-10"
+                        )}
+                        {filteredOptions.length > 0 && (
+                          <div className="relative" ref={(el) => { menuRefs.current[reserva.id] = el; }}>
+                            <button
+                              onClick={() => toggleStatusMenu(reserva.id)}
+                              className="p-2 text-gray-600 hover:bg-gray-100 rounded-full transition-colors flex items-center gap-1"
+                              aria-label="Cambiar estado"
                             >
-                              {filteredOptions.map((status) => (
-                                <li key={status}>
-                                  <button
-                                    onClick={() => handleSelectStatus(reserva.id, status)}
-                                    className="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
-                                  >
-                                    {statusDisplayMap[status]}
-                                  </button>
-                                </li>
-                              ))}
-                            </motion.ul>
-                          )}
-                        </div>
+                              <FaChevronDown size={12} />
+                            </button>
+                            {openStatusMenus[reserva.id] && (
+                              <motion.ul
+                                initial={{ opacity: 0, y: -10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-10"
+                              >
+                                {filteredOptions.map((status) => (
+                                  <li key={status}>
+                                    <button
+                                      onClick={() => handleSelectStatus(reserva.id, status)}
+                                      className="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                                    >
+                                      {statusDisplayMap[status]}
+                                    </button>
+                                  </li>
+                                ))}
+                              </motion.ul>
+                            )}
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -240,11 +257,11 @@ const ResumeReservations: React.FC<ResumeReservationsProps> = ({
             </div>
           )}
 
-          {/* Sub-modal de confirmación para eliminar */}
-          {confirmDeleteId && (
+          {/* Sub-modal de confirmación para cancelar */}
+          {confirmCancelId && (
             <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-60">
               <div className="bg-white p-6 rounded-xl shadow-2xl max-w-sm w-full mx-4 text-center">
-                <h3 className="text-lg font-semibold mb-4 text-gray-900">¿Estás seguro de eliminar esta reserva?</h3>
+                <h3 className="text-lg font-semibold mb-4 text-gray-900">¿Estás seguro de cancelar esta reserva?</h3>
                 {loading ? (
                   <div className="flex justify-center items-center">
                     <FaSpinner className="animate-spin text-blue-600" size={24} />
@@ -255,7 +272,7 @@ const ResumeReservations: React.FC<ResumeReservationsProps> = ({
                     <button
                       onClick={() => {
                         setResponseMessage(null);
-                        setConfirmDeleteId(null);
+                        setConfirmCancelId(null);
                       }}
                       className="mt-4 w-full bg-gray-200 text-gray-800 py-2 rounded-md hover:bg-gray-300 transition-colors"
                     >
@@ -265,16 +282,16 @@ const ResumeReservations: React.FC<ResumeReservationsProps> = ({
                 ) : (
                   <div className="flex gap-4 justify-center">
                     <button
-                      onClick={() => setConfirmDeleteId(null)}
+                      onClick={() => setConfirmCancelId(null)}
                       className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors"
                     >
-                      Cancelar
+                      Volver
                     </button>
                     <button
-                      onClick={confirmDelete}
+                      onClick={confirmCancel}
                       className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
                     >
-                      Confirmar
+                      Confirmar cancelación
                     </button>
                   </div>
                 )}

@@ -112,7 +112,10 @@ export default async function ReservasPage({ params }: Props) {
   // Si éxito, renderiza el dashboard con config (elegante y responsive wrapper)
   return (
     <div className="sm:mt-60 p-4 sm:p-8 bg-gray-50 min-h-screen">
-      <ReservasUserDashboard config={configReservation.config}  />
+      <ReservasUserDashboard
+        config={configReservation.config}
+        publicSlug={slug}
+      />
     </div>
   );
 }

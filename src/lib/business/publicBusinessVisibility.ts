@@ -1,11 +1,9 @@
-import { EstadoNegocio, Prisma } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
+
+import { buildDirectVisibleBusinessWhere } from "./business-visibility-policy";
 
 export function buildPublicBusinessVisibilityWhere(): Prisma.NegocioWhereInput {
-  return {
-    estado: EstadoNegocio.activo,
-    isTestData: false,
-    archivedAt: null,
-  };
+  return buildDirectVisibleBusinessWhere();
 }
 
 export function buildPublicBusinessBySlugWhere(

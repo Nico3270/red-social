@@ -1,6 +1,39 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { auth } from '@/auth.config';
+import { Prisma } from '@prisma/client';
+
+const publishedBusinessPredicate = Prisma.sql`
+  n."estado" = 'activo' AND
+  n."isTestData" = false AND
+  n."archivedAt" IS NULL AND
+  u."estado" = 'activo' AND
+  u."isPlaceholder" = false AND
+  u."perfilCompleto" = true
+`;
+
+const searchableUserPredicate = Prisma.sql`
+  u."estado" = 'activo' AND
+  u."isPlaceholder" = false AND
+  (
+    NOT EXISTS (
+      SELECT 1
+      FROM "Negocio" AS un
+      WHERE un."usuarioId" = u."id"
+    )
+    OR (
+      u."perfilCompleto" = true AND
+      EXISTS (
+        SELECT 1
+        FROM "Negocio" AS un
+        WHERE un."usuarioId" = u."id"
+          AND un."estado" = 'activo'
+          AND un."isTestData" = false
+          AND un."archivedAt" IS NULL
+      )
+    )
+  )
+`;
 
 // Sanitize query string to prevent SQL injection
 function sanitizeQuery(query: string): string {
@@ -61,25 +94,24 @@ export async function GET(request: Request) {
         }>
       >`
         SELECT 
-          id,
-          nombre,
-          slug,
-          "fotoPerfil" AS thumbnail,
+          n.id,
+          n.nombre,
+          n.slug,
+          n."fotoPerfil" AS thumbnail,
           ts_rank(
-            to_tsvector('spanish', coalesce(nombre, '') || ' ' || coalesce(descripcion, '') || ' ' || coalesce(tipo::text, '')),
+            to_tsvector('spanish', coalesce(n.nombre, '') || ' ' || coalesce(n.descripcion, '') || ' ' || coalesce(n.tipo::text, '')),
             to_tsquery('spanish', ${tsQuery})
           ) AS rank
-        FROM "Negocio"
+        FROM "Negocio" AS n
+        JOIN "Usuario" AS u ON u."id" = n."usuarioId"
         WHERE 
-          estado = 'activo' AND
-          "isTestData" = false AND
-          "archivedAt" IS NULL AND
+          ${publishedBusinessPredicate} AND
           (
-            to_tsvector('spanish', coalesce(nombre, '') || ' ' || coalesce(descripcion, '') || ' ' || coalesce(tipo::text, '')) 
+            to_tsvector('spanish', coalesce(n.nombre, '') || ' ' || coalesce(n.descripcion, '') || ' ' || coalesce(n.tipo::text, ''))
             @@ to_tsquery('spanish', ${tsQuery})
-            OR nombre % ${safeQuery}
+            OR n.nombre % ${safeQuery}
           )
-        ORDER BY rank DESC, orden DESC
+        ORDER BY rank DESC, n.orden DESC
         LIMIT ${safeLimit} OFFSET ${offset}
       `;
       results.push(
@@ -115,11 +147,10 @@ export async function GET(request: Request) {
           ) AS rank
         FROM "Product" p
         JOIN "Negocio" n ON p."negocioId" = n.id
+        JOIN "Usuario" u ON u.id = n."usuarioId"
         WHERE 
           p.status = 'disponible' AND
-          n.estado = 'activo' AND
-          n."isTestData" = false AND
-          n."archivedAt" IS NULL AND
+          ${publishedBusinessPredicate} AND
           (
             to_tsvector('spanish', coalesce(p.nombre, '') || ' ' || coalesce(p.descripcion, '') || ' ' || coalesce(p."descripcionCorta", '')) 
             @@ to_tsquery('spanish', ${tsQuery})
@@ -162,11 +193,10 @@ export async function GET(request: Request) {
           ) AS rank
         FROM "Servicio" s
         JOIN "Negocio" n ON s."negocioId" = n.id
+        JOIN "Usuario" u ON u.id = n."usuarioId"
         WHERE 
           s.status = 'disponible' AND
-          n.estado = 'activo' AND
-          n."isTestData" = false AND
-          n."archivedAt" IS NULL AND
+          ${publishedBusinessPredicate} AND
           (
             to_tsvector('spanish', coalesce(s.titulo, '') || ' ' || array_to_string(s.descripcion, ' ')) 
             @@ to_tsquery('spanish', ${tsQuery})
@@ -199,21 +229,21 @@ export async function GET(request: Request) {
         }>
       >`
         SELECT 
-          id,
-          username AS nombre,
-          username AS slug,
-          "fotoPerfil" AS thumbnail,
+          u.id,
+          u.username AS nombre,
+          u.username AS slug,
+          u."fotoPerfil" AS thumbnail,
           ts_rank(
-            to_tsvector('spanish', coalesce(username, '') || ' ' || coalesce(biografia, '')),
+            to_tsvector('spanish', coalesce(u.username, '') || ' ' || coalesce(u.biografia, '')),
             to_tsquery('spanish', ${tsQuery})
           ) AS rank
-        FROM "Usuario"
+        FROM "Usuario" AS u
         WHERE 
-          estado = 'activo' AND
+          ${searchableUserPredicate} AND
           (
-            to_tsvector('spanish', coalesce(username, '') || ' ' || coalesce(biografia, '')) 
+            to_tsvector('spanish', coalesce(u.username, '') || ' ' || coalesce(u.biografia, ''))
             @@ to_tsquery('spanish', ${tsQuery})
-            OR username % ${safeQuery}
+            OR u.username % ${safeQuery}
           )
         ORDER BY rank DESC
         LIMIT ${safeLimit} OFFSET ${offset}
