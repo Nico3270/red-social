@@ -2,34 +2,10 @@
 
 import { auth } from "@/auth.config";
 import prisma from "@/lib/prisma";
-import { EstadoNegocio } from "@prisma/client";
+import { profileEditorSchema } from "@/lib/business/profileEditor";
+import { validProfileLocation } from "@/lib/business/profileLocation";
+import type { InformacionInicialNegocio } from "@/lib/business/profileEditor";
 import { revalidatePath, revalidateTag } from "next/cache";
-
-interface InformacionInicialNegocio {
-  nombreNegocio: string;
-  slugNegocio: string;
-  descripcionNegocio: string;
-  telefonoNegocio: string; // Mapea a telefonoContacto en Negocio
-  ciudadNegocio: string;
-  departamentoNegocio: string;
-  direccionNegocio?: string;
-  telefonoContacto?: string;
-  imagenPerfil?: string;
-  imagenPortada?: string;
-  sitioWeb?: string;
-  urlGoogleMaps?: string;
-  facebook?: string;
-  instagram?: string;
-  twitter?: string;
-  tiktok?: string;
-  youtube?: string;
-  latitudNegocio: number;
-  longitudNegocio: number;
-  categoriaIds: string[];
-  seccionesIds: string[];
-  estadoNegocio: EstadoNegocio;
-  idNegocio?: string; // Opcional, si se necesita el ID del negocio
-}
 
 interface DatosPerfilNegocio {
   ok: boolean;
@@ -37,13 +13,24 @@ interface DatosPerfilNegocio {
   negocio?: InformacionInicialNegocio;
 }
 
-// Constantes para valores por defecto
-const DEFAULT_LATITUDE = 4.710989; // Bogotá
-const DEFAULT_LONGITUDE = -74.07209;
+const profileSelection = {
+  id: true,
+  slug: true,
+  usuarioId: true,
+  latitud: true,
+  longitud: true,
+  categorias: { select: { categoryId: true } },
+  secciones: { select: { sectionId: true } },
+} as const;
+
+const sameIds = (current: string[], next: string[]) =>
+  current.length === next.length && current.every((id) => next.includes(id));
+const optionalText = (value: string | undefined) =>
+  value === undefined ? undefined : value || null;
 
 export const actualizarPerfilNegocio = async (
   usuarioId: string,
-  data: InformacionInicialNegocio
+  data: InformacionInicialNegocio,
 ): Promise<DatosPerfilNegocio> => {
   try {
     const session = await auth();
@@ -63,14 +50,25 @@ export const actualizarPerfilNegocio = async (
       };
     }
 
+    const validated = profileEditorSchema.safeParse(data);
+    if (!validated.success) {
+      return {
+        ok: false,
+        message:
+          validated.error.issues[0]?.message ||
+          "Revisa los datos del formulario.",
+      };
+    }
+    data = validated.data;
+
     const negocio = data.idNegocio
       ? await prisma.negocio.findUnique({
           where: { id: data.idNegocio },
-          select: { id: true, slug: true, usuarioId: true },
+          select: profileSelection,
         })
       : await prisma.negocio.findUnique({
           where: { usuarioId: authenticatedUserId },
-          select: { id: true, slug: true, usuarioId: true },
+          select: profileSelection,
         });
 
     if (!negocio) {
@@ -94,7 +92,6 @@ export const actualizarPerfilNegocio = async (
     // Validaciones adicionales
     // console.log("Validación del slug del negocio, coordenadas y categorías...");
 
-
     // 1. Verificar que el slug no esté en uso por otro negocio
     const slugNegocio = data.slugNegocio; // Usa el proporcionado, no generes nuevo
     if (slugNegocio !== negocio.slug) {
@@ -103,19 +100,11 @@ export const actualizarPerfilNegocio = async (
         select: { id: true },
       });
       if (existingSlug && existingSlug.id !== negocio.id) {
-        return { ok: false, message: "El slug ya está en uso por otro negocio." };
+        return {
+          ok: false,
+          message: "El slug ya está en uso por otro negocio.",
+        };
       }
-
-    }
-
-    // 2. Validar coordenadas
-    if (
-      data.latitudNegocio < -90 ||
-      data.latitudNegocio > 90 ||
-      data.longitudNegocio < -180 ||
-      data.longitudNegocio > 180
-    ) {
-      return { ok: false, message: "Las coordenadas proporcionadas no son válidas." };
     }
 
     // 3. Verificar que las categorías existen
@@ -124,7 +113,10 @@ export const actualizarPerfilNegocio = async (
         where: { id: { in: data.categoriaIds } },
       });
       if (categoriasExistentes !== data.categoriaIds.length) {
-        return { ok: false, message: "Una o más categorías proporcionadas no existen." };
+        return {
+          ok: false,
+          message: "Una o más categorías proporcionadas no existen.",
+        };
       }
     }
 
@@ -134,14 +126,30 @@ export const actualizarPerfilNegocio = async (
         where: { id: { in: data.seccionesIds } },
       });
       if (seccionesExistentes !== data.seccionesIds.length) {
-        return { ok: false, message: "Una o más secciones proporcionadas no existen." };
+        return {
+          ok: false,
+          message: "Una o más secciones proporcionadas no existen.",
+        };
       }
     }
 
     // console.log("Validaciones pasadas, procediendo a actualizar el perfil del negocio...  ");
 
-
-    const tieneUbicacion = !!(data.latitudNegocio && data.longitudNegocio);
+    const location = validProfileLocation(
+      data.latitudNegocio,
+      data.longitudNegocio,
+    );
+    const locationChanged =
+      location &&
+      (location.lat !== negocio.latitud || location.lng !== negocio.longitud);
+    // La ausencia de ubicación no borra coordenadas existentes; solo una selección válida las cambia.
+    const locationData = locationChanged
+      ? {
+          latitud: location.lat,
+          longitud: location.lng,
+          urlGoogleMaps: `https://www.google.com/maps?q=${location.lat},${location.lng}`,
+        }
+      : { urlGoogleMaps: optionalText(data.urlGoogleMaps) };
     // Preparar los datos para la actualización
     const negocioData = {
       nombre: data.nombreNegocio,
@@ -150,25 +158,21 @@ export const actualizarPerfilNegocio = async (
       telefonoContacto: data.telefonoNegocio,
       ciudad: data.ciudadNegocio,
       departamento: data.departamentoNegocio,
-      direccion: data.direccionNegocio ?? null,
-      urlGoogleMaps: tieneUbicacion
-        ? `https://www.google.com/maps?q=${data.latitudNegocio},${data.longitudNegocio}`
-        : null,
-      latitud: data.latitudNegocio,
-      longitud: data.longitudNegocio,
-      fotoPerfil: data.imagenPerfil ?? null,
-      fotoPortada: data.imagenPortada ?? null,
-      sitioWeb: data.sitioWeb ?? null,
+      direccion: optionalText(data.direccionNegocio),
+      ...locationData,
+      fotoPerfil: optionalText(data.imagenPerfil),
+      fotoPortada: optionalText(data.imagenPortada),
+      sitioWeb: optionalText(data.sitioWeb),
       // El estado operacional del negocio es administrado por Myckeo/admin.
       // La edición normal del dueño acepta el campo por compatibilidad, pero no lo persiste.
     };
 
     const usuarioData = {
-      facebook: data.facebook ?? null,
-      instagram: data.instagram ?? null,
-      twitter: data.twitter ?? null,
-      tiktok: data.tiktok ?? null,
-      youtube: data.youtube ?? null,
+      facebook: optionalText(data.facebook),
+      instagram: optionalText(data.instagram),
+      twitter: optionalText(data.twitter),
+      tiktok: optionalText(data.tiktok),
+      youtube: optionalText(data.youtube),
     };
     // console.log("Ejecutando la transacción para actualizar el negocio...");
 
@@ -179,19 +183,33 @@ export const actualizarPerfilNegocio = async (
         where: { id: negocio.id },
         data: {
           ...negocioData,
-          categorias: {
-            deleteMany: {}, // Eliminar todas las categorías actuales
-            create: data.categoriaIds.map((categoryId) => ({
-              categoryId,
-            })),
-          },
-          secciones: {
-            deleteMany: {}, // Eliminar todas las secciones actuales
-            create: data.seccionesIds.map((sectionId) => ({
-              sectionId,
-              prioridad: 0, // Asignar prioridad por defecto
-            })),
-          },
+          ...(sameIds(
+            negocio.categorias.map((item) => item.categoryId),
+            data.categoriaIds,
+          )
+            ? {}
+            : {
+                categorias: {
+                  deleteMany: {},
+                  create: data.categoriaIds.map((categoryId) => ({
+                    categoryId,
+                  })),
+                },
+              }),
+          ...(sameIds(
+            negocio.secciones.map((item) => item.sectionId),
+            data.seccionesIds,
+          )
+            ? {}
+            : {
+                secciones: {
+                  deleteMany: {},
+                  create: data.seccionesIds.map((sectionId) => ({
+                    sectionId,
+                    prioridad: 0,
+                  })),
+                },
+              }),
         },
         select: {
           id: true,
@@ -257,12 +275,12 @@ export const actualizarPerfilNegocio = async (
       twitter: data.twitter ?? undefined,
       tiktok: data.tiktok ?? undefined,
       youtube: data.youtube ?? undefined,
-      latitudNegocio: updatedNegocio.latitud ?? DEFAULT_LATITUDE,
-      longitudNegocio: updatedNegocio.longitud ?? DEFAULT_LONGITUDE,
+      latitudNegocio: updatedNegocio.latitud ?? null,
+      longitudNegocio: updatedNegocio.longitud ?? null,
       categoriaIds: updatedNegocio.categorias.map((cat) => cat.categoryId),
       seccionesIds: updatedNegocio.secciones.map((sec) => sec.sectionId),
       estadoNegocio: updatedNegocio.estado,
-      idNegocio: updatedNegocio.id, // Incluimos el ID del negocio actualizado  
+      idNegocio: updatedNegocio.id, // Incluimos el ID del negocio actualizado
     };
 
     return {
@@ -274,7 +292,8 @@ export const actualizarPerfilNegocio = async (
     console.error("Error al actualizar el perfil del negocio:", error);
     return {
       ok: false,
-      message: `Error al actualizar el perfil: ${error instanceof Error ? error.message : "Error desconocido"}`,
+      message:
+        "No pudimos guardar los cambios. Tus datos siguen en el formulario; inténtalo nuevamente.",
     };
   }
 };

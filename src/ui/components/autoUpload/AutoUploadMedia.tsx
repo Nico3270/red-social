@@ -6,6 +6,7 @@ import { FaTrashAlt } from "react-icons/fa";
 import { MdAddAPhoto } from "react-icons/md";
 import Image from "next/image";
 import { titleFont } from "@/config/fonts";
+import { uploadAuthorizedMedia } from "@/lib/cloudinary/uploadAuthorizedMedia";
 import {
   getCloudinaryAssetReference,
   inferCloudinaryResourceType,
@@ -25,9 +26,11 @@ interface RenderMedia {
   publicId?: string;
   resourceType?: CloudinaryResourceType | null;
   isUploaded?: boolean;
+  deleteAuthorization?: string;
 }
 
 type UploadedMedia = {
+  deleteAuthorization?: string;
   url: string;
   publicId: string | null;
   resourceType: CloudinaryResourceType | null;
@@ -214,6 +217,8 @@ interface AutoUploadMediaProps {
   onChange: (urls: string[] | string | undefined) => void;
   onError?: (message: string) => void;
   onLoading?: (isLoading: boolean) => void;
+  // En editores con guardado diferido, conservar el asset persistido hasta confirmar los cambios.
+  deleteRemoteOnRemove?: boolean;
 }
 
 const AutoUploadMedia: React.FC<AutoUploadMediaProps> = ({
@@ -222,13 +227,14 @@ const AutoUploadMedia: React.FC<AutoUploadMediaProps> = ({
   onError,
   onLoading,
   multiple = false,
+  deleteRemoteOnRemove = true,
   mediaType = "mixto",
   titulo
 }) => {
   const [media, setMedia] = useState<Media[]>([]);
   const [uploadedMedia, setUploadedMedia] = useState<UploadedMedia[]>([]);
   const [loading, setLoading] = useState(false);
-  const [uploadingFiles, setUploadingFiles] = useState<Set<string>>(new Set());
+  const uploadingFiles = useRef(new Set<string>());
   const isInitialized = useRef(false); // Flag para inicialización (no causa re-renders)
   const inputId = useId();
 
@@ -300,19 +306,8 @@ const AutoUploadMedia: React.FC<AutoUploadMediaProps> = ({
       }
     }
 
-    // Si multiple es false, limpiar medios previos
-    if (!multiple && (media.length > 0 || uploadedMedia.length > 0)) {
-      if (uploadedMedia.length > 0) {
-        await Promise.all(
-          uploadedMedia.map((m) =>
-            handleRemoveFromCloudinary(m.publicId, m.url, m.resourceType)
-          )
-        );
-      }
-      setMedia([]);
-      setUploadedMedia([]);
-    }
-
+    // La referencia anterior permanece intacta hasta completar la nueva subida.
+    // El borrado remoto de assets persistidos pertenece a la limpieza posterior al guardado.
     const newMedia: Media[] = [];
     for (const file of files) {
       if (file.type.startsWith("video/")) {
@@ -350,55 +345,24 @@ const AutoUploadMedia: React.FC<AutoUploadMediaProps> = ({
   useEffect(() => {
     const uploadFile = async (mediaItem: Media) => {
       const fileId = mediaItem.id;
-      if (uploadingFiles.has(fileId)) {
+      if (uploadingFiles.current.has(fileId)) {
         // console.log("File already uploading, skipping:", fileId);
         return;
       }
 
-      setUploadingFiles((prev) => new Set(prev).add(fileId));
+      uploadingFiles.current.add(fileId);
       setLoading(true);
       onLoading?.(true);
-      const formData = new FormData();
-      formData.append("file", mediaItem.file);
-      formData.append("upload_preset", process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!);
-
       try {
-        const response = await fetch(
-          `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME!}/${mediaItem.file.type.startsWith("video/") ? "video" : "image"
-          }/upload`,
-          {
-            method: "POST",
-            body: formData,
-          }
-        );
-        const data = await response.json();
-        if (!response.ok) {
-          throw new Error(`Error en la carga: ${data.error?.message || response.statusText}`);
-        }
-        if (data.secure_url) {
-          const newUploadedMedia = {
-            url: data.secure_url,
-            publicId: data.public_id ?? null,
-            resourceType: mediaItem.file.type.startsWith("video/")
-              ? "video"
-              : "image",
-          } satisfies UploadedMedia;
-          setUploadedMedia((prev) => (multiple ? [...prev, newUploadedMedia] : [newUploadedMedia]));
-        }
-        else {
-          throw new Error("No se subió el archivo.");
-        }
+        const uploaded = await uploadAuthorizedMedia(mediaItem.file);
+        setUploadedMedia((prev) => multiple ? [...prev, uploaded] : [uploaded]);
       } catch (error) {
         console.error("Upload error:", error);
         onError?.(`Error al subir archivo a Cloudinary: ${error}`);
       } finally {
-        setUploadingFiles((prev) => {
-          const newSet = new Set(prev);
-          newSet.delete(fileId);
-          return newSet;
-        });
-        setLoading(false);
-        onLoading?.(false);
+        uploadingFiles.current.delete(fileId);
+        setLoading(uploadingFiles.current.size > 0);
+        onLoading?.(uploadingFiles.current.size > 0);
         setMedia((prev) => {
           const updated = prev.filter((m) => m.id !== fileId);
           updated.forEach((m) => URL.revokeObjectURL(m.url));
@@ -417,7 +381,8 @@ const AutoUploadMedia: React.FC<AutoUploadMediaProps> = ({
   const handleRemoveFromCloudinary = async (
     publicId: string | null,
     url: string,
-    resourceType?: CloudinaryResourceType | null
+    resourceType?: CloudinaryResourceType | null,
+    deleteAuthorization?: string,
   ) => {
     setLoading(true);
     onLoading?.(true);
@@ -440,10 +405,13 @@ const AutoUploadMedia: React.FC<AutoUploadMediaProps> = ({
           publicId: resolvedPublicId,
           resourceType: resolvedResourceType || "image",
           url,
+          deleteAuthorization,
         }),
       });
       const data = await response.json();
-      if (!response.ok) {
+      // El archivo ya se guardó: se permite retirarlo del borrador sin destruirlo remotamente.
+      if (response.status === 409 && data.code === "ASSET_IN_USE") return true;
+      if (!response.ok || data.success !== true) {
         throw new Error(
           `Error al eliminar de Cloudinary: ${data.error?.message || response.statusText || "Unknown error"}`
         );
@@ -472,9 +440,11 @@ const AutoUploadMedia: React.FC<AutoUploadMediaProps> = ({
   const handleRemoveUploadedMedia = async (
     publicId: string | null,
     url: string,
-    resourceType?: CloudinaryResourceType | null
+    resourceType?: CloudinaryResourceType | null,
+    deleteAuthorization?: string,
   ) => {
-    const success = await handleRemoveFromCloudinary(publicId, url, resourceType);
+    // Sin prueba de creación (incluidos assets antiguos), solo cambia el formulario.
+    const success = !deleteRemoteOnRemove || !deleteAuthorization || await handleRemoveFromCloudinary(publicId, url, resourceType, deleteAuthorization);
     if (success) {
       setUploadedMedia((prev) => {
         const updated = prev.filter(
@@ -501,6 +471,7 @@ const AutoUploadMedia: React.FC<AutoUploadMediaProps> = ({
       publicId: m.publicId ?? undefined,
       resourceType: m.resourceType,
       isUploaded: true,
+      deleteAuthorization: m.deleteAuthorization,
     })),
   ];
 
@@ -543,7 +514,8 @@ const AutoUploadMedia: React.FC<AutoUploadMediaProps> = ({
                   ? handleRemoveUploadedMedia(
                       img.publicId ?? null,
                       img.url,
-                      img.resourceType ?? inferCloudinaryResourceType(img.url)
+                      img.resourceType ?? inferCloudinaryResourceType(img.url),
+                      img.deleteAuthorization,
                     )
                   : handleRemoveMedia(img.id)
               }
@@ -557,6 +529,7 @@ const AutoUploadMedia: React.FC<AutoUploadMediaProps> = ({
         <label className="flex items-center justify-center w-32 h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 transition-all">
           <input
             type="file"
+            disabled={loading}
             accept={getAcceptValue()}
             onChange={handleAddMedia}
             className="hidden"
@@ -565,6 +538,8 @@ const AutoUploadMedia: React.FC<AutoUploadMediaProps> = ({
           />
           <button
             type="button"
+            disabled={loading}
+            aria-label="Añadir archivo multimedia"
             onClick={() => document.getElementById(inputId)?.click()}  // Busca por el ID único
             className="p-3 rounded-full bg-gray-200 hover:bg-blue-100 text-gray-600 hover:text-blue-600 transition-all"
           >

@@ -31,7 +31,8 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 9
+          # Match the pnpm-workspace.yaml build allowlist used locally.
+          version: 10.19.0
           run_install: false
 
       - name: Setup Node.js

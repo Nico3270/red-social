@@ -1,31 +1,7 @@
 import { auth } from "@/auth.config";
 import prisma from "@/lib/prisma";
 import { EstadoNegocio } from "@prisma/client";
-
-interface InformacionInicialNegocio {
-  nombreNegocio: string;
-  slugNegocio: string;
-  descripcionNegocio: string;
-  telefonoNegocio: string;
-  ciudadNegocio: string;
-  departamentoNegocio: string;
-  direccionNegocio?: string;
-  telefonoContacto?: string;
-  imagenPerfil?: string;
-  imagenPortada?: string;
-  sitioWeb?: string;
-  urlGoogleMaps?: string;
-  facebook?: string;
-  instagram?: string;
-  twitter?: string;
-  tiktok?: string;
-  youtube?: string;
-  latitudNegocio: number;
-  longitudNegocio: number;
-  categoriaIds: string[];
-  seccionesIds: string[];
-  estadoNegocio: EstadoNegocio;
-}
+import type { InformacionInicialNegocio } from "@/lib/business/profileEditor";
 
 interface DatosPerfilNegocio {
   ok: boolean;
@@ -33,7 +9,9 @@ interface DatosPerfilNegocio {
   negocio?: InformacionInicialNegocio;
 }
 
-export const editarPerfilNegocio = async (idNegocio: string):Promise<DatosPerfilNegocio> => {
+export const editarPerfilNegocio = async (
+  idNegocio: string,
+): Promise<DatosPerfilNegocio> => {
   try {
     const session = await auth();
     const authenticatedUserId = session?.user?.id;
@@ -103,7 +81,6 @@ export const editarPerfilNegocio = async (idNegocio: string):Promise<DatosPerfil
       } as DatosPerfilNegocio;
     }
 
-
     // Transformar los datos del negocio para que cumplan con la interface InformacionInicialNegocio
     const negocioFormateado: InformacionInicialNegocio = {
       nombreNegocio: result.negocio.nombre || "",
@@ -123,18 +100,20 @@ export const editarPerfilNegocio = async (idNegocio: string):Promise<DatosPerfil
       twitter: result.twitter || "",
       tiktok: result.tiktok || "",
       youtube: result.youtube || "",
-      latitudNegocio: result.negocio.latitud || 4.710839303719267,
-      longitudNegocio: result.negocio.longitud || -74.07215437301636,
-      categoriaIds: result.negocio.categorias.map((categoria) => categoria.categoryId) || [],
-      seccionesIds: result.negocio.secciones.map((seccion) => seccion.sectionId) || [],
+      latitudNegocio: result.negocio.latitud ?? null,
+      longitudNegocio: result.negocio.longitud ?? null,
+      categoriaIds:
+        result.negocio.categorias.map((categoria) => categoria.categoryId) ||
+        [],
+      seccionesIds:
+        result.negocio.secciones.map((seccion) => seccion.sectionId) || [],
       estadoNegocio: result.negocio.estado || EstadoNegocio.activo,
-    }
+    };
     return {
       ok: true,
       message: "Perfil del negocio editado correctamente",
       negocio: negocioFormateado,
     } as DatosPerfilNegocio;
-
   } catch (error) {
     console.error("Error al editar el perfil del negocio:", error);
     return {
