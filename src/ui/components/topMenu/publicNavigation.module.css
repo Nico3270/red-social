@@ -1,0 +1,129 @@
+.desktopRow {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  max-width: 1280px;
+  min-height: 80px;
+  padding: 8px 16px;
+  margin: auto;
+}
+.discovery {
+  min-height: 64px;
+}
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  white-space: nowrap;
+  color: #292c32;
+}
+.brand > img {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+.searchArea {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 0;
+}
+.searchSlot {
+  flex: 1;
+  min-width: 0;
+  max-width: 360px;
+}
+.location {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 44px;
+  min-height: 44px;
+  max-width: 160px;
+  flex-shrink: 0;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  padding: 8px 10px;
+  background: white;
+  color: #374151;
+  font-size: 13px;
+}
+.location > svg {
+  flex-shrink: 0;
+}
+.city {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.desktopActions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.desktopActions > :is(a, button) {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  margin: 0 !important;
+}
+.mobileRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+}
+.mobileRow .location {
+  max-width: min(150px, 38vw);
+}
+.mobileSearch {
+  grid-column: 1/-1;
+  min-width: 0;
+}
+.mobileActions > div {
+  display: flex;
+  justify-content: space-around;
+  align-items: stretch;
+  gap: 2px;
+  padding: 6px 4px;
+}
+.mobileActions > div > :is(a, button) {
+  min-width: 44px;
+  min-height: 56px;
+  flex: 1;
+  justify-content: center;
+}
+.mobileActions > div > :is(a, button) > span:last-child {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.25;
+  text-align: center;
+  max-width: 100%;
+}
+.brand:focus-visible,
+.location:focus-visible,
+.desktopActions > :focus-visible,
+.mobileActions button:focus-visible,
+.mobileActions a:focus-visible {
+  outline: 2px solid #c93545;
+  outline-offset: 3px;
+}
+.location:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+@media (prefers-reduced-motion: reduce) {
+  .desktopActions *,
+  .mobileActions * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

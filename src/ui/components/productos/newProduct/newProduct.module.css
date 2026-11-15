@@ -1,0 +1,505 @@
+.shell {
+  width: 100%;
+  max-width: 960px;
+  min-width: 0;
+  margin: 0 auto;
+  color: var(--product-ink, #292c32);
+  font-family: inherit;
+}
+.header {
+  color: var(--product-ink);
+  padding: 0 0 28px;
+}
+.headerNav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+.back,
+.help {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  color: #4b5563;
+  font-size: 14px;
+  border-radius: 10px;
+  padding: 0 8px;
+  background: transparent;
+  text-decoration: none;
+}
+.back {
+  margin-left: -8px;
+}
+.back:hover,
+.help:hover {
+  background: #e5e7eb;
+  color: var(--product-ink);
+}
+.eyebrow {
+  color: var(--product-accent);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.title {
+  font-size: clamp(26px, 4vw, 34px);
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  margin: 0;
+}
+.subtitle {
+  color: #6b7280;
+  font-size: 15px;
+  line-height: 1.7;
+  margin-top: 12px;
+  max-width: 580px;
+}
+.form {
+  color: var(--product-ink);
+  container-type: inline-size;
+  min-width: 0;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  box-shadow: 0 2px 6px #11182703;
+}
+.section {
+  padding: 24px 16px;
+  min-width: 0;
+  scroll-margin-top: 88px;
+}
+.section + .section {
+  border-top: 1px solid #f0f1f3;
+}
+.sectionHead {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.sectionIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border: 1px solid var(--product-accent-border);
+  border-radius: 11px;
+  color: var(--product-accent);
+  background: var(--product-soft);
+}
+.sectionTitle {
+  font-size: 18px;
+  font-weight: 650;
+  color: var(--product-ink);
+  line-height: 1.45;
+  letter-spacing: -0.025em;
+}
+.sectionHint {
+  font-size: 13px;
+  line-height: 1.6;
+  color: #6b7280;
+  margin-top: 4px;
+}
+.fields {
+  display: grid;
+  gap: 24px;
+  min-width: 0;
+}
+.twoColumns {
+  display: grid;
+  gap: 20px;
+  min-width: 0;
+}
+.field {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+.label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  line-height: 1.5;
+}
+.optional {
+  font-size: 12px;
+  font-weight: 400;
+  color: #6b7280;
+  margin-left: 5px;
+}
+.hint {
+  color: #6b7280;
+  font-size: 13px;
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+.error {
+  color: #b91c1c;
+  font-size: 13px;
+  line-height: 1.6;
+  margin-top: 8px;
+}
+.disclosure {
+  min-width: 0;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #fafafa;
+}
+.disclosure > summary {
+  cursor: pointer;
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  list-style: none;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+.disclosure > summary::-webkit-details-marker {
+  display: none;
+}
+.disclosure > summary::after {
+  content: "+";
+  margin-left: auto;
+  font-size: 20px;
+  font-weight: 400;
+  flex-shrink: 0;
+}
+.disclosure[open] > summary::after {
+  content: "−";
+}
+.disclosureBody {
+  padding: 4px 16px 20px;
+  display: grid;
+  gap: 20px;
+  min-width: 0;
+}
+.aiPreview {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 16px;
+  display: grid;
+  gap: 12px;
+  overflow-wrap: anywhere;
+}
+.aiPreview p {
+  font-size: 14px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  min-width: 0;
+}
+.rowTitle {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.6;
+}
+.variant {
+  min-width: 0;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+  display: grid;
+  gap: 20px;
+}
+.variantTitle {
+  font-size: 15px;
+  font-weight: 650;
+}
+.option {
+  display: grid;
+  gap: 12px;
+  border-top: 1px solid #e5e7eb;
+  padding-top: 16px;
+  min-width: 0;
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+}
+.footer {
+  border-top: 1px solid #e5e7eb;
+  padding: 20px 16px;
+  background: #fafafa;
+  border-radius: 0 0 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: stretch;
+}
+.footer p {
+  font-size: 12px;
+  line-height: 1.6;
+  color: #6b7280;
+}
+.form :global(.MuiFormControl-root),
+.form :global(.MuiAutocomplete-root) {
+  min-width: 0;
+}
+.form :global(.MuiInputBase-root) {
+  font-family: inherit;
+  font-size: 16px;
+  border-radius: 10px;
+  background: #fff;
+}
+.form :global(.MuiOutlinedInput-input) {
+  padding: 13px 14px;
+}
+.form :global(.MuiOutlinedInput-multiline) {
+  padding: 13px 14px;
+}
+.form :global(.MuiInputBase-multiline) textarea {
+  padding: 0;
+}
+.form :global(.MuiOutlinedInput-notchedOutline) {
+  border-color: #d1d5db;
+}
+.form :global(.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline) {
+  border-color: #9ca3af;
+}
+.form :global(.Mui-focused .MuiOutlinedInput-notchedOutline) {
+  border-color: var(--product-accent);
+  border-width: 2px;
+}
+.form :global(.Mui-error .MuiOutlinedInput-notchedOutline) {
+  border-color: #b91c1c;
+}
+.form :global(.MuiInputLabel-root),
+.form :global(.MuiFormHelperText-root),
+.form :global(.MuiFormControlLabel-label),
+.form :global(.MuiButton-root) {
+  font-family: inherit;
+}
+.form :global(.MuiFormHelperText-root) {
+  margin-left: 0;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.form :global(.MuiButton-root) {
+  min-height: 44px;
+  border-radius: 10px;
+  text-transform: none;
+  box-shadow: none;
+  font-size: 14px;
+  line-height: 1.5;
+  padding: 10px 16px;
+  white-space: normal;
+}
+.form :global(.MuiButton-outlined) {
+  border-color: var(--product-accent-border);
+  color: var(--product-accent);
+}
+.form :global(.MuiButton-outlined:hover) {
+  border-color: var(--product-accent);
+  background: var(--product-soft);
+}
+.form :global(.MuiButton-text) {
+  color: #4b5563;
+}
+.form :global(.MuiButton-contained) {
+  background: var(--product-accent);
+  color: #fff;
+}
+.form :global(.MuiButton-contained:hover) {
+  background: var(--product-hover);
+  box-shadow: none;
+}
+.form :global(.MuiButton-contained.Mui-disabled) {
+  background: #e5e7eb;
+  color: #6b7280;
+}
+.form :global(.MuiIconButton-root) {
+  min-width: 44px;
+  min-height: 44px;
+  color: #6b7280;
+}
+.form :global(.MuiIconButton-root:hover) {
+  color: #b91c1c;
+  background: #fef2f2;
+}
+.form :global(.MuiFormControlLabel-root) {
+  margin: 0;
+  gap: 4px;
+  min-height: 44px;
+}
+.form :global(.MuiSwitch-switchBase.Mui-checked) {
+  color: var(--product-accent);
+}
+.form :global(.MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track) {
+  background-color: var(--product-accent);
+}
+.form :global(.MuiChip-root) {
+  min-height: 44px;
+  height: auto;
+  max-width: 100%;
+  font-family: inherit;
+  background: var(--product-soft);
+  color: var(--product-accent);
+  border: 1px solid var(--product-accent-border);
+  border-radius: 8px;
+}
+.form :global(.MuiChip-label) {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+.form :global(.MuiChip-deleteIcon) {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 12px;
+}
+.form :global(.MuiAutocomplete-clearIndicator),
+.form :global(.MuiAutocomplete-popupIndicator) {
+  min-width: 44px;
+  min-height: 44px;
+}
+.form :global(.MuiAutocomplete-root .MuiOutlinedInput-root) {
+  padding: 4px 8px;
+}
+.form :global(.MuiAutocomplete-root .MuiAutocomplete-input) {
+  padding: 9px 6px;
+}
+.form :global(.MuiAutocomplete-hasPopupIcon .MuiOutlinedInput-root) {
+  padding-right: 88px;
+}
+.form :global(.MuiAutocomplete-endAdornment) {
+  top: calc(50% - 22px);
+  transform: none;
+}
+.form :global(.MuiAlert-message) {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.shell :is(button, a, summary):focus-visible,
+.form :global(.MuiButtonBase-root.Mui-focusVisible) {
+  outline: 2px solid var(--product-accent);
+  outline-offset: 3px;
+}
+.helpVideo {
+  border: 0;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+}
+@media (min-width: 640px) {
+  .section {
+    padding: 32px;
+  }
+  .footer {
+    padding: 24px 32px;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .footer p {
+    max-width: 300px;
+  }
+}
+@container (min-width: 620px) {
+  .twoColumns {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .shell *,
+  .shell *::before,
+  .shell *::after {
+    transition: none !important;
+    animation: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.form
+  :global(.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline) {
+  border-color: var(--product-accent);
+  border-width: 2px;
+}
+.form :global(.MuiOutlinedInput-root.Mui-focused) {
+  box-shadow: 0 0 0 3px var(--product-ring);
+}
+.form
+  :global(.MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline) {
+  border-color: #b91c1c;
+}
+.form :global(.MuiAutocomplete-root .MuiAutocomplete-input) {
+  min-width: 120px;
+}
+
+/* Compensa solo en esta ruta la diferencia heredada entre menú (250px) y margen (200px). */
+@media (min-width: 769px) and (max-width: 1279px) {
+  .shell {
+    padding-left: 32px;
+  }
+}
+
+.assistant {
+  border-color: var(--product-accent-border);
+  background: var(--product-soft);
+}
+.assistant > summary {
+  color: var(--product-ink);
+}
+.assistant > summary > svg,
+.assistant > summary::after {
+  color: var(--product-accent);
+}
+.assistant .disclosureBody {
+  padding-top: 8px;
+}
+.assistant :global(.MuiChip-root) {
+  background: #fff;
+}
+.form :global(.MuiCircularProgress-root) {
+  color: var(--product-accent);
+}
+.form :global([aria-busy] > button) {
+  background: var(--product-soft);
+  border-color: var(--product-accent-border);
+  color: var(--product-accent);
+}
+.form :global([aria-busy] > button:hover) {
+  border-color: var(--product-accent);
+}
+.form :global(.MuiChip-deleteIcon) {
+  color: var(--product-accent);
+}
+.form :global(.MuiChip-deleteIcon:hover) {
+  color: var(--product-hover);
+}
+
+/* El texto de ayuda conserva contraste al pasar de blanco a los fondos suaves. */
+.assistant .hint,
+.assistant :global(.MuiFormHelperText-root) {
+  color: #596273;
+}
+
+/* Componentes es un bloque propio de Información, entre nombre y descripción. */
+.componentBlock {
+  min-width: 0;
+  padding-block: 20px;
+  border-block: 1px solid #f0f1f3;
+}
+.componentBlock .sectionHead {
+  margin-bottom: 16px;
+}

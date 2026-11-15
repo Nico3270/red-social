@@ -219,6 +219,8 @@ interface AutoUploadMediaProps {
   onLoading?: (isLoading: boolean) => void;
   // En editores con guardado diferido, conservar el asset persistido hasta confirmar los cambios.
   deleteRemoteOnRemove?: boolean;
+  /** Presentación opt-in; conserva el flujo y los permisos existentes. */
+  presentation?: "default" | "productGallery";
 }
 
 const AutoUploadMedia: React.FC<AutoUploadMediaProps> = ({
@@ -229,7 +231,8 @@ const AutoUploadMedia: React.FC<AutoUploadMediaProps> = ({
   multiple = false,
   deleteRemoteOnRemove = true,
   mediaType = "mixto",
-  titulo
+  titulo,
+  presentation = "default",
 }) => {
   const [media, setMedia] = useState<Media[]>([]);
   const [uploadedMedia, setUploadedMedia] = useState<UploadedMedia[]>([]);
@@ -486,6 +489,109 @@ const AutoUploadMedia: React.FC<AutoUploadMediaProps> = ({
       return multiple ? "Añade tus imágenes o videos" : "Añade una imagen o video";
     }
   };
+
+  if (presentation === "productGallery") {
+    return (
+      <div className="min-w-0" aria-busy={loading}>
+        <input
+          id={inputId}
+          type="file"
+          accept={getAcceptValue()}
+          multiple={multiple}
+          disabled={loading}
+          onChange={handleAddMedia}
+          className="hidden"
+        />
+        <button
+          type="button"
+          onClick={() => document.getElementById(inputId)?.click()}
+          disabled={loading}
+          className="flex min-h-[116px] w-full flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-gray-300 bg-gray-50 px-4 py-5 text-center text-gray-700 transition-colors hover:border-gray-500 hover:bg-gray-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gray-700 disabled:cursor-wait disabled:opacity-60 motion-reduce:transition-none"
+        >
+          <MdAddAPhoto size={25} aria-hidden="true" />
+          <span className="text-sm font-semibold">
+            {loading ? "Subiendo fotografías…" : "Añadir fotografías"}
+          </span>
+          <span className="text-xs leading-5 text-gray-500">
+            Selecciona una o varias imágenes de tu dispositivo
+          </span>
+        </button>
+        {renderMedia.length > 0 && (
+          <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+            {renderMedia.map((img, index) => (
+              <div
+                key={img.id}
+                className="min-w-0 overflow-hidden rounded-xl border border-gray-200 bg-gray-50"
+              >
+                <div className="relative aspect-square">
+                  <Image
+                    src={img.url}
+                    alt={`Fotografía ${index + 1} del producto`}
+                    fill
+                    sizes="(max-width: 639px) 40vw, (max-width: 1023px) 25vw, 200px"
+                    className={`object-cover ${!img.isUploaded ? "opacity-50" : ""}`}
+                  />
+                  {img.isUploaded && (
+                    <IconButton
+                      type="button"
+                      aria-label={`Eliminar fotografía ${index + 1}`}
+                      disabled={loading}
+                      onClick={() =>
+                        handleRemoveUploadedMedia(
+                          img.publicId ?? null,
+                          img.url,
+                          img.resourceType ??
+                            inferCloudinaryResourceType(img.url),
+                          img.deleteAuthorization,
+                        )
+                      }
+                      sx={{
+                        position: "absolute",
+                        top: 4,
+                        right: 4,
+                        width: 44,
+                        height: 44,
+                        bgcolor: "rgba(255,255,255,.95)",
+                        color: "#374151",
+                        "&:hover": { bgcolor: "#fef2f2", color: "#b91c1c" },
+                        "&:focus-visible": {
+                          outline: "2px solid #b91c1c",
+                          outlineOffset: 2,
+                        },
+                      }}
+                    >
+                      <FaTrashAlt size={14} />
+                    </IconButton>
+                  )}
+                  {!img.isUploaded && (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <CircularProgress
+                        size={24}
+                        sx={{ color: "#374151" }}
+                        aria-label="Subiendo fotografía"
+                      />
+                    </div>
+                  )}
+                </div>
+                <p className="px-3 py-2 text-xs leading-5 text-gray-600">
+                  {img.isUploaded
+                    ? "✓ Fotografía subida"
+                    : "Pendiente de subida"}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
+        <p className="mt-3 text-xs leading-5 text-gray-500" role="status">
+          {loading
+            ? "Espera a que las fotografías terminen de subir."
+            : uploadedMedia.length > 0
+              ? `${uploadedMedia.length} fotografía${uploadedMedia.length === 1 ? "" : "s"} subida${uploadedMedia.length === 1 ? "" : "s"}.`
+              : "Al menos una fotografía. Máximo 10 MB por imagen después de optimizar."}
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="mb-6">

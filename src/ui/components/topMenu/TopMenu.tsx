@@ -19,6 +19,8 @@ import { updateUserPreferences } from "@/preferences/actions/updateUserPreferenc
 import { titleFont } from "@/config/fonts";
 import SearchBar from "@/busqueda/componentes/SearchBar";
 
+import styles from "./publicNavigation.module.css";
+
 interface ColombiaDepartment {
   id: number;
   departamento: string;
@@ -197,12 +199,17 @@ export const TopMenu = () => {
   const [isCrearModalOpen, setIsCrearModalOpen] = useState(false);
   const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
   const pathname = usePathname();
-  const totalItemsInCart = useCartCatalogoStore((state) => state.getTotalItems());
-  const totalFavorites = useFavoritesCatalogoStore((state) => state.getTotalItems());
+  const totalItemsInCart = useCartCatalogoStore((state) =>
+    state.getTotalItems(),
+  );
+  const totalFavorites = useFavoritesCatalogoStore((state) =>
+    state.getTotalItems(),
+  );
   const { data: session } = useSession();
   const isNegocio = session?.user?.role === "negocio";
   const { ciudad, userLat, userLong } = usePreferencesStore();
-  const isDiscoveryPage = pathname === "/" || pathname?.startsWith("/category/");
+  const isDiscoveryPage =
+    pathname === "/" || pathname?.startsWith("/category/");
 
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
@@ -211,27 +218,28 @@ export const TopMenu = () => {
   const showGpsIcon = userLat != null && userLong != null;
 
   const handleAyudaClick = () => {
-    window.open('https://wa.me/573132492256?text=Hola,%20necesito%20ayuda', '_blank');
+    window.open(
+      "https://wa.me/573132492256?text=Hola,%20necesito%20ayuda",
+      "_blank",
+    );
   };
 
   return (
     <header
-      className={`top-0 w-full border-b bg-white/95 shadow-md backdrop-blur ${
+      className={`top-0 w-full border-b bg-white shadow-sm ${
         isDiscoveryPage ? "sticky z-40" : "fixed z-50"
       }`}
     >
       <div
-        className={`mx-auto flex max-w-7xl items-center justify-between px-4 ${
-          isDiscoveryPage ? "h-16 gap-3" : "h-20"
-        }`}
+        className={`${styles.desktopRow} ${isDiscoveryPage ? styles.discovery : ""}`}
       >
         {/* Logo a la izquierda */}
-        <Link href="/" className="flex items-center space-x-1">
+        <Link href="/" className={styles.brand}>
           <Image
             src="/imgs/Logo Final (1).png"
             alt="Logo Myckeo"
-            width={100}
-            height={100}
+            width={44}
+            height={44}
             className="rounded-full"
             priority
           />
@@ -244,28 +252,33 @@ export const TopMenu = () => {
         </Link>
 
         {/* Barra de búsqueda centrada con botón de ubicación al lado */}
-        <div
-          className={`flex w-full items-center ${
-            isDiscoveryPage ? "mx-3 max-w-xl" : "mx-4 max-w-md"
-          }`}
-        >
-          <div className="relative flex-1">
+        <div className={styles.searchArea}>
+          <div className={styles.searchSlot}>
             <SearchBar compact={isDiscoveryPage} />
           </div>
           <button
             onClick={() => setIsLocationModalOpen(true)}
-            className={`ml-3 flex items-center rounded-full border border-gray-300 bg-white text-gray-800 shadow-md transition-colors hover:bg-gray-100 ${
-              isDiscoveryPage ? "px-3 py-1.5 text-sm" : "px-4 py-2"
-            }`}
+            className={styles.location}
+            aria-label={`Cambiar ubicación: ${ciudad || "Seleccionar ciudad"}${showGpsIcon ? " (GPS)" : ""}`}
+            title={ciudad || "Seleccionar ciudad"}
           >
-            <FaMapMarkerAlt className={`mr-2 ${showGpsIcon ? 'text-green-600' : 'text-gray-500'}`} />
-            <span className="font-medium truncate max-w-[120px]">{ciudad || 'Seleccionar Ciudad'}</span>
-            {showGpsIcon && <span className="ml-1 text-xs text-green-600">GPS</span>}
+            <FaMapMarkerAlt
+              className={`mr-2 ${showGpsIcon ? "text-green-600" : "text-gray-500"}`}
+            />
+            <span className={styles.city}>
+              {ciudad || "Seleccionar Ciudad"}
+            </span>
+            {showGpsIcon && (
+              <span className="ml-1 text-xs text-green-600">GPS</span>
+            )}
           </button>
         </div>
 
         {/* Iconos de navegación alineados a la derecha */}
-        <nav className="flex items-center space-x-2 md:space-x-4 text-gray-700">
+        <nav
+          className={styles.desktopActions}
+          aria-label="Navegación principal"
+        >
           {/* Inicio */}
           <Link
             href="/"
@@ -368,6 +381,8 @@ export const TopMenu = () => {
 
           {isNegocio && (
             <button
+              aria-haspopup="dialog"
+              aria-label="Crear"
               onClick={() => setIsCrearModalOpen(true)}
               className="
                 group relative flex flex-col items-center justify-center 
@@ -457,8 +472,14 @@ export const TopMenu = () => {
       {/* Drawer lateral */}
       <SideBar open={isDrawerOpen} toggleDrawer={setIsDrawerOpen} />
       <MenuSectionsBar compact={isDiscoveryPage} />
-      <CrearModal isOpen={isCrearModalOpen} onClose={() => setIsCrearModalOpen(false)} />
-      <UpdateLocationModal isOpen={isLocationModalOpen} onClose={() => setIsLocationModalOpen(false)} />
+      <CrearModal
+        isOpen={isCrearModalOpen}
+        onClose={() => setIsCrearModalOpen(false)}
+      />
+      <UpdateLocationModal
+        isOpen={isLocationModalOpen}
+        onClose={() => setIsLocationModalOpen(false)}
+      />
     </header>
   );
 };
