@@ -1,0 +1,38 @@
+
+Running 1 test using 1 worker
+
+  ✘  1 e2e/postgres-public-ui/postgres.spec.ts:132:5 › PostgreSQL: mobile feed, all tiers and pages, new selection, product WhatsApp and card actions (5.3s)
+
+
+  1) e2e/postgres-public-ui/postgres.spec.ts:132:5 › PostgreSQL: mobile feed, all tiers and pages, new selection, product WhatsApp and card actions
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      150 |         request.city === "Tunja" && request.cursor?.startsWith("fg2:"),
+      151 |     ),
+    > 152 |   ).toBe(true);
+          |     ^
+      153 |   await page.screenshot({
+      154 |     path: `${evidence}/postgres-feed-tunja-390.png`,
+      155 |     fullPage: true,
+        at /home/nico/worktrees/myckeo-public-candidate-20261125/e2e/postgres-public-ui/postgres.spec.ts:152:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/postgres-public-ui/postgres-PostgreSQL-mobile-3f23f-t-WhatsApp-and-card-actions/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/postgres-public-ui/postgres-PostgreSQL-mobile-3f23f-t-WhatsApp-and-card-actions/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/postgres-public-ui/postgres-PostgreSQL-mobile-3f23f-t-WhatsApp-and-card-actions/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/postgres-public-ui/postgres-PostgreSQL-mobile-3f23f-t-WhatsApp-and-card-actions/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    e2e/postgres-public-ui/postgres.spec.ts:132:5 › PostgreSQL: mobile feed, all tiers and pages, new selection, product WhatsApp and card actions

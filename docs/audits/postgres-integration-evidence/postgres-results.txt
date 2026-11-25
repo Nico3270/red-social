@@ -1,0 +1,27 @@
+PASS products/A/category
+PASS products/B/category
+PASS products/C/category
+PASS products/D/category
+PASS products/empty/category
+PASS publications/A/category
+PASS publications/B/category
+PASS publications/C/category
+PASS publications/D/category
+PASS publications/empty/category
+PASS services/A/category
+PASS services/B/category
+PASS services/C/category
+PASS services/D/category
+PASS services/empty/category
+PASS businesses/A/category
+PASS businesses/B/category
+PASS businesses/C/category
+PASS businesses/D/category
+PASS businesses/empty/category
+PASS compound-order/pending-buffer-restoration
+PASS products/current-visibility-on-buffer-reread
+PASS businesses/current-visibility-on-buffer-reread
+PASS publications/current-visibility-on-buffer-reread
+PASS location-nullability-and-deliberate-publication-policy
+PASS deleted-database-cursor/documented-restart
+26 PostgreSQL scenarios passed; Prisma 6.18.0

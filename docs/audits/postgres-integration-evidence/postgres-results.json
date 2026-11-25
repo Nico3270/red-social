@@ -1,0 +1,822 @@
+{
+  "database": {
+    "database": "myckeo_public_audit",
+    "version": "PostgreSQL 16.16 (Debian 16.16-1.pgdg13+1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit"
+  },
+  "prisma": "6.18.0",
+  "adapter": "real PrismaClient; no memory injection",
+  "results": [
+    {
+      "name": "products/A/category",
+      "details": {
+        "count": 36,
+        "pages": 9,
+        "ids": [
+          "products-local-00",
+          "products-local-01",
+          "products-local-02",
+          "products-local-03",
+          "products-local-04",
+          "products-local-05",
+          "products-local-06",
+          "products-local-07",
+          "products-local-08",
+          "products-local-09",
+          "products-local-10",
+          "products-local-11",
+          "products-local-12",
+          "products-local-13",
+          "products-local-14",
+          "products-local-15",
+          "products-local-16",
+          "products-local-17",
+          "products-local-18",
+          "products-local-19",
+          "products-local-20",
+          "products-local-21",
+          "products-local-22",
+          "products-local-23",
+          "products-local-24",
+          "products-local-25",
+          "products-local-26",
+          "products-dept-00",
+          "products-dept-01",
+          "products-dept-02",
+          "products-national-00",
+          "products-national-01",
+          "products-national-02",
+          "products-national-03",
+          "products-national-04",
+          "products-national-05"
+        ],
+        "tiers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2
+        ]
+      }
+    },
+    {
+      "name": "products/B/category",
+      "details": {
+        "count": 13,
+        "pages": 4,
+        "ids": [
+          "products-local-00",
+          "products-local-01",
+          "products-local-02",
+          "products-local-03",
+          "products-local-04",
+          "products-dept-00",
+          "products-dept-01",
+          "products-dept-02",
+          "products-national-00",
+          "products-national-01",
+          "products-national-02",
+          "products-national-03",
+          "products-national-04"
+        ],
+        "tiers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          2,
+          2,
+          2,
+          2,
+          2
+        ]
+      }
+    },
+    {
+      "name": "products/C/category",
+      "details": {
+        "count": 9,
+        "pages": 3,
+        "ids": [
+          "products-national-00",
+          "products-national-01",
+          "products-national-02",
+          "products-national-03",
+          "products-national-04",
+          "products-national-05",
+          "products-national-06",
+          "products-national-07",
+          "products-national-08"
+        ],
+        "tiers": [
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2
+        ]
+      }
+    },
+    {
+      "name": "products/D/category",
+      "details": {
+        "count": 4,
+        "pages": 1,
+        "ids": [
+          "products-local-00",
+          "products-dept-00",
+          "products-national-00",
+          "products-national-01"
+        ],
+        "tiers": [
+          0,
+          1,
+          2,
+          2
+        ]
+      }
+    },
+    {
+      "name": "products/empty/category",
+      "details": {
+        "count": 0,
+        "pages": 1,
+        "ids": [],
+        "tiers": []
+      }
+    },
+    {
+      "name": "publications/A/category",
+      "details": {
+        "count": 36,
+        "pages": 9,
+        "ids": [
+          "publications-local-00",
+          "publications-local-01",
+          "publications-local-02",
+          "publications-local-03",
+          "publications-local-04",
+          "publications-local-05",
+          "publications-local-06",
+          "publications-local-07",
+          "publications-local-08",
+          "publications-local-09",
+          "publications-local-10",
+          "publications-local-11",
+          "publications-local-12",
+          "publications-local-13",
+          "publications-local-14",
+          "publications-local-15",
+          "publications-local-16",
+          "publications-local-17",
+          "publications-local-18",
+          "publications-local-19",
+          "publications-local-20",
+          "publications-local-21",
+          "publications-local-22",
+          "publications-local-23",
+          "publications-local-24",
+          "publications-local-25",
+          "publications-local-26",
+          "publications-dept-00",
+          "publications-dept-01",
+          "publications-dept-02",
+          "publications-national-00",
+          "publications-national-01",
+          "publications-national-02",
+          "publications-national-03",
+          "publications-national-04",
+          "publications-national-05"
+        ],
+        "tiers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2
+        ]
+      }
+    },
+    {
+      "name": "publications/B/category",
+      "details": {
+        "count": 13,
+        "pages": 4,
+        "ids": [
+          "publications-local-00",
+          "publications-local-01",
+          "publications-local-02",
+          "publications-local-03",
+          "publications-local-04",
+          "publications-dept-00",
+          "publications-dept-01",
+          "publications-dept-02",
+          "publications-national-00",
+          "publications-national-01",
+          "publications-national-02",
+          "publications-national-03",
+          "publications-national-04"
+        ],
+        "tiers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          2,
+          2,
+          2,
+          2,
+          2
+        ]
+      }
+    },
+    {
+      "name": "publications/C/category",
+      "details": {
+        "count": 9,
+        "pages": 3,
+        "ids": [
+          "publications-national-00",
+          "publications-national-01",
+          "publications-national-02",
+          "publications-national-03",
+          "publications-national-04",
+          "publications-national-05",
+          "publications-national-06",
+          "publications-national-07",
+          "publications-national-08"
+        ],
+        "tiers": [
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2
+        ]
+      }
+    },
+    {
+      "name": "publications/D/category",
+      "details": {
+        "count": 4,
+        "pages": 1,
+        "ids": [
+          "publications-local-00",
+          "publications-dept-00",
+          "publications-national-00",
+          "publications-national-01"
+        ],
+        "tiers": [
+          0,
+          1,
+          2,
+          2
+        ]
+      }
+    },
+    {
+      "name": "publications/empty/category",
+      "details": {
+        "count": 0,
+        "pages": 1,
+        "ids": [],
+        "tiers": []
+      }
+    },
+    {
+      "name": "services/A/category",
+      "details": {
+        "count": 36,
+        "pages": 9,
+        "ids": [
+          "services-local-00",
+          "services-local-01",
+          "services-local-02",
+          "services-local-03",
+          "services-local-04",
+          "services-local-05",
+          "services-local-06",
+          "services-local-07",
+          "services-local-08",
+          "services-local-09",
+          "services-local-10",
+          "services-local-11",
+          "services-local-12",
+          "services-local-13",
+          "services-local-14",
+          "services-local-15",
+          "services-local-16",
+          "services-local-17",
+          "services-local-18",
+          "services-local-19",
+          "services-local-20",
+          "services-local-21",
+          "services-local-22",
+          "services-local-23",
+          "services-local-24",
+          "services-local-25",
+          "services-local-26",
+          "services-dept-00",
+          "services-dept-01",
+          "services-dept-02",
+          "services-national-00",
+          "services-national-01",
+          "services-national-02",
+          "services-national-03",
+          "services-national-04",
+          "services-national-05"
+        ],
+        "tiers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2
+        ]
+      }
+    },
+    {
+      "name": "services/B/category",
+      "details": {
+        "count": 13,
+        "pages": 4,
+        "ids": [
+          "services-local-00",
+          "services-local-01",
+          "services-local-02",
+          "services-local-03",
+          "services-local-04",
+          "services-dept-00",
+          "services-dept-01",
+          "services-dept-02",
+          "services-national-00",
+          "services-national-01",
+          "services-national-02",
+          "services-national-03",
+          "services-national-04"
+        ],
+        "tiers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          2,
+          2,
+          2,
+          2,
+          2
+        ]
+      }
+    },
+    {
+      "name": "services/C/category",
+      "details": {
+        "count": 9,
+        "pages": 3,
+        "ids": [
+          "services-national-00",
+          "services-national-01",
+          "services-national-02",
+          "services-national-03",
+          "services-national-04",
+          "services-national-05",
+          "services-national-06",
+          "services-national-07",
+          "services-national-08"
+        ],
+        "tiers": [
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2
+        ]
+      }
+    },
+    {
+      "name": "services/D/category",
+      "details": {
+        "count": 4,
+        "pages": 1,
+        "ids": [
+          "services-local-00",
+          "services-dept-00",
+          "services-national-00",
+          "services-national-01"
+        ],
+        "tiers": [
+          0,
+          1,
+          2,
+          2
+        ]
+      }
+    },
+    {
+      "name": "services/empty/category",
+      "details": {
+        "count": 0,
+        "pages": 1,
+        "ids": [],
+        "tiers": []
+      }
+    },
+    {
+      "name": "businesses/A/category",
+      "details": {
+        "count": 36,
+        "pages": 9,
+        "ids": [
+          "businesses-local-00",
+          "businesses-local-01",
+          "businesses-local-02",
+          "businesses-local-03",
+          "businesses-local-04",
+          "businesses-local-05",
+          "businesses-local-06",
+          "businesses-local-07",
+          "businesses-local-08",
+          "businesses-local-09",
+          "businesses-local-10",
+          "businesses-local-11",
+          "businesses-local-12",
+          "businesses-local-13",
+          "businesses-local-14",
+          "businesses-local-15",
+          "businesses-local-16",
+          "businesses-local-17",
+          "businesses-local-18",
+          "businesses-local-19",
+          "businesses-local-20",
+          "businesses-local-21",
+          "businesses-local-22",
+          "businesses-local-23",
+          "businesses-local-24",
+          "businesses-local-25",
+          "businesses-local-26",
+          "businesses-dept-00",
+          "businesses-dept-01",
+          "businesses-dept-02",
+          "businesses-national-00",
+          "businesses-national-01",
+          "businesses-national-02",
+          "businesses-national-03",
+          "businesses-national-04",
+          "businesses-national-05"
+        ],
+        "tiers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2
+        ]
+      }
+    },
+    {
+      "name": "businesses/B/category",
+      "details": {
+        "count": 13,
+        "pages": 4,
+        "ids": [
+          "businesses-local-00",
+          "businesses-local-01",
+          "businesses-local-02",
+          "businesses-local-03",
+          "businesses-local-04",
+          "businesses-dept-00",
+          "businesses-dept-01",
+          "businesses-dept-02",
+          "businesses-national-00",
+          "businesses-national-01",
+          "businesses-national-02",
+          "businesses-national-03",
+          "businesses-national-04"
+        ],
+        "tiers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          2,
+          2,
+          2,
+          2,
+          2
+        ]
+      }
+    },
+    {
+      "name": "businesses/C/category",
+      "details": {
+        "count": 9,
+        "pages": 3,
+        "ids": [
+          "businesses-national-00",
+          "businesses-national-01",
+          "businesses-national-02",
+          "businesses-national-03",
+          "businesses-national-04",
+          "businesses-national-05",
+          "businesses-national-06",
+          "businesses-national-07",
+          "businesses-national-08"
+        ],
+        "tiers": [
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2
+        ]
+      }
+    },
+    {
+      "name": "businesses/D/category",
+      "details": {
+        "count": 4,
+        "pages": 1,
+        "ids": [
+          "businesses-local-00",
+          "businesses-dept-00",
+          "businesses-national-00",
+          "businesses-national-01"
+        ],
+        "tiers": [
+          0,
+          1,
+          2,
+          2
+        ]
+      }
+    },
+    {
+      "name": "businesses/empty/category",
+      "details": {
+        "count": 0,
+        "pages": 1,
+        "ids": [],
+        "tiers": []
+      }
+    },
+    {
+      "name": "compound-order/pending-buffer-restoration",
+      "details": {
+        "pending": [
+          "products-local-13",
+          "products-local-02",
+          "products-local-07",
+          "products-local-12",
+          "products-local-01",
+          "products-local-06",
+          "products-local-11",
+          "products-local-00",
+          "products-local-05",
+          "products-local-10"
+        ],
+        "databaseOrder": [
+          "products-local-00",
+          "products-local-01",
+          "products-local-02",
+          "products-local-05",
+          "products-local-06",
+          "products-local-07",
+          "products-local-10",
+          "products-local-11",
+          "products-local-12",
+          "products-local-13"
+        ],
+        "next": [
+          "products-local-13",
+          "products-local-02",
+          "products-local-07",
+          "products-local-12"
+        ]
+      }
+    },
+    {
+      "name": "products/current-visibility-on-buffer-reread",
+      "details": {
+        "hiddenPending": "products-local-04",
+        "count": 35,
+        "notDelivered": true
+      }
+    },
+    {
+      "name": "businesses/current-visibility-on-buffer-reread",
+      "details": {
+        "hiddenPending": "businesses-local-04",
+        "count": 35,
+        "notDelivered": true
+      }
+    },
+    {
+      "name": "publications/current-visibility-on-buffer-reread",
+      "details": {
+        "hiddenPending": "publications-local-04",
+        "count": 35,
+        "notDelivered": true
+      }
+    },
+    {
+      "name": "location-nullability-and-deliberate-publication-policy",
+      "details": {
+        "columns": [
+          {
+            "column_name": "ciudad",
+            "is_nullable": "NO"
+          },
+          {
+            "column_name": "departamento",
+            "is_nullable": "NO"
+          }
+        ],
+        "emptyStringsClassified": [
+          0,
+          1,
+          2
+        ],
+        "incompleteExcluded": true,
+        "unattachedExcluded": true
+      }
+    },
+    {
+      "name": "deleted-database-cursor/documented-restart",
+      "details": {
+        "deleted": "businesses-local-13",
+        "continued": 22,
+        "missed": [
+          "businesses-local-14",
+          "businesses-local-15",
+          "businesses-local-16",
+          "businesses-local-17",
+          "businesses-local-18",
+          "businesses-local-19",
+          "businesses-local-20",
+          "businesses-local-21",
+          "businesses-local-22",
+          "businesses-local-23",
+          "businesses-local-24",
+          "businesses-local-25",
+          "businesses-local-26"
+        ],
+        "recoveredByFreshTraversal": 35
+      }
+    }
+  ]
+}

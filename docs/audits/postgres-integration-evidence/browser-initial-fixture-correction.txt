@@ -1,0 +1,115 @@
+
+Running 2 tests using 1 worker
+
+  ✘  1 e2e/postgres-public-ui/postgres.spec.ts:132:5 › PostgreSQL: mobile feed, all tiers and pages, new selection, product WhatsApp and card actions (5.3s)
+  ✓  2 e2e/postgres-public-ui/postgres.spec.ts:264:5 › PostgreSQL: category filters, desktop and contact/category route regressions (5.1s)
+
+
+  1) e2e/postgres-public-ui/postgres.spec.ts:132:5 › PostgreSQL: mobile feed, all tiers and pages, new selection, product WhatsApp and card actions
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  -  0
+    + Received  + 66
+
+    @@ -1,6 +1,72 @@
+      Array [
+    +   "business-b-products-dept-00",
+    +   "business-b-products-dept-01",
+    +   "business-b-products-dept-02",
+    +   "business-b-products-dept-unavailable",
+    +   "business-b-products-dept-wrong-category",
+    +   "business-b-products-local-00",
+    +   "business-b-products-local-01",
+    +   "business-b-products-local-02",
+    +   "business-b-products-local-03",
+    +   "business-b-products-local-04",
+    +   "business-b-products-local-05",
+    +   "business-b-products-local-06",
+    +   "business-b-products-local-07",
+    +   "business-b-products-local-08",
+    +   "business-b-products-local-09",
+    +   "business-b-products-local-10",
+    +   "business-b-products-local-11",
+    +   "business-b-products-local-12",
+    +   "business-b-products-local-13",
+    +   "business-b-products-local-14",
+    +   "business-b-products-local-15",
+    +   "business-b-products-local-16",
+    +   "business-b-products-local-17",
+    +   "business-b-products-local-18",
+    +   "business-b-products-local-19",
+    +   "business-b-products-local-20",
+    +   "business-b-products-local-21",
+    +   "business-b-products-local-22",
+    +   "business-b-products-local-23",
+    +   "business-b-products-local-24",
+    +   "business-b-products-local-25",
+    +   "business-b-products-local-26",
+    +   "business-b-products-local-unavailable",
+    +   "business-b-products-local-wrong-category",
+    +   "business-b-products-national-00",
+    +   "business-b-products-national-01",
+    +   "business-b-products-national-02",
+    +   "business-b-products-national-03",
+    +   "business-b-products-national-04",
+    +   "business-b-products-national-05",
+    +   "business-b-products-national-unavailable",
+    +   "business-b-products-national-wrong-category",
+    +   "business-b-publications-dept-00",
+    +   "business-b-publications-dept-unavailable",
+    +   "business-b-publications-dept-unavailable-type",
+    +   "business-b-publications-dept-wrong-category",
+    +   "business-b-publications-local-00",
+    +   "business-b-publications-local-01",
+    +   "business-b-publications-local-unavailable",
+    +   "business-b-publications-local-unavailable-type",
+    +   "business-b-publications-local-wrong-category",
+    +   "business-b-publications-national-00",
+    +   "business-b-publications-national-01",
+    +   "business-b-publications-national-unavailable",
+    +   "business-b-publications-national-unavailable-type",
+    +   "business-b-publications-national-wrong-category",
+    +   "business-b-services-dept-00",
+    +   "business-b-services-dept-unavailable",
+    +   "business-b-services-dept-wrong-category",
+    +   "business-b-services-local-00",
+    +   "business-b-services-local-unavailable",
+    +   "business-b-services-local-wrong-category",
+    +   "business-b-services-national-00",
+    +   "business-b-services-national-01",
+    +   "business-b-services-national-unavailable",
+    +   "business-b-services-national-wrong-category",
+        "business-businesses-dept-00",
+        "business-businesses-dept-wrong-category",
+        "business-businesses-local-00",
+        "business-businesses-local-01",
+        "business-businesses-local-wrong-category",
+
+       99 | }
+      100 | function complete(actual: string[], expected: string[], city = "Tunja") {
+    > 101 |   expect([...actual].sort()).toEqual([...expected].sort());
+          |                              ^
+      102 |   expect(new Set(actual).size).toBe(actual.length);
+      103 |   const tiers = actual.map((key) =>
+      104 |     city === "Tunja"
+        at complete (/home/nico/worktrees/myckeo-public-candidate-20261125/e2e/postgres-public-ui/postgres.spec.ts:101:30)
+        at /home/nico/worktrees/myckeo-public-candidate-20261125/e2e/postgres-public-ui/postgres.spec.ts:143:3
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/postgres-public-ui/postgres-PostgreSQL-mobile-3f23f-t-WhatsApp-and-card-actions/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/postgres-public-ui/postgres-PostgreSQL-mobile-3f23f-t-WhatsApp-and-card-actions/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/postgres-public-ui/postgres-PostgreSQL-mobile-3f23f-t-WhatsApp-and-card-actions/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/postgres-public-ui/postgres-PostgreSQL-mobile-3f23f-t-WhatsApp-and-card-actions/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    e2e/postgres-public-ui/postgres.spec.ts:132:5 › PostgreSQL: mobile feed, all tiers and pages, new selection, product WhatsApp and card actions
+  1 passed (12.2s)

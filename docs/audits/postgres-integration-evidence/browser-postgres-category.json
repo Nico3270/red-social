@@ -1,0 +1,101 @@
+{
+  "keys": [
+    "product-products-local-00",
+    "product-products-local-04",
+    "product-products-local-08",
+    "product-products-local-12",
+    "product-products-local-16",
+    "product-products-local-20",
+    "product-products-local-24",
+    "product-products-local-01",
+    "product-products-local-05",
+    "product-products-local-09",
+    "product-products-local-13",
+    "product-products-local-17",
+    "product-products-local-21",
+    "product-products-local-25",
+    "product-products-local-02",
+    "product-products-local-06",
+    "product-products-local-10",
+    "product-products-local-14",
+    "product-products-local-18",
+    "product-products-local-22",
+    "product-products-local-26",
+    "product-products-local-03",
+    "product-products-local-07",
+    "product-products-local-11",
+    "product-products-local-15",
+    "product-products-local-19",
+    "product-products-local-23",
+    "product-products-dept-00",
+    "product-products-dept-01",
+    "product-products-dept-02",
+    "product-products-national-00",
+    "product-products-national-04",
+    "product-products-national-01",
+    "product-products-national-05",
+    "product-products-national-02",
+    "product-products-national-03"
+  ],
+  "requests": [
+    {
+      "city": "Tunja",
+      "type": "products",
+      "seenIds": [],
+      "category": "comida"
+    },
+    {
+      "city": "Tunja",
+      "type": "products",
+      "cursor": "fg2.eyJ2IjoyLCJzY29wZSI6IjdmZDNhMWVlNzZiNWZhNWVkMGY3NWZkZTE5ZDUzYmQ0ZGU5NjhmMzI1N2JkNThiODVlMDdmNmMyOTI5NWVlNGYiLCJ0aWVyIjowLCJwZW5kaW5nIjpbInByb2R1Y3RzLWxvY2FsLTIwIiwicHJvZHVjdHMtbG9jYWwtMjEiLCJwcm9kdWN0cy1sb2NhbC0yMiIsInByb2R1Y3RzLWxvY2FsLTIzIiwicHJvZHVjdHMtbG9jYWwtMjQiLCJwcm9kdWN0cy1sb2NhbC0yNSIsInByb2R1Y3RzLWxvY2FsLTI2Il0sImV4aGF1c3RlZCI6dHJ1ZSwic2VlbiI6W10sImFmdGVyIjoicHJvZHVjdHMtbG9jYWwtMjYifQ",
+      "seenIds": [
+        "product-products-local-00",
+        "product-products-local-01",
+        "product-products-local-02",
+        "product-products-local-03",
+        "product-products-local-04",
+        "product-products-local-05",
+        "product-products-local-06",
+        "product-products-local-07",
+        "product-products-local-08",
+        "product-products-local-09",
+        "product-products-local-10",
+        "product-products-local-11",
+        "product-products-local-12",
+        "product-products-local-13",
+        "product-products-local-14",
+        "product-products-local-15",
+        "product-products-local-16",
+        "product-products-local-17",
+        "product-products-local-18",
+        "product-products-local-19"
+      ],
+      "category": "comida"
+    },
+    {
+      "city": "Tunja",
+      "type": "products",
+      "seenIds": [],
+      "category": "moda"
+    },
+    {
+      "city": "Tunja",
+      "type": "products",
+      "seenIds": [],
+      "category": "negocios"
+    }
+  ],
+  "statuses": [
+    200,
+    200,
+    200
+  ],
+  "errors": [],
+  "routes": {
+    "/contacto": 200,
+    "/category/moda": 200,
+    "/category/negocios": 200,
+    "/category/audit-missing-category": 404,
+    "/audit-missing-category": 404
+  }
+}

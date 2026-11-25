@@ -1,5 +1,7 @@
 # Auditoría del frontend público de Myckeo
 
+**Estado actual:** candidata local validada con Prisma/PostgreSQL reales el 25/11/2026. Véase [Validación PostgreSQL e integración](#validación-postgresql-e-integración--25112026). Los apartados anteriores a ese anexo conservan la evidencia histórica y sus limitaciones de entonces.
+
 Auditoría inicial: 24 de noviembre de 2026. Segundo lote, geografía/paginación: 25 de noviembre de 2026 (véase el anexo al final). Alcance inicial: exploración pública, contacto, WhatsApp y entradas existentes de cuenta/carrito. No se desplegó, hizo push, ejecutaron migraciones ni modificaron registros remotos.
 
 ## Repositorio y entorno
@@ -230,3 +232,94 @@ Separación del trabajo para revisión:
 No se concluye que toda la rama esté lista para integrar por haber pasado estas pruebas. Antes de publicar: revisar los deltas separados, resolver/aceptar explícitamente los errores ajenos de la rama, validar contra un entorno de datos aislado con Prisma/PostgreSQL real y preparar un despliegue como tarea posterior. Continúan fuera del lote los contenidos persistidos identificados, los 404 de fichas, el acceso comercial para propietarios y el error previo de lint de administración.
 
 Para revisión: [delta exclusivo del segundo lote](geography-pagination-evidence/second-batch-changes.patch), [inventario de archivos y preservación de cambios previos](geography-pagination-evidence/change-inventory.json). El inventario compara 102 archivos recibidos y no detecta modificaciones ajenas al alcance declarado. Los fixtures, arte y caché temporales se retiran al finalizar; se conserva su preparación reproducible en `e2e/geography-pagination`.
+
+
+## Validación PostgreSQL e integración — 25/11/2026
+
+**Resultado:** candidata preparada para revisión e integración local. No se encontraron divergencias nuevas de las consultas que exigieran modificar la aplicación. La brecha de validación SQL queda cerrada con el cliente Prisma real y PostgreSQL real; no se certifica la rama de origen completa ni una publicación automática.
+
+### Base y conservación del original
+
+- Candidata: `/home/nico/worktrees/myckeo-public-candidate-20261125`, rama `candidate/public-ui-postgres-20261125`.
+- Base exacta de integración: `3c8e51d03076d9158991abbd8d4d1d20f62b107c`, confirmada para `origin/main` y `refs/heads/main` del remoto mediante `git ls-remote`. No se modificó `main` local.
+- El informe histórico identificaba ese mismo hash para un despliegue de producción. La coincidencia no prueba qué sirve producción hoy: no se consultó ni modificó el despliegue actual en esta tarea.
+- Origen conservado: `/home/nico/red-social`, `feat/premium-product-form-navigation`, HEAD `1f491ff8ce6f80e333f07548e299141fc863d993`. Comparación SHA-256 de **2740 archivos**, sin archivos cambiados ni añadidos, y estado Git `--porcelain -z` idéntico al inicio. [Comprobación](postgres-integration-evidence/original-preservation.json).
+- La candidata tiene sus propias dependencias y cliente generado. No se regeneró Prisma ni se instaló nada en el original; no se copiaron sus `.env`.
+
+### Selección y commits para revisión
+
+| Grupo | Commit local | Contenido y dependencia |
+| --- | --- | --- |
+| Dependencias públicas anteriores | `9bf7848775d999412639eaaabc7c88f5e05f8176` | Lista explícita de 19 archivos: tarjetas/estilos móviles, FollowButton, renderer y módulos del feed, búsqueda/header y navegación pública. Conserva la fila precio/WhatsApp/carrito, distintivo sobre avatar, enlaces al perfil, acciones independientes y los textos públicos ya revisados. Los deltas de los lotes 1/2 se retiraron de esta reconstrucción antes de crear el commit. |
+| Lote 1 | `2e540360671e2b7b82c91202a55db34a2c12b010` | Helper y consumidores públicos de WhatsApp, contacto y categorías desconocidas. 15 archivos; se omitió la caracterización geográfica histórica. |
+| Lote 2 | `6de1d58bcfee713a0fc7382fb735191bbf6fae15` | Acciones global/categoría, `feedPage`, geografía, DTO/metadatos, coordinación de Para ti, renderer por tramo, cursor `fg2.` y claves `feed-v2-`, junto con regresiones y evidencia histórica necesaria. |
+| Esta tarea | Commit de validación inmediatamente posterior a los anteriores | Scripts PostgreSQL reproducibles, dos recorridos Playwright contra el build real, evidencia y este anexo. Sin cambios adicionales de código de aplicación. |
+
+[Inventario por commit y archivos](postgres-integration-evidence/candidate-inventory.json). Los parches originales continúan en [lote 1](public-ui-evidence/source-changes.patch) y [lote 2](geography-pagination-evidence/second-batch-changes.patch); son antecedentes sobre el árbol sucio original, no parches para aplicar ciegamente a `main`.
+
+La adaptación a la base se hizo por archivo: los 19 prerrequisitos públicos se reconstruyeron sin los deltas de ambos lotes; después se incorporaron los archivos enumerados por cada parche. Así `ProductCard`, DiscoveryBusiness/Service y `FeedRederer` conservan sus estilos previos sin duplicar las correcciones. Búsqueda y navegación incluyen sus módulos CSS compartidos; no requieren el nuevo editor de producto ni el onboarding pendiente de la rama de origen. No se trasladó el diff completo de la rama.
+
+Quedan excluidos los cambios previos ajenos en editor de productos, onboarding, administración, sitemap, esquema y configuración. `package.json`, `pnpm-lock.yaml`, `prisma/schema.prisma`, `next.config.ts`, `src/lib/prisma.ts`, `feedRanking.ts` y `feedForYou.ts` coinciden con la base. Se utiliza el esquema real de integración; la ampliación no relacionada `BusinessDemoLink` del original no es necesaria.
+
+El backend geográfico es independiente del helper de teléfono y de contacto. El lote 2 completo sí requiere viajar junto: consultas + buffer/cursor + metadatos + coordinación cliente + agrupación visual + versión de caché. Sus cambios de renderer y tarjetas se apoyan en el primer commit público. El lote 1 comparte consumidores con esos prerrequisitos. Para integrar sobre esta base, revisar los cuatro commits en orden; para extraer solo un arreglo, adaptar explícitamente esos archivos compartidos. Que esta candidata pase no declara lista toda `feat/premium-product-form-navigation`.
+
+### Aislamiento y versiones
+
+Contenedor propio `myckeo-public-pg-20261125`, etiqueta `myckeo.audit=public-candidate-20261125`, PostgreSQL **16.16**, escucha exclusivamente `127.0.0.1:55439`, base desechable `myckeo_public_audit`, volumen **tmpfs**. Prisma CLI y client **6.18.0**, Next **15.5.9**, pnpm **10.17.1**, versiones resueltas por el lockfile existente. No se actualizaron dependencias.
+
+El esquema solo usa `DATABASE_URL`; no hay `directUrl` ni `shadowDatabaseUrl` adicionales. `env.mjs` crea un entorno de proceso mediante una lista permitida y fija `DATABASE_URL`, `DIRECT_URL` y `SHADOW_DATABASE_URL` al mismo destino local comprobado. No altera variables originales ni archivos de configuración. El runner rechaza otro host, puerto, usuario o nombre de base. Antes de escribir fixtures se comprueban `current_database()` y la versión por SQL. `prepare` ejecuta `prisma db push --skip-generate` y `pnpm prisma:generate` exclusivamente allí, sin seeds generales ni migraciones de producción.
+
+`fixtures.ts` usa el singleton **PrismaClient real** de `src/lib/prisma.ts`; únicamente reutiliza la fábrica sintética `makeRows`. No importa `makePrisma`, `queryRows` ni los overrides del harness en memoria. Los registros se insertan en tablas PostgreSQL reales. El navegador llama las Server Actions reales del build; no se interceptan sus respuestas ni la sesión. Solo se bloquean orígenes externos y POST ajenos a las lecturas del feed. No se envían mensajes, correos ni interacciones remotas.
+
+### Comprobaciones decisivas con PostgreSQL
+
+Se ejecutaron **26 escenarios PostgreSQL** en la versión final del script, además de las pruebas unitarias. [Resultado SQL detallado](postgres-integration-evidence/postgres-results.json), [salida](postgres-integration-evidence/postgres-results.txt), [implementación reproducible](../../scripts/public-ui-pg/verify.ts).
+
+| Caso | Ejecución real y resultado |
+| --- | --- |
+| A / cuatro tipos | Por cada tipo: 27 de ciudad, 3 de departamento y 6 nacionales, límite 4; acciones global y por categoría. **36 IDs, 9 páginas**, cada ID exactamente una vez; los 27 locales preceden a los otros 9. Fecha/orden/score empatados verifican secuencia determinista por ID a través de las ventanas. No se impone un ranking global nuevo. |
+| B / transición | 5 ciudad + 3 departamento + 5 nacionales, límite 4; los cuatro tipos. Se concatenan todos los elegibles sin omisiones/duplicados, incluso en páginas que cruzan tramos. |
+| C / sin locales | 9 nacionales, sin coincidencias locales/departamentales; los cuatro tipos recuperan los 9 en tres páginas. |
+| D / fin y filtros | 1 local + 1 departamento + 2 nacionales: página final de 4 sin cursor fantasma. Caso sin coincidencias: vacío sin continuación. En los cuatro tipos se excluyen categoría ajena, negocio oculto/de prueba y, según corresponda, status no disponible, publicación privada o tipo no admitido. No reaparecen mediante ampliación. |
+| Cursor compuesto | Se ejercitan `cursor:{id}`, `skip:1`, `take` y `orderBy:[orden desc, createdAt desc, id asc]` de las acciones. Las pruebas recorren varias ventanas y comprueban que `nextTier` describe el primer elemento de la siguiente página; `nextCursor` termina cuando no quedan elegibles. El contrato no tiene `total`. |
+| Buffer con orden distinto | Se asignan prioridades sintéticas para que el orden del buffer difiera del de una relectura SQL con `IN`. La continuación conserva exactamente el orden de los IDs pendientes y recupera todos los 27, sin depender del orden devuelto por PostgreSQL. |
+| Visibilidad actual | Después de obtener un buffer se vuelve `isTestData=true` el negocio de un producto pendiente; en otro escenario se archiva un negocio pendiente; en el tercero una publicación pendiente cambia a PRIVADA. Cada recorrido devuelve los otros **35** elegibles una sola vez y excluye el candidato que perdió visibilidad. |
+| Nulabilidad/política | SQL confirma `Negocio.ciudad` y `departamento` **NOT NULL**. Cadenas vacías son válidas: ciudad vacía con departamento coincidente → tramo departamento; ambos vacíos → resto del país. Se mantienen la exclusión del propietario incompleto y de una publicación con `negocioId=NULL`. No se fuerza la inclusión de contenidos deliberadamente excluidos por PUBLISHED. |
+| Cursor eliminado | Se borra `businesses-local-13`, fila usada por el cursor de DB. Continuar devuelve 22 y omite los locales 14–26; empezar de nuevo sin cursor ni IDs vistos recupera los **35** elegibles restantes. No surge otro error diferente del límite documentado. |
+
+Las reglas de publicación de la entidad y de su negocio son distintas: un producto oculto no oculta automáticamente al negocio propietario. El primer intento de navegador mostró que el oráculo inicial no contaba esos negocios públicos adicionales; se corrigió el fixture esperado, sin cambiar reglas del producto. También se corrigió una expectativa del test que escribía `fg2:` en vez del prefijo real `fg2.`. Se conservan ambos resultados iniciales, y no se presentan como defectos de la aplicación.
+
+### Navegador real sobre el build candidato
+
+Se usó `next start` del **build de producción local**, puerto 3419, conectado al contenedor anterior. Sin rutas temporales, rewrites, inyecciones ni arrays de respuesta. Chromium instalado localmente, Playwright **1.59.1**. Se ejecutaron **dos recorridos aprobados**: el de categoría pasó en la ejecución inicial y el móvil pasó después de corregir las dos expectativas de preparación anteriores. [Resultado inicial](postgres-integration-evidence/browser-initial-results.txt), [resultado móvil final](postgres-integration-evidence/browser-mobile-results.txt).
+
+- **Móvil 390 px:** portada real con 128 elementos elegibles (productos, publicaciones, servicios y todos sus negocios publicados), **73 de Tunja → 22 de otras ciudades de Boyacá → 33 nacionales**, sin duplicados ni omisiones. Scroll hasta el fin; cambio Tunja → Bogotá desde el selector real; nuevo recorrido completo con los 33 de Bogotá antes del resto, sin mezclar páginas de ambas selecciones. Se observa la política existente de reciclado tras agotar los IDs vistos, sin eliminarla. **32 solicitudes de acciones, 20 continuaciones**, todas HTTP 200, cero errores de página. Cursores reales `fg2.` y respuestas del servidor consumidas por el cliente con caché `feed-v2-`. [Solicitudes, IDs y medidas](postgres-integration-evidence/browser-postgres-mobile.json).
+- **Presentación móvil:** precio/WhatsApp/carrito en la misma fila, acciones de 44 px, distintivo sobre avatar, ausencia de desbordamiento. Añadir al carrito conserva la URL de la página y se limita al estado local. Destino de tarjeta y de `/producto/products-local-00`: `wa.me/573100000000`, número sintético, mensaje de producto y URL contextual codificados conservados; sin navegar a WhatsApp ni enviar mensajes.
+- **Escritorio 1440 px:** `/category/comida` recupera los 36 productos de esa categoría, por tramos, sin incorporar moda ni contenidos ocultos/no disponibles. Contacto y categorías moda/negocios responden 200; dos slugs de categoría desconocidos responden 404. Cero errores de página. [IDs, acciones y rutas](postgres-integration-evidence/browser-postgres-category.json).
+- Capturas sintéticas actuales: [Tunja móvil](postgres-integration-evidence/postgres-feed-tunja-390.png), [Bogotá móvil](postgres-integration-evidence/postgres-feed-bogota-390.png), [producto](postgres-integration-evidence/postgres-product-390.png), [categoría escritorio](postgres-integration-evidence/postgres-category-comida-1440.png).
+
+No se repitió la matriz completa 360/390/430/1440 del lote anterior: esta tarea no cambia layout ni código de aplicación. Tampoco se presenta la prueba histórica de respuesta retrasada con adaptador en memoria como una nueva prueba PostgreSQL; aquí se comprueba el cambio real de ciudad y la completitud de sus páginas con la base aislada.
+
+### Controles y reproducción
+
+| Control actual | Resultado |
+| --- | --- |
+| Siete suites Jest directamente afectadas | **103/103**, ejecución actual; mocks unitarios informados por separado. [Salida](postgres-integration-evidence/unit-results.txt). |
+| Integración Prisma/PostgreSQL | **26/26 escenarios**, versión final con aserciones explícitas de desempate y `nextTier`. |
+| Navegador PostgreSQL | **2 recorridos aprobados**, en las ejecuciones descritas; no se reutilizan como cifras actuales los ocho u once del lote anterior. |
+| `pnpm typecheck` | Correcto con el cliente real generado y scripts de validación incluidos. [Salida](postgres-integration-evidence/typecheck-results.txt). |
+| `pnpm lint` | Correcto; aviso previo `_body` sin uso en `activar/ActivationBootstrap.test.tsx:347`. No hay error de lint de administración en la candidata, por lo que no se trasladó ni corrigió trabajo ajeno. [Salida](postgres-integration-evidence/lint-results.txt). |
+| Lint específico de herramientas nuevas | Correcto, sin avisos ni errores. [Salida](postgres-integration-evidence/validation-tools-lint-results.txt). |
+| `pnpm build` | Correcto: Prisma generate + Next build con lint/tipos y generación de **136 páginas**, incluidas fichas sintéticas. Solo conexión PostgreSQL local; no scripts de migración/sitemap. No se vaciaron rutas ni se desactivaron controles. [Salida completa](postgres-integration-evidence/build-results.txt). |
+
+El build y runtime emiten avisos de Upstash porque se dejan sin credenciales los servicios externos no necesarios; no se invocó una operación Redis en estos recorridos. Al visitar un 404 reaparece el recurso heredado `/imgs/image_not_found.png` ausente, ya documentado. No impide el estado 404 ni el funcionamiento comprobado. No se ha ocultado ese aviso ni se lo cuenta como error nuevo de geografía.
+
+Comandos y ciclo de vida: [README reproducible](../../scripts/public-ui-pg/README.md), [runner con entorno aislado](../../scripts/public-ui-pg/run.mjs), [fixtures reales](../../scripts/public-ui-pg/fixtures.ts), [pruebas de navegador](../../e2e/postgres-public-ui/postgres.spec.ts). En orden: `database.mjs create` → `run.mjs prepare` → `verify` → `seed` → `build` → `start`; navegador con `pnpm exec playwright test --config=e2e/postgres-public-ui/playwright.config.ts`; detener servidor y `database.mjs remove`.
+
+### Límites y decisión de integración
+
+El ranking sigue siendo por ventanas, sin instantánea frente a cambios concurrentes. Se validó expresamente la visibilidad al releer el buffer; borrar la fila que sostiene el cursor requiere reiniciar el recorrido para garantizar completitud. No se diseñó otro protocolo ni se amplió el alcance para ese límite aceptado.
+
+Pendientes no bloqueantes: revisión humana de los commits y de los 19 prerrequisitos públicos seleccionados; contenido persistido de prueba, estados 404 de fichas, acceso de propietarios e ilustración 404 heredada, todos fuera del alcance. No se verificaron altas autenticadas ni servicios externos. Para publicar hace falta una tarea posterior con revisión/aprobación y configuración del entorno de destino, sin copiar fixtures ni credenciales sintéticas.
+
+**No queda un bloqueo técnico demostrado para revisar e integrar localmente esta candidata.** El servidor local quedó detenido, los puertos 3419 y 55439 cerrados y el contenedor etiquetado eliminado con su tmpfs; [comprobación de limpieza](postgres-integration-evidence/cleanup.json). Se conservan worktree, commits, scripts y evidencia. No hubo push, merge, despliegue, migraciones remotas ni cambios de contenido de producción.
