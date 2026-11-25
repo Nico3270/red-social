@@ -5,7 +5,8 @@ import Image from "next/image";
 import { BsWhatsapp } from "react-icons/bs";
 import { SiGooglemaps } from "react-icons/si";
 import { FaArrowRight, FaMapMarkerAlt } from "react-icons/fa";
-import { titleFont, textosFont } from "@/config/fonts";
+import { inter } from "@/config/fonts";
+import styles from "./discoveryCards.module.css";
 import { BusinessCardData } from "../feed.interfaces";
 import { FollowButton } from "./FollowButton";
 import {
@@ -66,8 +67,8 @@ export const DiscoveryBusinessCard: React.FC<DiscoveryBusinessCardProps> = ({
   );
 
   return (
-    <article className="overflow-hidden rounded-2xl border border-slate-200 bg-white p-3 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
-      <div className="flex items-start gap-3">
+    <article className={`${styles.card} ${styles.business} ${inter.className}`}>
+      <div className={styles.header}>
         <Link
           href={`/perfil/${business.slug}`}
           className="relative mt-0.5 h-12 w-12 shrink-0 overflow-hidden rounded-2xl bg-slate-100"
@@ -81,11 +82,11 @@ export const DiscoveryBusinessCard: React.FC<DiscoveryBusinessCardProps> = ({
           />
         </Link>
 
-        <div className="min-w-0 flex-1">
+        <div className={styles.author}>
           <div className="flex flex-wrap items-center gap-2">
             <Link
               href={`/perfil/${business.slug}`}
-              className={`truncate text-base font-semibold text-slate-900 transition-colors hover:text-sky-700 ${titleFont.className}`}
+              className={styles.authorName}
             >
               {business.nombre}
             </Link>
@@ -94,7 +95,7 @@ export const DiscoveryBusinessCard: React.FC<DiscoveryBusinessCardProps> = ({
             </span>
           </div>
 
-          <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-slate-500">
+          <div className={styles.context}>
             <span className="inline-flex items-center gap-1">
               <FaMapMarkerAlt className="text-[11px] text-slate-400" />
               {business.ciudad}, {business.departamento}
@@ -112,7 +113,7 @@ export const DiscoveryBusinessCard: React.FC<DiscoveryBusinessCardProps> = ({
 
       <Link
         href={`/perfil/${business.slug}`}
-        className="relative mt-3 block aspect-[16/10] overflow-hidden rounded-2xl bg-slate-100"
+        className={styles.cover}
       >
         <Image
           src={optimizedBusinessCoverUrl}
@@ -123,16 +124,12 @@ export const DiscoveryBusinessCard: React.FC<DiscoveryBusinessCardProps> = ({
         />
       </Link>
 
-      <p
-        className={`mt-3 line-clamp-3 text-sm leading-6 text-slate-600 ${textosFont.className}`}
-      >
-        {description}
-      </p>
+      <p className={styles.summary}>{description}</p>
 
-      <div className="mt-4 flex flex-wrap items-center gap-2">
+      <div className={styles.businessActions}>
         <Link
           href={`/perfil/${business.slug}`}
-          className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-slate-800"
+          className={`${styles.action} ${styles.primary}`}
         >
           Ver perfil
           <FaArrowRight className="text-xs" />
@@ -143,10 +140,11 @@ export const DiscoveryBusinessCard: React.FC<DiscoveryBusinessCardProps> = ({
             href={`https://wa.me/57${telefono}?text=${whatsappMessage}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-700 transition-colors hover:bg-emerald-100"
+            className={`${styles.action} ${styles.contact}`}
+            aria-label={`Contactar a ${business.nombre} por WhatsApp`}
+            title="WhatsApp"
           >
             <BsWhatsapp className="text-base" />
-            WhatsApp
           </Link>
         )}
 
@@ -155,10 +153,11 @@ export const DiscoveryBusinessCard: React.FC<DiscoveryBusinessCardProps> = ({
             href={business.urlGoogleMaps || "#"}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 rounded-full border border-rose-200 bg-rose-50 px-3 py-2 text-sm font-medium text-rose-700 transition-colors hover:bg-rose-100"
+            className={`${styles.action} ${styles.map}`}
+            aria-label={`Ver ${business.nombre} en el mapa`}
+            title="Mapa"
           >
             <SiGooglemaps className="text-base" />
-            Mapa
           </Link>
         )}
       </div>

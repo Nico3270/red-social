@@ -28,6 +28,9 @@ import colombia from "@/config/colombia.json";
 import { updateUserPreferences } from "@/preferences/actions/updateUserPreferences";
 import SearchBar from "@/busqueda/componentes/SearchBar";
 
+import { titleFont } from "@/config/fonts";
+import styles from "../topMenu/publicNavigation.module.css";
+
 interface ColombiaDepartment {
   id: number;
   departamento: string;
@@ -235,13 +238,19 @@ export const TopMenuMobile = () => {
   const [isCrearModalOpen, setIsCrearModalOpen] = useState(false);
   const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
   const pathname = usePathname();
-  const totalItemsInCart = useCartCatalogoStore((state) => state.getTotalItems());
-  const totalFavorites = useFavoritesCatalogoStore((state) => state.getTotalItems());
+  const totalItemsInCart = useCartCatalogoStore((state) =>
+    state.getTotalItems(),
+  );
+  const totalFavorites = useFavoritesCatalogoStore((state) =>
+    state.getTotalItems(),
+  );
   const { data: session } = useSession();
   const isNegocio = session?.user?.role === "negocio";
   const { ciudad, userLat, userLong } = usePreferencesStore();
   const isBusinessProfilePage = pathname?.startsWith("/perfil/");
-  const isDiscoveryPage = !isBusinessProfilePage && (pathname === "/" || pathname?.startsWith("/category/"));
+  const isDiscoveryPage =
+    !isBusinessProfilePage &&
+    (pathname === "/" || pathname?.startsWith("/category/"));
 
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
@@ -249,53 +258,63 @@ export const TopMenuMobile = () => {
   const showGpsIcon = userLat != null && userLong != null;
 
   const handleAyudaWhatsApp = () => {
-    window.open("https://wa.me/573132492256?text=Hola%2C%20necesito%20ayuda", "_blank");
+    window.open(
+      "https://wa.me/573132492256?text=Hola%2C%20necesito%20ayuda",
+      "_blank",
+    );
   };
 
   return (
     <div className="">
       {/* Barra superior fija */}
-      <header className="fixed top-0 z-50 w-full border-b bg-white/95 shadow-md backdrop-blur">
-        <div className={`flex items-center justify-between px-3 ${isDiscoveryPage ? "h-14" : "h-16"}`}>
-          <Link href="/" className="flex items-center">
+      <header className="fixed top-0 z-50 w-full border-b bg-white shadow-sm">
+        <div className={styles.mobileRow}>
+          <Link href="/" className={styles.brand}>
             <Image
               src="/imgs/Logo Final (1).png"
               alt="Logo Myckeo"
-              width={100}
-              height={100}
+              width={44}
+              height={44}
               className="rounded-xl"
               priority
             />
-          </Link>
-
-          <div className={`mx-3 flex flex-1 items-center ${isDiscoveryPage ? "gap-1.5" : "gap-2"}`}>
-            <div className="flex-1">
-              <SearchBar compact={isDiscoveryPage} />
-            </div>
-            <button
-              onClick={() => setIsLocationModalOpen(true)}
-              className={`flex items-center rounded-full border border-gray-300 bg-white text-gray-800 shadow-md transition hover:bg-gray-50 ${
-                isDiscoveryPage ? "px-2.5 py-1.5 text-xs" : "px-3 py-1.5 text-sm"
-              }`}
+            <span
+              className={`text-2xl font-bold tracking-tight ${titleFont.className}`}
             >
-              <FaMapMarkerAlt className={`mr-1 ${showGpsIcon ? "text-green-600" : "text-gray-500"}`} />
-              <span className="truncate max-w-20">{ciudad || "Ciudad"}</span>
-              {showGpsIcon && <span className="ml-1 text-xs text-green-600">GPS</span>}
-            </button>
+              Myckeo
+            </span>
+          </Link>
+          <div className={styles.mobileSearch}>
+            <SearchBar compact={isDiscoveryPage} iconOnly />
           </div>
+          <button
+            onClick={() => setIsLocationModalOpen(true)}
+            className={styles.location}
+            aria-label={`Cambiar ubicación: ${ciudad || "Ciudad"}${showGpsIcon ? " (GPS)" : ""}`}
+            title={ciudad || "Ciudad"}
+          >
+            <FaMapMarkerAlt
+              className={showGpsIcon ? "text-green-600" : "text-gray-500"}
+            />
+            <span className={styles.city}>{ciudad || "Ciudad"}</span>
+            {showGpsIcon && <span className="text-xs text-green-600">GPS</span>}
+          </button>
         </div>
       </header>
 
       {isBusinessProfilePage ? (
-        <div className="h-16" />
+        <div className={styles.mobileProfileOffset} />
       ) : (
-        <div className={isDiscoveryPage ? "mt-14" : "mt-16"}>
+        <div className={styles.mobileOffset}>
           <MenuSectionsBar compact={isDiscoveryPage} />
         </div>
       )}
 
       {/* Barra inferior fija con botón de Ayuda WhatsApp */}
-      <nav className="fixed bottom-0 w-full bg-white border-t shadow-lg z-50">
+      <nav
+        className={`fixed bottom-0 w-full bg-white border-t shadow-lg z-50 ${styles.mobileActions}`}
+        aria-label="Navegación principal"
+      >
         <div className="flex justify-around items-center py-2">
           {/* Inicio */}
           <Link href="/" className="flex flex-col items-center">
@@ -332,7 +351,10 @@ export const TopMenuMobile = () => {
           </Link>
 
           {/* Favoritos */}
-          <Link href="/favoritos" className="relative flex flex-col items-center">
+          <Link
+            href="/favoritos"
+            className="relative flex flex-col items-center"
+          >
             <Image
               src="/imgs/iconos/heart.png"
               alt="Favoritos"
@@ -361,10 +383,17 @@ export const TopMenuMobile = () => {
                   unoptimized
                   className="mb-1"
                 />
-                <span className="text-xs text-gray-600 whitespace-nowrap">Mi negocio</span>
+                <span className="text-xs text-gray-600 whitespace-nowrap">
+                  Mi negocio
+                </span>
               </Link>
             ) : (
-              <button onClick={() => setIsCrearModalOpen(true)} className="flex flex-col items-center">
+              <button
+                aria-label="Crear"
+                aria-haspopup="dialog"
+                onClick={() => setIsCrearModalOpen(true)}
+                className="flex flex-col items-center"
+              >
                 <Image
                   src="/imgs/iconos/plus.png"
                   alt="Crear"
@@ -379,7 +408,10 @@ export const TopMenuMobile = () => {
           ) : null}
 
           {/* Perfil */}
-          <button onClick={() => setIsDrawerOpen(true)} className="flex flex-col items-center">
+          <button
+            onClick={() => setIsDrawerOpen(true)}
+            className="flex flex-col items-center"
+          >
             <Image
               src="/imgs/iconos/profile.png"
               alt="Perfil"
@@ -405,8 +437,14 @@ export const TopMenuMobile = () => {
 
       {/* Modales */}
       <SideBar open={isDrawerOpen} toggleDrawer={setIsDrawerOpen} />
-      <CrearModal isOpen={isCrearModalOpen} onClose={() => setIsCrearModalOpen(false)} />
-      <UpdateLocationModal isOpen={isLocationModalOpen} onClose={() => setIsLocationModalOpen(false)} />
+      <CrearModal
+        isOpen={isCrearModalOpen}
+        onClose={() => setIsCrearModalOpen(false)}
+      />
+      <UpdateLocationModal
+        isOpen={isLocationModalOpen}
+        onClose={() => setIsLocationModalOpen(false)}
+      />
     </div>
   );
 };

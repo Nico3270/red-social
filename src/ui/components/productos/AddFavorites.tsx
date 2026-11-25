@@ -18,6 +18,7 @@ interface AddFavoritesProps {
   descripcionCorta: string;
   sections: string[];
   slugNegocio: string;
+  accessibleLabel?: string;
 }
 
 export const AddFavorites: React.FC<AddFavoritesProps> = ({
@@ -30,6 +31,7 @@ export const AddFavorites: React.FC<AddFavoritesProps> = ({
   descripcionCorta,
   sections,
   slugNegocio,
+  accessibleLabel,
 }) => {
   const { favorites, addProductFavorites, removeProductFavorites } =
     useFavoritesCatalogoStore();
@@ -101,6 +103,8 @@ export const AddFavorites: React.FC<AddFavoritesProps> = ({
   return (
     <>
       <button
+        aria-label={accessibleLabel}
+        aria-pressed={accessibleLabel ? isFavorite : undefined}
         onClick={handleToggleFavorite}
         className={`p-2 rounded-full transition-colors duration-300 ease-in-out shadow-sm z-20
     ${

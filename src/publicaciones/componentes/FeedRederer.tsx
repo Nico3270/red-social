@@ -14,6 +14,7 @@ import DiscoveryBusinessCard from "@/feed/componentes/DiscoveryBusinessCard";
 import DiscoveryPublicationCard from "@/feed/componentes/DiscoveryPublicationCard";
 import DiscoveryPulseModule, { DiscoveryPulseTone } from "@/feed/componentes/DiscoveryPulseModule";
 import DiscoveryServiceCard from "@/feed/componentes/DiscoveryServiceCard";
+import productModules from "./feedProductModules.module.css";
 
 type FeedTab = "Para ti" | "Publicaciones" | "Productos" | "Servicios" | "Negocios";
 type SupportType = "publication" | "business" | "service";
@@ -54,6 +55,7 @@ interface FeedRendererProps {
   categoriaNombre?: string;
   categoriaIconName?: string;
   ciudad?: string;
+  productActionLayout?: "separate" | "split";
 }
 
 const SkeletonCard = React.memo(() => (
@@ -261,10 +263,10 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
   activeTab,
   onTabChange,
   discoveryContext,
-  categoriaSlug,
   categoriaNombre,
   categoriaIconName,
   ciudad,
+  productActionLayout = "separate",
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
@@ -564,7 +566,7 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
   const renderCardContent = (item: FeedItem) => {
     if (!item) return null;
 
-    if (isProductItem(item)) return <ProductCard product={item.data} />;
+    if (isProductItem(item)) return <ProductCard product={item.data} variant="feed" feedActionLayout={productActionLayout} />;
     if (isServiceItem(item)) return <DiscoveryServiceCard servicio={item.data} />;
     if (isBusinessItem(item)) return <DiscoveryBusinessCard business={item.data} />;
     if (isPublicationItem(item)) return <DiscoveryPublicationCard publicacion={item.data} />;
@@ -591,6 +593,7 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
         {section.items.map((item, itemIndex) => (
           <motion.div
             key={`${section.key}-${item.id}`}
+            data-feed-item-key={`${item.type}-${item.id}`}
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{
@@ -611,42 +614,17 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
       const section = cadenceSections[sectionIndex];
 
       if (section.kind === "products") {
-        const sectionTitle =
-          section.emphasis === "lead"
-            ? isCategoryFeed
-              ? `Productos para empezar en ${categoriaNombre || "esta categoría"}`
-              : "Productos para empezar"
-            : null;
-        const sectionDescription =
-          section.emphasis === "lead"
-            ? isCategoryFeed
-              ? "Abrimos con producto para que la categoría se sienta enfocada, y luego dejamos entrar ritmo social de forma dosificada."
-              : "Abrimos con producto para que el discovery siga siendo comercial, pero luego el feed gane respiración con señales de negocio vivo."
-            : null;
-
         renderedSections.push(
           <section
             key={section.key}
-            className={section.emphasis === "lead" ? "mb-6" : "mb-5"}
+            data-product-module
+            className={`mb-4 ${productModules.module} ${section.items.length === 1 ? productModules.single : ""}`}
           >
-            {sectionTitle && (
-              <div className="mb-3 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
-                <div>
-                  <h2 className="text-base font-semibold text-slate-900 sm:text-lg">
-                    {sectionTitle}
-                  </h2>
-                  <p className="text-sm text-slate-600">{sectionDescription}</p>
-                </div>
-                <span className="text-xs font-medium uppercase tracking-[0.14em] text-slate-400">
-                  Discovery principal
-                </span>
-              </div>
-            )}
-
-            <div className={getProductClusterGridClass(section.items.length)}>
+            <div className={`${getProductClusterGridClass(section.items.length)} ${productModules.grid}`}>
               {section.items.map((item, itemIndex) => (
                 <motion.div
                   key={item.id}
+                  data-feed-item-key={`${item.type}-${item.id}`}
                   initial={{ opacity: 0, y: 18 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{
@@ -717,82 +695,29 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
   };
 
   const renderDiscoveryIntro = () => {
-    if (isCategoryFeed) {
-      return (
-        <motion.div
-          initial={{ opacity: 0, y: -8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.25 }}
-          className="mb-3 rounded-2xl border border-slate-200 bg-white/95 px-4 py-4 shadow-sm"
-        >
-          <div className="flex items-start gap-3">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-sky-50">
-              <Image
-                src={categoriaIconName ? `/imgs/iconos/${categoriaIconName}` : "/imgs/iconos/placeholder.png"}
-                alt={categoriaNombre || categoriaSlug || "Categoría"}
-                width={28}
-                height={28}
-                className="h-7 w-7 object-contain"
-              />
-            </div>
-
-            <div className="min-w-0 flex-1">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="rounded-full bg-sky-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-sky-700">
-                  Categoría
-                </span>
-                {ciudad && (
-                  <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">
-                    {ciudad}
-                  </span>
-                )}
-              </div>
-
-              <h1 className="mt-2 text-lg font-semibold text-slate-900 sm:text-xl">
-                {categoriaNombre || "Explora esta categoría"}
-              </h1>
-              <p className="mt-1 text-sm leading-6 text-slate-600">
-                Empezamos por productos para que el discovery sea más claro y dejamos la mezcla de
-                negocios y publicaciones disponible en <span className="font-medium text-slate-700">Para ti</span>.
-              </p>
-            </div>
-
-            <Link
-              href="/"
-              className="hidden rounded-full border border-slate-200 px-3 py-1.5 text-sm font-medium text-slate-600 transition-colors hover:border-sky-200 hover:text-sky-700 sm:inline-flex"
-            >
-              Volver a explorar
-            </Link>
-          </div>
-        </motion.div>
-      );
-    }
-
-    if (activeTab !== "Para ti") return null;
+    if (!isCategoryFeed && activeTab !== "Para ti") return null;
 
     return (
-      <motion.div
-        initial={{ opacity: 0, y: -8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.25 }}
-        className="mb-3 rounded-2xl border border-slate-200 bg-white/95 px-4 py-4 shadow-sm"
-      >
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="inline-flex items-center gap-2 rounded-full bg-sky-50 px-3 py-1 text-xs font-semibold text-sky-700">
-            <FaCompass className="text-[11px]" />
-            Descubre primero
-          </div>
-          {ciudad && (
-            <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">
-              {ciudad}
-            </span>
-          )}
-        </div>
-        <p className="mt-2 text-sm leading-6 text-slate-600">
-          Este tramo prioriza productos para que encuentres opciones rápido. Luego entran negocios y
-          publicaciones para darte contexto social sin romper el ritmo de compra.
-        </p>
-      </motion.div>
+      <div className="mb-2 flex min-w-0 flex-wrap items-center gap-2 px-1">
+        {isCategoryFeed && (
+          <Image
+            src={categoriaIconName ? `/imgs/iconos/${categoriaIconName}` : "/imgs/iconos/placeholder.png"}
+            alt=""
+            width={28}
+            height={28}
+            className="shrink-0 object-contain"
+          />
+        )}
+        <h1 className="min-w-0 text-base font-semibold text-slate-900 [overflow-wrap:anywhere]">
+          {isCategoryFeed ? categoriaNombre || "Explora esta categoría" : "Descubre cerca de ti"}
+        </h1>
+        {ciudad && <span className="text-xs text-slate-500 [overflow-wrap:anywhere]">{ciudad}</span>}
+        {isCategoryFeed && (
+          <Link href="/" className="inline-flex min-h-11 items-center text-sm font-medium text-sky-700">
+            Volver a explorar
+          </Link>
+        )}
+      </div>
     );
   };
 
@@ -855,21 +780,22 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
-        className="mx-auto mb-4 mt-2 flex w-full overflow-x-auto rounded-2xl border border-gray-200 bg-white/90 px-2 shadow-sm lg:justify-around lg:overflow-visible"
+        className="mx-auto mb-3 flex w-full overflow-x-auto rounded-xl border border-gray-200 bg-white px-1 lg:justify-around"
       >
         {tabs.map((tab) => (
           <button
             key={tab.label}
             onClick={() => onTabChange(tab.label)}
-            className={`relative flex-1 lg:flex-none flex items-center justify-center gap-2 
-                  px-3 lg:px-5 py-3 lg:py-4 font-medium text-sm lg:text-base transition-all 
+            className={`relative flex shrink-0 items-center justify-center gap-2 whitespace-nowrap min-h-11
+                  px-3 py-2 font-medium text-sm transition-all
                   duration-300 rounded-xl
                   ${activeTab === tab.label
-                ? "text-gray-600 bg-gray-70/90 shadow-sm border-b-4 border-gray-500"
-                : "text-gray-700 hover:text-gray-900 hover:bg-blue-300"
+                ? "text-sky-700 bg-sky-50 font-semibold"
+                : "text-gray-700 hover:text-gray-900 hover:bg-slate-100"
               } 
                   focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-opacity-50`}
             aria-label={`Cambiar a pestaña ${tab.label}`}
+            aria-pressed={activeTab === tab.label}
           >
             {tab.icon}
             <span>{tab.label}</span>
@@ -927,6 +853,7 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
                   {filteredItems.map((item, index) => (
                     <motion.div
                       key={`${item.type}-${item.id}`}
+                      data-feed-item-key={`${item.type}-${item.id}`}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.3, delay: index * 0.05, ease: "easeOut" }}

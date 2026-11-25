@@ -20,82 +20,33 @@ interface DiscoveryPulseModuleProps {
   children: ReactNode;
 }
 
-const toneStyles: Record<
-  DiscoveryPulseTone,
-  {
-    container: string;
-    badge: string;
-    Icon: typeof FaCompass;
-  }
-> = {
-  social: {
-    container: "border-sky-100 bg-gradient-to-br from-sky-50 via-white to-white",
-    badge: "bg-sky-100 text-sky-700",
-    Icon: FaNewspaper,
-  },
-  business: {
-    container:
-      "border-emerald-100 bg-gradient-to-br from-emerald-50 via-white to-white",
-    badge: "bg-emerald-100 text-emerald-700",
-    Icon: FaBuilding,
-  },
-  mixed: {
-    container:
-      "border-violet-100 bg-gradient-to-br from-violet-50 via-white to-white",
-    badge: "bg-violet-100 text-violet-700",
-    Icon: FaCompass,
-  },
-  service: {
-    container:
-      "border-orange-100 bg-gradient-to-br from-orange-50 via-white to-white",
-    badge: "bg-orange-100 text-orange-700",
-    Icon: FaTools,
-  },
+const toneIcons: Record<DiscoveryPulseTone, typeof FaCompass> = {
+  social: FaNewspaper,
+  business: FaBuilding,
+  mixed: FaCompass,
+  service: FaTools,
 };
 
 export const DiscoveryPulseModule: React.FC<DiscoveryPulseModuleProps> = ({
   badge,
   title,
-  description,
   tone,
-  city,
   itemCount,
   children,
 }) => {
-  const toneStyle = toneStyles[tone];
+  const Icon = toneIcons[tone];
   const gridClassName =
     itemCount > 1
       ? "grid grid-cols-1 gap-3 lg:grid-cols-2"
       : "grid max-w-3xl grid-cols-1 gap-3";
 
   return (
-    <section
-      className={`mb-5 overflow-hidden rounded-3xl border p-3 shadow-sm sm:p-4 ${toneStyle.container}`}
-    >
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div className="min-w-0">
-          <div className="flex flex-wrap items-center gap-2">
-            <span
-              className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] ${toneStyle.badge}`}
-            >
-              <toneStyle.Icon className="text-[10px]" />
-              {badge}
-            </span>
-            {city && (
-              <span className="rounded-full bg-white/80 px-3 py-1 text-xs font-medium text-slate-500 shadow-sm">
-                {city}
-              </span>
-            )}
-          </div>
-
-          <h3 className="mt-3 text-base font-semibold text-slate-900 sm:text-lg">
-            {title}
-          </h3>
-          <p className="mt-1 text-sm leading-6 text-slate-600">{description}</p>
-        </div>
+    <section className="mb-4 min-w-0" aria-label={title}>
+      <div className="mb-2 flex items-center gap-2 px-1 text-xs font-semibold text-slate-600">
+        <Icon aria-hidden="true" className="shrink-0" />
+        <span>{badge}</span>
       </div>
-
-      <div className={`mt-4 ${gridClassName}`}>{children}</div>
+      <div className={gridClassName}>{children}</div>
     </section>
   );
 };

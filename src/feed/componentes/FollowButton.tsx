@@ -1,14 +1,24 @@
 // src/components/follow/FollowButton.tsx
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, type ReactNode } from "react";
 import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaCheck, FaTimes, FaUserPlus, FaUserCheck, FaUserTimes, FaSignInAlt } from "react-icons/fa";
+import {
+  FaCheck,
+  FaPlus,
+  FaSpinner,
+  FaTimes,
+  FaUserPlus,
+  FaUserCheck,
+  FaUserTimes,
+  FaSignInAlt,
+} from "react-icons/fa";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 import clsx from "clsx";
+import styles from "./followButton.module.css";
 import { checkIsFollowing, toggleFollow } from "../actions/toggleFollow";
 import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
@@ -18,9 +28,19 @@ interface FollowButtonProps {
   type: "USER_TO_BUSINESS" | "BUSINESS_TO_USER" | "USER_TO_USER"; // Del enum
   className?: string;
   version?: 1 | 2; // Nueva prop opcional, default 1
+  /** Optional feed presentation; the existing query, mutation and login flow are shared. */
+  mobileAvatarBusinessName?: string;
+  mobileAvatarImage?: ReactNode;
 }
 
-export const FollowButton: React.FC<FollowButtonProps> = ({ followedId, type, className, version = 1 }) => {
+export const FollowButton: React.FC<FollowButtonProps> = ({
+  followedId,
+  type,
+  className,
+  version = 1,
+  mobileAvatarBusinessName,
+  mobileAvatarImage,
+}) => {
   const { data: session, status } = useSession();
   const pathname = usePathname();
   const queryClient = useQueryClient();
@@ -73,6 +93,78 @@ export const FollowButton: React.FC<FollowButtonProps> = ({ followedId, type, cl
   const handleTouchStart = () => isFollowing && setHoverUnfollow(true);
   const handleTouchEnd = () => setHoverUnfollow(false);
 
+  const legacyIcon = (
+    <AnimatePresence mode="wait">
+      {version === 1 ? (
+        // Versión 1: Con texto (tal como estaba)
+        isFollowing ? (
+          hoverUnfollow ? (
+            <motion.span
+              key="unfollow"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.2 }}
+              className="flex items-center gap-1"
+            >
+              <FaTimes size={14} /> Dejar de seguir
+            </motion.span>
+          ) : (
+            <motion.span
+              key="following"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.2 }}
+              className="flex items-center gap-1"
+            >
+              <FaCheck size={14} /> Siguiendo
+            </motion.span>
+          )
+        ) : (
+          <motion.span
+            key="follow"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            transition={{ duration: 0.2 }}
+          >
+            Seguir
+          </motion.span>
+        )
+      ) : (
+        // Versión 2: Solo iconos (tu estilo implementado)
+        <motion.span
+          key={
+            isFollowing
+              ? hoverUnfollow
+                ? "unfollow-icon"
+                : "following-icon"
+              : "follow-icon"
+          }
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.8 }}
+          transition={{ duration: 0.2 }}
+          className="flex items-center"
+        >
+          {isFollowing ? (
+            hoverUnfollow ? (
+              // 🔴 Estado hover unfollow → icono user con X
+              <FaUserTimes size={18} />
+            ) : (
+              // 🟢 Estado siguiendo → icono user con check
+              <FaUserCheck size={18} />
+            )
+          ) : (
+            // 🔵 Estado no siguiendo → icono user con +
+            <FaUserPlus size={18} />
+          )}
+        </motion.span>
+      )}
+    </AnimatePresence>
+  );
+
   return (
     <>
       <button
@@ -90,80 +182,61 @@ export const FollowButton: React.FC<FollowButtonProps> = ({ followedId, type, cl
               ? "bg-red-100 text-red-600 hover:bg-red-200"
               : "bg-green-500 text-white hover:bg-green-600"
             : "bg-blue-600 text-white hover:bg-blue-700",
-          className
+          className,
+          mobileAvatarBusinessName && styles.avatarPresentation,
         )}
-        aria-label={isFollowing ? (hoverUnfollow ? "Dejar de seguir" : "Siguiendo") : "Seguir"}
+        data-avatar-follow={mobileAvatarBusinessName ? "true" : undefined}
+        data-follow-state={
+          mobileAvatarBusinessName
+            ? isLoading || mutation.isPending
+              ? "pending"
+              : isFollowing
+                ? "following"
+                : "idle"
+            : undefined
+        }
+        aria-busy={
+          mobileAvatarBusinessName ? isLoading || mutation.isPending : undefined
+        }
+        aria-label={
+          mobileAvatarBusinessName
+            ? `${isFollowing ? "Dejar de seguir a" : "Seguir a"} ${mobileAvatarBusinessName}`
+            : isFollowing
+              ? hoverUnfollow
+                ? "Dejar de seguir"
+                : "Siguiendo"
+              : "Seguir"
+        }
       >
-        <AnimatePresence mode="wait">
-          {version === 1 ? (
-            // Versión 1: Con texto (tal como estaba)
-            isFollowing ? (
-              hoverUnfollow ? (
-                <motion.span
-                  key="unfollow"
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ duration: 0.2 }}
-                  className="flex items-center gap-1"
-                >
-                  <FaTimes size={14} /> Dejar de seguir
-                </motion.span>
+        {mobileAvatarBusinessName ? (
+          <>
+            {mobileAvatarImage && (
+              <span className={styles.avatarPhoto} data-avatar-image="true" aria-hidden="true">
+                {mobileAvatarImage}
+              </span>
+            )}
+            <span className={styles.legacyIcon}>{legacyIcon}</span>
+            <span className={styles.avatarIcon} data-avatar-indicator="true" aria-hidden="true">
+              {isLoading || mutation.isPending ? (
+                <FaSpinner className={styles.spinner} />
+              ) : isFollowing ? (
+                <FaCheck />
               ) : (
-                <motion.span
-                  key="following"
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ duration: 0.2 }}
-                  className="flex items-center gap-1"
-                >
-                  <FaCheck size={14} /> Siguiendo
-                </motion.span>
-              )
-            ) : (
-              <motion.span
-                key="follow"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.2 }}
-              >
-                Seguir
-              </motion.span>
-            )
-          ) : (
-            // Versión 2: Solo iconos (tu estilo implementado)
-            <motion.span
-              key={
-                isFollowing
-                  ? hoverUnfollow
-                    ? "unfollow-icon"
-                    : "following-icon"
-                  : "follow-icon"
-              }
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              transition={{ duration: 0.2 }}
-              className="flex items-center"
-            >
-              {isFollowing ? (
-                hoverUnfollow ? (
-                  // 🔴 Estado hover unfollow → icono user con X
-                  <FaUserTimes size={18} />
-                ) : (
-                  // 🟢 Estado siguiendo → icono user con check
-                  <FaUserCheck size={18} />
-                )
-              ) : (
-                // 🔵 Estado no siguiendo → icono user con +
-                <FaUserPlus size={18} />
+                <FaPlus />
               )}
-            </motion.span>
-          )}
-        </AnimatePresence>
+            </span>
+          </>
+        ) : (
+          legacyIcon
+        )}
       </button>
+      {mobileAvatarBusinessName && (
+        <span className={styles.feedback} role="status" aria-live="polite">
+          {mutation.isError
+            ? "No se pudo actualizar el seguimiento. Inténtalo de nuevo."
+            : ""}
+        </span>
+      )}
 
       {/* Modal para no autenticados (mismo que antes, pero con estilos responsivos) */}
       {mounted && createPortal(

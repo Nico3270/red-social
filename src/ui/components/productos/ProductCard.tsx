@@ -5,7 +5,7 @@ import { BsWhatsapp } from "react-icons/bs";
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
-import { textosFont, tituloCard } from "@/config/fonts";
+import { inter, textosFont, tituloCard } from "@/config/fonts";
 import { InfoEmpresa as empresa } from "@/config/config";
 import {
   PLACEHOLDER_BUSINESS_IMAGE,
@@ -28,6 +28,7 @@ import { createPortal } from "react-dom";
 import { ProductQuickAddModal } from "./ProductQuickAddModal";
 import { useQuickAddSelection } from "./useQuickAddSelection";
 import { buildVariantLabel } from "./variantDisplay";
+import styles from "./feedProductCard.module.css";
 import {
   trackAnalyticsEvent,
   type EventSource,
@@ -46,7 +47,8 @@ interface ProductCardProps {
     sectionSlug?: string;
     position?: number;
   };
-  variant?: "default" | "business_profile";
+  variant?: "default" | "business_profile" | "feed";
+  feedActionLayout?: "separate" | "split";
 }
 
 const urlWebProduccion = empresa.linkWebProduccion;
@@ -64,6 +66,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   product,
   analyticsContext,
   variant = "default",
+  feedActionLayout = "separate",
 }) => {
   const rawProductImages = useMemo(
     () => (Array.isArray(product.imagenes) ? product.imagenes : []),
@@ -78,6 +81,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   const secondaryImage = productImages[1] || primaryImage;
 
   const [displayImage, setDisplayImage] = useState(primaryImage);
+  const [feedImageShape, setFeedImageShape] = useState<
+    "unknown" | "portrait" | "square" | "landscape"
+  >("unknown");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [modalRoot, setModalRoot] = useState<Element | null>(null);
@@ -154,8 +160,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   const hasMultipleVariantChoices = hasVariants && activeVariants.length > 1;
   const pricePrefixLabel = shouldShowFromPrice ? "Desde" : "Precio";
   const isBusinessProfileVariant = variant === "business_profile";
+  const isFeedVariant = variant === "feed";
   const shortDescription = product.descripcionCorta?.trim() ?? "";
-  const shouldRenderDescription = isBusinessProfileVariant ? shortDescription.length > 0 : true;
+  const shouldRenderDescription = isBusinessProfileVariant || isFeedVariant ? shortDescription.length > 0 : true;
   const shouldDirectAddFromCard = !hasVariants || hasSingleActiveVariant;
   const cardActionLabel = isActionDisabled
     ? "Agotado"
@@ -561,6 +568,70 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     shouldDirectAddFromCard,
   ]);
 
+  // One shared set of callbacks and destinations; CSS exposes only the appropriate controls.
+  const whatsAppAction = (<>
+      {product.telefonoContacto && telefonoLimpio && (
+        <Link
+          href={`https://wa.me/${telefonoLimpio}?text=${whatsappMessage}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={handleWhatsAppClick}
+          aria-label={`Contactar por WhatsApp sobre ${product.nombre}`}
+          className={
+            isFeedVariant
+              ? styles.whatsapp
+              : isBusinessProfileVariant
+              ? "flex h-9 w-9 items-center justify-center rounded-full text-green-600 transition-all duration-300 hover:bg-green-50 hover:text-green-700"
+              : "flex items-center justify-center rounded-full bg-gradient-to-r from-green-500 to-green-600 p-3 transition-all duration-300 hover:from-green-600 hover:to-green-700"
+          }
+        >
+          <BsWhatsapp
+            className={
+              isFeedVariant
+                ? styles.actionIcon
+                : isBusinessProfileVariant
+                ? "text-[22px] text-current"
+                : "text-2xl text-white sm:text-xl"
+            }
+          />
+        </Link>
+      )}
+  </>);
+  const cartAction = (
+      <button
+        type="button"
+        onClick={handlePrimaryCartAction}
+        disabled={isActionDisabled}
+        aria-label={
+          isActionDisabled
+            ? `${product.nombre} agotado`
+            : shouldDirectAddFromCard
+              ? `Agregar ${product.nombre} al carrito`
+              : hasMultipleVariantChoices
+              ? `Elegir opciones de ${product.nombre}`
+              : `Ver opciones de ${product.nombre}`
+        }
+        className={
+          isFeedVariant
+            ? styles.cart
+            : isBusinessProfileVariant
+            ? "inline-flex h-9 items-center justify-center gap-1.5 rounded-lg bg-slate-900 px-3.5 text-sm font-semibold text-white shadow-sm transition-all duration-300 hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-500"
+            : "flex items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-blue-600 p-3 transition-all duration-300 hover:from-blue-600 hover:to-blue-700 disabled:cursor-not-allowed disabled:from-gray-300 disabled:to-gray-400 disabled:opacity-80"
+        }
+      >
+        <FaShoppingCart
+          className={isFeedVariant ? styles.actionIcon : isBusinessProfileVariant ? "text-base text-current" : "text-2xl text-white"}
+        />
+        {(isBusinessProfileVariant || isFeedVariant) && <span>{cardActionLabel}</span>}
+      </button>
+  );
+  const purchaseActions = (
+    <div className={isFeedVariant ? `${styles.purchaseActions} ${styles.desktopActions}` : isBusinessProfileVariant ? "flex shrink-0 items-center gap-1.5" : "flex items-center gap-3"}>
+      {whatsAppAction}
+      {cartAction}
+    </div>
+  );
+
   const ToastContent = (
     <AnimatePresence>
       {showSuccess && (
@@ -584,16 +655,22 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.28 }}
+      data-product-variant={variant}
+      data-feed-product-id={isFeedVariant ? product.id : undefined}
+      data-feed-action-layout={isFeedVariant ? feedActionLayout : undefined}
+      data-feed-image-shape={isFeedVariant ? feedImageShape : undefined}
       className={
-        isBusinessProfileVariant
+        isFeedVariant
+          ? `${styles.feed} ${inter.className}`
+          : isBusinessProfileVariant
           ? "relative mx-auto flex w-full self-start flex-col overflow-hidden rounded-[22px] border border-slate-200 bg-white p-1.5 shadow-sm transition-all duration-300 hover:border-slate-300 hover:shadow-md"
           : "relative mx-auto flex h-[480px] w-full flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white p-2 shadow-lg transition-all duration-300 hover:shadow-2xl"
       }
     >
       {!isBusinessProfileVariant && (
-        <div className="mb-3 flex items-center justify-between px-3">
-          <div className="flex min-w-0 items-center gap-2">
-            <div className="relative h-8 w-8 overflow-hidden rounded-full">
+        <div className={isFeedVariant ? styles.header : "mb-3 flex items-center justify-between px-3"}>
+          <div className={isFeedVariant ? styles.business : "flex min-w-0 items-center gap-2"}>
+            <div className={`${isFeedVariant ? styles.desktopAvatar : ""} relative h-8 w-8 overflow-hidden rounded-full`}>
               <Image
                 src={optimizedBusinessProfileImageUrl}
                 alt={`Perfil de ${product.nombreNegocio ?? "negocio"}`}
@@ -606,29 +683,40 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             {product.nombreNegocio && product.slugNegocio ? (
               <Link
                 href={`/perfil/${product.slugNegocio}`}
-                className={`truncate text-md font-semibold text-gray-800 transition-colors duration-200 hover:text-blue-700 sm:text-sm ${tituloCard.className}`}
+                className={isFeedVariant ? styles.businessName : `truncate text-md font-semibold text-gray-800 transition-colors duration-200 hover:text-blue-700 sm:text-sm ${tituloCard.className}`}
               >
-                {product.nombreNegocio}
+                {isFeedVariant ? <span className={styles.businessLabel}>{product.nombreNegocio}</span> : product.nombreNegocio}
               </Link>
             ) : (
               <span
-                className={`truncate text-md font-semibold text-gray-800 sm:text-sm ${tituloCard.className}`}
+                className={isFeedVariant ? styles.businessName : `truncate text-md font-semibold text-gray-800 sm:text-sm ${tituloCard.className}`}
               >
-                {product.nombreNegocio ?? "Negocio"}
+                {isFeedVariant ? <span className={styles.businessLabel}>{product.nombreNegocio ?? "Negocio"}</span> : product.nombreNegocio ?? "Negocio"}
               </span>
             )}
           </div>
 
-          <div className="flex items-center">
+          <div className={isFeedVariant ? styles.headerActions : "flex items-center"}>
             <FollowButton
               followedId={product.negocioId}
               version={2}
               type="USER_TO_BUSINESS"
               className="text-sm"
+              mobileAvatarBusinessName={isFeedVariant ? product.nombreNegocio || "negocio" : undefined}
+              mobileAvatarImage={isFeedVariant ? (
+                <Image
+                  src={optimizedBusinessProfileImageUrl}
+                  alt=""
+                  fill
+                  sizes="24px"
+                  className="object-cover"
+                />
+              ) : undefined}
             />
 
-            <div className="z-20 ml-2">
+            <div className={isFeedVariant ? styles.favorite : "z-20 ml-2"}>
               <AddFavorites
+                accessibleLabel={isFeedVariant ? `Guardar ${product.nombre} en favoritos` : undefined}
                 id={product.id}
                 title={product.nombre}
                 price={product.precio}
@@ -648,7 +736,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         <Link href={detailHref} onClick={handleDetailLinkClick} className="relative block">
           <div
             className={
-              isBusinessProfileVariant
+              isFeedVariant
+                ? styles.media
+                : isBusinessProfileVariant
                 ? "relative h-48 w-full cursor-pointer overflow-hidden rounded-[18px] sm:h-52"
                 : "relative h-64 w-full cursor-pointer overflow-hidden rounded-xl"
             }
@@ -661,6 +751,17 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               setDisplayImage(primaryImage);
             }}
           >
+            {isFeedVariant && (feedImageShape === "portrait" || feedImageShape === "square") && (
+              <Image
+                src={optimizedProductImageUrl}
+                alt=""
+                aria-hidden="true"
+                fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                quality={80}
+                className={styles.imageBackdrop}
+              />
+            )}
             <Image
               src={optimizedProductImageUrl}
               alt={product.nombre}
@@ -668,16 +769,24 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               quality={80}
               onError={handleProductImageError}
-              className="object-cover transition-transform duration-300 hover:scale-[1.04]"
+              onLoad={isFeedVariant ? (event) => {
+                const { naturalWidth, naturalHeight } = event.currentTarget;
+                if (!naturalWidth || !naturalHeight) return;
+                const ratio = naturalWidth / naturalHeight;
+                setFeedImageShape(
+                  ratio < 0.85 ? "portrait" : ratio < 1.3 ? "square" : "landscape"
+                );
+              } : undefined}
+              className={isFeedVariant ? styles.image : "object-cover transition-transform duration-300 hover:scale-[1.04]"}
             />
 
-            <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-100" />
+            {!isFeedVariant && <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-100" />}
 
             <div
               className={
                 isBusinessProfileVariant
                   ? "pointer-events-none absolute left-2.5 top-2.5 flex max-w-[calc(100%-72px)] flex-wrap gap-1.5"
-                  : "pointer-events-none absolute left-3 top-3 flex flex-wrap gap-2"
+                  : `pointer-events-none absolute left-3 top-3 flex flex-wrap gap-2 ${isFeedVariant ? styles.socialBadges : ""}`
               }
             >
               {hasVariants && (
@@ -692,7 +801,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                 </span>
               )}
 
-              {isOutOfStock && (
+              {(isFeedVariant ? isActionDisabled : isOutOfStock) && (
                 <span className="rounded-full bg-red-600/90 px-2.5 py-1 text-[11px] font-semibold text-white shadow-sm">
                   Agotado
                 </span>
@@ -720,7 +829,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
       <div
         className={
-          isBusinessProfileVariant
+          isFeedVariant
+            ? styles.content
+            : isBusinessProfileVariant
             ? "mt-2 flex flex-col gap-2 px-1 pb-1.5"
             : "mt-2 flex flex-grow flex-col justify-between"
         }
@@ -729,12 +840,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           <Link href={detailHref} onClick={handleDetailLinkClick} className="block">
             <h3
               className={
-                isBusinessProfileVariant
+                isFeedVariant
+                  ? styles.title
+                  : isBusinessProfileVariant
                   ? `line-clamp-2 text-[15px] font-extrabold leading-tight text-gray-900 transition duration-300 hover:text-blue-700 sm:text-base ${tituloCard.className}`
                   : `text-lg font-extrabold text-gray-800 transition duration-300 hover:text-blue-700 ${tituloCard.className}`
               }
               style={
-                isBusinessProfileVariant
+                isBusinessProfileVariant || isFeedVariant
                   ? undefined
                   : { textShadow: "0.5px 0.5px 1px rgba(0, 0, 0, 0.08)" }
               }
@@ -746,7 +859,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           {shouldRenderDescription && (
             <p
               className={
-                isBusinessProfileVariant
+                isFeedVariant
+                  ? styles.description
+                  : isBusinessProfileVariant
                   ? `line-clamp-2 text-[13px] leading-[1.35] text-gray-600 ${textosFont.className}`
                   : `mt-1 line-clamp-2 text-lg text-gray-600 ${textosFont.className}`
               }
@@ -756,22 +871,26 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           )}
         </div>
 
-        <div className={isBusinessProfileVariant ? "pt-0.5" : "m-1"}>
+        <div className={isFeedVariant ? styles.footer : isBusinessProfileVariant ? "pt-0.5" : "m-1"}>
           <div
             className={
-              isBusinessProfileVariant
+              isFeedVariant
+                ? styles.purchaseRow
+                : isBusinessProfileVariant
                 ? "flex items-center justify-between gap-2.5"
                 : "flex items-center justify-between gap-2"
             }
           >
-            <div className="min-w-0">
+            <div className={isFeedVariant ? styles.priceBlock : "min-w-0"}>
               <div className={isBusinessProfileVariant ? "flex flex-col gap-0.5 leading-none" : "flex flex-col leading-tight"}>
-                {(!isBusinessProfileVariant || shouldShowFromPrice) && (
+                {((!isBusinessProfileVariant && !isFeedVariant) || shouldShowFromPrice) && (
                   <span className={isBusinessProfileVariant ? "text-[10px] font-semibold uppercase tracking-[0.16em] text-gray-400" : "text-xs font-medium uppercase tracking-wide text-gray-400"}>
                     {isBusinessProfileVariant ? "Desde" : pricePrefixLabel}
                   </span>
                 )}
-                {isBusinessProfileVariant ? (
+                {isFeedVariant ? (
+                  <span className={styles.price}>{formatCurrency(displayPrice)}</span>
+                ) : isBusinessProfileVariant ? (
                   <span
                     className={`text-[22px] font-bold tracking-[-0.02em] text-gray-900 ${tituloCard.className}`}
                   >
@@ -783,67 +902,20 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               </div>
 
               {hasSingleActiveVariant && selectedVariantLabel && (
-                <p className={isBusinessProfileVariant ? "mt-1 truncate text-[11px] text-gray-500" : "mt-1 text-xs text-gray-500"}>
+                <p className={isFeedVariant ? styles.variantLabel : isBusinessProfileVariant ? "mt-1 truncate text-[11px] text-gray-500" : "mt-1 text-xs text-gray-500"}>
                   {selectedVariantLabel}
                 </p>
               )}
             </div>
 
-            <div className={isBusinessProfileVariant ? "flex shrink-0 items-center gap-1.5" : "flex items-center gap-3"}>
-              {product.telefonoContacto && telefonoLimpio && (
-                <Link
-                  href={`https://wa.me/${telefonoLimpio}?text=${whatsappMessage}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={handleWhatsAppClick}
-                  aria-label={`Contactar por WhatsApp sobre ${product.nombre}`}
-                  className={
-                    isBusinessProfileVariant
-                      ? "flex h-9 w-9 items-center justify-center rounded-full text-green-600 transition-all duration-300 hover:bg-green-50 hover:text-green-700"
-                      : "flex items-center justify-center rounded-full bg-gradient-to-r from-green-500 to-green-600 p-3 transition-all duration-300 hover:from-green-600 hover:to-green-700"
-                  }
-                >
-                  <BsWhatsapp
-                    className={
-                      isBusinessProfileVariant
-                        ? "text-[22px] text-current"
-                        : "text-2xl text-white sm:text-xl"
-                    }
-                  />
-                </Link>
-              )}
-
-              <button
-                type="button"
-                onClick={handlePrimaryCartAction}
-                disabled={isActionDisabled}
-                aria-label={
-                  isActionDisabled
-                    ? `${product.nombre} agotado`
-                    : shouldDirectAddFromCard
-                      ? `Agregar ${product.nombre} al carrito`
-                      : hasMultipleVariantChoices
-                      ? `Elegir opciones de ${product.nombre}`
-                      : `Ver opciones de ${product.nombre}`
-                }
-                className={
-                  isBusinessProfileVariant
-                    ? "inline-flex h-9 items-center justify-center gap-1.5 rounded-lg bg-slate-900 px-3.5 text-sm font-semibold text-white shadow-sm transition-all duration-300 hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-500"
-                    : "flex items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-blue-600 p-3 transition-all duration-300 hover:from-blue-600 hover:to-blue-700 disabled:cursor-not-allowed disabled:from-gray-300 disabled:to-gray-400 disabled:opacity-80"
-                }
-              >
-                <FaShoppingCart
-                  className={isBusinessProfileVariant ? "text-base text-current" : "text-2xl text-white"}
-                />
-                {isBusinessProfileVariant && <span>{cardActionLabel}</span>}
-              </button>
-            </div>
+            {purchaseActions}
           </div>
         </div>
       </div>
 
       {modalRoot &&
         createPortal(
+          <div className={isFeedVariant ? styles.modalScope : undefined}>
           <ProductQuickAddModal
             isOpen={isModalOpen}
             onClose={(reason) => {
@@ -893,7 +965,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             isOutOfStock={isOutOfStock}
             isActionDisabled={isActionDisabled}
             onConfirm={() => handleAddToCart(quantity, "modal")}
-          />,
+          />
+          </div>,
           modalRoot
         )}
       {modalRoot && createPortal(ToastContent, modalRoot)}

@@ -12,7 +12,8 @@ import {
   FaPlay,
   FaStar,
 } from "react-icons/fa";
-import { titleFont, textosFont } from "@/config/fonts";
+import { inter } from "@/config/fonts";
+import styles from "./discoveryCards.module.css";
 import PublicationModal from "@/publicaciones/componentes/PublicationModal";
 import { EnhancedPublicacion } from "@/publicaciones/interfaces/enhancedPublicacion.interface";
 import {
@@ -130,7 +131,7 @@ export const DiscoveryPublicationCard: React.FC<
     (publicacion.producto
       ? `Opinión sobre ${publicacion.producto.nombre}`
       : "Mira esta publicación de la comunidad.");
-  const descriptionClamp = hasMedia ? "line-clamp-3" : "line-clamp-4";
+  const descriptionClamp = hasMedia ? "" : styles.textOnlySummary;
   const openModal = useCallback(() => setIsModalOpen(true), []);
   const closeModal = useCallback(() => setIsModalOpen(false), []);
   const mediaAspectClass = useMemo(
@@ -203,8 +204,8 @@ export const DiscoveryPublicationCard: React.FC<
 
   return (
     <>
-      <article className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
-        <div className="flex items-start gap-3 p-3">
+      <article className={`${styles.card} ${inter.className}`}>
+        <div className={styles.header}>
           <Link
             href={authorHref}
             className="relative mt-0.5 h-11 w-11 shrink-0 overflow-hidden rounded-2xl bg-slate-100"
@@ -218,11 +219,11 @@ export const DiscoveryPublicationCard: React.FC<
             />
           </Link>
 
-          <div className="min-w-0 flex-1">
+          <div className={styles.author}>
             <div className="flex flex-wrap items-center gap-2">
               <Link
                 href={authorHref}
-                className={`truncate text-sm font-semibold text-slate-900 transition-colors hover:text-sky-700 ${titleFont.className}`}
+                className={styles.authorName}
               >
                 {authorName}
               </Link>
@@ -303,17 +304,15 @@ export const DiscoveryPublicationCard: React.FC<
           </button>
         )}
 
-        <div className="p-3">
+        <div className={styles.body}>
           {publicacion.titulo && (
-            <h3
-              className={`text-base font-semibold leading-6 text-slate-900 ${titleFont.className}`}
-            >
+            <h3 className={styles.title}>
               {publicacion.titulo}
             </h3>
           )}
 
           <p
-            className={`mt-2 text-sm leading-6 text-slate-600 ${textosFont.className} ${descriptionClamp}`}
+            className={`${styles.summary} ${descriptionClamp}`}
           >
             {previewText}
           </p>
@@ -336,13 +335,13 @@ export const DiscoveryPublicationCard: React.FC<
             </div>
           )}
 
-          <div className="mt-4 flex items-center justify-between gap-3">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex h-8 items-center gap-1.5 rounded-full bg-rose-50 px-3 text-sm font-semibold text-slate-700 ring-1 ring-rose-100">
+          <div className={styles.actions}>
+            <div className={styles.stats}>
+              <span>
                 <FaHeart className="text-[13px] text-rose-500" />
                 <span>{publicacion.numLikes}</span>
               </span>
-              <span className="inline-flex h-8 items-center gap-1.5 rounded-full bg-sky-50 px-3 text-sm font-semibold text-slate-700 ring-1 ring-sky-100">
+              <span>
                 <FaCommentDots className="text-[13px] text-sky-600" />
                 <span>{publicacion.numComentarios}</span>
               </span>
@@ -351,7 +350,7 @@ export const DiscoveryPublicationCard: React.FC<
             <button
               type="button"
               onClick={openModal}
-              className="inline-flex h-9 items-center justify-center rounded-full border border-slate-200 bg-white px-3.5 text-sm font-semibold text-slate-700 shadow-sm transition-colors hover:border-sky-200 hover:text-sky-700"
+              className={styles.action}
             >
               Ver publicación
             </button>
