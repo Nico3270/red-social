@@ -1,6 +1,6 @@
 # Auditoría del frontend público de Myckeo
 
-**Estado actual:** candidata local validada con Prisma/PostgreSQL reales el 25/11/2026. Véase [Validación PostgreSQL e integración](#validación-postgresql-e-integración--25112026). Los apartados anteriores a ese anexo conservan la evidencia histórica y sus limitaciones de entonces.
+**Estado actual:** integración local completada en `main`, con HEAD funcional `65f5f14c4f9f0abfa9f48cd58cec0759f1334b2d` al completar la integración. Véase [Cierre de integración local](#cierre-de-integración-local). La validación con Prisma/PostgreSQL reales está documentada en el anexo del 25/11/2026; los apartados anteriores conservan evidencia histórica y limitaciones de cada fase. La integración local por sí sola no acredita una publicación.
 
 Auditoría inicial: 24 de noviembre de 2026. Segundo lote, geografía/paginación: 25 de noviembre de 2026 (véase el anexo al final). Alcance inicial: exploración pública, contacto, WhatsApp y entradas existentes de cuenta/carrito. No se desplegó, hizo push, ejecutaron migraciones ni modificaron registros remotos.
 
@@ -238,7 +238,7 @@ Para revisión: [delta exclusivo del segundo lote](geography-pagination-evidence
 
 **Resultado:** candidata preparada para revisión e integración local. No se encontraron divergencias nuevas de las consultas que exigieran modificar la aplicación. La brecha de validación SQL queda cerrada con el cliente Prisma real y PostgreSQL real; no se certifica la rama de origen completa ni una publicación automática.
 
-### Base y conservación del original
+### Base y conservación del original (fase de preparación, histórico)
 
 - Candidata: `/home/nico/worktrees/myckeo-public-candidate-20261125`, rama `candidate/public-ui-postgres-20261125`.
 - Base exacta de integración: `3c8e51d03076d9158991abbd8d4d1d20f62b107c`, confirmada para `origin/main` y `refs/heads/main` del remoto mediante `git ls-remote`. No se modificó `main` local.
@@ -316,10 +316,25 @@ El build y runtime emiten avisos de Upstash porque se dejan sin credenciales los
 
 Comandos y ciclo de vida: [README reproducible](../../scripts/public-ui-pg/README.md), [runner con entorno aislado](../../scripts/public-ui-pg/run.mjs), [fixtures reales](../../scripts/public-ui-pg/fixtures.ts), [pruebas de navegador](../../e2e/postgres-public-ui/postgres.spec.ts). En orden: `database.mjs create` → `run.mjs prepare` → `verify` → `seed` → `build` → `start`; navegador con `pnpm exec playwright test --config=e2e/postgres-public-ui/playwright.config.ts`; detener servidor y `database.mjs remove`.
 
-### Límites y decisión de integración
+### Límites y decisión de integración (cierre de validación, histórico)
 
 El ranking sigue siendo por ventanas, sin instantánea frente a cambios concurrentes. Se validó expresamente la visibilidad al releer el buffer; borrar la fila que sostiene el cursor requiere reiniciar el recorrido para garantizar completitud. No se diseñó otro protocolo ni se amplió el alcance para ese límite aceptado.
 
 Pendientes no bloqueantes: revisión humana de los commits y de los 19 prerrequisitos públicos seleccionados; contenido persistido de prueba, estados 404 de fichas, acceso de propietarios e ilustración 404 heredada, todos fuera del alcance. No se verificaron altas autenticadas ni servicios externos. Para publicar hace falta una tarea posterior con revisión/aprobación y configuración del entorno de destino, sin copiar fixtures ni credenciales sintéticas.
 
 **No queda un bloqueo técnico demostrado para revisar e integrar localmente esta candidata.** El servidor local quedó detenido, los puertos 3419 y 55439 cerrados y el contenedor etiquetado eliminado con su tmpfs; [comprobación de limpieza](postgres-integration-evidence/cleanup.json). Se conservan worktree, commits, scripts y evidencia. No hubo push, merge, despliegue, migraciones remotas ni cambios de contenido de producción.
+
+
+## Cierre de integración local
+
+Integración local completada. Los cuatro commits revisados (`9bf7848`, `2e54036`, `6de1d58` y `65f5f14`) se incorporaron mediante fast-forward a `main`, en `/home/nico/worktrees/myckeo-public-main-integration-20261125`, con HEAD `65f5f14c4f9f0abfa9f48cd58cec0759f1334b2d` al completar la integración funcional. El árbol quedó limpio e idéntico al candidato validado. El trabajo original se conservó íntegro: 2740 archivos, rama, HEAD y estado Git pendientes sin modificaciones.
+
+No fueron necesarias correcciones adicionales ni nuevas ejecuciones funcionales. Se reutilizó la evidencia PostgreSQL, navegador, unitarias, tipos, lint y build. Durante esa integración no hubo push, merge remoto, despliegue ni escrituras remotas.
+
+`main` local estaba en `62f7aba98c96f65a9bbc7d28017eccfa9eaf01e9`, ancestro de la base validada; el remoto seguía en `3c8e51d03076d9158991abbd8d4d1d20f62b107c`. El fast-forward conservó esos avances conocidos y añadió los cuatro commits revisados, sin conflictos. Se comprobaron la inclusión de los commits, la igualdad de árboles y la ausencia de cambios inesperados. No se trasladó el resto del trabajo pendiente de la rama de origen.
+
+Las afirmaciones «No se modificó main local» y «No hubo merge» de las fases anteriores se conservan como antecedentes de aquellas fases; no describen este cierre posterior. La revisión técnica del asistente no se presenta como una aprobación humana.
+
+Se mantiene la limitación del cursor eliminado: borrar la fila que sostiene el cursor puede omitir candidatos al continuar; un recorrido nuevo sin cursor ni IDs vistos recupera los elegibles. No se promete una instantánea frente a todas las modificaciones concurrentes. Continúan diferidos la revisión individual de contenido persistido, los estados 404 de fichas, el acceso de propietarios y la ilustración 404 heredada.
+
+El SHA anterior identifica el momento de la integración funcional. Un commit exclusivamente documental posterior tendrá otro SHA y conservará el código, dependencias, esquema y configuración validados. Esta integración local por sí sola no acredita una publicación: el push, el despliegue y su comprobación efectiva deben registrarse como actuaciones posteriores.
