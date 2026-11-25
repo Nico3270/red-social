@@ -1,6 +1,6 @@
 # Prototipo de jerarquía del feed de escritorio — 25/11/2026
 
-**Estado actual: dirección visual aprobada y ajuste de cabecera validado en local; integración/publicación pendientes de confirmar en el anexo final.**
+**Estado actual: integrado y publicado; comprobación pública aprobada.** La versión funcional `569daa154030976cee971bdfb94cd7b652bcd802` está verificada en Production. Este cierre documental conserva exactamente el mismo código de aplicación. El anexo final distingue esta publicación de las evidencias históricas del prototipo.
 
 Antecedente del prototipo revisado: propuesta local revisable; en aquella fase **sin integración en main, push ni despliegue**. Worktree `/home/nico/worktrees/myckeo-desktop-feed-20261125`, rama `prototype/desktop-feed-20261125`, base `058d13329ba6a81414e140a33d08cb50475d009b`.
 
@@ -123,4 +123,32 @@ Antes de integrar, main local y origin/main confirmados en `058d13329ba6a81414e1
 
 **Build final aprobado**, 74 páginas: [salida](desktop-feed-header-evidence/build.txt). PostgreSQL 16.16/Prisma 6.18.0, 12 negocios y 3 productos sintéticos únicamente para generación de páginas. No hay ruta temporal en el manifiesto final. Recursos temporales retirados y puertos cerrados: [limpieza](desktop-feed-header-evidence/cleanup.json). Original conservado: [comparación de 2834 archivos y estado Git](desktop-feed-header-evidence/original-preservation.json).
 
-El cierre de integración y publicación se documentará al comprobar el resultado efectivo. Los pendientes históricos (Public smoke por entorno, contenido persistido, 404/ilustración y staging separado) no se presentan como pruebas aprobadas ni se corrigen en este lote.
+### Integración y publicación funcional completadas
+
+Se integraron mediante **fast-forward** los commits `2d292f1bedb82cd55ba09990564b1bd5c36eeeb4` (prototipo aprobado) y `569daa154030976cee971bdfb94cd7b652bcd802` (cabecera fija) sobre main en `/home/nico/worktrees/myckeo-public-main-integration-20261125`, partiendo de 058d133. Árbol limpio e idéntico a la versión validada. Se actualizó origin/main justo antes del push; sin avances ajenos ni conflictos. Push normal del SHA funcional exacto, sin force.
+
+Vercel construyó desde **Git/main**, con su configuración existente y datos reales; no se subió el build local ni sus fixtures. Deployment funcional **dpl_BNL83P5HB2Ed3Wnkvgso9mMdJaZt**, Production **READY**, commit 569daa1 completo, alias myckeo.com y www.myckeo.com confirmados individualmente. [Inspección](https://vercel.com/nico-rodriguezs-projects-63a84b64/red-social/BNL83P5HB2Ed3Wnkvgso9mMdJaZt) · [registro](desktop-feed-header-evidence/production-deployment.json). El commit documental posterior transporta únicamente este informe/evidencia; no altera el árbol de aplicación validado.
+
+### Comprobación pública con fotos y textos existentes
+
+Resultado **aprobado** en 1440, 1920 y 390 px sobre https://myckeo.com, con navegador real, sin interceptar datos del feed ni simular sesión. [Resultado y medidas](desktop-feed-header-evidence/production-results.json).
+
+- Escritorio: fila superior de 72 px fija al inicio y tras scroll; categorías/pestañas fluyen. Principal/lateral y medios acotados con imágenes reales. Sin desbordamientos. Los tres controles de viewport conservaron sus dimensiones esperadas.
+- En 1440 se observaron cinco cargas incrementales: **33→59→79→99→111→121** elementos, sin IDs duplicados; se comprobaron los límites verticales de los tramos visibles. No se agotó el inventario completo ni se certifica completitud del catálogo real con este recorrido breve. La completitud bajo datos fijos continúa respaldada por la validación aislada previa.
+- Cambio real a Bogotá desde la cabecera fija: 32 elementos del recorrido nuevo, sin IDs de las páginas anteriores en ese conjunto observado; solicitudes con ciudad nueva y orden de tramos verificado. La ampliación sigue disponible y no se considera error que haya resultados de otras ciudades.
+- Búsqueda real de salchipapa: dos resultados. Diálogo comercial abierto/cerrado sin enviar compra; enlaces comerciales/WhatsApp inspeccionados, sin prefijo duplicado. Tengo un negocio abrió el registro de negocio existente, sin enviar el formulario.
+- Móvil: fila precio/WhatsApp/carrito y distintivo sobre avatar conservados. Sin desbordamiento nuevo.
+- **Cero errores de página, cero respuestas HTTP fallidas** durante el recorrido. Se permitieron únicamente las cuatro Server Actions de lectura y GET/HEAD; no se enviaron cuentas, pedidos, mensajes ni otras mutaciones. 28 solicitudes de lectura registradas; no se usan sus indicadores de cursor para contar continuaciones (véase nota de serialización en el JSON).
+- Logs de runtime del deployment funcional: consulta de errores/fatales Production, últimos diez minutos, agrupada por ruta, **sin grupos de errores**. Build remoto correcto, 87 páginas reales; generación Prisma y Next build existentes, sin migraciones/seeds remotos. No se detectó regresión grave atribuible; **no hubo rollback** y la referencia anterior permanece registrada.
+
+Capturas de **producción**, diferentes de las sintéticas anteriores:
+
+| Ancho | Inicio | Después del scroll |
+|---|---|---|
+| 1440 | [Captura](desktop-feed-header-evidence/production-1440-top.png) | [Captura](desktop-feed-header-evidence/production-1440-scroll.png) |
+| 1920 | [Captura](desktop-feed-header-evidence/production-1920-top.png) | [Captura](desktop-feed-header-evidence/production-1920-scroll.png) |
+| 390 | [Captura](desktop-feed-header-evidence/production-390-top.png) | [Captura](desktop-feed-header-evidence/production-390-scroll.png) |
+
+Public smoke volvió a fallar en **Validate smoke environment** en el run GitHub `45697577760`; Generate smoke fixtures y Run smoke suite quedaron omitidos. No se presenta como aprobado, no se alteraron secretos y no bloquea una revisión obligatoria configurada (no hay protección/rulesets obligatorios). No se modificó el proyecto separado de staging. El texto persistido de prueba reaparece en una publicación real de las capturas: es DATA-01 histórico, no una regresión de composición ni motivo para borrar contenido o revertir.
+
+Permanece el límite del cursor eliminado, las estimaciones de altura y las demás limitaciones documentadas. El original conserva sus 2834 archivos, HEAD y estado Git; no se modificaron datos de producción, esquema, infraestructura ni dependencias. Recursos temporales propios retirados. La actualización documental posterior no requiere repetir pruebas funcionales de código idéntico; se verifica su deployment/SHA/dominios efectivos al cerrar la entrega. Los pendientes históricos (Public smoke por entorno, contenido persistido, 404/ilustración y staging separado) no se presentan como pruebas aprobadas ni se corrigen en este lote.

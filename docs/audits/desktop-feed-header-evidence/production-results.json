@@ -1,0 +1,711 @@
+{
+  "checks": [
+    {
+      "width": 1440,
+      "before": {
+        "rowTop": 0,
+        "rowHeight": 72,
+        "y": 0,
+        "overflow": false,
+        "tiers": [
+          {
+            "tier": 0,
+            "top": 247,
+            "bottom": 5643.5,
+            "ids": [
+              "publication-cmd8abuph000443wfzt9txx2e",
+              "publication-cmf1vtl2l000043hsthjz3ep6",
+              "publication-cmhslo4up000243cl2hvcl8g7",
+              "publication-cmd803gku000643ldvt829p32",
+              "publication-cmft41ko80000l404g83uz2oq",
+              "publication-cmf1ydjgp000h43hsci8m5p55",
+              "publication-cmcy9nj7m000543e7ou96o0pf",
+              "publication-cmeumpcxx000143elvzbvboxy",
+              "publication-cmf1w0mt9000543hss56x55b7",
+              "publication-cmd50isao000143kz3xyliykn",
+              "service-484de355-eaf5-4698-b491-5e982787347e",
+              "service-99e0c4aa-ee7e-4632-9f48-8ca6e16d164d",
+              "service-0b213f9c-095d-4800-8552-07a008d30e16",
+              "business-9c43d4bf-7185-48d3-9c7a-70ce79aa82ad",
+              "business-df781d8a-26ac-4fff-92dc-3297ae9fd67f",
+              "business-c3c4b604-9d83-47ce-8690-30b555bacff1",
+              "business-9790c152-383e-4bc2-9ab1-7c268c5b4b70",
+              "business-f2a00461-bfb5-40d4-8d8e-d51281902152",
+              "business-82688f03-866c-476f-b8b8-c7653161101e",
+              "business-696ee6ca-d4cb-444b-b423-dce95cefdce3",
+              "product-63cdfdd0-a5cf-4da7-932b-1bbb874615f6",
+              "product-45acac87-83a0-45d8-937c-5993d7027f71",
+              "product-fcea4193-4e78-49bc-988e-5ba411deaca2",
+              "product-7e09bebd-af35-424f-9a13-e33d1862f42c",
+              "product-e52cec36-50f8-4285-9515-76b0b53cf929",
+              "product-5ee0be8d-ed2c-4f90-9afc-628c8c796e28",
+              "product-31b18ab8-264d-48e0-a4a0-0385ed990eeb",
+              "product-77d14ce8-363e-4816-9484-ed7c6456f98b",
+              "product-78a153ef-7fe0-4e27-a0c0-5b5fe5bf0a0c",
+              "product-6670a118-4714-43cd-9afb-4a0c6bd9f5d4",
+              "business-5506619e-3b3a-4e87-adb4-325396a98c26",
+              "business-738e54a1-b8f5-4813-a960-e2a663127604",
+              "business-84712cc3-5d0f-41dc-b660-353baff57e78"
+            ]
+          }
+        ]
+      },
+      "after": {
+        "rowTop": 0,
+        "rowHeight": 72,
+        "y": 950,
+        "overflow": false,
+        "tiers": [
+          {
+            "tier": 0,
+            "top": -703,
+            "bottom": 4693.5,
+            "ids": [
+              "publication-cmd8abuph000443wfzt9txx2e",
+              "publication-cmf1vtl2l000043hsthjz3ep6",
+              "publication-cmhslo4up000243cl2hvcl8g7",
+              "publication-cmd803gku000643ldvt829p32",
+              "publication-cmft41ko80000l404g83uz2oq",
+              "publication-cmf1ydjgp000h43hsci8m5p55",
+              "publication-cmcy9nj7m000543e7ou96o0pf",
+              "publication-cmeumpcxx000143elvzbvboxy",
+              "publication-cmf1w0mt9000543hss56x55b7",
+              "publication-cmd50isao000143kz3xyliykn",
+              "service-484de355-eaf5-4698-b491-5e982787347e",
+              "service-99e0c4aa-ee7e-4632-9f48-8ca6e16d164d",
+              "service-0b213f9c-095d-4800-8552-07a008d30e16",
+              "business-9c43d4bf-7185-48d3-9c7a-70ce79aa82ad",
+              "business-df781d8a-26ac-4fff-92dc-3297ae9fd67f",
+              "business-c3c4b604-9d83-47ce-8690-30b555bacff1",
+              "business-9790c152-383e-4bc2-9ab1-7c268c5b4b70",
+              "business-f2a00461-bfb5-40d4-8d8e-d51281902152",
+              "business-82688f03-866c-476f-b8b8-c7653161101e",
+              "business-696ee6ca-d4cb-444b-b423-dce95cefdce3",
+              "product-63cdfdd0-a5cf-4da7-932b-1bbb874615f6",
+              "product-45acac87-83a0-45d8-937c-5993d7027f71",
+              "product-fcea4193-4e78-49bc-988e-5ba411deaca2",
+              "product-7e09bebd-af35-424f-9a13-e33d1862f42c",
+              "product-e52cec36-50f8-4285-9515-76b0b53cf929",
+              "product-5ee0be8d-ed2c-4f90-9afc-628c8c796e28",
+              "product-31b18ab8-264d-48e0-a4a0-0385ed990eeb",
+              "product-77d14ce8-363e-4816-9484-ed7c6456f98b",
+              "product-78a153ef-7fe0-4e27-a0c0-5b5fe5bf0a0c",
+              "product-6670a118-4714-43cd-9afb-4a0c6bd9f5d4",
+              "business-5506619e-3b3a-4e87-adb4-325396a98c26",
+              "business-738e54a1-b8f5-4813-a960-e2a663127604",
+              "business-84712cc3-5d0f-41dc-b660-353baff57e78"
+            ]
+          }
+        ]
+      },
+      "whatsapp": [
+        "https://wa.me/573182293083?text=%C2%A1Hola!%20Vi%20en%20Myckeo%20el%20servicio%20*Entregas%20express%20*%20y%20quiero%20m%C3%A1s%20informaci%C3%B3n.",
+        "https://wa.me/573182293083?text=%C2%A1Hola!%20Vi%20en%20Myckeo%20el%20servicio%20*Entrega%20a%20domicilio*%20y%20quiero%20m%C3%A1s%20informaci%C3%B3n.",
+        "https://wa.me/573182293083?text=%C2%A1Hola!%20Vi%20en%20Myckeo%20el%20servicio%20*Servicio%20de%20parrilla%20y%20barril*%20y%20quiero%20m%C3%A1s%20informaci%C3%B3n.",
+        "https://wa.me/573182293089?text=%C2%A1Hola!%20Estoy%20explorando%20negocios%20en%20Myckeo%20y%20me%20interes%C3%B3%20*Carmen%20Moda%20Urbana*.%0A%0AVer%20perfil%3A%20%2Fperfil%2Fcarmen-moda-urbana-tunja-57eb",
+        "https://wa.me/573148529639?text=%C2%A1Hola!%20Estoy%20explorando%20negocios%20en%20Myckeo%20y%20me%20interes%C3%B3%20*LUMINA%20Beauty*.%0A%0AVer%20perfil%3A%20%2Fperfil%2Flumina-beauty-tunja-83sa",
+        "https://wa.me/573182293090?text=%C2%A1Hola!%20Estoy%20explorando%20negocios%20en%20Myckeo%20y%20me%20interes%C3%B3%20*NovaBloom*.%0A%0AVer%20perfil%3A%20%2Fperfil%2Fnovabloom-tunja-co6w",
+        "https://wa.me/573148596327?text=%C2%A1Hola!%20Estoy%20explorando%20negocios%20en%20Myckeo%20y%20me%20interes%C3%B3%20*NovaThread*.%0A%0AVer%20perfil%3A%20%2Fperfil%2Fnovathread-tunja-q256",
+        "https://wa.me/573182293094?text=%C2%A1Hola!%20Estoy%20explorando%20negocios%20en%20Myckeo%20y%20me%20interes%C3%B3%20*Artesan%C3%ADas%20Do%C3%B1a%20Marta*.%0A%0AVer%20perfil%3A%20%2Fperfil%2Fartesanias-dona-marta",
+        "https://wa.me/573182293087?text=%C2%A1Hola!%20Estoy%20explorando%20negocios%20en%20Myckeo%20y%20me%20interes%C3%B3%20*Zapater%C3%ADa%20don%20Jorge*.%0A%0AVer%20perfil%3A%20%2Fperfil%2Fzapateria-don-jorge-tunja-tzj2",
+        "https://wa.me/573182293081?text=%C2%A1Hola!%20Estoy%20explorando%20negocios%20en%20Myckeo%20y%20me%20interes%C3%B3%20*Andrea%20Beauty%20Studio*.%0A%0AVer%20perfil%3A%20%2Fperfil%2Fandrea-beauty-studio-tunja-18ds",
+        "https://wa.me/573182293083?text=%C2%A1Hola!%20Estoy%20interesado%20en%20el%20siguiente%20producto%3A%0A%0A*Salchipapas%20premium*%0APrecio%20desde%3A%20%24%C2%A025.000%0A%0AVeo%20que%20tiene%20opciones%20o%20variantes%2C%20me%20gustar%C3%ADa%20m%C3%A1s%20informaci%C3%B3n.%0A%0APuedes%20ver%20m%C3%A1s%20detalles%20aqu%C3%AD%3A%20https%3A%2F%2Fmyckeo.com%2Fproducto%2Fsalchipapas-premium-zyuv",
+        "https://wa.me/573182293083?text=%C2%A1Hola!%20Estoy%20interesado%20en%20el%20siguiente%20producto%3A%0A%0A*Mojarra%20Frita*%0APrecio%3A%20%24%C2%A035.000%0A%0APuedes%20ver%20m%C3%A1s%20detalles%20aqu%C3%AD%3A%20https%3A%2F%2Fmyckeo.com%2Fproducto%2Fmojarra-frita-qtt6",
+        "https://wa.me/573182293087?text=%C2%A1Hola!%20Estoy%20interesado%20en%20el%20siguiente%20producto%3A%0A%0A*Bot%C3%ADn%20Vers%C3%A1til%20Aventura*%0APrecio%3A%20%24%C2%A0175.000%0A%0APuedes%20ver%20m%C3%A1s%20detalles%20aqu%C3%AD%3A%20https%3A%2F%2Fmyckeo.com%2Fproducto%2Fbotin-versatil-aventura-cxji",
+        "https://wa.me/573148596327?text=%C2%A1Hola!%20Estoy%20interesado%20en%20el%20siguiente%20producto%3A%0A%0A*Elegance%20Blazer*%0APrecio%3A%20%24%C2%A0185.000%0A%0APuedes%20ver%20m%C3%A1s%20detalles%20aqu%C3%AD%3A%20https%3A%2F%2Fmyckeo.com%2Fproducto%2Felegance-blazer-2j9u",
+        "https://wa.me/573182293087?text=%C2%A1Hola!%20Estoy%20interesado%20en%20el%20siguiente%20producto%3A%0A%0A*Sandalia%20Elegante%20Verano*%0APrecio%3A%20%24%C2%A095.000%0A%0APuedes%20ver%20m%C3%A1s%20detalles%20aqu%C3%AD%3A%20https%3A%2F%2Fmyckeo.com%2Fproducto%2Fsandalia-elegante-verano-1qo0",
+        "https://wa.me/573182293083?text=%C2%A1Hola!%20Estoy%20interesado%20en%20el%20siguiente%20producto%3A%0A%0A*Cheesecake%20de%20Ar%C3%A1ndanos*%0APrecio%3A%20%24%C2%A023.000%0A%0APuedes%20ver%20m%C3%A1s%20detalles%20aqu%C3%AD%3A%20https%3A%2F%2Fmyckeo.com%2Fproducto%2Fcheesecake-de-arandanos-bq1o",
+        "https://wa.me/573182293083?text=%C2%A1Hola!%20Estoy%20interesado%20en%20el%20siguiente%20producto%3A%0A%0A*Pulpo%20a%20la%20Parrilla*%0APrecio%3A%20%24%C2%A058.000%0A%0APuedes%20ver%20m%C3%A1s%20detalles%20aqu%C3%AD%3A%20https%3A%2F%2Fmyckeo.com%2Fproducto%2Fpulpo-a-la-parrilla-qwxs",
+        "https://wa.me/573182293083?text=%C2%A1Hola!%20Estoy%20interesado%20en%20el%20siguiente%20producto%3A%0A%0A*Bandeja%20Paisa*%0APrecio%3A%20%24%C2%A017.000%0A%0APuedes%20ver%20m%C3%A1s%20detalles%20aqu%C3%AD%3A%20https%3A%2F%2Fmyckeo.com%2Fproducto%2Fbandeja-paisa-8j6g",
+        "https://wa.me/573182293083?text=%C2%A1Hola!%20Estoy%20interesado%20en%20el%20siguiente%20producto%3A%0A%0A*Bandeja%20de%20carnes%20mixta%20especial%201*%0APrecio%3A%20%24%C2%A038.000%0A%0APuedes%20ver%20m%C3%A1s%20detalles%20aqu%C3%AD%3A%20https%3A%2F%2Fmyckeo.com%2Fproducto%2Fbandeja-de-carnes-mixta-s5rj",
+        "https://wa.me/573182293083?text=%C2%A1Hola!%20Estoy%20interesado%20en%20el%20siguiente%20producto%3A%0A%0A*Chuleta%20de%20pollo%20apanada*%0APrecio%3A%20%24%C2%A035.000%0A%0APuedes%20ver%20m%C3%A1s%20detalles%20aqu%C3%AD%3A%20https%3A%2F%2Fmyckeo.com%2Fproducto%2Fchuleta-de-pollo-apanada-i98c",
+        "https://wa.me/573182293083?text=%C2%A1Hola!%20Estoy%20explorando%20negocios%20en%20Myckeo%20y%20me%20interes%C3%B3%20*Pariila%20Internacional%20Tunja*.%0A%0AVer%20perfil%3A%20%2Fperfil%2Fparrilla-internacional-tunja-tunja-r3jq",
+        "https://wa.me/573182293085?text=%C2%A1Hola!%20Estoy%20explorando%20negocios%20en%20Myckeo%20y%20me%20interes%C3%B3%20*PulseSip*.%0A%0AVer%20perfil%3A%20%2Fperfil%2Fpulsesip-tunja-iox5",
+        "https://wa.me/573182293088?text=%C2%A1Hola!%20Estoy%20explorando%20negocios%20en%20Myckeo%20y%20me%20interes%C3%B3%20*BlitzBite*.%0A%0AVer%20perfil%3A%20%2Fperfil%2Fblitzbite-tunja-llfb"
+      ],
+      "pages": [
+        {
+          "before": 33,
+          "after": 59
+        },
+        {
+          "before": 59,
+          "after": 79
+        },
+        {
+          "before": 79,
+          "after": 99
+        },
+        {
+          "before": 99,
+          "after": 111
+        },
+        {
+          "before": 111,
+          "after": 121
+        }
+      ],
+      "idsBeforeCity": [
+        "publication-cmd8abuph000443wfzt9txx2e",
+        "publication-cmf1vtl2l000043hsthjz3ep6",
+        "publication-cmhslo4up000243cl2hvcl8g7",
+        "publication-cmd803gku000643ldvt829p32",
+        "publication-cmft41ko80000l404g83uz2oq",
+        "publication-cmf1ydjgp000h43hsci8m5p55",
+        "publication-cmcy9nj7m000543e7ou96o0pf",
+        "publication-cmeumpcxx000143elvzbvboxy",
+        "publication-cmf1w0mt9000543hss56x55b7",
+        "publication-cmd50isao000143kz3xyliykn",
+        "service-484de355-eaf5-4698-b491-5e982787347e",
+        "service-99e0c4aa-ee7e-4632-9f48-8ca6e16d164d",
+        "service-0b213f9c-095d-4800-8552-07a008d30e16",
+        "business-9c43d4bf-7185-48d3-9c7a-70ce79aa82ad",
+        "business-df781d8a-26ac-4fff-92dc-3297ae9fd67f",
+        "business-c3c4b604-9d83-47ce-8690-30b555bacff1",
+        "business-9790c152-383e-4bc2-9ab1-7c268c5b4b70",
+        "business-f2a00461-bfb5-40d4-8d8e-d51281902152",
+        "business-82688f03-866c-476f-b8b8-c7653161101e",
+        "business-696ee6ca-d4cb-444b-b423-dce95cefdce3",
+        "publication-cmf1wm4py000643hsb5j4zf4l",
+        "publication-cmfow406i0001jo04gslzlcnb",
+        "publication-cmf1xdu3n000c43hsjn31bsn5",
+        "publication-cmdqh89ya000043oasyllf15q",
+        "publication-cmd7zxhz6000243ldumsgvdc6",
+        "publication-cmcy98gai000143e7wawpohzd",
+        "publication-cmevxcddn0001436a89m4qpeu",
+        "publication-cmexb6cnd000143pw5s3j4e77",
+        "publication-cmexctx5w000d43pwckv005tb",
+        "publication-cmeumt0uv000543elrdg1py7c",
+        "business-728b0157-7f0d-465a-a5ee-5f5b596c3c68",
+        "business-f431ed07-b51b-4611-9c16-f3f8fc15d32c",
+        "business-607615cb-8520-480a-b161-85d3c4afdc2f",
+        "business-ce5c25de-460e-4735-9a2d-c389f498651f",
+        "publication-cmga1qf3t000143or68yyssiz",
+        "publication-cmcxve992000143o5twq8ewi0",
+        "publication-cmfgfk23z0001jv04ba9epgb6",
+        "publication-cmd807hpp000943ldr4qud5az",
+        "publication-cmdsj2dpj001u43qaipiq8cxn",
+        "publication-cmga1sipx000f43or691h0bt0",
+        "publication-cmga1rred000b43orhjfl61hh",
+        "publication-cmexdrml7000j43pwcfazfi30",
+        "publication-cmd70d6lv000i43an4d9oprm0",
+        "publication-cmfovzjjk0000jo04s051ezwq",
+        "product-f849739f-593d-4c13-86e3-d2072b929cd4",
+        "publication-cmexdzw87000k43pw2hxwrrrh",
+        "publication-cmd7zhhr9000043lder2gtpy6",
+        "publication-cmg8xpm16000143n02v9qeaty",
+        "publication-cmfoxuqu10002lb0445nrbcls",
+        "publication-cmfoyz07t0000l804m8d6uqgc",
+        "publication-cmfovuzuf0000l504lor81iw0",
+        "publication-cmfoxr60j0001lb04vp36yxho",
+        "publication-cmga4f9zn000j43orzy81o6bm",
+        "publication-cmexcrtr9000743pwdc9g3b95",
+        "publication-cmfoxmpac0000lb04f4fch9w3",
+        "publication-cmga1r21w000743or4x824nsf",
+        "publication-cmfoyuo730001l204icckjtw5",
+        "product-300026f8-44cf-4778-b966-32dfce16a37c",
+        "product-fa068e0b-9d04-4793-a608-9a235845b67b",
+        "product-b4d2ff4e-b915-4448-9228-a5219b424588",
+        "product-8b0e8e82-4857-42b2-bc45-ca3c644636d2",
+        "product-f7aebcc4-f629-4530-a906-4b6813dc3b84",
+        "product-7c1d3324-8d5c-4889-b932-2ab03a5ff92e",
+        "product-31d79c20-0489-4d1a-9ebf-8e0d106ae75e",
+        "product-4c982d6e-7be0-4aca-ae4b-230234608fb1",
+        "product-9644fa9c-2aed-427c-a604-96f5ed3d0d5e",
+        "product-15e50602-9be7-4667-903e-62a5270c956b",
+        "product-f9cc411f-4b02-42c7-aa67-ba5ecc9805b3",
+        "product-e68e53f1-b8b5-4403-ad1b-8d7a196a84ca",
+        "product-63cdfdd0-a5cf-4da7-932b-1bbb874615f6",
+        "product-45acac87-83a0-45d8-937c-5993d7027f71",
+        "product-fcea4193-4e78-49bc-988e-5ba411deaca2",
+        "product-7e09bebd-af35-424f-9a13-e33d1862f42c",
+        "product-e52cec36-50f8-4285-9515-76b0b53cf929",
+        "product-5ee0be8d-ed2c-4f90-9afc-628c8c796e28",
+        "product-31b18ab8-264d-48e0-a4a0-0385ed990eeb",
+        "product-77d14ce8-363e-4816-9484-ed7c6456f98b",
+        "product-78a153ef-7fe0-4e27-a0c0-5b5fe5bf0a0c",
+        "product-6670a118-4714-43cd-9afb-4a0c6bd9f5d4",
+        "business-5506619e-3b3a-4e87-adb4-325396a98c26",
+        "business-738e54a1-b8f5-4813-a960-e2a663127604",
+        "business-84712cc3-5d0f-41dc-b660-353baff57e78",
+        "product-5cff00c8-1f14-4f34-aac2-cb813fc49543",
+        "product-1d373a1d-b030-4828-9aab-7d90327d399f",
+        "product-b23b070e-89d4-4caf-92af-2959335edfca",
+        "product-6384b64c-821c-41ce-aea9-6c22a29e1b2a",
+        "product-7a8a0204-d003-48f6-8d79-4bb86e2cc278",
+        "product-b424debe-3737-48b5-8a4f-0a85cf69b3d1",
+        "product-1585bd90-4879-4ed9-a033-4a9e675eab7a",
+        "product-9182bb6a-6ba5-4297-865c-0c1d56f25545",
+        "product-c1da45c9-7639-4821-b6ea-b530c202296b",
+        "product-4101604b-3c32-4db0-bcaf-0c8a1be3fbed",
+        "business-fac99465-d2de-4a3b-8126-005ec1856c23",
+        "business-e52a2875-5e94-4bd6-b7f9-6323631591bb",
+        "product-40dc41e6-c33f-4d9d-bd66-36d86f73ca13",
+        "product-f81bd11c-92d0-4e6e-864a-5689ac97688d",
+        "product-1be892ce-b916-4f09-b727-78613ecb1357",
+        "product-ff2c2e4f-46a4-41a2-a523-35ea6cc9e467",
+        "product-43cbdf39-2c15-41b7-a733-5945d04c4615",
+        "product-7c167009-2995-4fa5-8bb7-5004d1eadea5",
+        "product-0b63c954-dad2-4b6f-82a8-d6172c4e61b7",
+        "product-574feb66-82de-41a4-bd15-dad119842106",
+        "product-7c3278f7-0d43-4174-913e-20d10a2627cb",
+        "product-6286319b-dfd7-4b66-bc0d-098f63ca0da5",
+        "product-3ee8b3db-d1e0-4afa-8c46-648af90a854e",
+        "product-e2d157df-57ab-4ff0-ba7d-843abd8ef655",
+        "product-1e21f011-7e70-4cf8-a24e-45938f4743e6",
+        "product-4e8f05b6-03aa-4747-9468-fa2304b137d7",
+        "product-27f961ad-79d4-43a9-af13-f3a5b52511b9",
+        "product-7e9d87b4-2540-4452-b752-ff4587d14fa0",
+        "product-18411fd4-6b74-4ad0-8be7-6a075d9d15f8",
+        "product-a31ffa31-0e17-4fff-9587-831c5fd17082",
+        "product-db6659d8-0fff-4b71-81b1-52f1dfdf9549",
+        "product-280e23e3-193b-4544-af87-dc81e08d42db",
+        "product-b648007d-6a97-4f36-b1d6-42ce3287c64f",
+        "product-de9d0fd9-7146-4811-b41f-b6370327ff4c",
+        "product-978bc03c-641c-4f71-8feb-0b1a56684d91",
+        "product-42423bac-3ea0-45c7-a248-95d099948092",
+        "product-b9584ed0-9aee-463d-ad45-a3a408f182ca",
+        "product-eb7bce2a-3cf4-42b9-a35e-c6a2522f1b98",
+        "product-3512a40d-af03-431a-b0b8-472c8c3709bb"
+      ],
+      "afterCity": {
+        "rowTop": 0,
+        "rowHeight": 72,
+        "y": 403,
+        "overflow": false,
+        "tiers": [
+          {
+            "tier": 0,
+            "top": -156,
+            "bottom": 467.875,
+            "ids": [
+              "publication-cmd395w0p000143fk1uny84mi",
+              "business-045be979-b540-4275-b905-4d6d83a4a0b2",
+              "business-31b91353-cc6f-495f-b830-c9595819acb4",
+              "product-2d9a057b-c7b1-47a6-aca4-82e8db7bac43"
+            ]
+          },
+          {
+            "tier": 1,
+            "top": 499.875,
+            "bottom": 891.5,
+            "ids": [
+              "business-c44382cb-d41d-4b67-ad33-02ee7731f160"
+            ]
+          },
+          {
+            "tier": 2,
+            "top": 923.5,
+            "bottom": 4676.59375,
+            "ids": [
+              "publication-cmiko5t7y0000l704yb50kglt",
+              "publication-cmexjdjv9000v43pwlcvzlb3b",
+              "business-c1890372-6af1-48b0-95da-aa6115db9e6e",
+              "product-6a74045d-3de8-42a2-ad17-b392f88b0d27",
+              "business-00593aa0-8574-43e5-9fe6-60df0d449e5d",
+              "product-aaea32dc-3ff6-4690-a396-570a10324e29",
+              "business-be8dee19-a738-47c5-92cb-812ed8faf5e9",
+              "business-526829c2-03e8-49a0-a0fc-5c8f93246112",
+              "product-f3ed8fd2-2d31-4d53-9d7c-68389a32657e",
+              "product-c21cb739-c0c0-458e-b048-e225e75dc9ab",
+              "product-a02cc0f5-a553-40fe-8804-9a4dc38e7492",
+              "product-8b8a0ff5-e48f-4885-a445-8c3ee03b4c05",
+              "product-8496b72c-7479-43f0-843d-7598a6faac44",
+              "product-f525ac42-ae2f-4db5-897e-c55fb5a1e371",
+              "product-97da2a37-ff8e-4aa4-87a2-cd9084e7e1f1",
+              "product-e3f407f1-793f-4ade-8bb7-9f0dda02e3ae",
+              "product-8b93aa02-0907-4b5e-be69-b91e6c0cba05",
+              "product-2b227431-af7e-4b39-a8f2-aa6af2bcd3df",
+              "product-03913f70-99fb-4763-b235-3853e0d0e7ad",
+              "business-19e16611-e2ef-41eb-a51e-30f82cb2db62",
+              "product-e404847b-e1ca-4b07-b989-565e2310d961",
+              "business-1cc70c80-afe6-4f63-97fd-e99e75e08d76",
+              "product-3994eab2-4adc-4d0b-8dae-0773f03d5873",
+              "product-69c96c48-2155-422f-a6c1-21e2d3c408ce",
+              "product-6acff2bf-c4e4-48d6-8862-d89473a632e6",
+              "product-64d10104-fd72-47c4-b7f3-566f071e333e",
+              "product-454a76ca-78ce-4758-b722-eebfec835e48"
+            ]
+          }
+        ]
+      },
+      "idsAfterCity": [
+        "publication-cmd395w0p000143fk1uny84mi",
+        "business-045be979-b540-4275-b905-4d6d83a4a0b2",
+        "business-31b91353-cc6f-495f-b830-c9595819acb4",
+        "product-2d9a057b-c7b1-47a6-aca4-82e8db7bac43",
+        "business-c44382cb-d41d-4b67-ad33-02ee7731f160",
+        "publication-cmiko5t7y0000l704yb50kglt",
+        "publication-cmexjdjv9000v43pwlcvzlb3b",
+        "business-c1890372-6af1-48b0-95da-aa6115db9e6e",
+        "product-6a74045d-3de8-42a2-ad17-b392f88b0d27",
+        "business-00593aa0-8574-43e5-9fe6-60df0d449e5d",
+        "product-aaea32dc-3ff6-4690-a396-570a10324e29",
+        "business-be8dee19-a738-47c5-92cb-812ed8faf5e9",
+        "business-526829c2-03e8-49a0-a0fc-5c8f93246112",
+        "product-f3ed8fd2-2d31-4d53-9d7c-68389a32657e",
+        "product-c21cb739-c0c0-458e-b048-e225e75dc9ab",
+        "product-a02cc0f5-a553-40fe-8804-9a4dc38e7492",
+        "product-8b8a0ff5-e48f-4885-a445-8c3ee03b4c05",
+        "product-8496b72c-7479-43f0-843d-7598a6faac44",
+        "product-f525ac42-ae2f-4db5-897e-c55fb5a1e371",
+        "product-97da2a37-ff8e-4aa4-87a2-cd9084e7e1f1",
+        "product-e3f407f1-793f-4ade-8bb7-9f0dda02e3ae",
+        "product-8b93aa02-0907-4b5e-be69-b91e6c0cba05",
+        "product-2b227431-af7e-4b39-a8f2-aa6af2bcd3df",
+        "product-03913f70-99fb-4763-b235-3853e0d0e7ad",
+        "business-19e16611-e2ef-41eb-a51e-30f82cb2db62",
+        "product-e404847b-e1ca-4b07-b989-565e2310d961",
+        "business-1cc70c80-afe6-4f63-97fd-e99e75e08d76",
+        "product-3994eab2-4adc-4d0b-8dae-0773f03d5873",
+        "product-69c96c48-2155-422f-a6c1-21e2d3c408ce",
+        "product-6acff2bf-c4e4-48d6-8862-d89473a632e6",
+        "product-64d10104-fd72-47c4-b7f3-566f071e333e",
+        "product-454a76ca-78ce-4758-b722-eebfec835e48"
+      ],
+      "searchResults": 2,
+      "searchText": [
+        "Salchipapa colombianoProductoSalchipapas premiumProducto"
+      ],
+      "productLinks": [
+        {
+          "text": "Vestidos Bogota",
+          "href": "/perfil/vestidos-bogota-bogota-1aog"
+        },
+        {
+          "text": "",
+          "href": "/producto/vestido-de-15-anos-mjdx"
+        },
+        {
+          "text": "Vestido de 15 años",
+          "href": "/producto/vestido-de-15-anos-mjdx"
+        },
+        {
+          "text": "",
+          "href": "https://wa.me/573124589685?text=%C2%A1Hola!%20Estoy%20interesado%20en%20el%20siguiente%20producto%3A%0A%0A*Vestido%20de%2015%20a%C3%B1os*%0APrecio%3A%20%24%C2%A0119.999%0A%0APuedes%20ver%20m%C3%A1s%20detalles%20aqu%C3%AD%3A%20https%3A%2F%2Fmyckeo.com%2Fproducto%2Fvestido-de-15-anos-mjdx"
+        }
+      ],
+      "cartDialog": true,
+      "businessEntry": true
+    },
+    {
+      "width": 1920,
+      "before": {
+        "rowTop": 0,
+        "rowHeight": 72,
+        "y": 0,
+        "overflow": false,
+        "tiers": [
+          {
+            "tier": 0,
+            "top": 247,
+            "bottom": 5643.5,
+            "ids": [
+              "publication-cmd8abuph000443wfzt9txx2e",
+              "publication-cmf1vtl2l000043hsthjz3ep6",
+              "publication-cmhslo4up000243cl2hvcl8g7",
+              "publication-cmd803gku000643ldvt829p32",
+              "publication-cmft41ko80000l404g83uz2oq",
+              "publication-cmf1ydjgp000h43hsci8m5p55",
+              "publication-cmcy9nj7m000543e7ou96o0pf",
+              "publication-cmeumpcxx000143elvzbvboxy",
+              "publication-cmf1w0mt9000543hss56x55b7",
+              "publication-cmd50isao000143kz3xyliykn",
+              "service-484de355-eaf5-4698-b491-5e982787347e",
+              "service-99e0c4aa-ee7e-4632-9f48-8ca6e16d164d",
+              "service-0b213f9c-095d-4800-8552-07a008d30e16",
+              "business-9c43d4bf-7185-48d3-9c7a-70ce79aa82ad",
+              "business-df781d8a-26ac-4fff-92dc-3297ae9fd67f",
+              "business-c3c4b604-9d83-47ce-8690-30b555bacff1",
+              "business-9790c152-383e-4bc2-9ab1-7c268c5b4b70",
+              "business-f2a00461-bfb5-40d4-8d8e-d51281902152",
+              "business-82688f03-866c-476f-b8b8-c7653161101e",
+              "business-696ee6ca-d4cb-444b-b423-dce95cefdce3",
+              "product-63cdfdd0-a5cf-4da7-932b-1bbb874615f6",
+              "product-45acac87-83a0-45d8-937c-5993d7027f71",
+              "product-fcea4193-4e78-49bc-988e-5ba411deaca2",
+              "product-7e09bebd-af35-424f-9a13-e33d1862f42c",
+              "product-e52cec36-50f8-4285-9515-76b0b53cf929",
+              "product-5ee0be8d-ed2c-4f90-9afc-628c8c796e28",
+              "product-31b18ab8-264d-48e0-a4a0-0385ed990eeb",
+              "product-77d14ce8-363e-4816-9484-ed7c6456f98b",
+              "product-78a153ef-7fe0-4e27-a0c0-5b5fe5bf0a0c",
+              "product-6670a118-4714-43cd-9afb-4a0c6bd9f5d4",
+              "business-5506619e-3b3a-4e87-adb4-325396a98c26",
+              "business-738e54a1-b8f5-4813-a960-e2a663127604",
+              "business-84712cc3-5d0f-41dc-b660-353baff57e78"
+            ]
+          }
+        ]
+      },
+      "after": {
+        "rowTop": 0,
+        "rowHeight": 72,
+        "y": 950,
+        "overflow": false,
+        "tiers": [
+          {
+            "tier": 0,
+            "top": -703,
+            "bottom": 4693.5,
+            "ids": [
+              "publication-cmd8abuph000443wfzt9txx2e",
+              "publication-cmf1vtl2l000043hsthjz3ep6",
+              "publication-cmhslo4up000243cl2hvcl8g7",
+              "publication-cmd803gku000643ldvt829p32",
+              "publication-cmft41ko80000l404g83uz2oq",
+              "publication-cmf1ydjgp000h43hsci8m5p55",
+              "publication-cmcy9nj7m000543e7ou96o0pf",
+              "publication-cmeumpcxx000143elvzbvboxy",
+              "publication-cmf1w0mt9000543hss56x55b7",
+              "publication-cmd50isao000143kz3xyliykn",
+              "service-484de355-eaf5-4698-b491-5e982787347e",
+              "service-99e0c4aa-ee7e-4632-9f48-8ca6e16d164d",
+              "service-0b213f9c-095d-4800-8552-07a008d30e16",
+              "business-9c43d4bf-7185-48d3-9c7a-70ce79aa82ad",
+              "business-df781d8a-26ac-4fff-92dc-3297ae9fd67f",
+              "business-c3c4b604-9d83-47ce-8690-30b555bacff1",
+              "business-9790c152-383e-4bc2-9ab1-7c268c5b4b70",
+              "business-f2a00461-bfb5-40d4-8d8e-d51281902152",
+              "business-82688f03-866c-476f-b8b8-c7653161101e",
+              "business-696ee6ca-d4cb-444b-b423-dce95cefdce3",
+              "product-63cdfdd0-a5cf-4da7-932b-1bbb874615f6",
+              "product-45acac87-83a0-45d8-937c-5993d7027f71",
+              "product-fcea4193-4e78-49bc-988e-5ba411deaca2",
+              "product-7e09bebd-af35-424f-9a13-e33d1862f42c",
+              "product-e52cec36-50f8-4285-9515-76b0b53cf929",
+              "product-5ee0be8d-ed2c-4f90-9afc-628c8c796e28",
+              "product-31b18ab8-264d-48e0-a4a0-0385ed990eeb",
+              "product-77d14ce8-363e-4816-9484-ed7c6456f98b",
+              "product-78a153ef-7fe0-4e27-a0c0-5b5fe5bf0a0c",
+              "product-6670a118-4714-43cd-9afb-4a0c6bd9f5d4",
+              "business-5506619e-3b3a-4e87-adb4-325396a98c26",
+              "business-738e54a1-b8f5-4813-a960-e2a663127604",
+              "business-84712cc3-5d0f-41dc-b660-353baff57e78"
+            ]
+          }
+        ]
+      },
+      "whatsapp": [
+        "https://wa.me/573182293083?text=%C2%A1Hola!%20Vi%20en%20Myckeo%20el%20servicio%20*Entregas%20express%20*%20y%20quiero%20m%C3%A1s%20informaci%C3%B3n.",
+        "https://wa.me/573182293083?text=%C2%A1Hola!%20Vi%20en%20Myckeo%20el%20servicio%20*Entrega%20a%20domicilio*%20y%20quiero%20m%C3%A1s%20informaci%C3%B3n.",
+        "https://wa.me/573182293083?text=%C2%A1Hola!%20Vi%20en%20Myckeo%20el%20servicio%20*Servicio%20de%20parrilla%20y%20barril*%20y%20quiero%20m%C3%A1s%20informaci%C3%B3n.",
+        "https://wa.me/573182293089?text=%C2%A1Hola!%20Estoy%20explorando%20negocios%20en%20Myckeo%20y%20me%20interes%C3%B3%20*Carmen%20Moda%20Urbana*.%0A%0AVer%20perfil%3A%20%2Fperfil%2Fcarmen-moda-urbana-tunja-57eb",
+        "https://wa.me/573148529639?text=%C2%A1Hola!%20Estoy%20explorando%20negocios%20en%20Myckeo%20y%20me%20interes%C3%B3%20*LUMINA%20Beauty*.%0A%0AVer%20perfil%3A%20%2Fperfil%2Flumina-beauty-tunja-83sa",
+        "https://wa.me/573182293090?text=%C2%A1Hola!%20Estoy%20explorando%20negocios%20en%20Myckeo%20y%20me%20interes%C3%B3%20*NovaBloom*.%0A%0AVer%20perfil%3A%20%2Fperfil%2Fnovabloom-tunja-co6w",
+        "https://wa.me/573148596327?text=%C2%A1Hola!%20Estoy%20explorando%20negocios%20en%20Myckeo%20y%20me%20interes%C3%B3%20*NovaThread*.%0A%0AVer%20perfil%3A%20%2Fperfil%2Fnovathread-tunja-q256",
+        "https://wa.me/573182293094?text=%C2%A1Hola!%20Estoy%20explorando%20negocios%20en%20Myckeo%20y%20me%20interes%C3%B3%20*Artesan%C3%ADas%20Do%C3%B1a%20Marta*.%0A%0AVer%20perfil%3A%20%2Fperfil%2Fartesanias-dona-marta",
+        "https://wa.me/573182293087?text=%C2%A1Hola!%20Estoy%20explorando%20negocios%20en%20Myckeo%20y%20me%20interes%C3%B3%20*Zapater%C3%ADa%20don%20Jorge*.%0A%0AVer%20perfil%3A%20%2Fperfil%2Fzapateria-don-jorge-tunja-tzj2",
+        "https://wa.me/573182293081?text=%C2%A1Hola!%20Estoy%20explorando%20negocios%20en%20Myckeo%20y%20me%20interes%C3%B3%20*Andrea%20Beauty%20Studio*.%0A%0AVer%20perfil%3A%20%2Fperfil%2Fandrea-beauty-studio-tunja-18ds",
+        "https://wa.me/573182293083?text=%C2%A1Hola!%20Estoy%20interesado%20en%20el%20siguiente%20producto%3A%0A%0A*Salchipapas%20premium*%0APrecio%20desde%3A%20%24%C2%A025.000%0A%0AVeo%20que%20tiene%20opciones%20o%20variantes%2C%20me%20gustar%C3%ADa%20m%C3%A1s%20informaci%C3%B3n.%0A%0APuedes%20ver%20m%C3%A1s%20detalles%20aqu%C3%AD%3A%20https%3A%2F%2Fmyckeo.com%2Fproducto%2Fsalchipapas-premium-zyuv",
+        "https://wa.me/573182293083?text=%C2%A1Hola!%20Estoy%20interesado%20en%20el%20siguiente%20producto%3A%0A%0A*Mojarra%20Frita*%0APrecio%3A%20%24%C2%A035.000%0A%0APuedes%20ver%20m%C3%A1s%20detalles%20aqu%C3%AD%3A%20https%3A%2F%2Fmyckeo.com%2Fproducto%2Fmojarra-frita-qtt6",
+        "https://wa.me/573182293087?text=%C2%A1Hola!%20Estoy%20interesado%20en%20el%20siguiente%20producto%3A%0A%0A*Bot%C3%ADn%20Vers%C3%A1til%20Aventura*%0APrecio%3A%20%24%C2%A0175.000%0A%0APuedes%20ver%20m%C3%A1s%20detalles%20aqu%C3%AD%3A%20https%3A%2F%2Fmyckeo.com%2Fproducto%2Fbotin-versatil-aventura-cxji",
+        "https://wa.me/573148596327?text=%C2%A1Hola!%20Estoy%20interesado%20en%20el%20siguiente%20producto%3A%0A%0A*Elegance%20Blazer*%0APrecio%3A%20%24%C2%A0185.000%0A%0APuedes%20ver%20m%C3%A1s%20detalles%20aqu%C3%AD%3A%20https%3A%2F%2Fmyckeo.com%2Fproducto%2Felegance-blazer-2j9u",
+        "https://wa.me/573182293087?text=%C2%A1Hola!%20Estoy%20interesado%20en%20el%20siguiente%20producto%3A%0A%0A*Sandalia%20Elegante%20Verano*%0APrecio%3A%20%24%C2%A095.000%0A%0APuedes%20ver%20m%C3%A1s%20detalles%20aqu%C3%AD%3A%20https%3A%2F%2Fmyckeo.com%2Fproducto%2Fsandalia-elegante-verano-1qo0",
+        "https://wa.me/573182293083?text=%C2%A1Hola!%20Estoy%20interesado%20en%20el%20siguiente%20producto%3A%0A%0A*Cheesecake%20de%20Ar%C3%A1ndanos*%0APrecio%3A%20%24%C2%A023.000%0A%0APuedes%20ver%20m%C3%A1s%20detalles%20aqu%C3%AD%3A%20https%3A%2F%2Fmyckeo.com%2Fproducto%2Fcheesecake-de-arandanos-bq1o",
+        "https://wa.me/573182293083?text=%C2%A1Hola!%20Estoy%20interesado%20en%20el%20siguiente%20producto%3A%0A%0A*Pulpo%20a%20la%20Parrilla*%0APrecio%3A%20%24%C2%A058.000%0A%0APuedes%20ver%20m%C3%A1s%20detalles%20aqu%C3%AD%3A%20https%3A%2F%2Fmyckeo.com%2Fproducto%2Fpulpo-a-la-parrilla-qwxs",
+        "https://wa.me/573182293083?text=%C2%A1Hola!%20Estoy%20interesado%20en%20el%20siguiente%20producto%3A%0A%0A*Bandeja%20Paisa*%0APrecio%3A%20%24%C2%A017.000%0A%0APuedes%20ver%20m%C3%A1s%20detalles%20aqu%C3%AD%3A%20https%3A%2F%2Fmyckeo.com%2Fproducto%2Fbandeja-paisa-8j6g",
+        "https://wa.me/573182293083?text=%C2%A1Hola!%20Estoy%20interesado%20en%20el%20siguiente%20producto%3A%0A%0A*Bandeja%20de%20carnes%20mixta%20especial%201*%0APrecio%3A%20%24%C2%A038.000%0A%0APuedes%20ver%20m%C3%A1s%20detalles%20aqu%C3%AD%3A%20https%3A%2F%2Fmyckeo.com%2Fproducto%2Fbandeja-de-carnes-mixta-s5rj",
+        "https://wa.me/573182293083?text=%C2%A1Hola!%20Estoy%20interesado%20en%20el%20siguiente%20producto%3A%0A%0A*Chuleta%20de%20pollo%20apanada*%0APrecio%3A%20%24%C2%A035.000%0A%0APuedes%20ver%20m%C3%A1s%20detalles%20aqu%C3%AD%3A%20https%3A%2F%2Fmyckeo.com%2Fproducto%2Fchuleta-de-pollo-apanada-i98c",
+        "https://wa.me/573182293083?text=%C2%A1Hola!%20Estoy%20explorando%20negocios%20en%20Myckeo%20y%20me%20interes%C3%B3%20*Pariila%20Internacional%20Tunja*.%0A%0AVer%20perfil%3A%20%2Fperfil%2Fparrilla-internacional-tunja-tunja-r3jq",
+        "https://wa.me/573182293085?text=%C2%A1Hola!%20Estoy%20explorando%20negocios%20en%20Myckeo%20y%20me%20interes%C3%B3%20*PulseSip*.%0A%0AVer%20perfil%3A%20%2Fperfil%2Fpulsesip-tunja-iox5",
+        "https://wa.me/573182293088?text=%C2%A1Hola!%20Estoy%20explorando%20negocios%20en%20Myckeo%20y%20me%20interes%C3%B3%20*BlitzBite*.%0A%0AVer%20perfil%3A%20%2Fperfil%2Fblitzbite-tunja-llfb"
+      ]
+    },
+    {
+      "width": 390,
+      "before": {
+        "rowTop": 0,
+        "rowHeight": 105,
+        "y": 0,
+        "overflow": false,
+        "tiers": []
+      },
+      "after": {
+        "rowTop": 0,
+        "rowHeight": 105,
+        "y": 950,
+        "overflow": false,
+        "tiers": []
+      },
+      "whatsapp": [
+        "https://wa.me/573182293083?text=%C2%A1Hola!%20Estoy%20interesado%20en%20el%20siguiente%20producto%3A%0A%0A*Salchipapas%20premium*%0APrecio%20desde%3A%20%24%C2%A025.000%0A%0AVeo%20que%20tiene%20opciones%20o%20variantes%2C%20me%20gustar%C3%ADa%20m%C3%A1s%20informaci%C3%B3n.%0A%0APuedes%20ver%20m%C3%A1s%20detalles%20aqu%C3%AD%3A%20https%3A%2F%2Fmyckeo.com%2Fproducto%2Fsalchipapas-premium-zyuv",
+        "https://wa.me/573182293087?text=%C2%A1Hola!%20Estoy%20interesado%20en%20el%20siguiente%20producto%3A%0A%0A*Bot%C3%ADn%20Vers%C3%A1til%20Aventura*%0APrecio%3A%20%24%C2%A0175.000%0A%0APuedes%20ver%20m%C3%A1s%20detalles%20aqu%C3%AD%3A%20https%3A%2F%2Fmyckeo.com%2Fproducto%2Fbotin-versatil-aventura-cxji",
+        "https://wa.me/573148596327?text=%C2%A1Hola!%20Estoy%20interesado%20en%20el%20siguiente%20producto%3A%0A%0A*Elegance%20Blazer*%0APrecio%3A%20%24%C2%A0185.000%0A%0APuedes%20ver%20m%C3%A1s%20detalles%20aqu%C3%AD%3A%20https%3A%2F%2Fmyckeo.com%2Fproducto%2Felegance-blazer-2j9u",
+        "https://wa.me/573182293087?text=%C2%A1Hola!%20Estoy%20interesado%20en%20el%20siguiente%20producto%3A%0A%0A*Sandalia%20Elegante%20Verano*%0APrecio%3A%20%24%C2%A095.000%0A%0APuedes%20ver%20m%C3%A1s%20detalles%20aqu%C3%AD%3A%20https%3A%2F%2Fmyckeo.com%2Fproducto%2Fsandalia-elegante-verano-1qo0",
+        "https://wa.me/573182293083?text=%C2%A1Hola!%20Estoy%20interesado%20en%20el%20siguiente%20producto%3A%0A%0A*Mojarra%20Frita*%0APrecio%3A%20%24%C2%A035.000%0A%0APuedes%20ver%20m%C3%A1s%20detalles%20aqu%C3%AD%3A%20https%3A%2F%2Fmyckeo.com%2Fproducto%2Fmojarra-frita-qtt6",
+        "https://wa.me/573182293089?text=%C2%A1Hola!%20Estoy%20explorando%20negocios%20en%20Myckeo%20y%20me%20interes%C3%B3%20*Carmen%20Moda%20Urbana*.%0A%0AVer%20perfil%3A%20%2Fperfil%2Fcarmen-moda-urbana-tunja-57eb",
+        "https://wa.me/573182293083?text=%C2%A1Hola!%20Estoy%20interesado%20en%20el%20siguiente%20producto%3A%0A%0A*Cheesecake%20de%20Ar%C3%A1ndanos*%0APrecio%3A%20%24%C2%A023.000%0A%0APuedes%20ver%20m%C3%A1s%20detalles%20aqu%C3%AD%3A%20https%3A%2F%2Fmyckeo.com%2Fproducto%2Fcheesecake-de-arandanos-bq1o",
+        "https://wa.me/573182293083?text=%C2%A1Hola!%20Estoy%20interesado%20en%20el%20siguiente%20producto%3A%0A%0A*Pulpo%20a%20la%20Parrilla*%0APrecio%3A%20%24%C2%A058.000%0A%0APuedes%20ver%20m%C3%A1s%20detalles%20aqu%C3%AD%3A%20https%3A%2F%2Fmyckeo.com%2Fproducto%2Fpulpo-a-la-parrilla-qwxs",
+        "https://wa.me/573182293083?text=%C2%A1Hola!%20Estoy%20explorando%20negocios%20en%20Myckeo%20y%20me%20interes%C3%B3%20*Pariila%20Internacional%20Tunja*.%0A%0AVer%20perfil%3A%20%2Fperfil%2Fparrilla-internacional-tunja-tunja-r3jq",
+        "https://wa.me/573182293083?text=%C2%A1Hola!%20Estoy%20interesado%20en%20el%20siguiente%20producto%3A%0A%0A*Bandeja%20Paisa*%0APrecio%3A%20%24%C2%A017.000%0A%0APuedes%20ver%20m%C3%A1s%20detalles%20aqu%C3%AD%3A%20https%3A%2F%2Fmyckeo.com%2Fproducto%2Fbandeja-paisa-8j6g",
+        "https://wa.me/573182293083?text=%C2%A1Hola!%20Estoy%20interesado%20en%20el%20siguiente%20producto%3A%0A%0A*Bandeja%20de%20carnes%20mixta%20especial%201*%0APrecio%3A%20%24%C2%A038.000%0A%0APuedes%20ver%20m%C3%A1s%20detalles%20aqu%C3%AD%3A%20https%3A%2F%2Fmyckeo.com%2Fproducto%2Fbandeja-de-carnes-mixta-s5rj",
+        "https://wa.me/573182293083?text=%C2%A1Hola!%20Estoy%20interesado%20en%20el%20siguiente%20producto%3A%0A%0A*Chuleta%20de%20pollo%20apanada*%0APrecio%3A%20%24%C2%A035.000%0A%0APuedes%20ver%20m%C3%A1s%20detalles%20aqu%C3%AD%3A%20https%3A%2F%2Fmyckeo.com%2Fproducto%2Fchuleta-de-pollo-apanada-i98c",
+        "https://wa.me/573148529639?text=%C2%A1Hola!%20Estoy%20explorando%20negocios%20en%20Myckeo%20y%20me%20interes%C3%B3%20*LUMINA%20Beauty*.%0A%0AVer%20perfil%3A%20%2Fperfil%2Flumina-beauty-tunja-83sa",
+        "https://wa.me/573182293090?text=%C2%A1Hola!%20Estoy%20explorando%20negocios%20en%20Myckeo%20y%20me%20interes%C3%B3%20*NovaBloom*.%0A%0AVer%20perfil%3A%20%2Fperfil%2Fnovabloom-tunja-co6w",
+        "https://wa.me/573182293085?text=%C2%A1Hola!%20Estoy%20explorando%20negocios%20en%20Myckeo%20y%20me%20interes%C3%B3%20*PulseSip*.%0A%0AVer%20perfil%3A%20%2Fperfil%2Fpulsesip-tunja-iox5",
+        "https://wa.me/573148596327?text=%C2%A1Hola!%20Estoy%20explorando%20negocios%20en%20Myckeo%20y%20me%20interes%C3%B3%20*NovaThread*.%0A%0AVer%20perfil%3A%20%2Fperfil%2Fnovathread-tunja-q256",
+        "https://wa.me/573182293094?text=%C2%A1Hola!%20Estoy%20explorando%20negocios%20en%20Myckeo%20y%20me%20interes%C3%B3%20*Artesan%C3%ADas%20Do%C3%B1a%20Marta*.%0A%0AVer%20perfil%3A%20%2Fperfil%2Fartesanias-dona-marta",
+        "https://wa.me/573182293088?text=%C2%A1Hola!%20Estoy%20explorando%20negocios%20en%20Myckeo%20y%20me%20interes%C3%B3%20*BlitzBite*.%0A%0AVer%20perfil%3A%20%2Fperfil%2Fblitzbite-tunja-llfb",
+        "https://wa.me/573182293087?text=%C2%A1Hola!%20Estoy%20explorando%20negocios%20en%20Myckeo%20y%20me%20interes%C3%B3%20*Zapater%C3%ADa%20don%20Jorge*.%0A%0AVer%20perfil%3A%20%2Fperfil%2Fzapateria-don-jorge-tunja-tzj2",
+        "https://wa.me/573182293081?text=%C2%A1Hola!%20Estoy%20explorando%20negocios%20en%20Myckeo%20y%20me%20interes%C3%B3%20*Andrea%20Beauty%20Studio*.%0A%0AVer%20perfil%3A%20%2Fperfil%2Fandrea-beauty-studio-tunja-18ds",
+        "https://wa.me/573182293083?text=%C2%A1Hola!%20Vi%20en%20Myckeo%20el%20servicio%20*Entregas%20express%20*%20y%20quiero%20m%C3%A1s%20informaci%C3%B3n.",
+        "https://wa.me/573182293083?text=%C2%A1Hola!%20Vi%20en%20Myckeo%20el%20servicio%20*Entrega%20a%20domicilio*%20y%20quiero%20m%C3%A1s%20informaci%C3%B3n.",
+        "https://wa.me/573182293083?text=%C2%A1Hola!%20Vi%20en%20Myckeo%20el%20servicio%20*Servicio%20de%20parrilla%20y%20barril*%20y%20quiero%20m%C3%A1s%20informaci%C3%B3n."
+      ],
+      "mobile": {
+        "sameRow": true,
+        "badge": true
+      }
+    }
+  ],
+  "pageErrors": [],
+  "httpErrors": [],
+  "blockedPosts": [],
+  "actions": [
+    {
+      "width": 1440,
+      "type": "publications",
+      "city": "Tunja"
+    },
+    {
+      "width": 1440,
+      "type": "products",
+      "city": "Tunja"
+    },
+    {
+      "width": 1440,
+      "type": "services",
+      "city": "Tunja"
+    },
+    {
+      "width": 1440,
+      "type": "businesses",
+      "city": "Tunja"
+    },
+    {
+      "width": 1440,
+      "type": "publications",
+      "city": "Tunja"
+    },
+    {
+      "width": 1440,
+      "type": "products",
+      "city": "Tunja"
+    },
+    {
+      "width": 1440,
+      "type": "businesses",
+      "city": "Tunja"
+    },
+    {
+      "width": 1440,
+      "type": "publications",
+      "city": "Tunja"
+    },
+    {
+      "width": 1440,
+      "type": "products",
+      "city": "Tunja"
+    },
+    {
+      "width": 1440,
+      "type": "businesses",
+      "city": "Tunja"
+    },
+    {
+      "width": 1440,
+      "type": "publications",
+      "city": "Tunja"
+    },
+    {
+      "width": 1440,
+      "type": "products",
+      "city": "Tunja"
+    },
+    {
+      "width": 1440,
+      "type": "publications",
+      "city": "Tunja"
+    },
+    {
+      "width": 1440,
+      "type": "products",
+      "city": "Tunja"
+    },
+    {
+      "width": 1440,
+      "type": "products",
+      "city": "Tunja"
+    },
+    {
+      "width": 1440,
+      "type": "publications",
+      "city": "Bogotá"
+    },
+    {
+      "width": 1440,
+      "type": "products",
+      "city": "Bogotá"
+    },
+    {
+      "width": 1440,
+      "type": "services",
+      "city": "Bogotá"
+    },
+    {
+      "width": 1440,
+      "type": "businesses",
+      "city": "Bogotá"
+    },
+    {
+      "width": 1440,
+      "type": "products",
+      "city": "Bogotá"
+    },
+    {
+      "width": 1920,
+      "type": "publications",
+      "city": "Tunja"
+    },
+    {
+      "width": 1920,
+      "type": "products",
+      "city": "Tunja"
+    },
+    {
+      "width": 1920,
+      "type": "services",
+      "city": "Tunja"
+    },
+    {
+      "width": 1920,
+      "type": "businesses",
+      "city": "Tunja"
+    },
+    {
+      "width": 390,
+      "type": "publications",
+      "city": "Tunja"
+    },
+    {
+      "width": 390,
+      "type": "products",
+      "city": "Tunja"
+    },
+    {
+      "width": 390,
+      "type": "services",
+      "city": "Tunja"
+    },
+    {
+      "width": 390,
+      "type": "businesses",
+      "city": "Tunja"
+    }
+  ],
+  "startedAt": "2026-11-25T20:47:39.418Z",
+  "status": "passed",
+  "finishedAt": "2026-11-25T20:48:50.762Z",
+  "recordingNote": "El registro inicial de solicitudes no normalizaba el literal serializado $undefined del cursor. Se omite ese indicador; la evidencia de continuación son las cinco variaciones de conteo renderizado y sus IDs únicos, no el total de solicitudes."
+}

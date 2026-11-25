@@ -1,0 +1,46 @@
+{
+  "functionalSha": "569daa154030976cee971bdfb94cd7b652bcd802",
+  "deploymentId": "dpl_BNL83P5HB2Ed3Wnkvgso9mMdJaZt",
+  "url": "red-social-j8x2oa6ku-nico-rodriguezs-projects-63a84b64.vercel.app",
+  "state": "READY",
+  "target": "production",
+  "source": "git",
+  "projectId": "prj_iB5Hr9oHgsqEAwnvsTqo5EyUuruy",
+  "domains": [
+    "myckeo.com",
+    "www.myckeo.com"
+  ],
+  "aliasesVerified": [
+    {
+      "host": "myckeo.com",
+      "deploymentId": "dpl_BNL83P5HB2Ed3Wnkvgso9mMdJaZt",
+      "projectId": "prj_iB5Hr9oHgsqEAwnvsTqo5EyUuruy"
+    },
+    {
+      "host": "www.myckeo.com",
+      "deploymentId": "dpl_BNL83P5HB2Ed3Wnkvgso9mMdJaZt",
+      "projectId": "prj_iB5Hr9oHgsqEAwnvsTqo5EyUuruy"
+    }
+  ],
+  "buildSummary": [
+    "Running build in Washington, D.C., USA (East) – iad1",
+    "Cloning github.com/Nico3270/red-social (Branch: main, Commit: 569daa1)",
+    "Cloning completed: 2.861s",
+    "Running \"vercel build\"",
+    "Running \"pnpm run build\"",
+    " ✓ Compiled successfully in 32.9s",
+    "Build Completed in /vercel/output [2m]"
+  ],
+  "runtimeErrors": {
+    "deploymentId": "dpl_BNL83P5HB2Ed3Wnkvgso9mMdJaZt",
+    "environment": "production",
+    "since": "10m",
+    "levels": [
+      "error",
+      "fatal"
+    ],
+    "groups": []
+  },
+  "rollbackRequired": false,
+  "priorDeploymentId": "dpl_13YyTGgU4sSFjv7mgCEEhBF5XpXv"
+}
