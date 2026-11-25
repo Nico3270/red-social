@@ -1,0 +1,34 @@
+
+Running 3 tests using 1 worker
+
+  ✘  1 e2e/business-entry/business-entry.spec.ts:78:5 › mobile entry → business credentials registration → business creation → management (23.1s)
+  ✓  2 e2e/business-entry/business-entry.spec.ts:171:5 › desktop entry and personal registration remain available; existing account resumes without registration (3.7s)
+  ✓  3 e2e/business-entry/business-entry.spec.ts:213:5 › incomplete account resumes personal details then business creation; intent grants no user-ID permission (4.6s)
+
+
+  1) e2e/business-entry/business-entry.spec.ts:78:5 › mobile entry → business credentials registration → business creation → management
+
+    TimeoutError: locator.click: Timeout 20000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('form').getByRole('button', { name: 'Comida', exact: true })[22m
+
+
+      50 |   await page.waitForLoadState("networkidle");
+      51 |   const form = page.locator("form");
+    > 52 |   await form.getByRole("button", { name: "Comida", exact: true }).click();
+         |                                                                   ^
+      53 |   await form
+      54 |     .getByRole("button", { name: "Comida Rápida", exact: true })
+      55 |     .click();
+        at createBusiness (/home/nico/worktrees/myckeo-business-entry-20261125/e2e/business-entry/business-entry.spec.ts:52:67)
+        at /home/nico/worktrees/myckeo-business-entry-20261125/e2e/business-entry/business-entry.spec.ts:145:3
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/business-entry/business-entry-mobile-entr-9e719-iness-creation-→-management/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/business-entry/business-entry-mobile-entr-9e719-iness-creation-→-management/error-context.md
+
+  1 failed
+    e2e/business-entry/business-entry.spec.ts:78:5 › mobile entry → business credentials registration → business creation → management
+  2 passed (32.6s)

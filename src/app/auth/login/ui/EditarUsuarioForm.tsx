@@ -1,5 +1,6 @@
 "use client";
 
+import { BUSINESS_ENTRY_PATH } from "@/lib/business/businessEntry";
 import React, { useEffect, useRef, useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -41,6 +42,7 @@ interface UsuarioParaEditar {
 interface Props {
   usuario: UsuarioParaEditar;
   esModoObligatorio?: boolean;
+  continueBusiness?: boolean;
 }
 
 const inputBaseClass =
@@ -201,6 +203,7 @@ type UpdateUserFormValues = z.input<typeof updateUserSchema>;
 export const EditarUsuarioForm = ({
   usuario,
   esModoObligatorio = false,
+  continueBusiness = false,
 }: Props) => {
   const initialBirthParts = parseDateOnlyParts(usuario.fechaNacimiento);
   const initialBirthDate = buildSafeLocalDate(
@@ -446,7 +449,7 @@ export const EditarUsuarioForm = ({
     setIsRedirecting(true);
 
     redirectTimeoutRef.current = setTimeout(() => {
-      router.replace("/dashboard");
+      router.replace(continueBusiness ? BUSINESS_ENTRY_PATH : "/dashboard");
     }, 2000);
   };
 

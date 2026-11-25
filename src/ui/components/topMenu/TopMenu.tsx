@@ -19,6 +19,7 @@ import { updateUserPreferences } from "@/preferences/actions/updateUserPreferenc
 import { titleFont } from "@/config/fonts";
 import SearchBar from "@/busqueda/componentes/SearchBar";
 
+import { BusinessEntryLink } from "./BusinessEntryLink";
 import styles from "./publicNavigation.module.css";
 
 interface ColombiaDepartment {
@@ -225,6 +226,7 @@ export const TopMenu = () => {
   };
 
   return (
+    <>
     <header
       className={`top-0 w-full border-b bg-white shadow-sm ${
         isDiscoveryPage ? "sticky z-40" : "fixed z-50"
@@ -469,6 +471,8 @@ export const TopMenu = () => {
         </nav>
       </div>
 
+      <BusinessEntryLink />
+
       {/* Drawer lateral */}
       <SideBar open={isDrawerOpen} toggleDrawer={setIsDrawerOpen} />
       <MenuSectionsBar compact={isDiscoveryPage} />
@@ -481,5 +485,7 @@ export const TopMenu = () => {
         onClose={() => setIsLocationModalOpen(false)}
       />
     </header>
+    {!isDiscoveryPage && <div className="h-11" aria-hidden="true" />}
+    </>
   );
 };

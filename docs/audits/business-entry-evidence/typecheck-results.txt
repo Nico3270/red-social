@@ -1,0 +1,3 @@
+
+> myckeo@0.1.0 typecheck /home/nico/worktrees/myckeo-business-entry-20261125
+> tsc --noEmit

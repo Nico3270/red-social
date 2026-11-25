@@ -29,6 +29,7 @@ import { updateUserPreferences } from "@/preferences/actions/updateUserPreferenc
 import SearchBar from "@/busqueda/componentes/SearchBar";
 
 import { titleFont } from "@/config/fonts";
+import { BusinessEntryLink } from "../topMenu/BusinessEntryLink";
 import styles from "../topMenu/publicNavigation.module.css";
 
 interface ColombiaDepartment {
@@ -300,6 +301,7 @@ export const TopMenuMobile = () => {
             {showGpsIcon && <span className="text-xs text-green-600">GPS</span>}
           </button>
         </div>
+        <BusinessEntryLink />
       </header>
 
       {isBusinessProfilePage ? (

@@ -93,10 +93,10 @@
   min-width: 44px;
 }
 .mobileOffset {
-  margin-top: 61px;
+  margin-top: 105px;
 }
 .mobileProfileOffset {
-  height: 61px;
+  height: 105px;
 }
 /* At high browser zoom, reflow the location instead of crowding touch targets. */
 @media (max-width: 279px) {
@@ -117,10 +117,10 @@
     grid-column: 1 / -1;
   }
   .mobileOffset {
-    margin-top: 113px;
+    margin-top: 157px;
   }
   .mobileProfileOffset {
-    height: 113px;
+    height: 157px;
   }
 }
 @media (max-width: 199px) {
@@ -174,3 +174,26 @@
     transition: none !important;
   }
 }
+
+.businessEntryBar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  min-height: 44px;
+  max-width: 1280px;
+  padding: 0 12px;
+  margin: auto;
+}
+.businessEntry {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 12px;
+  color: #b72e45;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 12px;
+}
+.businessEntry:hover { background: #faf3f5; }
+.businessEntry:focus-visible { outline: 2px solid #c93545; outline-offset: -2px; }

@@ -1,0 +1,4 @@
+
+Running 3 tests using 1 worker
+
+  ✘  1 e2e/business-entry/business-entry.spec.ts:74:5 › mobile entry → business credentials registration → business creation → management (2.0m)

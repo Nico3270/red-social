@@ -1,5 +1,6 @@
 "use client";
 
+import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { RegisterForm } from "./ui/NewAcoount";
 import { motion } from "framer-motion";
@@ -10,7 +11,8 @@ import { HelpTriggerModal } from "@/ui/components/helpModal/HelpTriggerModal";
 
 
 export default function NewAccountPage() {
-  const [tipoUsuario, setTipoUsuario] = useState<null | boolean>(null);
+  const searchParams = useSearchParams();
+  const [tipoUsuario, setTipoUsuario] = useState<null | boolean>(() => searchParams.get("tipo") === "negocio" ? true : null);
  
 
   return (
@@ -18,7 +20,10 @@ export default function NewAccountPage() {
       <div className="flex flex-col md:flex-row min-h-screen bg-gray-100 relative">
         {/* Sección izquierda: Selector o Formulario */}
         {tipoUsuario !== null ? (
-          <RegisterForm negocio={tipoUsuario} />
+          <div className="w-full md:w-1/2">
+            <button type="button" onClick={() => setTipoUsuario(null)} className="mx-auto mt-3 flex min-h-11 items-center text-sm text-blue-700 underline">Elegir otro tipo de cuenta</button>
+            <RegisterForm negocio={tipoUsuario} />
+          </div>
         ) : (
           <div className="md:w-1/2 flex flex-col items-center justify-center p-4 sm:p-8 bg-white">
             <div className="relative w-full sm:w-2/3 h-60 sm:h-2/3 mt-2 sm:mt-4 rounded-2xl overflow-hidden shadow-xl">
@@ -122,7 +127,7 @@ export default function NewAccountPage() {
                 </h1>
                 <p className="text-lg text-gray-600">
                   {tipoUsuario
-                    ? "Crea tu vitrina digital, publica contenido y empieza a vender en minutos."
+                    ? "Completa tus datos y continúa con la información de tu negocio."
                     : "Únete a la comunidad, descubre negocios locales y comparte tus experiencias."}
                 </p>
               </div>

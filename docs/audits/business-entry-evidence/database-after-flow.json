@@ -1,0 +1,38 @@
+{
+  "realPrisma": true,
+  "realPostgreSQL": true,
+  "syntheticUsers": [
+    {
+      "email": "existing-personal@business-audit.invalid",
+      "role": "user",
+      "perfilCompleto": true,
+      "negocio": null
+    },
+    {
+      "email": "new-owner@business-audit.invalid",
+      "role": "negocio",
+      "perfilCompleto": true,
+      "negocio": {
+        "nombre": "Negocio Sintético Auditoría",
+        "telefonoContacto": "+573100000000",
+        "categorias": [
+          {
+            "categoryId": "2"
+          }
+        ],
+        "secciones": [
+          {
+            "sectionId": "s8"
+          }
+        ]
+      }
+    },
+    {
+      "email": "incomplete-personal@business-audit.invalid",
+      "role": "user",
+      "perfilCompleto": true,
+      "negocio": null
+    }
+  ],
+  "newBusinessCount": 1
+}

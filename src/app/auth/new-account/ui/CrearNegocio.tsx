@@ -277,6 +277,10 @@ export const CreateNegocioForm: React.FC<IdUsuario> = () => {
                     const isSelected = selectedCategorySlugs.has(category.slug);
                     return (
                       <Box
+                        component="button"
+                        type="button"
+                        aria-pressed={isSelected}
+                        aria-label={category.nombre}
                         key={`${category.id}-${category.slug}`}
                         onClick={() => handleCategoryChange(category.slug)}
                         sx={{
@@ -344,6 +348,10 @@ export const CreateNegocioForm: React.FC<IdUsuario> = () => {
                   const isActive = selectedSections.has(section.id);
                   return (
                     <Box
+                      component="button"
+                      type="button"
+                      aria-pressed={isActive}
+                      aria-label={section.nombre}
                       key={`${section.id}-${section.nombre}`}
                       onClick={() => toggleSection(section.id)}
                       sx={{

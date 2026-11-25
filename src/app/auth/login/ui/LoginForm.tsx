@@ -1,5 +1,6 @@
 "use client";
 
+import { BUSINESS_ENTRY_PATH, BUSINESS_REGISTER_PATH, internalAuthCallback } from "@/lib/business/businessEntry";
 import { useState, useEffect } from "react";
 import { FaGoogle } from "react-icons/fa";
 import Link from "next/link";
@@ -19,7 +20,8 @@ export const LoginForm = () => {
     "Idle" | "Loading" | "Success" | "Error" | "CredentialsSignin" | "UnknownError"
   >("Idle");
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/";
+  const businessIntent = searchParams.get("tipo") === "negocio";
+  const callbackUrl = businessIntent ? BUSINESS_ENTRY_PATH : internalAuthCallback(searchParams.get("callbackUrl"), typeof window === "undefined" ? undefined : window.location.origin);
 
   // En esta parte se comprueba el estado de la autenticación y en caso de ser Success se redirige al usuario a la ruta principal, todo esto mediante
   // el useEffect
@@ -85,6 +87,7 @@ export const LoginForm = () => {
             </label>
             <input
               type="email"
+              id="email"
               name="email"
               className="w-full border rounded-lg p-2 mt-2 focus:outline-none focus:ring-2 text-gray-800 focus:ring-red-600"
               placeholder="Ingresa tu correo"
@@ -99,6 +102,7 @@ export const LoginForm = () => {
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
+                id="password"
                 name="password"
                 className="w-full border rounded-lg text-gray-800 p-2 mt-2 pr-10 focus:outline-none focus:ring-2 focus:ring-red-600"
                 placeholder="Ingresa tu contraseña"
@@ -159,7 +163,7 @@ export const LoginForm = () => {
         </button>
         <div className="text-center mt-4">
           <span className="text-gray-900 text-lg">¿No tienes cuenta?</span>
-          <Link href="/auth/new-account" className="text-red-600 hover:underline ml-1 text-xl">
+          <Link href={businessIntent ? BUSINESS_REGISTER_PATH : "/auth/new-account"} className="text-red-600 hover:underline ml-1 text-xl">
             Regístrate
           </Link>
         </div>

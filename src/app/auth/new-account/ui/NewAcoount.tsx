@@ -1,5 +1,6 @@
 "use client";
 
+import { BUSINESS_ENTRY_PATH, BUSINESS_LOGIN_PATH, internalAuthCallback } from "@/lib/business/businessEntry";
 import React, { useState, useEffect } from "react";
 import { FaGoogle } from "react-icons/fa";
 import { IoEyeOffOutline, IoEyeOutline } from "react-icons/io5";
@@ -46,7 +47,7 @@ export const RegisterForm = ({ negocio }: TipoUsuario) => {
   const [cities, setCities] = useState<string[]>([]);
   const [acceptedPolicies, setAcceptedPolicies] = useState(false); // Estado para checkbox
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/";
+  const callbackUrl = negocio ? BUSINESS_ENTRY_PATH : internalAuthCallback(searchParams.get("callbackUrl"), typeof window === "undefined" ? undefined : window.location.origin);
   const router = useRouter();
   const { update } = useSession();
 
@@ -137,7 +138,7 @@ export const RegisterForm = ({ negocio }: TipoUsuario) => {
       await update({ perfilCompleto: true });
 
       if (negocio) {
-        router.push(`/crear_negocio/${response.user.id}`);
+        window.location.assign(BUSINESS_ENTRY_PATH);
       } else {
         router.push(callbackUrl);
       }
@@ -151,17 +152,7 @@ export const RegisterForm = ({ negocio }: TipoUsuario) => {
   const handleGoogleRegister = async () => {
     try {
       setIsPending(true);
-      const response: SignInResponse | undefined = await signIn("google", {
-        callbackUrl: callbackUrl,
-        redirect: false,
-      });
-
-      if (response?.error) {
-        setErrorMessage("No se pudo completar el inicio de sesión con Google");
-        setIsPending(false);
-      } else {
-        router.push(callbackUrl);
-      }
+      await signIn("google", { callbackUrl });
     } catch {
       setErrorMessage("No se pudo completar el inicio de sesión con Google");
       setIsPending(false);
@@ -169,9 +160,10 @@ export const RegisterForm = ({ negocio }: TipoUsuario) => {
   };
 
   return (
-    <div className="md:w-1/2 bg-white flex flex-col justify-center p-8">
+    <div className="w-full bg-white flex flex-col justify-center p-8">
       <div className="max-w-md w-full mx-auto">
-        <h1 className="text-3xl font-bold mb-6 text-center text-blue-700">Crear una cuenta en Myckeo</h1>
+        <h1 className="text-3xl font-bold mb-6 text-center text-blue-700">{negocio ? "Crear cuenta de negocio" : "Crear cuenta personal"}</h1>
+        {negocio && <p className="mb-6 text-center">¿Ya tienes cuenta? <Link href={BUSINESS_LOGIN_PATH} className="text-red-600 underline">Inicia sesión</Link></p>}
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div>
             <label htmlFor="nombre" className="block font-bold">Nombre del administrador</label>
@@ -440,22 +432,22 @@ export const RegisterForm = ({ negocio }: TipoUsuario) => {
 
         <button
           onClick={handleGoogleRegister}
-          disabled={isPending || !isValid}
+          disabled={isPending}
           className={clsx(
             "w-full flex items-center justify-center bg-blue-600 text-white py-2 rounded-lg mt-4",
-            isPending || !isValid ? "bg-gray-400 cursor-not-allowed" : "hover:bg-blue-700 transition"
+            isPending ? "bg-gray-400 cursor-not-allowed" : "hover:bg-blue-700 transition"
           )}
         >
           <FaGoogle className="mr-2" />
           {isPending ? "Cargando..." : "Iniciar con Google"}
         </button>
 
-        <div className="text-center mt-4">
+        {!negocio && <div className="text-center mt-4">
           <span>¿Ya tienes cuenta?</span>
-          <Link href="/auth/login" className="text-red-600 hover:underline ml-1">
+          <Link href={negocio ? BUSINESS_LOGIN_PATH : "/auth/login"} className="text-red-600 hover:underline ml-1">
             Inicia sesión
           </Link>
-        </div>
+        </div>}
       </div>
     </div>
   );

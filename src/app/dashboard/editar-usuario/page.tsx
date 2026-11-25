@@ -10,7 +10,7 @@ export const metadata = {
   description: "Actualiza tu información personal en Myckeo",
 };
 
-export default async function EditarUsuarioPage() {
+export default async function EditarUsuarioPage({ searchParams }: { searchParams: Promise<{ negocio?: string }> }) {
   const session = await auth();
 
   if (!session?.user?.id) {
@@ -51,6 +51,7 @@ export default async function EditarUsuarioPage() {
         <EditarUsuarioForm
           usuario={usuario}
           esModoObligatorio={esModoObligatorio}
+          continueBusiness={(await searchParams).negocio === "1"}
         />
       </div>
     </main>

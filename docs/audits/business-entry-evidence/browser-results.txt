@@ -1,0 +1,8 @@
+
+Running 3 tests using 1 worker
+
+  ✓  1 e2e/business-entry/business-entry.spec.ts:78:5 › mobile entry → business credentials registration → business creation → management (6.4s)
+  ✓  2 e2e/business-entry/business-entry.spec.ts:171:5 › desktop entry and personal registration remain available; existing account resumes without registration (4.8s)
+  ✓  3 e2e/business-entry/business-entry.spec.ts:214:5 › incomplete account resumes personal details then business creation; intent grants no user-ID permission (5.0s)
+
+  3 passed (16.9s)
