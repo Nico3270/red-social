@@ -1,0 +1,10 @@
+
+Running 5 tests using 1 worker
+
+  ✓  1 e2e/desktop-feed-prototype/desktop.spec.ts:52:5 › inventory balance, all identities, geographic boundaries and one page scroll (13.0s)
+  ✓  2 e2e/desktop-feed-prototype/desktop.spec.ts:75:5 › desktop actions, review relationship, and unchanged mobile layout (9.2s)
+  ✓  3 e2e/desktop-feed-prototype/desktop.spec.ts:110:5 › real coordinator: desktop continuation then city selection without mixed pages (12.7s)
+  ✓  4 e2e/desktop-feed-prototype/desktop.spec.ts:134:5 › scope: 1279px, other tabs and categories retain the published composition (8.3s)
+  ✓  5 e2e/desktop-feed-prototype/desktop.spec.ts:148:5 › a pending commercial action survives new publications without moving existing cards (3.1s)
+
+  5 passed (47.1s)

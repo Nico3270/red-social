@@ -1,0 +1,35 @@
+{
+  "comparisons": [
+    {
+      "width": 1440,
+      "beforeHeader": 215,
+      "afterHeader": 133,
+      "sameIds": true,
+      "overflow": false
+    },
+    {
+      "width": 1920,
+      "beforeHeader": 215,
+      "afterHeader": 133,
+      "sameIds": true,
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "beforeHeader": 105,
+      "afterHeader": 105,
+      "sameIds": true,
+      "overflow": false
+    }
+  ],
+  "mobile": {
+    "top": {
+      "identical": true,
+      "sha256": "e6a6d44e02e4a0d8c1f6d5232095f1c7f470ef5160e4d2bdaf04187ef75996bc"
+    },
+    "scroll": {
+      "identical": true,
+      "sha256": "ff5795fe32ddd665c12afb903020a6ecf5af5a5036f8766987b21182cc81b5b3"
+    }
+  }
+}

@@ -1,0 +1,42 @@
+
+> myckeo@0.1.0 build /home/nico/worktrees/myckeo-desktop-feed-20261125
+> npm run prisma:generate && next build
+
+
+> myckeo@0.1.0 prisma:generate
+> prisma generate
+
+Prisma schema loaded from prisma/schema.prisma
+
+✔ Generated Prisma Client (v6.18.0) to ./node_modules/.pnpm/@prisma+client@6.18.0_prisma@6.18.0_typescript@5.9.3__typescript@5.9.3/node_modules/@prisma/client in 372ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Interested in query caching in just a few lines of code? Try Accelerate today! https://pris.ly/tip-3-accelerate
+
+   ▲ Next.js 15.5.9
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 91s
+   Linting and checking validity of types ...
+
+./src/app/activar/ActivationBootstrap.test.tsx
+347:21  Warning: '_body' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/app/api-reference/config/eslint#disabling-rules
+Failed to compile.
+
+./e2e/desktop-feed-prototype/playwright.config.ts:6:44
+Type error: No overload matches this call.
+  The last overload gave the following error.
+    Object literal may only specify known properties, and 'reducedMotion' does not exist in type 'UseOptions<PlaywrightTestOptions & CustomProperties<unknown>, PlaywrightWorkerOptions & CustomProperties<unknown>>'.
+
+[0m [90m 4 |[39m   expect[33m:[39m { timeout[33m:[39m [35m30000[39m }[33m,[39m reporter[33m:[39m [[[32m"list"[39m]][33m,[39m
+ [90m 5 |[39m   outputDir[33m:[39m [32m"../../test-results/desktop-feed-prototype"[39m[33m,[39m
+[31m[1m>[22m[39m[90m 6 |[39m   use[33m:[39m { baseURL[33m:[39m [32m"http://127.0.0.1:3400"[39m[33m,[39m reducedMotion[33m:[39m [32m"reduce"[39m[33m,[39m
+ [90m   |[39m                                            [31m[1m^[22m[39m
+ [90m 7 |[39m     launchOptions[33m:[39m { executablePath[33m:[39m process[33m.[39menv[33m.[39m[33mAUDIT_CHROMIUM_PATH[39m [33m||[39m [32m"/home/nico/.cache/ms-playwright/chromium-1193/chrome-linux/chrome"[39m } }[33m,[39m
+ [90m 8 |[39m })[33m;[39m
+ [90m 9 |[39m[0m
+Next.js build worker exited with code: 1 and signal: null
+ ELIFECYCLE  Command failed with exit code 1.

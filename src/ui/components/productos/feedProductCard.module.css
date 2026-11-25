@@ -891,3 +891,10 @@
     }
   }
 }
+
+@media (min-width: 1280px) {
+  .desktopCompact .media { max-height: 170px; aspect-ratio: 16 / 9; }
+  .desktopCompact .description { -webkit-line-clamp: 1; }
+  .desktopCompact .price { font-size: 21px; }
+  .desktopCompact .cart { padding-inline: 10px; }
+}

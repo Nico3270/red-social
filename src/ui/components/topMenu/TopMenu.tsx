@@ -228,10 +228,11 @@ export const TopMenu = () => {
   return (
     <>
     <header
-      className={`top-0 w-full border-b bg-white shadow-sm ${
+      className={`${pathname === "/" ? styles.prototypeHeader : ""} top-0 w-full border-b bg-white shadow-sm ${
         isDiscoveryPage ? "sticky z-40" : "fixed z-50"
       }`}
     >
+      <div className={styles.prototypeMain}>
       <div
         className={`${styles.desktopRow} ${isDiscoveryPage ? styles.discovery : ""}`}
       >
@@ -472,10 +473,11 @@ export const TopMenu = () => {
       </div>
 
       <BusinessEntryLink />
+      </div>
 
       {/* Drawer lateral */}
       <SideBar open={isDrawerOpen} toggleDrawer={setIsDrawerOpen} />
-      <MenuSectionsBar compact={isDiscoveryPage} />
+      <div className={styles.prototypeCategories}><MenuSectionsBar compact={isDiscoveryPage} /></div>
       <CrearModal
         isOpen={isCrearModalOpen}
         onClose={() => setIsCrearModalOpen(false)}

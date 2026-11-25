@@ -1,0 +1,29 @@
+@media (min-width: 1280px) {
+  .scope {
+    max-width: 1072px;
+    margin-inline: auto;
+    padding: 24px !important;
+  }
+  .tiers { display: grid; gap: 32px; }
+  .tier { min-width: 0; }
+  .tierTitle {
+    padding-block: 8px 12px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid #e2e8f0;
+    font-size: 15px;
+    font-weight: 600;
+    color: #475569;
+  }
+  .columns {
+    display: grid;
+    grid-template-columns: minmax(0, 680px) 320px;
+    align-items: start;
+    gap: 24px;
+  }
+  .main, .side { display: grid; align-content: start; gap: 20px; min-width: 0; }
+  .side { gap: 16px; }
+  .commerce { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: start; }
+  .commerce > :only-child { grid-column: 1 / -1; width: 100%; max-width: 328px; }
+  .single { grid-template-columns: minmax(0, 680px); justify-content: center; }
+  .item { min-width: 0; }
+}

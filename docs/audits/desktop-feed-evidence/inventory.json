@@ -1,0 +1,146 @@
+[
+  {
+    "scenario": "balanced",
+    "count": 31,
+    "groups": [
+      {
+        "tier": 0,
+        "top": 306.5,
+        "bottom": 3583.0625
+      },
+      {
+        "tier": 1,
+        "top": 3674.5625,
+        "bottom": 4613.5
+      },
+      {
+        "tier": 2,
+        "top": 4705,
+        "bottom": 5643.9375
+      }
+    ],
+    "balance": {
+      "lanes": [
+        3276.5625,
+        2875.75
+      ],
+      "tailGap": 400.8125,
+      "nestedScroll": false
+    }
+  },
+  {
+    "scenario": "commerce",
+    "count": 39,
+    "groups": [
+      {
+        "tier": 0,
+        "top": 306.5,
+        "bottom": 3775.71875
+      },
+      {
+        "tier": 1,
+        "top": 3867.21875,
+        "bottom": 4806.15625
+      },
+      {
+        "tier": 2,
+        "top": 4897.65625,
+        "bottom": 5836.59375
+      }
+    ],
+    "balance": {
+      "lanes": [
+        3468.53125,
+        3469.21875
+      ],
+      "tailGap": 0.6875,
+      "nestedScroll": false
+    }
+  },
+  {
+    "scenario": "only-commerce",
+    "count": 31,
+    "groups": [
+      {
+        "tier": 0,
+        "top": 306.5,
+        "bottom": 2724.84375
+      },
+      {
+        "tier": 1,
+        "top": 2816.34375,
+        "bottom": 3755.28125
+      },
+      {
+        "tier": 2,
+        "top": 3846.78125,
+        "bottom": 4785.71875
+      }
+    ],
+    "balance": {
+      "lanes": [
+        2418.34375,
+        2152.8125
+      ],
+      "tailGap": 265.53125,
+      "nestedScroll": false
+    }
+  },
+  {
+    "scenario": "social",
+    "count": 16,
+    "groups": [
+      {
+        "tier": 0,
+        "top": 307.25,
+        "bottom": 3851.25
+      },
+      {
+        "tier": 1,
+        "top": 3942.75,
+        "bottom": 4843.34375
+      },
+      {
+        "tier": 2,
+        "top": 4934.84375,
+        "bottom": 5835.4375
+      }
+    ],
+    "balance": {
+      "lanes": [
+        3544
+      ],
+      "tailGap": 0,
+      "nestedScroll": false
+    }
+  },
+  {
+    "scenario": "sparse",
+    "count": 10,
+    "groups": [
+      {
+        "tier": 0,
+        "top": 306.5,
+        "bottom": 841.5
+      },
+      {
+        "tier": 1,
+        "top": 933,
+        "bottom": 1833.59375
+      },
+      {
+        "tier": 2,
+        "top": 1925.09375,
+        "bottom": 2825.6875
+      }
+    ],
+    "balance": {
+      "lanes": [
+        535,
+        345.46875
+      ],
+      "tailGap": 189.53125,
+      "nestedScroll": false
+    }
+  }
+]

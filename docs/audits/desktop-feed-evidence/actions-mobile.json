@@ -1,0 +1,10 @@
+{
+  "geometry": {
+    "row": 0,
+    "priceAligned": true,
+    "touch": 44,
+    "overlay": true,
+    "overflow": false
+  },
+  "errors": []
+}

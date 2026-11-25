@@ -14,7 +14,9 @@ import DiscoveryBusinessCard from "@/feed/componentes/DiscoveryBusinessCard";
 import DiscoveryPublicationCard from "@/feed/componentes/DiscoveryPublicationCard";
 import DiscoveryPulseModule, { DiscoveryPulseTone } from "@/feed/componentes/DiscoveryPulseModule";
 import DiscoveryServiceCard from "@/feed/componentes/DiscoveryServiceCard";
-import { groupFeedByLocation } from "@/feed/geography";
+import { distributeDesktopDiscovery, type DesktopDiscoveryPlan } from "@/feed/desktopDiscovery";
+import desktop from "./desktopDiscovery.module.css";
+import { groupFeedByLocation, getFeedItemTier } from "@/feed/geography";
 import productModules from "./feedProductModules.module.css";
 
 type FeedTab = "Para ti" | "Publicaciones" | "Productos" | "Servicios" | "Negocios";
@@ -304,6 +306,16 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
     }, delay);
   }, []);
 
+  const [wideDesktop, setWideDesktop] = useState(false);
+  useEffect(() => {
+    const media = window.matchMedia("(min-width: 1280px)");
+    const update = () => setWideDesktop(media.matches);
+    update();
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
+  const desktopHome = wideDesktop && discoveryContext === "home" && activeTab === "Para ti";
+
   const itemsPorTab = useMemo(() => {
     const filtrados = items.filter(item => {
       if (activeTab === "Productos" && !isProductItem(item)) return false;
@@ -340,6 +352,20 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
 
     return filtered;
   }, [itemsPorTab, activeTab, selectedCategory]);
+
+  const desktopScope = JSON.stringify([ciudad, departamento, discoveryContext, activeTab]);
+  const previousDesktop = useRef<{ scope: string; plans: Map<number, DesktopDiscoveryPlan> }>({ scope: "", plans: new Map() });
+  const desktopGroups = useMemo(() => {
+    if (!desktopHome) return [];
+    return groupFeedByLocation(filteredItems, { ciudad, departamento }).map(group => {
+      const tier = getFeedItemTier(group[0], { ciudad, departamento });
+      const previous = previousDesktop.current.scope === desktopScope ? previousDesktop.current.plans.get(tier) : undefined;
+      return { tier, plan: distributeDesktopDiscovery(group, previous) };
+    });
+  }, [desktopHome, desktopScope, filteredItems, ciudad, departamento]);
+  useEffect(() => {
+    previousDesktop.current = { scope: desktopScope, plans: new Map(desktopGroups.map(group => [group.tier, group.plan])) };
+  }, [desktopGroups, desktopScope]);
 
   const itemsHash = useMemo(() => filteredItems.map(item => `${item.type}-${item.id}`).join(','), [filteredItems]);
   const cadenceSections = useMemo<CadenceSection[]>(() => {
@@ -568,16 +594,52 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
     return PUBLICACIONES_SERVICIOS_BREAKPOINTS;
   }, [activeTab, isCategoryFeed]);
 
-  const renderCardContent = (item: FeedItem) => {
+  const renderCardContent = (item: FeedItem, desktopPresentation = false) => {
     if (!item) return null;
 
-    if (isProductItem(item)) return <ProductCard product={item.data} variant="feed" feedActionLayout={productActionLayout} />;
+    if (isProductItem(item)) return <ProductCard product={item.data} variant="feed" feedActionLayout={productActionLayout} desktopCompact={desktopPresentation} />;
     if (isServiceItem(item)) return <DiscoveryServiceCard servicio={item.data} />;
     if (isBusinessItem(item)) return <DiscoveryBusinessCard business={item.data} />;
-    if (isPublicationItem(item)) return <DiscoveryPublicationCard publicacion={item.data} />;
+    if (isPublicationItem(item)) return <DiscoveryPublicationCard publicacion={item.data} presentation={desktopPresentation ? "desktop" : "default"} />;
 
     return null;
   };
+
+  const renderDesktopFeed = () => (
+    <div className={desktop.tiers}>
+      {desktopGroups.map(({ tier, plan: { main, side } }) => {
+        const label = tier === 0 ? `En ${ciudad || "tu ciudad"}`
+          : tier === 1 ? `Más ciudades de ${departamento || "tu departamento"}` : "Otras ciudades del país";
+        return (
+          <section key={tier} data-desktop-tier={tier} aria-label={label} className={desktop.tier}>
+            <h2 className={desktop.tierTitle}>{label}</h2>
+            <div className={`${desktop.columns} ${side.length ? "" : desktop.single}`}>
+              <div className={desktop.main}>
+                {main.map(block => (
+                  <div key={`${block.items[0].type}-${block.items[0].id}`} className={block.kind === "commerce" ? desktop.commerce : undefined}>
+                    {block.items.map(item => (
+                      <div key={`${item.type}-${item.id}`} data-feed-item-key={`${item.type}-${item.id}`} className={desktop.item}>
+                        {renderCardContent(item, true)}
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </div>
+              {side.length > 0 && (
+                <aside className={desktop.side} aria-label={`Productos y negocios · ${label}`}>
+                  {side.map(item => (
+                    <div key={`${item.type}-${item.id}`} data-feed-item-key={`${item.type}-${item.id}`} className={desktop.item}>
+                      {renderCardContent(item, true)}
+                    </div>
+                  ))}
+                </aside>
+              )}
+            </div>
+          </section>
+        );
+      })}
+    </div>
+  );
 
   const renderCadenceFeed = () => {
     if (activeTab !== "Para ti" || cadenceSections.length === 0) return null;
@@ -778,7 +840,7 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
   };
 
   return (
-    <div className="min-h-screen w-full bg-gray-50 px-1 py-2 sm:px-2 sm:py-4 lg:px-6 xl:px-12">
+    <div data-desktop-discovery={desktopHome || undefined} className={`min-h-screen w-full bg-gray-50 px-1 py-2 sm:px-2 sm:py-4 lg:px-6 xl:px-12 ${desktopHome ? desktop.scope : ""}`}>
       {renderDiscoveryIntro()}
 
       <motion.div
@@ -846,7 +908,7 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
         ) : (
           <>
             {activeTab === "Para ti" ? (
-              renderCadenceFeed()
+              desktopHome ? renderDesktopFeed() : renderCadenceFeed()
             ) : (
               <div ref={masonryWrapperRef} className="w-full">
                 {groupFeedByLocation(filteredItems, { ciudad, departamento }).map((group, tierIndex) => (

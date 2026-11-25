@@ -197,3 +197,41 @@
 }
 .businessEntry:hover { background: #faf3f5; }
 .businessEntry:focus-visible { outline: 2px solid #c93545; outline-offset: -2px; }
+
+/* Only the wide home/For you prototype opts in. The rest keeps its current header. */
+@media (min-width: 1280px) {
+  :global(body:has([data-desktop-discovery])) .prototypeHeader {
+    position: relative;
+  }
+  :global(body:has([data-desktop-discovery])) .prototypeMain {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: 12px;
+    max-width: 1280px;
+    min-height: 72px;
+    margin: auto;
+    padding: 8px 16px;
+  }
+  :global(body:has([data-desktop-discovery])) .prototypeMain .desktopRow { display: contents; }
+  :global(body:has([data-desktop-discovery])) .prototypeMain .desktopActions { order: 4; }
+  :global(body:has([data-desktop-discovery])) .prototypeMain .businessEntryBar { order: 3; padding: 0; }
+  :global(body:has([data-desktop-discovery])) .prototypeCategories { max-width: 1072px; margin: auto; }
+  :global(body:has([data-desktop-discovery])) .prototypeCategories a > div {
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+    width: auto;
+    min-height: 44px;
+    max-height: none;
+    padding: 6px 10px;
+  }
+  :global(body:has([data-desktop-discovery])) .prototypeCategories img { width: 22px; height: 22px; }
+  :global(body:has([data-desktop-discovery])) .prototypeCategories a span {
+    min-height: 0;
+    max-height: none;
+    margin: 0;
+    white-space: nowrap;
+    font-size: 12px;
+  }
+}

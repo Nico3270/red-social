@@ -49,6 +49,7 @@ interface ProductCardProps {
     position?: number;
   };
   variant?: "default" | "business_profile" | "feed";
+  desktopCompact?: boolean;
   feedActionLayout?: "separate" | "split";
 }
 
@@ -68,6 +69,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   analyticsContext,
   variant = "default",
   feedActionLayout = "separate",
+  desktopCompact = false,
 }) => {
   const rawProductImages = useMemo(
     () => (Array.isArray(product.imagenes) ? product.imagenes : []),
@@ -662,7 +664,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       data-feed-image-shape={isFeedVariant ? feedImageShape : undefined}
       className={
         isFeedVariant
-          ? `${styles.feed} ${inter.className}`
+          ? `${styles.feed} ${inter.className} ${desktopCompact ? styles.desktopCompact : ""}`
           : isBusinessProfileVariant
           ? "relative mx-auto flex w-full self-start flex-col overflow-hidden rounded-[22px] border border-slate-200 bg-white p-1.5 shadow-sm transition-all duration-300 hover:border-slate-300 hover:shadow-md"
           : "relative mx-auto flex h-[480px] w-full flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white p-2 shadow-lg transition-all duration-300 hover:shadow-2xl"

@@ -30,6 +30,7 @@ import { getCloudinaryImageUrl } from "@/lib/cloudinary/buildCloudinaryDeliveryU
 
 interface DiscoveryPublicationCardProps {
   publicacion: EnhancedPublicacion;
+  presentation?: "default" | "desktop";
 }
 
 type MediaOrientation = "vertical" | "horizontal" | "square" | "unknown";
@@ -63,7 +64,7 @@ const buildPublicationLabel = (publicacion: EnhancedPublicacion) => {
 
 export const DiscoveryPublicationCard: React.FC<
   DiscoveryPublicationCardProps
-> = ({ publicacion }) => {
+> = ({ publicacion, presentation = "default" }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [mediaOrientation, setMediaOrientation] =
     useState<MediaOrientation>("unknown");
@@ -204,7 +205,7 @@ export const DiscoveryPublicationCard: React.FC<
 
   return (
     <>
-      <article className={`${styles.card} ${inter.className}`}>
+      <article className={`${styles.card} ${inter.className} ${presentation === "desktop" ? styles.desktopPublication : ""} ${presentation === "desktop" && publicacion.tipo === "TESTIMONIO" ? styles.desktopReview : ""}`}>
         <div className={styles.header}>
           <Link
             href={authorHref}
@@ -255,18 +256,18 @@ export const DiscoveryPublicationCard: React.FC<
           <button
             type="button"
             onClick={openModal}
-            className="group block w-full text-left"
+            className={`group block w-full text-left ${styles.mediaButton}`}
             aria-label="Abrir publicación"
           >
             {isVideo ? (
               videoPosterUrl ? (
-                <div className={`relative w-full overflow-hidden bg-slate-950 ${mediaAspectClass}`}>
+                <div className={`relative w-full overflow-hidden bg-slate-950 ${mediaAspectClass} ${styles.mediaFrame}`}>
                   <Image
                     src={videoPosterUrl}
                     alt={mediaPreviewAlt}
                     fill
                     unoptimized
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 420px"
+                    sizes={presentation === "desktop" ? "680px" : "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 420px"}
                     className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
                     onError={handleVideoPosterError}
                   />
@@ -281,7 +282,7 @@ export const DiscoveryPublicationCard: React.FC<
                   </div>
                 </div>
               ) : (
-                <div className={`flex w-full items-center justify-center bg-slate-900 text-white ${mediaAspectClass}`}>
+                <div className={`flex w-full items-center justify-center bg-slate-900 text-white ${mediaAspectClass} ${styles.mediaFrame}`}>
                   <div className="flex flex-col items-center gap-2 opacity-90 transition-opacity duration-200 group-hover:opacity-100">
                     <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white/15">
                       <FaPlay className="ml-1 text-base" />
@@ -291,12 +292,12 @@ export const DiscoveryPublicationCard: React.FC<
                 </div>
               )
             ) : (
-              <div className={`relative w-full overflow-hidden bg-slate-100 ${mediaAspectClass}`}>
+              <div className={`relative w-full overflow-hidden bg-slate-100 ${mediaAspectClass} ${styles.mediaFrame}`}>
                 <Image
                   src={optimizedPublicationImageUrl}
                   alt={mediaPreviewAlt}
                   fill
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 420px"
+                  sizes={presentation === "desktop" ? "680px" : "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 420px"}
                   className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
                 />
               </div>

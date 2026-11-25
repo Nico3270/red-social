@@ -241,3 +241,17 @@
     background: #334155;
   }
 }
+
+/* Explicit home/For you presentation. No changes to mobile or category cards. */
+@media (min-width: 1280px) {
+  .desktopPublication .mediaFrame { aspect-ratio: auto; height: 320px; }
+  .desktopPublication .mediaFrame img { object-fit: contain; }
+  .desktopPublication .header { padding: 16px 20px; }
+  .desktopPublication .body { padding: 16px 20px; }
+  .desktopPublication .summary { -webkit-line-clamp: 3; line-height: 22px; }
+  .desktopPublication .title { font-size: 18px; line-height: 25px; }
+  .desktopReview .mediaButton { float: right; width: 96px; margin: 0 20px 8px 12px; }
+  .desktopReview .mediaFrame { height: 80px; border-radius: 8px; }
+  .desktopReview .body::after { display: table; clear: both; content: ""; }
+  .desktopReview .title { font-size: 16px; }
+}
