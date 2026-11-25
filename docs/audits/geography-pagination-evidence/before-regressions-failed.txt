@@ -1,0 +1,58 @@
+FAIL src/feed/actions/__geoBefore.test.ts
+  ✕ GEO-01 expected local first despite higher external score (10 ms)
+  ✕ GEO-02 expected all eligible rows across pages (3 ms)
+
+  ● GEO-01 expected local first despite higher external score
+
+    expect(received).toContain(expected) // indexOf
+
+    Expected substring: "-local-"
+    Received string:    "businesses-dept-00"
+
+       7 | it('GEO-01 expected local first despite higher external score',async()=>{
+       8 |  const first=await getFeedDataByType('businesses',params);
+    >  9 |  expect(first.items[0].id).toContain('-local-');
+         |                            ^
+      10 | });
+      11 | it('GEO-02 expected all eligible rows across pages',async()=>{
+      12 |  let cursor:string|undefined;const items:string[]=[];
+
+      at Object.<anonymous> (src/feed/actions/__geoBefore.test.ts:9:28)
+
+  ● GEO-02 expected all eligible rows across pages
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 11
+    + Received  +  0
+
+      Array [
+        "businesses-dept-00",
+        "businesses-dept-01",
+    -   "businesses-dept-02",
+    -   "businesses-local-00",
+    -   "businesses-local-01",
+    -   "businesses-local-02",
+    -   "businesses-local-03",
+    -   "businesses-local-04",
+    -   "businesses-national-00",
+    -   "businesses-national-01",
+    -   "businesses-national-02",
+    -   "businesses-national-03",
+    -   "businesses-national-04",
+      ]
+
+      15 |   items.push(...page.items.map(item=>item.id));cursor=page.nextCursor;if(!cursor)break;
+      16 |  }
+    > 17 |  expect([...new Set(items)].sort()).toEqual(mockRows.map((row:{id:string})=>row.id).sort());
+         |                                     ^
+      18 | });
+      19 |
+
+      at Object.<anonymous> (src/feed/actions/__geoBefore.test.ts:17:37)
+
+Test Suites: 1 failed, 1 total
+Tests:       2 failed, 2 total
+Snapshots:   0 total
+Time:        0.402 s
+Ran all test suites matching src/feed/actions/__geoBefore.test.ts.

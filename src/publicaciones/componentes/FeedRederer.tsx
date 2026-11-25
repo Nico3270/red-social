@@ -14,6 +14,7 @@ import DiscoveryBusinessCard from "@/feed/componentes/DiscoveryBusinessCard";
 import DiscoveryPublicationCard from "@/feed/componentes/DiscoveryPublicationCard";
 import DiscoveryPulseModule, { DiscoveryPulseTone } from "@/feed/componentes/DiscoveryPulseModule";
 import DiscoveryServiceCard from "@/feed/componentes/DiscoveryServiceCard";
+import { groupFeedByLocation } from "@/feed/geography";
 import productModules from "./feedProductModules.module.css";
 
 type FeedTab = "Para ti" | "Publicaciones" | "Productos" | "Servicios" | "Negocios";
@@ -55,6 +56,7 @@ interface FeedRendererProps {
   categoriaNombre?: string;
   categoriaIconName?: string;
   ciudad?: string;
+  departamento?: string;
   productActionLayout?: "separate" | "split";
 }
 
@@ -266,6 +268,7 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
   categoriaNombre,
   categoriaIconName,
   ciudad,
+  departamento,
   productActionLayout = "separate",
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -342,97 +345,99 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
   const cadenceSections = useMemo<CadenceSection[]>(() => {
     if (activeTab !== "Para ti") return [];
 
-    const productQueue = filteredItems.filter(isProductItem);
-    const supportQueues: Record<SupportType, SupportFeedItem[]> = {
-      publication: filteredItems.filter(
-        (item): item is SupportFeedItem => isPublicationItem(item),
-      ),
-      business: filteredItems.filter(
-        (item): item is SupportFeedItem => isBusinessItem(item),
-      ),
-      service: filteredItems.filter(
-        (item): item is SupportFeedItem => isServiceItem(item),
-      ),
-    };
+    return groupFeedByLocation(filteredItems, { ciudad, departamento }).flatMap((group, tierIndex) => {
+      const productQueue = group.filter(isProductItem);
+      const supportQueues: Record<SupportType, SupportFeedItem[]> = {
+        publication: group.filter(
+          (item): item is SupportFeedItem => isPublicationItem(item),
+        ),
+        business: group.filter(
+          (item): item is SupportFeedItem => isBusinessItem(item),
+        ),
+        service: group.filter(
+          (item): item is SupportFeedItem => isServiceItem(item),
+        ),
+      };
 
-    const productPattern = isCategoryFeed
-      ? CATEGORY_PRODUCT_PATTERN
-      : HOME_PRODUCT_PATTERN;
-    const supportPattern = isCategoryFeed
-      ? CATEGORY_SUPPORT_PATTERN
-      : HOME_SUPPORT_PATTERN;
-    const sections: CadenceSection[] = [];
-    const pushSupportSection = (patternIndex: number) => {
-      if (!hasSupportItems(supportQueues)) {
-        return patternIndex;
-      }
+      const productPattern = isCategoryFeed
+        ? CATEGORY_PRODUCT_PATTERN
+        : HOME_PRODUCT_PATTERN;
+      const supportPattern = isCategoryFeed
+        ? CATEGORY_SUPPORT_PATTERN
+        : HOME_SUPPORT_PATTERN;
+      const sections: CadenceSection[] = [];
+      const pushSupportSection = (patternIndex: number) => {
+        if (!hasSupportItems(supportQueues)) {
+          return patternIndex;
+        }
 
-      const supportPlan = supportPattern[patternIndex % supportPattern.length];
-      const supportItems = takeSupportItems(supportQueues, supportPlan);
+        const supportPlan = supportPattern[patternIndex % supportPattern.length];
+        const supportItems = takeSupportItems(supportQueues, supportPlan);
 
-      if (supportItems.length === 0) {
-        return patternIndex;
-      }
+        if (supportItems.length === 0) {
+          return patternIndex;
+        }
 
-      sections.push({
-        kind: "pulse",
-        key: `pulse-${sections.length}`,
-        ...buildPulseMeta(supportItems, discoveryContext, categoriaNombre),
-        items: supportItems,
-      });
+        sections.push({
+          kind: "pulse",
+          key: `pulse-${sections.length}`,
+          ...buildPulseMeta(supportItems, discoveryContext, categoriaNombre),
+          items: supportItems,
+        });
 
-      return patternIndex + 1;
-    };
+        return patternIndex + 1;
+      };
 
-    const leadItems = takeQueueItems(productQueue, leadProductCount);
-    if (leadItems.length > 0) {
-      sections.push({
-        kind: "products",
-        key: "products-lead",
-        emphasis: "lead",
-        items: leadItems,
-      });
-    }
-
-    let productPatternIndex = 0;
-    let supportPatternIndex = 0;
-
-    if (!isCategoryFeed && leadItems.length > 0) {
-      supportPatternIndex = pushSupportSection(supportPatternIndex);
-    }
-
-    while (productQueue.length > 0 || hasSupportItems(supportQueues)) {
-      const productCount = productPattern[productPatternIndex % productPattern.length];
-      const productItems = takeQueueItems(productQueue, productCount);
-
-      if (productItems.length > 0) {
+      const leadItems = takeQueueItems(productQueue, leadProductCount);
+      if (leadItems.length > 0) {
         sections.push({
           kind: "products",
-          key: `products-${sections.length}`,
-          emphasis: "flow",
-          items: productItems,
+          key: "products-lead",
+          emphasis: "lead",
+          items: leadItems,
         });
-        productPatternIndex += 1;
       }
 
-      if (!hasSupportItems(supportQueues)) {
-        if (productItems.length === 0) break;
-        continue;
+      let productPatternIndex = 0;
+      let supportPatternIndex = 0;
+
+      if (!isCategoryFeed && leadItems.length > 0) {
+        supportPatternIndex = pushSupportSection(supportPatternIndex);
       }
 
-      if (productItems.length === 0 && productQueue.length > 0) {
-        continue;
+      while (productQueue.length > 0 || hasSupportItems(supportQueues)) {
+        const productCount = productPattern[productPatternIndex % productPattern.length];
+        const productItems = takeQueueItems(productQueue, productCount);
+
+        if (productItems.length > 0) {
+          sections.push({
+            kind: "products",
+            key: `products-${sections.length}`,
+            emphasis: "flow",
+            items: productItems,
+          });
+          productPatternIndex += 1;
+        }
+
+        if (!hasSupportItems(supportQueues)) {
+          if (productItems.length === 0) break;
+          continue;
+        }
+
+        if (productItems.length === 0 && productQueue.length > 0) {
+          continue;
+        }
+
+        supportPatternIndex = pushSupportSection(supportPatternIndex);
+
+        if (productItems.length === 0 && !hasSupportItems(supportQueues)) {
+          break;
+        }
       }
 
-      supportPatternIndex = pushSupportSection(supportPatternIndex);
-
-      if (productItems.length === 0 && !hasSupportItems(supportQueues)) {
-        break;
-      }
-    }
-
-    return sections;
-  }, [activeTab, categoriaNombre, discoveryContext, filteredItems, isCategoryFeed, leadProductCount]);
+      return sections.map(section => ({ ...section, key: `tier-${tierIndex}-${section.key}` }));
+    });
+  }, [activeTab, categoriaNombre, discoveryContext, filteredItems, isCategoryFeed, leadProductCount, ciudad, departamento]);
 
   // Efecto principal para manejar cambios de tab y relayout
   useEffect(() => {
@@ -649,7 +654,7 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
 
       while (nextSectionIndex < cadenceSections.length) {
         const nextSection = cadenceSections[nextSectionIndex];
-        if (nextSection.kind !== "pulse") break;
+        if (nextSection.kind !== "pulse" || nextSection.key.split("-")[1] !== section.key.split("-")[1]) break;
 
         pulseSections.push(nextSection);
         nextSectionIndex += 1;
@@ -844,13 +849,14 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
               renderCadenceFeed()
             ) : (
               <div ref={masonryWrapperRef} className="w-full">
+                {groupFeedByLocation(filteredItems, { ciudad, departamento }).map((group, tierIndex) => (
                 <Masonry
-                  key={`${activeTab}-${itemsHash}-${isLayoutReady ? 'ready' : 'loading'}`}
+                  key={`${tierIndex}-${activeTab}-${itemsHash}-${isLayoutReady ? 'ready' : 'loading'}`}
                   breakpointCols={breakpointCols}
                   className="masonry-container flex w-auto -ml-0 lg:-ml-2"
                   columnClassName="masonry-column pl-0 md:px-2 bg-clip-padding"
                 >
-                  {filteredItems.map((item, index) => (
+                  {group.map((item, index) => (
                     <motion.div
                       key={`${item.type}-${item.id}`}
                       data-feed-item-key={`${item.type}-${item.id}`}
@@ -863,6 +869,7 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
                     </motion.div>
                   ))}
                 </Masonry>
+                ))}
               </div>
             )}
           </>
@@ -892,7 +899,7 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
         </div>
       )}
 
-      <div ref={sentinelRef} className="h-1" />
+      <div ref={sentinelRef} data-feed-sentinel className="h-1" />
     </div>
   );
 };

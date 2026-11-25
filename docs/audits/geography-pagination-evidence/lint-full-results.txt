@@ -1,0 +1,36 @@
+
+> myckeo@0.1.0 lint /home/nico/red-social
+> next lint
+
+`next lint` is deprecated and will be removed in Next.js 16.
+For new projects, use create-next-app to choose your preferred linter.
+For existing projects, migrate to the ESLint CLI:
+npx @next/codemod@canary next-lint-to-eslint-cli .
+
+
+./src/actions/productos/changeStatusProduct.ts
+92:12  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/activar/ActivationBootstrap.test.tsx
+347:21  Warning: '_body' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/products/create/route.ts
+8:10  Warning: 'replaceGallery' is defined but never used.  @typescript-eslint/no-unused-vars
+8:26  Warning: 'lockProduct' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/myckeoAdmin/crearProductos/_componentes/AssistedProductCreationClient.tsx
+3516:11  Error: Do not use an `<a>` element to navigate to `/myckeoAdmin/incorporacion/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages  @next/next/no-html-link-for-pages
+3516:11  Error: Do not use an `<a>` element to navigate to `/myckeoAdmin/incorporacion/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages  @next/next/no-html-link-for-pages
+
+./src/ui/actions/productos/createNewProduct.ts
+7:10  Warning: 'replaceGallery' is defined but never used.  @typescript-eslint/no-unused-vars
+7:26  Warning: 'lockProduct' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/ui/components/onboarding/BusinessDemoProfile.tsx
+16:11  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+26:11  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+55:15  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+72:21  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/app/api-reference/config/eslint#disabling-rules
+ ELIFECYCLE  Command failed with exit code 1.

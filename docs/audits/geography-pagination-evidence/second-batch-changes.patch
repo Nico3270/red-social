@@ -1,0 +1,2879 @@
+--- a/src/feed/actions/getFeedData.ts
++++ b/src/feed/actions/getFeedData.ts
+@@ -2,11 +2,10 @@
+ "use server";
+ 
+ import {
+-  buildPublishedBusinessRelationWhere,
+   buildPublishedBusinessWhere,
+ } from "@/lib/business/business-visibility-policy";
+ import prisma from "@/lib/prisma";
+-import { FeedQueryParams, FeedResponse, FeedItem } from "../feed.interfaces";
++import { FeedResponse, FeedItem } from "../feed.interfaces";
+ import { Prisma, ReaccionTipo } from "@prisma/client";
+ import {
+   productSelect,
+@@ -17,11 +16,13 @@
+   RawPublication,
+   RawService,
+   RawBusiness,
++  RawData,
+ } from "./selects";
+ import { mapToFeedItem } from "./mapItem";
+ import { isRawProduct, isRawPublication, isRawService, isRawBusiness } from "../feed.interfaces";
+ import { EnhancedPublicacion } from "@/publicaciones/interfaces/enhancedPublicacion.interface";
+-import { extractSeenRawIds } from "../feed-ids";
++import { getLocationTier } from "../geography";
++import { getGeographicPage, feedIdWhere, nationalLocationWhere, type FeedPageParams, type FeedFetchers } from "./feedPage";
+ import { rankRawItems } from "./feedRanking";
+ 
+ // === 1. FUNCIONES FETCH (orden correcto) ===
+@@ -44,11 +45,11 @@
+   };
+ }
+ 
+-async function fetchPublicationsCity(params: ExtendedParams): Promise<RawPublication[]> {
++async function fetchPublicationsCity(params: FeedPageParams): Promise<RawPublication[]> {
+   const where: Prisma.PublicacionWhereInput = {
+     tipo: { in: ["TESTIMONIO", "CARRUSEL_IMAGENES"] },
+     visibilidad: "PUBLICA",
+-    id: { notIn: extractSeenRawIds(params.seenIds, "publications") },
++    id: feedIdWhere(params, "publications"),
+     negocio: buildPublishedBusinessRelationWith({
+       ciudad: params.ciudad,
+     }),
+@@ -56,18 +57,18 @@
+   return prisma.publicacion.findMany({
+     where,
+     select: publicationSelect,
+-    orderBy: [{ orden: "desc" }],
+-    take: params.limit,
+-    cursor: params.cursor ? { id: params.cursor } : undefined,
+-    skip: params.cursor ? 1 : 0,
+-  });
+-}
+-
+-async function fetchPublicationsDept(params: ExtendedParams): Promise<RawPublication[]> {
++    orderBy: [{ orden: "desc" }, { createdAt: "desc" }, { id: "asc" }],
++    take: params.limit,
++    cursor: params.cursor ? { id: params.cursor } : undefined,
++    skip: params.cursor ? 1 : 0,
++  });
++}
++
++async function fetchPublicationsDept(params: FeedPageParams): Promise<RawPublication[]> {
+   const where: Prisma.PublicacionWhereInput = {
+     tipo: { in: ["TESTIMONIO", "CARRUSEL_IMAGENES"] },
+     visibilidad: "PUBLICA",
+-    id: { notIn: extractSeenRawIds(params.seenIds, "publications") },
++    id: feedIdWhere(params, "publications"),
+     negocio: buildPublishedBusinessRelationWith({
+       departamento: params.departamento,
+       ciudad: { not: params.ciudad },
+@@ -76,34 +77,34 @@
+   return prisma.publicacion.findMany({
+     where,
+     select: publicationSelect,
+-    orderBy: [{ orden: "desc" }],
+-    take: params.limit,
+-    cursor: params.cursor ? { id: params.cursor } : undefined,
+-    skip: params.cursor ? 1 : 0,
+-  });
+-}
+-
+-async function fetchPublicationsNational(params: ExtendedParams): Promise<RawPublication[]> {
++    orderBy: [{ orden: "desc" }, { createdAt: "desc" }, { id: "asc" }],
++    take: params.limit,
++    cursor: params.cursor ? { id: params.cursor } : undefined,
++    skip: params.cursor ? 1 : 0,
++  });
++}
++
++async function fetchPublicationsNational(params: FeedPageParams): Promise<RawPublication[]> {
+   const where: Prisma.PublicacionWhereInput = {
+     tipo: { in: ["TESTIMONIO", "CARRUSEL_IMAGENES"] },
+     visibilidad: "PUBLICA",
+-    id: { notIn: extractSeenRawIds(params.seenIds, "publications") },
+-    negocio: buildPublishedBusinessRelationWhere(),
++    id: feedIdWhere(params, "publications"),
++    negocio: buildPublishedBusinessRelationWith(nationalLocationWhere(params)),
+   };
+   return prisma.publicacion.findMany({
+     where,
+     select: publicationSelect,
+-    orderBy: [{ orden: "desc" }],
+-    take: params.limit,
+-    cursor: params.cursor ? { id: params.cursor } : undefined,
+-    skip: params.cursor ? 1 : 0,
+-  });
+-}
+-
+-async function fetchProductsCity(params: ExtendedParams): Promise<RawProduct[]> {
++    orderBy: [{ orden: "desc" }, { createdAt: "desc" }, { id: "asc" }],
++    take: params.limit,
++    cursor: params.cursor ? { id: params.cursor } : undefined,
++    skip: params.cursor ? 1 : 0,
++  });
++}
++
++async function fetchProductsCity(params: FeedPageParams): Promise<RawProduct[]> {
+   const where: Prisma.ProductWhereInput = {
+     status: "disponible",
+-    id: { notIn: extractSeenRawIds(params.seenIds, "products") },
++    id: feedIdWhere(params, "products"),
+     negocio: buildPublishedBusinessRelationWith({
+       ciudad: params.ciudad,
+     }),
+@@ -111,17 +112,17 @@
+   return prisma.product.findMany({
+     where,
+     select: productSelect,
+-    orderBy: [{ orden: "desc" }],
+-    take: params.limit,
+-    cursor: params.cursor ? { id: params.cursor } : undefined,
+-    skip: params.cursor ? 1 : 0,
+-  });
+-}
+-
+-async function fetchProductsDept(params: ExtendedParams): Promise<RawProduct[]> {
++    orderBy: [{ orden: "desc" }, { createdAt: "desc" }, { id: "asc" }],
++    take: params.limit,
++    cursor: params.cursor ? { id: params.cursor } : undefined,
++    skip: params.cursor ? 1 : 0,
++  });
++}
++
++async function fetchProductsDept(params: FeedPageParams): Promise<RawProduct[]> {
+   const where: Prisma.ProductWhereInput = {
+     status: "disponible",
+-    id: { notIn: extractSeenRawIds(params.seenIds, "products") },
++    id: feedIdWhere(params, "products"),
+     negocio: buildPublishedBusinessRelationWith({
+       departamento: params.departamento,
+       ciudad: { not: params.ciudad },
+@@ -130,33 +131,33 @@
+   return prisma.product.findMany({
+     where,
+     select: productSelect,
+-    orderBy: [{ orden: "desc" }],
+-    take: params.limit,
+-    cursor: params.cursor ? { id: params.cursor } : undefined,
+-    skip: params.cursor ? 1 : 0,
+-  });
+-}
+-
+-async function fetchProductsNational(params: ExtendedParams): Promise<RawProduct[]> {
++    orderBy: [{ orden: "desc" }, { createdAt: "desc" }, { id: "asc" }],
++    take: params.limit,
++    cursor: params.cursor ? { id: params.cursor } : undefined,
++    skip: params.cursor ? 1 : 0,
++  });
++}
++
++async function fetchProductsNational(params: FeedPageParams): Promise<RawProduct[]> {
+   const where: Prisma.ProductWhereInput = {
+     status: "disponible",
+-    id: { notIn: extractSeenRawIds(params.seenIds, "products") },
+-    negocio: buildPublishedBusinessRelationWhere(),
++    id: feedIdWhere(params, "products"),
++    negocio: buildPublishedBusinessRelationWith(nationalLocationWhere(params)),
+   };
+   return prisma.product.findMany({
+     where,
+     select: productSelect,
+-    orderBy: [{ orden: "desc" }],
+-    take: params.limit,
+-    cursor: params.cursor ? { id: params.cursor } : undefined,
+-    skip: params.cursor ? 1 : 0,
+-  });
+-}
+-
+-async function fetchServicesCity(params: ExtendedParams): Promise<RawService[]> {
++    orderBy: [{ orden: "desc" }, { createdAt: "desc" }, { id: "asc" }],
++    take: params.limit,
++    cursor: params.cursor ? { id: params.cursor } : undefined,
++    skip: params.cursor ? 1 : 0,
++  });
++}
++
++async function fetchServicesCity(params: FeedPageParams): Promise<RawService[]> {
+   const where: Prisma.ServicioWhereInput = {
+     status: "disponible",
+-    id: { notIn: extractSeenRawIds(params.seenIds, "services") },
++    id: feedIdWhere(params, "services"),
+     negocio: buildPublishedBusinessRelationWith({
+       ciudad: params.ciudad,
+     }),
+@@ -164,17 +165,17 @@
+   return prisma.servicio.findMany({
+     where,
+     select: serviceSelect,
+-    orderBy: [{ orden: "desc" }],
+-    take: params.limit,
+-    cursor: params.cursor ? { id: params.cursor } : undefined,
+-    skip: params.cursor ? 1 : 0,
+-  });
+-}
+-
+-async function fetchServicesDept(params: ExtendedParams): Promise<RawService[]> {
++    orderBy: [{ orden: "desc" }, { createdAt: "desc" }, { id: "asc" }],
++    take: params.limit,
++    cursor: params.cursor ? { id: params.cursor } : undefined,
++    skip: params.cursor ? 1 : 0,
++  });
++}
++
++async function fetchServicesDept(params: FeedPageParams): Promise<RawService[]> {
+   const where: Prisma.ServicioWhereInput = {
+     status: "disponible",
+-    id: { notIn: extractSeenRawIds(params.seenIds, "services") },
++    id: feedIdWhere(params, "services"),
+     negocio: buildPublishedBusinessRelationWith({
+       departamento: params.departamento,
+       ciudad: { not: params.ciudad },
+@@ -183,68 +184,69 @@
+   return prisma.servicio.findMany({
+     where,
+     select: serviceSelect,
+-    orderBy: [{ orden: "desc" }],
+-    take: params.limit,
+-    cursor: params.cursor ? { id: params.cursor } : undefined,
+-    skip: params.cursor ? 1 : 0,
+-  });
+-}
+-
+-async function fetchServicesNational(params: ExtendedParams): Promise<RawService[]> {
++    orderBy: [{ orden: "desc" }, { createdAt: "desc" }, { id: "asc" }],
++    take: params.limit,
++    cursor: params.cursor ? { id: params.cursor } : undefined,
++    skip: params.cursor ? 1 : 0,
++  });
++}
++
++async function fetchServicesNational(params: FeedPageParams): Promise<RawService[]> {
+   const where: Prisma.ServicioWhereInput = {
+     status: "disponible",
+-    id: { notIn: extractSeenRawIds(params.seenIds, "services") },
+-    negocio: buildPublishedBusinessRelationWhere(),
++    id: feedIdWhere(params, "services"),
++    negocio: buildPublishedBusinessRelationWith(nationalLocationWhere(params)),
+   };
+   return prisma.servicio.findMany({
+     where,
+     select: serviceSelect,
+-    orderBy: [{ orden: "desc" }],
+-    take: params.limit,
+-    cursor: params.cursor ? { id: params.cursor } : undefined,
+-    skip: params.cursor ? 1 : 0,
+-  });
+-}
+-
+-async function fetchBusinessesCity(params: ExtendedParams): Promise<RawBusiness[]> {
++    orderBy: [{ orden: "desc" }, { createdAt: "desc" }, { id: "asc" }],
++    take: params.limit,
++    cursor: params.cursor ? { id: params.cursor } : undefined,
++    skip: params.cursor ? 1 : 0,
++  });
++}
++
++async function fetchBusinessesCity(params: FeedPageParams): Promise<RawBusiness[]> {
+   const where = buildPublishedBusinessWith({
+-    id: { notIn: extractSeenRawIds(params.seenIds, "businesses") },
++    id: feedIdWhere(params, "businesses"),
+     ciudad: params.ciudad,
+   });
+   return prisma.negocio.findMany({
+     where,
+     select: businessSelect,
+-    orderBy: [{ orden: "desc" }],
+-    take: params.limit,
+-    cursor: params.cursor ? { id: params.cursor } : undefined,
+-    skip: params.cursor ? 1 : 0,
+-  });
+-}
+-
+-async function fetchBusinessesDept(params: ExtendedParams): Promise<RawBusiness[]> {
++    orderBy: [{ orden: "desc" }, { createdAt: "desc" }, { id: "asc" }],
++    take: params.limit,
++    cursor: params.cursor ? { id: params.cursor } : undefined,
++    skip: params.cursor ? 1 : 0,
++  });
++}
++
++async function fetchBusinessesDept(params: FeedPageParams): Promise<RawBusiness[]> {
+   const where = buildPublishedBusinessWith({
+-    id: { notIn: extractSeenRawIds(params.seenIds, "businesses") },
++    id: feedIdWhere(params, "businesses"),
+     departamento: params.departamento,
+     ciudad: { not: params.ciudad },
+   });
+   return prisma.negocio.findMany({
+     where,
+     select: businessSelect,
+-    orderBy: [{ orden: "desc" }, { createdAt: "desc" }],
+-    take: params.limit,
+-    cursor: params.cursor ? { id: params.cursor } : undefined,
+-    skip: params.cursor ? 1 : 0,
+-  });
+-}
+-
+-async function fetchBusinessesNational(params: ExtendedParams): Promise<RawBusiness[]> {
++    orderBy: [{ orden: "desc" }, { createdAt: "desc" }, { id: "asc" }],
++    take: params.limit,
++    cursor: params.cursor ? { id: params.cursor } : undefined,
++    skip: params.cursor ? 1 : 0,
++  });
++}
++
++async function fetchBusinessesNational(params: FeedPageParams): Promise<RawBusiness[]> {
+   const where = buildPublishedBusinessWith({
+-    id: { notIn: extractSeenRawIds(params.seenIds, "businesses") },
++    id: feedIdWhere(params, "businesses"),
++    ...nationalLocationWhere(params),
+   });
+   return prisma.negocio.findMany({
+     where,
+     select: businessSelect,
+-    orderBy: [{ orden: "desc" }, { createdAt: "desc" }],
++    orderBy: [{ orden: "desc" }, { createdAt: "desc" }, { id: "asc" }],
+     take: params.limit,
+     cursor: params.cursor ? { id: params.cursor } : undefined,
+     skip: params.cursor ? 1 : 0,
+@@ -252,109 +254,24 @@
+ }
+ 
+ // === 2. INTERFACES Y HELPERS ===
+-
+-interface SortableItem {
+-  id: string;
+-  orden?: number;
+-  createdAt: Date;
+-}
+-
+-interface ExtendedParams extends FeedQueryParams {
+-  cursor?: string;
+-  userId?: string | null;
+-  userLat?: number | null;
+-  userLong?: number | null;
+-}
+-
+-const sortGroup = <T extends SortableItem>(items: T[]): T[] => {
+-  return items.sort((a, b) => {
+-    const orderA = a.orden ?? 0;
+-    const orderB = b.orden ?? 0;
+-    if (orderB !== orderA) return orderB - orderA;
+-    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+-  });
+-};
+-
+-async function fetchWithPriority<T extends SortableItem>(
+-  fetchCity: (params: ExtendedParams) => Promise<T[]>,
+-  fetchDept: (params: ExtendedParams) => Promise<T[]>,
+-  fetchNational: (params: ExtendedParams) => Promise<T[]>,
+-  params: ExtendedParams,
+-  type: string,
+-  buffer: number = 10
+-): Promise<T[]> {
+-  const limitWithBuffer = params.limit + buffer;
+-  let items: T[] = [];
+-  let remaining = limitWithBuffer;
+-
+-  try {
+-    const cityItems = await fetchCity({ ...params, limit: remaining });
+-    items = [...items, ...sortGroup(cityItems)];
+-    remaining -= cityItems.length;
+-  } catch (e) {
+-    console.error(`Error en ${type} ciudad:`, e);
+-  }
+-
+-  if (remaining > 0 && params.departamento) {
+-    try {
+-      const deptItems = await fetchDept({ ...params, limit: remaining });
+-      items = [...items, ...sortGroup(deptItems)];
+-      remaining -= deptItems.length;
+-    } catch (e) {
+-      console.error(`Error en ${type} depto:`, e);
+-    }
+-  }
+-
+-  if (remaining > 0) {
+-    try {
+-      const nationalItems = await fetchNational({ ...params, limit: remaining });
+-      items = [...items, ...sortGroup(nationalItems)];
+-    } catch (e) {
+-      console.error(`Error en ${type} nacional:`, e);
+-    }
+-  }
+-
+-  const uniqueItems = Array.from(new Map(items.map((item) => [item.id, item])).values());
+-  return uniqueItems.slice(0, params.limit + buffer);
+-}
+ 
+ // === 3. getFeedDataByType ===
+ export async function getFeedDataByType(
+   type: "products" | "publications" | "services" | "businesses",
+-  params: ExtendedParams
++  params: FeedPageParams
+ ): Promise<FeedResponse> {
+   if (!params.ciudad) throw new Error("Ciudad requerida para feed local");
+ 
+-  let rawItems: (RawProduct | RawPublication | RawService | RawBusiness)[] = [];
+-  let nextCursor: string | undefined;
+-
+-  try {
+-    switch (type) {
+-      case "products":
+-        rawItems = await fetchWithPriority<RawProduct>(fetchProductsCity, fetchProductsDept, fetchProductsNational, params, "products");
+-        break;
+-      case "publications":
+-        rawItems = await fetchWithPriority<RawPublication>(
+-          fetchPublicationsCity,
+-          fetchPublicationsDept,
+-          fetchPublicationsNational,
+-          params,
+-          "publications"
+-        );
+-        break;
+-      case "services":
+-        rawItems = await fetchWithPriority<RawService>(fetchServicesCity, fetchServicesDept, fetchServicesNational, params, "services");
+-        break;
+-      case "businesses":
+-        rawItems = await fetchWithPriority<RawBusiness>(fetchBusinessesCity, fetchBusinessesDept, fetchBusinessesNational, params, "businesses");
+-        break;
+-    }
+-  } catch (error) {
+-    console.error(`Error fetching ${type}:`, error);
+-    rawItems = [];
+-  }
+-  const rankedRawItems = rankRawItems(rawItems, type, params);
+-  rawItems = rankedRawItems.map(({ item }) => item);
++  const fetchers = {
++    products: [fetchProductsCity, fetchProductsDept, fetchProductsNational],
++    publications: [fetchPublicationsCity, fetchPublicationsDept, fetchPublicationsNational],
++    services: [fetchServicesCity, fetchServicesDept, fetchServicesNational],
++    businesses: [fetchBusinessesCity, fetchBusinessesDept, fetchBusinessesNational],
++  } satisfies Record<string, FeedFetchers<RawData>>;
++  const { rankedItems: rankedRawItems, nextCursor, nextTier } = await getGeographicPage<RawData>(
++    type, params, fetchers[type], items => rankRawItems(items, type, params),
++  );
++  const rawItems = rankedRawItems.map(({ item }) => item);
+ 
+   // === Reacciones ===
+   let userReactionsMap: Record<string, { id: string; tipo: ReaccionTipo } | null> = {};
+@@ -428,15 +345,12 @@
+       negocioId = raw.id;
+     }
+     (item.data as { negocioId?: string }).negocioId = negocioId;
++    item.locationTier = getLocationTier(isRawBusiness(raw) ? raw : raw.negocio ?? {}, params);
+     item.isFollowed = params.followedBusinessIds?.includes(negocioId) ?? false;
+     item.score = scoreMap.get(raw.id) ?? item.score;
+ 
+     return item;
+   });
+ 
+-  if (rawItems.length >= params.limit) {
+-    nextCursor = rawItems[rawItems.length - 1].id;
+-  }
+-
+-  return { items: items.slice(0, params.limit), nextCursor };
+-}
++  return { items, nextCursor, nextTier };
++}
+--- a/src/feed/actions/getFeedDataByCategory.ts
++++ b/src/feed/actions/getFeedDataByCategory.ts
+@@ -2,11 +2,10 @@
+ "use server";
+ 
+ import {
+-  buildPublishedBusinessRelationWhere,
+   buildPublishedBusinessWhere,
+ } from "@/lib/business/business-visibility-policy";
+ import prisma from "@/lib/prisma";
+-import { FeedQueryParams, FeedResponse, FeedItem } from "../feed.interfaces";
++import { FeedResponse, FeedItem } from "../feed.interfaces";
+ import { Prisma, ReaccionTipo } from "@prisma/client";
+ import {
+   productSelect,
+@@ -17,11 +16,13 @@
+   RawPublication,
+   RawService,
+   RawBusiness,
++  RawData,
+ } from "./selects";
+ import { mapToFeedItem } from "./mapItem";
+ import { isRawProduct, isRawPublication, isRawService, isRawBusiness } from "../feed.interfaces";
+ import { EnhancedPublicacion } from "@/publicaciones/interfaces/enhancedPublicacion.interface";
+-import { extractSeenRawIds } from "../feed-ids";
++import { getLocationTier } from "../geography";
++import { getGeographicPage, feedIdWhere, nationalLocationWhere, type FeedPageParams, type FeedFetchers } from "./feedPage";
+ import { rankRawItems } from "./feedRanking";
+ 
+ // === 1. FUNCIONES FETCH ===
+@@ -44,10 +45,10 @@
+   };
+ }
+ 
+-async function fetchProductsCity(params: ExtendedParams): Promise<RawProduct[]> {
++async function fetchProductsCity(params: FeedPageParams): Promise<RawProduct[]> {
+   const where: Prisma.ProductWhereInput = {
+     status: "disponible",
+-    id: { notIn: extractSeenRawIds(params.seenIds, "products") },
++    id: feedIdWhere(params, "products"),
+     category: { slug: params.categoriaSlug },
+     negocio: buildPublishedBusinessRelationWith({
+       ciudad: params.ciudad,
+@@ -56,17 +57,17 @@
+   return prisma.product.findMany({
+     where,
+     select: productSelect,
+-    orderBy: [{ orden: "desc" }, { createdAt: "desc" }],
+-    take: params.limit,
+-    cursor: params.cursor ? { id: params.cursor } : undefined,
+-    skip: params.cursor ? 1 : 0,
+-  });
+-}
+-
+-async function fetchProductsDept(params: ExtendedParams): Promise<RawProduct[]> {
++    orderBy: [{ orden: "desc" }, { createdAt: "desc" }, { id: "asc" }],
++    take: params.limit,
++    cursor: params.cursor ? { id: params.cursor } : undefined,
++    skip: params.cursor ? 1 : 0,
++  });
++}
++
++async function fetchProductsDept(params: FeedPageParams): Promise<RawProduct[]> {
+   const where: Prisma.ProductWhereInput = {
+     status: "disponible",
+-    id: { notIn: extractSeenRawIds(params.seenIds, "products") },
++    id: feedIdWhere(params, "products"),
+     category: { slug: params.categoriaSlug },
+     negocio: buildPublishedBusinessRelationWith({
+       departamento: params.departamento,
+@@ -76,34 +77,34 @@
+   return prisma.product.findMany({
+     where,
+     select: productSelect,
+-    orderBy: [{ orden: "desc" }, { createdAt: "desc" }],
+-    take: params.limit,
+-    cursor: params.cursor ? { id: params.cursor } : undefined,
+-    skip: params.cursor ? 1 : 0,
+-  });
+-}
+-
+-async function fetchProductsNational(params: ExtendedParams): Promise<RawProduct[]> {
++    orderBy: [{ orden: "desc" }, { createdAt: "desc" }, { id: "asc" }],
++    take: params.limit,
++    cursor: params.cursor ? { id: params.cursor } : undefined,
++    skip: params.cursor ? 1 : 0,
++  });
++}
++
++async function fetchProductsNational(params: FeedPageParams): Promise<RawProduct[]> {
+   const where: Prisma.ProductWhereInput = {
+     status: "disponible",
+-    id: { notIn: extractSeenRawIds(params.seenIds, "products") },
++    id: feedIdWhere(params, "products"),
+     category: { slug: params.categoriaSlug },
+-    negocio: buildPublishedBusinessRelationWhere(),
++    negocio: buildPublishedBusinessRelationWith(nationalLocationWhere(params)),
+   };
+   return prisma.product.findMany({
+     where,
+     select: productSelect,
+-    orderBy: [{ orden: "desc" }, { createdAt: "desc" }],
+-    take: params.limit,
+-    cursor: params.cursor ? { id: params.cursor } : undefined,
+-    skip: params.cursor ? 1 : 0,
+-  });
+-}
+-
+-async function fetchServicesCity(params: ExtendedParams): Promise<RawService[]> {
++    orderBy: [{ orden: "desc" }, { createdAt: "desc" }, { id: "asc" }],
++    take: params.limit,
++    cursor: params.cursor ? { id: params.cursor } : undefined,
++    skip: params.cursor ? 1 : 0,
++  });
++}
++
++async function fetchServicesCity(params: FeedPageParams): Promise<RawService[]> {
+   const where: Prisma.ServicioWhereInput = {
+     status: "disponible",
+-    id: { notIn: extractSeenRawIds(params.seenIds, "services") },
++    id: feedIdWhere(params, "services"),
+     negocio: buildPublishedBusinessRelationWith({
+       ciudad: params.ciudad,
+       categorias: { some: { category: { slug: params.categoriaSlug } } },
+@@ -112,17 +113,17 @@
+   return prisma.servicio.findMany({
+     where,
+     select: serviceSelect,
+-    orderBy: [{ orden: "desc" }, { createdAt: "desc" }],
+-    take: params.limit,
+-    cursor: params.cursor ? { id: params.cursor } : undefined,
+-    skip: params.cursor ? 1 : 0,
+-  });
+-}
+-
+-async function fetchServicesDept(params: ExtendedParams): Promise<RawService[]> {
++    orderBy: [{ orden: "desc" }, { createdAt: "desc" }, { id: "asc" }],
++    take: params.limit,
++    cursor: params.cursor ? { id: params.cursor } : undefined,
++    skip: params.cursor ? 1 : 0,
++  });
++}
++
++async function fetchServicesDept(params: FeedPageParams): Promise<RawService[]> {
+   const where: Prisma.ServicioWhereInput = {
+     status: "disponible",
+-    id: { notIn: extractSeenRawIds(params.seenIds, "services") },
++    id: feedIdWhere(params, "services"),
+     negocio: buildPublishedBusinessRelationWith({
+       departamento: params.departamento,
+       ciudad: { not: params.ciudad },
+@@ -132,50 +133,51 @@
+   return prisma.servicio.findMany({
+     where,
+     select: serviceSelect,
+-    orderBy: [{ orden: "desc" }, { createdAt: "desc" }],
+-    take: params.limit,
+-    cursor: params.cursor ? { id: params.cursor } : undefined,
+-    skip: params.cursor ? 1 : 0,
+-  });
+-}
+-
+-async function fetchServicesNational(params: ExtendedParams): Promise<RawService[]> {
++    orderBy: [{ orden: "desc" }, { createdAt: "desc" }, { id: "asc" }],
++    take: params.limit,
++    cursor: params.cursor ? { id: params.cursor } : undefined,
++    skip: params.cursor ? 1 : 0,
++  });
++}
++
++async function fetchServicesNational(params: FeedPageParams): Promise<RawService[]> {
+   const where: Prisma.ServicioWhereInput = {
+     status: "disponible",
+-    id: { notIn: extractSeenRawIds(params.seenIds, "services") },
+-    negocio: buildPublishedBusinessRelationWith({
++    id: feedIdWhere(params, "services"),
++    negocio: buildPublishedBusinessRelationWith({
++      ...nationalLocationWhere(params),
+       categorias: { some: { category: { slug: params.categoriaSlug } } },
+     }),
+   };
+   return prisma.servicio.findMany({
+     where,
+     select: serviceSelect,
+-    orderBy: [{ orden: "desc" }, { createdAt: "desc" }],
+-    take: params.limit,
+-    cursor: params.cursor ? { id: params.cursor } : undefined,
+-    skip: params.cursor ? 1 : 0,
+-  });
+-}
+-
+-async function fetchBusinessesCity(params: ExtendedParams): Promise<RawBusiness[]> {
++    orderBy: [{ orden: "desc" }, { createdAt: "desc" }, { id: "asc" }],
++    take: params.limit,
++    cursor: params.cursor ? { id: params.cursor } : undefined,
++    skip: params.cursor ? 1 : 0,
++  });
++}
++
++async function fetchBusinessesCity(params: FeedPageParams): Promise<RawBusiness[]> {
+   const where = buildPublishedBusinessWith({
+-    id: { notIn: extractSeenRawIds(params.seenIds, "businesses") },
++    id: feedIdWhere(params, "businesses"),
+     ciudad: params.ciudad,
+     categorias: { some: { category: { slug: params.categoriaSlug } } },
+   });
+   return prisma.negocio.findMany({
+     where,
+     select: businessSelect,
+-    orderBy: [{ orden: "desc" }, { createdAt: "desc" }],
+-    take: params.limit,
+-    cursor: params.cursor ? { id: params.cursor } : undefined,
+-    skip: params.cursor ? 1 : 0,
+-  });
+-}
+-
+-async function fetchBusinessesDept(params: ExtendedParams): Promise<RawBusiness[]> {
++    orderBy: [{ orden: "desc" }, { createdAt: "desc" }, { id: "asc" }],
++    take: params.limit,
++    cursor: params.cursor ? { id: params.cursor } : undefined,
++    skip: params.cursor ? 1 : 0,
++  });
++}
++
++async function fetchBusinessesDept(params: FeedPageParams): Promise<RawBusiness[]> {
+   const where = buildPublishedBusinessWith({
+-    id: { notIn: extractSeenRawIds(params.seenIds, "businesses") },
++    id: feedIdWhere(params, "businesses"),
+     departamento: params.departamento,
+     ciudad: { not: params.ciudad },
+     categorias: { some: { category: { slug: params.categoriaSlug } } },
+@@ -183,33 +185,34 @@
+   return prisma.negocio.findMany({
+     where,
+     select: businessSelect,
+-    orderBy: [{ orden: "desc" }, { createdAt: "desc" }],
+-    take: params.limit,
+-    cursor: params.cursor ? { id: params.cursor } : undefined,
+-    skip: params.cursor ? 1 : 0,
+-  });
+-}
+-
+-async function fetchBusinessesNational(params: ExtendedParams): Promise<RawBusiness[]> {
++    orderBy: [{ orden: "desc" }, { createdAt: "desc" }, { id: "asc" }],
++    take: params.limit,
++    cursor: params.cursor ? { id: params.cursor } : undefined,
++    skip: params.cursor ? 1 : 0,
++  });
++}
++
++async function fetchBusinessesNational(params: FeedPageParams): Promise<RawBusiness[]> {
+   const where = buildPublishedBusinessWith({
+-    id: { notIn: extractSeenRawIds(params.seenIds, "businesses") },
++    id: feedIdWhere(params, "businesses"),
++    ...nationalLocationWhere(params),
+     categorias: { some: { category: { slug: params.categoriaSlug } } },
+   });
+   return prisma.negocio.findMany({
+     where,
+     select: businessSelect,
+-    orderBy: [{ orden: "desc" }, { createdAt: "desc" }],
+-    take: params.limit,
+-    cursor: params.cursor ? { id: params.cursor } : undefined,
+-    skip: params.cursor ? 1 : 0,
+-  });
+-}
+-
+-async function fetchPublicationsCity(params: ExtendedParams): Promise<RawPublication[]> {
++    orderBy: [{ orden: "desc" }, { createdAt: "desc" }, { id: "asc" }],
++    take: params.limit,
++    cursor: params.cursor ? { id: params.cursor } : undefined,
++    skip: params.cursor ? 1 : 0,
++  });
++}
++
++async function fetchPublicationsCity(params: FeedPageParams): Promise<RawPublication[]> {
+   const where: Prisma.PublicacionWhereInput = {
+     tipo: { in: ["TESTIMONIO", "CARRUSEL_IMAGENES"] },
+     visibilidad: "PUBLICA",
+-    id: { notIn: extractSeenRawIds(params.seenIds, "publications") },
++    id: feedIdWhere(params, "publications"),
+     negocio: buildPublishedBusinessRelationWith({
+       ciudad: params.ciudad,
+       categorias: { some: { category: { slug: params.categoriaSlug } } },
+@@ -218,18 +221,18 @@
+   return prisma.publicacion.findMany({
+     where,
+     select: publicationSelect,
+-    orderBy: [{ orden: "desc" }, { createdAt: "desc" }],
+-    take: params.limit,
+-    cursor: params.cursor ? { id: params.cursor } : undefined,
+-    skip: params.cursor ? 1 : 0,
+-  });
+-}
+-
+-async function fetchPublicationsDept(params: ExtendedParams): Promise<RawPublication[]> {
++    orderBy: [{ orden: "desc" }, { createdAt: "desc" }, { id: "asc" }],
++    take: params.limit,
++    cursor: params.cursor ? { id: params.cursor } : undefined,
++    skip: params.cursor ? 1 : 0,
++  });
++}
++
++async function fetchPublicationsDept(params: FeedPageParams): Promise<RawPublication[]> {
+   const where: Prisma.PublicacionWhereInput = {
+     tipo: { in: ["TESTIMONIO", "CARRUSEL_IMAGENES"] },
+     visibilidad: "PUBLICA",
+-    id: { notIn: extractSeenRawIds(params.seenIds, "publications") },
++    id: feedIdWhere(params, "publications"),
+     negocio: buildPublishedBusinessRelationWith({
+       departamento: params.departamento,
+       ciudad: { not: params.ciudad },
+@@ -239,26 +242,27 @@
+   return prisma.publicacion.findMany({
+     where,
+     select: publicationSelect,
+-    orderBy: [{ orden: "desc" }, { createdAt: "desc" }],
+-    take: params.limit,
+-    cursor: params.cursor ? { id: params.cursor } : undefined,
+-    skip: params.cursor ? 1 : 0,
+-  });
+-}
+-
+-async function fetchPublicationsNational(params: ExtendedParams): Promise<RawPublication[]> {
++    orderBy: [{ orden: "desc" }, { createdAt: "desc" }, { id: "asc" }],
++    take: params.limit,
++    cursor: params.cursor ? { id: params.cursor } : undefined,
++    skip: params.cursor ? 1 : 0,
++  });
++}
++
++async function fetchPublicationsNational(params: FeedPageParams): Promise<RawPublication[]> {
+   const where: Prisma.PublicacionWhereInput = {
+     tipo: { in: ["TESTIMONIO", "CARRUSEL_IMAGENES"] },
+     visibilidad: "PUBLICA",
+-    id: { notIn: extractSeenRawIds(params.seenIds, "publications") },
+-    negocio: buildPublishedBusinessRelationWith({
++    id: feedIdWhere(params, "publications"),
++    negocio: buildPublishedBusinessRelationWith({
++      ...nationalLocationWhere(params),
+       categorias: { some: { category: { slug: params.categoriaSlug } } },
+     }),
+   };
+   return prisma.publicacion.findMany({
+     where,
+     select: publicationSelect,
+-    orderBy: [{ orden: "desc" }, { createdAt: "desc" }],
++    orderBy: [{ orden: "desc" }, { createdAt: "desc" }, { id: "asc" }],
+     take: params.limit,
+     cursor: params.cursor ? { id: params.cursor } : undefined,
+     skip: params.cursor ? 1 : 0,
+@@ -266,111 +270,25 @@
+ }
+ 
+ // === 2. INTERFACES Y HELPERS ===
+-
+-interface SortableItem {
+-  id: string;
+-  orden?: number;
+-  createdAt: Date;
+-}
+-
+-interface ExtendedParams extends FeedQueryParams {
+-  cursor?: string;
+-  userId?: string | null;
+-  categoriaSlug: string;
+-  userLat?: number | null;
+-  userLong?: number | null;
+-}
+-
+-const sortGroup = <T extends SortableItem>(items: T[]): T[] => {
+-  return items.sort((a, b) => {
+-    const orderA = a.orden ?? 0;
+-    const orderB = b.orden ?? 0;
+-    if (orderB !== orderA) return orderB - orderA;
+-    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+-  });
+-};
+-
+-async function fetchWithPriority<T extends SortableItem>(
+-  fetchCity: (params: ExtendedParams) => Promise<T[]>,
+-  fetchDept: (params: ExtendedParams) => Promise<T[]>,
+-  fetchNational: (params: ExtendedParams) => Promise<T[]>,
+-  params: ExtendedParams,
+-  type: string,
+-  buffer: number = 10
+-): Promise<T[]> {
+-  const limitWithBuffer = params.limit + buffer;
+-  let items: T[] = [];
+-  let remaining = limitWithBuffer;
+-
+-  try {
+-    const cityItems = await fetchCity({ ...params, limit: remaining });
+-    items = [...items, ...sortGroup(cityItems)];
+-    remaining -= cityItems.length;
+-  } catch (e) {
+-    console.error(`Error en ${type} ciudad para '${params.categoriaSlug}':`, e);
+-  }
+-
+-  if (remaining > 0 && params.departamento) {
+-    try {
+-      const deptItems = await fetchDept({ ...params, limit: remaining });
+-      items = [...items, ...sortGroup(deptItems)];
+-      remaining -= deptItems.length;
+-    } catch (e) {
+-      console.error(`Error en ${type} depto para '${params.categoriaSlug}':`, e);
+-    }
+-  }
+-
+-  if (remaining > 0) {
+-    try {
+-      const nationalItems = await fetchNational({ ...params, limit: remaining });
+-      items = [...items, ...sortGroup(nationalItems)];
+-    } catch (e) {
+-      console.error(`Error en ${type} nacional para '${params.categoriaSlug}':`, e);
+-    }
+-  }
+-
+-  const uniqueItems = Array.from(new Map(items.map((item) => [item.id, item])).values());
+-  return uniqueItems.slice(0, params.limit + buffer);
+-}
+ 
+ // === 3. getFeedDataByCategory ===
+ export async function getFeedDataByCategory(
+   type: "products" | "publications" | "services" | "businesses",
+-  params: ExtendedParams
++  params: FeedPageParams
+ ): Promise<FeedResponse> {
+   if (!params.ciudad) throw new Error("Ciudad requerida para feed local");
+   if (!params.categoriaSlug) throw new Error("categoriaSlug requerido para feed por categoría");
+ 
+-  let rawItems: (RawProduct | RawPublication | RawService | RawBusiness)[] = [];
+-  let nextCursor: string | undefined;
+-
+-  try {
+-    switch (type) {
+-      case "products":
+-        rawItems = await fetchWithPriority<RawProduct>(fetchProductsCity, fetchProductsDept, fetchProductsNational, params, "products");
+-        break;
+-      case "publications":
+-        rawItems = await fetchWithPriority<RawPublication>(
+-          fetchPublicationsCity,
+-          fetchPublicationsDept,
+-          fetchPublicationsNational,
+-          params,
+-          "publications"
+-        );
+-        break;
+-      case "services":
+-        rawItems = await fetchWithPriority<RawService>(fetchServicesCity, fetchServicesDept, fetchServicesNational, params, "services");
+-        break;
+-      case "businesses":
+-        rawItems = await fetchWithPriority<RawBusiness>(fetchBusinessesCity, fetchBusinessesDept, fetchBusinessesNational, params, "businesses");
+-        break;
+-    }
+-  } catch (error) {
+-    console.error(`Error fetching ${type} para '${params.categoriaSlug}':`, error);
+-    rawItems = [];
+-  }
+-  const rankedRawItems = rankRawItems(rawItems, type, params);
+-  rawItems = rankedRawItems.map(({ item }) => item);
++  const fetchers = {
++    products: [fetchProductsCity, fetchProductsDept, fetchProductsNational],
++    publications: [fetchPublicationsCity, fetchPublicationsDept, fetchPublicationsNational],
++    services: [fetchServicesCity, fetchServicesDept, fetchServicesNational],
++    businesses: [fetchBusinessesCity, fetchBusinessesDept, fetchBusinessesNational],
++  } satisfies Record<string, FeedFetchers<RawData>>;
++  const { rankedItems: rankedRawItems, nextCursor, nextTier } = await getGeographicPage<RawData>(
++    type, params, fetchers[type], items => rankRawItems(items, type, params),
++  );
++  const rawItems = rankedRawItems.map(({ item }) => item);
+ 
+   // === Reacciones ===
+   let userReactionsMap: Record<string, { id: string; tipo: ReaccionTipo } | null> = {};
+@@ -445,15 +363,12 @@
+       negocioId = raw.id;
+     }
+     (item.data as { negocioId?: string }).negocioId = negocioId;
++    item.locationTier = getLocationTier(isRawBusiness(raw) ? raw : raw.negocio ?? {}, params);
+     item.isFollowed = params.followedBusinessIds?.includes(negocioId) ?? false;
+     item.score = scoreMap.get(raw.id) ?? item.score;
+ 
+     return item;
+   });
+ 
+-  if (rawItems.length >= params.limit) {
+-    nextCursor = rawItems[rawItems.length - 1].id;
+-  }
+-
+-  return { items: items.slice(0, params.limit), nextCursor };
+-}
++  return { items, nextCursor, nextTier };
++}
+--- a/src/feed/actions/getFeedData.test.ts
++++ b/src/feed/actions/getFeedData.test.ts
+@@ -1,3 +1,4 @@
++import { nationalLocationWhere } from "./feedPage";
+ import { EstadoNegocio, EstadoUsuario } from "@prisma/client";
+ 
+ const mockPublicacionFindMany = jest.fn();
+@@ -33,7 +34,6 @@
+ }));
+ 
+ import {
+-  buildPublishedBusinessRelationWhere,
+   buildPublishedBusinessWhere,
+   classifyBusinessVisibility,
+ } from "../../lib/business/business-visibility-policy";
+@@ -83,7 +83,7 @@
+       },
+     });
+     expect(mockPublicacionFindMany.mock.calls[2][0].where.negocio).toEqual(
+-      buildPublishedBusinessRelationWhere(),
++      { is: { AND: [buildPublishedBusinessWhere(), nationalLocationWhere(params)] } },
+     );
+   });
+ 
+@@ -108,7 +108,7 @@
+       },
+     });
+     expect(mockProductFindMany.mock.calls[2][0].where.negocio).toEqual(
+-      buildPublishedBusinessRelationWhere(),
++      { is: { AND: [buildPublishedBusinessWhere(), nationalLocationWhere(params)] } },
+     );
+   });
+ 
+@@ -133,7 +133,7 @@
+       },
+     });
+     expect(mockServicioFindMany.mock.calls[2][0].where.negocio).toEqual(
+-      buildPublishedBusinessRelationWhere(),
++      { is: { AND: [buildPublishedBusinessWhere(), nationalLocationWhere(params)] } },
+     );
+   });
+ 
+@@ -158,7 +158,7 @@
+       ],
+     });
+     expect(mockNegocioFindMany.mock.calls[2][0].where).toEqual({
+-      AND: [buildPublishedBusinessWhere(), { id: { notIn: [] } }],
++      AND: [buildPublishedBusinessWhere(), { id: { notIn: [] }, ...nationalLocationWhere(params) }],
+     });
+   });
+ 
+@@ -230,19 +230,15 @@
+   it("preserves response shape, paging and ordering", async () => {
+     const result = await getFeedDataByType("businesses", {
+       ...params,
+-      cursor: "cursor-1",
+     });
+ 
+     expect(result).toEqual({ items: [], nextCursor: undefined });
+-    for (const [index, call] of mockNegocioFindMany.mock.calls.entries()) {
++    for (const call of mockNegocioFindMany.mock.calls) {
+       expect(call[0]).toMatchObject({
+-        orderBy:
+-          index === 0
+-            ? [{ orden: "desc" }]
+-            : [{ orden: "desc" }, { createdAt: "desc" }],
++        orderBy: [{ orden: "desc" }, { createdAt: "desc" }, { id: "asc" }],
+         take: 20,
+-        cursor: { id: "cursor-1" },
+-        skip: 1,
++        cursor: undefined,
++        skip: 0,
+       });
+     }
+   });
+--- a/src/feed/actions/getFeedDataByCategory.test.ts
++++ b/src/feed/actions/getFeedDataByCategory.test.ts
+@@ -1,3 +1,4 @@
++import { nationalLocationWhere } from "./feedPage";
+ import { EstadoNegocio, EstadoUsuario } from "@prisma/client";
+ 
+ const mockPublicacionFindMany = jest.fn();
+@@ -33,7 +34,6 @@
+ }));
+ 
+ import {
+-  buildPublishedBusinessRelationWhere,
+   buildPublishedBusinessWhere,
+   classifyBusinessVisibility,
+ } from "../../lib/business/business-visibility-policy";
+@@ -86,7 +86,7 @@
+       },
+     });
+     expect(mockProductFindMany.mock.calls[2][0].where.negocio).toEqual(
+-      buildPublishedBusinessRelationWhere(),
++      { is: { AND: [buildPublishedBusinessWhere(), nationalLocationWhere(params)] } },
+     );
+   });
+ 
+@@ -120,7 +120,7 @@
+     });
+     expect(mockServicioFindMany.mock.calls[2][0].where.negocio).toEqual({
+       is: {
+-        AND: [buildPublishedBusinessWhere(), categoryCondition],
++        AND: [buildPublishedBusinessWhere(), { ...nationalLocationWhere(params), ...categoryCondition }],
+       },
+     });
+   });
+@@ -169,7 +169,7 @@
+     expect(mockNegocioFindMany.mock.calls[2][0].where).toEqual({
+       AND: [
+         buildPublishedBusinessWhere(),
+-        { id: { notIn: [] }, ...categoryCondition },
++        { id: { notIn: [] }, ...nationalLocationWhere(params), ...categoryCondition },
+       ],
+     });
+   });
+@@ -291,7 +291,6 @@
+   it("preserves geography, ranking inputs, pagination and response shape", async () => {
+     const result = await getFeedDataByCategory("businesses", {
+       ...params,
+-      cursor: "cursor-1",
+     });
+ 
+     expect(result).toEqual({ items: [], nextCursor: undefined });
+@@ -306,10 +305,10 @@
+     });
+     for (const call of mockNegocioFindMany.mock.calls) {
+       expect(call[0]).toMatchObject({
+-        orderBy: [{ orden: "desc" }, { createdAt: "desc" }],
++        orderBy: [{ orden: "desc" }, { createdAt: "desc" }, { id: "asc" }],
+         take: 20,
+-        cursor: { id: "cursor-1" },
+-        skip: 1,
++        cursor: undefined,
++        skip: 0,
+       });
+     }
+   });
+--- a/src/feed/actions/publicGeography.audit.test.ts
++++ b/src/feed/actions/publicGeography.audit.test.ts
+@@ -1,71 +1,218 @@
+-/** Characterization of outstanding geography defects; no database or query changes. */
+-import type { RawBusiness } from "./selects";
+-
+-const mockFindMany = jest.fn();
+-jest.mock("@/lib/prisma", () => ({
+-  __esModule: true,
+-  default: { negocio: { findMany: mockFindMany } },
+-}), { virtual: true });
+-jest.mock("./mapItem", () => ({
+-  mapToFeedItem: (raw: RawBusiness) => ({ id: raw.id, type: "business", data: { ...raw } }),
+-}));
+-
++/** Regressions replacing the earlier characterization of GEO-01 / GEO-02. */
++import type { FeedContentType } from "../feed-ids";
++import type { FeedResponse } from "../feed.interfaces";
++import type { RawData } from "./selects";
++import { buildSeenFeedId } from "../feed-ids";
++import {
++  makeRows,
++  queryRows,
++} from "../../../e2e/geography-pagination/data.cjs";
++const mockDataset: Record<string, RawData[]> = {};
++const mockQuery = (type: string) =>
++  jest.fn(async (args) => queryRows(mockDataset[type] || [], args));
++const mockProduct = mockQuery("products"),
++  mockPublication = mockQuery("publications");
++const mockService = mockQuery("services"),
++  mockBusiness = mockQuery("businesses");
++jest.mock(
++  "@/lib/prisma",
++  () => ({
++    __esModule: true,
++    default: {
++      product: { findMany: mockProduct },
++      publicacion: { findMany: mockPublication },
++      servicio: { findMany: mockService },
++      negocio: { findMany: mockBusiness },
++      interaccion: { findMany: jest.fn(async () => []) },
++    },
++  }),
++  { virtual: true },
++);
+ import { getFeedDataByType } from "./getFeedData";
+ import { getFeedDataByCategory } from "./getFeedDataByCategory";
+-
+-const business = (id: string, ciudad = "Bogotá", orden = 0): RawBusiness => ({
+-  id, nombre: id, slug: id, ciudad, departamento: ciudad === "Bogotá" ? "Bogotá D.C." : "Boyacá",
+-  descripcion: "", telefonoContacto: null, fotoPerfil: null, fotoPortada: null,
+-  urlGoogleMaps: null, latitud: null, longitud: null, estado: "activo", orden,
+-  createdAt: new Date("2026-01-01"), categorias: [], secciones: [],
+-  _count: { followsIn: 0, publicaciones: 0, Product: 0, Servicio: 0 },
+-} as RawBusiness);
+-
+-const params = { ciudad: "Bogotá", departamento: "Bogotá D.C.", limit: 2, seenIds: [], followedBusinessIds: [] };
+-
+-beforeEach(() => { mockFindMany.mockReset(); });
+-
+-it("sufficient local supply does not need other cities", async () => {
+-  mockFindMany.mockResolvedValueOnce(Array.from({ length: 12 }, (_, i) => business(`local-${i}`)));
+-  const result = await getFeedDataByType("businesses", params);
+-  expect(mockFindMany).toHaveBeenCalledTimes(1);
+-  expect(result.items).toHaveLength(2);
+-  expect(result.items.every(item => (item.data as unknown as RawBusiness).ciudad === "Bogotá")).toBe(true);
+-});
+-
+-it("scarce local supply expands and deduplicates overlapping national candidates", async () => {
+-  const local = business("local"), national = business("national", "Tunja");
+-  mockFindMany.mockResolvedValueOnce([local]).mockResolvedValueOnce([]).mockResolvedValueOnce([local, national]);
+-  const result = await getFeedDataByType("businesses", params);
+-  expect(result.items.map(item => item.id)).toEqual(["local", "national"]);
+-  expect(mockFindMany).toHaveBeenCalledTimes(3);
+-});
+-
+-it("absent local supply still shows other cities", async () => {
+-  mockFindMany.mockResolvedValueOnce([]).mockResolvedValueOnce([]).mockResolvedValueOnce([business("national", "Tunja")]);
+-  const result = await getFeedDataByType("businesses", params);
+-  expect(result.items.map(item => item.id)).toEqual(["national"]);
+-});
+-
+-it("AUDIT GEO-01: a highly ranked other-city business can precede the local result", async () => {
+-  mockFindMany.mockResolvedValueOnce([business("local")]).mockResolvedValueOnce([]).mockResolvedValueOnce([business("national", "Tunja", 100)]);
+-  const result = await getFeedDataByType("businesses", params);
+-  // This documents the defect, not the required product behavior. Replace with
+-  // a local-first assertion when GEO-01 is fixed in the next batch.
+-  expect(result.items.map(item => item.id)).toEqual(["national", "local"]);
+-});
+-
+-it("AUDIT GEO-02: cursor points to an unreturned buffer candidate", async () => {
+-  mockFindMany.mockResolvedValueOnce(Array.from({ length: 12 }, (_, i) => business(`local-${i}`)));
+-  const result = await getFeedDataByType("businesses", params);
+-  expect(result.items.map(item => item.id)).not.toContain(result.nextCursor);
+-  expect(result.nextCursor).toBeDefined();
+-});
+-
+-it("category expansion keeps the category predicate in all three geographic queries", async () => {
+-  mockFindMany.mockResolvedValue([]);
+-  await getFeedDataByCategory("businesses", { ...params, categoriaSlug: "comida" });
+-  for (const [query] of mockFindMany.mock.calls) {
+-    expect(query.where.AND[1].categorias).toEqual({ some: { category: { slug: "comida" } } });
++import type { FeedPageParams } from "./feedPage";
++const params: FeedPageParams = {
++  ciudad: "Tunja",
++  departamento: "Boyacá",
++  limit: 4,
++  seenIds: [],
++  categoriaSlug: "comida",
++};
++const types: FeedContentType[] = [
++  "products",
++  "publications",
++  "services",
++  "businesses",
++];
++
++beforeEach(() => {
++  jest.clearAllMocks();
++  for (const key of types) mockDataset[key] = [];
++});
++async function collect(
++  type: FeedContentType,
++  p: FeedPageParams,
++  category = true,
++) {
++  const pages: FeedResponse[] = [];
++  const seen: string[] = [...p.seenIds];
++  let cursor: string | undefined;
++  const cursors = new Set<string>();
++  do {
++    const page = await (category ? getFeedDataByCategory : getFeedDataByType)(
++      type,
++      { ...p, seenIds: seen, cursor },
++    );
++    pages.push(page);
++    expect(page.items.length).toBeLessThanOrEqual(p.limit);
++    expect(pages.length).toBeLessThan(50);
++    seen.push(...page.items.map((item) => buildSeenFeedId(item.type, item.id)));
++    cursor = page.nextCursor;
++    if (cursor) {
++      expect(cursors.has(cursor)).toBe(false);
++      cursors.add(cursor);
++      expect(page.nextTier).toBeDefined();
++    } else expect(page.nextTier).toBeUndefined();
++  } while (cursor);
++  const items = pages.flatMap((page) => page.items);
++  expect(new Set(items.map((item) => item.id)).size).toBe(items.length);
++  expect(items.map((item) => item.locationTier)).toEqual(
++    [...items.map((item) => item.locationTier)].sort(),
++  );
++  return { pages, items };
++}
++
++for (const type of types)
++  describe(`${type}: geographic cursor across complete sequences`, () => {
++    it("A: drains multiple local pages before higher-scoring external rows", async () => {
++      mockDataset[type] = makeRows(type) as RawData[];
++      const { items, pages } = await collect(type, params);
++      expect(items).toHaveLength(36);
++      expect(items.slice(0, 27).every((item) => item.locationTier === 0)).toBe(
++        true,
++      );
++      expect(items.slice(27, 30).every((item) => item.locationTier === 1)).toBe(
++        true,
++      );
++      expect(items.slice(30).every((item) => item.locationTier === 2)).toBe(
++        true,
++      );
++      expect(pages.at(-1)?.nextCursor).toBeUndefined();
++    });
++    it("B: crosses both geographic boundaries without losing buffered candidates", async () => {
++      mockDataset[type] = makeRows(type, {
++        local: 5,
++        dept: 3,
++        national: 5,
++      }) as RawData[];
++      const { items, pages } = await collect(type, params);
++      const eligible = mockDataset[type].filter(
++        (row) =>
++          !row.id.includes("wrong-category") &&
++          !row.id.includes("hidden") &&
++          !row.id.includes("unavailable"),
++      );
++      expect(items.map((item) => item.id).sort()).toEqual(
++        eligible.map((row) => row.id).sort(),
++      );
++      expect(pages[1].items.map((item) => item.locationTier)).toEqual([
++        0, 1, 1, 1,
++      ]);
++    });
++    it("C: a city with no matches can paginate other cities", async () => {
++      mockDataset[type] = makeRows(type, {
++        local: 0,
++        dept: 0,
++        national: 9,
++      }) as RawData[];
++      const { items, pages } = await collect(type, params);
++      expect(items).toHaveLength(9);
++      expect(pages).toHaveLength(3);
++      expect(items.every((item) => item.locationTier === 2)).toBe(true);
++    });
++    it("D: applies visibility/category/type at every tier and returns a coherent final page", async () => {
++      mockDataset[type] = makeRows(type, {
++        local: 1,
++        dept: 1,
++        national: 2,
++      }) as RawData[];
++      const { items, pages } = await collect(type, params);
++      expect(items).toHaveLength(4);
++      expect(pages).toHaveLength(1);
++      expect(
++        items.every(
++          (item) => !/hidden|unavailable|wrong-category/.test(item.id),
++        ),
++      ).toBe(true);
++      mockDataset[type] = makeRows(type, {
++        local: 0,
++        dept: 0,
++        national: 0,
++      }) as RawData[];
++      expect((await collect(type, params)).items).toEqual([]);
++    });
++    it("keeps fixed-data tie order stable despite input order and mutable seenIds", async () => {
++      mockDataset[type] = makeRows(
++        type,
++        { local: 25, dept: 4, national: 5 },
++        false,
++      ) as RawData[];
++      const first = await collect(type, params, false);
++      mockDataset[type].reverse();
++      const second = await collect(type, params, false);
++      expect(second.items.map((item) => item.id)).toEqual(
++        first.items.map((item) => item.id),
++      );
++    });
++  });
++
++it("binds continuation to city, category, content type and secondary ranking inputs", async () => {
++  mockDataset.businesses = makeRows("businesses") as RawData[];
++  const first = await getFeedDataByCategory("businesses", params);
++  for (const changed of [
++    { ciudad: "Bogotá" },
++    { categoriaSlug: "moda" },
++    { preferencias: ["moda"] },
++    { limit: 2 },
++  ]) {
++    await expect(
++      getFeedDataByCategory("businesses", {
++        ...params,
++        ...changed,
++        cursor: first.nextCursor,
++      }),
++    ).rejects.toThrow("otra selección");
+   }
+-});
++  await expect(
++    getFeedDataByCategory("products", { ...params, cursor: first.nextCursor }),
++  ).rejects.toThrow("otra selección");
++});
++
++it("does not expand past a failed local query as if the city were empty", async () => {
++  mockBusiness.mockRejectedValueOnce(new Error("synthetic failure"));
++  await expect(getFeedDataByType("businesses", params)).rejects.toThrow(
++    "synthetic failure",
++  );
++  expect(mockBusiness).toHaveBeenCalledTimes(1);
++});
++
++it("continues without a department and beyond the client's 500 seen-id limit", async () => {
++  mockDataset.businesses = makeRows(
++    "businesses",
++    { local: 503, dept: 2, national: 1 },
++    false,
++  ) as RawData[];
++  const { items, pages } = await collect(
++    "businesses",
++    { ...params, departamento: "", limit: 100 },
++    false,
++  );
++  expect(items).toHaveLength(506);
++  expect(items.slice(0, 503).every((item) => item.locationTier === 0)).toBe(
++    true,
++  );
++  expect(items.slice(503).every((item) => item.locationTier === 2)).toBe(true);
++  expect(
++    Math.max(...pages.map((page) => page.nextCursor?.length ?? 0)),
++  ).toBeLessThan(10_000);
++});
+--- a/src/feed/feed.interfaces.ts
++++ b/src/feed/feed.interfaces.ts
+@@ -2,6 +2,7 @@
+ import { RawBusiness, RawData, RawProduct, RawPublication, RawService } from "./actions/selects";
+ import { EnhancedPublicacion } from "@/publicaciones/interfaces/enhancedPublicacion.interface";
+ import { ServicioData } from "@/servicios/interfaces/servicios.interface";
++import type { FeedLocationTier } from "./geography";
+ 
+ export interface BusinessCardData {
+   id: string;
+@@ -87,6 +88,7 @@
+ export type FeedItemType = 'product' | 'publication' | 'service' | 'business';
+ 
+ export interface FeedItem {
++  locationTier?: FeedLocationTier;
+   id: string;
+   type: FeedItemType; // Discriminator para switch
+   score: number; // Para ranking (calculado en query: matches con preferencias + recency)
+@@ -122,6 +124,8 @@
+ export interface FeedResponse {
+   items: FeedItem[];
+   nextCursor?: string; // Simplificado a string | undefined
++  /** Geographic tier of the next eligible item, absent when exhausted. */
++  nextTier?: FeedLocationTier;
+ }
+ 
+ 
+--- a/src/feed/componentes/FeedComponent.tsx
++++ b/src/feed/componentes/FeedComponent.tsx
+@@ -16,6 +16,7 @@
+ import { useUserLocation } from "@/hooks/useUserLocation"; // ← NUEVO: Hook de ubicación
+ import { buildSeenFeedId, extractSeenRawIds } from "../feed-ids";
+ import { buildDiscoveryFeed, dedupeFeedItems } from "../feedForYou";
++import { availableDiscoveryTier, getFeedItemTier, groupFeedByLocation } from "../geography";
+ 
+ // EXTENSIÓN: Agrega categoriaSlug a params (para temático futuro)
+ interface ExtendedFeedQueryParams extends FeedQueryParams {
+@@ -129,7 +130,7 @@
+ 
+   // Helpers (sin cambios)
+   const getQueryKey = useCallback((type: string) => ([
+-    "feed-" + type,
++    "feed-v2-" + type,
+     categoriaSlug || "global",
+     ciudad || "sin-ciudad",
+     departamento || "sin-departamento",
+@@ -250,10 +251,11 @@
+       ])
+         .map((entry) => ({
+           ...entry,
++          nextTier: entry.query.data?.pages.at(-1)?.nextTier ?? 0,
+           itemCount: entry.query.data?.pages.flatMap((page) => page.items).length ?? 0,
+         }))
+         .filter((entry) => entry.query.hasNextPage && !entry.query.isFetchingNextPage)
+-        .sort((a, b) => a.itemCount - b.itemCount);
++        .sort((a, b) => a.nextTier - b.nextTier || a.itemCount - b.itemCount);
+ 
+       if (nextCandidates.length > 0) {
+         void nextCandidates[0].query.fetchNextPage();
+@@ -339,11 +341,17 @@
+         ...getItemsForQuery("Negocios"),
+       ];
+ 
+-      return buildDiscoveryFeed(allItems, resolvedDiscoveryContext);
++      const tier = availableDiscoveryTier([
++        publicationsQuery, productsQuery, servicesQuery, businessesQuery,
++      ]);
++      return groupFeedByLocation(
++        allItems.filter(item => getFeedItemTier(item, { ciudad, departamento }) <= tier),
++        { ciudad, departamento },
++      ).flatMap(group => buildDiscoveryFeed(group, resolvedDiscoveryContext));
+     }
+ 
+     return getItemsForQuery(tab);
+-  }, [getItemsForQuery, resolvedDiscoveryContext]);
++  }, [getItemsForQuery, resolvedDiscoveryContext, publicationsQuery, productsQuery, servicesQuery, businessesQuery, ciudad, departamento]);
+ 
+   const markAsSeen = useCallback(() => {
+     const currentItems = getItemsForTab(activeTab);
+@@ -491,6 +499,7 @@
+         categoriaNombre={categoriaNombre}
+         categoriaIconName={categoriaIconName}
+         ciudad={ciudad}
++        departamento={departamento}
+       />
+     </div>
+   );
+--- a/src/publicaciones/componentes/FeedRederer.tsx
++++ b/src/publicaciones/componentes/FeedRederer.tsx
+@@ -14,6 +14,7 @@
+ import DiscoveryPublicationCard from "@/feed/componentes/DiscoveryPublicationCard";
+ import DiscoveryPulseModule, { DiscoveryPulseTone } from "@/feed/componentes/DiscoveryPulseModule";
+ import DiscoveryServiceCard from "@/feed/componentes/DiscoveryServiceCard";
++import { groupFeedByLocation } from "@/feed/geography";
+ import productModules from "./feedProductModules.module.css";
+ 
+ type FeedTab = "Para ti" | "Publicaciones" | "Productos" | "Servicios" | "Negocios";
+@@ -55,6 +56,7 @@
+   categoriaNombre?: string;
+   categoriaIconName?: string;
+   ciudad?: string;
++  departamento?: string;
+   productActionLayout?: "separate" | "split";
+ }
+ 
+@@ -266,6 +268,7 @@
+   categoriaNombre,
+   categoriaIconName,
+   ciudad,
++  departamento,
+   productActionLayout = "separate",
+ }) => {
+   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+@@ -342,97 +345,99 @@
+   const cadenceSections = useMemo<CadenceSection[]>(() => {
+     if (activeTab !== "Para ti") return [];
+ 
+-    const productQueue = filteredItems.filter(isProductItem);
+-    const supportQueues: Record<SupportType, SupportFeedItem[]> = {
+-      publication: filteredItems.filter(
+-        (item): item is SupportFeedItem => isPublicationItem(item),
+-      ),
+-      business: filteredItems.filter(
+-        (item): item is SupportFeedItem => isBusinessItem(item),
+-      ),
+-      service: filteredItems.filter(
+-        (item): item is SupportFeedItem => isServiceItem(item),
+-      ),
+-    };
+-
+-    const productPattern = isCategoryFeed
+-      ? CATEGORY_PRODUCT_PATTERN
+-      : HOME_PRODUCT_PATTERN;
+-    const supportPattern = isCategoryFeed
+-      ? CATEGORY_SUPPORT_PATTERN
+-      : HOME_SUPPORT_PATTERN;
+-    const sections: CadenceSection[] = [];
+-    const pushSupportSection = (patternIndex: number) => {
+-      if (!hasSupportItems(supportQueues)) {
+-        return patternIndex;
+-      }
+-
+-      const supportPlan = supportPattern[patternIndex % supportPattern.length];
+-      const supportItems = takeSupportItems(supportQueues, supportPlan);
+-
+-      if (supportItems.length === 0) {
+-        return patternIndex;
+-      }
+-
+-      sections.push({
+-        kind: "pulse",
+-        key: `pulse-${sections.length}`,
+-        ...buildPulseMeta(supportItems, discoveryContext, categoriaNombre),
+-        items: supportItems,
+-      });
+-
+-      return patternIndex + 1;
+-    };
+-
+-    const leadItems = takeQueueItems(productQueue, leadProductCount);
+-    if (leadItems.length > 0) {
+-      sections.push({
+-        kind: "products",
+-        key: "products-lead",
+-        emphasis: "lead",
+-        items: leadItems,
+-      });
+-    }
+-
+-    let productPatternIndex = 0;
+-    let supportPatternIndex = 0;
+-
+-    if (!isCategoryFeed && leadItems.length > 0) {
+-      supportPatternIndex = pushSupportSection(supportPatternIndex);
+-    }
+-
+-    while (productQueue.length > 0 || hasSupportItems(supportQueues)) {
+-      const productCount = productPattern[productPatternIndex % productPattern.length];
+-      const productItems = takeQueueItems(productQueue, productCount);
+-
+-      if (productItems.length > 0) {
++    return groupFeedByLocation(filteredItems, { ciudad, departamento }).flatMap((group, tierIndex) => {
++      const productQueue = group.filter(isProductItem);
++      const supportQueues: Record<SupportType, SupportFeedItem[]> = {
++        publication: group.filter(
++          (item): item is SupportFeedItem => isPublicationItem(item),
++        ),
++        business: group.filter(
++          (item): item is SupportFeedItem => isBusinessItem(item),
++        ),
++        service: group.filter(
++          (item): item is SupportFeedItem => isServiceItem(item),
++        ),
++      };
++
++      const productPattern = isCategoryFeed
++        ? CATEGORY_PRODUCT_PATTERN
++        : HOME_PRODUCT_PATTERN;
++      const supportPattern = isCategoryFeed
++        ? CATEGORY_SUPPORT_PATTERN
++        : HOME_SUPPORT_PATTERN;
++      const sections: CadenceSection[] = [];
++      const pushSupportSection = (patternIndex: number) => {
++        if (!hasSupportItems(supportQueues)) {
++          return patternIndex;
++        }
++
++        const supportPlan = supportPattern[patternIndex % supportPattern.length];
++        const supportItems = takeSupportItems(supportQueues, supportPlan);
++
++        if (supportItems.length === 0) {
++          return patternIndex;
++        }
++
++        sections.push({
++          kind: "pulse",
++          key: `pulse-${sections.length}`,
++          ...buildPulseMeta(supportItems, discoveryContext, categoriaNombre),
++          items: supportItems,
++        });
++
++        return patternIndex + 1;
++      };
++
++      const leadItems = takeQueueItems(productQueue, leadProductCount);
++      if (leadItems.length > 0) {
+         sections.push({
+           kind: "products",
+-          key: `products-${sections.length}`,
+-          emphasis: "flow",
+-          items: productItems,
++          key: "products-lead",
++          emphasis: "lead",
++          items: leadItems,
+         });
+-        productPatternIndex += 1;
+       }
+ 
+-      if (!hasSupportItems(supportQueues)) {
+-        if (productItems.length === 0) break;
+-        continue;
++      let productPatternIndex = 0;
++      let supportPatternIndex = 0;
++
++      if (!isCategoryFeed && leadItems.length > 0) {
++        supportPatternIndex = pushSupportSection(supportPatternIndex);
+       }
+ 
+-      if (productItems.length === 0 && productQueue.length > 0) {
+-        continue;
++      while (productQueue.length > 0 || hasSupportItems(supportQueues)) {
++        const productCount = productPattern[productPatternIndex % productPattern.length];
++        const productItems = takeQueueItems(productQueue, productCount);
++
++        if (productItems.length > 0) {
++          sections.push({
++            kind: "products",
++            key: `products-${sections.length}`,
++            emphasis: "flow",
++            items: productItems,
++          });
++          productPatternIndex += 1;
++        }
++
++        if (!hasSupportItems(supportQueues)) {
++          if (productItems.length === 0) break;
++          continue;
++        }
++
++        if (productItems.length === 0 && productQueue.length > 0) {
++          continue;
++        }
++
++        supportPatternIndex = pushSupportSection(supportPatternIndex);
++
++        if (productItems.length === 0 && !hasSupportItems(supportQueues)) {
++          break;
++        }
+       }
+ 
+-      supportPatternIndex = pushSupportSection(supportPatternIndex);
+-
+-      if (productItems.length === 0 && !hasSupportItems(supportQueues)) {
+-        break;
+-      }
+-    }
+-
+-    return sections;
+-  }, [activeTab, categoriaNombre, discoveryContext, filteredItems, isCategoryFeed, leadProductCount]);
++      return sections.map(section => ({ ...section, key: `tier-${tierIndex}-${section.key}` }));
++    });
++  }, [activeTab, categoriaNombre, discoveryContext, filteredItems, isCategoryFeed, leadProductCount, ciudad, departamento]);
+ 
+   // Efecto principal para manejar cambios de tab y relayout
+   useEffect(() => {
+@@ -649,7 +654,7 @@
+ 
+       while (nextSectionIndex < cadenceSections.length) {
+         const nextSection = cadenceSections[nextSectionIndex];
+-        if (nextSection.kind !== "pulse") break;
++        if (nextSection.kind !== "pulse" || nextSection.key.split("-")[1] !== section.key.split("-")[1]) break;
+ 
+         pulseSections.push(nextSection);
+         nextSectionIndex += 1;
+@@ -844,13 +849,14 @@
+               renderCadenceFeed()
+             ) : (
+               <div ref={masonryWrapperRef} className="w-full">
++                {groupFeedByLocation(filteredItems, { ciudad, departamento }).map((group, tierIndex) => (
+                 <Masonry
+-                  key={`${activeTab}-${itemsHash}-${isLayoutReady ? 'ready' : 'loading'}`}
++                  key={`${tierIndex}-${activeTab}-${itemsHash}-${isLayoutReady ? 'ready' : 'loading'}`}
+                   breakpointCols={breakpointCols}
+                   className="masonry-container flex w-auto -ml-0 lg:-ml-2"
+                   columnClassName="masonry-column pl-0 md:px-2 bg-clip-padding"
+                 >
+-                  {filteredItems.map((item, index) => (
++                  {group.map((item, index) => (
+                     <motion.div
+                       key={`${item.type}-${item.id}`}
+                       data-feed-item-key={`${item.type}-${item.id}`}
+@@ -863,6 +869,7 @@
+                     </motion.div>
+                   ))}
+                 </Masonry>
++                ))}
+               </div>
+             )}
+           </>
+@@ -892,7 +899,7 @@
+         </div>
+       )}
+ 
+-      <div ref={sentinelRef} className="h-1" />
++      <div ref={sentinelRef} data-feed-sentinel className="h-1" />
+     </div>
+   );
+ };
+--- a/e2e/public-ui-audit/public-ui.spec.ts
++++ b/e2e/public-ui-audit/public-ui.spec.ts
+@@ -4,7 +4,7 @@
+ 
+ const before = process.env.PUBLIC_UI_BEFORE === "1";
+ const phase = before ? "before" : "after";
+-const evidence = "docs/audits/public-ui-evidence";
++const evidence = process.env.PUBLIC_UI_EVIDENCE_DIR || "docs/audits/public-ui-evidence";
+ 
+ for (const width of [360, 390, 430, 1440]) {
+   test(`${phase}: feed and contact at ${width}px`, async ({ page }) => {
+--- a/docs/audits/MYCKEO_PUBLIC_UI_AUDIT.md
++++ b/docs/audits/MYCKEO_PUBLIC_UI_AUDIT.md
+@@ -1,6 +1,6 @@
+ # Auditoría del frontend público de Myckeo
+ 
+-Fecha: 24 de noviembre de 2026. Alcance: exploración pública, contacto, WhatsApp y entradas existentes de cuenta/carrito. No se desplegó, hizo push, ejecutaron migraciones ni modificaron registros remotos.
++Auditoría inicial: 24 de noviembre de 2026. Segundo lote, geografía/paginación: 25 de noviembre de 2026 (véase el anexo al final). Alcance inicial: exploración pública, contacto, WhatsApp y entradas existentes de cuenta/carrito. No se desplegó, hizo push, ejecutaron migraciones ni modificaron registros remotos.
+ 
+ ## Repositorio y entorno
+ 
+@@ -15,7 +15,7 @@
+ 
+ ## Regla geográfica que debe conservarse
+ 
+-**Ciudad actual/seleccionada primero; después otras ciudades para ampliar la oferta.** Ver un negocio de Tunja con Bogotá seleccionada no demuestra por sí mismo un error de geolocalización. No se introdujo un filtro estricto de ciudad ni se cambiaron consultas, ranking o paginación en este lote.
++**Ciudad actual/seleccionada primero; después otras ciudades para ampliar la oferta.** Ver un negocio de Tunja con Bogotá seleccionada no demuestra por sí mismo un error de geolocalización. El primer lote no alteró esa lógica. El segundo corrige su orden y continuación, manteniendo la ampliación y sin convertir la ciudad en un filtro estricto.
+ 
+ La implementación obtiene candidatos por ciudad, departamento sin esa ciudad y ámbito nacional, deduplica por ID y después vuelve a aplicar ranking. La ampliación está presente; la prioridad estricta final y la continuidad de páginas tienen defectos independientes, detallados más abajo.
+ 
+@@ -29,8 +29,8 @@
+ | ROUTE-01 / P1 / funcional | `/contacto`, `/[categoria]`, `/category/[slug]`; footer de `(catalogo)/layout.tsx` | Antes, local y producción: `/contacto` conserva URL y HTTP 200, muestra categoría vacía. URL inventada de un segmento también recibe 200. Capturas antes/después. | Footer correcto hacia una página inexistente; Next resuelve `[categoria]` sin validar slug. No hay middleware ni rewrite de contacto implicado; rewrite local previo solo afecta sitemap. | Página estática con correo ya publicado; `notFound()` para categorías ajenas al catálogo de navegación existente. Riesgo bajo; categorías reconocidas mantienen su feed. | **Aplicado localmente.** `/contacto` 200 y `mailto:soporte@myckeo.com`; comida/moda/negocios en ambos formatos 200; slugs inventados en ambos formatos 404. |
+ | COPY-01 / P2 / contenido de interfaz | `/`; `FeedRederer.tsx`, `DiscoveryPulseModule.tsx` | Producción sí muestra los tres fragmentos indicados. `rg` de las frases exactas no los encuentra en el árbol local; navegador local confirma ausencia. | Producción conserva explicaciones de composición. Cambios móviles **anteriores al encargo** ya simplificaron la introducción y dejaron de renderizar descripciones. Persisten algunos metadatos de copia interna, sin mostrarse como párrafos; títulos de módulos también sirven como `aria-label`. | No rehacer un arreglo existente ni cambiar estructura. Revisar metadatos accesibles en una pasada editorial posterior si procede. | **Resuelto previamente en el árbol local; pendiente en producción.** Capturas locales a cuatro anchos, sin módulos vacíos introducidos por este encargo. No se modificaron esos archivos. |
+ | DATA-01 / P2 / contenido persistido | Portada; publicación y servicio del perfil de referencia | Producción reproduce ambas frases. `production-content-records.json` registra IDs extraídos de las respuestas de lectura. `rg -i` no encuentra las frases en `src`, fixtures ni seeds versionados consultados. | Texto proviene de registros servidos por backend, no de un fallback de tarjeta. El texto de relleno no equivale automáticamente a una marca de prueba. | Revisión individual de registros por responsable de contenido. Riesgo de ocultar oferta legítima si se clasifica por nombre o palabras. | **Documentado, sin modificación de datos.** Reglas locales de visibilidad revisadas y cubiertas por pruebas existentes. No se certificaron las marcas reales del registro en la base remota. |
+-| GEO-01 / P1 / funcional | Portada/categorías; `feedRanking.ts`, `getFeedData*.ts`, `feedForYou.ts` | Test con un negocio local de baja puntuación y uno nacional con `orden:100`: el nacional se entrega primero. | El orden ciudad→departamento→nacional de candidatos se pierde al aplicar puntuación y diversidad globales; ciudad es un bonus 2.8, no un nivel de orden. “Para ti” vuelve a ordenar/mezclar y el renderer agrupa tipos. | Próximo lote: mantener nivel geográfico a través de ranking, mezcla y presentación; puntuar/diversificar dentro de cada nivel. Riesgo medio; requiere pruebas de composición y paginación. | **Confirmado con mocks y código, pendiente.** No se cambiaron consultas ni comportamiento geográfico. |
+-| GEO-02 / P1 / funcional | Scroll de portada/categorías; `getFeedData.ts`, `getFeedDataByCategory.ts` | Con límite 2 y 12 candidatos locales, `nextCursor` referencia un candidato que no aparece en los dos elementos entregados. Test reproducible sin DB. | Se ordena una ventana con buffer, se toma cursor del último candidato y luego se recorta a `limit`. El cursor se aplica a las tres consultas con orden DB diferente del ranking; `seenIds` además excluye elementos. Riesgo de saltos y pérdida de candidatos entre páginas. | Próximo lote junto con GEO-01: contrato de continuación estable por nivel geográfico y candidatos pendientes; no basta cambiar una línea del cursor. Riesgo medio. | **Confirmado con mocks y código, pendiente.** Deduplicación por ID existe en servidor y cliente; no prueba por sí sola continuidad completa de páginas. |
++| GEO-01 / P1 / funcional | Portada/categorías; `feedRanking.ts`, `getFeedData*.ts`, `feedForYou.ts` | Test con un negocio local de baja puntuación y uno nacional con `orden:100`: el nacional se entrega primero. | El orden ciudad→departamento→nacional de candidatos se pierde al aplicar puntuación y diversidad globales; ciudad es un bonus 2.8, no un nivel de orden. “Para ti” vuelve a ordenar/mezclar y el renderer agrupa tipos. | Próximo lote: mantener nivel geográfico a través de ranking, mezcla y presentación; puntuar/diversificar dentro de cada nivel. Riesgo medio; requiere pruebas de composición y paginación. | **Corregido en lote 2 (25/11).** Evidencia anterior conservada; continuación y composición verificadas con fixtures. Véase anexo. |
++| GEO-02 / P1 / funcional | Scroll de portada/categorías; `getFeedData.ts`, `getFeedDataByCategory.ts` | Con límite 2 y 12 candidatos locales, `nextCursor` referencia un candidato que no aparece en los dos elementos entregados. Test reproducible sin DB. | Se ordena una ventana con buffer, se toma cursor del último candidato y luego se recorta a `limit`. El cursor se aplica a las tres consultas con orden DB diferente del ranking; `seenIds` además excluye elementos. Riesgo de saltos y pérdida de candidatos entre páginas. | Próximo lote junto con GEO-01: contrato de continuación estable por nivel geográfico y candidatos pendientes; no basta cambiar una línea del cursor. Riesgo medio. | **Corregido en lote 2 (25/11).** Se conservan buffer y cursores separados por tramo; se verifican secuencias completas. Véase anexo. |
+ | GEO-03 / P2 / claridad | Portada y encabezado con ciudad; `FeedRederer` | “Descubre cerca de ti” junto a ciudad puede abarcar oferta nacional. Tarjetas de negocio sí indican su ciudad. | La interfaz puede sugerir que toda la oferta es local. No demuestra fallo del selector. | Propuesta breve: “Explora Bogotá y otras ciudades”; cuando se garantice GEO-01, separar “En Bogotá” / “Más ciudades” según ciudad real. No afirmar falta de oferta local sin consultar. | **Propuesta, no aplicada** para mantener el lote en dos problemas y no prometer prioridad aún no garantizada. |
+ | OWNER-01 / P3 / conversión | Portada → Perfil → Ingresar → `/auth/login` → `/auth/new-account` → Cuenta Negocio | Menú compartido usa `SideBar`, `signIn()` y la configuración real `auth.config.ts`. Registro tiene opción Cuenta Negocio; tras registro credenciales navega a `/crear_negocio/{id}`, luego edición. | El recorrido existe, pero requiere abrir Perfil y pasar por acceso para descubrir la opción de propietario. No se constató ausencia del registro. | Recomendar entrada visible “Tengo un negocio” hacia el registro existente, sin inventar planes ni ofertas. Revisar por separado paridad del camino OAuth: su callback no usa la misma bifurcación explícita de credenciales. | **Recorrido localizado**; revisión de UI y navegación sin crear cuentas. No se probó alta autenticada completa. |
+ | ROUTE-02 / P2 / funcional pendiente | `/producto/[slug]`, `/perfil/[slug]`, `/{categoria}/{seccion}/{slug}` | Inspección estática: producto no encontrado devuelve JSX de error, perfil devuelve error genérico; no llaman `notFound()`. `seccion/[slug]` e `/inicio` aún tienen placeholders. | Estados de error pueden responder 200, y una ruta de tres segmentos solo usa slug de producto. | Revisar 404 vs fallo de datos en siguiente lote; no convertir indiscriminadamente errores de conexión en “no encontrado”. | **Pendiente fuera del arreglo de contacto**. No se afirma ejecución local de fichas completas con base real. |
+@@ -71,7 +71,7 @@
+ 
+ Filtros: las consultas por categoría mantienen el predicado en ciudad/departamento/nacional para productos, servicios, negocios y publicaciones. Preferencias y secciones del feed general son señales de ranking, no filtros estrictos. Se detectó además en `FeedRederer` que el filtro de categoría del tab Servicios devuelve `true` para todos los servicios: sus datos no incluyen categorías para filtrarlos. Dejarlo para el lote geográfico/filtros; no se corrigió como un tercer problema encubierto.
+ 
+-## Cambios de este lote
++## Cambios del primer lote
+ 
+ 1. **WhatsApp**: nuevo `src/lib/contact/phone.ts` y pruebas enfocadas. Forma canónica `+internacional`; conserva `+` para que normalizar dos veces sea idempotente incluso en internacionales de diez dígitos. Solo se asume CO para un nacional de diez dígitos cuando el consumidor pasa explícitamente `"CO"`. Se aceptan `+`, espacios, guiones, puntos y paréntesis; no se eliminan letras/extensiones para inventar destinatarios. `toWhatsAppNumber` convierte esa forma a los dígitos de `wa.me`. Comprueba estructura, no asignación real ni registro en WhatsApp. Un internacional sin `+` de exactamente diez dígitos es ambiguo y, con default CO, se interpreta como nacional; debe venir con `+` para ser inequívoco.
+ 2. **Contacto/resolución**: nueva página de correo y guards en ambas rutas de categorías. No se mostraron teléfonos de soporte: configuración y menús tienen números diferentes, mientras el correo coincide con las páginas legales.
+@@ -80,7 +80,7 @@
+ 
+ Soporte de auditoría añadido: `e2e/public-ui-audit`, pruebas de caracterización `publicGeography.audit.test.ts`, este informe y evidencia. Los tests GEO que documentan defectos **afirman el comportamiento observado**, no certifican que la regla de producto esté cumplida; sus comentarios indican sustituirlos por expectativas correctas al resolverlos.
+ 
+-## Evidencia y verificación
++## Evidencia y verificación del primer lote
+ 
+ Carpeta: [public-ui-evidence](public-ui-evidence/). Las imágenes del feed local usan datos sintéticos; no son capturas de producción. El cambio de contacto sí se ejecuta en la ruta real local. En pruebas, `/` se reescribe temporalmente al harness de desarrollo; los componentes de producto/perfil son reales pero reciben props sintéticas. La consulta a datos reales no queda certificada por esa comprobación.
+ 
+@@ -118,7 +118,7 @@
+ 
+ El servidor temporal se detuvo y sus fixtures/caché se retiraron al terminar. `tsconfig.json`, `next-env.d.ts`, variables locales y los archivos de configuración de la aplicación quedaron sin cambios de este encargo. `pnpm lint` completo, repetido tras retirar los fixtures, falla por el enlace HTML en `src/app/myckeoAdmin/crearProductos/_componentes/AssistedProductCreationClient.tsx:3516`, archivo modificado antes de iniciar esta tarea y no tocado aquí; también emite advertencias previas. El lint de los archivos de este lote sí pasó. Evidencia: `lint-full-results.txt` y `lint-changed-files.txt`.
+ 
+-## Limitaciones y siguiente lote
++## Limitaciones y pendientes al cerrar el primer lote (histórico)
+ 
+ No se verificó destinatario mediante conversación, alta real de cuentas, OAuth completo, checkout, pedidos ni carga completa local de fichas desde una base real. Geografía se verificó mediante mocks/inspección, no mediante una población remota controlada. Las ubicaciones originales y flags de los registros editoriales requieren consulta autorizada posterior. No se ejecutó limpieza de producción.
+ 
+@@ -132,3 +132,101 @@
+ 4. Hacer visible el registro de propietarios mediante enlace al recorrido existente y revisar equivalencia de OAuth. Añadir aclaración de ciudades sin afirmar ausencia de oferta local.
+ 
+ Los cambios de WhatsApp y contacto quedan para revisión local. Publicarlos y trasladar los ajustes móviles previos a producción requiere una tarea posterior.
++
++## Lote 2: prioridad geográfica y paginación — 25/11/2026
++
++### Estado recuperado y reproducción
++
++Se confirmó de nuevo `/home/nico/red-social`, rama `feat/premium-product-form-navigation`, HEAD `1f491ff8ce6f80e333f07548e299141fc863d993`. No se restauró a ningún commit: se partió del árbol con los cambios del usuario y del lote 1. Se releyó AGENTS.md. Las capturas/evidencias anteriores permanecen en `public-ui-evidence`; las nuevas se guardan en [geography-pagination-evidence](geography-pagination-evidence/).
++
++GEO-01 y GEO-02 se reprodujeron antes de cambiar sus causas. Se conservaron las seis caracterizaciones anteriores y se ejecutaron además dos expectativas correctas contra copias temporales de las acciones recibidas, sin sustituir archivos de trabajo. Ambas fallaron: se entregó `businesses-dept-00` antes de un local y, de trece registros elegibles, la continuación solo recuperó dos. [Fallo normativo anterior](geography-pagination-evidence/before-regressions-failed.txt), [caracterización anterior](geography-pagination-evidence/before-characterization.txt). Las copias temporales se retiraron.
++
++| Hallazgo | Causa reproducida | Corrección aplicada |
++| --- | --- | --- |
++| GEO-01, orden final | Se consultaba ciudad → departamento → país, pero ranking, mezcla de tipos y agrupación de tarjetas podían cruzar esos límites. Las cuatro consultas de “Para ti” tienen continuaciones independientes. | Se consume cada tramo antes del siguiente; se aplica el ranking existente dentro de cada ventana del tramo. “Para ti” reserva los externos recibidos hasta agotar los locales de todos los tipos; después hace lo mismo con departamento/resto del país. La composición y masonry se ejecutan por grupos geográficos. |
++| GEO-02, omisiones entre páginas | El cursor era el último candidato del buffer, no un registro necesariamente entregado; un solo cursor se aplicaba a tres consultas distintas. `seenIds` cambiaba con cada respuesta. | Cursor opaco versionado que conserva tramo, posición de lectura de ese tramo, IDs pendientes ordenados del buffer y exclusiones iniciales. El buffer se consume antes de avanzar. Hay desempate explícito por ID y una lectura de anticipación que distingue página final de página con continuación. |
++| Solapamiento nacional | La consulta nacional incluía otra vez candidatos locales/departamentales antes de deduplicar, consumiendo plazas del buffer. | Ciudad, departamento sin ciudad seleccionada y resto del país sin esos dos tramos son conjuntos excluyentes. Todos conservan sus filtros/visibilidad. |
++| Caché/respuesta tardía | Las claves ya incluían ciudad, departamento, categoría y contexto: no se reprodujo un defecto independiente de claves de ciudad. | Se preservan esas dimensiones. Se versiona el prefijo de clave por el nuevo formato de cursor para evitar reutilizar resultados antiguos. La prueba retrasando una respuesta real confirma aislamiento tras cambiar ciudad. No se presenta esa prueba como un arreglo de un defecto de caché no demostrado. |
++
++### Contrato implementado
++
++- La ciudad se obtiene de `Negocio.ciudad` y `Negocio.departamento`; productos, servicios y publicaciones usan los campos de su relación `negocio`, ya incluidos en los selects. No se infiere por nombre, slug o apariencia. `locationTier` transporta ese nivel hasta el renderer, también para servicios cuyo DTO no tenía ciudad.
++- Se mantiene la precedencia de consulta existente **ciudad → otras ciudades del departamento → resto del país**. La fórmula de puntuación, boosts, frescura, preferencias y diversidad no se modificó: `feedRanking.ts` y `feedForYou.ts` permanecen intactos. Se aplican dentro de los grupos en lugar de permitir que crucen la prioridad geográfica. No se promete una clasificación global de todos los registros por score: el producto ya ordenaba ventanas de candidatos; se conserva ese mecanismo.
++- Se mantiene Prisma con cursor por ID y ventanas `limit + 10`; no se cambia a offset ni se carga el catálogo completo. `orden desc`, `createdAt desc`, `id asc` proporcionan una lectura determinista. El ID resuelve empates; el helper anterior ya contemplaba fecha como orden secundario, aunque no todas las consultas lo expresaban.
++- `nextCursor` sigue siendo opcional y significa **existe otro elemento elegible**. No se inventa `total`. `hasMore` sigue derivándose de la existencia de continuación. `nextTier` indica el tramo del siguiente elemento, y desaparece junto al cursor al terminar. Una página completa que es la última no genera una página vacía adicional.
++- El cursor `fg2` contiene IDs pendientes, no productos completos, y no crece con todos los resultados ya entregados. Las exclusiones iniciales se fijan al comenzar el recorrido: los IDs vistos que el cliente va agregando no invalidan candidatos pendientes. Se conserva la regla de “visto” al iniciar otro recorrido o pestaña; las pruebas de navegador contabilizan esa exclusión intencional.
++- El cursor se vincula al tipo, ciudad/departamento, categoría, límite, usuario y señales de ranking. Uno de otra selección o formato se rechaza. Las claves de caché nuevas comienzan con `feed-v2-`; no se reutilizan cursores antiguos como si fuesen del nuevo protocolo.
++- Se releen los candidatos pendientes con filtros públicos actuales. Una consulta local fallida produce error/reintento; no se interpreta como ausencia de oferta para avanzar silenciosamente a otras ciudades.
++- Categoría, `disponible`, visibilidad PUBLICA, tipos de publicación y política PUBLISHED se mantienen en todas las consultas, incluidas las relecturas del buffer. Preferencias/secciones continúan siendo señales de ranking. La búsqueda del header usa `/api/search`, no estas acciones; no se cambió ese recorrido independiente. Tampoco se amplió este lote a los filtros secundarios de UI documentados históricamente que no participan en las rutas por categoría verificadas.
++
++### Archivos de este lote
++
++Implementación:
++
++- Nuevos `src/feed/actions/feedPage.ts` y `src/feed/geography.ts`.
++- `src/feed/actions/getFeedData.ts` y `getFeedDataByCategory.ts`: consultas excluyentes, lectura del cursor/buffer, desempate y metadatos de continuación. Se retiraron sus implementaciones duplicadas defectuosas de `fetchWithPriority`.
++- `src/feed/feed.interfaces.ts`: `locationTier` y `nextTier` opcionales.
++- `src/feed/componentes/FeedComponent.tsx`: coordinación de continuaciones por tramo, composición dentro de cada grupo y versión de caché. Se conserva el selector de ciudad y sus claves de selección.
++- `src/publicaciones/componentes/FeedRederer.tsx`: misma cadencia y tarjetas por grupo; masonry separado por tramo para que una columna de escritorio no levante externos por encima del último local. Sin cambios CSS. Se añadió un atributo al sentinel para verificar el scroll real.
++
++Pruebas/documentación:
++
++- `publicGeography.audit.test.ts` sustituye las caracterizaciones de errores conocidos por regresiones que exigen el comportamiento correcto; se adaptan los tests existentes de ambas acciones a los cursores/nacional excluyente y se añade `geography.test.ts`.
++- `e2e/geography-pagination`: fixtures en memoria, adaptador Prisma de pruebas, wrapper del servidor de auditoría y tres recorridos Playwright.
++- `e2e/public-ui-audit/public-ui.spec.ts` solo recibe una variable para guardar la nueva ejecución de regresiones en otra carpeta; no sobrescribir las capturas del primer lote.
++
++### Comprobaciones actuales (no cifras heredadas)
++
++La selección actual de siete suites Jest pasó **103 pruebas**. Incluye acciones del feed, geografía, helper de teléfono y reglas de visibilidad: [resultado actual](geography-pagination-evidence/unit-results.txt). Los escenarios recorren todas las páginas, no solo una página ordenada:
++
++| Caso | Datos y comprobación |
++| --- | --- |
++| A | 27 locales, 3 del departamento y 6 nacionales; límite 4. Los 36 registros se recuperan y ningún externo precede a los 27 locales. Se ejecuta para los cuatro tipos de contenido. |
++| B | 5 locales, 3 del departamento y 5 nacionales; límite 4. La segunda página cruza el límite local: `[local, departamento, departamento, departamento]`. La concatenación coincide con todos los IDs elegibles, sin duplicados. |
++| C | Sin oferta local/departamental y 9 nacionales; se recuperan los 9 en tres páginas, con fin correcto. |
++| D | Una última página exactamente llena y un conjunto sin coincidencias elegibles. Se excluyen categoría incorrecta, negocios de prueba, contenidos no disponibles, publicaciones privadas y tipos no admitidos, incluso en la ampliación. Los estados usados corresponden al esquema real. |
++| Empates | Se invierte el orden de entrada de los fixtures con la misma fecha/orden. La secuencia completa se mantiene. También se modifican los `seenIds` entre páginas como hace el cliente. |
++| Más de 500 / sin departamento | 503 locales y 3 externos; límite 100. Se recuperan los 506 y los cursores siguen por debajo de 10 KB con ese conjunto. No dependen de acumular todos los IDs entregados en la lista del cliente. |
++| Selección y fallos | Rechazo de cursor de otra ciudad, categoría, tipo o señales de ranking. Una lectura local fallida no se convierte en expansión por supuesta falta de locales. |
++
++El navegador usa la aplicación y **Server Actions reales**, con un adaptador Prisma de memoria en el servidor y una URL de base inalcanzable. Las respuestas del feed no se sustituyen por arrays preordenados en Playwright: atraviesan las consultas, paginación, ranking, mapeo y serialización de la implementación. La portada se sirve a través del harness temporal existente con `FeedComponent`; `/category/comida` es la ruta real. Se bloquean solicitudes externas y cualquier mutación que no sea una acción de lectura del feed.
++
++Los recorridos comprueban portada, varias páginas, cambio Tunja → Bogotá a través del selector real, y una continuación anterior retenida y liberada después de seleccionar Bogotá. Next serializa estas acciones: la respuesta antigua se libera antes de esperar las lecturas nuevas que quedan en cola. Se comprueba que el listado se vacía al cambiar selección y que el resultado final corresponde al nuevo recorrido y sus exclusiones iniciales. Se repite la paginación con categoría Comida y pestaña Productos, y después con “Para ti”.
++
++La matriz de presentación mide 360, 390, 430 y 1440 px porque se separaron los grupos masonry. Se verifican el orden DOM y el orden vertical efectivo al terminar las animaciones existentes, final de listado, ausencia de desbordamiento, acciones de 44 px, precio/WhatsApp/carrito en fila y distintivo sobre el avatar móvil. Las regresiones del primer lote se vuelven a ejecutar en esta sesión, con nueva evidencia en `geography-pagination-evidence/first-batch-regression`.
++
++Resultado actual: **3 pruebas nuevas de navegador aprobadas y 8 regresiones del primer lote ejecutadas otra vez y aprobadas**. Son once comprobaciones actuales, además de las 103 unitarias. [Navegador de geografía](geography-pagination-evidence/browser-results.txt), [regresión del lote 1](geography-pagination-evidence/first-batch-regression-results.txt), [medidas de los cuatro anchos](geography-pagination-evidence/geography-layout.json), [solicitudes y orden renderizado tras cambiar ciudad](geography-pagination-evidence/browser-real-actions.json), [categoría y páginas](geography-pagination-evidence/browser-category.json).
++
++Las pruebas nuevas pasaron juntas en una ejecución; al volver a capturar evidencia de imágenes y conservar el orden renderizado sin ordenar el array de evidencia, un arranque en frío dejó la primera navegación sin hidratar. Ese recorrido se repitió con el servidor listo y pasó; categoría y matriz final también pasaron. Se conservan el [primer resultado completo](geography-pagination-evidence/browser-initial-all-pass.txt) y el [arranque en frío](geography-pagination-evidence/browser-cold-start.txt). No se presenta esa carga de desarrollo como un bloqueo permanente de la portada de producción. Las capturas de este lote son sintéticas y las de la matriz final esperan la carga de las imágenes visibles.
++
++`pnpm typecheck` pasó con los fixtures retirados; el lint enfocado de los once archivos fuente/pruebas afectados pasó sin advertencias ni errores. `pnpm lint` completo se repitió y sigue fallando por el enlace `<a>` de `AssistedProductCreationClient.tsx:3516`, ya existente y no modificado en este lote. [Tipos](geography-pagination-evidence/typecheck-results.txt), [lint enfocado](geography-pagination-evidence/lint-changed-files.txt), [lint completo](geography-pagination-evidence/lint-full-results.txt). No se actualizó ninguna dependencia ni configuración para resolver ese error ajeno.
++
++### Reproducir sin datos remotos
++
++```bash
++pnpm exec jest src/feed/actions/getFeedData.test.ts src/feed/actions/getFeedDataByCategory.test.ts src/feed/actions/publicGeography.audit.test.ts src/feed/geography.test.ts src/lib/contact/phone.test.ts src/lib/business/business-visibility-policy.test.ts src/lib/business/publicBusinessVisibility.test.ts --runInBand --coverage=false
++node e2e/geography-pagination/prepare.cjs
++NODE_OPTIONS=--max-old-space-size=6144 node e2e/geography-pagination/dev-server.cjs
++# En otra terminal, con el servidor de pruebas listo:
++pnpm exec playwright test --config=e2e/geography-pagination/playwright.config.ts
++PUBLIC_UI_EVIDENCE_DIR=docs/audits/geography-pagination-evidence/first-batch-regression pnpm exec playwright test --config=e2e/public-ui-audit/playwright.config.ts
++# Detener el servidor temporal; retirar únicamente sus fixtures y caché:
++node e2e/mobile-feed-implementation/prepare.cjs --clean
++pnpm typecheck
++```
++
++Se admite `AUDIT_CHROMIUM_PATH` para el Chromium existente. No se ejecutó generación de fixtures remotos, migraciones, push ni despliegue.
++
++### Límites e integración
++
++No hay instantánea entre solicitudes. Si cambian orden, ciudad, visibilidad o existencia de registros durante el recorrido, la secuencia puede variar; no se ha diseñado una garantía nueva para todas las modificaciones concurrentes. En particular, eliminar la fila usada como cursor de DB puede requerir reiniciar ese recorrido. Los tests de completitud usan datos fijos. Las relecturas del buffer vuelven a exigir visibilidad actual. No se afirma una prueba SQL contra PostgreSQL real: Prisma se valida por tipos y su interfaz se ejercita mediante el adaptador aislado; no se consultó ni escribió la base remota.
++
++Separación del trabajo para revisión:
++
++1. **Anterior a la auditoría:** tarjetas/estilos móviles, navegación, onboarding, administración y otros cambios ya existentes. No forman parte de la corrección de geografía. Los archivos de ranking y mezcla, selectores, esquema y configuración se preservan.
++2. **Lote 1:** normalización de WhatsApp y consumidores, contacto y validación de categorías. Su delta original permanece en `public-ui-evidence/source-changes.patch`. No se modificaron sus consumidores ni helper en este lote.
++3. **Lote 2:** archivos enumerados arriba. `FeedRederer.tsx` comparte cambios previos de diseño del usuario: el nuevo delta se aplica sobre ellos y no debe confundirse con todo el `git diff` desde HEAD. El backend de geografía no depende de WhatsApp/contacto; el arreglo completo de “Para ti” sí requiere integrar juntos backend, metadatos y coordinación/renderizado del cliente. El prefijo de caché y formato de cursor deben viajar en esa misma integración. El cambio de renderer debe adaptarse manualmente si se integra sobre otra versión de la UI.
++
++No se concluye que toda la rama esté lista para integrar por haber pasado estas pruebas. Antes de publicar: revisar los deltas separados, resolver/aceptar explícitamente los errores ajenos de la rama, validar contra un entorno de datos aislado con Prisma/PostgreSQL real y preparar un despliegue como tarea posterior. Continúan fuera del lote los contenidos persistidos identificados, los 404 de fichas, el acceso comercial para propietarios y el error previo de lint de administración.
++
++Para revisión: [delta exclusivo del segundo lote](geography-pagination-evidence/second-batch-changes.patch), [inventario de archivos y preservación de cambios previos](geography-pagination-evidence/change-inventory.json). El inventario compara 102 archivos recibidos y no detecta modificaciones ajenas al alcance declarado. Los fixtures, arte y caché temporales se retiran al finalizar; se conserva su preparación reproducible en `e2e/geography-pagination`.
+--- /dev/null
++++ b/src/feed/actions/feedPage.ts
+@@ -0,0 +1,182 @@
++import { createHash } from "node:crypto";
++import type { FeedQueryParams } from "../feed.interfaces";
++import type { FeedContentType } from "../feed-ids";
++import { extractSeenRawIds } from "../feed-ids";
++import type { FeedLocationTier } from "../geography";
++
++export interface FeedPageParams extends FeedQueryParams {
++  categoriaSlug?: string;
++  userId?: string | null;
++  userLat?: number | null;
++  userLong?: number | null;
++  /** Internal query: reread the pending buffer under the same public filters. */
++  onlyIds?: string[];
++}
++
++type CursorState = {
++  v: 2;
++  scope: string;
++  tier: FeedLocationTier;
++  after?: string;
++  pending: string[];
++  exhausted: boolean;
++  seen: string[];
++};
++type Candidate = { id: string };
++type Ranked<T> = { item: T; score: number };
++type Fetch<T> = (params: FeedPageParams) => Promise<T[]>;
++export type FeedFetchers<T> = [Fetch<T>, Fetch<T>, Fetch<T>];
++const PREFIX = "fg2.";
++
++function scopeFor(type: FeedContentType, params: FeedPageParams) {
++  return createHash("sha256")
++    .update(
++      JSON.stringify([
++        type,
++        params.ciudad,
++        params.departamento,
++        params.categoriaSlug ?? "",
++        params.limit,
++        params.userId ?? null,
++        params.userLat ?? null,
++        params.userLong ?? null,
++        params.preferencias ?? [],
++        params.secciones ?? [],
++        params.followedBusinessIds ?? [],
++      ]),
++    )
++    .digest("hex");
++}
++
++function initialState(
++  type: FeedContentType,
++  params: FeedPageParams,
++): CursorState {
++  const scope = scopeFor(type, params);
++  if (!params.cursor)
++    return {
++      v: 2,
++      scope,
++      tier: 0,
++      pending: [],
++      exhausted: false,
++      seen: extractSeenRawIds(params.seenIds, type),
++    };
++  let state: CursorState;
++  try {
++    if (!params.cursor.startsWith(PREFIX) || params.cursor.length > 100_000)
++      throw new Error();
++    state = JSON.parse(
++      Buffer.from(params.cursor.slice(PREFIX.length), "base64url").toString(),
++    );
++    if (
++      state.v !== 2 ||
++      state.scope !== scope ||
++      ![0, 1, 2].includes(state.tier) ||
++      typeof state.exhausted !== "boolean" ||
++      (state.after !== undefined && typeof state.after !== "string") ||
++      !Array.isArray(state.pending) ||
++      state.pending.length > params.limit + 10 ||
++      !Array.isArray(state.seen) ||
++      ![...state.pending, ...state.seen].every((id) => typeof id === "string")
++    )
++      throw new Error();
++  } catch {
++    throw new Error(
++      "Cursor de feed inválido o de otra selección. Reinicia la exploración.",
++    );
++  }
++  return state;
++}
++
++/**
++ * Continue each geographic DB cursor separately. The ranked buffer is consumed
++ * before scanning again, so its unreturned candidates are never skipped.
++ * No snapshot: pending rows are reread with current category/visibility filters.
++ */
++export async function getGeographicPage<T extends Candidate>(
++  type: FeedContentType,
++  params: FeedPageParams,
++  fetchers: FeedFetchers<T>,
++  rank: (items: T[]) => Ranked<T>[],
++): Promise<{
++  rankedItems: Ranked<T>[];
++  nextCursor?: string;
++  nextTier?: FeedLocationTier;
++}> {
++  if (
++    !Number.isInteger(params.limit) ||
++    params.limit < 1 ||
++    params.limit > 100
++  ) {
++    throw new Error("Límite de feed inválido");
++  }
++  const state = initialState(type, params);
++  const rankedItems: Ranked<T>[] = [];
++  let queue: Ranked<T>[] = [];
++
++  if (state.pending.length) {
++    const pending = await fetchers[state.tier]({
++      ...params,
++      cursor: undefined,
++      onlyIds: state.pending,
++      seenIds: state.seen,
++      limit: state.pending.length,
++    });
++    const byId = new Map(rank(pending).map((entry) => [entry.item.id, entry]));
++    queue = state.pending.flatMap((id) =>
++      byId.has(id) ? [byId.get(id)!] : [],
++    );
++    state.pending = [];
++  }
++
++  while (true) {
++    if (queue.length) {
++      if (rankedItems.length === params.limit) {
++        state.pending = queue.map((entry) => entry.item.id);
++        return {
++          rankedItems,
++          nextCursor:
++            PREFIX + Buffer.from(JSON.stringify(state)).toString("base64url"),
++          nextTier: state.tier,
++        };
++      }
++      rankedItems.push(queue.shift()!);
++      continue;
++    }
++    if (state.exhausted || (state.tier === 1 && !params.departamento)) {
++      if (state.tier === 2) return { rankedItems };
++      state.tier = (state.tier + 1) as FeedLocationTier;
++      state.after = undefined;
++      state.exhausted = false;
++      continue;
++    }
++    const windowSize = params.limit + 10;
++    const candidates = await fetchers[state.tier]({
++      ...params,
++      cursor: state.after,
++      onlyIds: undefined,
++      seenIds: state.seen,
++      limit: windowSize,
++    });
++    state.exhausted = candidates.length < windowSize;
++    if (candidates.length) state.after = candidates[candidates.length - 1].id;
++    queue = rank(candidates);
++  }
++}
++
++export function feedIdWhere(params: FeedPageParams, type: FeedContentType) {
++  return params.onlyIds
++    ? { in: params.onlyIds }
++    : { notIn: extractSeenRawIds(params.seenIds, type) };
++}
++
++/** City and department queries are disjoint; national must exclude both. */
++export function nationalLocationWhere(params: FeedPageParams) {
++  return {
++    ciudad: { not: params.ciudad },
++    ...(params.departamento
++      ? { departamento: { not: params.departamento } }
++      : {}),
++  };
++}
+--- /dev/null
++++ b/src/feed/geography.ts
+@@ -0,0 +1,51 @@
++import type { FeedItem, FeedResponse } from "./feed.interfaces";
++
++export type FeedLocationTier = 0 | 1 | 2;
++type Location = { ciudad?: string; departamento?: string };
++
++export function getLocationTier(
++  location: Location,
++  selected: Location,
++): FeedLocationTier {
++  if (selected.ciudad && location.ciudad === selected.ciudad) return 0;
++  if (selected.departamento && location.departamento === selected.departamento)
++    return 1;
++  return 2;
++}
++
++export function getFeedItemTier(
++  item: FeedItem,
++  selected: Location,
++): FeedLocationTier {
++  if (item.locationTier !== undefined) return item.locationTier;
++  const data = item.data as Location & { negocio?: Location };
++  return getLocationTier(data.negocio ?? data, selected);
++}
++
++export function groupFeedByLocation(
++  items: FeedItem[],
++  selected: Location,
++): FeedItem[][] {
++  const groups: FeedItem[][] = [[], [], []];
++  items.forEach((item) => groups[getFeedItemTier(item, selected)].push(item));
++  return groups.filter((group) => group.length > 0);
++}
++
++/** A faster content stream must not expose other cities before slower locals. */
++export function availableDiscoveryTier(
++  queries: Array<{
++    isPending: boolean;
++    isError: boolean;
++    hasNextPage: boolean;
++    data?: { pages: FeedResponse[] };
++  }>,
++): FeedLocationTier {
++  return Math.min(
++    ...queries.map((query) => {
++      if (query.isPending || query.isError || !query.data?.pages.length)
++        return 0;
++      const last = query.data.pages[query.data.pages.length - 1];
++      return query.hasNextPage ? (last.nextTier ?? 0) : 2;
++    }),
++  ) as FeedLocationTier;
++}
+--- /dev/null
++++ b/src/feed/geography.test.ts
+@@ -0,0 +1,37 @@
++import { availableDiscoveryTier, groupFeedByLocation } from "./geography";
++import type { FeedItem, FeedResponse } from "./feed.interfaces";
++
++const ready = (nextTier?: 0 | 1 | 2) => ({
++  isPending: false,
++  isError: false,
++  hasNextPage: nextTier !== undefined,
++  data: { pages: [{ items: [], nextTier } as FeedResponse] },
++});
++it("holds fast external streams until every local continuation is exhausted", () => {
++  expect(availableDiscoveryTier([ready(2), ready(0), ready(1), ready()])).toBe(
++    0,
++  );
++  expect(availableDiscoveryTier([ready(2), ready(1), ready(1), ready()])).toBe(
++    1,
++  );
++  expect(availableDiscoveryTier([ready(2), ready(), ready(2), ready()])).toBe(
++    2,
++  );
++  expect(
++    availableDiscoveryTier([ready(2), { ...ready(), isPending: true }]),
++  ).toBe(0);
++  expect(
++    availableDiscoveryTier([ready(2), { ...ready(), isError: true }]),
++  ).toBe(0);
++});
++it("keeps geographic groups ordered while preserving their secondary order", () => {
++  const items = [
++    { id: "external", locationTier: 2 },
++    { id: "local-b", locationTier: 0 },
++    { id: "dept", locationTier: 1 },
++    { id: "local-a", locationTier: 0 },
++  ] as FeedItem[];
++  expect(
++    groupFeedByLocation(items, {}).map((group) => group.map((item) => item.id)),
++  ).toEqual([["local-b", "local-a"], ["dept"], ["external"]]);
++});
+--- /dev/null
++++ b/e2e/geography-pagination/data.cjs
+@@ -0,0 +1,210 @@
++// Fixed, isolated rows. Used by Jest and the local Next runtime; never persisted.
++const locations = {
++  local: { ciudad: "Tunja", departamento: "Boyacá" },
++  dept: { ciudad: "Duitama", departamento: "Boyacá" },
++  national: { ciudad: "Bogotá", departamento: "Bogotá D.C." },
++};
++function makeBusiness(id, location = "local", category = "comida") {
++  return {
++    id,
++    nombre: id,
++    slug: id,
++    descripcion: "Oferta del negocio",
++    ...locations[location],
++    estado: "activo",
++    isTestData: false,
++    archivedAt: null,
++    usuario: { estado: "activo", isPlaceholder: false, perfilCompleto: true },
++    orden: location === "local" ? 0 : 100,
++    createdAt: new Date("2026-01-01T12:00:00Z"),
++    fotoPerfil: "/__feed-implementation-art/avatar.svg",
++    fotoPortada: "/__feed-implementation-art/morning.svg",
++    telefonoContacto: "+573182293083",
++    urlGoogleMaps: null,
++    latitud: null,
++    longitud: null,
++    categorias: [{ category: { slug: category } }],
++    secciones: [],
++    _count: { followsIn: 0, publicaciones: 0, Product: 0, Servicio: 0 },
++  };
++}
++function makeRow(type, id, location = "local", category = "comida") {
++  const negocio = makeBusiness("b-" + id, location, category);
++  const common = {
++    id,
++    orden: negocio.orden,
++    createdAt: negocio.createdAt,
++    negocio,
++  };
++  if (type === "businesses") return { ...negocio, id, slug: id, nombre: id };
++  if (type === "products")
++    return {
++      ...common,
++      nombre: id,
++      slug: id,
++      precio: 23000,
++      descripcion: "Oferta de " + negocio.ciudad,
++      descripcionCorta: "Disponible para explorar",
++      prioridad: 0,
++      status: "disponible",
++      etiquetaEspecial: null,
++      ratingPromedio: 0,
++      numResenas: 0,
++      tags: [],
++      componentes: [],
++      categoryId: category === "comida" ? "2" : "1",
++      category: { slug: category, nombre: category },
++      imagenes: [{ url: "/__feed-implementation-art/coffee.svg" }],
++      secciones: [],
++      variantes: [],
++      stock: 10,
++      stockIlimitado: false,
++      usaVariantes: false,
++    };
++  if (type === "services")
++    return {
++      ...common,
++      titulo: id,
++      slug: id,
++      descripcion: ["Servicio en " + negocio.ciudad],
++      status: "disponible",
++      precio: 23000,
++      currency: "COP",
++      tags: [],
++      multimedia: [],
++    };
++  return {
++    ...common,
++    titulo: id,
++    descripcion: "Noticias de " + negocio.ciudad,
++    tipo: "CARRUSEL_IMAGENES",
++    visibilidad: "PUBLICA",
++    multimedia: [],
++    usuario: { id: "u-" + id, nombre: "Cliente", apellido: "", username: id },
++    numLikes: 0,
++    numComentarios: 0,
++    numCompartidos: 0,
++    calificacion: null,
++    productosEnPublicacion: [],
++    interacciones: [],
++  };
++}
++function makeRows(
++  type,
++  counts = { local: 27, dept: 3, national: 6 },
++  includeExcluded = true,
++) {
++  const result = [];
++  for (const [place, count] of Object.entries(counts))
++    for (let i = 0; i < count; i++)
++      result.push(
++        makeRow(type, `${type}-${place}-${String(i).padStart(2, "0")}`, place),
++      );
++  if (includeExcluded)
++    for (const place of Object.keys(locations)) {
++      result.push(
++        makeRow(type, `${type}-${place}-wrong-category`, place, "moda"),
++      );
++      const hidden = makeRow(type, `${type}-${place}-hidden`, place);
++      (type === "businesses" ? hidden : hidden.negocio).isTestData = true;
++      result.push(hidden);
++      if (type !== "businesses") {
++        const unavailable = makeRow(
++          type,
++          `${type}-${place}-unavailable`,
++          place,
++        );
++        if (type === "publications") unavailable.visibilidad = "PRIVADA";
++        else
++          unavailable.status = type === "products" ? "oculto" : "no_disponible";
++        result.push(unavailable);
++        if (type === "publications") {
++          const wrongType = makeRow(
++            type,
++            `${type}-${place}-unavailable-type`,
++            place,
++          );
++          wrongType.tipo = "VIDEO_VERTICAL";
++          result.push(wrongType);
++        }
++      }
++    }
++  return result;
++}
++function matches(value, where) {
++  if (where === undefined) return true;
++  if (where === null || typeof where !== "object") return value === where;
++  if ("is" in where) return matches(value, where.is);
++  if ("some" in where)
++    return (
++      Array.isArray(value) && value.some((item) => matches(item, where.some))
++    );
++  if ("in" in where && !where.in.includes(value)) return false;
++  if ("notIn" in where && where.notIn.includes(value)) return false;
++  if ("not" in where && matches(value, where.not)) return false;
++  if ("AND" in where && ![].concat(where.AND).every((w) => matches(value, w)))
++    return false;
++  if ("OR" in where && ![].concat(where.OR).some((w) => matches(value, w)))
++    return false;
++  if ("NOT" in where && [].concat(where.NOT).some((w) => matches(value, w)))
++    return false;
++  return Object.entries(where).every(
++    ([key, filter]) =>
++      ["AND", "OR", "NOT", "in", "notIn", "not"].includes(key) ||
++      matches(value?.[key], filter),
++  );
++}
++function queryRows(rows, args) {
++  let result = rows.filter((row) => matches(row, args.where));
++  const ordering = [].concat(args.orderBy || []);
++  result.sort((a, b) => {
++    for (const spec of ordering)
++      for (const [key, direction] of Object.entries(spec)) {
++        const av = a[key] instanceof Date ? a[key].getTime() : a[key],
++          bv = b[key] instanceof Date ? b[key].getTime() : b[key];
++        const comparison = av === bv ? 0 : av < bv ? -1 : 1;
++        if (comparison) return direction === "desc" ? -comparison : comparison;
++      }
++    return 0;
++  });
++  if (args.cursor) {
++    const index = result.findIndex((row) => row.id === args.cursor.id);
++    result = index < 0 ? [] : result.slice(index + (args.skip || 0));
++  } else if (args.skip) result = result.slice(args.skip);
++  return result.slice(0, args.take ?? result.length);
++}
++function makePrisma(dataset) {
++  const models = {
++    products: "product",
++    publications: "publicacion",
++    services: "servicio",
++    businesses: "negocio",
++  };
++  const prisma = {
++    interaccion: { findMany: async () => [] },
++    follow: { findMany: async () => [] },
++  };
++  for (const [type, model] of Object.entries(models))
++    prisma[model] = {
++      findMany: async (args) => queryRows(dataset[type] || [], args),
++    };
++  return prisma;
++}
++function browserDataset() {
++  return {
++    products: makeRows("products", { local: 25, dept: 3, national: 5 }),
++    publications: makeRows("publications", { local: 12, dept: 1, national: 2 }),
++    services: makeRows("services", { local: 1, dept: 1, national: 2 }),
++    businesses: makeRows("businesses", { local: 2, dept: 1, national: 2 }),
++  };
++}
++module.exports = {
++  locations,
++  makeBusiness,
++  makeRow,
++  makeRows,
++  matches,
++  queryRows,
++  makePrisma,
++  browserDataset,
++};
+--- /dev/null
++++ b/e2e/geography-pagination/dev-server.cjs
+@@ -0,0 +1,4 @@
++// Real Server Actions + isolated in-memory Prisma adapter. No database writes.
++const { makePrisma, browserDataset } = require("./data.cjs");
++globalThis.prisma = makePrisma(browserDataset());
++require("../mobile-feed-implementation/dev-server.cjs");
+--- /dev/null
++++ b/e2e/geography-pagination/geography.spec.ts
+@@ -0,0 +1,435 @@
++import { test, expect, type Page } from "@playwright/test";
++import { writeFileSync } from "node:fs";
++const { browserDataset } = require("./data.cjs");
++const evidence = "docs/audits/geography-pagination-evidence";
++const releases = new Set<() => void>();
++test.afterEach(() => {
++  releases.forEach((release) => release());
++  releases.clear();
++});
++type RecordPage = {
++  city: string;
++  type: string;
++  cursor: boolean;
++  ids: string[];
++  seenIds: string[];
++  nextTier?: number;
++};
++async function setup(page: Page, hold = false) {
++  const records: RecordPage[] = [];
++  const requests: RecordPage[] = [];
++  let held = false;
++  let release = () => {};
++  const gate = new Promise<void>((resolve) => {
++    release = resolve;
++  });
++  releases.add(release);
++  await page
++    .context()
++    .addCookies([
++      { name: "myckeo-consent", value: "true", domain: "127.0.0.1", path: "/" },
++    ]);
++  await page.addInitScript(() =>
++    localStorage.setItem(
++      "preferences-storage",
++      JSON.stringify({
++        state: {
++          ciudad: "Tunja",
++          departamento: "Boyacá",
++          preferencias: [],
++          secciones: [],
++          seenIds: [],
++          userLat: null,
++          userLong: null,
++        },
++        version: 0,
++      }),
++    ),
++  );
++  await page.context().route("**/*", async (route) => {
++    const req = route.request(),
++      url = new URL(req.url());
++    if (url.origin !== "http://127.0.0.1:3400") return route.abort();
++    if (url.pathname === "/api/auth/session")
++      return route.fulfill({ json: null });
++    if (req.method() === "POST") {
++      let args;
++      try {
++        args = JSON.parse(req.postData() || "null", (_key, value) =>
++          value === "$undefined" ? undefined : value,
++        );
++      } catch {}
++      if (
++        !req.headers()["next-action"] ||
++        !["products", "publications", "services", "businesses"].includes(
++          args?.[0],
++        )
++      )
++        return route.abort();
++      requests.push({
++        city: args[1].ciudad,
++        type: args[0],
++        cursor: !!args[1].cursor,
++        seenIds: args[1].seenIds,
++        ids: [],
++      });
++      // Delay an actual response, without substituting the action or its data.
++      if (
++        hold &&
++        !held &&
++        args[0] === "products" &&
++        args[1].ciudad === "Tunja" &&
++        args[1].cursor
++      ) {
++        held = true;
++        const response = await route.fetch();
++        await gate;
++        return route.fulfill({ response });
++      }
++      return route.continue();
++    }
++    if (url.pathname.startsWith("/api/")) return route.fulfill({ json: {} });
++    return route.continue();
++  });
++  page.on("response", async (res) => {
++    try {
++      if (
++        res.request().method() !== "POST" ||
++        !res.headers()["content-type"]?.includes("text/x-component")
++      )
++        return;
++      const args = JSON.parse(res.request().postData()!, (_key, value) =>
++        value === "$undefined" ? undefined : value,
++      );
++      for (const line of (await res.text()).split("\n")) {
++        try {
++          const value = JSON.parse(
++            line.slice(line.indexOf(":") + 1),
++            (_key, value) => (value === "$undefined" ? undefined : value),
++          );
++          if (Array.isArray(value?.items))
++            records.push({
++              city: args[1].ciudad,
++              type: args[0],
++              cursor: !!args[1].cursor,
++              seenIds: args[1].seenIds,
++              ids: value.items.map((item: { id: string }) => item.id),
++              nextTier: value.nextTier,
++            });
++        } catch {}
++      }
++    } catch {}
++  });
++  return { records, requests, release, isHeld: () => held };
++}
++async function changeCity(page: Page, dept: string, city: string) {
++  await page.getByRole("button", { name: /Cambiar ubicación/ }).click();
++  // Existing MUI selectors do not associate their visible labels with the input.
++  const selects = page.getByRole("combobox");
++  const visible = selects.filter({ visible: true });
++  // Header search is also a combobox; location selects are the final two.
++  await visible.nth((await visible.count()) - 2).click();
++  await page.getByRole("option", { name: dept, exact: true }).click();
++  const current = page.getByRole("combobox").filter({ visible: true });
++  await current.nth((await current.count()) - 1).click();
++  await page.getByRole("option", { name: city, exact: true }).click();
++  await page
++    .getByRole("button", { name: "Actualizar Ubicación", exact: true })
++    .click();
++  await expect(
++    page.getByRole("button", {
++      name: new RegExp(`Cambiar ubicación: ${city}`),
++    }),
++  ).toBeVisible();
++}
++async function ids(page: Page) {
++  return page
++    .locator("[data-feed-item-key]")
++    .evaluateAll((els) =>
++      els.map((el) => el.getAttribute("data-feed-item-key")!),
++    );
++}
++async function drain(page: Page, records: RecordPage[], tab = "para ti") {
++  for (let i = 0; i < 35; i++) {
++    if (await page.getByText(`No hay más ${tab}.`, { exact: true }).count())
++      break;
++    const count = records.length;
++    await page.locator("[data-feed-sentinel]").scrollIntoViewIfNeeded();
++    await expect
++      .poll(
++        async () =>
++          records.length > count ||
++          (await page
++            .getByText(`No hay más ${tab}.`, { exact: true })
++            .count()) > 0,
++        { timeout: 30000 },
++      )
++      .toBe(true);
++  }
++  await expect(
++    page.getByText(`No hay más ${tab}.`, { exact: true }),
++  ).toBeVisible();
++}
++function expectedKeys(category = false, initial: RecordPage[] = []) {
++  const types: Record<string, string> = {
++    products: "product",
++    publications: "publication",
++    services: "service",
++    businesses: "business",
++  };
++  const prefixes: Record<string, string> = {
++    products: "product-",
++    publications: "pub-",
++    services: "serv-",
++    businesses: "bus-",
++  };
++  return Object.entries(browserDataset()).flatMap(([type, rows]) => {
++    const seen =
++      initial.find((r) => r.type === type && !r.cursor)?.seenIds || [];
++    return (rows as { id: string }[])
++      .filter(
++        (row) =>
++          !/-hidden|-unavailable/.test(row.id) &&
++          (!category || !row.id.endsWith("wrong-category")) &&
++          !seen.includes(prefixes[type] + row.id),
++      )
++      .map((row) => `${types[type]}-${row.id}`);
++  });
++}
++function assertTierOrder(keys: string[], city = "Tunja") {
++  const tiers = keys.map((key) =>
++    city === "Tunja"
++      ? key.includes("-local-")
++        ? 0
++        : key.includes("-dept-")
++          ? 1
++          : 2
++      : key.includes("-national-")
++        ? 0
++        : 2,
++  );
++  expect(tiers).toEqual([...tiers].sort());
++  expect(new Set(keys).size).toBe(keys.length);
++}
++
++test("real actions: multiple pages, global priority, new city and delayed old response", async ({
++  page,
++}) => {
++  await page.setViewportSize({ width: 390, height: 844 });
++  const state = await setup(page, true);
++  await page.goto("/?view=live");
++  await expect(page.locator("[data-feed-product-id]").first()).toBeVisible({
++    timeout: 60000,
++  });
++  await expect
++    .poll(
++      () =>
++        state.requests.filter((r) => r.city === "Tunja" && !r.cursor).length,
++    )
++    .toBe(4);
++  console.log("geo: four initial pages loaded");
++  expect((await ids(page)).every((key) => key.includes("-local-"))).toBe(true);
++  for (let i = 0; i < 5 && !state.isHeld(); i++) {
++    const count = state.records.length;
++    await page.locator("[data-feed-sentinel]").scrollIntoViewIfNeeded();
++    await expect
++      .poll(() => state.isHeld() || state.records.length > count)
++      .toBe(true);
++  }
++  expect(state.isHeld()).toBe(true);
++  console.log("geo: actual continuation held");
++  await changeCity(page, "Cundinamarca", "Bogotá");
++  console.log("geo: city changed through existing selector");
++  await expect(page.locator("[data-feed-item-key]")).toHaveCount(0);
++  // Next's client action queue serializes these reads; release the old actual
++  // response after selecting the new city, before waiting for the queued reads.
++  state.release();
++  await expect
++    .poll(() => state.records.some((r) => r.city === "Bogotá"))
++    .toBe(true);
++  await drain(page, state.records);
++  const keys = await ids(page);
++  assertTierOrder(keys, "Bogotá");
++  expect([...keys].sort()).toEqual(
++    expectedKeys(
++      false,
++      state.requests.filter((r) => r.city === "Bogotá"),
++    ).sort(),
++  );
++  expect(state.records.some((r) => r.city === "Bogotá" && r.cursor)).toBe(true);
++  await page.screenshot({
++    path: `${evidence}/city-changed-390.png`,
++    fullPage: true,
++  });
++  writeFileSync(
++    `${evidence}/browser-real-actions.json`,
++    JSON.stringify(
++      {
++        requests: state.requests,
++        records: state.records,
++        keys,
++        oldResponseReleased: true,
++      },
++      null,
++      2,
++    ),
++  );
++});
++
++test("category filter: all local pages then expansion, exclusions and final page", async ({
++  page,
++}) => {
++  await page.setViewportSize({ width: 1440, height: 1000 });
++  const state = await setup(page);
++  await page.goto("/category/comida");
++  await expect(page.locator("[data-feed-item-key]").first()).toBeVisible({
++    timeout: 60000,
++  });
++  await drain(page, state.records, "productos");
++  const productKeys = await ids(page);
++  assertTierOrder(productKeys);
++  expect(productKeys).toHaveLength(33);
++  expect(
++    productKeys.every(
++      (key) =>
++        key.startsWith("product-") &&
++        !/wrong-category|hidden|unavailable/.test(key),
++    ),
++  ).toBe(true);
++  await page
++    .getByRole("button", { name: "Cambiar a pestaña Para ti", exact: true })
++    .click();
++  await drain(page, state.records);
++  const keys = await ids(page);
++  assertTierOrder(keys);
++  // Switching tabs retains the existing "seen" policy: products already loaded
++  // in Productos are intentionally excluded from the new Para ti traversal.
++  expect([...keys].sort()).toEqual(
++    expectedKeys(true)
++      .filter((key) => !productKeys.includes(key))
++      .sort(),
++  );
++  await page.screenshot({
++    path: `${evidence}/category-comida-1440.png`,
++    fullPage: true,
++  });
++  writeFileSync(
++    `${evidence}/browser-category.json`,
++    JSON.stringify({ records: state.records, productKeys, keys }, null, 2),
++  );
++});
++
++test("geographic masonry groups preserve mobile commerce and visual order at four widths", async ({
++  page,
++}) => {
++  test.setTimeout(180_000);
++  const state = await setup(page);
++  const measurements = [];
++  for (const width of [360, 390, 430, 1440]) {
++    await page.setViewportSize({ width, height: 1000 });
++    await page.goto("/category/comida");
++    await expect(page.locator("[data-feed-item-key]").first()).toBeVisible();
++    await drain(page, state.records, "productos");
++    const keys = await ids(page);
++    assertTierOrder(keys);
++    expect(keys).toHaveLength(33);
++    // Existing entrance animations and masonry relayout run after pagination.
++    // Measure their settled geometry rather than an intermediate transform.
++    await expect
++      .poll(async () => {
++        const b = await page
++          .locator("[data-feed-item-key]")
++          .evaluateAll((els) =>
++            els.map((el) => ({
++              key: el.getAttribute("data-feed-item-key")!,
++              top: el.getBoundingClientRect().top,
++              bottom: el.getBoundingClientRect().bottom,
++            })),
++          );
++        return (
++          Math.min(
++            ...b.filter((x) => !x.key.includes("-local-")).map((x) => x.top),
++          ) -
++          Math.max(
++            ...b.filter((x) => x.key.includes("-local-")).map((x) => x.bottom),
++          )
++        );
++      })
++      .toBeGreaterThanOrEqual(0);
++    const boxes = await page
++      .locator("[data-feed-item-key]")
++      .evaluateAll((els) =>
++        els.map((el) => ({
++          key: el.getAttribute("data-feed-item-key")!,
++          top: el.getBoundingClientRect().top,
++          bottom: el.getBoundingClientRect().bottom,
++        })),
++      );
++    const localBottom = Math.max(
++      ...boxes.filter((b) => b.key.includes("-local-")).map((b) => b.bottom),
++    );
++    const externalTop = Math.min(
++      ...boxes.filter((b) => !b.key.includes("-local-")).map((b) => b.top),
++    );
++    expect(externalTop).toBeGreaterThanOrEqual(localBottom);
++    const card = page.locator("[data-feed-product-id]").first();
++    await card.scrollIntoViewIfNeeded();
++    await card
++      .locator("img")
++      .evaluateAll((imgs) =>
++        Promise.all(
++          imgs
++            .filter((img) => img.getBoundingClientRect().width > 0)
++            .map((img) => (img as HTMLImageElement).decode().catch(() => {})),
++        ),
++      );
++    const geometry = await card.evaluate((el) => {
++      const wa = el
++        .querySelector('a[href^="https://wa.me/"]')!
++        .getBoundingClientRect();
++      const cart = [...el.querySelectorAll("button")]
++        .find((b) =>
++          /Agregar .* al carrito/.test(b.getAttribute("aria-label") || ""),
++        )!
++        .getBoundingClientRect();
++      const price = el
++        .querySelector('[class*="priceBlock"]')!
++        .getBoundingClientRect();
++      const photo = el
++        .querySelector('[class*="avatarPhoto"]')!
++        .getBoundingClientRect();
++      const badge = el
++        .querySelector('[class*="avatarIcon"]')!
++        .getBoundingClientRect();
++      return {
++        sameRow:
++          Math.abs(wa.top - cart.top) < 12 &&
++          price.bottom > wa.top &&
++          price.top < wa.bottom,
++        waHeight: wa.height,
++        cartHeight: cart.height,
++        badgeOverAvatar:
++          Math.min(photo.right, badge.right) >
++            Math.max(photo.left, badge.left) &&
++          Math.min(photo.bottom, badge.bottom) > Math.max(photo.top, badge.top),
++      };
++    });
++    expect(geometry.sameRow).toBe(true);
++    expect(geometry.waHeight).toBe(44);
++    expect(geometry.cartHeight).toBe(44);
++    if (width < 768) expect(geometry.badgeOverAvatar).toBe(true);
++    expect(
++      await page.evaluate(
++        () => document.documentElement.scrollWidth <= innerWidth,
++      ),
++    ).toBe(true);
++    await page.screenshot({
++      path: `${evidence}/geography-layout-${width}.png`,
++    });
++    measurements.push({ width, localBottom, externalTop, ...geometry });
++  }
++  writeFileSync(
++    `${evidence}/geography-layout.json`,
++    JSON.stringify(measurements, null, 2),
++  );
++});
+--- /dev/null
++++ b/e2e/geography-pagination/playwright.config.ts
+@@ -0,0 +1,8 @@
++import { defineConfig } from "@playwright/test";
++import base from "../public-ui-audit/playwright.config";
++export default defineConfig(base, {
++  testDir: ".",
++  testMatch: "geography.spec.ts",
++  timeout: 120_000,
++  outputDir: "../../test-results/geography-pagination",
++});
+--- /dev/null
++++ b/e2e/geography-pagination/prepare.cjs
+@@ -0,0 +1,18 @@
++const fs = require("node:fs");
++const path = require("node:path");
++require("../public-ui-audit/prepare.cjs");
++const fixture = path.resolve(
++  __dirname,
++  "../../src/app/(catalogo)/feed-implementation-review/ReviewClient.tsx",
++);
++// The real feed reads the browser's city. Keep the previous static fixture's
++// initialization for the first-batch regressions only.
++fs.writeFileSync(
++  fixture,
++  fs
++    .readFileSync(fixture, "utf8")
++    .replace(
++      'usePreferencesStore.getState().setUbicacion("Bogotá","Bogotá D.C.");',
++      'if(query.get("view")!=="live") usePreferencesStore.getState().setUbicacion("Bogotá","Bogotá D.C.");',
++    ),
++);

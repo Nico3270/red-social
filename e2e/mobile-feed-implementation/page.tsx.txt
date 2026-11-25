@@ -1,0 +1,8 @@
+import { notFound } from "next/navigation";
+import { Suspense } from "react";
+import ReviewClient from "./ReviewClient";
+
+export default function Page() {
+  if (process.env.NODE_ENV !== "development" || process.env.MYCKEO_FEED_REVIEW !== "1") notFound();
+  return <Suspense fallback={null}><ReviewClient /></Suspense>;
+}

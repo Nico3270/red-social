@@ -1,0 +1,18 @@
+Resultado principal: siete comprobaciones aprobadas; el servidor agotó el heap al compilar registro.
+  ✓  1 e2e/public-ui-audit/public-ui.spec.ts:10:7 › after: feed and contact at 360px (4.2s)
+  ✓  2 e2e/public-ui-audit/public-ui.spec.ts:10:7 › after: feed and contact at 390px (4.0s)
+  ✓  3 e2e/public-ui-audit/public-ui.spec.ts:10:7 › after: feed and contact at 430px (5.7s)
+  ✓  4 e2e/public-ui-audit/public-ui.spec.ts:10:7 › after: feed and contact at 1440px (4.2s)
+  ✓  5 e2e/public-ui-audit/public-ui.spec.ts:41:5 › after: categories and unknown slugs (29.3s)
+  ✓  6 e2e/public-ui-audit/public-ui.spec.ts:61:5 › after: business, service, product, detail and profile agree on destination (12.8s)
+  ✓  7 e2e/public-ui-audit/public-ui.spec.ts:85:5 › after: independent mobile actions, business link and commerce row (23.1s)
+
+Repetición del recorrido restante con servidor reiniciado (heap 6 GB):
+
+Running 1 test using 1 worker
+
+  ✓  1 e2e/public-ui-audit/public-ui.spec.ts:130:5 › after: footer, favorites, cart and existing owner entry (12.5s)
+
+  1 passed (13.2s)
+
+Total: ocho comprobaciones aprobadas en dos ejecuciones.

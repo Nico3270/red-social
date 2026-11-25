@@ -2,11 +2,10 @@
 "use server";
 
 import {
-  buildPublishedBusinessRelationWhere,
   buildPublishedBusinessWhere,
 } from "@/lib/business/business-visibility-policy";
 import prisma from "@/lib/prisma";
-import { FeedQueryParams, FeedResponse, FeedItem } from "../feed.interfaces";
+import { FeedResponse, FeedItem } from "../feed.interfaces";
 import { Prisma, ReaccionTipo } from "@prisma/client";
 import {
   productSelect,
@@ -17,11 +16,13 @@ import {
   RawPublication,
   RawService,
   RawBusiness,
+  RawData,
 } from "./selects";
 import { mapToFeedItem } from "./mapItem";
 import { isRawProduct, isRawPublication, isRawService, isRawBusiness } from "../feed.interfaces";
 import { EnhancedPublicacion } from "@/publicaciones/interfaces/enhancedPublicacion.interface";
-import { extractSeenRawIds } from "../feed-ids";
+import { getLocationTier } from "../geography";
+import { getGeographicPage, feedIdWhere, nationalLocationWhere, type FeedPageParams, type FeedFetchers } from "./feedPage";
 import { rankRawItems } from "./feedRanking";
 
 // === 1. FUNCIONES FETCH (orden correcto) ===
@@ -44,11 +45,11 @@ function buildPublishedBusinessWith(
   };
 }
 
-async function fetchPublicationsCity(params: ExtendedParams): Promise<RawPublication[]> {
+async function fetchPublicationsCity(params: FeedPageParams): Promise<RawPublication[]> {
   const where: Prisma.PublicacionWhereInput = {
     tipo: { in: ["TESTIMONIO", "CARRUSEL_IMAGENES"] },
     visibilidad: "PUBLICA",
-    id: { notIn: extractSeenRawIds(params.seenIds, "publications") },
+    id: feedIdWhere(params, "publications"),
     negocio: buildPublishedBusinessRelationWith({
       ciudad: params.ciudad,
     }),
@@ -56,18 +57,18 @@ async function fetchPublicationsCity(params: ExtendedParams): Promise<RawPublica
   return prisma.publicacion.findMany({
     where,
     select: publicationSelect,
-    orderBy: [{ orden: "desc" }],
+    orderBy: [{ orden: "desc" }, { createdAt: "desc" }, { id: "asc" }],
     take: params.limit,
     cursor: params.cursor ? { id: params.cursor } : undefined,
     skip: params.cursor ? 1 : 0,
   });
 }
 
-async function fetchPublicationsDept(params: ExtendedParams): Promise<RawPublication[]> {
+async function fetchPublicationsDept(params: FeedPageParams): Promise<RawPublication[]> {
   const where: Prisma.PublicacionWhereInput = {
     tipo: { in: ["TESTIMONIO", "CARRUSEL_IMAGENES"] },
     visibilidad: "PUBLICA",
-    id: { notIn: extractSeenRawIds(params.seenIds, "publications") },
+    id: feedIdWhere(params, "publications"),
     negocio: buildPublishedBusinessRelationWith({
       departamento: params.departamento,
       ciudad: { not: params.ciudad },
@@ -76,34 +77,34 @@ async function fetchPublicationsDept(params: ExtendedParams): Promise<RawPublica
   return prisma.publicacion.findMany({
     where,
     select: publicationSelect,
-    orderBy: [{ orden: "desc" }],
+    orderBy: [{ orden: "desc" }, { createdAt: "desc" }, { id: "asc" }],
     take: params.limit,
     cursor: params.cursor ? { id: params.cursor } : undefined,
     skip: params.cursor ? 1 : 0,
   });
 }
 
-async function fetchPublicationsNational(params: ExtendedParams): Promise<RawPublication[]> {
+async function fetchPublicationsNational(params: FeedPageParams): Promise<RawPublication[]> {
   const where: Prisma.PublicacionWhereInput = {
     tipo: { in: ["TESTIMONIO", "CARRUSEL_IMAGENES"] },
     visibilidad: "PUBLICA",
-    id: { notIn: extractSeenRawIds(params.seenIds, "publications") },
-    negocio: buildPublishedBusinessRelationWhere(),
+    id: feedIdWhere(params, "publications"),
+    negocio: buildPublishedBusinessRelationWith(nationalLocationWhere(params)),
   };
   return prisma.publicacion.findMany({
     where,
     select: publicationSelect,
-    orderBy: [{ orden: "desc" }],
+    orderBy: [{ orden: "desc" }, { createdAt: "desc" }, { id: "asc" }],
     take: params.limit,
     cursor: params.cursor ? { id: params.cursor } : undefined,
     skip: params.cursor ? 1 : 0,
   });
 }
 
-async function fetchProductsCity(params: ExtendedParams): Promise<RawProduct[]> {
+async function fetchProductsCity(params: FeedPageParams): Promise<RawProduct[]> {
   const where: Prisma.ProductWhereInput = {
     status: "disponible",
-    id: { notIn: extractSeenRawIds(params.seenIds, "products") },
+    id: feedIdWhere(params, "products"),
     negocio: buildPublishedBusinessRelationWith({
       ciudad: params.ciudad,
     }),
@@ -111,17 +112,17 @@ async function fetchProductsCity(params: ExtendedParams): Promise<RawProduct[]> 
   return prisma.product.findMany({
     where,
     select: productSelect,
-    orderBy: [{ orden: "desc" }],
+    orderBy: [{ orden: "desc" }, { createdAt: "desc" }, { id: "asc" }],
     take: params.limit,
     cursor: params.cursor ? { id: params.cursor } : undefined,
     skip: params.cursor ? 1 : 0,
   });
 }
 
-async function fetchProductsDept(params: ExtendedParams): Promise<RawProduct[]> {
+async function fetchProductsDept(params: FeedPageParams): Promise<RawProduct[]> {
   const where: Prisma.ProductWhereInput = {
     status: "disponible",
-    id: { notIn: extractSeenRawIds(params.seenIds, "products") },
+    id: feedIdWhere(params, "products"),
     negocio: buildPublishedBusinessRelationWith({
       departamento: params.departamento,
       ciudad: { not: params.ciudad },
@@ -130,33 +131,33 @@ async function fetchProductsDept(params: ExtendedParams): Promise<RawProduct[]> 
   return prisma.product.findMany({
     where,
     select: productSelect,
-    orderBy: [{ orden: "desc" }],
+    orderBy: [{ orden: "desc" }, { createdAt: "desc" }, { id: "asc" }],
     take: params.limit,
     cursor: params.cursor ? { id: params.cursor } : undefined,
     skip: params.cursor ? 1 : 0,
   });
 }
 
-async function fetchProductsNational(params: ExtendedParams): Promise<RawProduct[]> {
+async function fetchProductsNational(params: FeedPageParams): Promise<RawProduct[]> {
   const where: Prisma.ProductWhereInput = {
     status: "disponible",
-    id: { notIn: extractSeenRawIds(params.seenIds, "products") },
-    negocio: buildPublishedBusinessRelationWhere(),
+    id: feedIdWhere(params, "products"),
+    negocio: buildPublishedBusinessRelationWith(nationalLocationWhere(params)),
   };
   return prisma.product.findMany({
     where,
     select: productSelect,
-    orderBy: [{ orden: "desc" }],
+    orderBy: [{ orden: "desc" }, { createdAt: "desc" }, { id: "asc" }],
     take: params.limit,
     cursor: params.cursor ? { id: params.cursor } : undefined,
     skip: params.cursor ? 1 : 0,
   });
 }
 
-async function fetchServicesCity(params: ExtendedParams): Promise<RawService[]> {
+async function fetchServicesCity(params: FeedPageParams): Promise<RawService[]> {
   const where: Prisma.ServicioWhereInput = {
     status: "disponible",
-    id: { notIn: extractSeenRawIds(params.seenIds, "services") },
+    id: feedIdWhere(params, "services"),
     negocio: buildPublishedBusinessRelationWith({
       ciudad: params.ciudad,
     }),
@@ -164,17 +165,17 @@ async function fetchServicesCity(params: ExtendedParams): Promise<RawService[]> 
   return prisma.servicio.findMany({
     where,
     select: serviceSelect,
-    orderBy: [{ orden: "desc" }],
+    orderBy: [{ orden: "desc" }, { createdAt: "desc" }, { id: "asc" }],
     take: params.limit,
     cursor: params.cursor ? { id: params.cursor } : undefined,
     skip: params.cursor ? 1 : 0,
   });
 }
 
-async function fetchServicesDept(params: ExtendedParams): Promise<RawService[]> {
+async function fetchServicesDept(params: FeedPageParams): Promise<RawService[]> {
   const where: Prisma.ServicioWhereInput = {
     status: "disponible",
-    id: { notIn: extractSeenRawIds(params.seenIds, "services") },
+    id: feedIdWhere(params, "services"),
     negocio: buildPublishedBusinessRelationWith({
       departamento: params.departamento,
       ciudad: { not: params.ciudad },
@@ -183,68 +184,69 @@ async function fetchServicesDept(params: ExtendedParams): Promise<RawService[]> 
   return prisma.servicio.findMany({
     where,
     select: serviceSelect,
-    orderBy: [{ orden: "desc" }],
+    orderBy: [{ orden: "desc" }, { createdAt: "desc" }, { id: "asc" }],
     take: params.limit,
     cursor: params.cursor ? { id: params.cursor } : undefined,
     skip: params.cursor ? 1 : 0,
   });
 }
 
-async function fetchServicesNational(params: ExtendedParams): Promise<RawService[]> {
+async function fetchServicesNational(params: FeedPageParams): Promise<RawService[]> {
   const where: Prisma.ServicioWhereInput = {
     status: "disponible",
-    id: { notIn: extractSeenRawIds(params.seenIds, "services") },
-    negocio: buildPublishedBusinessRelationWhere(),
+    id: feedIdWhere(params, "services"),
+    negocio: buildPublishedBusinessRelationWith(nationalLocationWhere(params)),
   };
   return prisma.servicio.findMany({
     where,
     select: serviceSelect,
-    orderBy: [{ orden: "desc" }],
+    orderBy: [{ orden: "desc" }, { createdAt: "desc" }, { id: "asc" }],
     take: params.limit,
     cursor: params.cursor ? { id: params.cursor } : undefined,
     skip: params.cursor ? 1 : 0,
   });
 }
 
-async function fetchBusinessesCity(params: ExtendedParams): Promise<RawBusiness[]> {
+async function fetchBusinessesCity(params: FeedPageParams): Promise<RawBusiness[]> {
   const where = buildPublishedBusinessWith({
-    id: { notIn: extractSeenRawIds(params.seenIds, "businesses") },
+    id: feedIdWhere(params, "businesses"),
     ciudad: params.ciudad,
   });
   return prisma.negocio.findMany({
     where,
     select: businessSelect,
-    orderBy: [{ orden: "desc" }],
+    orderBy: [{ orden: "desc" }, { createdAt: "desc" }, { id: "asc" }],
     take: params.limit,
     cursor: params.cursor ? { id: params.cursor } : undefined,
     skip: params.cursor ? 1 : 0,
   });
 }
 
-async function fetchBusinessesDept(params: ExtendedParams): Promise<RawBusiness[]> {
+async function fetchBusinessesDept(params: FeedPageParams): Promise<RawBusiness[]> {
   const where = buildPublishedBusinessWith({
-    id: { notIn: extractSeenRawIds(params.seenIds, "businesses") },
+    id: feedIdWhere(params, "businesses"),
     departamento: params.departamento,
     ciudad: { not: params.ciudad },
   });
   return prisma.negocio.findMany({
     where,
     select: businessSelect,
-    orderBy: [{ orden: "desc" }, { createdAt: "desc" }],
+    orderBy: [{ orden: "desc" }, { createdAt: "desc" }, { id: "asc" }],
     take: params.limit,
     cursor: params.cursor ? { id: params.cursor } : undefined,
     skip: params.cursor ? 1 : 0,
   });
 }
 
-async function fetchBusinessesNational(params: ExtendedParams): Promise<RawBusiness[]> {
+async function fetchBusinessesNational(params: FeedPageParams): Promise<RawBusiness[]> {
   const where = buildPublishedBusinessWith({
-    id: { notIn: extractSeenRawIds(params.seenIds, "businesses") },
+    id: feedIdWhere(params, "businesses"),
+    ...nationalLocationWhere(params),
   });
   return prisma.negocio.findMany({
     where,
     select: businessSelect,
-    orderBy: [{ orden: "desc" }, { createdAt: "desc" }],
+    orderBy: [{ orden: "desc" }, { createdAt: "desc" }, { id: "asc" }],
     take: params.limit,
     cursor: params.cursor ? { id: params.cursor } : undefined,
     skip: params.cursor ? 1 : 0,
@@ -253,108 +255,23 @@ async function fetchBusinessesNational(params: ExtendedParams): Promise<RawBusin
 
 // === 2. INTERFACES Y HELPERS ===
 
-interface SortableItem {
-  id: string;
-  orden?: number;
-  createdAt: Date;
-}
-
-interface ExtendedParams extends FeedQueryParams {
-  cursor?: string;
-  userId?: string | null;
-  userLat?: number | null;
-  userLong?: number | null;
-}
-
-const sortGroup = <T extends SortableItem>(items: T[]): T[] => {
-  return items.sort((a, b) => {
-    const orderA = a.orden ?? 0;
-    const orderB = b.orden ?? 0;
-    if (orderB !== orderA) return orderB - orderA;
-    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-  });
-};
-
-async function fetchWithPriority<T extends SortableItem>(
-  fetchCity: (params: ExtendedParams) => Promise<T[]>,
-  fetchDept: (params: ExtendedParams) => Promise<T[]>,
-  fetchNational: (params: ExtendedParams) => Promise<T[]>,
-  params: ExtendedParams,
-  type: string,
-  buffer: number = 10
-): Promise<T[]> {
-  const limitWithBuffer = params.limit + buffer;
-  let items: T[] = [];
-  let remaining = limitWithBuffer;
-
-  try {
-    const cityItems = await fetchCity({ ...params, limit: remaining });
-    items = [...items, ...sortGroup(cityItems)];
-    remaining -= cityItems.length;
-  } catch (e) {
-    console.error(`Error en ${type} ciudad:`, e);
-  }
-
-  if (remaining > 0 && params.departamento) {
-    try {
-      const deptItems = await fetchDept({ ...params, limit: remaining });
-      items = [...items, ...sortGroup(deptItems)];
-      remaining -= deptItems.length;
-    } catch (e) {
-      console.error(`Error en ${type} depto:`, e);
-    }
-  }
-
-  if (remaining > 0) {
-    try {
-      const nationalItems = await fetchNational({ ...params, limit: remaining });
-      items = [...items, ...sortGroup(nationalItems)];
-    } catch (e) {
-      console.error(`Error en ${type} nacional:`, e);
-    }
-  }
-
-  const uniqueItems = Array.from(new Map(items.map((item) => [item.id, item])).values());
-  return uniqueItems.slice(0, params.limit + buffer);
-}
-
 // === 3. getFeedDataByType ===
 export async function getFeedDataByType(
   type: "products" | "publications" | "services" | "businesses",
-  params: ExtendedParams
+  params: FeedPageParams
 ): Promise<FeedResponse> {
   if (!params.ciudad) throw new Error("Ciudad requerida para feed local");
 
-  let rawItems: (RawProduct | RawPublication | RawService | RawBusiness)[] = [];
-  let nextCursor: string | undefined;
-
-  try {
-    switch (type) {
-      case "products":
-        rawItems = await fetchWithPriority<RawProduct>(fetchProductsCity, fetchProductsDept, fetchProductsNational, params, "products");
-        break;
-      case "publications":
-        rawItems = await fetchWithPriority<RawPublication>(
-          fetchPublicationsCity,
-          fetchPublicationsDept,
-          fetchPublicationsNational,
-          params,
-          "publications"
-        );
-        break;
-      case "services":
-        rawItems = await fetchWithPriority<RawService>(fetchServicesCity, fetchServicesDept, fetchServicesNational, params, "services");
-        break;
-      case "businesses":
-        rawItems = await fetchWithPriority<RawBusiness>(fetchBusinessesCity, fetchBusinessesDept, fetchBusinessesNational, params, "businesses");
-        break;
-    }
-  } catch (error) {
-    console.error(`Error fetching ${type}:`, error);
-    rawItems = [];
-  }
-  const rankedRawItems = rankRawItems(rawItems, type, params);
-  rawItems = rankedRawItems.map(({ item }) => item);
+  const fetchers = {
+    products: [fetchProductsCity, fetchProductsDept, fetchProductsNational],
+    publications: [fetchPublicationsCity, fetchPublicationsDept, fetchPublicationsNational],
+    services: [fetchServicesCity, fetchServicesDept, fetchServicesNational],
+    businesses: [fetchBusinessesCity, fetchBusinessesDept, fetchBusinessesNational],
+  } satisfies Record<string, FeedFetchers<RawData>>;
+  const { rankedItems: rankedRawItems, nextCursor, nextTier } = await getGeographicPage<RawData>(
+    type, params, fetchers[type], items => rankRawItems(items, type, params),
+  );
+  const rawItems = rankedRawItems.map(({ item }) => item);
 
   // === Reacciones ===
   let userReactionsMap: Record<string, { id: string; tipo: ReaccionTipo } | null> = {};
@@ -428,15 +345,12 @@ export async function getFeedDataByType(
       negocioId = raw.id;
     }
     (item.data as { negocioId?: string }).negocioId = negocioId;
+    item.locationTier = getLocationTier(isRawBusiness(raw) ? raw : raw.negocio ?? {}, params);
     item.isFollowed = params.followedBusinessIds?.includes(negocioId) ?? false;
     item.score = scoreMap.get(raw.id) ?? item.score;
 
     return item;
   });
 
-  if (rawItems.length >= params.limit) {
-    nextCursor = rawItems[rawItems.length - 1].id;
-  }
-
-  return { items: items.slice(0, params.limit), nextCursor };
+  return { items, nextCursor, nextTier };
 }

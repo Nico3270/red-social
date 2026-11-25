@@ -1,3 +1,4 @@
+import { nationalLocationWhere } from "./feedPage";
 import { EstadoNegocio, EstadoUsuario } from "@prisma/client";
 
 const mockPublicacionFindMany = jest.fn();
@@ -33,7 +34,6 @@ jest.mock("./mapItem", () => ({
 }));
 
 import {
-  buildPublishedBusinessRelationWhere,
   buildPublishedBusinessWhere,
   classifyBusinessVisibility,
 } from "../../lib/business/business-visibility-policy";
@@ -83,7 +83,7 @@ describe("getFeedDataByType PUBLISHED visibility", () => {
       },
     });
     expect(mockPublicacionFindMany.mock.calls[2][0].where.negocio).toEqual(
-      buildPublishedBusinessRelationWhere(),
+      { is: { AND: [buildPublishedBusinessWhere(), nationalLocationWhere(params)] } },
     );
   });
 
@@ -108,7 +108,7 @@ describe("getFeedDataByType PUBLISHED visibility", () => {
       },
     });
     expect(mockProductFindMany.mock.calls[2][0].where.negocio).toEqual(
-      buildPublishedBusinessRelationWhere(),
+      { is: { AND: [buildPublishedBusinessWhere(), nationalLocationWhere(params)] } },
     );
   });
 
@@ -133,7 +133,7 @@ describe("getFeedDataByType PUBLISHED visibility", () => {
       },
     });
     expect(mockServicioFindMany.mock.calls[2][0].where.negocio).toEqual(
-      buildPublishedBusinessRelationWhere(),
+      { is: { AND: [buildPublishedBusinessWhere(), nationalLocationWhere(params)] } },
     );
   });
 
@@ -158,7 +158,7 @@ describe("getFeedDataByType PUBLISHED visibility", () => {
       ],
     });
     expect(mockNegocioFindMany.mock.calls[2][0].where).toEqual({
-      AND: [buildPublishedBusinessWhere(), { id: { notIn: [] } }],
+      AND: [buildPublishedBusinessWhere(), { id: { notIn: [] }, ...nationalLocationWhere(params) }],
     });
   });
 
@@ -230,19 +230,15 @@ describe("getFeedDataByType PUBLISHED visibility", () => {
   it("preserves response shape, paging and ordering", async () => {
     const result = await getFeedDataByType("businesses", {
       ...params,
-      cursor: "cursor-1",
     });
 
     expect(result).toEqual({ items: [], nextCursor: undefined });
-    for (const [index, call] of mockNegocioFindMany.mock.calls.entries()) {
+    for (const call of mockNegocioFindMany.mock.calls) {
       expect(call[0]).toMatchObject({
-        orderBy:
-          index === 0
-            ? [{ orden: "desc" }]
-            : [{ orden: "desc" }, { createdAt: "desc" }],
+        orderBy: [{ orden: "desc" }, { createdAt: "desc" }, { id: "asc" }],
         take: 20,
-        cursor: { id: "cursor-1" },
-        skip: 1,
+        cursor: undefined,
+        skip: 0,
       });
     }
   });

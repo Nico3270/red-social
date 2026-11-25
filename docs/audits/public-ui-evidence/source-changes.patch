@@ -1,0 +1,467 @@
+--- a/src/app/(catalogo)/[categoria]/page.tsx
++++ b/src/app/(catalogo)/[categoria]/page.tsx
+@@ -1,4 +1,6 @@
+ import FeedComponent from "@/feed/componentes/FeedComponent";
++import { initialData } from "@/seed/seed";
++import { notFound } from "next/navigation";
+ 
+ interface Props {
+   params: Promise<{
+@@ -8,10 +10,17 @@
+ 
+ 
+ export default async function CategoryPage({ params }: Props) {
+-    const { categoria } = await params;
++  const { categoria } = await params;
++  const category = initialData.categorias.find((item) => item.slug === categoria);
++  if (!category) notFound();
+   return (
+     <div className="mt-1 sm:mt-10 w-full">
+-      <FeedComponent categoriaSlug={categoria} />
++      <FeedComponent
++        categoriaSlug={categoria}
++        categoriaNombre={category.nombre}
++        categoriaIconName={category.iconName}
++        discoveryContext="category"
++      />
+     </div>
+   );
+ }
+--- a/src/app/(catalogo)/category/[slug]/page.tsx
++++ b/src/app/(catalogo)/category/[slug]/page.tsx
+@@ -1,28 +1,23 @@
+ import FeedComponent from "@/feed/componentes/FeedComponent";
+ import { initialData } from "@/seed/seed";
++import { notFound } from "next/navigation";
+ 
+ interface Props {
+     params: Promise<
+         { slug: string; }>
+ }
+ 
+-const formatCategoryName = (slug: string) =>
+-  slug
+-    .split("-")
+-    .filter(Boolean)
+-    .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
+-    .join(" ");
+-
+ export default async function CategoryPage({ params }: Props) {
+     const { slug } = await params;
+     const category = initialData.categorias.find((item) => item.slug === slug);
++    if (!category) notFound();
+ 
+     return (
+         <div className="min-h-screen bg-gray-50 mb-20">
+             <FeedComponent
+                 categoriaSlug={slug}
+-                categoriaNombre={category?.nombre || formatCategoryName(slug)}
+-                categoriaIconName={category?.iconName}
++                categoriaNombre={category.nombre}
++                categoriaIconName={category.iconName}
+                 discoveryContext="category"
+             />
+         </div>
+--- a/src/feed/componentes/BusinessCard.tsx
++++ b/src/feed/componentes/BusinessCard.tsx
+@@ -3,6 +3,7 @@
+ import { BsWhatsapp } from "react-icons/bs";
+ import { SiGooglemaps } from "react-icons/si"; // Para Maps
+ import Link from "next/link";
++import { toWhatsAppNumber } from "@/lib/contact/phone";
+ import Image from "next/image";
+ import { useState } from "react";
+ import { textosFont, titleFont } from "@/config/fonts";
+@@ -52,6 +53,7 @@
+ 
+   const [displayImage, setDisplayImage] = useState<string>(optimizedBusinessCoverUrl);
+   const [isModalOpen, setIsModalOpen] = useState(false);
++  const telefono = toWhatsAppNumber(business.telefonoContacto, "CO");
+ 
+   // Mensaje para WhatsApp (similar a ProductCard, pero para negocio)
+   const whatsappMessage = encodeURIComponent(
+@@ -141,9 +143,9 @@
+ 
+               <div className="flex gap-4">
+                 {/* Botón de WhatsApp (si disponible) */}
+-                {business.telefonoContacto && (
++                {telefono && (
+                   <Link
+-                    href={`https://wa.me/57${business.telefonoContacto}?text=${whatsappMessage}`}
++                    href={`https://wa.me/${telefono}?text=${whatsappMessage}`}
+                     target="_blank"
+                     rel="noopener noreferrer"
+                     className="bg-gradient-to-r from-green-500 to-green-600 p-2 rounded-full hover:from-green-600 hover:to-green-700 flex items-center justify-center transition-all duration-300"
+@@ -248,9 +250,9 @@
+                     {business.ciudad}, {business.departamento}
+                   </p>
+                   <div className="flex gap-4 justify-center md:justify-start">
+-                    {business.telefonoContacto && (
++                    {telefono && (
+                       <Link
+-                        href={`https://wa.me/57${business.telefonoContacto}?text=${whatsappMessage}`}
++                        href={`https://wa.me/${telefono}?text=${whatsappMessage}`}
+                         target="_blank"
+                         rel="noopener noreferrer"
+                         className="bg-gradient-to-r from-green-500 to-green-600 p-3 rounded-full hover:from-green-600 hover:to-green-700 flex items-center justify-center transition-all duration-300"
+--- a/src/feed/componentes/DiscoveryBusinessCard.tsx
++++ b/src/feed/componentes/DiscoveryBusinessCard.tsx
+@@ -1,6 +1,7 @@
+ "use client";
+ 
+ import Link from "next/link";
++import { toWhatsAppNumber } from "@/lib/contact/phone";
+ import Image from "next/image";
+ import { BsWhatsapp } from "react-icons/bs";
+ import { SiGooglemaps } from "react-icons/si";
+@@ -61,7 +62,7 @@
+   const primeraCategoria = formatCategory(business.categorias[0]);
+   const description =
+     business.descripcion?.trim() || "Explora este negocio y descubre lo que ofrece en tu zona.";
+-  const telefono = business.telefonoContacto?.replace(/\D/g, "") ?? "";
++  const telefono = toWhatsAppNumber(business.telefonoContacto, "CO");
+   const whatsappMessage = encodeURIComponent(
+     `¡Hola! Estoy explorando negocios en Myckeo y me interesó *${business.nombre}*.\n\nVer perfil: /perfil/${business.slug}`,
+   );
+@@ -137,7 +138,7 @@
+ 
+         {telefono && (
+           <Link
+-            href={`https://wa.me/57${telefono}?text=${whatsappMessage}`}
++            href={`https://wa.me/${telefono}?text=${whatsappMessage}`}
+             target="_blank"
+             rel="noopener noreferrer"
+             className={`${styles.action} ${styles.contact}`}
+--- a/src/feed/componentes/DiscoveryServiceCard.tsx
++++ b/src/feed/componentes/DiscoveryServiceCard.tsx
+@@ -3,6 +3,7 @@
+ import { useMemo } from "react";
+ import Image from "next/image";
+ import Link from "next/link";
++import { toWhatsAppNumber } from "@/lib/contact/phone";
+ import { BsWhatsapp } from "react-icons/bs";
+ import { FaArrowRight } from "react-icons/fa";
+ import { getCloudinaryImageUrl } from "@/lib/cloudinary/buildCloudinaryDeliveryUrl";
+@@ -49,7 +50,7 @@
+   const fullDescription = servicio.descripcion.join(" ").trim();
+   const description =
+     fullDescription || "Explora este servicio y contacta al negocio para recibir más detalles.";
+-  const telefono = servicio.telefonoNegocio?.replace(/\D/g, "") ?? "";
++  const telefono = toWhatsAppNumber(servicio.telefonoNegocio, "CO");
+   const whatsappMessage = encodeURIComponent(
+     `¡Hola! Vi en Myckeo el servicio *${servicio.titulo}* y quiero más información.`,
+   );
+@@ -91,7 +92,7 @@
+           </Link>
+           {telefono && (
+             <Link
+-              href={`https://wa.me/57${telefono}?text=${whatsappMessage}`}
++              href={`https://wa.me/${telefono}?text=${whatsappMessage}`}
+               target="_blank"
+               rel="noopener noreferrer"
+               aria-label={`Consultar ${servicio.titulo} por WhatsApp`}
+--- a/src/perfil/componentes/BusinessGuideResults.tsx
++++ b/src/perfil/componentes/BusinessGuideResults.tsx
+@@ -1,5 +1,6 @@
+ "use client";
+ 
++import { toWhatsAppNumber } from "@/lib/contact/phone";
+ import Image from "next/image";
+ import Link from "next/link";
+ import { motion } from "framer-motion";
+@@ -112,7 +113,7 @@
+             primaryImage,
+             "product-card",
+           );
+-          const telefonoLimpio = item.product.telefonoContacto?.replace(/\D/g, "") ?? "";
++          const telefonoLimpio = toWhatsAppNumber(item.product.telefonoContacto, "CO");
+           const displayPrice = getDisplayPrice(
+             item.product.precio,
+             (item.product.variantes ?? []).map((variant) => variant.precio)
+--- a/src/perfil/componentes/BusinessGuideSection.tsx
++++ b/src/perfil/componentes/BusinessGuideSection.tsx
+@@ -2,6 +2,7 @@
+ 
+ import { startTransition, useCallback, useEffect, useMemo, useState } from "react";
+ import { useRouter } from "next/navigation";
++import { toWhatsAppNumber } from "@/lib/contact/phone";
+ import { BusinessGuideEntry } from "./BusinessGuideEntry";
+ import type {
+   BusinessGuideIntroChoice,
+@@ -52,7 +53,7 @@
+     return "";
+   }
+ 
+-  const phoneNumber = value.replace(/\D/g, "");
++  const phoneNumber = toWhatsAppNumber(value, "CO");
+   return phoneNumber ? `https://wa.me/${phoneNumber}` : "";
+ };
+ 
+--- a/src/perfil/guide/business-guide.ts
++++ b/src/perfil/guide/business-guide.ts
+@@ -1,3 +1,4 @@
++import { toWhatsAppNumber } from "@/lib/contact/phone";
+ import { initialData } from "@/seed/seed";
+ import type { ProductRedSocial } from "@/interfaces/productRedSocial.interface";
+ import type {
+@@ -123,7 +124,7 @@
+ 
+ const buildContactHref = (products: ProductRedSocial[]) => {
+   const phone = products
+-    .map((product) => product.telefonoContacto?.replace(/\D/g, "") ?? "")
++    .map((product) => toWhatsAppNumber(product.telefonoContacto, "CO"))
+     .find(Boolean);
+ 
+   if (!phone) {
+--- a/src/ui/components/dashboard/catalogGroups/RestaurantMenuItem.tsx
++++ b/src/ui/components/dashboard/catalogGroups/RestaurantMenuItem.tsx
+@@ -1,5 +1,6 @@
+ "use client";
+ 
++import { toWhatsAppNumber } from "@/lib/contact/phone";
+ import React, { useCallback, useMemo, useState } from "react";
+ import Image from "next/image";
+ import Link from "next/link";
+@@ -71,7 +72,7 @@
+     typeof product.stock === "number" &&
+     product.stock <= 0;
+   const isOutOfStock = hasConfigurableVariants ? areAllVariantsOutOfStock : simpleProductOutOfStock;
+-  const phoneNumber = product.telefonoContacto?.replace(/\D/g, "") ?? "";
++  const phoneNumber = toWhatsAppNumber(product.telefonoContacto, "CO");
+   const detailHref = `/producto/${product.slug}`;
+   const activeVariantCount = activeVariants.length;
+   const variantPriceFloor = activeVariants
+--- a/src/ui/components/perfil-usuario-header/PerfilUsuarioHeader.tsx
++++ b/src/ui/components/perfil-usuario-header/PerfilUsuarioHeader.tsx
+@@ -1,5 +1,6 @@
+ "use client";
+ 
++import { toWhatsAppNumber } from "@/lib/contact/phone";
+ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+ import { usePathname, useRouter, useSearchParams } from "next/navigation";
+ import {
+@@ -173,7 +174,7 @@
+     }
+ 
+     if (type === "whatsapp") {
+-      const phoneNumber = value.replace(/\D/g, "");
++      const phoneNumber = toWhatsAppNumber(value, "CO");
+       return phoneNumber ? `https://wa.me/${phoneNumber}` : "";
+     }
+ 
+--- a/src/ui/components/productos/DetallesProducto.tsx
++++ b/src/ui/components/productos/DetallesProducto.tsx
+@@ -6,6 +6,7 @@
+ import { IoMdClose } from "react-icons/io";
+ import { HiOutlineCube } from "react-icons/hi";
+ import Link from "next/link";
++import { toWhatsAppNumber } from "@/lib/contact/phone";
+ import { ProductRedSocial } from "@/interfaces/productRedSocial.interface";
+ import Divider from "../divider/Divider";
+ import { useSession } from "next-auth/react";
+@@ -61,7 +62,7 @@
+ 
+   const addProductToCart = useCartCatalogoStore((state) => state.addProductToCart);
+ 
+-  const telefonoLimpio = telefonoNegocio?.replace(/\D/g, "") ?? "";
++  const telefonoLimpio = toWhatsAppNumber(telefonoNegocio ?? product.telefonoContacto, "CO");
+   const analyticsNegocioSlug = product.slugNegocio ?? "";
+   const {
+     activeVariants,
+--- a/src/ui/components/productos/ProductCard.tsx
++++ b/src/ui/components/productos/ProductCard.tsx
+@@ -1,5 +1,6 @@
+ "use client";
+ 
++import { toWhatsAppNumber } from "@/lib/contact/phone";
+ import { FaShoppingCart } from "react-icons/fa";
+ import { BsWhatsapp } from "react-icons/bs";
+ import Link from "next/link";
+@@ -155,7 +156,7 @@
+     return queryString ? `/producto/${product.slug}?${queryString}` : `/producto/${product.slug}`;
+   }, [analyticsContext, product.slug, product.slugNegocio]);
+ 
+-  const telefonoLimpio = product.telefonoContacto?.replace(/\D/g, "") ?? "";
++  const telefonoLimpio = toWhatsAppNumber(product.telefonoContacto, "CO");
+   const hasSingleActiveVariant = hasVariants && activeVariants.length === 1 && !!selectedVariant;
+   const hasMultipleVariantChoices = hasVariants && activeVariants.length > 1;
+   const pricePrefixLabel = shouldShowFromPrice ? "Desde" : "Precio";
+--- /dev/null
++++ b/src/lib/contact/phone.ts
+@@ -0,0 +1,30 @@
++/**
++ * Canonical international form, including `+` so normalization is idempotent
++ * even for international numbers that happen to contain ten digits.
++ * Only infer Colombia for a national number when the caller explicitly opts in.
++ * This checks shape, not whether a number is assigned or registered on WhatsApp.
++ */
++export function normalizeContactPhone(
++  value?: string | null,
++  defaultCountry?: "CO",
++): string | null {
++  const raw = value?.trim();
++  if (!raw || !/^\+?[\d\s().-]+$/.test(raw)) return null;
++
++  const digits = raw.replace(/\D/g, "");
++  if (!/^[1-9]\d{7,14}$/.test(digits)) return null;
++
++  if (!raw.startsWith("+") && digits.length === 10) {
++    return defaultCountry === "CO" ? `+57${digits}` : null;
++  }
++
++  return `+${digits}`;
++}
++
++/** Digits required by wa.me, derived from the canonical phone representation. */
++export function toWhatsAppNumber(
++  value?: string | null,
++  defaultCountry?: "CO",
++): string {
++  return normalizeContactPhone(value, defaultCountry)?.slice(1) ?? "";
++}
+--- /dev/null
++++ b/src/lib/contact/phone.test.ts
+@@ -0,0 +1,42 @@
++import { normalizeContactPhone, toWhatsAppNumber } from "./phone";
++
++describe("public business contact numbers", () => {
++  it.each([
++    ["3182293083", "+573182293083"],
++    ["(318) 229-30.83", "+573182293083"],
++    ["573182293083", "+573182293083"],
++    ["+57 318 229 3083", "+573182293083"],
++    ["  +57 (318) 229-3083  ", "+573182293083"],
++    ["+1 (202) 555-0123", "+12025550123"],
++    ["12025550123", "+12025550123"],
++    ["+34 612 345 678", "+34612345678"],
++    ["34612345678", "+34612345678"],
++    ["+57 601 234 5678", "+576012345678"],
++    // Explicit international ten-digit number must never be reinterpreted as CO.
++    ["+3312345678", "+3312345678"],
++  ])("normalizes %s without duplicating the country code", (input, expected) => {
++    const canonical = normalizeContactPhone(input, "CO");
++    expect(canonical).toBe(expected);
++    expect(normalizeContactPhone(canonical, "CO")).toBe(canonical);
++    expect(toWhatsAppNumber(input, "CO")).toBe(expected.slice(1));
++  });
++
++  it("requires an explicit default country for national numbers", () => {
++    expect(normalizeContactPhone("3182293083")).toBeNull();
++    expect(toWhatsAppNumber("3182293083")).toBe("");
++    expect(normalizeContactPhone("+573182293083")).toBe("+573182293083");
++  });
++
++  it.each([null, undefined, "", "  ", "---", "123", "0000000000", "1234567890123456", "318ABC2293083", "57+3182293083", "+57 3182293083 ext 2"])("omits malformed or absent contact %s", (input) => {
++    expect(normalizeContactPhone(input, "CO")).toBeNull();
++    expect(toWhatsAppNumber(input, "CO")).toBe("");
++  });
++
++  it("preserves an already encoded contextual message when composing the URL", () => {
++    const text = "¡Hola! *Café & pan*\nPrecio: $ 23.000\nVariante: Grande\nhttps://myckeo.com/producto/cafe";
++    const message = encodeURIComponent(text);
++    const url = new URL(`https://wa.me/${toWhatsAppNumber("+57 3182293083", "CO")}?text=${message}`);
++    expect(url.pathname).toBe("/573182293083");
++    expect(url.searchParams.get("text")).toBe(text);
++  });
++});
+--- /dev/null
++++ b/src/feed/actions/publicGeography.audit.test.ts
+@@ -0,0 +1,71 @@
++/** Characterization of outstanding geography defects; no database or query changes. */
++import type { RawBusiness } from "./selects";
++
++const mockFindMany = jest.fn();
++jest.mock("@/lib/prisma", () => ({
++  __esModule: true,
++  default: { negocio: { findMany: mockFindMany } },
++}), { virtual: true });
++jest.mock("./mapItem", () => ({
++  mapToFeedItem: (raw: RawBusiness) => ({ id: raw.id, type: "business", data: { ...raw } }),
++}));
++
++import { getFeedDataByType } from "./getFeedData";
++import { getFeedDataByCategory } from "./getFeedDataByCategory";
++
++const business = (id: string, ciudad = "Bogotá", orden = 0): RawBusiness => ({
++  id, nombre: id, slug: id, ciudad, departamento: ciudad === "Bogotá" ? "Bogotá D.C." : "Boyacá",
++  descripcion: "", telefonoContacto: null, fotoPerfil: null, fotoPortada: null,
++  urlGoogleMaps: null, latitud: null, longitud: null, estado: "activo", orden,
++  createdAt: new Date("2026-01-01"), categorias: [], secciones: [],
++  _count: { followsIn: 0, publicaciones: 0, Product: 0, Servicio: 0 },
++} as RawBusiness);
++
++const params = { ciudad: "Bogotá", departamento: "Bogotá D.C.", limit: 2, seenIds: [], followedBusinessIds: [] };
++
++beforeEach(() => { mockFindMany.mockReset(); });
++
++it("sufficient local supply does not need other cities", async () => {
++  mockFindMany.mockResolvedValueOnce(Array.from({ length: 12 }, (_, i) => business(`local-${i}`)));
++  const result = await getFeedDataByType("businesses", params);
++  expect(mockFindMany).toHaveBeenCalledTimes(1);
++  expect(result.items).toHaveLength(2);
++  expect(result.items.every(item => (item.data as unknown as RawBusiness).ciudad === "Bogotá")).toBe(true);
++});
++
++it("scarce local supply expands and deduplicates overlapping national candidates", async () => {
++  const local = business("local"), national = business("national", "Tunja");
++  mockFindMany.mockResolvedValueOnce([local]).mockResolvedValueOnce([]).mockResolvedValueOnce([local, national]);
++  const result = await getFeedDataByType("businesses", params);
++  expect(result.items.map(item => item.id)).toEqual(["local", "national"]);
++  expect(mockFindMany).toHaveBeenCalledTimes(3);
++});
++
++it("absent local supply still shows other cities", async () => {
++  mockFindMany.mockResolvedValueOnce([]).mockResolvedValueOnce([]).mockResolvedValueOnce([business("national", "Tunja")]);
++  const result = await getFeedDataByType("businesses", params);
++  expect(result.items.map(item => item.id)).toEqual(["national"]);
++});
++
++it("AUDIT GEO-01: a highly ranked other-city business can precede the local result", async () => {
++  mockFindMany.mockResolvedValueOnce([business("local")]).mockResolvedValueOnce([]).mockResolvedValueOnce([business("national", "Tunja", 100)]);
++  const result = await getFeedDataByType("businesses", params);
++  // This documents the defect, not the required product behavior. Replace with
++  // a local-first assertion when GEO-01 is fixed in the next batch.
++  expect(result.items.map(item => item.id)).toEqual(["national", "local"]);
++});
++
++it("AUDIT GEO-02: cursor points to an unreturned buffer candidate", async () => {
++  mockFindMany.mockResolvedValueOnce(Array.from({ length: 12 }, (_, i) => business(`local-${i}`)));
++  const result = await getFeedDataByType("businesses", params);
++  expect(result.items.map(item => item.id)).not.toContain(result.nextCursor);
++  expect(result.nextCursor).toBeDefined();
++});
++
++it("category expansion keeps the category predicate in all three geographic queries", async () => {
++  mockFindMany.mockResolvedValue([]);
++  await getFeedDataByCategory("businesses", { ...params, categoriaSlug: "comida" });
++  for (const [query] of mockFindMany.mock.calls) {
++    expect(query.where.AND[1].categorias).toEqual({ some: { category: { slug: "comida" } } });
++  }
++});
+--- /dev/null
++++ b/src/app/(catalogo)/contacto/page.tsx
+@@ -0,0 +1,24 @@
++import type { Metadata } from "next";
++import { InfoEmpresa } from "@/config/config";
++
++export const metadata: Metadata = {
++  title: "Contacto | Myckeo",
++  description: "Contacta al equipo de Myckeo.",
++};
++
++export default function ContactPage() {
++  return (
++    <section className="mx-auto w-full max-w-3xl px-4 py-8 sm:py-12">
++      <h1 className="text-2xl font-semibold text-slate-900">Contacto</h1>
++      <p className="mt-3 text-slate-600">
++        Para preguntas o ayuda con Myckeo, escríbenos a:
++      </p>
++      <a
++        href={`mailto:${InfoEmpresa.email}`}
++        className="mt-3 inline-flex min-h-11 items-center text-blue-600 underline [overflow-wrap:anywhere]"
++      >
++        {InfoEmpresa.email}
++      </a>
++    </section>
++  );
++}

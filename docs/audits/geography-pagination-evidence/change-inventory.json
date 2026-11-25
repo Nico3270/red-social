@@ -1,0 +1,31 @@
+{
+  "branch": "feat/premium-product-form-navigation",
+  "head": "1f491ff8ce6f80e333f07548e299141fc863d993",
+  "existingFilesCompared": 102,
+  "unexpectedChanges": [],
+  "changedThisBatch": [
+    "src/feed/actions/getFeedData.ts",
+    "src/feed/actions/getFeedDataByCategory.ts",
+    "src/feed/actions/getFeedData.test.ts",
+    "src/feed/actions/getFeedDataByCategory.test.ts",
+    "src/feed/actions/publicGeography.audit.test.ts",
+    "src/feed/feed.interfaces.ts",
+    "src/feed/componentes/FeedComponent.tsx",
+    "src/publicaciones/componentes/FeedRederer.tsx",
+    "e2e/public-ui-audit/public-ui.spec.ts",
+    "docs/audits/MYCKEO_PUBLIC_UI_AUDIT.md"
+  ],
+  "newThisBatch": [
+    "src/feed/actions/feedPage.ts",
+    "src/feed/geography.ts",
+    "src/feed/geography.test.ts",
+    "e2e/geography-pagination/data.cjs",
+    "e2e/geography-pagination/dev-server.cjs",
+    "e2e/geography-pagination/geography.spec.ts",
+    "e2e/geography-pagination/playwright.config.ts",
+    "e2e/geography-pagination/prepare.cjs"
+  ],
+  "rankerUnchanged": true,
+  "mixerUnchanged": true,
+  "temporaryFixtureRemoved": true
+}

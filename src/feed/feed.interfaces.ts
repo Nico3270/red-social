@@ -2,6 +2,7 @@ import { ProductStatus, ServicioStatus, EstadoNegocio } from "@prisma/client";
 import { RawBusiness, RawData, RawProduct, RawPublication, RawService } from "./actions/selects";
 import { EnhancedPublicacion } from "@/publicaciones/interfaces/enhancedPublicacion.interface";
 import { ServicioData } from "@/servicios/interfaces/servicios.interface";
+import type { FeedLocationTier } from "./geography";
 
 export interface BusinessCardData {
   id: string;
@@ -87,6 +88,7 @@ export interface Media {
 export type FeedItemType = 'product' | 'publication' | 'service' | 'business';
 
 export interface FeedItem {
+  locationTier?: FeedLocationTier;
   id: string;
   type: FeedItemType; // Discriminator para switch
   score: number; // Para ranking (calculado en query: matches con preferencias + recency)
@@ -122,6 +124,8 @@ export interface FeedQueryParams {
 export interface FeedResponse {
   items: FeedItem[];
   nextCursor?: string; // Simplificado a string | undefined
+  /** Geographic tier of the next eligible item, absent when exhausted. */
+  nextTier?: FeedLocationTier;
 }
 
 
