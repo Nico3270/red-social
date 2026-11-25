@@ -1,0 +1,175 @@
+{
+  "before": [
+    {
+      "key": "publication-pub-0-0",
+      "side": false
+    },
+    {
+      "key": "publication-pub-0-1",
+      "side": false
+    },
+    {
+      "key": "publication-pub-0-2",
+      "side": false
+    },
+    {
+      "key": "publication-pub-0-3",
+      "side": false
+    },
+    {
+      "key": "publication-pub-0-4",
+      "side": false
+    },
+    {
+      "key": "product-p-0-6",
+      "side": false
+    },
+    {
+      "key": "product-p-0-7",
+      "side": false
+    },
+    {
+      "key": "product-p-0-9",
+      "side": false
+    },
+    {
+      "key": "product-p-0-10",
+      "side": false
+    },
+    {
+      "key": "business-b-0",
+      "side": false
+    },
+    {
+      "key": "service-s-0",
+      "side": false
+    },
+    {
+      "key": "product-p-0-0",
+      "side": true
+    },
+    {
+      "key": "product-p-0-1",
+      "side": true
+    },
+    {
+      "key": "product-p-0-2",
+      "side": true
+    },
+    {
+      "key": "product-p-0-3",
+      "side": true
+    },
+    {
+      "key": "product-p-0-4",
+      "side": true
+    },
+    {
+      "key": "product-p-0-5",
+      "side": true
+    },
+    {
+      "key": "product-p-0-8",
+      "side": true
+    },
+    {
+      "key": "product-p-0-11",
+      "side": true
+    }
+  ],
+  "after": [
+    {
+      "key": "publication-pub-0-0",
+      "side": false
+    },
+    {
+      "key": "publication-pub-0-1",
+      "side": false
+    },
+    {
+      "key": "publication-pub-0-2",
+      "side": false
+    },
+    {
+      "key": "publication-pub-0-3",
+      "side": false
+    },
+    {
+      "key": "publication-pub-0-4",
+      "side": false
+    },
+    {
+      "key": "product-p-0-6",
+      "side": false
+    },
+    {
+      "key": "product-p-0-7",
+      "side": false
+    },
+    {
+      "key": "product-p-0-9",
+      "side": false
+    },
+    {
+      "key": "product-p-0-10",
+      "side": false
+    },
+    {
+      "key": "business-b-0",
+      "side": false
+    },
+    {
+      "key": "service-s-0",
+      "side": false
+    },
+    {
+      "key": "publication-pub-0-5",
+      "side": false
+    },
+    {
+      "key": "publication-pub-0-6",
+      "side": false
+    },
+    {
+      "key": "publication-pub-0-7",
+      "side": false
+    },
+    {
+      "key": "publication-pub-0-8",
+      "side": false
+    },
+    {
+      "key": "product-p-0-0",
+      "side": true
+    },
+    {
+      "key": "product-p-0-1",
+      "side": true
+    },
+    {
+      "key": "product-p-0-2",
+      "side": true
+    },
+    {
+      "key": "product-p-0-3",
+      "side": true
+    },
+    {
+      "key": "product-p-0-4",
+      "side": true
+    },
+    {
+      "key": "product-p-0-5",
+      "side": true
+    },
+    {
+      "key": "product-p-0-8",
+      "side": true
+    },
+    {
+      "key": "product-p-0-11",
+      "side": true
+    }
+  ],
+  "dialogStillOpen": true
+}

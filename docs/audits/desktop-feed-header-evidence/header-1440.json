@@ -1,0 +1,41 @@
+{
+  "positions": [
+    {
+      "scroll": 0,
+      "rowTop": 0,
+      "rowHeight": 72,
+      "categoriesBottom": 132,
+      "tabsBottom": 234,
+      "firstDocumentTop": 306.5,
+      "overflow": false
+    },
+    {
+      "scroll": 1,
+      "rowTop": 0,
+      "rowHeight": 72,
+      "categoriesBottom": 131,
+      "tabsBottom": 233,
+      "firstDocumentTop": 306.5,
+      "overflow": false
+    },
+    {
+      "scroll": 200,
+      "rowTop": 0,
+      "rowHeight": 72,
+      "categoriesBottom": -68,
+      "tabsBottom": 34,
+      "firstDocumentTop": 306.5,
+      "overflow": false
+    },
+    {
+      "scroll": 950,
+      "rowTop": 0,
+      "rowHeight": 72,
+      "categoriesBottom": -818,
+      "tabsBottom": -716,
+      "firstDocumentTop": 306.5,
+      "overflow": false
+    }
+  ],
+  "errors": []
+}

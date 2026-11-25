@@ -1,0 +1,8 @@
+
+Running 3 tests using 1 worker
+
+  ✓  1 e2e/desktop-feed-prototype/header.spec.ts:33:38 › header 1440: fixed row, flowing categories, overlays, focus and navigation (58.5s)
+  ✓  2 e2e/desktop-feed-prototype/header.spec.ts:33:38 › header 1920: fixed row, flowing categories, overlays, focus and navigation (26.4s)
+  ✓  3 e2e/desktop-feed-prototype/header.spec.ts:81:5 › header boundary 1279/1280 and mobile 390 preserve context without overflow (9.3s)
+
+  3 passed (1.6m)

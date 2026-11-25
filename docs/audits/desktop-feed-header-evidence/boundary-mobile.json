@@ -1,0 +1,26 @@
+[
+  {
+    "width": 1280,
+    "overflow": false,
+    "position": "fixed",
+    "rowHeight": 72
+  },
+  {
+    "width": 1279,
+    "overflow": false,
+    "position": "static",
+    "rowHeight": 108
+  },
+  {
+    "width": 1280,
+    "overflow": false,
+    "position": "fixed",
+    "rowHeight": 72
+  },
+  {
+    "width": 390,
+    "overflow": false,
+    "position": "fixed",
+    "rowHeight": 105
+  }
+]

@@ -1,0 +1,24 @@
+12e212f082cb5dc02ed9e304d52b70c1fce73218a097819608bab9a890a5d164
+Prisma schema loaded from prisma/schema.prisma
+Datasource "db": PostgreSQL database "myckeo_public_audit", schema "public" at "127.0.0.1:55439"
+
+🚀  Your database is now in sync with your Prisma schema. Done in 906ms
+
+
+> myckeo@0.1.0 prisma:generate /home/nico/worktrees/myckeo-desktop-feed-20261125
+> prisma generate
+
+Prisma schema loaded from prisma/schema.prisma
+
+✔ Generated Prisma Client (v6.18.0) to ./node_modules/.pnpm/@prisma+client@6.18.0_prisma@6.18.0_typescript@5.9.3__typescript@5.9.3/node_modules/@prisma/client in 601ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Want to turn off tips and other hints? https://pris.ly/tip-4-nohints
+
+{
+  database: 'myckeo_public_audit',
+  version: 'PostgreSQL 16.16 (Debian 16.16-1.pgdg13+1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit',
+  businesses: 12,
+  products: 3
+}

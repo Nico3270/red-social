@@ -1,7 +1,7 @@
 import { test, expect, type Page } from "@playwright/test";
 import { writeFileSync } from "node:fs";
 import { browserDataset } from "../geography-pagination/data.cjs";
-const evidence = "docs/audits/desktop-feed-evidence";
+const evidence = process.env.DESKTOP_EVIDENCE_DIR || "docs/audits/desktop-feed-evidence";
 async function setup(page: Page) {
   const requests: Array<{ type: string; city: string; cursor: boolean; seen: string[] }> = [];
   const errors: string[] = [];

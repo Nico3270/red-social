@@ -1,6 +1,8 @@
 # Prototipo de jerarquía del feed de escritorio — 25/11/2026
 
-Propuesta local revisable; **sin integración en main, push ni despliegue**. Worktree `/home/nico/worktrees/myckeo-desktop-feed-20261125`, rama `prototype/desktop-feed-20261125`, base `058d13329ba6a81414e140a33d08cb50475d009b`.
+**Estado actual: dirección visual aprobada y ajuste de cabecera validado en local; integración/publicación pendientes de confirmar en el anexo final.**
+
+Antecedente del prototipo revisado: propuesta local revisable; en aquella fase **sin integración en main, push ni despliegue**. Worktree `/home/nico/worktrees/myckeo-desktop-feed-20261125`, rama `prototype/desktop-feed-20261125`, base `058d13329ba6a81414e140a33d08cb50475d009b`.
 
 Se comprobaron main local, referencia remota mediante `git ls-remote` y el deployment que sirve `myckeo.com`: `dpl_13YyTGgU4sSFjv7mgCEEhBF5XpXv`, proyecto red-social, READY, SHA 058d133 completo, ambos dominios asociados. Se leyó AGENTS.md del original; no hay instrucciones anidadas aplicables. El árbol original sucio permanece separado y no se cambió de rama en él.
 
@@ -96,3 +98,29 @@ La propuesta necesita una decisión visual antes de integrar: valorar principal/
 La evidencia SQL previa sigue siendo el respaldo de la semántica de consultas; no se anuncia como una nueva ejecución funcional PostgreSQL en esta tarea. Se mantiene el límite documentado del **cursor de DB eliminado**: reiniciar el recorrido sin cursor y sin exclusiones de IDs vistos para garantizar completitud. No hay instantánea general frente a modificaciones concurrentes.
 
 No se ejecutaron seguimiento autenticado, mensajes, pedidos ni altas. No se corrigió contenido persistido ni se realizó una auditoría general. Public smoke sigue siendo un pendiente de validación de su entorno; el proyecto separado de staging no se tocó ni se certificó. No bloquean la revisión local de esta propuesta y no se cuentan como controles aprobados.
+
+
+## Cabecera fija, integración y publicación — 25/11/2026
+
+La dirección del prototipo `2d292f1bedb82cd55ba09990564b1bd5c36eeeb4` fue aprobada. El único cambio nuevo de aplicación es `src/ui/components/topMenu/publicNavigation.module.css`: en portada/Para ti desde 1280 px, fila superior fija de **72 px**, fondo blanco, reserva de la misma altura en el flujo y `scroll-padding-top:88px` para el foco. Categorías y pestañas se desplazan; no se duplican controles ni se crea otro scroll de contenido. El primer contenido mantiene su posición absoluta durante scroll 0/1/200/950. Se conserva la anchura interior de la fila revisada y el resto del diseño.
+
+No hay cambios nuevos respecto a 2d292f1 en coordinador, reparto estable, variantes de tarjetas, consultas/ranking, cursores/caché, autenticación, esquema, configuración o dependencias. Los tramos geográficos y la limitación del cursor eliminado descritos arriba siguen vigentes.
+
+### Validación nueva y evidencia reutilizada
+
+- **3 pruebas nuevas Playwright aprobadas**: 1440, 1920 y transición 1279→1280→1279→1280→390. [Salida](desktop-feed-header-evidence/browser-header.txt). Búsqueda con respuesta sintética local, foco búsqueda→ciudad, selector y cambio de ciudad, menú Perfil, diálogo comercial, publicación, navegación a categoría y acceso real anónimo a registro de negocio. Sin enviar formularios ni mensajes. [1440](desktop-feed-header-evidence/header-1440.json) · [1920](desktop-feed-header-evidence/header-1920.json) · [límite/móvil](desktop-feed-header-evidence/boundary-mobile.json).
+- Se ejecutaron otra vez **3 regresiones existentes y aprobaron**: acciones/móvil, coordinador real con varias páginas/cambio de ciudad y acción comercial abierta al llegar publicaciones. [Resultados individuales](desktop-feed-header-evidence/browser-first-pass.txt). Esa ejecución se interrumpió después para depurar la nueva prueba de overlays; no se anuncia como una suite completa de seis aprobadas. El modal comercial heredado se cierra con Cancelar: la prueba se corrigió para usar ese control, sin añadir manejo de Escape a la aplicación. Los seis casos aprobados corresponden a dos ejecuciones, no a la cifra histórica del prototipo.
+- Interacciones locales: componentes y Server Actions reales, adaptador Prisma **en memoria** y destino DB inalcanzable. Se conserva esa distinción respecto a SQL. La ruta/rewrite de pruebas solo vive en el harness temporal, retirado antes de controles finales/build.
+- **12/12 unitarias ejecutadas ahora**, reparto y geografía; no se atribuyen como nuevas las 103 unitarias anteriores. [Salida](desktop-feed-header-evidence/unit.txt).
+- `pnpm typecheck`, `pnpm lint` y lint enfocado de herramientas: correctos; únicamente aviso previo `_body` en ActivationBootstrap.test.tsx:347. [Tipos](desktop-feed-header-evidence/typecheck.txt) · [lint](desktop-feed-header-evidence/lint.txt) · [enfocado](desktop-feed-header-evidence/lint-focused.txt).
+- Se reutilizan los casos y capturas anteriores de inventario escaso, solo comercial y solo social: sus tarjetas/reparto no se modificaron. También la matriz SQL previa de 26 escenarios, **sin repetirla ni sumarla a esta validación**. El build actual utiliza el esquema real y fixtures mínimos solo en PostgreSQL local aislado, con HTTP externo bloqueado; no usa datos remotos ni artefactos prebuilt de prueba.
+
+Capturas locales actuales: [1440 inicio](desktop-feed-header-evidence/local-1440-top.png) · [1440 scroll](desktop-feed-header-evidence/local-1440-scroll.png) · [1920 inicio](desktop-feed-header-evidence/local-1920-top.png) · [1920 scroll](desktop-feed-header-evidence/local-1920-scroll.png) · [390](desktop-feed-header-evidence/local-390-top.png). Son sintéticas; las capturas públicas finales se registran después de verificar el deployment.
+
+### Referencia de publicación y recuperación
+
+Antes de integrar, main local y origin/main confirmados en `058d13329ba6a81414e140a33d08cb50475d009b`, prototipo limpio en 2d292f1. Proyecto red-social `prj_iB5Hr9oHgsqEAwnvsTqo5EyUuruy`, equipo `team_iDtsndfHbJjkJqyQspXbeFHR`. Deployment previo efectivo: **dpl_13YyTGgU4sSFjv7mgCEEhBF5XpXv**, Production READY, Git/main, SHA 058d133, asociado a ambos dominios. [Referencia](desktop-feed-header-evidence/prior-deployment.json). La API de GitHub devolvió main no protegida (404) y reglas de repositorio vacías; no se omitieron controles obligatorios ni se habilitó force push.
+
+**Build final aprobado**, 74 páginas: [salida](desktop-feed-header-evidence/build.txt). PostgreSQL 16.16/Prisma 6.18.0, 12 negocios y 3 productos sintéticos únicamente para generación de páginas. No hay ruta temporal en el manifiesto final. Recursos temporales retirados y puertos cerrados: [limpieza](desktop-feed-header-evidence/cleanup.json). Original conservado: [comparación de 2834 archivos y estado Git](desktop-feed-header-evidence/original-preservation.json).
+
+El cierre de integración y publicación se documentará al comprobar el resultado efectivo. Los pendientes históricos (Public smoke por entorno, contenido persistido, 404/ilustración y staging separado) no se presentan como pruebas aprobadas ni se corrigen en este lote.

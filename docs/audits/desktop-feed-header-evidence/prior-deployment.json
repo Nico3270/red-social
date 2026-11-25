@@ -1,0 +1,15 @@
+{
+  "project": "red-social",
+  "projectId": "prj_iB5Hr9oHgsqEAwnvsTqo5EyUuruy",
+  "teamId": "team_iDtsndfHbJjkJqyQspXbeFHR",
+  "deployment": "dpl_13YyTGgU4sSFjv7mgCEEhBF5XpXv",
+  "sha": "058d13329ba6a81414e140a33d08cb50475d009b",
+  "branch": "main",
+  "target": "production",
+  "state": "READY",
+  "domains": [
+    "myckeo.com",
+    "www.myckeo.com"
+  ],
+  "protection": "branch protection 404 (not protected); rulesets []"
+}
