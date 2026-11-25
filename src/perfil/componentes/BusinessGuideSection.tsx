@@ -2,6 +2,7 @@
 
 import { startTransition, useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { toWhatsAppNumber } from "@/lib/contact/phone";
 import { BusinessGuideEntry } from "./BusinessGuideEntry";
 import type {
   BusinessGuideIntroChoice,
@@ -52,7 +53,7 @@ const buildWhatsappHref = (value?: string) => {
     return "";
   }
 
-  const phoneNumber = value.replace(/\D/g, "");
+  const phoneNumber = toWhatsAppNumber(value, "CO");
   return phoneNumber ? `https://wa.me/${phoneNumber}` : "";
 };
 

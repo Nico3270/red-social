@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { toWhatsAppNumber } from "@/lib/contact/phone";
 import Image from "next/image";
 import { BsWhatsapp } from "react-icons/bs";
 import { SiGooglemaps } from "react-icons/si";
@@ -61,7 +62,7 @@ export const DiscoveryBusinessCard: React.FC<DiscoveryBusinessCardProps> = ({
   const primeraCategoria = formatCategory(business.categorias[0]);
   const description =
     business.descripcion?.trim() || "Explora este negocio y descubre lo que ofrece en tu zona.";
-  const telefono = business.telefonoContacto?.replace(/\D/g, "") ?? "";
+  const telefono = toWhatsAppNumber(business.telefonoContacto, "CO");
   const whatsappMessage = encodeURIComponent(
     `¡Hola! Estoy explorando negocios en Myckeo y me interesó *${business.nombre}*.\n\nVer perfil: /perfil/${business.slug}`,
   );
@@ -137,7 +138,7 @@ export const DiscoveryBusinessCard: React.FC<DiscoveryBusinessCardProps> = ({
 
         {telefono && (
           <Link
-            href={`https://wa.me/57${telefono}?text=${whatsappMessage}`}
+            href={`https://wa.me/${telefono}?text=${whatsappMessage}`}
             target="_blank"
             rel="noopener noreferrer"
             className={`${styles.action} ${styles.contact}`}

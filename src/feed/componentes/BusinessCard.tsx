@@ -3,6 +3,7 @@
 import { BsWhatsapp } from "react-icons/bs";
 import { SiGooglemaps } from "react-icons/si"; // Para Maps
 import Link from "next/link";
+import { toWhatsAppNumber } from "@/lib/contact/phone";
 import Image from "next/image";
 import { useState } from "react";
 import { textosFont, titleFont } from "@/config/fonts";
@@ -52,6 +53,7 @@ export const BusinessCard: React.FC<BusinessCardProps> = ({ business }) => {
 
   const [displayImage, setDisplayImage] = useState<string>(optimizedBusinessCoverUrl);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const telefono = toWhatsAppNumber(business.telefonoContacto, "CO");
 
   // Mensaje para WhatsApp (similar a ProductCard, pero para negocio)
   const whatsappMessage = encodeURIComponent(
@@ -141,9 +143,9 @@ export const BusinessCard: React.FC<BusinessCardProps> = ({ business }) => {
 
               <div className="flex gap-4">
                 {/* Botón de WhatsApp (si disponible) */}
-                {business.telefonoContacto && (
+                {telefono && (
                   <Link
-                    href={`https://wa.me/57${business.telefonoContacto}?text=${whatsappMessage}`}
+                    href={`https://wa.me/${telefono}?text=${whatsappMessage}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="bg-gradient-to-r from-green-500 to-green-600 p-2 rounded-full hover:from-green-600 hover:to-green-700 flex items-center justify-center transition-all duration-300"
@@ -248,9 +250,9 @@ export const BusinessCard: React.FC<BusinessCardProps> = ({ business }) => {
                     {business.ciudad}, {business.departamento}
                   </p>
                   <div className="flex gap-4 justify-center md:justify-start">
-                    {business.telefonoContacto && (
+                    {telefono && (
                       <Link
-                        href={`https://wa.me/57${business.telefonoContacto}?text=${whatsappMessage}`}
+                        href={`https://wa.me/${telefono}?text=${whatsappMessage}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="bg-gradient-to-r from-green-500 to-green-600 p-3 rounded-full hover:from-green-600 hover:to-green-700 flex items-center justify-center transition-all duration-300"

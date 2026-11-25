@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { toWhatsAppNumber } from "@/lib/contact/phone";
 import { BsWhatsapp } from "react-icons/bs";
 import { FaArrowRight } from "react-icons/fa";
 import { getCloudinaryImageUrl } from "@/lib/cloudinary/buildCloudinaryDeliveryUrl";
@@ -49,7 +50,7 @@ export const DiscoveryServiceCard: React.FC<DiscoveryServiceCardProps> = ({
   const fullDescription = servicio.descripcion.join(" ").trim();
   const description =
     fullDescription || "Explora este servicio y contacta al negocio para recibir más detalles.";
-  const telefono = servicio.telefonoNegocio?.replace(/\D/g, "") ?? "";
+  const telefono = toWhatsAppNumber(servicio.telefonoNegocio, "CO");
   const whatsappMessage = encodeURIComponent(
     `¡Hola! Vi en Myckeo el servicio *${servicio.titulo}* y quiero más información.`,
   );
@@ -91,7 +92,7 @@ export const DiscoveryServiceCard: React.FC<DiscoveryServiceCardProps> = ({
           </Link>
           {telefono && (
             <Link
-              href={`https://wa.me/57${telefono}?text=${whatsappMessage}`}
+              href={`https://wa.me/${telefono}?text=${whatsappMessage}`}
               target="_blank"
               rel="noopener noreferrer"
               aria-label={`Consultar ${servicio.titulo} por WhatsApp`}

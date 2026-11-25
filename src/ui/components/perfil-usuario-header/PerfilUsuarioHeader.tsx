@@ -1,5 +1,6 @@
 "use client";
 
+import { toWhatsAppNumber } from "@/lib/contact/phone";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
@@ -173,7 +174,7 @@ export default function PerfilUsuarioHeader({
     }
 
     if (type === "whatsapp") {
-      const phoneNumber = value.replace(/\D/g, "");
+      const phoneNumber = toWhatsAppNumber(value, "CO");
       return phoneNumber ? `https://wa.me/${phoneNumber}` : "";
     }
 

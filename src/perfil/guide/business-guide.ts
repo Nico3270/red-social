@@ -1,3 +1,4 @@
+import { toWhatsAppNumber } from "@/lib/contact/phone";
 import { initialData } from "@/seed/seed";
 import type { ProductRedSocial } from "@/interfaces/productRedSocial.interface";
 import type {
@@ -123,7 +124,7 @@ const productPool = (products: ProductRedSocial[]) => {
 
 const buildContactHref = (products: ProductRedSocial[]) => {
   const phone = products
-    .map((product) => product.telefonoContacto?.replace(/\D/g, "") ?? "")
+    .map((product) => toWhatsAppNumber(product.telefonoContacto, "CO"))
     .find(Boolean);
 
   if (!phone) {

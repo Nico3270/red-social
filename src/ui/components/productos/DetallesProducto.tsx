@@ -6,6 +6,7 @@ import { InfoEmpresa } from "@/config/config";
 import { IoMdClose } from "react-icons/io";
 import { HiOutlineCube } from "react-icons/hi";
 import Link from "next/link";
+import { toWhatsAppNumber } from "@/lib/contact/phone";
 import { ProductRedSocial } from "@/interfaces/productRedSocial.interface";
 import Divider from "../divider/Divider";
 import { useSession } from "next-auth/react";
@@ -61,7 +62,7 @@ export const DetallesProducto: React.FC<AddToCartProps> = ({
 
   const addProductToCart = useCartCatalogoStore((state) => state.addProductToCart);
 
-  const telefonoLimpio = telefonoNegocio?.replace(/\D/g, "") ?? "";
+  const telefonoLimpio = toWhatsAppNumber(telefonoNegocio ?? product.telefonoContacto, "CO");
   const analyticsNegocioSlug = product.slugNegocio ?? "";
   const {
     activeVariants,

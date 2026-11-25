@@ -1,5 +1,6 @@
 "use client";
 
+import { toWhatsAppNumber } from "@/lib/contact/phone";
 import { FaShoppingCart } from "react-icons/fa";
 import { BsWhatsapp } from "react-icons/bs";
 import Link from "next/link";
@@ -155,7 +156,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     return queryString ? `/producto/${product.slug}?${queryString}` : `/producto/${product.slug}`;
   }, [analyticsContext, product.slug, product.slugNegocio]);
 
-  const telefonoLimpio = product.telefonoContacto?.replace(/\D/g, "") ?? "";
+  const telefonoLimpio = toWhatsAppNumber(product.telefonoContacto, "CO");
   const hasSingleActiveVariant = hasVariants && activeVariants.length === 1 && !!selectedVariant;
   const hasMultipleVariantChoices = hasVariants && activeVariants.length > 1;
   const pricePrefixLabel = shouldShowFromPrice ? "Desde" : "Precio";
