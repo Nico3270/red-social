@@ -1,0 +1,8 @@
+
+Running 3 tests using 1 worker
+
+  ✓  1 e2e/centered-desktop-final/final.spec.ts:15:5 › sticky navigation, stable columns, fixed header and overlay precedence (19.4s)
+  ✓  2 e2e/centered-desktop-final/final.spec.ts:55:5 › expanded categories remain keyboard accessible in short windows and release document scroll (55.1s)
+  ✓  3 e2e/centered-desktop-final/final.spec.ts:87:5 › compact completion only follows delivered content with no continuation or pending load (49.4s)
+
+  3 passed (2.1m)

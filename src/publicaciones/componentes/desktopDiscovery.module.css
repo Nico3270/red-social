@@ -40,11 +40,39 @@
     max-width: 1416px;
   }
   .scope[data-centered-discovery] .intro { display: block; grid-column: 2; }
-  .scope[data-centered-discovery] .navigation { display: block; grid-column: 1; grid-row: 1 / span 2; max-width: 260px; min-width: 0; }
+  .scope[data-centered-discovery] .navigation {
+    display: block;
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    max-width: 260px;
+    min-width: 0;
+    position: sticky;
+    top: 88px;
+    max-height: calc(100vh - 104px);
+    max-height: calc(100dvh - 104px);
+    overflow-y: auto;
+    overscroll-behavior-y: auto;
+    scrollbar-width: thin;
+    scroll-padding-block: 8px;
+  }
+  .scope[data-centered-discovery] .navigation :is(a, button, summary):focus-visible {
+    outline: 2px solid #c93545;
+    outline-offset: -2px;
+  }
   .scope[data-centered-discovery] .feedContent { display: block; grid-column: 2; min-width: 0; }
   .navigationTitle { padding: 0 12px 8px; font-size: 13px; font-weight: 600; color: #64748b; }
   .scope[data-centered-discovery] .tabs { flex-direction: column; align-items: stretch; justify-content: start; overflow: visible; border: 0; border-radius: 0; background: transparent; padding: 0; }
   .scope[data-centered-discovery] .tabs button { justify-content: start; padding-inline: 12px; font-size: 14px; }
   .scope[data-centered-discovery] .single { grid-template-columns: minmax(0, 680px) 320px; justify-content: start; }
   .commerceLabel { grid-column: 1 / -1; padding-top: 8px; border-top: 1px solid #e2e8f0; color: #64748b; font-size: 12px; font-weight: 600; }
+  .complete {
+    max-width: 680px;
+    margin-top: 24px;
+    padding: 16px 24px;
+    border-top: 1px solid #e2e8f0;
+    color: #64748b;
+    font-size: 13px;
+    line-height: 1.6;
+    text-align: center;
+  }
 }

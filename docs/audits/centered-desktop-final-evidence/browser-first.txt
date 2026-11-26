@@ -1,0 +1,69 @@
+
+Running 8 tests using 1 worker
+
+  ✘  1 e2e/centered-desktop-final/final.spec.ts:15:5 › sticky navigation, stable columns, fixed header and overlay precedence (45.8s)
+  ✓  2 e2e/centered-desktop-final/final.spec.ts:55:5 › expanded categories remain keyboard accessible in short windows and release document scroll (48.5s)
+  ✘  3 e2e/centered-desktop-final/final.spec.ts:87:5 › compact completion only follows delivered content with no continuation or pending load (6.5s)
+  ✓  4 e2e/centered-desktop-final/final.spec.ts:118:5 › tab return and below-threshold layouts preserve the published ending (21.7s)
+  ✓  5 e2e/centered-feed/centered.spec.ts:10:5 › composition, unique navigation, all inventories and fixed central width (57.9s)
+  ✓  6 e2e/centered-feed/centered.spec.ts:36:5 › boundary, mobile, category navigation and preserved card action on append (31.1s)
+  ✓  7 e2e/centered-feed/centered.spec.ts:56:5 › real coordinator: continuation, geographic groups and new city with the navigation rail (18.5s)
+  ✓  8 e2e/centered-feed/centered.spec.ts:66:5 › actual review relationships and a controlled arrival-order characterization (14.3s)
+
+
+  1) e2e/centered-desktop-final/final.spec.ts:15:5 › sticky navigation, stable columns, fixed header and overlay precedence
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('[data-centered-discovery]')
+    Expected: visible
+    Timeout: 30000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 30000ms
+      - waiting for locator('[data-centered-discovery]')
+
+
+       8 | async function ready(page: Page, url = "/?scenario=balanced") {
+       9 |   await page.goto(url, { waitUntil: "domcontentloaded" });
+    > 10 |   await expect(page.locator("[data-centered-discovery]")).toBeVisible();
+         |                                                           ^
+      11 |   await expect(page.locator("[data-feed-item-key]").first()).toBeVisible();
+      12 |   await settled(page);
+      13 | }
+        at ready (/home/nico/worktrees/myckeo-centered-desktop-final-20261125/e2e/centered-desktop-final/final.spec.ts:10:59)
+        at /home/nico/worktrees/myckeo-centered-desktop-final-20261125/e2e/centered-desktop-final/final.spec.ts:20:5
+
+    Error Context: test-results/centered-desktop-final/centered-desktop-final-fin-390ae-ader-and-overlay-precedence/error-context.md
+
+  2) e2e/centered-desktop-final/final.spec.ts:87:5 › compact completion only follows delivered content with no continuation or pending load
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator: getByRole('status')
+    Expected: "Estás al día. Sigue explorando productos y negocios"
+    Error: strict mode violation: getByRole('status') resolved to 2 elements:
+        1) <span role="status" aria-live="polite" class="followButton_feedback__XoxUN"></span> aka getByRole('region', { name: 'En Tunja' }).getByRole('status')
+        2) <div role="status" data-feed-complete="true" class="desktopDiscovery_complete__r9rB_">Estás al día. Sigue explorando productos y negoci…</div> aka getByText('Estás al día. Sigue')
+
+    Call log:
+      - Expect "toHaveText" with timeout 30000ms
+      - waiting for getByRole('status')
+
+
+      89 |   for (const width of [1440, 1920]) {
+      90 |     await page.setViewportSize({ width, height: 900 }); await ready(page, '/?scenario=sparse');
+    > 91 |     const status = page.getByRole('status'); await expect(status).toHaveText(complete);
+         |                                                                   ^
+      92 |     expect((await status.boundingBox())!.height).toBeLessThan(100);
+      93 |     await expect(page.getByRole('img', { name: 'No hay más para ti', exact: true })).toHaveCount(0);
+      94 |     await expect(page.locator('[data-feed-item-key]')).toHaveCount(2);
+        at /home/nico/worktrees/myckeo-centered-desktop-final-20261125/e2e/centered-desktop-final/final.spec.ts:91:67
+
+    Error Context: test-results/centered-desktop-final/centered-desktop-final-fin-23d2b-ontinuation-or-pending-load/error-context.md
+
+  2 failed
+    e2e/centered-desktop-final/final.spec.ts:15:5 › sticky navigation, stable columns, fixed header and overlay precedence
+    e2e/centered-desktop-final/final.spec.ts:87:5 › compact completion only follows delivered content with no continuation or pending load
+  6 passed (4.1m)

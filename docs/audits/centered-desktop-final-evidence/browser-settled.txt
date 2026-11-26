@@ -1,0 +1,7 @@
+
+Running 2 tests using 1 worker
+
+  ✓  1 e2e/centered-desktop-final/final.spec.ts:87:5 › compact completion only follows delivered content with no continuation or pending load (1.4m)
+  ✓  2 e2e/centered-feed/centered.spec.ts:56:5 › real coordinator: continuation, geographic groups and new city with the navigation rail (22.1s)
+
+  2 passed (1.8m)

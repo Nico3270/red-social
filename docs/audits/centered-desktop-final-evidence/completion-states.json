@@ -1,0 +1,77 @@
+{
+  "results": [
+    {
+      "width": 1440,
+      "state": "empty",
+      "count": 0,
+      "completed": false
+    },
+    {
+      "width": 1440,
+      "state": "loading",
+      "count": 0,
+      "completed": false
+    },
+    {
+      "width": 1440,
+      "state": "more",
+      "count": 2,
+      "completed": false
+    },
+    {
+      "width": 1440,
+      "state": "loading-with-content",
+      "count": 2,
+      "completed": false
+    },
+    {
+      "width": 1440,
+      "state": "pending-types",
+      "count": 2,
+      "completed": false
+    },
+    {
+      "width": 1440,
+      "state": "error",
+      "count": 2,
+      "completed": false
+    },
+    {
+      "width": 1920,
+      "state": "empty",
+      "count": 0,
+      "completed": false
+    },
+    {
+      "width": 1920,
+      "state": "loading",
+      "count": 0,
+      "completed": false
+    },
+    {
+      "width": 1920,
+      "state": "more",
+      "count": 2,
+      "completed": false
+    },
+    {
+      "width": 1920,
+      "state": "loading-with-content",
+      "count": 2,
+      "completed": false
+    },
+    {
+      "width": 1920,
+      "state": "pending-types",
+      "count": 2,
+      "completed": false
+    },
+    {
+      "width": 1920,
+      "state": "error",
+      "count": 2,
+      "completed": false
+    }
+  ],
+  "errors": []
+}

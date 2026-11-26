@@ -1,0 +1,14 @@
+{
+  "/home/nico/red-social": {
+    "same": true,
+    "fileCount": 2740,
+    "head": "1f491ff8ce6f80e333f07548e299141fc863d993",
+    "branch": "feat/premium-product-form-navigation"
+  },
+  "/home/nico/worktrees/myckeo-centered-feed-20261125": {
+    "same": true,
+    "fileCount": 1365,
+    "head": "d98e40984a9574b0aa2ecdcc9ab6d816c476c94c",
+    "branch": "prototype/centered-feed-navigation-20261125"
+  }
+}

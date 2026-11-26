@@ -4,7 +4,7 @@ import {setup,settled} from "./browser-support.cjs";
 import {initialData} from "../../src/seed/seed";
 import comparison from "../../docs/audits/centered-feed-evidence/comparison-sample.json";
 import snapshot from "../../docs/audits/centered-feed-evidence/public-sample.json";
-const folder="docs/audits/centered-feed-evidence";
+const folder="docs/audits/centered-desktop-final-evidence";
 const ids=(page:Page)=>page.locator('[data-feed-item-key]').evaluateAll(es=>es.map(e=>e.getAttribute('data-feed-item-key')!));
 
 test('composition, unique navigation, all inventories and fixed central width',async({page})=>{
@@ -55,7 +55,7 @@ test('boundary, mobile, category navigation and preserved card action on append'
 
 test('real coordinator: continuation, geographic groups and new city with the navigation rail',async({page})=>{
  const errors=await setup(page);await page.setViewportSize({width:1440,height:900});await page.goto('/?view=live');await expect(page.locator('[data-feed-item-key]').first()).toBeVisible();
- async function drain(){for(let i=0;i<60;i++){if(await page.getByText('No hay más para ti.',{exact:true}).count())return;await page.locator('[data-feed-sentinel]').scrollIntoViewIfNeeded();await page.waitForTimeout(350);}throw Error('Traversal did not finish');}
+ async function drain(){for(let i=0;i<60;i++){if(await page.locator('[data-feed-complete]').count())return;await page.locator('[data-feed-sentinel]').scrollIntoViewIfNeeded();await page.waitForTimeout(350);}throw Error('Traversal did not finish');}
  async function tiers(){const groups=await page.locator('[data-desktop-tier]').evaluateAll(es=>es.map(e=>({tier:Number(e.getAttribute('data-desktop-tier')),top:e.getBoundingClientRect().top,bottom:e.getBoundingClientRect().bottom,ids:[...e.querySelectorAll('[data-feed-item-key]')].map(e=>e.getAttribute('data-feed-item-key')!)})));for(let i=1;i<groups.length;i++)expect(groups[i].top).toBeGreaterThanOrEqual(groups[i-1].bottom);return groups;}
  await drain();const tunja=await ids(page);expect(tunja).toHaveLength(69);expect(new Set(tunja).size).toBe(69);const before=await tiers();
  await page.getByRole('button',{name:/Cambiar ubicación/}).click();let s=page.getByRole('combobox').filter({visible:true});await s.nth((await s.count())-2).click();await page.getByRole('option',{name:'Cundinamarca',exact:true}).click();s=page.getByRole('combobox').filter({visible:true});await s.nth((await s.count())-1).click();await page.getByRole('option',{name:'Bogotá',exact:true}).click();await page.getByRole('button',{name:'Actualizar Ubicación',exact:true}).click();await expect(page.getByRole('button',{name:/Cambiar ubicación: Bogotá/})).toBeVisible();await expect(page.locator('[data-desktop-tier="0"]')).toContainText('Bogotá');

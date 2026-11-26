@@ -491,6 +491,9 @@ export default function FeedComponent({
         items={items}
         hasMore={hasMore}
         isLoadingNext={isLoadingNext}
+        isFeedSettled={activeTab === "Para ti"
+          ? [publicationsQuery, productsQuery, servicesQuery, businessesQuery].every(query => query.isSuccess && !query.isFetching)
+          : queries[activeTab].isSuccess && !queries[activeTab].isFetching}
         sentinelRef={sentinelRef}
         activeTab={activeTab}
         onTabChange={setActiveTab}

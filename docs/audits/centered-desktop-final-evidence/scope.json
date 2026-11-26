@@ -1,0 +1,10 @@
+{
+  "reviewedCommit": "d98e40984a9574b0aa2ecdcc9ab6d816c476c94c",
+  "applicationFilesChanged": [
+    "src/feed/componentes/FeedComponent.tsx",
+    "src/publicaciones/componentes/FeedRederer.tsx",
+    "src/publicaciones/componentes/desktopDiscovery.module.css"
+  ],
+  "coordinatorChange": "Only passes the existing query success/fetching states to the renderer; no requests or pagination logic changed.",
+  "queriesRankingCursorsCacheAuthSchemaDependenciesUnchanged": true
+}

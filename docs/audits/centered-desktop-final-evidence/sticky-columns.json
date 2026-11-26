@@ -1,0 +1,229 @@
+{
+  "results": [
+    {
+      "width": 1440,
+      "scroll": 0,
+      "navigation": {
+        "x": 36,
+        "y": 97,
+        "width": 260,
+        "height": 616
+      },
+      "main": {
+        "x": 380,
+        "y": 188.5,
+        "width": 680,
+        "height": 5619.03125
+      },
+      "side": {
+        "x": 1084,
+        "y": 188.5,
+        "width": 320,
+        "height": 5044.84375
+      },
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 72
+      }
+    },
+    {
+      "width": 1440,
+      "scroll": 180,
+      "navigation": {
+        "x": 36,
+        "y": 88,
+        "width": 260,
+        "height": 616
+      },
+      "main": {
+        "x": 380,
+        "y": 8.5,
+        "width": 680,
+        "height": 5619.03125
+      },
+      "side": {
+        "x": 1084,
+        "y": 8.5,
+        "width": 320,
+        "height": 5044.84375
+      },
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 72
+      }
+    },
+    {
+      "width": 1440,
+      "scroll": 950,
+      "navigation": {
+        "x": 36,
+        "y": 88,
+        "width": 260,
+        "height": 616
+      },
+      "main": {
+        "x": 380,
+        "y": -761.5,
+        "width": 680,
+        "height": 5619.03125
+      },
+      "side": {
+        "x": 1084,
+        "y": -761.5,
+        "width": 320,
+        "height": 5044.84375
+      },
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 72
+      }
+    },
+    {
+      "width": 1440,
+      "scroll": 2100,
+      "navigation": {
+        "x": 36,
+        "y": 88,
+        "width": 260,
+        "height": 616
+      },
+      "main": {
+        "x": 380,
+        "y": -1911.5,
+        "width": 680,
+        "height": 5619.03125
+      },
+      "side": {
+        "x": 1084,
+        "y": -1911.5,
+        "width": 320,
+        "height": 5044.84375
+      },
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 72
+      }
+    },
+    {
+      "width": 1920,
+      "scroll": 0,
+      "navigation": {
+        "x": 276,
+        "y": 97,
+        "width": 260,
+        "height": 616
+      },
+      "main": {
+        "x": 620,
+        "y": 188.5,
+        "width": 680,
+        "height": 5619.03125
+      },
+      "side": {
+        "x": 1324,
+        "y": 188.5,
+        "width": 320,
+        "height": 5044.84375
+      },
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 1920,
+        "height": 72
+      }
+    },
+    {
+      "width": 1920,
+      "scroll": 180,
+      "navigation": {
+        "x": 276,
+        "y": 88,
+        "width": 260,
+        "height": 616
+      },
+      "main": {
+        "x": 620,
+        "y": 8.5,
+        "width": 680,
+        "height": 5619.03125
+      },
+      "side": {
+        "x": 1324,
+        "y": 8.5,
+        "width": 320,
+        "height": 5044.84375
+      },
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 1920,
+        "height": 72
+      }
+    },
+    {
+      "width": 1920,
+      "scroll": 950,
+      "navigation": {
+        "x": 276,
+        "y": 88,
+        "width": 260,
+        "height": 616
+      },
+      "main": {
+        "x": 620,
+        "y": -761.5,
+        "width": 680,
+        "height": 5619.03125
+      },
+      "side": {
+        "x": 1324,
+        "y": -761.5,
+        "width": 320,
+        "height": 5044.84375
+      },
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 1920,
+        "height": 72
+      }
+    },
+    {
+      "width": 1920,
+      "scroll": 2100,
+      "navigation": {
+        "x": 276,
+        "y": 88,
+        "width": 260,
+        "height": 616
+      },
+      "main": {
+        "x": 620,
+        "y": -1911.5,
+        "width": 680,
+        "height": 5619.03125
+      },
+      "side": {
+        "x": 1324,
+        "y": -1911.5,
+        "width": 320,
+        "height": 5044.84375
+      },
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 1920,
+        "height": 72
+      }
+    }
+  ],
+  "errors": []
+}

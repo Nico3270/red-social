@@ -1,0 +1,59 @@
+{
+  "realRelations": [
+    {
+      "publication": "cmga1qf3t000143or68yyssiz",
+      "product": {
+        "id": "40dc41e6-c33f-4d9d-bd66-36d86f73ca13",
+        "nombre": "Empanadas Boyacenses",
+        "slug": "empanadas-boyacenses-9qzg"
+      }
+    },
+    {
+      "publication": "cmga1sipx000f43or691h0bt0",
+      "product": {
+        "id": "40dc41e6-c33f-4d9d-bd66-36d86f73ca13",
+        "nombre": "Empanadas Boyacenses",
+        "slug": "empanadas-boyacenses-9qzg"
+      }
+    },
+    {
+      "publication": "cmga1rred000b43orhjfl61hh",
+      "product": {
+        "id": "40dc41e6-c33f-4d9d-bd66-36d86f73ca13",
+        "nombre": "Empanadas Boyacenses",
+        "slug": "empanadas-boyacenses-9qzg"
+      }
+    },
+    {
+      "publication": "cmga1r21w000743or4x824nsf",
+      "product": {
+        "id": "40dc41e6-c33f-4d9d-bd66-36d86f73ca13",
+        "nombre": "Empanadas Boyacenses",
+        "slug": "empanadas-boyacenses-9qzg"
+      }
+    },
+    {
+      "publication": "cmg8xpm16000143n02v9qeaty",
+      "product": {
+        "id": "45acac87-83a0-45d8-937c-5993d7027f71",
+        "nombre": "Mojarra Frita",
+        "slug": "mojarra-frita-qtt6"
+      }
+    }
+  ],
+  "arrival": [
+    {
+      "phase": "before",
+      "initial": "product-fcea4193-4e78-49bc-988e-5ba411deaca2",
+      "appended": "product-fcea4193-4e78-49bc-988e-5ba411deaca2",
+      "afterTabReturn": "publication-cmf1vtl2l000043hsthjz3ep6"
+    },
+    {
+      "phase": "after",
+      "initial": "product-fcea4193-4e78-49bc-988e-5ba411deaca2",
+      "appended": "product-fcea4193-4e78-49bc-988e-5ba411deaca2",
+      "afterTabReturn": "publication-cmf1vtl2l000043hsthjz3ep6"
+    }
+  ],
+  "errors": []
+}

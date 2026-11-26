@@ -51,6 +51,8 @@ interface FeedRendererProps {
   items: FeedItem[];
   hasMore: boolean;
   isLoadingNext: boolean;
+  /** Only used by the centered completion indicator; pending/error sources are not exhausted. */
+  isFeedSettled?: boolean;
   sentinelRef: React.RefCallback<HTMLDivElement>;
   activeTab: FeedTab;
   onTabChange: (tab: FeedTab) => void;
@@ -264,6 +266,7 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
   items,
   hasMore,
   isLoadingNext,
+  isFeedSettled = false,
   sentinelRef,
   activeTab,
   onTabChange,
@@ -850,7 +853,7 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
     <div data-centered-discovery={centeredHome || undefined} data-desktop-discovery={desktopHome || undefined} className={`min-h-screen w-full bg-gray-50 px-1 py-2 sm:px-2 sm:py-4 lg:px-6 xl:px-12 ${desktopHome ? desktop.scope : ""}`}>
       <div className={desktop.intro}>{renderDiscoveryIntro()}</div>
 
-      <div className={desktop.navigation}>
+      <div data-discovery-navigation={centeredHome || undefined} className={desktop.navigation}>
       {centeredHome && <h2 className={desktop.navigationTitle}>Explorar</h2>}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
@@ -957,7 +960,12 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
         </div>
       )}
 
-      {!hasMore && !isLoadingNext && filteredItems.length > 0 && (
+      {!hasMore && !isLoadingNext && filteredItems.length > 0 && (!centeredHome || isFeedSettled) && (
+        centeredHome ? (
+          <div role="status" data-feed-complete className={desktop.complete}>
+            Estás al día. Sigue explorando productos y negocios
+          </div>
+        ) : (
         <div className="flex flex-col items-center justify-center py-8">
           <Image
             src={placeholderImages[activeTab]}
@@ -972,6 +980,7 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
             No hay más {activeTab.toLowerCase()}.
           </p>
         </div>
+        )
       )}
 
       <div ref={sentinelRef} data-feed-sentinel className="h-1" />

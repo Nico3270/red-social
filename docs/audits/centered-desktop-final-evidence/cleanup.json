@@ -1,0 +1,9 @@
+{
+  "reviewRouteRemoved": true,
+  "temporaryArtRemoved": true,
+  "serverStopped": true,
+  "temporaryServerAndBrowserOutputsRemoved": true,
+  "buildManifestHasNoTemporaryRoute": true,
+  "localDatabaseRemoved": true,
+  "noEnvFiles": true
+}

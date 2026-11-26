@@ -1,0 +1,184 @@
+{
+  "before": [
+    {
+      "key": "publication-cmf1vtl2l000043hsthjz3ep6",
+      "side": false
+    },
+    {
+      "key": "publication-cmf1ydjgp000h43hsci8m5p55",
+      "side": false
+    },
+    {
+      "key": "product-fcea4193-4e78-49bc-988e-5ba411deaca2",
+      "side": false
+    },
+    {
+      "key": "business-df781d8a-26ac-4fff-92dc-3297ae9fd67f",
+      "side": false
+    },
+    {
+      "key": "product-7e09bebd-af35-424f-9a13-e33d1862f42c",
+      "side": false
+    },
+    {
+      "key": "business-738e54a1-b8f5-4813-a960-e2a663127604",
+      "side": false
+    },
+    {
+      "key": "product-63cdfdd0-a5cf-4da7-932b-1bbb874615f6",
+      "side": true
+    },
+    {
+      "key": "business-9c43d4bf-7185-48d3-9c7a-70ce79aa82ad",
+      "side": true
+    },
+    {
+      "key": "business-5506619e-3b3a-4e87-adb4-325396a98c26",
+      "side": true
+    },
+    {
+      "key": "business-c3c4b604-9d83-47ce-8690-30b555bacff1",
+      "side": true
+    }
+  ],
+  "after": [
+    {
+      "key": "publication-cmf1vtl2l000043hsthjz3ep6",
+      "side": false
+    },
+    {
+      "key": "publication-cmf1ydjgp000h43hsci8m5p55",
+      "side": false
+    },
+    {
+      "key": "product-fcea4193-4e78-49bc-988e-5ba411deaca2",
+      "side": false
+    },
+    {
+      "key": "business-df781d8a-26ac-4fff-92dc-3297ae9fd67f",
+      "side": false
+    },
+    {
+      "key": "product-7e09bebd-af35-424f-9a13-e33d1862f42c",
+      "side": false
+    },
+    {
+      "key": "business-738e54a1-b8f5-4813-a960-e2a663127604",
+      "side": false
+    },
+    {
+      "key": "publication-cmft41ko80000l404g83uz2oq",
+      "side": false
+    },
+    {
+      "key": "publication-cmd8abuph000443wfzt9txx2e",
+      "side": false
+    },
+    {
+      "key": "publication-cmhslo4up000243cl2hvcl8g7",
+      "side": false
+    },
+    {
+      "key": "publication-cmf1w0mt9000543hss56x55b7",
+      "side": false
+    },
+    {
+      "key": "publication-cmd803gku000643ldvt829p32",
+      "side": false
+    },
+    {
+      "key": "publication-cmcy9nj7m000543e7ou96o0pf",
+      "side": false
+    },
+    {
+      "key": "publication-cmeumpcxx000143elvzbvboxy",
+      "side": false
+    },
+    {
+      "key": "publication-cmd50isao000143kz3xyliykn",
+      "side": false
+    },
+    {
+      "key": "product-5ee0be8d-ed2c-4f90-9afc-628c8c796e28",
+      "side": false
+    },
+    {
+      "key": "product-31b18ab8-264d-48e0-a4a0-0385ed990eeb",
+      "side": false
+    },
+    {
+      "key": "product-78a153ef-7fe0-4e27-a0c0-5b5fe5bf0a0c",
+      "side": false
+    },
+    {
+      "key": "product-6670a118-4714-43cd-9afb-4a0c6bd9f5d4",
+      "side": false
+    },
+    {
+      "key": "product-63cdfdd0-a5cf-4da7-932b-1bbb874615f6",
+      "side": true
+    },
+    {
+      "key": "business-9c43d4bf-7185-48d3-9c7a-70ce79aa82ad",
+      "side": true
+    },
+    {
+      "key": "business-5506619e-3b3a-4e87-adb4-325396a98c26",
+      "side": true
+    },
+    {
+      "key": "business-c3c4b604-9d83-47ce-8690-30b555bacff1",
+      "side": true
+    },
+    {
+      "key": "business-9790c152-383e-4bc2-9ab1-7c268c5b4b70",
+      "side": true
+    },
+    {
+      "key": "service-484de355-eaf5-4698-b491-5e982787347e",
+      "side": true
+    },
+    {
+      "key": "business-f2a00461-bfb5-40d4-8d8e-d51281902152",
+      "side": true
+    },
+    {
+      "key": "business-84712cc3-5d0f-41dc-b660-353baff57e78",
+      "side": true
+    },
+    {
+      "key": "service-99e0c4aa-ee7e-4632-9f48-8ca6e16d164d",
+      "side": true
+    },
+    {
+      "key": "business-82688f03-866c-476f-b8b8-c7653161101e",
+      "side": true
+    },
+    {
+      "key": "service-0b213f9c-095d-4800-8552-07a008d30e16",
+      "side": true
+    },
+    {
+      "key": "business-696ee6ca-d4cb-444b-b423-dce95cefdce3",
+      "side": true
+    },
+    {
+      "key": "product-e52cec36-50f8-4285-9515-76b0b53cf929",
+      "side": true
+    },
+    {
+      "key": "product-45acac87-83a0-45d8-937c-5993d7027f71",
+      "side": true
+    },
+    {
+      "key": "product-77d14ce8-363e-4816-9484-ed7c6456f98b",
+      "side": true
+    }
+  ],
+  "mobile": {
+    "row": true,
+    "badge": true,
+    "overflow": false
+  },
+  "errors": []
+}

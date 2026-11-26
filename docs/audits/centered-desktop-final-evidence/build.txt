@@ -1,0 +1,181 @@
+
+> myckeo@0.1.0 build /home/nico/worktrees/myckeo-centered-desktop-final-20261125
+> npm run prisma:generate && next build
+
+
+> myckeo@0.1.0 prisma:generate
+> prisma generate
+
+Prisma schema loaded from prisma/schema.prisma
+
+✔ Generated Prisma Client (v6.18.0) to ./node_modules/.pnpm/@prisma+client@6.18.0_prisma@6.18.0_typescript@5.9.3__typescript@5.9.3/node_modules/@prisma/client in 641ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Want to turn off tips and other hints? https://pris.ly/tip-4-nohints
+
+   ▲ Next.js 15.5.9
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 99s
+   Linting and checking validity of types ...
+
+./src/app/activar/ActivationBootstrap.test.tsx
+347:21  Warning: '_body' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/app/api-reference/config/eslint#disabling-rules
+   Collecting page data ...
+[Upstash Redis] Unable to find environment variable: `UPSTASH_REDIS_REST_URL`
+[Upstash Redis] Unable to find environment variable: `UPSTASH_REDIS_REST_TOKEN`
+[Upstash Redis] The 'url' property is missing or undefined in your Redis config.
+[Upstash Redis] The 'token' property is missing or undefined in your Redis config.
+   Generating static pages (0/74) ...
+   Generating static pages (18/74)
+[Upstash Redis] Unable to find environment variable: `UPSTASH_REDIS_REST_URL`
+[Upstash Redis] Unable to find environment variable: `UPSTASH_REDIS_REST_TOKEN`
+[Upstash Redis] The 'url' property is missing or undefined in your Redis config.
+[Upstash Redis] The 'token' property is missing or undefined in your Redis config.
+   Generating static pages (36/74)
+   Generating static pages (55/74)
+ ✓ Generating static pages (74/74)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                          Size  First Load JS
+┌ ○ /                                               188 B         272 kB
+├ ○ /_not-found                                     405 B         104 kB
+├ ƒ /[categoria]                                    185 B         272 kB
+├ ƒ /[categoria]/[seccion]/[slug]                  2.8 kB         351 kB
+├ ƒ /activar                                      11.5 kB         119 kB
+├ ƒ /address                                      10.7 kB         275 kB
+├ ƒ /address/[slug]                               11.2 kB         276 kB
+├ ○ /admin/eventos                                3.96 kB         187 kB
+├ ƒ /api/account-activation/bootstrap               292 B         103 kB
+├ ƒ /api/asistente                                  292 B         103 kB
+├ ƒ /api/auth/[...nextauth]                         292 B         103 kB
+├ ƒ /api/auth/forgot-password                       292 B         103 kB
+├ ƒ /api/auth/refresh-session                       292 B         103 kB
+├ ƒ /api/auth/register                              292 B         103 kB
+├ ƒ /api/auth/updateScores/[id]                     292 B         103 kB
+├ ƒ /api/brevo/sync                                 292 B         103 kB
+├ ƒ /api/business/description/[phone]               292 B         103 kB
+├ ƒ /api/business/direccion/[phone]                 292 B         103 kB
+├ ƒ /api/business/facebook/[phone]                  292 B         103 kB
+├ ƒ /api/business/fotoperfil/[phone]                292 B         103 kB
+├ ƒ /api/business/fotoportada/[phone]               292 B         103 kB
+├ ƒ /api/business/instagram/[phone]                 292 B         103 kB
+├ ƒ /api/business/nombre/[phone]                    292 B         103 kB
+├ ƒ /api/business/sitioweb/[phone]                  292 B         103 kB
+├ ƒ /api/business/tiktok/[phone]                    292 B         103 kB
+├ ƒ /api/business/twitter/[phone]                   292 B         103 kB
+├ ƒ /api/business/ubicacion/[phone]                 292 B         103 kB
+├ ƒ /api/business/youtube/[phone]                   292 B         103 kB
+├ ƒ /api/cloudinary/delete                          292 B         103 kB
+├ ƒ /api/cloudinary/upload-authorization            292 B         103 kB
+├ ƒ /api/comentarios/[publicacionId]                292 B         103 kB
+├ ƒ /api/deleteOrder/[id]                           292 B         103 kB
+├ ƒ /api/editarOrder/[id]                           292 B         103 kB
+├ ƒ /api/eliminarServicio                           292 B         103 kB
+├ ƒ /api/eliminarTransaccion/[id]                   292 B         103 kB
+├ ƒ /api/getServiciosBySlug                         292 B         103 kB
+├ ƒ /api/getServiciosNegocio                        292 B         103 kB
+├ ƒ /api/internal/onboarding/claim                  292 B         103 kB
+├ ƒ /api/internal/onboarding/provision              292 B         103 kB
+├ ƒ /api/negocio                                    292 B         103 kB
+├ ƒ /api/negocios/[slug]                            292 B         103 kB
+├ ƒ /api/order/[id]                                 292 B         103 kB
+├ ƒ /api/orders                                     292 B         103 kB
+├ ƒ /api/placeholder                                292 B         103 kB
+├ ƒ /api/productos/[slug]                           292 B         103 kB
+├ ƒ /api/productosNegocio                           292 B         103 kB
+├ ƒ /api/productosTransacciones                     292 B         103 kB
+├ ƒ /api/products/create                            292 B         103 kB
+├ ƒ /api/products/list/[phone]                      292 B         103 kB
+├ ƒ /api/products/update/[id]                       292 B         103 kB
+├ ƒ /api/publicaciones/[slug]                       292 B         103 kB
+├ ƒ /api/resenas/[id]                               292 B         103 kB
+├ ƒ /api/resenasPrueba/[id]                         292 B         103 kB
+├ ƒ /api/reservasConfig                             292 B         103 kB
+├ ƒ /api/reservasConfigUser                         292 B         103 kB
+├ ƒ /api/resumenTransaccion/[id]                    292 B         103 kB
+├ ƒ /api/search                                     292 B         103 kB
+├ ƒ /api/summary/[publicacionId]                    292 B         103 kB
+├ ƒ /api/transacciones                              292 B         103 kB
+├ ƒ /api/transaccionesExcel                         292 B         103 kB
+├ ƒ /api/usuario/email/[phone]                      292 B         103 kB
+├ ƒ /api/usuario/fecha-nacimiento/[phone]           292 B         103 kB
+├ ƒ /api/usuario/fotoperfil/[phone]                 292 B         103 kB
+├ ƒ /api/usuario/genero/[phone]                     292 B         103 kB
+├ ƒ /api/usuario/nombre/[phone]                     292 B         103 kB
+├ ƒ /auth/forgot-password                         2.17 kB         169 kB
+├ ƒ /auth/login                                   3.69 kB         136 kB
+├ ƒ /auth/new-account                             52.8 kB         294 kB
+├ ƒ /auth/reset-password/[token]                  3.79 kB         173 kB
+├ ƒ /carro                                          430 B         174 kB
+├ ○ /carrusel                                     10.1 kB         253 kB
+├ ƒ /category/[slug]                                188 B         272 kB
+├ ƒ /checkout                                     7.36 kB         234 kB
+├ ƒ /checkout/[slug]                              6.99 kB         234 kB
+├ ƒ /config/completePerfil                          292 B         103 kB
+├ ○ /contacto                                       292 B         103 kB
+├ ƒ /crear_negocio/[id]                             11 kB         210 kB
+├ ƒ /dashboard                                    12.8 kB         220 kB
+├ ƒ /dashboard/carrusel                           5.19 kB         278 kB
+├ ƒ /dashboard/crear-publicacion                  12.6 kB         310 kB
+├ ƒ /dashboard/editar-perfil                      58.6 kB         367 kB
+├ ƒ /dashboard/editar-usuario                     13.9 kB         145 kB
+├ ƒ /dashboard/encuestas                          2.25 kB         164 kB
+├ ƒ /dashboard/encuestas/crear                    2.25 kB         164 kB
+├ ƒ /dashboard/orders                             24.9 kB         295 kB
+├ ƒ /dashboard/orders/address                     12.7 kB         207 kB
+├ ƒ /dashboard/orders/checkout                    8.97 kB         209 kB
+├ ƒ /dashboard/orders/crear                       5.77 kB         203 kB
+├ ƒ /dashboard/organizacion-catalogo              12.6 kB         137 kB
+├ ƒ /dashboard/perfil                               292 B         103 kB
+├ ƒ /dashboard/productos                          8.35 kB         219 kB
+├ ƒ /dashboard/productos/modificar_producto/[id]  8.25 kB         290 kB
+├ ƒ /dashboard/productos/nuevo_producto           13.8 kB         299 kB
+├ ƒ /dashboard/qr                                 53.9 kB         199 kB
+├ ƒ /dashboard/reservas                           17.1 kB         243 kB
+├ ƒ /dashboard/reservas/crear                      2.8 kB         134 kB
+├ ƒ /dashboard/servicios                          5.37 kB         346 kB
+├ ƒ /dashboard/servicios/crear                      243 B         341 kB
+├ ƒ /dashboard/transacciones                      4.41 kB         155 kB
+├ ƒ /dashboard/transaccioneslista                  166 kB         486 kB
+├ ○ /empty                                          182 B         112 kB
+├ ƒ /encuestas/[slug]                             8.81 kB         190 kB
+├ ƒ /favoritos                                    4.54 kB         173 kB
+├ ○ /inicio                                         292 B         103 kB
+├ ƒ /myckeoAdmin                                    180 B         107 kB
+├ ƒ /myckeoAdmin/crearProductos                   21.7 kB         204 kB
+├ ƒ /myckeoAdmin/editar/[slug]                    14.2 kB         196 kB
+├ ƒ /myckeoAdmin/negocios                         6.28 kB         113 kB
+├ ƒ /myckeoAdmin/organizar/[slug]                 13.9 kB         126 kB
+├ ƒ /myckeoAdmin/productos/[slug]                 4.63 kB         130 kB
+├ ƒ /not_authorized                                 182 B         112 kB
+├ ƒ /perfil                                         201 B         350 kB
+├ ● /perfil/[slug]                                  201 B         350 kB
+├   ├ /perfil/b-products-dept-00
+├   ├ /perfil/b-products-local-00
+├   ├ /perfil/b-products-national-00
+├   └ [+9 more paths]
+├ ○ /pitch                                         155 kB         334 kB
+├ ○ /politica-cookies                               180 B         107 kB
+├ ○ /politica-privacidad                            180 B         107 kB
+├ ○ /politica-publicidad                            180 B         107 kB
+├ ƒ /producto/[slug]                              13.9 kB         363 kB
+├ ƒ /reservas/[slug]                              6.56 kB         210 kB
+├ ƒ /reservas/eliminar/[id]                         292 B         103 kB
+├ ƒ /reservas/gestionar                           2.52 kB         122 kB
+├ ƒ /reservas/gestionar/[token]                     292 B         103 kB
+├ ƒ /seccion/[slug]                                 292 B         103 kB
+└ ○ /terminos-servicio                              180 B         107 kB
++ First Load JS shared by all                      103 kB
+  ├ chunks/8789-80a289214c9483d1.js               45.6 kB
+  ├ chunks/c492a97a-296e9d03155ad214.js           54.2 kB
+  └ other shared chunks (total)                    3.3 kB
+
+
+○  (Static)   prerendered as static content
+●  (SSG)      prerendered as static HTML (uses generateStaticParams)
+ƒ  (Dynamic)  server-rendered on demand
