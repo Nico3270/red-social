@@ -1,0 +1,7 @@
+.rail { max-width: 260px; padding-top: 16px; border-top: 1px solid #e2e8f0; margin-top: 16px; }
+.title { margin-bottom: 8px; padding-inline: 12px; font-size: 13px; font-weight: 600; color: #64748b; }
+.link { display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 8px 12px; border-radius: 10px; color: #475569; font-size: 13px; line-height: 18px; }
+.link img { width: 20px; height: 20px; flex-shrink: 0; object-fit: contain; }
+.link:hover, .current { background: #eaf4fc; color: #0369a1; }
+.link:focus-visible, .more:focus-visible { outline: 2px solid #c93545; outline-offset: 2px; }
+.more { min-height: 44px; padding: 12px; cursor: pointer; color: #475569; font-size: 13px; font-weight: 600; }

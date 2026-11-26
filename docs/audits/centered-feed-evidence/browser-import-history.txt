@@ -1,0 +1,14 @@
+
+Running 1 test using 1 worker
+
+  ✘  1 e2e/centered-feed/centered.spec.ts:62:5 › actual review relationships and a controlled arrival-order characterization (255ms)
+
+
+  1) e2e/centered-feed/centered.spec.ts:62:5 › actual review relationships and a controlled arrival-order characterization
+
+    TypeError: Module "file:///home/nico/worktrees/myckeo-centered-feed-20261125/docs/audits/centered-feed-evidence/comparison-sample.json" needs an import attribute of type "json"
+
+    Error Context: test-results/centered-browser/centered-actual-review-rel-18747-ival-order-characterization/error-context.md
+
+  1 failed
+    e2e/centered-feed/centered.spec.ts:62:5 › actual review relationships and a controlled arrival-order characterization

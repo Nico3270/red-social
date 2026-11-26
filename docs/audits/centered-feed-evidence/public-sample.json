@@ -1,0 +1,2501 @@
+{
+  "tab": "Para ti",
+  "city": "Tunja",
+  "items": [
+    {
+      "id": "63cdfdd0-a5cf-4da7-932b-1bbb874615f6",
+      "type": "product",
+      "score": 12.496,
+      "createdAt": "2026-04-15T08:31:15.539Z",
+      "title": "Salchipapas premium",
+      "descriptionShort": "Auténtico sabor colombiano con ingredientes premium: salchichas, papas, tocineta, maíz, pollo, carne, chorizo, queso.",
+      "imageUrl": "https://res.cloudinary.com/dkwosk8qd/image/upload/v1776241252/zv0caubf62mqq9jjczqf.jpg",
+      "businessSlug": "parrilla-internacional-tunja-tunja-r3jq",
+      "isFollowed": false,
+      "data": {
+        "id": "63cdfdd0-a5cf-4da7-932b-1bbb874615f6",
+        "nombre": "Salchipapas premium",
+        "precio": 25000,
+        "descripcion": "Disfruta de una experiencia culinaria única con nuestras Salchipapas premium. Este plato tradicional colombiano ha sido cuidadosamente elaborado con ingredientes de la más alta calidad para garantizar un sabor exquisito que deleitará tus sentidos. Ofrecemos dos tamaños para adaptarse a tus necesidades: grande y mediano. Cada porción incluye una deliciosa combinación de salchichas jugosas, papas crujientes, tocineta ahumada, maíz dulce, y una mezcla sabrosa de pollo y carne desmenuzados. Además, hemos añadido chorizo y una generosa capa de queso derretido para completar esta obra maestra gastronómica. Perfecto para compartir con amigos y familiares o para disfrutar en solitario, nuestras Salchipapas premium son la opción ideal para cualquier ocasión.",
+        "descripcionCorta": "Auténtico sabor colombiano con ingredientes premium: salchichas, papas, tocineta, maíz, pollo, carne, chorizo, queso.",
+        "slug": "salchipapas-premium-zyuv",
+        "prioridad": 1,
+        "status": "disponible",
+        "tags": [
+          "Salchipapas premium",
+          "salchipapa colombiana",
+          "comida tradicional",
+          "ingredientes de calidad",
+          "salchichas",
+          "papas",
+          "tocineta",
+          "chorizo",
+          "queso",
+          "maíz dulce",
+          "pollo",
+          "carne desmenuzada",
+          "plato colombiano",
+          "comida rápida",
+          "snack gourmet."
+        ],
+        "categoriaId": "2",
+        "imagenes": [
+          "https://res.cloudinary.com/dkwosk8qd/image/upload/v1776241252/zv0caubf62mqq9jjczqf.jpg",
+          "https://res.cloudinary.com/dkwosk8qd/image/upload/v1776241252/rymikw71cb7v1komguv7.jpg"
+        ],
+        "componentes": [
+          "Salchichas",
+          "Papas",
+          "Tocineta",
+          "Maíz dulce",
+          "Pollo y carné desmenuzados",
+          "Chorizo",
+          "Queso"
+        ],
+        "sections": [
+          "s8"
+        ],
+        "slugNegocio": "parrilla-internacional-tunja-tunja-r3jq",
+        "nombreNegocio": "Pariila Internacional Tunja",
+        "telefonoContacto": "+573182293083",
+        "negocioId": "5506619e-3b3a-4e87-adb4-325396a98c26",
+        "negocioFotoPerfil": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1758509399/red-social/hco0zuwbphkf18ocrozc.png",
+        "ciudad": "Tunja",
+        "departamento": "Boyacá",
+        "stock": null,
+        "stockIlimitado": true,
+        "usaVariantes": true,
+        "variantes": [
+          {
+            "id": "cc1b495a-faac-45b8-93d4-79f7142826f9",
+            "nombre": "Pequeña",
+            "sku": "Mediana",
+            "precio": 25000,
+            "stock": null,
+            "stockIlimitado": true,
+            "isActive": true,
+            "imagenUrl": null,
+            "orden": 0,
+            "options": []
+          },
+          {
+            "id": "17527060-de01-4a0b-a8d8-6ba1e9cd7e98",
+            "nombre": "Mediana",
+            "sku": null,
+            "precio": 35000,
+            "stock": null,
+            "stockIlimitado": true,
+            "isActive": true,
+            "imagenUrl": null,
+            "orden": 1,
+            "options": []
+          },
+          {
+            "id": "293ca8a9-90d9-4774-8faa-3a4ee7684073",
+            "nombre": "Grande",
+            "sku": null,
+            "precio": 45000,
+            "stock": null,
+            "stockIlimitado": true,
+            "isActive": true,
+            "imagenUrl": null,
+            "orden": 2,
+            "options": []
+          }
+        ]
+      },
+      "price": 25000,
+      "status": "disponible",
+      "locationTier": 0
+    },
+    {
+      "id": "cmf1vtl2l000043hsthjz3ep6",
+      "type": "publication",
+      "score": 12.673,
+      "createdAt": "2025-09-02T01:40:59.647Z",
+      "title": "Publicación",
+      "descriptionShort": "La belleza comienza con pequeños rituales que nos conectan con nosotros mismos. Hoy te compartimos u",
+      "imageUrl": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1756777234/red-social/xhtuxrzcsfall2rsdwzh.png",
+      "businessSlug": "lumina-beauty-tunja-83sa",
+      "isFollowed": false,
+      "data": {
+        "id": "cmf1vtl2l000043hsthjz3ep6",
+        "usuario": {
+          "id": "be47bc36-e823-430b-ab0e-4eb66f6bb648",
+          "nombre": "Carmen",
+          "apellido": "Bernal",
+          "username": "carmenbernal",
+          "fotoPerfil": null
+        },
+        "tipo": "TESTIMONIO",
+        "titulo": null,
+        "descripcion": "La belleza comienza con pequeños rituales que nos conectan con nosotros mismos. Hoy te compartimos un tip sencillo pero transformador: mantener una rutina de skincare minimalista con tres pasos esenciales — limpieza, hidratación y protección solar. ",
+        "multimedia": [
+          {
+            "id": "4b5003ca-efbe-4c29-89f4-1bd97ec8210d",
+            "url": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1756777234/red-social/xhtuxrzcsfall2rsdwzh.png",
+            "tipo": "IMAGEN",
+            "formato": "image/jpeg",
+            "orden": 0
+          },
+          {
+            "id": "1c324972-98a7-498e-86d8-a3d86697f366",
+            "url": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1756777234/red-social/vbzuduswm4bze7momth6.png",
+            "tipo": "IMAGEN",
+            "formato": "image/jpeg",
+            "orden": 1
+          },
+          {
+            "id": "8b58a8ca-76f8-4c1c-930e-7a71bbbaa5f8",
+            "url": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1756777234/red-social/z5vx1mssknwtxemoj7qm.png",
+            "tipo": "IMAGEN",
+            "formato": "image/jpeg",
+            "orden": 2
+          },
+          {
+            "id": "be512e22-db56-4faf-a531-268e261723a5",
+            "url": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1756777234/red-social/frjdzatvrvwz7vtfrx8u.png",
+            "tipo": "IMAGEN",
+            "formato": "image/jpeg",
+            "orden": 3
+          }
+        ],
+        "visibilidad": "PUBLICA",
+        "createdAt": "2025-09-02T01:40:59.647Z",
+        "numLikes": 3,
+        "numComentarios": 1,
+        "numCompartidos": 0,
+        "negocio": {
+          "id": "df781d8a-26ac-4fff-92dc-3297ae9fd67f",
+          "nombre": "LUMINA Beauty",
+          "fotoPerfil": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1756771272/red-social/s0b75ueknugqvykt2atr.png",
+          "slug": "lumina-beauty-tunja-83sa",
+          "ciudad": "Tunja",
+          "departamento": "Boyacá"
+        },
+        "calificacion": null,
+        "userReaction": null,
+        "comments": [
+          {
+            "id": "cmf1vulcd000443hs9ccybs2y",
+            "contenido": "Me encanta este tip",
+            "createdAt": "2025-09-02T01:41:46.679Z",
+            "usuario": {
+              "id": "be47bc36-e823-430b-ab0e-4eb66f6bb648",
+              "nombre": "Carmen",
+              "apellido": "Bernal",
+              "username": "carmenbernal"
+            }
+          }
+        ],
+        "isAuthenticated": false,
+        "negocioId": "df781d8a-26ac-4fff-92dc-3297ae9fd67f"
+      },
+      "numLikes": 3,
+      "locationTier": 0
+    },
+    {
+      "id": "9c43d4bf-7185-48d3-9c7a-70ce79aa82ad",
+      "type": "business",
+      "score": 13.426,
+      "createdAt": "2025-09-20T01:32:31.719Z",
+      "title": "Carmen Moda Urbana",
+      "descriptionShort": "Carmen Moda Urbana es un emprendimiento juvenil que ofrece ropa pensada para el día a día, combinand",
+      "imageUrl": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1758332069/red-social/uvdcxwdpc9db14xpifgo.png",
+      "businessSlug": "carmen-moda-urbana-tunja-57eb",
+      "isFollowed": false,
+      "data": {
+        "id": "9c43d4bf-7185-48d3-9c7a-70ce79aa82ad",
+        "nombre": "Carmen Moda Urbana",
+        "slug": "carmen-moda-urbana-tunja-57eb",
+        "negocioId": "9c43d4bf-7185-48d3-9c7a-70ce79aa82ad",
+        "descripcion": "Carmen Moda Urbana es un emprendimiento juvenil que ofrece ropa pensada para el día a día, combinando comodidad con estilo contemporáneo. Sus diseños se distinguen por ser minimalistas, frescos y versátiles, con siluetas inspiradas en animales, paisajes y símbolos característicos de ciudades del mundo.\r\n\r\nCada prenda refleja un equilibrio entre lo casual y lo moderno, ideal para quienes buscan vestir con identidad sin perder sencillez. Con un enfoque en la creatividad y la autenticidad, Carmen apuesta por una moda urbana que conecta con los jóvenes y transmite una esencia global en cada detalle.",
+        "ciudad": "Tunja",
+        "departamento": "Boyacá",
+        "imagenPerfil": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1758332069/red-social/uvdcxwdpc9db14xpifgo.png",
+        "imagenPortada": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1758332072/red-social/uvd2vsix1cc77cfyfxwj.png",
+        "telefonoContacto": "+573182293089",
+        "urlGoogleMaps": "https://www.google.com/maps?q=5.5181312,-73.3642752",
+        "categorias": [
+          "moda"
+        ],
+        "secciones": [
+          "s1",
+          "s112",
+          "s5",
+          "s2",
+          "s123",
+          "s118",
+          "s84",
+          "s119"
+        ],
+        "estado": "activo",
+        "createdAt": "2025-09-20T01:32:31.719Z"
+      },
+      "status": "activo",
+      "locationTier": 0
+    },
+    {
+      "id": "5506619e-3b3a-4e87-adb4-325396a98c26",
+      "type": "business",
+      "score": 16.131,
+      "createdAt": "2025-07-07T15:33:45.800Z",
+      "title": "Pariila Internacional Tunja",
+      "descriptionShort": "Restaurante tradicional ubicado en la ciudad de Tunja, ofrecemos productos tipicos de la región, pla",
+      "imageUrl": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1758509399/red-social/hco0zuwbphkf18ocrozc.png",
+      "businessSlug": "parrilla-internacional-tunja-tunja-r3jq",
+      "isFollowed": false,
+      "data": {
+        "id": "5506619e-3b3a-4e87-adb4-325396a98c26",
+        "nombre": "Pariila Internacional Tunja",
+        "slug": "parrilla-internacional-tunja-tunja-r3jq",
+        "negocioId": "5506619e-3b3a-4e87-adb4-325396a98c26",
+        "descripcion": "Restaurante tradicional ubicado en la ciudad de Tunja, ofrecemos productos tipicos de la región, platos a la carta, trucha, mojarra, carne de res, cerdo",
+        "ciudad": "Tunja",
+        "departamento": "Boyacá",
+        "imagenPerfil": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1758509399/red-social/hco0zuwbphkf18ocrozc.png",
+        "imagenPortada": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1758509405/red-social/qvlzyyjhkarekmunt9qx.png",
+        "telefonoContacto": "+573182293083",
+        "urlGoogleMaps": "https://www.google.com/maps?q=5.542843766403192,-73.35332528302003",
+        "categorias": [
+          "comida",
+          "bebidas"
+        ],
+        "secciones": [
+          "s8",
+          "s9",
+          "s11",
+          "s12",
+          "s13",
+          "s14",
+          "s16",
+          "s19",
+          "s21",
+          "s79",
+          "s62",
+          "s63",
+          "s64",
+          "s65",
+          "s67",
+          "s68"
+        ],
+        "estado": "activo",
+        "createdAt": "2025-07-07T15:33:45.800Z"
+      },
+      "status": "activo",
+      "locationTier": 0
+    },
+    {
+      "id": "cmf1ydjgp000h43hsci8m5p55",
+      "type": "publication",
+      "score": 12.361,
+      "createdAt": "2025-09-02T02:52:29.916Z",
+      "title": "Publicación",
+      "descriptionShort": "¡Ilumina tu mirada con LUMINA Shadow Flow! Esta sombra fluida innovadora, hecha con pigmentos natura",
+      "imageUrl": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1756781542/red-social/dtmyl5uhebakzn7alufa.png",
+      "businessSlug": "lumina-beauty-tunja-83sa",
+      "isFollowed": false,
+      "data": {
+        "id": "cmf1ydjgp000h43hsci8m5p55",
+        "usuario": {
+          "id": "be47bc36-e823-430b-ab0e-4eb66f6bb648",
+          "nombre": "Carmen",
+          "apellido": "Bernal",
+          "username": "carmenbernal",
+          "fotoPerfil": null
+        },
+        "tipo": "CARRUSEL_IMAGENES",
+        "titulo": null,
+        "descripcion": "¡Ilumina tu mirada con LUMINA Shadow Flow! Esta sombra fluida innovadora, hecha con pigmentos naturales y veganos, ofrece una aplicación suave y de larga duración. Perfecta para looks versátiles: desde un glow sutil diurno hasta un smokey eye nocturno. Sostenible y ética, eleva tu rutina de belleza con calidad premium. ¿Lista para brillar? ✨ #BellezaSostenible #MaquillajeVersatil #LuminaGlow",
+        "multimedia": [
+          {
+            "id": "5bccd7eb-a066-4357-9436-f9dc32cc3419",
+            "url": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1756781542/red-social/dtmyl5uhebakzn7alufa.png",
+            "tipo": "IMAGEN",
+            "formato": "image/jpeg",
+            "orden": 0
+          },
+          {
+            "id": "bb19025c-b783-40da-93f1-634ff0416c50",
+            "url": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1756781543/red-social/e3hikhj8o9oivo27mjqi.png",
+            "tipo": "IMAGEN",
+            "formato": "image/jpeg",
+            "orden": 1
+          },
+          {
+            "id": "6b364f56-1807-4bea-982f-4e775016c28f",
+            "url": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1756781544/red-social/qxzaxcswvauhobucwbxj.png",
+            "tipo": "IMAGEN",
+            "formato": "image/jpeg",
+            "orden": 2
+          }
+        ],
+        "visibilidad": "PUBLICA",
+        "createdAt": "2025-09-02T02:52:29.916Z",
+        "numLikes": 7,
+        "numComentarios": 3,
+        "numCompartidos": 0,
+        "negocio": {
+          "id": "df781d8a-26ac-4fff-92dc-3297ae9fd67f",
+          "nombre": "LUMINA Beauty",
+          "fotoPerfil": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1756771272/red-social/s0b75ueknugqvykt2atr.png",
+          "slug": "lumina-beauty-tunja-83sa",
+          "ciudad": "Tunja",
+          "departamento": "Boyacá"
+        },
+        "calificacion": null,
+        "userReaction": null,
+        "comments": [
+          {
+            "id": "cmfllm6nw0004la04fqxlfbwo",
+            "contenido": "Me encanta este producto y todos los demás de este negocio",
+            "createdAt": "2025-09-15T20:50:41.849Z",
+            "usuario": {
+              "id": "229b78b9-1d13-4222-86d3-68e15d3d596e",
+              "nombre": "Nicolás",
+              "apellido": "Rodríguez",
+              "username": "naceunaleyenda20251757910723725"
+            }
+          },
+          {
+            "id": "cmfgfh7ot0003ju04p1brcfqo",
+            "contenido": "Me gusta",
+            "createdAt": "2025-09-12T06:00:01.324Z",
+            "usuario": {
+              "id": "b9023a76-9bd8-47ec-b136-f76b32aab9fe",
+              "nombre": "Cristian",
+              "apellido": "Rodriguez",
+              "username": "cristianrodriguez3270"
+            }
+          },
+          {
+            "id": "cmffj8lsd000543dejzkifkov",
+            "contenido": "Me encanta este negocio",
+            "createdAt": "2025-09-11T14:57:31.876Z",
+            "usuario": {
+              "id": "7ffe2473-52a8-40b0-ab24-2606afd0cb9d",
+              "nombre": "Lorena",
+              "apellido": "Torres",
+              "username": "lorenatorres"
+            }
+          }
+        ],
+        "isAuthenticated": false,
+        "negocioId": "df781d8a-26ac-4fff-92dc-3297ae9fd67f"
+      },
+      "numLikes": 7,
+      "locationTier": 0
+    },
+    {
+      "id": "cmft41ko80000l404g83uz2oq",
+      "type": "publication",
+      "score": 12.472,
+      "createdAt": "2025-09-21T03:00:56.169Z",
+      "title": "Publicación",
+      "descriptionShort": "¡Hola chicos! 💚 Hoy lanzo mi nueva colección y les traigo la Camisa Fauna Urban 🌿✨, inspirada en l",
+      "imageUrl": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1758423428/red-social/wlooqwn3jmik1avhgcfb.png",
+      "businessSlug": "carmen-moda-urbana-tunja-57eb",
+      "isFollowed": false,
+      "data": {
+        "id": "cmft41ko80000l404g83uz2oq",
+        "usuario": {
+          "id": "7b671372-5c88-4913-b688-a49109bec902",
+          "nombre": "Carmen",
+          "apellido": "Pineda",
+          "username": "carmenpineda",
+          "fotoPerfil": null
+        },
+        "tipo": "CARRUSEL_IMAGENES",
+        "titulo": null,
+        "descripcion": "¡Hola chicos! 💚 Hoy lanzo mi nueva colección y les traigo la Camisa Fauna Urban 🌿✨, inspirada en la naturaleza de nuestra tierra. Estoy segura de que les va a encantar 😍. ¡Ya disponible en mis productos! 🛒💥\n\n#FaunaUrban #NuevaColección #EstiloUrbano #ModaConIdentidad #HechoConAmor #CarmenModaUrbana",
+        "multimedia": [
+          {
+            "id": "7a921ba0-6604-4aef-a42f-d3bb62031b65",
+            "url": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1758423428/red-social/wlooqwn3jmik1avhgcfb.png",
+            "tipo": "IMAGEN",
+            "formato": "image/jpeg",
+            "orden": 0
+          },
+          {
+            "id": "6987859e-932e-4fe1-ab92-84168fa4ee69",
+            "url": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1758423433/red-social/htpwqwcso79hbvn3grat.png",
+            "tipo": "IMAGEN",
+            "formato": "image/jpeg",
+            "orden": 1
+          }
+        ],
+        "visibilidad": "PUBLICA",
+        "createdAt": "2025-09-21T03:00:56.169Z",
+        "numLikes": 11,
+        "numComentarios": 11,
+        "numCompartidos": 0,
+        "negocio": {
+          "id": "9c43d4bf-7185-48d3-9c7a-70ce79aa82ad",
+          "nombre": "Carmen Moda Urbana",
+          "fotoPerfil": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1758332069/red-social/uvdcxwdpc9db14xpifgo.png",
+          "slug": "carmen-moda-urbana-tunja-57eb",
+          "ciudad": "Tunja",
+          "departamento": "Boyacá"
+        },
+        "calificacion": null,
+        "userReaction": null,
+        "comments": [
+          {
+            "id": "cmft4fehn0011k004o57o28nz",
+            "contenido": "Me encanta, por favor saca esta camisa en mas colores",
+            "createdAt": "2025-09-21T03:11:41.338Z",
+            "usuario": {
+              "id": "e21bc615-4c86-4db0-85d2-0d28616c58ad",
+              "nombre": "Andrea",
+              "apellido": "Torres",
+              "username": "andreatorres"
+            }
+          },
+          {
+            "id": "cmft4dphh000wk0046mvgrldx",
+            "contenido": "Carmen la mejor",
+            "createdAt": "2025-09-21T03:10:22.275Z",
+            "usuario": {
+              "id": "5f16ce4b-3a39-4ac6-bf31-f90583736aa2",
+              "nombre": "Juan",
+              "apellido": "Alvarez",
+              "username": "juanalvarez"
+            }
+          },
+          {
+            "id": "cmft4bfkd000uk004zj8aa127",
+            "contenido": "La quiero",
+            "createdAt": "2025-09-21T03:08:36.108Z",
+            "usuario": {
+              "id": "a4239c10-8076-434d-8846-e96bee0944d1",
+              "nombre": "Ana",
+              "apellido": "Roa",
+              "username": "anarojas"
+            }
+          }
+        ],
+        "isAuthenticated": false,
+        "negocioId": "9c43d4bf-7185-48d3-9c7a-70ce79aa82ad"
+      },
+      "numLikes": 11,
+      "locationTier": 0
+    },
+    {
+      "id": "fcea4193-4e78-49bc-988e-5ba411deaca2",
+      "type": "product",
+      "score": 8.988,
+      "createdAt": "2025-09-20T01:10:51.346Z",
+      "title": "Botín Versátil Aventura",
+      "descriptionShort": "Botín de cuero resistente al agua con suela amortiguada, cierre de cremallera y costuras contrastantes.",
+      "imageUrl": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1758330642/red-social/z1nm04fzthvozmgvson9.png",
+      "businessSlug": "zapateria-don-jorge-tunja-tzj2",
+      "isFollowed": false,
+      "data": {
+        "id": "fcea4193-4e78-49bc-988e-5ba411deaca2",
+        "nombre": "Botín Versátil Aventura",
+        "precio": 175000,
+        "descripcion": "El Botín Versátil Aventura es una opción ideal para quienes buscan un calzado que combine resistencia y estilo. Fabricado con cuero resistente al agua, este botín asegura protección y durabilidad en diversas condiciones climáticas. Su diseño incluye una suela amortiguada y flexible que proporciona un excelente soporte y comodidad al caminar, mientras que el forro textil transpirable garantiza frescura durante todo el día. El cierre con cremallera lateral facilita el calce y ajuste, ofreciendo practicidad sin comprometer el estilo. Con un acabado en color marrón terroso y costuras contrastantes, este botín no solo destaca por su funcionalidad, sino también por su estética contemporánea. Disponible en tallas 40 a 46, es perfecto para hombres activos que valoran la elegancia y la dedicación artesanal en su calzado.",
+        "descripcionCorta": "Botín de cuero resistente al agua con suela amortiguada, cierre de cremallera y costuras contrastantes.",
+        "slug": "botin-versatil-aventura-cxji",
+        "prioridad": 1,
+        "status": "disponible",
+        "tags": [
+          "botín versátil",
+          "cuero resistente al agua",
+          "suela amortiguada",
+          "calzado casual",
+          "estilo contemporáneo",
+          "cierre cremallera",
+          "costuras contrastantes",
+          "forro transpirable",
+          "marrón terroso",
+          "calzado para hombres",
+          "comodidad en todo terreno."
+        ],
+        "categoriaId": "1",
+        "imagenes": [
+          "https://res.cloudinary.com/dkfsejtx9/image/upload/v1758330642/red-social/z1nm04fzthvozmgvson9.png",
+          "https://res.cloudinary.com/dkfsejtx9/image/upload/v1758330644/red-social/o4rwdoxduly3ktknoepa.png",
+          "https://res.cloudinary.com/dkfsejtx9/image/upload/v1758330648/red-social/igktrjulubjkqtw8twr2.png"
+        ],
+        "componentes": [
+          "Material: Cuero resistente al agua",
+          "Color: Marrón terroso\\nTalla: 40-46",
+          "Suela: Amortiguada flexible",
+          "Forro: Textil transpirable",
+          "Cierre: Cremallera lateral",
+          "Peso: Robusto equilibrado",
+          "Personalización: Costuras contrastantes"
+        ],
+        "sections": [
+          "s3"
+        ],
+        "slugNegocio": "zapateria-don-jorge-tunja-tzj2",
+        "nombreNegocio": "Zapatería don Jorge",
+        "telefonoContacto": "+573182293087",
+        "negocioId": "82688f03-866c-476f-b8b8-c7653161101e",
+        "negocioFotoPerfil": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1758329893/red-social/k7xcigjuxyfbpvc9qtpz.png",
+        "ciudad": "Tunja",
+        "departamento": "Boyacá",
+        "stock": null,
+        "stockIlimitado": true,
+        "usaVariantes": false,
+        "variantes": []
+      },
+      "price": 175000,
+      "status": "disponible",
+      "locationTier": 0
+    },
+    {
+      "id": "df781d8a-26ac-4fff-92dc-3297ae9fd67f",
+      "type": "business",
+      "score": 13.387,
+      "createdAt": "2025-09-01T23:57:38.114Z",
+      "title": "LUMINA Beauty",
+      "descriptionShort": "LUMINA Beauty es una marca digital de belleza diseñada para una generación conectada, consciente y e",
+      "imageUrl": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1756771272/red-social/s0b75ueknugqvykt2atr.png",
+      "businessSlug": "lumina-beauty-tunja-83sa",
+      "isFollowed": false,
+      "data": {
+        "id": "df781d8a-26ac-4fff-92dc-3297ae9fd67f",
+        "nombre": "LUMINA Beauty",
+        "slug": "lumina-beauty-tunja-83sa",
+        "negocioId": "df781d8a-26ac-4fff-92dc-3297ae9fd67f",
+        "descripcion": "LUMINA Beauty es una marca digital de belleza diseñada para una generación conectada, consciente y exigente. Nuestro enfoque combina innovación cosmética con fórmulas limpias, sostenibles y libres de crueldad animal. Creemos que el cuidado personal debe ser accesible, elegante y funcional, por eso diseñamos experiencias responsivas que inspiran confianza tanto en la tienda online como en redes sociales. Cada producto refleja nuestro compromiso con la calidad premium, empaques eco-friendly y un estilo minimalista moderno. En LUMINA, la belleza no solo se trata de verse bien, sino de sentirse en armonía con uno mismo y con el mundo. Somos más que cosméticos: somos un movimiento hacia la autenticidad, la sofisticación y el bienestar digital.",
+        "ciudad": "Tunja",
+        "departamento": "Boyacá",
+        "imagenPerfil": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1756771272/red-social/s0b75ueknugqvykt2atr.png",
+        "imagenPortada": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1756771278/red-social/mwjwtptwufkoyi0hlhlp.png",
+        "telefonoContacto": "+573148529639",
+        "urlGoogleMaps": "https://www.google.com/maps?q=5.521847520959388,-73.35005498721925",
+        "categorias": [
+          "belleza"
+        ],
+        "secciones": [
+          "s36",
+          "s37",
+          "s38",
+          "s39"
+        ],
+        "estado": "activo",
+        "createdAt": "2025-09-01T23:57:38.114Z"
+      },
+      "status": "activo",
+      "locationTier": 0
+    },
+    {
+      "id": "cmd8abuph000443wfzt9txx2e",
+      "type": "publication",
+      "score": 13.873,
+      "createdAt": "2025-07-18T03:54:19.062Z",
+      "title": "Publicación",
+      "descriptionShort": "Vamos a probar un carrusel con imagenes y videos",
+      "imageUrl": "https://res.cloudinary.com/dkfsejtx9/video/upload/v1752810829/red-social/olqwhu1wztj6fqll5wna.mp4",
+      "businessSlug": "parrilla-internacional-tunja-tunja-r3jq",
+      "isFollowed": false,
+      "data": {
+        "id": "cmd8abuph000443wfzt9txx2e",
+        "usuario": {
+          "id": "b9023a76-9bd8-47ec-b136-f76b32aab9fe",
+          "nombre": "Cristian",
+          "apellido": "Rodriguez",
+          "username": "cristianrodriguez3270",
+          "fotoPerfil": null
+        },
+        "tipo": "CARRUSEL_IMAGENES",
+        "titulo": null,
+        "descripcion": "Vamos a probar un carrusel con imagenes y videos",
+        "multimedia": [
+          {
+            "id": "5d75e17a-bc6e-4b3f-a94d-547d996c5cb1",
+            "url": "https://res.cloudinary.com/dkfsejtx9/video/upload/v1752810829/red-social/olqwhu1wztj6fqll5wna.mp4",
+            "tipo": "VIDEO",
+            "formato": "video/mp4",
+            "orden": 0
+          },
+          {
+            "id": "e82ec2dd-faab-4366-9cee-44a6ca4c3039",
+            "url": "https://res.cloudinary.com/dkfsejtx9/video/upload/v1752810834/red-social/corti7jnp633vdrhoayy.mp4",
+            "tipo": "VIDEO",
+            "formato": "video/mp4",
+            "orden": 1
+          },
+          {
+            "id": "70bbdcf7-6aa3-4a76-8c66-891046d58b4f",
+            "url": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1752810842/red-social/l39kki5zricuwsopnvg7.png",
+            "tipo": "IMAGEN",
+            "formato": "image/jpeg",
+            "orden": 2
+          },
+          {
+            "id": "198f7d5f-517a-422e-aa4e-1f015e837c2a",
+            "url": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1752810843/red-social/kdqvsrnrf3eyakftdoae.png",
+            "tipo": "IMAGEN",
+            "formato": "image/jpeg",
+            "orden": 3
+          }
+        ],
+        "visibilidad": "PUBLICA",
+        "createdAt": "2025-07-18T03:54:19.062Z",
+        "numLikes": 5,
+        "numComentarios": 10,
+        "numCompartidos": 0,
+        "negocio": {
+          "id": "5506619e-3b3a-4e87-adb4-325396a98c26",
+          "nombre": "Pariila Internacional Tunja",
+          "fotoPerfil": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1758509399/red-social/hco0zuwbphkf18ocrozc.png",
+          "slug": "parrilla-internacional-tunja-tunja-r3jq",
+          "ciudad": "Tunja",
+          "departamento": "Boyacá"
+        },
+        "calificacion": null,
+        "userReaction": null,
+        "comments": [
+          {
+            "id": "cmdz96jjv001z43rksbo7iwrh",
+            "contenido": "No sube el contador",
+            "createdAt": "2025-08-06T00:51:58.364Z",
+            "usuario": {
+              "id": "b9023a76-9bd8-47ec-b136-f76b32aab9fe",
+              "nombre": "Cristian",
+              "apellido": "Rodriguez",
+              "username": "cristianrodriguez3270"
+            }
+          },
+          {
+            "id": "cmdz96dkc001x43rkojmefkat",
+            "contenido": "Otro comentario",
+            "createdAt": "2025-08-06T00:51:50.576Z",
+            "usuario": {
+              "id": "b9023a76-9bd8-47ec-b136-f76b32aab9fe",
+              "nombre": "Cristian",
+              "apellido": "Rodriguez",
+              "username": "cristianrodriguez3270"
+            }
+          },
+          {
+            "id": "cmdz967zk001v43rku1zg2lfw",
+            "contenido": "Probando el contador",
+            "createdAt": "2025-08-06T00:51:43.376Z",
+            "usuario": {
+              "id": "b9023a76-9bd8-47ec-b136-f76b32aab9fe",
+              "nombre": "Cristian",
+              "apellido": "Rodriguez",
+              "username": "cristianrodriguez3270"
+            }
+          }
+        ],
+        "isAuthenticated": false,
+        "negocioId": "5506619e-3b3a-4e87-adb4-325396a98c26"
+      },
+      "numLikes": 5,
+      "locationTier": 0
+    },
+    {
+      "id": "c3c4b604-9d83-47ce-8690-30b555bacff1",
+      "type": "business",
+      "score": 13.094,
+      "createdAt": "2025-09-17T22:51:01.777Z",
+      "title": "NovaBloom",
+      "descriptionShort": "NovaBloom es una marca innovadora de moda sostenible que fusiona diseño minimalista con materiales e",
+      "imageUrl": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1758149750/red-social/h2ssxz4zzppckmnswsxw.png",
+      "businessSlug": "novabloom-tunja-co6w",
+      "isFollowed": false,
+      "data": {
+        "id": "c3c4b604-9d83-47ce-8690-30b555bacff1",
+        "nombre": "NovaBloom",
+        "slug": "novabloom-tunja-co6w",
+        "negocioId": "c3c4b604-9d83-47ce-8690-30b555bacff1",
+        "descripcion": "NovaBloom es una marca innovadora de moda sostenible que fusiona diseño minimalista con materiales ecológicos, ofreciendo prendas versátiles para el estilo de vida moderno. Nos enfocamos en la innovación a través de telas recicladas y técnicas de producción ética, promoviendo la sostenibilidad sin comprometer la elegancia. Nuestra colección atrae a clientes conscientes del medio ambiente que buscan calidad premium en un mundo digital, con experiencias de compra responsive que se adaptan perfectamente a dispositivos móviles y redes sociales. Desde piezas atemporales hasta accesorios personalizables, NovaBloom inspira un guardarropa responsable y chic, ideal para influencers y profesionales urbanos que valoran la autenticidad y la creatividad en cada detalle.",
+        "ciudad": "Tunja",
+        "departamento": "Boyacá",
+        "imagenPerfil": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1758149750/red-social/h2ssxz4zzppckmnswsxw.png",
+        "imagenPortada": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1758149784/red-social/fecdjlloqalxsepshw2d.png",
+        "telefonoContacto": "+573182293090",
+        "urlGoogleMaps": "https://www.google.com/maps?q=4.710839303719267,-74.07215437301636",
+        "categorias": [
+          "moda"
+        ],
+        "secciones": [
+          "s1",
+          "s112",
+          "s124",
+          "s5",
+          "s6",
+          "s81",
+          "s2",
+          "s118",
+          "s87",
+          "s120",
+          "s83",
+          "s90",
+          "s3"
+        ],
+        "estado": "activo",
+        "createdAt": "2025-09-17T22:51:01.777Z"
+      },
+      "status": "activo",
+      "locationTier": 0
+    },
+    {
+      "id": "7e09bebd-af35-424f-9a13-e33d1862f42c",
+      "type": "product",
+      "score": 8.727,
+      "createdAt": "2025-09-02T04:18:32.487Z",
+      "title": "Elegance Blazer",
+      "descriptionShort": "Blazer moderno y sostenible, con telas recicladas, forro transpirable, personalización vía app y bolsillos funcionales.",
+      "imageUrl": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1756786695/red-social/vvaorrchfn1igvikwtqe.png",
+      "businessSlug": "novathread-tunja-q256",
+      "isFollowed": false,
+      "data": {
+        "id": "7e09bebd-af35-424f-9a13-e33d1862f42c",
+        "nombre": "Elegance Blazer",
+        "precio": 185000,
+        "descripcion": "El Elegance Blazer es una prenda diseñada para aquellos que valoran tanto la moda como la sostenibilidad. Confeccionado a partir de telas premium recicladas, este blazer no solo ofrece un estilo moderno con cortes estructurados, sino que también refleja un compromiso con el medio ambiente. Su forro transpirable asegura que te mantengas cómodo durante todo el día, mientras que los bolsillos funcionales proporcionan practicidad sin comprometer el diseño elegante. Lo que hace realmente único al Elegance Blazer es su capacidad de personalización a través de una aplicación intuitiva, permitiendo a los usuarios adaptar detalles para reflejar su estilo personal. Disponible en tonos neutros, este blazer es ideal para eventos formales y profesionales, especialmente para la generación Z que busca una moda responsable y contemporánea. La versatilidad del Elegance Blazer garantiza que sea una adición esencial a un guardarropa multifuncional y eco-amigable.",
+        "descripcionCorta": "Blazer moderno y sostenible, con telas recicladas, forro transpirable, personalización vía app y bolsillos funcionales.",
+        "slug": "elegance-blazer-2j9u",
+        "prioridad": 1,
+        "status": "disponible",
+        "tags": [
+          "blazer moderno",
+          "moda sostenible",
+          "telas recicladas",
+          "forro transpirable",
+          "personalización app",
+          "moda Gen Z",
+          "versatilidad eventos",
+          "eco-friendly",
+          "guardarropa multifuncional",
+          "moda ética."
+        ],
+        "categoriaId": "1",
+        "imagenes": [
+          "https://res.cloudinary.com/dkfsejtx9/image/upload/v1756786695/red-social/vvaorrchfn1igvikwtqe.png",
+          "https://res.cloudinary.com/dkfsejtx9/image/upload/v1756786695/red-social/f4lqmjdjhheofuylyiiv.png"
+        ],
+        "componentes": [
+          "Material: Telas premium recicladas para una sostenibilidad ética y de alta calidad.",
+          "Diseño: Cortes modernos con fit estructurado que aseguran versatilidad en eventos formales.",
+          "Forro: Transpirable innovador que prioriza comodidad duradera y responsable.",
+          "Bolsillos: Funcionales discretos para practicidad diaria en looks contemporáneos.",
+          "Personalización: Detalles únicos vía app responsive, fusionando innovación digital con estilo personalizado.",
+          "Colores: Tonos neutros y elegantes adaptables a tendencias éticas actuales.",
+          "Beneficios: Eleva la moda formal con enfoque responsable, atrayendo a profesionales Gen Z conscientes.",
+          "Versatilidad: Adaptable a ocasiones variadas, promoviendo un guardarropa multifuncional y eco-friendly."
+        ],
+        "sections": [
+          "s81"
+        ],
+        "slugNegocio": "novathread-tunja-q256",
+        "nombreNegocio": "NovaThread",
+        "telefonoContacto": "+573148596327",
+        "negocioId": "9790c152-383e-4bc2-9ab1-7c268c5b4b70",
+        "negocioFotoPerfil": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1756782518/red-social/aj5j4djkthmkyij5vdtv.png",
+        "ciudad": "Tunja",
+        "departamento": "Boyacá",
+        "stock": null,
+        "stockIlimitado": true,
+        "usaVariantes": false,
+        "variantes": []
+      },
+      "price": 185000,
+      "status": "disponible",
+      "locationTier": 0
+    },
+    {
+      "id": "cmhslo4up000243cl2hvcl8g7",
+      "type": "publication",
+      "score": 13.823,
+      "createdAt": "2025-11-10T03:46:00.628Z",
+      "title": "Publicación",
+      "descriptionShort": "✨ ¡Ven a visitarnos!\nHemos renovado nuestro espacio para que vivas una experiencia aún más especial.",
+      "imageUrl": "https://res.cloudinary.com/dkwosk8qd/image/upload/v1762746123/vhz8iw0o4iy9doehmw3j.png",
+      "businessSlug": "parrilla-internacional-tunja-tunja-r3jq",
+      "isFollowed": false,
+      "data": {
+        "id": "cmhslo4up000243cl2hvcl8g7",
+        "usuario": {
+          "id": "b9023a76-9bd8-47ec-b136-f76b32aab9fe",
+          "nombre": "Cristian",
+          "apellido": "Rodriguez",
+          "username": "cristianrodriguez3270",
+          "fotoPerfil": null
+        },
+        "tipo": "CARRUSEL_IMAGENES",
+        "titulo": null,
+        "descripcion": "✨ ¡Ven a visitarnos!\nHemos renovado nuestro espacio para que vivas una experiencia aún más especial.\nNuevas luces, un ambiente único… ¡te va a encantar!",
+        "multimedia": [
+          {
+            "id": "7f43b863-466b-47c6-98a1-6fa023bf90e3",
+            "url": "https://res.cloudinary.com/dkwosk8qd/image/upload/v1762746123/vhz8iw0o4iy9doehmw3j.png",
+            "tipo": "IMAGEN",
+            "formato": "image/jpeg",
+            "orden": 0
+          },
+          {
+            "id": "c9c6d908-bbc2-4683-8178-18554dfdf17f",
+            "url": "https://res.cloudinary.com/dkwosk8qd/image/upload/v1762746123/ppdj17v9bigi6ghriryq.png",
+            "tipo": "IMAGEN",
+            "formato": "image/jpeg",
+            "orden": 1
+          },
+          {
+            "id": "448ea5dd-2948-41ae-aa96-666b57a9102a",
+            "url": "https://res.cloudinary.com/dkwosk8qd/image/upload/v1762746124/sezjnf3nvbqmtwdcfscq.png",
+            "tipo": "IMAGEN",
+            "formato": "image/jpeg",
+            "orden": 2
+          },
+          {
+            "id": "e5c2c607-9a3c-4fb4-ab31-58e5ee72e9a9",
+            "url": "https://res.cloudinary.com/dkwosk8qd/image/upload/v1762746124/csd6uk2gsajnrvbppf3b.png",
+            "tipo": "IMAGEN",
+            "formato": "image/jpeg",
+            "orden": 3
+          }
+        ],
+        "visibilidad": "PUBLICA",
+        "createdAt": "2025-11-10T03:46:00.628Z",
+        "numLikes": 3,
+        "numComentarios": 1,
+        "numCompartidos": 0,
+        "negocio": {
+          "id": "5506619e-3b3a-4e87-adb4-325396a98c26",
+          "nombre": "Pariila Internacional Tunja",
+          "fotoPerfil": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1758509399/red-social/hco0zuwbphkf18ocrozc.png",
+          "slug": "parrilla-internacional-tunja-tunja-r3jq",
+          "ciudad": "Tunja",
+          "departamento": "Boyacá"
+        },
+        "calificacion": null,
+        "userReaction": null,
+        "comments": [
+          {
+            "id": "cmhsppm3v000g43clgsgmx7l7",
+            "contenido": "Me encanta la decoración ",
+            "createdAt": "2025-11-10T05:39:08.113Z",
+            "usuario": {
+              "id": "3b6e3174-45d6-44d7-83d0-905a67e4fef9",
+              "nombre": "Juan Esteban",
+              "apellido": "Rodríguez González",
+              "username": "juanrodriguez1625"
+            }
+          }
+        ],
+        "isAuthenticated": false,
+        "negocioId": "5506619e-3b3a-4e87-adb4-325396a98c26"
+      },
+      "numLikes": 3,
+      "locationTier": 0
+    },
+    {
+      "id": "738e54a1-b8f5-4813-a960-e2a663127604",
+      "type": "business",
+      "score": 12.799,
+      "createdAt": "2025-09-18T05:02:07.069Z",
+      "title": "PulseSip",
+      "descriptionShort": "PulseSip es una marca innovadora que fusiona el encanto de una cafetería con la vibrante energía de ",
+      "imageUrl": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1758171826/red-social/s5fh7f0zxxpepwewiisd.png",
+      "businessSlug": "pulsesip-tunja-iox5",
+      "isFollowed": false,
+      "data": {
+        "id": "738e54a1-b8f5-4813-a960-e2a663127604",
+        "nombre": "PulseSip",
+        "slug": "pulsesip-tunja-iox5",
+        "negocioId": "738e54a1-b8f5-4813-a960-e2a663127604",
+        "descripcion": "PulseSip es una marca innovadora que fusiona el encanto de una cafetería con la vibrante energía de un bar, ofreciendo bebidas frías y calientes que elevan el día a día con sabores audaces y mezclas creativas. Nos enfocamos en la calidad premium a través de ingredientes selectos y técnicas de infusión de vanguardia, como cocteles molecularizados y cafés nitro. Nuestra propuesta atrae a profesionales urbanos y creadores digitales que buscan experiencias sensoriales rápidas, con un app para personalizaciones en tiempo real y pedidos responsive. Desde lattes artesanales hasta mocktails efervescentes, PulseSip inspira un lifestyle dinámico, fomentando shares virales en redes con visuales minimalistas y trends como challenges de mixología casera, priorizando conveniencia, innovación y un toque elegante para conexiones sociales modernas.\", \"subcategorias",
+        "ciudad": "Tunja",
+        "departamento": "Boyacá",
+        "imagenPerfil": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1758171826/red-social/s5fh7f0zxxpepwewiisd.png",
+        "imagenPortada": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1758171832/red-social/ocs1nz88gvr52huhzhxc.png",
+        "telefonoContacto": "+573182293085",
+        "urlGoogleMaps": "https://www.google.com/maps?q=4.710839303719267,-74.07215437301636",
+        "categorias": [
+          "bebidas"
+        ],
+        "secciones": [
+          "s61",
+          "s62",
+          "s107",
+          "s103",
+          "s67",
+          "s66"
+        ],
+        "estado": "activo",
+        "createdAt": "2025-09-18T05:02:07.069Z"
+      },
+      "status": "activo",
+      "locationTier": 0
+    },
+    {
+      "id": "9790c152-383e-4bc2-9ab1-7c268c5b4b70",
+      "type": "business",
+      "score": 12.697,
+      "createdAt": "2025-09-02T03:04:04.849Z",
+      "title": "NovaThread",
+      "descriptionShort": "NovaThread es una marca innovadora de moda y accesorios que fusiona sostenibilidad con diseño contem",
+      "imageUrl": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1756782518/red-social/aj5j4djkthmkyij5vdtv.png",
+      "businessSlug": "novathread-tunja-q256",
+      "isFollowed": false,
+      "data": {
+        "id": "9790c152-383e-4bc2-9ab1-7c268c5b4b70",
+        "nombre": "NovaThread",
+        "slug": "novathread-tunja-q256",
+        "negocioId": "9790c152-383e-4bc2-9ab1-7c268c5b4b70",
+        "descripcion": "NovaThread es una marca innovadora de moda y accesorios que fusiona sostenibilidad con diseño contemporáneo. Utilizamos materiales ecológicos como algodón orgánico, tejidos reciclados y tintes naturales para crear piezas versátiles y de alta calidad que resisten el paso del tiempo. Nuestro enfoque en la innovación incluye colecciones cápsula personalizables a través de nuestra app responsive, permitiendo a los clientes diseñar looks únicos desde cualquier dispositivo. Atraemos a un público millennial y Gen Z consciente del medio ambiente, que valora la moda ética y busca experiencias digitales fluidas en redes sociales, con feeds interactivos, stories en vivo y AR para probar virtualmente. Con envíos globales y colaboraciones con influencers, NovaThread transforma el e-commerce en una comunidad vibrante y eco-friendly.",
+        "ciudad": "Tunja",
+        "departamento": "Boyacá",
+        "imagenPerfil": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1756782518/red-social/aj5j4djkthmkyij5vdtv.png",
+        "imagenPortada": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1756782520/red-social/jgghumcflraebh9ibh0w.png",
+        "telefonoContacto": "+573148596327",
+        "urlGoogleMaps": "https://www.google.com/maps?q=4.710839303719267,-74.07215437301636",
+        "categorias": [
+          "moda"
+        ],
+        "secciones": [
+          "s4",
+          "s3",
+          "s81"
+        ],
+        "estado": "activo",
+        "createdAt": "2025-09-02T03:04:04.849Z"
+      },
+      "status": "activo",
+      "locationTier": 0
+    },
+    {
+      "id": "484de355-eaf5-4698-b491-5e982787347e",
+      "type": "service",
+      "score": 12.565,
+      "createdAt": "2025-08-18T23:58:42.816Z",
+      "title": "Entregas express ",
+      "descriptionShort": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut ut aliquet purus. Ut vitae ornare odio. ",
+      "imageUrl": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1755561281/red-social/x6hv70mfg5an5uqoc1jv.png",
+      "businessSlug": "parrilla-internacional-tunja-tunja-r3jq",
+      "isFollowed": false,
+      "data": {
+        "id": "484de355-eaf5-4698-b491-5e982787347e",
+        "titulo": "Entregas express ",
+        "descripcion": [
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut ut aliquet purus. Ut vitae ornare odio. ",
+          "Ut sit amet suscipit lorem, a hendrerit odio. Mauris et condimentum nibh. Donec luctus tincidunt velit, quis aliquet odio auctor a. ",
+          "Quisque dignissim, leo a tempor bibendum, enim diam viverra sem, id egestas nibh nibh eu dolor. Nunc ac leo metus."
+        ],
+        "slug": "entregas-express-RlRKORGXN",
+        "precio": 45000,
+        "currency": "COP",
+        "status": "disponible",
+        "tags": [],
+        "multimedia": [
+          {
+            "url": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1755561281/red-social/x6hv70mfg5an5uqoc1jv.png",
+            "orden": 0,
+            "tipo": "IMAGEN"
+          },
+          {
+            "url": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1755561281/red-social/k7uujkhbo3sffhmy9g1e.png",
+            "orden": 1,
+            "tipo": "IMAGEN"
+          },
+          {
+            "url": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1755561283/red-social/oacbydol62j2thyychlh.png",
+            "orden": 2,
+            "tipo": "IMAGEN"
+          },
+          {
+            "url": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1755561482/red-social/vxdcfyh77uzhf9qbpxfz.png",
+            "orden": 3,
+            "tipo": "IMAGEN"
+          },
+          {
+            "url": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1755561482/red-social/gjnc5hn1cuuimcyijefz.png",
+            "orden": 4,
+            "tipo": "IMAGEN"
+          }
+        ],
+        "negocioId": "5506619e-3b3a-4e87-adb4-325396a98c26",
+        "negocioSlug": "parrilla-internacional-tunja-tunja-r3jq",
+        "nombreNegocio": "Pariila Internacional Tunja",
+        "telefonoNegocio": "+573182293083",
+        "negocioFotoPerfil": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1758509399/red-social/hco0zuwbphkf18ocrozc.png"
+      },
+      "price": 45000,
+      "status": "disponible",
+      "locationTier": 0
+    },
+    {
+      "id": "f2a00461-bfb5-40d4-8d8e-d51281902152",
+      "type": "business",
+      "score": 12.65,
+      "createdAt": "2025-09-20T00:03:24.862Z",
+      "title": "Artesanías Doña Marta",
+      "descriptionShort": "Artesanías Doña Marta es un emprendimiento familiar que nace del amor por la tradición y el trabajo ",
+      "imageUrl": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1758327291/red-social/hjvj8pohmv1d6dfot5f6.png",
+      "businessSlug": "artesanias-dona-marta",
+      "isFollowed": false,
+      "data": {
+        "id": "f2a00461-bfb5-40d4-8d8e-d51281902152",
+        "nombre": "Artesanías Doña Marta",
+        "slug": "artesanias-dona-marta",
+        "negocioId": "f2a00461-bfb5-40d4-8d8e-d51281902152",
+        "descripcion": "Artesanías Doña Marta es un emprendimiento familiar que nace del amor por la tradición y el trabajo hecho a mano. Cada pieza —collares, aretes, bufandas, abrigos y más— es elaborada con dedicación, combinando colores vibrantes y diseños inspirados en la riqueza cultural de nuestras raíces indígenas.\nNuestro objetivo es ofrecer artesanías auténticas que reflejan historia, identidad y un toque único en cada detalle. Más que productos, compartimos fragmentos de cultura y tradición, pensados para quienes valoran lo artesanal, lo original y lo hecho con el corazón.",
+        "ciudad": "Tunja",
+        "departamento": "Boyacá",
+        "imagenPerfil": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1758327291/red-social/hjvj8pohmv1d6dfot5f6.png",
+        "imagenPortada": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1758327209/red-social/bovvhc6oby3exhfeqtl7.png",
+        "telefonoContacto": "+573182293094",
+        "urlGoogleMaps": "https://www.google.com/maps?q=5.5181312,-73.3642752",
+        "categorias": [
+          "moda"
+        ],
+        "secciones": [
+          "s6",
+          "s87",
+          "s85",
+          "s4",
+          "s120",
+          "s121",
+          "s122"
+        ],
+        "estado": "activo",
+        "createdAt": "2025-09-20T00:03:24.862Z"
+      },
+      "status": "activo",
+      "locationTier": 0
+    },
+    {
+      "id": "84712cc3-5d0f-41dc-b660-353baff57e78",
+      "type": "business",
+      "score": 12.642,
+      "createdAt": "2025-09-18T04:13:27.676Z",
+      "title": "BlitzBite",
+      "descriptionShort": "BlitzBite es una marca innovadora de comidas rápidas que transforma el fast food en experiencias gou",
+      "imageUrl": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1758168902/red-social/lm0z8vqozco0vngyywtd.png",
+      "businessSlug": "blitzbite-tunja-llfb",
+      "isFollowed": false,
+      "data": {
+        "id": "84712cc3-5d0f-41dc-b660-353baff57e78",
+        "nombre": "BlitzBite",
+        "slug": "blitzbite-tunja-llfb",
+        "negocioId": "84712cc3-5d0f-41dc-b660-353baff57e78",
+        "descripcion": "BlitzBite es una marca innovadora de comidas rápidas que transforma el fast food en experiencias gourmet accesibles, fusionando sabores audaces con tecnología de vanguardia. Nos centramos en la calidad premium a través de ingredientes frescos y recetas creativas, ofreciendo personalizaciones vía app que agilizan el pedido. Nuestra propuesta atrae a profesionales urbanos y jóvenes digitales que buscan conveniencia sin compromisos, con un sitio web y redes responsive que facilitan pedidos en movimiento. Desde sliders cargados hasta wraps fusionados, BlitzBite eleva el ritmo diario con comidas rápidas que inspiran shares virales y trends en Instagram, priorizando velocidad, sabor intenso y un toque moderno para un lifestyle acelerado.",
+        "ciudad": "Tunja",
+        "departamento": "Boyacá",
+        "imagenPerfil": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1758168902/red-social/lm0z8vqozco0vngyywtd.png",
+        "imagenPortada": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1758168905/red-social/qzmvjjrcpmtlzkgfnlkv.png",
+        "telefonoContacto": "+573182293088",
+        "urlGoogleMaps": "https://www.google.com/maps?q=4.710839303719267,-74.07215437301636",
+        "categorias": [
+          "comida"
+        ],
+        "secciones": [
+          "s8",
+          "s14",
+          "s15",
+          "s16",
+          "s19",
+          "s80",
+          "s79"
+        ],
+        "estado": "activo",
+        "createdAt": "2025-09-18T04:13:27.676Z"
+      },
+      "status": "activo",
+      "locationTier": 0
+    },
+    {
+      "id": "99e0c4aa-ee7e-4632-9f48-8ca6e16d164d",
+      "type": "service",
+      "score": 12.11,
+      "createdAt": "2025-08-18T23:45:56.662Z",
+      "title": "Entrega a domicilio",
+      "descriptionShort": "Aliquam erat volutpat. Suspendisse quis nunc vehicula, scelerisque lorem id, sodales nulla. ",
+      "imageUrl": "https://res.cloudinary.com/dkfsejtx9/video/upload/v1755560729/red-social/g4s5oa3zxgkb2i7tn9bv.mp4",
+      "businessSlug": "parrilla-internacional-tunja-tunja-r3jq",
+      "isFollowed": false,
+      "data": {
+        "id": "99e0c4aa-ee7e-4632-9f48-8ca6e16d164d",
+        "titulo": "Entrega a domicilio",
+        "descripcion": [
+          "Aliquam erat volutpat. Suspendisse quis nunc vehicula, scelerisque lorem id, sodales nulla. ",
+          "Aenean tincidunt ligula quis nunc laoreet rhoncus eget vitae velit. Nullam rutrum euismod mauris, at tempor dolor imperdiet ut. ",
+          "Aenean et purus sed justo imperdiet facilisis ut quis leo. Nullam euismod neque quis ornare aliquet. ",
+          "Vivamus nec luctus leo. Interdum et malesuada fames ac ante ipsum primis in faucibus. ",
+          "Mauris volutpat ex quis pellentesque vulputate. Fusce leo elit, feugiat ut magna porta, consectetur elementum diam. Sed volutpat sodales rutrum. ",
+          "Maecenas varius, nulla eget commodo imperdiet, elit nibh consequat lacus, aliquet laoreet nisl lectus eu erat. ",
+          "Duis tellus nibh, viverra ac lacus sit amet, fringilla tempus ex. Nullam imperdiet lacus nisl, ac dignissim nisl maximus a. Vestibulum eu magna ligula. ",
+          "Nulla vehicula maximus magna, ac sagittis odio sollicitudin sed."
+        ],
+        "slug": "entrega-a-domicilio-GpYDLFCWj",
+        "precio": 80000,
+        "currency": "COP",
+        "status": "disponible",
+        "tags": [],
+        "multimedia": [
+          {
+            "url": "https://res.cloudinary.com/dkfsejtx9/video/upload/v1755560729/red-social/g4s5oa3zxgkb2i7tn9bv.mp4",
+            "orden": 0,
+            "tipo": "VIDEO"
+          },
+          {
+            "url": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1755560734/red-social/lijzbozr81t9m6degcxm.png",
+            "orden": 1,
+            "tipo": "IMAGEN"
+          },
+          {
+            "url": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1755560735/red-social/j1cmop7avefnz38iejwi.png",
+            "orden": 2,
+            "tipo": "IMAGEN"
+          }
+        ],
+        "negocioId": "5506619e-3b3a-4e87-adb4-325396a98c26",
+        "negocioSlug": "parrilla-internacional-tunja-tunja-r3jq",
+        "nombreNegocio": "Pariila Internacional Tunja",
+        "telefonoNegocio": "+573182293083",
+        "negocioFotoPerfil": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1758509399/red-social/hco0zuwbphkf18ocrozc.png"
+      },
+      "price": 80000,
+      "status": "disponible",
+      "locationTier": 0
+    },
+    {
+      "id": "cmf1w0mt9000543hss56x55b7",
+      "type": "publication",
+      "score": 11.931,
+      "createdAt": "2025-09-02T01:46:27.576Z",
+      "title": "Publicación",
+      "descriptionShort": "Descubre el encanto etéreo de 'Aura Nocturna', nuestro perfume insignia que captura la esencia de un",
+      "imageUrl": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1756777576/red-social/xrpuhzsehycempiln9sn.png",
+      "businessSlug": "lumina-beauty-tunja-83sa",
+      "isFollowed": false,
+      "data": {
+        "id": "cmf1w0mt9000543hss56x55b7",
+        "usuario": {
+          "id": "be47bc36-e823-430b-ab0e-4eb66f6bb648",
+          "nombre": "Carmen",
+          "apellido": "Bernal",
+          "username": "carmenbernal",
+          "fotoPerfil": null
+        },
+        "tipo": "TESTIMONIO",
+        "titulo": null,
+        "descripcion": "Descubre el encanto etéreo de 'Aura Nocturna', nuestro perfume insignia que captura la esencia de una noche estrellada en un jardín secreto. ",
+        "multimedia": [
+          {
+            "id": "1d72e568-1e68-4c15-85c6-3f525504a31e",
+            "url": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1756777576/red-social/xrpuhzsehycempiln9sn.png",
+            "tipo": "IMAGEN",
+            "formato": "image/jpeg",
+            "orden": 0
+          },
+          {
+            "id": "0bd75cf0-b885-450c-abad-3ddcbd7ede22",
+            "url": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1756777576/red-social/mll0tsqbt9lf8n297xq3.png",
+            "tipo": "IMAGEN",
+            "formato": "image/jpeg",
+            "orden": 1
+          },
+          {
+            "id": "64f097a2-aa71-4b76-b146-31a9ee175d37",
+            "url": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1756777581/red-social/murf9tgopbtkykaas8n3.png",
+            "tipo": "IMAGEN",
+            "formato": "image/jpeg",
+            "orden": 2
+          }
+        ],
+        "visibilidad": "PUBLICA",
+        "createdAt": "2025-09-02T01:46:27.576Z",
+        "numLikes": 3,
+        "numComentarios": 1,
+        "numCompartidos": 0,
+        "negocio": {
+          "id": "df781d8a-26ac-4fff-92dc-3297ae9fd67f",
+          "nombre": "LUMINA Beauty",
+          "fotoPerfil": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1756771272/red-social/s0b75ueknugqvykt2atr.png",
+          "slug": "lumina-beauty-tunja-83sa",
+          "ciudad": "Tunja",
+          "departamento": "Boyacá"
+        },
+        "calificacion": null,
+        "userReaction": null,
+        "comments": [
+          {
+            "id": "cmfkmydl80009ic04uiqsr1t2",
+            "contenido": "Me gusta ",
+            "createdAt": "2025-09-15T04:40:24.138Z",
+            "usuario": {
+              "id": "229b78b9-1d13-4222-86d3-68e15d3d596e",
+              "nombre": "Nicolás",
+              "apellido": "Rodríguez",
+              "username": "naceunaleyenda20251757910723725"
+            }
+          }
+        ],
+        "isAuthenticated": false,
+        "negocioId": "df781d8a-26ac-4fff-92dc-3297ae9fd67f"
+      },
+      "numLikes": 3,
+      "locationTier": 0
+    },
+    {
+      "id": "82688f03-866c-476f-b8b8-c7653161101e",
+      "type": "business",
+      "score": 12.358,
+      "createdAt": "2025-09-20T00:56:19.978Z",
+      "title": "Zapatería don Jorge",
+      "descriptionShort": "Zapatería Don Jorge es un emprendimiento dedicado al diseño y fabricación de calzado en cuero para h",
+      "imageUrl": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1758329893/red-social/k7xcigjuxyfbpvc9qtpz.png",
+      "businessSlug": "zapateria-don-jorge-tunja-tzj2",
+      "isFollowed": false,
+      "data": {
+        "id": "82688f03-866c-476f-b8b8-c7653161101e",
+        "nombre": "Zapatería don Jorge",
+        "slug": "zapateria-don-jorge-tunja-tzj2",
+        "negocioId": "82688f03-866c-476f-b8b8-c7653161101e",
+        "descripcion": "Zapatería Don Jorge es un emprendimiento dedicado al diseño y fabricación de calzado en cuero para hombre y mujer. Con un enfoque en la elegancia y la versatilidad, cada par está pensado para acompañar tanto ocasiones formales como momentos cotidianos.\r\nDon Jorge combina técnicas tradicionales de zapatería con un estilo moderno, garantizando calidad, comodidad y durabilidad en cada diseño. Su propuesta ofrece zapatos que reflejan buen gusto, personalidad y distinción, adaptándose a quienes buscan un calzado auténtico y confiable, hecho con dedicación y pasión.",
+        "ciudad": "Tunja",
+        "departamento": "Boyacá",
+        "imagenPerfil": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1758329893/red-social/k7xcigjuxyfbpvc9qtpz.png",
+        "imagenPortada": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1758329982/red-social/e3lkmvbb9a2wtcpnchlf.png",
+        "telefonoContacto": "+573182293087",
+        "urlGoogleMaps": "https://www.google.com/maps?q=5.5181312,-73.3642752",
+        "categorias": [
+          "moda"
+        ],
+        "secciones": [
+          "s3"
+        ],
+        "estado": "activo",
+        "createdAt": "2025-09-20T00:56:19.978Z"
+      },
+      "status": "activo",
+      "locationTier": 0
+    },
+    {
+      "id": "0b213f9c-095d-4800-8552-07a008d30e16",
+      "type": "service",
+      "score": 11.76,
+      "createdAt": "2025-08-18T21:53:17.109Z",
+      "title": "Servicio de parrilla y barril",
+      "descriptionShort": "Aliquam erat volutpat. Suspendisse quis nunc vehicula, scelerisque lorem id, sodales nulla. ",
+      "imageUrl": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1755553247/red-social/svooasc7s6oqe7yrfbny.png",
+      "businessSlug": "parrilla-internacional-tunja-tunja-r3jq",
+      "isFollowed": false,
+      "data": {
+        "id": "0b213f9c-095d-4800-8552-07a008d30e16",
+        "titulo": "Servicio de parrilla y barril",
+        "descripcion": [
+          "Aliquam erat volutpat. Suspendisse quis nunc vehicula, scelerisque lorem id, sodales nulla. ",
+          "Aenean tincidunt ligula quis nunc laoreet rhoncus eget vitae velit. Nullam rutrum euismod mauris, at tempor dolor imperdiet ut. ",
+          "Aenean et purus sed justo imperdiet facilisis ut quis leo. Nullam euismod neque quis ornare aliquet. ",
+          "Vivamus nec luctus leo. Interdum et malesuada fames ac ante ipsum primis in faucibus. ",
+          "Mauris volutpat ex quis pellentesque vulputate. Fusce leo elit, feugiat ut magna porta, consectetur elementum diam. "
+        ],
+        "slug": "servicio-de-parrilla-y-barril-rBQ-vNy5I",
+        "precio": 85000,
+        "currency": "COP",
+        "status": "disponible",
+        "tags": [],
+        "multimedia": [
+          {
+            "url": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1755553247/red-social/svooasc7s6oqe7yrfbny.png",
+            "orden": 0,
+            "tipo": "IMAGEN"
+          },
+          {
+            "url": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1755553246/red-social/mphjovde1pafieyvwtki.png",
+            "orden": 1,
+            "tipo": "IMAGEN"
+          }
+        ],
+        "negocioId": "5506619e-3b3a-4e87-adb4-325396a98c26",
+        "negocioSlug": "parrilla-internacional-tunja-tunja-r3jq",
+        "nombreNegocio": "Pariila Internacional Tunja",
+        "telefonoNegocio": "+573182293083",
+        "negocioFotoPerfil": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1758509399/red-social/hco0zuwbphkf18ocrozc.png"
+      },
+      "price": 85000,
+      "status": "disponible",
+      "locationTier": 0
+    },
+    {
+      "id": "696ee6ca-d4cb-444b-b423-dce95cefdce3",
+      "type": "business",
+      "score": 12.207,
+      "createdAt": "2025-09-24T18:03:31.638Z",
+      "title": "Andrea Beauty Studio",
+      "descriptionShort": "En Andrea Salón de Belleza ofrecemos un espacio pensado para resaltar tu estilo y cuidar de ti. Brin",
+      "imageUrl": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1758737114/red-social/h9x57wmf8jnuflhijpy5.png",
+      "businessSlug": "andrea-beauty-studio-tunja-18ds",
+      "isFollowed": false,
+      "data": {
+        "id": "696ee6ca-d4cb-444b-b423-dce95cefdce3",
+        "nombre": "Andrea Beauty Studio",
+        "slug": "andrea-beauty-studio-tunja-18ds",
+        "negocioId": "696ee6ca-d4cb-444b-b423-dce95cefdce3",
+        "descripcion": "En Andrea Salón de Belleza ofrecemos un espacio pensado para resaltar tu estilo y cuidar de ti. Brindamos servicios de cortes de cabello, maquillaje profesional, uñas, cuidado facial y más. Nuestro compromiso es que cada visita sea una experiencia de confianza, belleza y bienestar.",
+        "ciudad": "Tunja",
+        "departamento": "Boyacá",
+        "imagenPerfil": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1758737114/red-social/h9x57wmf8jnuflhijpy5.png",
+        "imagenPortada": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1758737118/red-social/lbmnetfckxckjtbnp5pz.png",
+        "telefonoContacto": "+573182293081",
+        "urlGoogleMaps": "https://www.google.com/maps?q=5.5181312,-73.3609984",
+        "categorias": [
+          "belleza"
+        ],
+        "secciones": [
+          "s38",
+          "s40",
+          "s37",
+          "s36",
+          "s39",
+          "s159"
+        ],
+        "estado": "activo",
+        "createdAt": "2025-09-24T18:03:31.638Z"
+      },
+      "status": "activo",
+      "locationTier": 0
+    },
+    {
+      "id": "cmd803gku000643ldvt829p32",
+      "type": "publication",
+      "score": 12.481,
+      "createdAt": "2025-07-17T23:07:51.343Z",
+      "title": "Publicación",
+      "descriptionShort": "Queso especial ",
+      "imageUrl": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1752793658/red-social/urwzsn3js2nhzlbo2rma.png",
+      "businessSlug": "parrilla-internacional-tunja-tunja-r3jq",
+      "isFollowed": false,
+      "data": {
+        "id": "cmd803gku000643ldvt829p32",
+        "usuario": {
+          "id": "b9023a76-9bd8-47ec-b136-f76b32aab9fe",
+          "nombre": "Cristian",
+          "apellido": "Rodriguez",
+          "username": "cristianrodriguez3270",
+          "fotoPerfil": null
+        },
+        "tipo": "TESTIMONIO",
+        "titulo": null,
+        "descripcion": "Queso especial ",
+        "multimedia": [
+          {
+            "id": "34996563-b505-49cf-82d5-3eff06159ccd",
+            "url": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1752793658/red-social/urwzsn3js2nhzlbo2rma.png",
+            "tipo": "IMAGEN",
+            "formato": null,
+            "orden": 0
+          }
+        ],
+        "visibilidad": "PUBLICA",
+        "createdAt": "2025-07-17T23:07:51.343Z",
+        "numLikes": 3,
+        "numComentarios": 26,
+        "numCompartidos": 0,
+        "negocio": {
+          "id": "5506619e-3b3a-4e87-adb4-325396a98c26",
+          "nombre": "Pariila Internacional Tunja",
+          "fotoPerfil": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1758509399/red-social/hco0zuwbphkf18ocrozc.png",
+          "slug": "parrilla-internacional-tunja-tunja-r3jq",
+          "ciudad": "Tunja",
+          "departamento": "Boyacá"
+        },
+        "calificacion": null,
+        "userReaction": null,
+        "comments": [
+          {
+            "id": "cme0yr9bs000n43dylardyni7",
+            "contenido": "Todo solucionado",
+            "createdAt": "2025-08-07T05:35:41.430Z",
+            "usuario": {
+              "id": "b9023a76-9bd8-47ec-b136-f76b32aab9fe",
+              "nombre": "Cristian",
+              "apellido": "Rodriguez",
+              "username": "cristianrodriguez3270"
+            }
+          },
+          {
+            "id": "cme0qjyhb001343ocevcd6y40",
+            "contenido": "Funciona bien",
+            "createdAt": "2025-08-07T01:46:03.881Z",
+            "usuario": {
+              "id": "b9023a76-9bd8-47ec-b136-f76b32aab9fe",
+              "nombre": "Cristian",
+              "apellido": "Rodriguez",
+              "username": "cristianrodriguez3270"
+            }
+          },
+          {
+            "id": "cme0qj314000z43occocm7c7g",
+            "contenido": "Que buen queso",
+            "createdAt": "2025-08-07T01:45:23.130Z",
+            "usuario": {
+              "id": "b9023a76-9bd8-47ec-b136-f76b32aab9fe",
+              "nombre": "Cristian",
+              "apellido": "Rodriguez",
+              "username": "cristianrodriguez3270"
+            }
+          }
+        ],
+        "isAuthenticated": false,
+        "negocioId": "5506619e-3b3a-4e87-adb4-325396a98c26"
+      },
+      "numLikes": 3,
+      "locationTier": 0
+    },
+    {
+      "id": "cmcy9nj7m000543e7ou96o0pf",
+      "type": "publication",
+      "score": 12.481,
+      "createdAt": "2025-07-11T03:37:42.659Z",
+      "title": "Publicación",
+      "descriptionShort": "Procedimiento para crear un regalo",
+      "imageUrl": "https://res.cloudinary.com/dkfsejtx9/video/upload/v1752205047/magicSurprise_images/ew6hi3z5bcqtrctl2xrv.mp4",
+      "businessSlug": "parrilla-internacional-tunja-tunja-r3jq",
+      "isFollowed": false,
+      "data": {
+        "id": "cmcy9nj7m000543e7ou96o0pf",
+        "usuario": {
+          "id": "b9023a76-9bd8-47ec-b136-f76b32aab9fe",
+          "nombre": "Cristian",
+          "apellido": "Rodriguez",
+          "username": "cristianrodriguez3270",
+          "fotoPerfil": null
+        },
+        "tipo": "TESTIMONIO",
+        "titulo": null,
+        "descripcion": "Procedimiento para crear un regalo",
+        "multimedia": [
+          {
+            "id": "7b23539a-9bc3-4e57-845b-d4d2a7e134db",
+            "url": "https://res.cloudinary.com/dkfsejtx9/video/upload/v1752205047/magicSurprise_images/ew6hi3z5bcqtrctl2xrv.mp4",
+            "tipo": "VIDEO",
+            "formato": null,
+            "orden": 0
+          }
+        ],
+        "visibilidad": "PUBLICA",
+        "createdAt": "2025-07-11T03:37:42.659Z",
+        "numLikes": 3,
+        "numComentarios": 10,
+        "numCompartidos": 1,
+        "negocio": {
+          "id": "5506619e-3b3a-4e87-adb4-325396a98c26",
+          "nombre": "Pariila Internacional Tunja",
+          "fotoPerfil": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1758509399/red-social/hco0zuwbphkf18ocrozc.png",
+          "slug": "parrilla-internacional-tunja-tunja-r3jq",
+          "ciudad": "Tunja",
+          "departamento": "Boyacá"
+        },
+        "calificacion": null,
+        "userReaction": null,
+        "comments": [
+          {
+            "id": "cme8wlut1000743kkbntlxluq",
+            "contenido": "Buen video",
+            "createdAt": "2025-08-12T18:57:39.533Z",
+            "usuario": {
+              "id": "b9023a76-9bd8-47ec-b136-f76b32aab9fe",
+              "nombre": "Cristian",
+              "apellido": "Rodriguez",
+              "username": "cristianrodriguez3270"
+            }
+          },
+          {
+            "id": "cmdyxf71h001p43rk3s2h5p8v",
+            "contenido": "Gracias",
+            "createdAt": "2025-08-05T19:22:46.655Z",
+            "usuario": {
+              "id": "b9023a76-9bd8-47ec-b136-f76b32aab9fe",
+              "nombre": "Cristian",
+              "apellido": "Rodriguez",
+              "username": "cristianrodriguez3270"
+            }
+          },
+          {
+            "id": "cmdyxf3qa001n43rk8byfrp7i",
+            "contenido": "Que buen servicio",
+            "createdAt": "2025-08-05T19:22:42.360Z",
+            "usuario": {
+              "id": "b9023a76-9bd8-47ec-b136-f76b32aab9fe",
+              "nombre": "Cristian",
+              "apellido": "Rodriguez",
+              "username": "cristianrodriguez3270"
+            }
+          }
+        ],
+        "isAuthenticated": false,
+        "negocioId": "5506619e-3b3a-4e87-adb4-325396a98c26"
+      },
+      "numLikes": 3,
+      "locationTier": 0
+    },
+    {
+      "id": "cmeumpcxx000143elvzbvboxy",
+      "type": "publication",
+      "score": 12.362,
+      "createdAt": "2025-08-27T23:51:22.821Z",
+      "title": "Publicación",
+      "descriptionShort": "Espectacular",
+      "imageUrl": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1756338668/red-social/scksnzitli6fnj4wxvhl.jpg",
+      "businessSlug": "parrilla-internacional-tunja-tunja-r3jq",
+      "isFollowed": false,
+      "data": {
+        "id": "cmeumpcxx000143elvzbvboxy",
+        "usuario": {
+          "id": "b9023a76-9bd8-47ec-b136-f76b32aab9fe",
+          "nombre": "Cristian",
+          "apellido": "Rodriguez",
+          "username": "cristianrodriguez3270",
+          "fotoPerfil": null
+        },
+        "tipo": "TESTIMONIO",
+        "titulo": null,
+        "descripcion": "Espectacular",
+        "multimedia": [
+          {
+            "id": "ca12ade4-440c-4572-a4da-3906128501ae",
+            "url": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1756338668/red-social/scksnzitli6fnj4wxvhl.jpg",
+            "tipo": "IMAGEN",
+            "formato": null,
+            "orden": 0
+          }
+        ],
+        "visibilidad": "PUBLICA",
+        "createdAt": "2025-08-27T23:51:22.821Z",
+        "numLikes": 4,
+        "numComentarios": 8,
+        "numCompartidos": 0,
+        "negocio": {
+          "id": "5506619e-3b3a-4e87-adb4-325396a98c26",
+          "nombre": "Pariila Internacional Tunja",
+          "fotoPerfil": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1758509399/red-social/hco0zuwbphkf18ocrozc.png",
+          "slug": "parrilla-internacional-tunja-tunja-r3jq",
+          "ciudad": "Tunja",
+          "departamento": "Boyacá"
+        },
+        "calificacion": null,
+        "userReaction": null,
+        "comments": [
+          {
+            "id": "cmfnlj9no000v43rdw1cwf1qn",
+            "contenido": "Hola",
+            "createdAt": "2025-09-17T06:23:58.023Z",
+            "usuario": {
+              "id": "3695bbd0-5e8b-43ac-ba7a-b1a80d1113b7",
+              "nombre": "Ana Rojas",
+              "apellido": "Perez",
+              "username": "anaperez"
+            }
+          },
+          {
+            "id": "cmf6cq34m000f43bgm943xlej",
+            "contenido": "continuar",
+            "createdAt": "2025-09-05T04:45:14.613Z",
+            "usuario": {
+              "id": "7ffe2473-52a8-40b0-ab24-2606afd0cb9d",
+              "nombre": "Lorena",
+              "apellido": "Torres",
+              "username": "lorenatorres"
+            }
+          },
+          {
+            "id": "cmf6cq0r7000d43bgu4kv9uky",
+            "contenido": "a ",
+            "createdAt": "2025-09-05T04:45:11.541Z",
+            "usuario": {
+              "id": "7ffe2473-52a8-40b0-ab24-2606afd0cb9d",
+              "nombre": "Lorena",
+              "apellido": "Torres",
+              "username": "lorenatorres"
+            }
+          }
+        ],
+        "isAuthenticated": false,
+        "negocioId": "5506619e-3b3a-4e87-adb4-325396a98c26"
+      },
+      "numLikes": 4,
+      "locationTier": 0
+    },
+    {
+      "id": "cmd50isao000143kz3xyliykn",
+      "type": "publication",
+      "score": 11.967,
+      "createdAt": "2025-07-15T20:56:27.840Z",
+      "title": "Publicación",
+      "descriptionShort": "Hola y gracias",
+      "imageUrl": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1752810843/red-social/kdqvsrnrf3eyakftdoae.png ",
+      "businessSlug": "parrilla-internacional-tunja-tunja-r3jq",
+      "isFollowed": false,
+      "data": {
+        "id": "cmd50isao000143kz3xyliykn",
+        "usuario": {
+          "id": "b9023a76-9bd8-47ec-b136-f76b32aab9fe",
+          "nombre": "Cristian",
+          "apellido": "Rodriguez",
+          "username": "cristianrodriguez3270",
+          "fotoPerfil": null
+        },
+        "tipo": "TESTIMONIO",
+        "titulo": null,
+        "descripcion": "Hola y gracias",
+        "multimedia": [
+          {
+            "id": "69483381-e3ee-41aa-9d88-2a9acf2960e4",
+            "url": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1752810843/red-social/kdqvsrnrf3eyakftdoae.png ",
+            "tipo": "IMAGEN",
+            "formato": null,
+            "orden": 0
+          }
+        ],
+        "visibilidad": "PUBLICA",
+        "createdAt": "2025-07-15T20:56:27.840Z",
+        "numLikes": 3,
+        "numComentarios": 6,
+        "numCompartidos": 0,
+        "negocio": {
+          "id": "5506619e-3b3a-4e87-adb4-325396a98c26",
+          "nombre": "Pariila Internacional Tunja",
+          "fotoPerfil": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1758509399/red-social/hco0zuwbphkf18ocrozc.png",
+          "slug": "parrilla-internacional-tunja-tunja-r3jq",
+          "ciudad": "Tunja",
+          "departamento": "Boyacá"
+        },
+        "calificacion": null,
+        "userReaction": null,
+        "comments": [
+          {
+            "id": "cmfcx07ov000143bldf72iok0",
+            "contenido": "Que buenos productos",
+            "createdAt": "2025-09-09T18:59:36.385Z",
+            "usuario": {
+              "id": "7ffe2473-52a8-40b0-ab24-2606afd0cb9d",
+              "nombre": "Lorena",
+              "apellido": "Torres",
+              "username": "lorenatorres"
+            }
+          },
+          {
+            "id": "cme8wliwj000543kknzpaic69",
+            "contenido": "Hola",
+            "createdAt": "2025-08-12T18:57:24.121Z",
+            "usuario": {
+              "id": "b9023a76-9bd8-47ec-b136-f76b32aab9fe",
+              "nombre": "Cristian",
+              "apellido": "Rodriguez",
+              "username": "cristianrodriguez3270"
+            }
+          },
+          {
+            "id": "cmdzh1fus003543rkbe8l9rlr",
+            "contenido": "Publicación sin imagen o video",
+            "createdAt": "2025-08-06T04:31:57.222Z",
+            "usuario": {
+              "id": "b9023a76-9bd8-47ec-b136-f76b32aab9fe",
+              "nombre": "Cristian",
+              "apellido": "Rodriguez",
+              "username": "cristianrodriguez3270"
+            }
+          }
+        ],
+        "isAuthenticated": false,
+        "negocioId": "5506619e-3b3a-4e87-adb4-325396a98c26"
+      },
+      "numLikes": 3,
+      "locationTier": 0
+    },
+    {
+      "id": "e52cec36-50f8-4285-9515-76b0b53cf929",
+      "type": "product",
+      "score": 8.697,
+      "createdAt": "2025-09-20T01:21:01.292Z",
+      "title": "Sandalia Elegante Verano",
+      "descriptionShort": "Sandalia de cuero dorado con soporte arqueado, hebilla ajustable, transpirabilidad y diseño ligero para versatilidad.",
+      "imageUrl": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1758331257/red-social/dvf9avlxlhuncnf8xar9.png",
+      "businessSlug": "zapateria-don-jorge-tunja-tzj2",
+      "isFollowed": false,
+      "data": {
+        "id": "e52cec36-50f8-4285-9515-76b0b53cf929",
+        "nombre": "Sandalia Elegante Verano",
+        "precio": 95000,
+        "descripcion": "La Sandalia Elegante Verano es una elección ideal para aquellas que buscan combinar estilo y funcionalidad durante los meses más cálidos. Fabricada con tiras de cuero fino en un elegante tono dorado sutil, esta sandalia ofrece un ajuste seguro gracias a su hebilla ajustable. La suela está diseñada con un soporte arqueado innovador que proporciona comodidad durante todo el día, mientras que el forro de cuero ventilado asegura transpirabilidad, manteniendo los pies frescos. Disponible en tallas del 35 al 41, su diseño ligero se complementa con adornos minimalistas, destacando la calidad artesanal y el enfoque en la autenticidad ética. Perfecta tanto para eventos casuales como formales, esta sandalia es un reflejo de versatilidad moderna y distinción personal.",
+        "descripcionCorta": "Sandalia de cuero dorado con soporte arqueado, hebilla ajustable, transpirabilidad y diseño ligero para versatilidad.",
+        "slug": "sandalia-elegante-verano-1qo0",
+        "prioridad": 1,
+        "status": "disponible",
+        "tags": [
+          "sandalia elegante verano",
+          "sandalias de cuero",
+          "suela de soporte",
+          "hebilla ajustable",
+          "calzado transpirable",
+          "sandalias doradas",
+          "moda sostenible",
+          "calzado para mujer",
+          "sandalias cómodas",
+          "estilo contemporáneo",
+          "calzado artesanal",
+          "sandalias ligeras."
+        ],
+        "categoriaId": "1",
+        "imagenes": [
+          "https://res.cloudinary.com/dkfsejtx9/image/upload/v1758331257/red-social/dvf9avlxlhuncnf8xar9.png",
+          "https://res.cloudinary.com/dkfsejtx9/image/upload/v1758331257/red-social/gl88bwkdlykmfwkrbrxu.png"
+        ],
+        "componentes": [
+          "Material: Tiras de cuero fino",
+          "Color: Dorado sutil\\nTalla: 35-41",
+          "Suela: Soporte arqueado",
+          "Forro: Cuero ventilado",
+          "Cierre: Hebilla ajustable",
+          "Peso: Ligero fresco",
+          "Personalización: Adornos minimalistas"
+        ],
+        "sections": [
+          "s3",
+          "s90"
+        ],
+        "slugNegocio": "zapateria-don-jorge-tunja-tzj2",
+        "nombreNegocio": "Zapatería don Jorge",
+        "telefonoContacto": "+573182293087",
+        "negocioId": "82688f03-866c-476f-b8b8-c7653161101e",
+        "negocioFotoPerfil": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1758329893/red-social/k7xcigjuxyfbpvc9qtpz.png",
+        "ciudad": "Tunja",
+        "departamento": "Boyacá",
+        "stock": null,
+        "stockIlimitado": true,
+        "usaVariantes": false,
+        "variantes": []
+      },
+      "price": 95000,
+      "status": "disponible",
+      "locationTier": 0
+    },
+    {
+      "id": "45acac87-83a0-45d8-937c-5993d7027f71",
+      "type": "product",
+      "score": 11.453,
+      "createdAt": "2025-07-07T18:20:11.891Z",
+      "title": "Mojarra Frita",
+      "descriptionShort": "Mojarra frita con papas, yuca, arroz y ensalada de frutas fresca.",
+      "imageUrl": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1751906406/magicSurprise_images/ghlywgfxsnursdbsew6z.avif",
+      "businessSlug": "parrilla-internacional-tunja-tunja-r3jq",
+      "isFollowed": false,
+      "data": {
+        "id": "45acac87-83a0-45d8-937c-5993d7027f71",
+        "nombre": "Mojarra Frita",
+        "precio": 35000,
+        "descripcion": "La mojarra frita es un platillo clásico que combina tradición y sabor en cada bocado. Este platillo incluye una mojarra cuidadosamente seleccionada y frita hasta alcanzar una textura crujiente por fuera y jugosa por dentro. Se acompaña de papas a la francesa doradas, yuca frita de exterior crujiente y corazón suave, arroz blanco perfectamente cocido y una ensalada fresca con frutas, que aporta un toque refrescante y balanceado al conjunto. Ideal para quienes buscan disfrutar de una comida completa y sabrosa.",
+        "descripcionCorta": "Mojarra frita con papas, yuca, arroz y ensalada de frutas fresca.",
+        "slug": "mojarra-frita-qtt6",
+        "prioridad": 1,
+        "status": "disponible",
+        "tags": [
+          "mojarra frita",
+          "papas a la francesa",
+          "yuca frita",
+          "arroz blanco",
+          "ensalada con frutas",
+          "comida tradicional",
+          "plato principal",
+          "comida completa",
+          "pescado frito."
+        ],
+        "categoriaId": "2",
+        "imagenes": [
+          "https://res.cloudinary.com/dkfsejtx9/image/upload/v1751906406/magicSurprise_images/ghlywgfxsnursdbsew6z.avif",
+          "https://res.cloudinary.com/dkfsejtx9/image/upload/v1751906408/magicSurprise_images/xojfgwo3284ug4xcdomu.jpg"
+        ],
+        "componentes": [
+          "Mojarra frita",
+          "Papas a la francesa",
+          "Yuca frita",
+          "Arroz blanco",
+          "Ensalada con frutas"
+        ],
+        "sections": [
+          "s79",
+          "s13"
+        ],
+        "slugNegocio": "parrilla-internacional-tunja-tunja-r3jq",
+        "nombreNegocio": "Pariila Internacional Tunja",
+        "telefonoContacto": "+573182293083",
+        "negocioId": "5506619e-3b3a-4e87-adb4-325396a98c26",
+        "negocioFotoPerfil": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1758509399/red-social/hco0zuwbphkf18ocrozc.png",
+        "ciudad": "Tunja",
+        "departamento": "Boyacá",
+        "stock": null,
+        "stockIlimitado": true,
+        "usaVariantes": false,
+        "variantes": []
+      },
+      "price": 35000,
+      "status": "disponible",
+      "locationTier": 0
+    },
+    {
+      "id": "5ee0be8d-ed2c-4f90-9afc-628c8c796e28",
+      "type": "product",
+      "score": 10.597,
+      "createdAt": "2026-04-30T23:02:47.669Z",
+      "title": "Cheesecake de Arándanos",
+      "descriptionShort": "Delicioso cheesecake con mermelada de arándanos y frutillas frescas.",
+      "imageUrl": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1777590185/myckeo/products/generated/5ee0be8d-ed2c-4f90-9afc-628c8c796e28/custom-b98ae957326b-v1.png",
+      "businessSlug": "parrilla-internacional-tunja-tunja-r3jq",
+      "isFollowed": false,
+      "data": {
+        "id": "5ee0be8d-ed2c-4f90-9afc-628c8c796e28",
+        "nombre": "Cheesecake de Arándanos",
+        "precio": 23000,
+        "descripcion": "Disfruta de un exquisito cheesecake de arándanos, elaborado con una base cremosa de queso y una capa de mermelada de arándanos y frutillas frescas. Perfecto para los amantes de los postres dulces y afrutados.",
+        "descripcionCorta": "Delicioso cheesecake con mermelada de arándanos y frutillas frescas.",
+        "slug": "cheesecake-de-arandanos-bq1o",
+        "prioridad": 1,
+        "status": "disponible",
+        "tags": [
+          "cheesecake",
+          "arándanos",
+          "frutillas",
+          "postre",
+          "dulce",
+          "cremoso",
+          "fresco"
+        ],
+        "categoriaId": "2",
+        "imagenes": [
+          "https://res.cloudinary.com/dkfsejtx9/image/upload/v1777590185/myckeo/products/generated/5ee0be8d-ed2c-4f90-9afc-628c8c796e28/custom-b98ae957326b-v1.png",
+          "https://res.cloudinary.com/dkfsejtx9/image/upload/v1777590262/myckeo/products/generated/5ee0be8d-ed2c-4f90-9afc-628c8c796e28/catalog-2fa7a233d67a-v1.png"
+        ],
+        "componentes": [
+          "Queso crema",
+          "mermelada de arándanos",
+          "frutillas frescas",
+          "base de galleta"
+        ],
+        "sections": [
+          "s79",
+          "s10"
+        ],
+        "slugNegocio": "parrilla-internacional-tunja-tunja-r3jq",
+        "nombreNegocio": "Pariila Internacional Tunja",
+        "telefonoContacto": "+573182293083",
+        "negocioId": "5506619e-3b3a-4e87-adb4-325396a98c26",
+        "negocioFotoPerfil": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1758509399/red-social/hco0zuwbphkf18ocrozc.png",
+        "ciudad": "Tunja",
+        "departamento": "Boyacá",
+        "stock": null,
+        "stockIlimitado": true,
+        "usaVariantes": false,
+        "variantes": []
+      },
+      "price": 23000,
+      "status": "disponible",
+      "locationTier": 0
+    },
+    {
+      "id": "31b18ab8-264d-48e0-a4a0-0385ed990eeb",
+      "type": "product",
+      "score": 10.597,
+      "createdAt": "2026-04-30T22:51:16.954Z",
+      "title": "Pulpo a la Parrilla",
+      "descriptionShort": "Pulpo a la parrilla con chimichurri tex-mex, homenaje a la cocina mexicana.",
+      "imageUrl": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1777589525/myckeo/products/generated/31b18ab8-264d-48e0-a4a0-0385ed990eeb/custom-dd8109841197-v1.png",
+      "businessSlug": "parrilla-internacional-tunja-tunja-r3jq",
+      "isFollowed": false,
+      "data": {
+        "id": "31b18ab8-264d-48e0-a4a0-0385ed990eeb",
+        "nombre": "Pulpo a la Parrilla",
+        "precio": 58000,
+        "descripcion": "Disfruta de nuestro Pulpo a la Parrilla, un homenaje a la cocina mexicana, cocido lentamente y aderezado con un vibrante chimichurri tex-mex. Perfecto para los amantes de los sabores intensos y auténticos.",
+        "descripcionCorta": "Pulpo a la parrilla con chimichurri tex-mex, homenaje a la cocina mexicana.",
+        "slug": "pulpo-a-la-parrilla-qwxs",
+        "prioridad": 1,
+        "status": "disponible",
+        "tags": [
+          "pulpo a la parrilla",
+          "chimichurri tex-mex",
+          "cocina mexicana",
+          "plato fuerte",
+          "comida internacional",
+          "sabores intensos"
+        ],
+        "categoriaId": "2",
+        "imagenes": [
+          "https://res.cloudinary.com/dkfsejtx9/image/upload/v1777589525/myckeo/products/generated/31b18ab8-264d-48e0-a4a0-0385ed990eeb/custom-dd8109841197-v1.png",
+          "https://res.cloudinary.com/dkfsejtx9/image/upload/v1777589553/myckeo/products/generated/31b18ab8-264d-48e0-a4a0-0385ed990eeb/catalog-5083fc77938a-v1.png"
+        ],
+        "componentes": [
+          "Pulpo fresco",
+          "chimichurri tex-mex",
+          "especias",
+          "aceite de oliva"
+        ],
+        "sections": [
+          "s79"
+        ],
+        "slugNegocio": "parrilla-internacional-tunja-tunja-r3jq",
+        "nombreNegocio": "Pariila Internacional Tunja",
+        "telefonoContacto": "+573182293083",
+        "negocioId": "5506619e-3b3a-4e87-adb4-325396a98c26",
+        "negocioFotoPerfil": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1758509399/red-social/hco0zuwbphkf18ocrozc.png",
+        "ciudad": "Tunja",
+        "departamento": "Boyacá",
+        "stock": null,
+        "stockIlimitado": true,
+        "usaVariantes": false,
+        "variantes": []
+      },
+      "price": 58000,
+      "status": "disponible",
+      "locationTier": 0
+    },
+    {
+      "id": "77d14ce8-363e-4816-9484-ed7c6456f98b",
+      "type": "product",
+      "score": 10.33,
+      "createdAt": "2025-07-07T18:38:26.071Z",
+      "title": "Bandeja Paisa",
+      "descriptionShort": "Disfruta de la tradicional Bandeja Paisa: frijoles, arroz, chorizo, huevo, chicharrón, aguacate, tajadas de maduro, arepa.",
+      "imageUrl": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1751913404/magicSurprise_images/ely07d6yfgbjdc2l7f5m.jpg",
+      "businessSlug": "parrilla-internacional-tunja-tunja-r3jq",
+      "isFollowed": false,
+      "data": {
+        "id": "77d14ce8-363e-4816-9484-ed7c6456f98b",
+        "nombre": "Bandeja Paisa",
+        "precio": 17000,
+        "descripcion": "La Bandeja Paisa es un plato emblemático de la cocina colombiana, conocido por su rica combinación de sabores y su generosa porción. Este platillo tradicional incluye frijoles bien cocidos, un acompañamiento esencial, junto con arroz blanco que aporta una base suave y reconfortante. El chorizo, sabroso y especiado, se complementa con un huevo frito que añade una textura cremosa. El chicharrón crujiente ofrece un contraste de textura y sabor, mientras que el aguacate proporciona una frescura cremosa. Las tajadas de maduro, dulces y tiernas, equilibran los sabores salados del plato. Finalmente, una arepa completa esta experiencia culinaria, ofreciendo un toque de maíz que es característico de la región. La Bandeja Paisa es una representación auténtica de la cultura gastronómica de Colombia, perfecta para quienes buscan disfrutar de una comida completa y satisfactoria.",
+        "descripcionCorta": "Disfruta de la tradicional Bandeja Paisa: frijoles, arroz, chorizo, huevo, chicharrón, aguacate, tajadas de maduro, arepa.",
+        "slug": "bandeja-paisa-8j6g",
+        "prioridad": 1,
+        "status": "disponible",
+        "tags": [
+          "Bandeja Paisa",
+          "plato colombiano",
+          "frijoles",
+          "arroz",
+          "chorizo",
+          "huevo",
+          "chicharrón",
+          "aguacate",
+          "tajadas de maduro",
+          "arepa",
+          "comida tradicional",
+          "cocina colombiana."
+        ],
+        "categoriaId": "2",
+        "imagenes": [
+          "https://res.cloudinary.com/dkfsejtx9/image/upload/v1751913404/magicSurprise_images/ely07d6yfgbjdc2l7f5m.jpg",
+          "https://res.cloudinary.com/dkfsejtx9/image/upload/v1751913405/magicSurprise_images/tvt0jugpjy8nynfzcc47.jpg"
+        ],
+        "componentes": [
+          "Frijoles",
+          "Arroz",
+          "Chorizo",
+          "Huevo",
+          "Chicharrón",
+          "Aguacate",
+          "Tajadas de maduro",
+          "Arroz",
+          "Arepa"
+        ],
+        "sections": [
+          "s11",
+          "s21",
+          "s79"
+        ],
+        "slugNegocio": "parrilla-internacional-tunja-tunja-r3jq",
+        "nombreNegocio": "Pariila Internacional Tunja",
+        "telefonoContacto": "+573182293083",
+        "negocioId": "5506619e-3b3a-4e87-adb4-325396a98c26",
+        "negocioFotoPerfil": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1758509399/red-social/hco0zuwbphkf18ocrozc.png",
+        "ciudad": "Tunja",
+        "departamento": "Boyacá",
+        "stock": null,
+        "stockIlimitado": true,
+        "usaVariantes": false,
+        "variantes": []
+      },
+      "price": 17000,
+      "status": "disponible",
+      "locationTier": 0
+    },
+    {
+      "id": "78a153ef-7fe0-4e27-a0c0-5b5fe5bf0a0c",
+      "type": "product",
+      "score": 10.328,
+      "createdAt": "2025-07-16T06:40:00.208Z",
+      "title": "Bandeja de carnes mixta especial 1",
+      "descriptionShort": "Bandeja variada con carne de res, cerdo, alitas BBQ, pescado, papas criollas, yuca frita y maduro asado.",
+      "imageUrl": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1752647839/red-social/wmpbmjkvcpol63e9ssrv.jpg",
+      "businessSlug": "parrilla-internacional-tunja-tunja-r3jq",
+      "isFollowed": false,
+      "data": {
+        "id": "78a153ef-7fe0-4e27-a0c0-5b5fe5bf0a0c",
+        "nombre": "Bandeja de carnes mixta especial 1",
+        "precio": 38000,
+        "descripcion": "La Bandeja de Carnes Mixta es una opción culinaria versátil y completa, ideal para compartir en reuniones familiares o eventos especiales. Este surtido incluye una selección de carnes de alta calidad: carne de res y cerdo que destacan por su sabor y textura, además de alitas BBQ que aportan un toque ahumado y dulce. Para los amantes del mar, el pescado incluido ofrece una opción más ligera y saludable. Los acompañamientos tradicionales como las papas criollas y la yuca frita añaden un contraste crujiente, mientras que el maduro asado con queso y bocadillo ofrece un equilibrio perfecto entre dulce y salado. Esta bandeja está diseñada para satisfacer una amplia gama de gustos y preferencias gastronómicas.",
+        "descripcionCorta": "Bandeja variada con carne de res, cerdo, alitas BBQ, pescado, papas criollas, yuca frita y maduro asado.",
+        "slug": "bandeja-de-carnes-mixta-s5rj",
+        "prioridad": 1,
+        "status": "disponible",
+        "tags": [
+          "Carne de res",
+          "carne de cerdo",
+          "alitas BBQ",
+          "pescado",
+          "papas criollas",
+          "yuca frita",
+          "maduro asado",
+          "bandeja mixta",
+          "comida compartida",
+          "reunión familiar",
+          "evento especial."
+        ],
+        "categoriaId": "2",
+        "imagenes": [
+          "https://res.cloudinary.com/dkfsejtx9/image/upload/v1752647839/red-social/wmpbmjkvcpol63e9ssrv.jpg",
+          "https://res.cloudinary.com/dkfsejtx9/image/upload/v1752647840/red-social/bfx1n40iedrfauppywp9.jpg"
+        ],
+        "componentes": [
+          "Carne de res",
+          "Carne de cerdo",
+          "Alitas BBQ",
+          "Pescado",
+          "Papas criollas",
+          "Yuca frita",
+          "Maduro asado con queso y bocadillo"
+        ],
+        "sections": [
+          "s12",
+          "s13",
+          "s79"
+        ],
+        "slugNegocio": "parrilla-internacional-tunja-tunja-r3jq",
+        "nombreNegocio": "Pariila Internacional Tunja",
+        "telefonoContacto": "+573182293083",
+        "negocioId": "5506619e-3b3a-4e87-adb4-325396a98c26",
+        "negocioFotoPerfil": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1758509399/red-social/hco0zuwbphkf18ocrozc.png",
+        "ciudad": "Tunja",
+        "departamento": "Boyacá",
+        "stock": null,
+        "stockIlimitado": true,
+        "usaVariantes": false,
+        "variantes": []
+      },
+      "price": 38000,
+      "status": "disponible",
+      "locationTier": 0
+    },
+    {
+      "id": "6670a118-4714-43cd-9afb-4a0c6bd9f5d4",
+      "type": "product",
+      "score": 9.977,
+      "createdAt": "2025-09-12T06:26:13.476Z",
+      "title": "Chuleta de pollo apanada",
+      "descriptionShort": "Chuleta de pollo crujiente con arroz, ensalada, papas, yuca frita y bebida.",
+      "imageUrl": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1757658199/red-social/jvvrvldj86ygnlot0gvu.jpg",
+      "businessSlug": "parrilla-internacional-tunja-tunja-r3jq",
+      "isFollowed": false,
+      "data": {
+        "id": "6670a118-4714-43cd-9afb-4a0c6bd9f5d4",
+        "nombre": "Chuleta de pollo apanada",
+        "precio": 35000,
+        "descripcion": "Disfruta de una experiencia culinaria completa con nuestra bandeja de chuleta de pollo apanada. Este plato cuidadosamente preparado incluye una jugosa chuleta de pollo, empanizada a la perfección para ofrecer una textura crujiente y un sabor delicioso. Acompañada de un arroz blanco esponjoso, nuestra ensalada de la casa fresca y vibrante complementa perfectamente el plato. Para una explosión de sabor adicional, hemos incluido papas a la francesa doradas y yuca frita, que añaden un toque crujiente. Completa tu comida con una bebida de tu elección para refrescar tu paladar. Ideal para un almuerzo completo y satisfactorio.",
+        "descripcionCorta": "Chuleta de pollo crujiente con arroz, ensalada, papas, yuca frita y bebida.",
+        "slug": "chuleta-de-pollo-apanada-i98c",
+        "prioridad": 1,
+        "status": "disponible",
+        "tags": [
+          "chuleta de pollo apanada",
+          "arroz blanco",
+          "ensalada fresca",
+          "papas a la francesa",
+          "yuca frita",
+          "comida completa",
+          "almuerzo",
+          "bandeja de pollo",
+          "comida deliciosa",
+          "bebida."
+        ],
+        "categoriaId": "2",
+        "imagenes": [
+          "https://res.cloudinary.com/dkfsejtx9/image/upload/v1757658199/red-social/jvvrvldj86ygnlot0gvu.jpg",
+          "https://res.cloudinary.com/dkfsejtx9/image/upload/v1757658199/red-social/avhysd559xxz6d3mtydr.jpg"
+        ],
+        "componentes": [
+          "Chuleta de pollo",
+          "Arroz blanco",
+          "Ensalada de la casa",
+          "Papás a la francesa",
+          "Yuca frita",
+          "Bebida adicional"
+        ],
+        "sections": [
+          "s11",
+          "s19",
+          "s21"
+        ],
+        "slugNegocio": "parrilla-internacional-tunja-tunja-r3jq",
+        "nombreNegocio": "Pariila Internacional Tunja",
+        "telefonoContacto": "+573182293083",
+        "negocioId": "5506619e-3b3a-4e87-adb4-325396a98c26",
+        "negocioFotoPerfil": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1758509399/red-social/hco0zuwbphkf18ocrozc.png",
+        "ciudad": "Tunja",
+        "departamento": "Boyacá",
+        "stock": null,
+        "stockIlimitado": true,
+        "usaVariantes": false,
+        "variantes": []
+      },
+      "price": 35000,
+      "status": "disponible",
+      "locationTier": 0
+    }
+  ],
+  "seen": [
+    "pub-cmd8abuph000443wfzt9txx2e",
+    "pub-cmf1vtl2l000043hsthjz3ep6",
+    "pub-cmhslo4up000243cl2hvcl8g7",
+    "pub-cmd803gku000643ldvt829p32",
+    "pub-cmft41ko80000l404g83uz2oq",
+    "pub-cmf1ydjgp000h43hsci8m5p55",
+    "pub-cmcy9nj7m000543e7ou96o0pf",
+    "pub-cmeumpcxx000143elvzbvboxy",
+    "pub-cmf1w0mt9000543hss56x55b7",
+    "pub-cmd50isao000143kz3xyliykn",
+    "product-63cdfdd0-a5cf-4da7-932b-1bbb874615f6",
+    "product-45acac87-83a0-45d8-937c-5993d7027f71",
+    "product-fcea4193-4e78-49bc-988e-5ba411deaca2",
+    "product-7e09bebd-af35-424f-9a13-e33d1862f42c",
+    "product-e52cec36-50f8-4285-9515-76b0b53cf929",
+    "product-5ee0be8d-ed2c-4f90-9afc-628c8c796e28",
+    "product-31b18ab8-264d-48e0-a4a0-0385ed990eeb",
+    "product-77d14ce8-363e-4816-9484-ed7c6456f98b",
+    "product-78a153ef-7fe0-4e27-a0c0-5b5fe5bf0a0c",
+    "product-6670a118-4714-43cd-9afb-4a0c6bd9f5d4",
+    "serv-484de355-eaf5-4698-b491-5e982787347e",
+    "serv-99e0c4aa-ee7e-4632-9f48-8ca6e16d164d",
+    "serv-0b213f9c-095d-4800-8552-07a008d30e16",
+    "bus-9c43d4bf-7185-48d3-9c7a-70ce79aa82ad",
+    "bus-5506619e-3b3a-4e87-adb4-325396a98c26",
+    "bus-df781d8a-26ac-4fff-92dc-3297ae9fd67f",
+    "bus-c3c4b604-9d83-47ce-8690-30b555bacff1",
+    "bus-738e54a1-b8f5-4813-a960-e2a663127604",
+    "bus-9790c152-383e-4bc2-9ab1-7c268c5b4b70",
+    "bus-f2a00461-bfb5-40d4-8d8e-d51281902152",
+    "bus-84712cc3-5d0f-41dc-b660-353baff57e78",
+    "bus-82688f03-866c-476f-b8b8-c7653161101e",
+    "bus-696ee6ca-d4cb-444b-b423-dce95cefdce3"
+  ],
+  "images": [
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_160%2Ch_160%2Fv1758509399%2Fred-social%2Fhco0zuwbphkf18ocrozc.png&w=3840&q=80",
+      "alt": "Perfil de Pariila Internacional Tunja"
+    },
+    {
+      "src": "https://res.cloudinary.com/dkfsejtx9/video/upload/so_2,f_jpg,q_auto:eco,c_fill,g_auto,w_720,h_540/v1752810829/red-social/olqwhu1wztj6fqll5wna.jpg",
+      "alt": "Vista previa del video"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_160%2Ch_160%2Fv1756771272%2Fred-social%2Fs0b75ueknugqvykt2atr.png&w=3840&q=80",
+      "alt": "Perfil de LUMINA Beauty"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_720%2Ch_540%2Fv1756777234%2Fred-social%2Fxhtuxrzcsfall2rsdwzh.png&w=3840&q=80",
+      "alt": "Vista previa de la publicación"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_160%2Ch_160%2Fv1758509399%2Fred-social%2Fhco0zuwbphkf18ocrozc.png&w=3840&q=80",
+      "alt": "Perfil de Pariila Internacional Tunja"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkwosk8qd%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_720%2Ch_540%2Fv1762746123%2Fvhz8iw0o4iy9doehmw3j.png&w=3840&q=80",
+      "alt": "Vista previa de la publicación"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_160%2Ch_160%2Fv1758509399%2Fred-social%2Fhco0zuwbphkf18ocrozc.png&w=3840&q=80",
+      "alt": "Perfil de Pariila Internacional Tunja"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_720%2Ch_540%2Fv1752793658%2Fred-social%2Furwzsn3js2nhzlbo2rma.png&w=3840&q=80",
+      "alt": "Vista previa de la publicación"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_160%2Ch_160%2Fv1758332069%2Fred-social%2Fuvdcxwdpc9db14xpifgo.png&w=3840&q=80",
+      "alt": "Perfil de Carmen Moda Urbana"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_720%2Ch_540%2Fv1758423428%2Fred-social%2Fwlooqwn3jmik1avhgcfb.png&w=3840&q=80",
+      "alt": "Vista previa de la publicación"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_160%2Ch_160%2Fv1756771272%2Fred-social%2Fs0b75ueknugqvykt2atr.png&w=3840&q=80",
+      "alt": "Perfil de LUMINA Beauty"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_720%2Ch_540%2Fv1756781542%2Fred-social%2Fdtmyl5uhebakzn7alufa.png&w=3840&q=80",
+      "alt": "Vista previa de la publicación"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_160%2Ch_160%2Fv1758509399%2Fred-social%2Fhco0zuwbphkf18ocrozc.png&w=3840&q=80",
+      "alt": "Perfil de Pariila Internacional Tunja"
+    },
+    {
+      "src": "https://res.cloudinary.com/dkfsejtx9/video/upload/so_2,f_jpg,q_auto:eco,c_fill,g_auto,w_720,h_540/v1752205047/magicSurprise_images/ew6hi3z5bcqtrctl2xrv.jpg",
+      "alt": "Vista previa del video"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_160%2Ch_160%2Fv1758509399%2Fred-social%2Fhco0zuwbphkf18ocrozc.png&w=3840&q=80",
+      "alt": "Perfil de Pariila Internacional Tunja"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_720%2Ch_540%2Fv1756338668%2Fred-social%2Fscksnzitli6fnj4wxvhl.jpg&w=3840&q=80",
+      "alt": "Vista previa de la publicación"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_160%2Ch_160%2Fv1756771272%2Fred-social%2Fs0b75ueknugqvykt2atr.png&w=3840&q=80",
+      "alt": "Perfil de LUMINA Beauty"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_720%2Ch_540%2Fv1756777576%2Fred-social%2Fxrpuhzsehycempiln9sn.png&w=3840&q=80",
+      "alt": "Vista previa de la publicación"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_160%2Ch_160%2Fv1758509399%2Fred-social%2Fhco0zuwbphkf18ocrozc.png&w=3840&q=80",
+      "alt": "Perfil de Pariila Internacional Tunja"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_720%2Ch_540%2Fv1752810843%2Fred-social%2Fkdqvsrnrf3eyakftdoae.png&w=3840&q=80",
+      "alt": "Vista previa de la publicación"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_720%2Ch_540%2Fv1755561281%2Fred-social%2Fx6hv70mfg5an5uqoc1jv.png&w=3840&q=80",
+      "alt": "Entregas express "
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_720%2Ch_540%2Fv1755553247%2Fred-social%2Fsvooasc7s6oqe7yrfbny.png&w=3840&q=80",
+      "alt": "Servicio de parrilla y barril"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_160%2Ch_160%2Fv1758332069%2Fred-social%2Fuvdcxwdpc9db14xpifgo.png&w=3840&q=80",
+      "alt": "Perfil de Carmen Moda Urbana"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_1200%2Ch_400%2Fv1758332072%2Fred-social%2Fuvd2vsix1cc77cfyfxwj.png&w=3840&q=80",
+      "alt": "Portada de Carmen Moda Urbana"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_160%2Ch_160%2Fv1756771272%2Fred-social%2Fs0b75ueknugqvykt2atr.png&w=3840&q=80",
+      "alt": "Perfil de LUMINA Beauty"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_1200%2Ch_400%2Fv1756771278%2Fred-social%2Fmwjwtptwufkoyi0hlhlp.png&w=3840&q=80",
+      "alt": "Portada de LUMINA Beauty"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_160%2Ch_160%2Fv1758149750%2Fred-social%2Fh2ssxz4zzppckmnswsxw.png&w=3840&q=80",
+      "alt": "Perfil de NovaBloom"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_1200%2Ch_400%2Fv1758149784%2Fred-social%2Ffecdjlloqalxsepshw2d.png&w=3840&q=80",
+      "alt": "Portada de NovaBloom"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_160%2Ch_160%2Fv1756782518%2Fred-social%2Faj5j4djkthmkyij5vdtv.png&w=3840&q=80",
+      "alt": "Perfil de NovaThread"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_1200%2Ch_400%2Fv1756782520%2Fred-social%2Fjgghumcflraebh9ibh0w.png&w=3840&q=80",
+      "alt": "Portada de NovaThread"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_160%2Ch_160%2Fv1758327291%2Fred-social%2Fhjvj8pohmv1d6dfot5f6.png&w=3840&q=80",
+      "alt": "Perfil de Artesanías Doña Marta"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_1200%2Ch_400%2Fv1758327209%2Fred-social%2Fbovvhc6oby3exhfeqtl7.png&w=3840&q=80",
+      "alt": "Portada de Artesanías Doña Marta"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_160%2Ch_160%2Fv1758329893%2Fred-social%2Fk7xcigjuxyfbpvc9qtpz.png&w=3840&q=80",
+      "alt": "Perfil de Zapatería don Jorge"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_1200%2Ch_400%2Fv1758329982%2Fred-social%2Fe3lkmvbb9a2wtcpnchlf.png&w=3840&q=80",
+      "alt": "Portada de Zapatería don Jorge"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_160%2Ch_160%2Fv1758737114%2Fred-social%2Fh9x57wmf8jnuflhijpy5.png&w=3840&q=80",
+      "alt": "Perfil de Andrea Beauty Studio"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_1200%2Ch_400%2Fv1758737118%2Fred-social%2Flbmnetfckxckjtbnp5pz.png&w=3840&q=80",
+      "alt": "Portada de Andrea Beauty Studio"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_160%2Ch_160%2Fv1758509399%2Fred-social%2Fhco0zuwbphkf18ocrozc.png&w=3840&q=80",
+      "alt": "Perfil de Pariila Internacional Tunja"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_160%2Ch_160%2Fv1758509399%2Fred-social%2Fhco0zuwbphkf18ocrozc.png&w=3840&q=80",
+      "alt": ""
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkwosk8qd%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_640%2Ch_640%2Fv1776241252%2Fzv0caubf62mqq9jjczqf.jpg&w=3840&q=80",
+      "alt": ""
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkwosk8qd%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_640%2Ch_640%2Fv1776241252%2Fzv0caubf62mqq9jjczqf.jpg&w=3840&q=80",
+      "alt": "Salchipapas premium"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_160%2Ch_160%2Fv1758509399%2Fred-social%2Fhco0zuwbphkf18ocrozc.png&w=3840&q=80",
+      "alt": "Perfil de Pariila Internacional Tunja"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_160%2Ch_160%2Fv1758509399%2Fred-social%2Fhco0zuwbphkf18ocrozc.png&w=3840&q=80",
+      "alt": ""
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_640%2Ch_640%2Fv1751906406%2FmagicSurprise_images%2Fghlywgfxsnursdbsew6z.avif&w=3840&q=80",
+      "alt": ""
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_640%2Ch_640%2Fv1751906406%2FmagicSurprise_images%2Fghlywgfxsnursdbsew6z.avif&w=3840&q=80",
+      "alt": "Mojarra Frita"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_160%2Ch_160%2Fv1758329893%2Fred-social%2Fk7xcigjuxyfbpvc9qtpz.png&w=3840&q=80",
+      "alt": "Perfil de Zapatería don Jorge"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_160%2Ch_160%2Fv1758329893%2Fred-social%2Fk7xcigjuxyfbpvc9qtpz.png&w=3840&q=80",
+      "alt": ""
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_640%2Ch_640%2Fv1758330642%2Fred-social%2Fz1nm04fzthvozmgvson9.png&w=3840&q=80",
+      "alt": ""
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_640%2Ch_640%2Fv1758330642%2Fred-social%2Fz1nm04fzthvozmgvson9.png&w=3840&q=80",
+      "alt": "Botín Versátil Aventura"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_160%2Ch_160%2Fv1756782518%2Fred-social%2Faj5j4djkthmkyij5vdtv.png&w=3840&q=80",
+      "alt": "Perfil de NovaThread"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_160%2Ch_160%2Fv1756782518%2Fred-social%2Faj5j4djkthmkyij5vdtv.png&w=3840&q=80",
+      "alt": ""
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_640%2Ch_640%2Fv1756786695%2Fred-social%2Fvvaorrchfn1igvikwtqe.png&w=3840&q=80",
+      "alt": ""
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_640%2Ch_640%2Fv1756786695%2Fred-social%2Fvvaorrchfn1igvikwtqe.png&w=3840&q=80",
+      "alt": "Elegance Blazer"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_160%2Ch_160%2Fv1758329893%2Fred-social%2Fk7xcigjuxyfbpvc9qtpz.png&w=3840&q=80",
+      "alt": "Perfil de Zapatería don Jorge"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_160%2Ch_160%2Fv1758329893%2Fred-social%2Fk7xcigjuxyfbpvc9qtpz.png&w=3840&q=80",
+      "alt": ""
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_640%2Ch_640%2Fv1758331257%2Fred-social%2Fdvf9avlxlhuncnf8xar9.png&w=3840&q=80",
+      "alt": ""
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_640%2Ch_640%2Fv1758331257%2Fred-social%2Fdvf9avlxlhuncnf8xar9.png&w=3840&q=80",
+      "alt": "Sandalia Elegante Verano"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_160%2Ch_160%2Fv1758509399%2Fred-social%2Fhco0zuwbphkf18ocrozc.png&w=3840&q=80",
+      "alt": "Perfil de Pariila Internacional Tunja"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_160%2Ch_160%2Fv1758509399%2Fred-social%2Fhco0zuwbphkf18ocrozc.png&w=3840&q=80",
+      "alt": ""
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_640%2Ch_640%2Fv1777590185%2Fmyckeo%2Fproducts%2Fgenerated%2F5ee0be8d-ed2c-4f90-9afc-628c8c796e28%2Fcustom-b98ae957326b-v1.png&w=3840&q=80",
+      "alt": "Cheesecake de Arándanos"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_160%2Ch_160%2Fv1758509399%2Fred-social%2Fhco0zuwbphkf18ocrozc.png&w=3840&q=80",
+      "alt": "Perfil de Pariila Internacional Tunja"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_160%2Ch_160%2Fv1758509399%2Fred-social%2Fhco0zuwbphkf18ocrozc.png&w=3840&q=80",
+      "alt": ""
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_640%2Ch_640%2Fv1777589525%2Fmyckeo%2Fproducts%2Fgenerated%2F31b18ab8-264d-48e0-a4a0-0385ed990eeb%2Fcustom-dd8109841197-v1.png&w=3840&q=80",
+      "alt": "Pulpo a la Parrilla"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_160%2Ch_160%2Fv1758509399%2Fred-social%2Fhco0zuwbphkf18ocrozc.png&w=3840&q=80",
+      "alt": "Perfil de Pariila Internacional Tunja"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_160%2Ch_160%2Fv1758509399%2Fred-social%2Fhco0zuwbphkf18ocrozc.png&w=3840&q=80",
+      "alt": ""
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_640%2Ch_640%2Fv1751913404%2FmagicSurprise_images%2Fely07d6yfgbjdc2l7f5m.jpg&w=3840&q=80",
+      "alt": "Bandeja Paisa"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_160%2Ch_160%2Fv1758509399%2Fred-social%2Fhco0zuwbphkf18ocrozc.png&w=3840&q=80",
+      "alt": "Perfil de Pariila Internacional Tunja"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_160%2Ch_160%2Fv1758509399%2Fred-social%2Fhco0zuwbphkf18ocrozc.png&w=3840&q=80",
+      "alt": ""
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_640%2Ch_640%2Fv1752647839%2Fred-social%2Fwmpbmjkvcpol63e9ssrv.jpg&w=3840&q=80",
+      "alt": "Bandeja de carnes mixta especial 1"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_160%2Ch_160%2Fv1758509399%2Fred-social%2Fhco0zuwbphkf18ocrozc.png&w=3840&q=80",
+      "alt": "Perfil de Pariila Internacional Tunja"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_160%2Ch_160%2Fv1758509399%2Fred-social%2Fhco0zuwbphkf18ocrozc.png&w=3840&q=80",
+      "alt": ""
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_640%2Ch_640%2Fv1757658199%2Fred-social%2Fjvvrvldj86ygnlot0gvu.jpg&w=3840&q=80",
+      "alt": "Chuleta de pollo apanada"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_160%2Ch_160%2Fv1758509399%2Fred-social%2Fhco0zuwbphkf18ocrozc.png&w=3840&q=80",
+      "alt": "Perfil de Pariila Internacional Tunja"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_1200%2Ch_400%2Fv1758509405%2Fred-social%2Fqvlzyyjhkarekmunt9qx.png&w=3840&q=80",
+      "alt": "Portada de Pariila Internacional Tunja"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_160%2Ch_160%2Fv1758171826%2Fred-social%2Fs5fh7f0zxxpepwewiisd.png&w=3840&q=80",
+      "alt": "Perfil de PulseSip"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_1200%2Ch_400%2Fv1758171832%2Fred-social%2Focs1nz88gvr52huhzhxc.png&w=3840&q=80",
+      "alt": "Portada de PulseSip"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_160%2Ch_160%2Fv1758168902%2Fred-social%2Flm0z8vqozco0vngyywtd.png&w=3840&q=80",
+      "alt": "Perfil de BlitzBite"
+    },
+    {
+      "src": "https://myckeo.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdkfsejtx9%2Fimage%2Fupload%2Ff_auto%2Cq_auto%3Aeco%2Cc_fill%2Cg_auto%2Cw_1200%2Ch_400%2Fv1758168905%2Fred-social%2Fqzmvjjrcpmtlzkgfnlkv.png&w=3840&q=80",
+      "alt": "Portada de BlitzBite"
+    }
+  ]
+}

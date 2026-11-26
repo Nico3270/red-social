@@ -1,0 +1,9 @@
+
+Running 4 tests using 1 worker
+
+  ✓  1 e2e/centered-feed/centered.spec.ts:10:5 › composition, unique navigation, all inventories and fixed central width (50.6s)
+  ✓  2 e2e/centered-feed/centered.spec.ts:36:5 › boundary, mobile, category navigation and preserved card action on append (32.8s)
+  ✓  3 e2e/centered-feed/centered.spec.ts:56:5 › real coordinator: continuation, geographic groups and new city with the navigation rail (23.0s)
+  ✓  4 e2e/centered-feed/centered.spec.ts:66:5 › actual review relationships and a controlled arrival-order characterization (14.1s)
+
+  4 passed (2.0m)

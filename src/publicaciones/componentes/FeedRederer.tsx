@@ -14,6 +14,7 @@ import DiscoveryBusinessCard from "@/feed/componentes/DiscoveryBusinessCard";
 import DiscoveryPublicationCard from "@/feed/componentes/DiscoveryPublicationCard";
 import DiscoveryPulseModule, { DiscoveryPulseTone } from "@/feed/componentes/DiscoveryPulseModule";
 import DiscoveryServiceCard from "@/feed/componentes/DiscoveryServiceCard";
+import { useDiscoveryCategorySlot } from "@/ui/components/menu-section-bar/DiscoveryCategories";
 import { distributeDesktopDiscovery, type DesktopDiscoveryPlan } from "@/feed/desktopDiscovery";
 import desktop from "./desktopDiscovery.module.css";
 import { groupFeedByLocation, getFeedItemTier } from "@/feed/geography";
@@ -307,14 +308,19 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
   }, []);
 
   const [wideDesktop, setWideDesktop] = useState(false);
+  const [centeredDesktop, setCenteredDesktop] = useState(false);
+  const categorySlotRef = useDiscoveryCategorySlot();
   useEffect(() => {
     const media = window.matchMedia("(min-width: 1280px)");
-    const update = () => setWideDesktop(media.matches);
+    const centered = window.matchMedia("(min-width: 1440px)");
+    const update = () => { setWideDesktop(media.matches); setCenteredDesktop(centered.matches); };
     update();
     media.addEventListener("change", update);
-    return () => media.removeEventListener("change", update);
+    centered.addEventListener("change", update);
+    return () => { media.removeEventListener("change", update); centered.removeEventListener("change", update); };
   }, []);
   const desktopHome = wideDesktop && discoveryContext === "home" && activeTab === "Para ti";
+  const centeredHome = desktopHome && centeredDesktop;
 
   const itemsPorTab = useMemo(() => {
     const filtrados = items.filter(item => {
@@ -617,6 +623,7 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
               <div className={desktop.main}>
                 {main.map(block => (
                   <div key={`${block.items[0].type}-${block.items[0].id}`} className={block.kind === "commerce" ? desktop.commerce : undefined}>
+                    {centeredHome && block.kind === "commerce" && <h3 className={desktop.commerceLabel}>Productos, negocios y servicios</h3>}
                     {block.items.map(item => (
                       <div key={`${item.type}-${item.id}`} data-feed-item-key={`${item.type}-${item.id}`} className={desktop.item}>
                         {renderCardContent(item, true)}
@@ -840,14 +847,16 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
   };
 
   return (
-    <div data-desktop-discovery={desktopHome || undefined} className={`min-h-screen w-full bg-gray-50 px-1 py-2 sm:px-2 sm:py-4 lg:px-6 xl:px-12 ${desktopHome ? desktop.scope : ""}`}>
-      {renderDiscoveryIntro()}
+    <div data-centered-discovery={centeredHome || undefined} data-desktop-discovery={desktopHome || undefined} className={`min-h-screen w-full bg-gray-50 px-1 py-2 sm:px-2 sm:py-4 lg:px-6 xl:px-12 ${desktopHome ? desktop.scope : ""}`}>
+      <div className={desktop.intro}>{renderDiscoveryIntro()}</div>
 
+      <div className={desktop.navigation}>
+      {centeredHome && <h2 className={desktop.navigationTitle}>Explorar</h2>}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
-        className="mx-auto mb-3 flex w-full overflow-x-auto rounded-xl border border-gray-200 bg-white px-1 lg:justify-around"
+        className={`mx-auto mb-3 flex w-full overflow-x-auto rounded-xl border border-gray-200 bg-white px-1 lg:justify-around ${desktop.tabs}`}
       >
         {tabs.map((tab) => (
           <button
@@ -870,6 +879,10 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
         ))}
       </motion.div>
 
+      {centeredHome && <div ref={categorySlotRef} data-category-slot />}
+      </div>
+
+      <div className={desktop.feedContent}>
       {renderCategoryFilter()}
 
       <motion.div
@@ -962,6 +975,7 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
       )}
 
       <div ref={sentinelRef} data-feed-sentinel className="h-1" />
+      </div>
     </div>
   );
 };

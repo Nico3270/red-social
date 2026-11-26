@@ -1,0 +1,26 @@
+[
+  {
+    "width": 1439,
+    "position": "top",
+    "differentPixels": 22,
+    "totalPixels": 1295100
+  },
+  {
+    "width": 1439,
+    "position": "scroll",
+    "differentPixels": 0,
+    "totalPixels": 1295100
+  },
+  {
+    "width": 390,
+    "position": "top",
+    "differentPixels": 43,
+    "totalPixels": 351000
+  },
+  {
+    "width": 390,
+    "position": "scroll",
+    "differentPixels": 0,
+    "totalPixels": 351000
+  }
+]

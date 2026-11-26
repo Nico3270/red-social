@@ -1,0 +1,13 @@
+{
+  "filesChecked": 2834,
+  "changed": [],
+  "added": [],
+  "gitStatusIdentical": true,
+  "headIdentical": true,
+  "excludes": [
+    ".git",
+    "node_modules",
+    ".next",
+    ".vercel"
+  ]
+}

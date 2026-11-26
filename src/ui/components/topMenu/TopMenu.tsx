@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { FaMapMarkerAlt, FaWhatsapp } from "react-icons/fa";
 import { SideBar } from "../side-bar/SideBar";
-import { MenuSectionsBar } from "../menu-section-bar/MenuSectionBar";
+import { DiscoveryCategories } from "../menu-section-bar/DiscoveryCategories";
 import { useCartCatalogoStore } from "@/store/carro/carro-store";
 import { useFavoritesCatalogoStore } from "@/store/favoritos/favoritos-store";
 import { CrearModal } from "./Crear";
@@ -477,7 +477,7 @@ export const TopMenu = () => {
 
       {/* Drawer lateral */}
       <SideBar open={isDrawerOpen} toggleDrawer={setIsDrawerOpen} />
-      <div className={styles.prototypeCategories}><MenuSectionsBar compact={isDiscoveryPage} /></div>
+      <DiscoveryCategories compact={isDiscoveryPage} />
       <CrearModal
         isOpen={isCrearModalOpen}
         onClose={() => setIsCrearModalOpen(false)}

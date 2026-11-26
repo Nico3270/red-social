@@ -1,0 +1,19 @@
+// Read-only public inspection. No accounts, messages, orders or data mutations.
+const {chromium}=require('@playwright/test');const fs=require('node:fs');
+const folder='docs/audits/centered-feed-evidence';
+(async()=>{const b=await chromium.launch({executablePath:process.env.AUDIT_CHROMIUM_PATH||'/home/nico/.cache/ms-playwright/chromium-1193/chrome-linux/chrome'});const data={requests:[],responses:[],states:[],errors:[]};const start=Date.now();try{
+ const c=await b.newContext({viewport:{width:1440,height:900}});
+ await c.addCookies([{name:'myckeo-consent',value:'true',domain:'myckeo.com',path:'/'}]);
+ await c.addInitScript(()=>{if(!localStorage.getItem('preferences-storage'))localStorage.setItem('preferences-storage',JSON.stringify({state:{ciudad:'Tunja',departamento:'Boyacá',preferencias:[],secciones:[],seenIds:[],userLat:null,userLong:null},version:0}));});
+ await c.route('**/*',r=>{const q=r.request(),u=new URL(q.url());if(!['GET','HEAD'].includes(q.method())){let a;try{a=JSON.parse(q.postData()||'null',(_k,v)=>v==='$undefined'?undefined:v)}catch{}if(u.origin==='https://myckeo.com'&&q.headers()['next-action']&&['products','publications','services','businesses'].includes(a?.[0])){data.requests.push({ms:Date.now()-start,type:a[0],city:a[1].ciudad,cursor:!!a[1].cursor,seen:a[1].seenIds});return r.continue()}return r.abort()}if(/wa\.me|whatsapp\.com|googletagmanager|google-analytics|doubleclick/.test(u.hostname))return r.abort();return r.continue()});
+ const p=await c.newPage();p.on('pageerror',e=>data.errors.push(e.message));
+ p.on('response',async r=>{if(r.request().method()!=='POST')return;try{const a=JSON.parse(r.request().postData());for(const line of(await r.text()).split('\n')){try{const v=JSON.parse(line.slice(line.indexOf(':')+1),(_key,value)=>value==='$undefined'?undefined:value);if(Array.isArray(v?.items))data.responses.push({ms:Date.now()-start,type:a[0],ids:v.items.map(i=>i.id),next:!!v.nextCursor});}catch{}}}catch{}});
+ const snapshot=async label=>{const s=await p.evaluate(()=>{const el=document.querySelector('[data-desktop-discovery]')||document.querySelector('[data-feed-item-key]')||document.querySelector('button[aria-label="Cambiar a pestaña Para ti"]')?.parentElement?.parentElement;let f=el&&el[Object.keys(el).find(k=>k.startsWith('__reactFiber$'))];while(f){if(Array.isArray(f.memoizedProps?.items)&&f.memoizedProps?.activeTab){const q=f.memoizedProps;return {tab:q.activeTab,city:q.ciudad,items:q.items,seen:JSON.parse(localStorage.getItem('preferences-storage')||'{}').state?.seenIds||[],images:[...document.querySelectorAll('[data-feed-item-key] img')].map(i=>({src:i.src,alt:i.alt}))};}f=f.return;}return {missing:true,items:[]};});data.states.push({label,ms:Date.now()-start,...s});return s;};
+ await p.goto('https://myckeo.com/',{waitUntil:'domcontentloaded'});await p.locator('[data-feed-item-key]').first().waitFor({timeout:60000});await snapshot('first-visible');
+ await p.waitForTimeout(3000);const sample=await snapshot('initial-settled');
+ fs.writeFileSync(`${folder}/public-sample.json`,JSON.stringify(sample,null,2));await p.screenshot({path:`${folder}/public-initial-1440.png`});
+ await p.getByRole('button',{name:'Cambiar a pestaña Publicaciones',exact:true}).click();await p.waitForTimeout(3000);await snapshot('publications-tab');
+ await p.getByRole('button',{name:'Cambiar a pestaña Para ti',exact:true}).click();await p.waitForTimeout(2500);await snapshot('return-for-you');
+ await p.reload({waitUntil:'domcontentloaded'});await p.getByRole('button',{name:'Cambiar a pestaña Para ti',exact:true}).waitFor();await p.waitForTimeout(3500);await snapshot('revisit');
+ fs.writeFileSync(`${folder}/public-startup.json`,JSON.stringify(data,null,2));console.log(data.states.map(s=>({label:s.label,ms:s.ms,counts:s.items.reduce((a,i)=>(a[i.type]=(a[i.type]||0)+1,a),{}),seen:s.seen?.length})));
+ }finally{await b.close()}})().catch(e=>{console.error(e);process.exitCode=1});

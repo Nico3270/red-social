@@ -1,5 +1,6 @@
 "use client";
 
+import { DiscoveryCategoriesProvider } from "@/ui/components/menu-section-bar/DiscoveryCategories";
 import { TopMenu, TopMenuMobile } from "@/ui";
 import { useSession } from "next-auth/react";
 import { useRouter, usePathname } from "next/navigation";
@@ -54,6 +55,7 @@ export default function CatalogoLayout({ children }: { children: React.ReactNode
   }, []);
 
   return (
+    <DiscoveryCategoriesProvider>
     <div className="bg-white min-h-screen flex flex-col relative">
       {isMobile ? <TopMenuMobile /> : <TopMenu />}
       <main className="flex-grow mt-0">{children}</main>
@@ -124,5 +126,6 @@ export default function CatalogoLayout({ children }: { children: React.ReactNode
         </div>
       </footer>
     </div>
+    </DiscoveryCategoriesProvider>
   );
 }

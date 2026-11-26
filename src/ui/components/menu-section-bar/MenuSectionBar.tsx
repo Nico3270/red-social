@@ -2,17 +2,20 @@
 
 import React, { useRef, useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion"; // 🔥 Para animaciones
 import { initialData } from "@/seed/seed";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa"; // Icons elegantes para botones
+import rail from "./categoryRail.module.css";
 import { titleFont } from "@/config/fonts";
 
 interface MenuSectionsBarProps {
   compact?: boolean;
+  presentation?: "bar" | "rail";
 }
 
-export const MenuSectionsBar = ({ compact = false }: MenuSectionsBarProps) => {
+export const MenuSectionsBar = ({ compact = false, presentation = "bar" }: MenuSectionsBarProps) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [isClient, setIsClient] = useState(false);
   const [showLeftButton, setShowLeftButton] = useState(false);
@@ -23,7 +26,7 @@ export const MenuSectionsBar = ({ compact = false }: MenuSectionsBarProps) => {
     ? pathname.split("/")[2] ?? null
     : null;
   const isHomeDiscoveryPage = pathname === "/";
-  const shouldShowDiscoveryEntry = compact && (isHomeDiscoveryPage || Boolean(activeCategorySlug));
+  const shouldShowDiscoveryEntry = presentation !== "rail" && compact && (isHomeDiscoveryPage || Boolean(activeCategorySlug));
   const navigationEntries = [
     ...(shouldShowDiscoveryEntry
       ? [
@@ -84,6 +87,26 @@ export const MenuSectionsBar = ({ compact = false }: MenuSectionsBarProps) => {
   const scrollRight = () => {
     scrollContainerRef.current?.scrollBy({ left: 200, behavior: "smooth" });
   };
+
+  if (presentation === "rail") {
+    const renderLink = (entry: (typeof navigationEntries)[number]) => (
+      <Link key={entry.id} href={entry.href} aria-current={entry.isActive ? "page" : undefined}
+        className={`${rail.link} ${entry.isActive ? rail.current : ""}`}>
+        <Image src={`/imgs/iconos/${entry.iconName}`} alt="" width={20} height={20} />
+        <span>{entry.nombre}</span>
+      </Link>
+    );
+    return (
+      <nav className={rail.rail} aria-label="Categorías">
+        <h2 className={rail.title}>Categorías</h2>
+        {navigationEntries.slice(0, 6).map(renderLink)}
+        <details>
+          <summary className={rail.more}>Más categorías</summary>
+          {navigationEntries.slice(6).map(renderLink)}
+        </details>
+      </nav>
+    );
+  }
 
   return (
     <div className="relative w-full color-fondo-principal">

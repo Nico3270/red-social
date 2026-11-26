@@ -1,0 +1,24 @@
+{
+  "project": {
+    "id": "prj_iB5Hr9oHgsqEAwnvsTqo5EyUuruy",
+    "name": "red-social",
+    "framework": "nextjs"
+  },
+  "production": {
+    "id": "dpl_WsisrcEjNXhCmA3Bj3FMFpfcJX7K",
+    "readyState": "READY",
+    "target": "production",
+    "sha": "8ce16bc7779f846c386483a7d145369b51d8e461",
+    "aliases": [
+      "myckeo.com",
+      "www.myckeo.com"
+    ]
+  },
+  "domain": {
+    "alias": "myckeo.com",
+    "deploymentId": "dpl_WsisrcEjNXhCmA3Bj3FMFpfcJX7K",
+    "projectId": "prj_iB5Hr9oHgsqEAwnvsTqo5EyUuruy"
+  },
+  "main": "8ce16bc7779f846c386483a7d145369b51d8e461",
+  "operation": "read-only; no deployment created"
+}

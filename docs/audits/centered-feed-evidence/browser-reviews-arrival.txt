@@ -1,0 +1,6 @@
+
+Running 1 test using 1 worker
+
+  ✓  1 e2e/centered-feed/centered.spec.ts:63:5 › actual review relationships and a controlled arrival-order characterization (10.3s)
+
+  1 passed (11.2s)
