@@ -1,0 +1,8 @@
+
+> myckeo@0.1.0 typecheck /home/nico/worktrees/myckeo-mobile-premium-v1-20261125
+> tsc --noEmit
+
+test-results/playwright/next-mobile-premium-review/types/app/(catalogo)/feed-implementation-review/page.ts(2,24): error TS2307: Cannot find module '../../../../../../../src/app/(catalogo)/feed-implementation-review/page.js' or its corresponding type declarations.
+test-results/playwright/next-mobile-premium-review/types/app/(catalogo)/feed-implementation-review/page.ts(5,29): error TS2307: Cannot find module '../../../../../../../src/app/(catalogo)/feed-implementation-review/page.js' or its corresponding type declarations.
+test-results/playwright/next-mobile-premium-review/types/validator.ts(170,39): error TS2307: Cannot find module '../../../../src/app/(catalogo)/feed-implementation-review/page.js' or its corresponding type declarations.
+ ELIFECYCLE  Command failed with exit code 2.

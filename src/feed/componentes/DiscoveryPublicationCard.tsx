@@ -26,7 +26,7 @@ import {
   isLikelyVideoUrl,
   resolveSafeImageSource,
 } from "@/lib/media/resolveSafeImageSource";
-import { getCloudinaryImageUrl } from "@/lib/cloudinary/buildCloudinaryDeliveryUrl";
+import { getCloudinaryImageUrl, buildCloudinaryDeliveryUrl } from "@/lib/cloudinary/buildCloudinaryDeliveryUrl";
 
 interface DiscoveryPublicationCardProps {
   publicacion: EnhancedPublicacion;
@@ -66,6 +66,7 @@ export const DiscoveryPublicationCard: React.FC<
   DiscoveryPublicationCardProps
 > = ({ publicacion, presentation = "default" }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [expandedText, setExpandedText] = useState(false);
   const [mediaOrientation, setMediaOrientation] =
     useState<MediaOrientation>("unknown");
   const [videoPosterAttempt, setVideoPosterAttempt] = useState(0);
@@ -123,6 +124,9 @@ export const DiscoveryPublicationCard: React.FC<
       : null
     : null;
   const visualMediaUrl = isVideo ? videoPosterUrl : optimizedPublicationImageUrl;
+  const mobileMediaUrl = isVideo
+    ? buildCloudinaryVideoPosterUrl(primaryMedia?.url, { preset: "publication-detail", startOffset: videoPosterAttempt === 0 ? 2 : 0 }) || visualMediaUrl
+    : buildCloudinaryDeliveryUrl(safeMediaImage, { preset: "publication-preview", crop: "limit", gravity: undefined });
   const mediaPreviewAlt = isVideo
     ? publicacion.titulo || "Vista previa del video"
     : publicacion.titulo || "Vista previa de la publicación";
@@ -205,7 +209,7 @@ export const DiscoveryPublicationCard: React.FC<
 
   return (
     <>
-      <article className={`${styles.card} ${inter.className} ${presentation === "desktop" ? styles.desktopPublication : ""} ${presentation === "desktop" && publicacion.tipo === "TESTIMONIO" ? styles.desktopReview : ""}`}>
+      <article className={`${styles.card} ${styles.publication} ${inter.className} ${presentation === "desktop" ? styles.desktopPublication : ""} ${presentation === "desktop" && publicacion.tipo === "TESTIMONIO" ? styles.desktopReview : ""}`}>
         <div className={styles.header}>
           <Link
             href={authorHref}
@@ -234,7 +238,7 @@ export const DiscoveryPublicationCard: React.FC<
               {publicacion.producto && (
                 <Link
                   href={`/producto/${publicacion.producto.slug}`}
-                  className="rounded-full bg-amber-50 px-2.5 py-1 text-[11px] font-semibold text-amber-700 transition-colors hover:bg-amber-100"
+                  className={`${styles.relatedProduct} rounded-full bg-amber-50 px-2.5 py-1 text-[11px] font-semibold text-amber-700 transition-colors hover:bg-amber-100`}
                 >
                   {publicacion.producto.nombre}
                 </Link>
@@ -262,6 +266,8 @@ export const DiscoveryPublicationCard: React.FC<
             {isVideo ? (
               videoPosterUrl ? (
                 <div className={`relative w-full overflow-hidden bg-slate-950 ${mediaAspectClass} ${styles.mediaFrame}`}>
+                  <picture>
+                  {mobileMediaUrl && <source media="(max-width: 768px)" srcSet={mobileMediaUrl} />}
                   <Image
                     src={videoPosterUrl}
                     alt={mediaPreviewAlt}
@@ -271,6 +277,7 @@ export const DiscoveryPublicationCard: React.FC<
                     className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
                     onError={handleVideoPosterError}
                   />
+                  </picture>
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-950/42 via-slate-950/12 to-transparent" />
                   <div className="absolute inset-0 flex items-center justify-center text-white">
                     <div className="flex flex-col items-center gap-2 opacity-90 transition-opacity duration-200 group-hover:opacity-100">
@@ -293,6 +300,8 @@ export const DiscoveryPublicationCard: React.FC<
               )
             ) : (
               <div className={`relative w-full overflow-hidden bg-slate-100 ${mediaAspectClass} ${styles.mediaFrame}`}>
+                <picture>
+                {mobileMediaUrl && <source media="(max-width: 768px)" srcSet={mobileMediaUrl} />}
                 <Image
                   src={optimizedPublicationImageUrl}
                   alt={mediaPreviewAlt}
@@ -300,6 +309,7 @@ export const DiscoveryPublicationCard: React.FC<
                   sizes={presentation === "desktop" ? "680px" : "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 420px"}
                   className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
                 />
+                </picture>
               </div>
             )}
           </button>
@@ -313,10 +323,11 @@ export const DiscoveryPublicationCard: React.FC<
           )}
 
           <p
-            className={`${styles.summary} ${descriptionClamp}`}
+            className={`${styles.summary} ${descriptionClamp} ${expandedText ? styles.expandedSummary : ""}`}
           >
             {previewText}
           </p>
+          {previewText.length > 180 && <button type="button" className={styles.readMore} onClick={() => setExpandedText(value => !value)} aria-expanded={expandedText}>{expandedText ? "Mostrar menos" : "Leer texto completo"}</button>}
 
           {typeof publicacion.calificacion === "number" && (
             <div className="mt-3 flex items-center gap-1">
@@ -341,10 +352,12 @@ export const DiscoveryPublicationCard: React.FC<
               <span>
                 <FaHeart className="text-[13px] text-rose-500" />
                 <span>{publicacion.numLikes}</span>
+                <span className={styles.statLabel}>Me gusta</span>
               </span>
               <span>
                 <FaCommentDots className="text-[13px] text-sky-600" />
                 <span>{publicacion.numComentarios}</span>
+                <span className={styles.statLabel}>{publicacion.numComentarios === 1 ? "comentario" : "comentarios"}</span>
               </span>
             </div>
 

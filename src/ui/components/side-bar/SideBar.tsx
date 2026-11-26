@@ -199,7 +199,7 @@ export const SideBar: React.FC<SideBarProps> = ({ open, toggleDrawer }) => {
       anchor="right"
       onClose={() => toggleDrawer(false)}
       PaperProps={{
-        sx: { bgcolor: "transparent", boxShadow: "none" },
+        sx: { bgcolor: "transparent", boxShadow: "none", "@media (max-width:768px)": { paddingTop: "env(safe-area-inset-top, 0px)", paddingBottom: "env(safe-area-inset-bottom, 0px)", height: "var(--myckeo-visual-height, 100dvh)", top: "var(--myckeo-visual-top, 0px)", boxSizing: "border-box" } },
       }}
     >
       {DrawerList}

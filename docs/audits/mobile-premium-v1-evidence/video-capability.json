@@ -1,0 +1,7 @@
+{
+  "browser": "Chromium 1193 / Linux headless",
+  "mp4ContainerSupport": "maybe",
+  "h264CodecSupport": "",
+  "webmVP8Support": "probably",
+  "interpretation": "The installed browser reports no H.264 decoder. Native MP4 controls and source association are checked, but playback is not certified; no transcoding or invented playback is used."
+}

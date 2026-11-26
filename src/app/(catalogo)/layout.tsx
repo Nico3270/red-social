@@ -7,6 +7,7 @@ import { useRouter, usePathname } from "next/navigation";
 import CookieConsent from "react-cookie-consent";
 import Link from "next/link";
 import React, { useState, useEffect } from "react";
+import mobile from "@/ui/components/topMenuMobile/mobileExperience.module.css";
 
 export default function CatalogoLayout({ children }: { children: React.ReactNode }) {
   const [isMobile, setIsMobile] = useState(false);
@@ -56,8 +57,8 @@ export default function CatalogoLayout({ children }: { children: React.ReactNode
 
   return (
     <DiscoveryCategoriesProvider>
-    <div className="bg-white min-h-screen flex flex-col relative">
-      {isMobile ? <TopMenuMobile /> : <TopMenu />}
+    <div className={`${mobile.shell} bg-white min-h-screen flex flex-col relative`}>
+      <div className={mobile.menuHost} data-mobile-profile={pathname?.startsWith("/perfil/") || undefined}>{isMobile ? <TopMenuMobile /> : <TopMenu />}</div>
       <main className="flex-grow mt-0">{children}</main>
 
       {/* Banner de Consentimiento */}

@@ -1,0 +1,2 @@
+Cold development harness: reload identical fixture once after hydration timeout.
+after: 15 inventories captured

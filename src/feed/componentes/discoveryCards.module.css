@@ -5,6 +5,7 @@
   background: white;
   box-shadow: 0 2px 6px #17203308;
 }
+.readMore, .statLabel { display: none; }
 .card a:focus-visible,
 .card button:focus-visible {
   outline: 2px solid #c93545;
@@ -254,4 +255,28 @@
   .desktopReview .mediaFrame { height: 80px; border-radius: 8px; }
   .desktopReview .body::after { display: table; clear: both; content: ""; }
   .desktopReview .title { font-size: 16px; }
+}
+
+@media (max-width: 768px) {
+  .card { box-shadow: 0 1px 4px #17203308; }
+  .publication .header { align-items: center; padding: 12px; gap: 10px; }
+  .publication .author > div { gap: 4px 6px; }
+  .publication .author span { padding-block: 2px; font-size: 10px; letter-spacing: .02em; }
+  .publication .relatedProduct { display: inline-flex; align-items: center; min-height: 44px; line-height: 16px; }
+  .publication .mediaFrame { aspect-ratio: auto; height: clamp(200px, 82vw, 360px); background: #f1f5f9; }
+  .publication .mediaFrame img { object-fit: contain; }
+  .publication .body { padding: 12px; }
+  .publication .title { font-size: 15px; line-height: 21px; }
+  .publication .summary { -webkit-line-clamp: 3; line-height: 21px; color: #475569; }
+  .publication .textOnlySummary { -webkit-line-clamp: 4; }
+  .publication .expandedSummary { display: block; -webkit-line-clamp: unset; }
+  .readMore { display: inline-flex; align-items: center; min-height: 44px; color: #b72e45; font-size: 13px; font-weight: 600; }
+  .publication .actions { gap: 6px; }
+  .publication .stats { gap: 8px; font-size: 12px; }
+  .publication .statLabel { display: inline; font-size: 11px; }
+  .publication .action { padding-inline: 8px; font-size: 12px; }
+  .card a:focus-visible, .card button:focus-visible { outline-offset: -2px; }
+  .business { padding: 12px; }
+  .business .header { align-items: center; }
+  .service .thumbnail { width: 76px; height: 76px; }
 }

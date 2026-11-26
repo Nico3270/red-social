@@ -17,6 +17,7 @@ import DiscoveryServiceCard from "@/feed/componentes/DiscoveryServiceCard";
 import { useDiscoveryCategorySlot } from "@/ui/components/menu-section-bar/DiscoveryCategories";
 import { distributeDesktopDiscovery, type DesktopDiscoveryPlan } from "@/feed/desktopDiscovery";
 import desktop from "./desktopDiscovery.module.css";
+import mobile from "./mobileFeed.module.css";
 import { groupFeedByLocation, getFeedItemTier } from "@/feed/geography";
 import productModules from "./feedProductModules.module.css";
 
@@ -312,15 +313,18 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
 
   const [wideDesktop, setWideDesktop] = useState(false);
   const [centeredDesktop, setCenteredDesktop] = useState(false);
+  const [mobileViewport, setMobileViewport] = useState(false);
   const categorySlotRef = useDiscoveryCategorySlot();
   useEffect(() => {
     const media = window.matchMedia("(min-width: 1280px)");
     const centered = window.matchMedia("(min-width: 1440px)");
-    const update = () => { setWideDesktop(media.matches); setCenteredDesktop(centered.matches); };
+    const compact = window.matchMedia("(max-width: 768px)");
+    const update = () => { setWideDesktop(media.matches); setCenteredDesktop(centered.matches); setMobileViewport(compact.matches); };
     update();
     media.addEventListener("change", update);
     centered.addEventListener("change", update);
-    return () => { media.removeEventListener("change", update); centered.removeEventListener("change", update); };
+    compact.addEventListener("change", update);
+    return () => { media.removeEventListener("change", update); centered.removeEventListener("change", update); compact.removeEventListener("change", update); };
   }, []);
   const desktopHome = wideDesktop && discoveryContext === "home" && activeTab === "Para ti";
   const centeredHome = desktopHome && centeredDesktop;
@@ -850,7 +854,7 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
   };
 
   return (
-    <div data-centered-discovery={centeredHome || undefined} data-desktop-discovery={desktopHome || undefined} className={`min-h-screen w-full bg-gray-50 px-1 py-2 sm:px-2 sm:py-4 lg:px-6 xl:px-12 ${desktopHome ? desktop.scope : ""}`}>
+    <div data-mobile-feed={mobileViewport || undefined} data-centered-discovery={centeredHome || undefined} data-desktop-discovery={desktopHome || undefined} className={`${mobile.scope} min-h-screen w-full bg-gray-50 px-1 py-2 sm:px-2 sm:py-4 lg:px-6 xl:px-12 ${desktopHome ? desktop.scope : ""}`}>
       <div className={desktop.intro}>{renderDiscoveryIntro()}</div>
 
       <div data-discovery-navigation={centeredHome || undefined} className={desktop.navigation}>
@@ -859,7 +863,7 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
-        className={`mx-auto mb-3 flex w-full overflow-x-auto rounded-xl border border-gray-200 bg-white px-1 lg:justify-around ${desktop.tabs}`}
+        className={`mx-auto mb-3 flex w-full overflow-x-auto rounded-xl border border-gray-200 bg-white px-1 lg:justify-around ${desktop.tabs} ${mobile.tabs}`}
       >
         {tabs.map((tab) => (
           <button
@@ -897,8 +901,10 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
       >
         {!mounted ? (
           <div className="text-center py-4 text-gray-400">Cargando…</div>
+        ) : mobileViewport && filteredItems.length === 0 && !isLoadingNext && !isFeedSettled ? (
+          <div className={mobile.incomplete} data-feed-unresolved role="note">El feed aún no está disponible. Puedes explorar otra pestaña o cambiar de ciudad.</div>
         ) : filteredItems.length === 0 && !isLoadingNext ? (
-          <div className="flex flex-col items-center justify-center py-8">
+          <div className={`${mobile.empty} flex flex-col items-center justify-center py-8`}>
             <p className="text-center text-gray-800 font-bold mb-4 text-lg sm:text-2xl">
               {activeTab === "Para ti"
                 ? "Aun no encontramos contenido ideal para ti"
@@ -960,8 +966,10 @@ const FeedRenderer: React.FC<FeedRendererProps> = ({
         </div>
       )}
 
-      {!hasMore && !isLoadingNext && filteredItems.length > 0 && (!centeredHome || isFeedSettled) && (
-        centeredHome ? (
+      {!hasMore && !isLoadingNext && filteredItems.length > 0 && (!(centeredHome || mobileViewport) || isFeedSettled) && (
+        mobileViewport ? (
+          <div role="status" data-mobile-feed-complete className={mobile.complete}>Estás al día. Sigue explorando productos y negocios</div>
+        ) : centeredHome ? (
           <div role="status" data-feed-complete className={desktop.complete}>
             Estás al día. Sigue explorando productos y negocios
           </div>

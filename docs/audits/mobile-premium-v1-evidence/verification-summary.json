@@ -1,0 +1,22 @@
+{
+  "distinctBrowserStoriesPassed": 6,
+  "browserRuns": {
+    "browser-second.txt": "5 passed",
+    "browser-commerce-tabs.txt": "commerce passed; tab selector failed, preserved",
+    "browser-tabs-final.txt": "1 passed",
+    "browser-city-final.txt": "2 passed"
+  },
+  "unitTestsPassed": 12,
+  "typecheck": "passed after removing generated harness declarations",
+  "lint": "passed; inherited _body warning only",
+  "focusedLint": "passed without warnings",
+  "build": "passed, 74 static pages, no temporary route",
+  "offlineComparator": {
+    "pairs": 42,
+    "imagesLoaded": 84,
+    "networkRequests": 0
+  },
+  "desktopPixelComparison": "0 differences at 769 and 1440, top and scroll",
+  "remoteMainUnchanged": true,
+  "productionChanged": false
+}

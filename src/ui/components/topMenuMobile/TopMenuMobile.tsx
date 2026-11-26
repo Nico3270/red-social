@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { usePathname } from "next/navigation";
-import { FaMapMarkerAlt, FaWhatsapp } from "react-icons/fa";
+import { MapPin, Plus, X } from "lucide-react";
 import { SideBar } from "../side-bar/SideBar";
 import { MenuSectionsBar } from "../menu-section-bar/MenuSectionBar";
 import { useCartCatalogoStore } from "@/store/carro/carro-store";
@@ -23,6 +23,10 @@ import {
   MenuItem,
   Select,
   Typography,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  IconButton,
 } from "@mui/material";
 import colombia from "@/config/colombia.json";
 import { updateUserPreferences } from "@/preferences/actions/updateUserPreferences";
@@ -31,6 +35,8 @@ import SearchBar from "@/busqueda/componentes/SearchBar";
 import { titleFont } from "@/config/fonts";
 import { BusinessEntryLink } from "../topMenu/BusinessEntryLink";
 import styles from "../topMenu/publicNavigation.module.css";
+import mobile from "./mobileExperience.module.css";
+import { MobileNavigation } from "./MobileNavigation";
 
 interface ColombiaDepartment {
   id: number;
@@ -38,20 +44,45 @@ interface ColombiaDepartment {
   ciudades: string[];
 }
 
-const UpdateLocationModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
+const UpdateLocationModal: React.FC<{
+  isOpen: boolean;
+  onClose: () => void;
+}> = ({ isOpen, onClose }) => {
   const { data: session } = useSession();
   const { ciudad, departamento, setUbicacion, setGeo } = usePreferencesStore();
-  const [selectedDepartamento, setSelectedDepartamento] = useState(departamento);
+  const [selectedDepartamento, setSelectedDepartamento] =
+    useState(departamento);
   const [selectedCity, setSelectedCity] = useState(ciudad);
   const [cities, setCities] = useState<string[]>([]);
-  const [alert, setAlert] = useState<{ type: "success" | "error"; message: string } | null>(null);
+  const [alert, setAlert] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [showThankYou, setShowThankYou] = useState(false);
+  const wasOpen = useRef(false);
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    if (isOpen && !wasOpen.current) {
+      setSelectedDepartamento(departamento);
+      setSelectedCity(ciudad);
+      setAlert(null);
+      setShowThankYou(false);
+    }
+    if (!isOpen && closeTimer.current) clearTimeout(closeTimer.current);
+    wasOpen.current = isOpen;
+  }, [isOpen, ciudad, departamento]);
+  useEffect(
+    () => () => {
+      if (closeTimer.current) clearTimeout(closeTimer.current);
+    },
+    [],
+  );
 
   useEffect(() => {
     if (selectedDepartamento) {
       const deptData = (colombia as ColombiaDepartment[]).find(
-        (dept) => dept.departamento === selectedDepartamento
+        (dept) => dept.departamento === selectedDepartamento,
       );
       setCities(deptData ? deptData.ciudades : []);
     } else {
@@ -61,7 +92,10 @@ const UpdateLocationModal: React.FC<{ isOpen: boolean; onClose: () => void }> = 
 
   const handleSave = async () => {
     if (!selectedCity || !selectedDepartamento) {
-      setAlert({ type: "error", message: "Completa todos los campos requeridos." });
+      setAlert({
+        type: "error",
+        message: "Completa todos los campos requeridos.",
+      });
       return;
     }
 
@@ -86,151 +120,178 @@ const UpdateLocationModal: React.FC<{ isOpen: boolean; onClose: () => void }> = 
 
     setIsSaving(false);
     setShowThankYou(true);
-    setTimeout(onClose, 3000);
+    closeTimer.current = setTimeout(onClose, 3000);
   };
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.3 }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
-          onClick={onClose}
-        >
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            transition={{ type: "spring", damping: 25, stiffness: 400, duration: 0.3 }}
-            className="relative w-full max-w-md bg-white rounded-3xl shadow-lg overflow-hidden p-6 md:p-8 max-h-[80vh] overflow-y-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              onClick={onClose}
-              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition-colors"
+    <Dialog
+      open={isOpen}
+      onClose={onClose}
+      fullWidth
+      maxWidth="sm"
+      aria-labelledby="mobile-location-title"
+      sx={{
+        zIndex: 10010,
+        top: "var(--myckeo-visual-top, 0px)",
+        height: "var(--myckeo-visual-height, 100dvh)",
+        bottom: "auto",
+        "& .MuiDialog-container": {
+          paddingTop: "env(safe-area-inset-top, 0px)",
+          paddingBottom: "env(safe-area-inset-bottom, 0px)",
+        },
+      }}
+      PaperProps={{
+        sx: {
+          m: 1.5,
+          width: "calc(100% - 24px)",
+          borderRadius: 3,
+          maxHeight:
+            "calc(var(--myckeo-visual-height, 100dvh) - 24px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px))",
+        },
+      }}
+    >
+      <DialogTitle
+        id="mobile-location-title"
+        sx={{ pr: 8, fontSize: 18, fontWeight: 600 }}
+      >
+        Actualizar Ubicación
+      </DialogTitle>
+      <IconButton
+        aria-label="Cerrar ubicación"
+        onClick={onClose}
+        sx={{ position: "absolute", right: 8, top: 8, width: 44, height: 44 }}
+      >
+        <X size={20} />
+      </IconButton>
+      <DialogContent sx={{ p: 2, minHeight: 0, overflowY: "auto" }}>
+        <AnimatePresence mode="wait">
+          {showThankYou ? (
+            <motion.div
+              key="thankyou"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3 }}
+              className="text-center space-y-4"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={1.5}
+              <Typography
+                variant="h5"
+                sx={{ fontWeight: "medium", color: "text.primary" }}
               >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-
-            <AnimatePresence mode="wait">
-              {showThankYou ? (
-                <motion.div
-                  key="thankyou"
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.3 }}
-                  className="text-center space-y-4"
+                ¡Gracias!
+              </Typography>
+              <Typography
+                variant="body1"
+                sx={{ color: "text.secondary", lineHeight: 1.6 }}
+              >
+                Tu ubicación ha sido actualizada. ¡Disfruta explorando la
+                plataforma!
+              </Typography>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="form"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.3 }}
+              className="space-y-6"
+            >
+              {alert && (
+                <Alert
+                  severity={alert.type}
+                  sx={{ mb: 2, borderRadius: "12px" }}
                 >
-                  <Typography variant="h5" sx={{ fontWeight: "medium", color: "text.primary" }}>
-                    ¡Gracias!
-                  </Typography>
-                  <Typography variant="body1" sx={{ color: "text.secondary", lineHeight: 1.6 }}>
-                    Tu ubicación ha sido actualizada. ¡Disfruta explorando la plataforma!
-                  </Typography>
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="form"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.3 }}
-                  className="space-y-6"
+                  {alert.message}
+                </Alert>
+              )}
+
+              <FormControl fullWidth variant="outlined" sx={{ mb: 2 }}>
+                <InputLabel id="mobile-department-label" shrink>
+                  Departamento
+                </InputLabel>
+                <Select
+                  value={selectedDepartamento}
+                  labelId="mobile-department-label"
+                  MenuProps={{ sx: { zIndex: 10020 } }}
+                  onChange={(e) =>
+                    setSelectedDepartamento(e.target.value as string)
+                  }
+                  label="Departamento"
+                  sx={{ borderRadius: "12px" }}
                 >
-                  <Typography
-                    variant="h6"
-                    sx={{ fontWeight: "medium", mb: 2, textAlign: "center", color: "text.primary" }}
-                  >
-                    Actualizar Ubicación
-                  </Typography>
+                  <MenuItem value="">Selecciona</MenuItem>
+                  {(colombia as ColombiaDepartment[]).map((dept) => (
+                    <MenuItem key={dept.id} value={dept.departamento}>
+                      {dept.departamento}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
 
-                  {alert && (
-                    <Alert severity={alert.type} sx={{ mb: 2, borderRadius: "12px" }}>
-                      {alert.message}
-                    </Alert>
-                  )}
+              <FormControl
+                fullWidth
+                variant="outlined"
+                disabled={!selectedDepartamento}
+                sx={{ mb: 2 }}
+              >
+                <InputLabel id="mobile-city-label" shrink>
+                  Ciudad
+                </InputLabel>
+                <Select
+                  value={selectedCity}
+                  labelId="mobile-city-label"
+                  MenuProps={{ sx: { zIndex: 10020 } }}
+                  onChange={(e) => setSelectedCity(e.target.value as string)}
+                  label="Ciudad"
+                  sx={{ borderRadius: "12px" }}
+                >
+                  <MenuItem value="">Selecciona</MenuItem>
+                  {cities.map((city, idx) => (
+                    <MenuItem key={idx} value={city}>
+                      {city}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
 
-                  <FormControl fullWidth variant="outlined" sx={{ mb: 2 }}>
-                    <InputLabel shrink>Departamento</InputLabel>
-                    <Select
-                      value={selectedDepartamento}
-                      onChange={(e) => setSelectedDepartamento(e.target.value as string)}
-                      label="Departamento"
-                      sx={{ borderRadius: "12px" }}
-                    >
-                      <MenuItem value="">Selecciona</MenuItem>
-                      {(colombia as ColombiaDepartment[]).map((dept) => (
-                        <MenuItem key={dept.id} value={dept.departamento}>
-                          {dept.departamento}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-
-                  <FormControl
-                    fullWidth
-                    variant="outlined"
-                    disabled={!selectedDepartamento}
-                    sx={{ mb: 2 }}
-                  >
-                    <InputLabel shrink>Ciudad</InputLabel>
-                    <Select
-                      value={selectedCity}
-                      onChange={(e) => setSelectedCity(e.target.value as string)}
-                      label="Ciudad"
-                      sx={{ borderRadius: "12px" }}
-                    >
-                      <MenuItem value="">Selecciona</MenuItem>
-                      {cities.map((city, idx) => (
-                        <MenuItem key={idx} value={city}>
-                          {city}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-
-                  <Button
-                    variant="contained"
-                    fullWidth
-                    onClick={handleSave}
-                    disabled={isSaving}
+              <Button
+                variant="contained"
+                fullWidth
+                onClick={handleSave}
+                disabled={isSaving}
+                sx={{
+                  mt: 4,
+                  borderRadius: "12px",
+                  py: 1.5,
+                  bgcolor: "primary.main",
+                  textTransform: "none",
+                  fontWeight: "medium",
+                }}
+              >
+                {isSaving ? (
+                  <Box
                     sx={{
-                      mt: 4,
-                      borderRadius: "12px",
-                      py: 1.5,
-                      bgcolor: "primary.main",
-                      textTransform: "none",
-                      fontWeight: "medium",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
                     }}
                   >
-                    {isSaving ? (
-                      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-                        <CircularProgress size={24} color="inherit" sx={{ mr: 1 }} />
-                        Actualizando...
-                      </Box>
-                    ) : (
-                      "Actualizar Ubicación"
-                    )}
-                  </Button>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+                    <CircularProgress
+                      size={24}
+                      color="inherit"
+                      sx={{ mr: 1 }}
+                    />
+                    Actualizando...
+                  </Box>
+                ) : (
+                  "Actualizar Ubicación"
+                )}
+              </Button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </DialogContent>
+    </Dialog>
   );
 };
 
@@ -245,7 +306,7 @@ export const TopMenuMobile = () => {
   const totalFavorites = useFavoritesCatalogoStore((state) =>
     state.getTotalItems(),
   );
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const isNegocio = session?.user?.role === "negocio";
   const { ciudad, userLat, userLong } = usePreferencesStore();
   const isBusinessProfilePage = pathname?.startsWith("/perfil/");
@@ -255,6 +316,32 @@ export const TopMenuMobile = () => {
 
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    const viewport = window.visualViewport;
+    const update = () => {
+      root.style.setProperty(
+        "--myckeo-visual-height",
+        `${viewport?.height ?? window.innerHeight}px`,
+      );
+      root.style.setProperty(
+        "--myckeo-visual-top",
+        `${viewport?.offsetTop ?? 0}px`,
+      );
+    };
+    update();
+    viewport?.addEventListener("resize", update);
+    viewport?.addEventListener("scroll", update);
+    window.addEventListener("resize", update);
+    return () => {
+      viewport?.removeEventListener("resize", update);
+      viewport?.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+      root.style.removeProperty("--myckeo-visual-height");
+      root.style.removeProperty("--myckeo-visual-top");
+    };
+  }, []);
 
   const showGpsIcon = userLat != null && userLong != null;
 
@@ -266,178 +353,83 @@ export const TopMenuMobile = () => {
   };
 
   return (
-    <div className="">
-      {/* Barra superior fija */}
-      <header className="fixed top-0 z-50 w-full border-b bg-white shadow-sm">
-        <div className={styles.mobileRow}>
-          <Link href="/" className={styles.brand}>
+    <div data-mobile-navigation>
+      <header className={mobile.header}>
+        <div className={mobile.row}>
+          <Link href="/" className={`${styles.brand} ${mobile.brand}`}>
             <Image
               src="/imgs/Logo Final (1).png"
               alt="Logo Myckeo"
-              width={44}
-              height={44}
+              width={32}
+              height={32}
               className="rounded-xl"
               priority
             />
-            <span
-              className={`text-2xl font-bold tracking-tight ${titleFont.className}`}
-            >
+            <span className={`font-bold tracking-tight ${titleFont.className}`}>
               Myckeo
             </span>
           </Link>
-          <div className={styles.mobileSearch}>
+          <div className={mobile.search}>
             <SearchBar compact={isDiscoveryPage} iconOnly />
           </div>
           <button
             onClick={() => setIsLocationModalOpen(true)}
-            className={styles.location}
+            className={`${styles.location} ${mobile.cityButton}`}
             aria-label={`Cambiar ubicación: ${ciudad || "Ciudad"}${showGpsIcon ? " (GPS)" : ""}`}
             title={ciudad || "Ciudad"}
+            aria-haspopup="dialog"
+            aria-expanded={isLocationModalOpen}
           >
-            <FaMapMarkerAlt
-              className={showGpsIcon ? "text-green-600" : "text-gray-500"}
+            <MapPin
+              size={16}
+              aria-hidden="true"
+              className={showGpsIcon ? "text-green-700" : "text-slate-500"}
             />
             <span className={styles.city}>{ciudad || "Ciudad"}</span>
-            {showGpsIcon && <span className="text-xs text-green-600">GPS</span>}
+            {showGpsIcon && (
+              <span className="text-[11px] text-green-700">GPS</span>
+            )}
           </button>
         </div>
-        <BusinessEntryLink />
       </header>
-
-      {isBusinessProfilePage ? (
-        <div className={styles.mobileProfileOffset} />
-      ) : (
-        <div className={styles.mobileOffset}>
-          <MenuSectionsBar compact={isDiscoveryPage} />
-        </div>
+      <div className={mobile.headerSpace} aria-hidden="true" />
+      <div className={mobile.businessRail}>
+        <BusinessEntryLink />
+        {isNegocio && (
+          <button
+            className={mobile.create}
+            onClick={() => setIsCrearModalOpen(true)}
+            aria-haspopup="dialog"
+            aria-label="Crear"
+            aria-expanded={isCrearModalOpen}
+          >
+            <Plus size={18} aria-hidden="true" />
+            Crear
+          </button>
+        )}
+      </div>
+      {!isBusinessProfilePage && (
+        <MenuSectionsBar compact={isDiscoveryPage} presentation="mobile" />
       )}
-
-      {/* Barra inferior fija con botón de Ayuda WhatsApp */}
-      <nav
-        className={`fixed bottom-0 w-full bg-white border-t shadow-lg z-50 ${styles.mobileActions}`}
-        aria-label="Navegación principal"
-      >
-        <div className="flex justify-around items-center py-2">
-          {/* Inicio */}
-          <Link href="/" className="flex flex-col items-center">
-            <Image
-              src="/imgs/iconos/home.png"
-              alt="Inicio"
-              width={26}
-              height={26}
-              unoptimized
-              className="mb-1"
-            />
-            <span className="text-xs text-gray-600">Inicio</span>
-          </Link>
-
-          {/* Carrito */}
-          <Link
-            href={mounted && totalItemsInCart > 0 ? "/carro" : "/empty"}
-            className="relative flex flex-col items-center"
-          >
-            <Image
-              src="/imgs/iconos/cart.png"
-              alt="Carro"
-              width={28}
-              height={28}
-              unoptimized
-              className="mb-1"
-            />
-            {mounted && totalItemsInCart > 0 && (
-              <span className="absolute -top-1 -right-2 bg-emerald-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
-                {totalItemsInCart}
-              </span>
-            )}
-            <span className="text-xs text-gray-600">Carro</span>
-          </Link>
-
-          {/* Favoritos */}
-          <Link
-            href="/favoritos"
-            className="relative flex flex-col items-center"
-          >
-            <Image
-              src="/imgs/iconos/heart.png"
-              alt="Favoritos"
-              width={26}
-              height={26}
-              unoptimized
-              className="mb-1"
-            />
-            {mounted && totalFavorites > 0 && (
-              <span className="absolute -top-1 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
-                {totalFavorites}
-              </span>
-            )}
-            <span className="text-xs text-gray-600">Favoritos</span>
-          </Link>
-
-          {/* Crear o Mi Negocio */}
-          {session ? (
-            isNegocio ? (
-              <Link href="/dashboard" className="flex flex-col items-center">
-                <Image
-                  src="/imgs/iconos/shop.png"
-                  alt="Mi negocio"
-                  width={32}
-                  height={32}
-                  unoptimized
-                  className="mb-1"
-                />
-                <span className="text-xs text-gray-600 whitespace-nowrap">
-                  Mi negocio
-                </span>
-              </Link>
-            ) : (
-              <button
-                aria-label="Crear"
-                aria-haspopup="dialog"
-                onClick={() => setIsCrearModalOpen(true)}
-                className="flex flex-col items-center"
-              >
-                <Image
-                  src="/imgs/iconos/plus.png"
-                  alt="Crear"
-                  width={28}
-                  height={28}
-                  unoptimized
-                  className="mb-1"
-                />
-                <span className="text-xs text-gray-600">Crear</span>
-              </button>
-            )
-          ) : null}
-
-          {/* Perfil */}
-          <button
-            onClick={() => setIsDrawerOpen(true)}
-            className="flex flex-col items-center"
-          >
-            <Image
-              src="/imgs/iconos/profile.png"
-              alt="Perfil"
-              width={26}
-              height={26}
-              unoptimized
-              className="mb-1"
-            />
-            <span className="text-xs text-gray-600">Perfil</span>
-          </button>
-
-          {/* Botón de Ayuda WhatsApp */}
-          <button
-            onClick={handleAyudaWhatsApp}
-            className="flex flex-col items-center text-green-600"
-            aria-label="Ayuda por WhatsApp"
-          >
-            <FaWhatsapp className="w-7 h-7 mb-1 drop-shadow-md" />
-            <span className="text-xs font-medium">Ayuda</span>
-          </button>
-        </div>
-      </nav>
-
-      {/* Modales */}
+      <MobileNavigation
+        pathname={pathname || "/"}
+        cartCount={mounted ? totalItemsInCart : 0}
+        favoriteCount={mounted ? totalFavorites : 0}
+        context={
+          status === "loading"
+            ? "loading"
+            : !session
+              ? "anonymous"
+              : isNegocio
+                ? "owner"
+                : "personal"
+        }
+        profileOpen={isDrawerOpen}
+        createOpen={isCrearModalOpen}
+        onProfile={() => setIsDrawerOpen(true)}
+        onCreate={() => setIsCrearModalOpen(true)}
+        onHelp={handleAyudaWhatsApp}
+      />
       <SideBar open={isDrawerOpen} toggleDrawer={setIsDrawerOpen} />
       <CrearModal
         isOpen={isCrearModalOpen}

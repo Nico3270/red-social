@@ -1,0 +1,1 @@
+before: 15 inventories captured

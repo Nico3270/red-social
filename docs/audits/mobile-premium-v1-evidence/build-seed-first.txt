@@ -1,0 +1,24 @@
+/home/nico/worktrees/myckeo-mobile-premium-v1-20261125/node_modules/.pnpm/@prisma+client@6.18.0_prisma@6.18.0_typescript@5.9.3__typescript@5.9.3/node_modules/@prisma/client/src/runtime/RequestHandler.ts:242
+      throw new PrismaClientInitializationError(message, this.client._clientVersion)
+            ^
+
+
+PrismaClientInitializationError:
+Invalid `prisma.$queryRaw()` invocation:
+
+
+Can't reach database server at `127.0.0.1:55439`
+
+Please make sure your database server is running at `127.0.0.1:55439`.
+    at ei.handleRequestError (/home/nico/worktrees/myckeo-mobile-premium-v1-20261125/node_modules/.pnpm/@prisma+client@6.18.0_prisma@6.18.0_typescript@5.9.3__typescript@5.9.3/node_modules/@prisma/client/src/runtime/RequestHandler.ts:242:13)
+    at ei.handleAndLogRequestError (/home/nico/worktrees/myckeo-mobile-premium-v1-20261125/node_modules/.pnpm/@prisma+client@6.18.0_prisma@6.18.0_typescript@5.9.3__typescript@5.9.3/node_modules/@prisma/client/src/runtime/RequestHandler.ts:174:12)
+    at ei.request (/home/nico/worktrees/myckeo-mobile-premium-v1-20261125/node_modules/.pnpm/@prisma+client@6.18.0_prisma@6.18.0_typescript@5.9.3__typescript@5.9.3/node_modules/@prisma/client/src/runtime/RequestHandler.ts:143:12)
+    at async a (/home/nico/worktrees/myckeo-mobile-premium-v1-20261125/node_modules/.pnpm/@prisma+client@6.18.0_prisma@6.18.0_typescript@5.9.3__typescript@5.9.3/node_modules/@prisma/client/src/runtime/getPrismaClient.ts:833:24)
+    at async assertIsolatedDatabase (/home/nico/worktrees/myckeo-mobile-premium-v1-20261125/scripts/public-ui-pg/fixtures.ts:15:18)
+    at async main (/home/nico/worktrees/myckeo-mobile-premium-v1-20261125/e2e/desktop-feed-prototype/build-seed.ts:5:16) {
+  clientVersion: '6.18.0',
+  errorCode: undefined,
+  retryable: undefined
+}
+
+Node.js v20.20.0

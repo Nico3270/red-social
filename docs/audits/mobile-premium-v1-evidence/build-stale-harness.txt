@@ -1,0 +1,39 @@
+
+> myckeo@0.1.0 build /home/nico/worktrees/myckeo-mobile-premium-v1-20261125
+> npm run prisma:generate && next build
+
+
+> myckeo@0.1.0 prisma:generate
+> prisma generate
+
+Prisma schema loaded from prisma/schema.prisma
+
+✔ Generated Prisma Client (v6.18.0) to ./node_modules/.pnpm/@prisma+client@6.18.0_prisma@6.18.0_typescript@5.9.3__typescript@5.9.3/node_modules/@prisma/client in 348ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Want to turn off tips and other hints? https://pris.ly/tip-4-nohints
+
+   ▲ Next.js 15.5.9
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 27.9s
+   Linting and checking validity of types ...
+
+./src/app/activar/ActivationBootstrap.test.tsx
+347:21  Warning: '_body' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/app/api-reference/config/eslint#disabling-rules
+Failed to compile.
+
+./test-results/playwright/next-mobile-premium-review/types/app/(catalogo)/feed-implementation-review/page.ts:2:24
+Type error: Cannot find module '../../../../../../../src/app/(catalogo)/feed-implementation-review/page.js' or its corresponding type declarations.
+
+  1 | // File: /home/nico/worktrees/myckeo-mobile-premium-v1-20261125/src/app/(catalogo)/feed-implementation-review/page.tsx
+> 2 | import * as entry from '../../../../../../../src/app/(catalogo)/feed-implementation-review/page.js'
+    |                        ^
+  3 | import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
+  4 |
+  5 | type TEntry = typeof import('../../../../../../../src/app/(catalogo)/feed-implementation-review/page.js')
+Next.js build worker exited with code: 1 and signal: null
+ ELIFECYCLE  Command failed with exit code 1.

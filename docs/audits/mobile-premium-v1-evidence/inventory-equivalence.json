@@ -1,0 +1,38 @@
+{
+  "cases": 15,
+  "allPairsEqual": true,
+  "uniqueIdentities": true,
+  "noOverflow": true,
+  "noFinalCapturePageErrors": true,
+  "publicInitialInventoryMatches": true,
+  "desktopPixels": [
+    {
+      "width": 769,
+      "position": "top",
+      "changedPixels": 0,
+      "totalPixels": 692100,
+      "bounds": null
+    },
+    {
+      "width": 769,
+      "position": "scroll",
+      "changedPixels": 0,
+      "totalPixels": 692100,
+      "bounds": null
+    },
+    {
+      "width": 1440,
+      "position": "top",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "bounds": null
+    },
+    {
+      "width": 1440,
+      "position": "scroll",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "bounds": null
+    }
+  ]
+}

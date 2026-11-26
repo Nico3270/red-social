@@ -1,7 +1,8 @@
 // src/components/follow/FollowButton.tsx
 "use client";
 
-import { useState, useEffect, type ReactNode } from "react";
+import { useState, useEffect, useRef, useId, type ReactNode } from "react";
+import { useDialogFocus } from "@/hooks/useDialogFocus";
 import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -45,6 +46,9 @@ export const FollowButton: React.FC<FollowButtonProps> = ({
   const pathname = usePathname();
   const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const modalRef = useRef<HTMLDivElement>(null);
+  const authTitle = useId();
+  useDialogFocus(isModalOpen, modalRef, () => setIsModalOpen(false));
   const [hoverUnfollow, setHoverUnfollow] = useState(false);
   const [mounted, setMounted] = useState(false);
   const router = useRouter();
@@ -246,7 +250,11 @@ export const FollowButton: React.FC<FollowButtonProps> = ({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]"
+              ref={modalRef}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby={authTitle}
+              className={`${styles.authDialog} fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]`}
               onClick={() => setIsModalOpen(false)}
             >
               <motion.div
@@ -257,7 +265,7 @@ export const FollowButton: React.FC<FollowButtonProps> = ({
                 className="bg-white rounded-xl p-6 max-w-sm w-full mx-4 shadow-xl"
                 onClick={(e) => e.stopPropagation()}
               >
-                <h2 className="text-xl font-bold mb-4 text-gray-800 text-center">Inicia sesión para interactuar</h2>
+                <h2 id={authTitle} className="text-xl font-bold mb-4 text-gray-800 text-center">Inicia sesión para interactuar</h2>
                 <p className="text-gray-800 mb-4">
                   Para seguir un perfil, debes estar autenticado. ¡Es un proceso sencillo y rápido!
                 </p>

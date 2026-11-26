@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useId } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -8,11 +8,13 @@ import { motion } from "framer-motion"; // 🔥 Para animaciones
 import { initialData } from "@/seed/seed";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa"; // Icons elegantes para botones
 import rail from "./categoryRail.module.css";
+import mobile from "./mobileCategories.module.css";
+import { LayoutGrid, ChevronDown } from "lucide-react";
 import { titleFont } from "@/config/fonts";
 
 interface MenuSectionsBarProps {
   compact?: boolean;
-  presentation?: "bar" | "rail";
+  presentation?: "bar" | "rail" | "mobile";
 }
 
 export const MenuSectionsBar = ({ compact = false, presentation = "bar" }: MenuSectionsBarProps) => {
@@ -21,12 +23,14 @@ export const MenuSectionsBar = ({ compact = false, presentation = "bar" }: MenuS
   const [showLeftButton, setShowLeftButton] = useState(false);
   const [showRightButton, setShowRightButton] = useState(false);
   const pathname = usePathname();
+  const [expanded, setExpanded] = useState(false);
+  const categoryId = useId();
 
   const activeCategorySlug = pathname?.startsWith("/category/")
     ? pathname.split("/")[2] ?? null
     : null;
   const isHomeDiscoveryPage = pathname === "/";
-  const shouldShowDiscoveryEntry = presentation !== "rail" && compact && (isHomeDiscoveryPage || Boolean(activeCategorySlug));
+  const shouldShowDiscoveryEntry = presentation === "bar" && compact && (isHomeDiscoveryPage || Boolean(activeCategorySlug));
   const navigationEntries = [
     ...(shouldShowDiscoveryEntry
       ? [
@@ -87,6 +91,25 @@ export const MenuSectionsBar = ({ compact = false, presentation = "bar" }: MenuS
   const scrollRight = () => {
     scrollContainerRef.current?.scrollBy({ left: 200, behavior: "smooth" });
   };
+
+  if (presentation === "mobile") {
+    return (
+      <nav className={mobile.categories} aria-label="Categorías" data-mobile-categories>
+        <div className={`${mobile.bar} ${expanded ? mobile.expanded : ""}`}>
+          <button className={mobile.toggle} onClick={() => setExpanded(value => !value)} aria-label={expanded ? "Ocultar categorías" : "Mostrar categorías"} aria-expanded={expanded} aria-controls={categoryId}>
+            <LayoutGrid size={16} aria-hidden="true" /> Categorías <ChevronDown size={14} aria-hidden="true" style={{ transform: expanded ? "rotate(180deg)" : undefined }} />
+          </button>
+          <div id={categoryId} className={mobile.links}>
+            {navigationEntries.map(entry => (
+              <Link key={entry.id} href={entry.href} className={mobile.link} aria-current={entry.isActive ? "page" : undefined}>
+                <Image src={`/imgs/iconos/${entry.iconName}`} alt="" width={20} height={20} /><span>{entry.nombre}</span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </nav>
+    );
+  }
 
   if (presentation === "rail") {
     const renderLink = (entry: (typeof navigationEntries)[number]) => (

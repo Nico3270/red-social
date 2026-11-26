@@ -1,0 +1,22 @@
+{
+  "cityClose": [
+    {
+      "label": null,
+      "width": 24,
+      "height": 24
+    }
+  ],
+  "publicationClose": {
+    "width": 20,
+    "height": 20
+  },
+  "video": {
+    "duration": null,
+    "currentTime": 0,
+    "paused": true,
+    "readyState": 0,
+    "error": "",
+    "canPlay": "maybe"
+  },
+  "errors": []
+}

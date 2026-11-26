@@ -1,0 +1,41 @@
+@media (max-width: 768px) {
+  .layer {
+    top: var(--myckeo-visual-top, 0px);
+    bottom: auto;
+    height: var(--myckeo-visual-height, 100dvh);
+    padding: calc(12px + env(safe-area-inset-top, 0px)) 8px
+      calc(12px + env(safe-area-inset-bottom, 0px));
+  }
+  .layer .panel {
+    max-height: 100%;
+    border-radius: 16px;
+  }
+  .layer .close {
+    top: 6px;
+    right: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: #fff;
+    color: #475569;
+  }
+  .layer .close:focus-visible {
+    outline: 2px solid #b72e45;
+    outline-offset: -2px;
+  }
+  .layer .content {
+    padding: 16px;
+    max-height: calc(
+      var(--myckeo-visual-height, 100dvh) - 24px -
+        env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)
+    );
+  }
+  .layer .content > h2 {
+    padding-right: 40px;
+    font-size: 18px;
+    line-height: 24px;
+  }
+}

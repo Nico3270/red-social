@@ -1,0 +1,18 @@
+{
+  "basePublished": "89f2741578ec666fbcdcabb1e1d23126b5609f31",
+  "localMain": "89f2741578ec666fbcdcabb1e1d23126b5609f31",
+  "originMain": "89f2741578ec666fbcdcabb1e1d23126b5609f31",
+  "remoteMain": "89f2741578ec666fbcdcabb1e1d23126b5609f31",
+  "prototypeBranch": "prototype/mobile-premium-v1-20261125",
+  "referenceHead": "89f2741578ec666fbcdcabb1e1d23126b5609f31",
+  "referenceTrackedApplicationDiff": "",
+  "productionAtStart": {
+    "project": "red-social",
+    "deploymentId": "dpl_9Dyd8BvDRHcKNp4e5Kwq9V4BG6SJ",
+    "state": "READY",
+    "sha": "89f2741578ec666fbcdcabb1e1d23126b5609f31",
+    "domain": "https://myckeo.com"
+  },
+  "pushMergeDeployPerformed": false,
+  "remoteMainEnd": "89f2741578ec666fbcdcabb1e1d23126b5609f31"
+}

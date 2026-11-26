@@ -1,0 +1,30 @@
+docker: Error response from daemon: Ports are not available: exposing port TCP 127.0.0.1:55439 -> 0.0.0.0:0: listen tcp 127.0.0.1:55439: bind: An attempt was made to access a socket in a way forbidden by its access permissions.
+node:internal/errors:984
+  const err = new Error(message);
+              ^
+
+Error: Command failed: docker run --detach --name myckeo-public-pg-20261125 --label myckeo.audit=public-candidate-20261125 --publish 127.0.0.1:55439:5432 --env POSTGRES_USER=myckeo_audit --env POSTGRES_PASSWORD=local_audit_only --env POSTGRES_DB=myckeo_public_audit --tmpfs /var/lib/postgresql/data:rw postgres:16
+docker: Error response from daemon: Ports are not available: exposing port TCP 127.0.0.1:55439 -> 0.0.0.0:0: listen tcp 127.0.0.1:55439: bind: An attempt was made to access a socket in a way forbidden by its access permissions.
+
+    at genericNodeError (node:internal/errors:984:15)
+    at wrappedFn (node:internal/errors:538:14)
+    at checkExecSyncError (node:child_process:891:11)
+    at execFileSync (node:child_process:927:15)
+    at docker (file:///home/nico/worktrees/myckeo-mobile-premium-v1-20261125/scripts/public-ui-pg/database.mjs:5:3)
+    at file:///home/nico/worktrees/myckeo-mobile-premium-v1-20261125/scripts/public-ui-pg/database.mjs:9:5
+    at ModuleJob.run (node:internal/modules/esm/module_job:325:25)
+    at async ModuleLoader.import (node:internal/modules/esm/loader:606:24)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5) {
+  status: 125,
+  signal: null,
+  output: [
+    null,
+    'bb78dab483c90e2482129f469174f26957e23d083a6fef3254cefe237e44ca00\n',
+    'docker: Error response from daemon: Ports are not available: exposing port TCP 127.0.0.1:55439 -> 0.0.0.0:0: listen tcp 127.0.0.1:55439: bind: An attempt was made to access a socket in a way forbidden by its access permissions.\n'
+  ],
+  pid: 161739,
+  stdout: 'bb78dab483c90e2482129f469174f26957e23d083a6fef3254cefe237e44ca00\n',
+  stderr: 'docker: Error response from daemon: Ports are not available: exposing port TCP 127.0.0.1:55439 -> 0.0.0.0:0: listen tcp 127.0.0.1:55439: bind: An attempt was made to access a socket in a way forbidden by its access permissions.\n'
+}
+
+Node.js v20.20.0

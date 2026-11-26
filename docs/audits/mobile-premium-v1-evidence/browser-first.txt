@@ -1,0 +1,155 @@
+
+Running 5 tests using 1 worker
+
+Cold development harness: reload identical fixture once after hydration timeout.
+(node:147769) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 e2e/mobile-premium-v1/mobile.spec.ts:11:5 › shell, stable navigation, categories and document clearance at all breakpoints (3.0m)
+  ✘  2 e2e/mobile-premium-v1/mobile.spec.ts:49:5 › commerce keeps independent 44px actions, product variants, cart badges and pending dialog on append (9.1s)
+  ✘  3 e2e/mobile-premium-v1/mobile.spec.ts:81:5 › sessions retain help, create, business and profile with predictable slots (1.3m)
+  ✘  4 e2e/mobile-premium-v1/mobile.spec.ts:105:5 › search, city, virtual viewport, safe areas and accessible publication dialog (10.2s)
+  ✘  5 e2e/mobile-premium-v1/mobile.spec.ts:130:5 › existing coordinator: completeness, geography, city and distinct empty/loading/error/end states (31.7s)
+
+
+  1) e2e/mobile-premium-v1/mobile.spec.ts:11:5 › shell, stable navigation, categories and document clearance at all breakpoints
+
+    Test timeout of 180000ms exceeded.
+
+    Error: page.waitForTimeout: Test timeout of 180000ms exceeded.
+
+       at ../centered-feed/browser-support.cjs:13
+
+      11 |  if(url.pathname.startsWith('/api/'))return route.fulfill({json:{}});return route.continue();});return errors;
+      12 | }
+    > 13 | async function settled(page){await page.waitForTimeout(1000);await page.evaluate(()=>Promise.race([Promise.all([...document.images].filter(i=>i.getBoundingClientRect().top>=0&&i.getBoundingClientRect().top<innerHeight).map(i=>i.complete?Promise.resolve():i.decode().catch(()=>{}))),new Promise(r=>setTimeout(r,3000))]));}
+         |                                         ^
+      14 | module.exports={setup,settled};
+      15 |
+        at settled (/home/nico/worktrees/myckeo-mobile-premium-v1-20261125/e2e/centered-feed/browser-support.cjs:13:41)
+        at ready (/home/nico/worktrees/myckeo-mobile-premium-v1-20261125/e2e/mobile-premium-v1/browser.cjs:39:8)
+        at /home/nico/worktrees/myckeo-mobile-premium-v1-20261125/e2e/mobile-premium-v1/mobile.spec.ts:14:57
+
+    Error Context: test-results/mobile-premium-v1/mobile-shell-stable-naviga-705b6-learance-at-all-breakpoints/error-context.md
+
+  2) e2e/mobile-premium-v1/mobile.spec.ts:49:5 › commerce keeps independent 44px actions, product variants, cart badges and pending dialog on append
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: "hidden"
+    Received: "unset"
+
+      67 |   await page.evaluate(() => (window as unknown as { __centeredAppend: () => void }).__centeredAppend());
+      68 |   await expect(page.locator('[data-feed-item-key]')).toHaveCount(snapshot.items.length); await expect(dialog).toBeVisible();
+    > 69 |   expect(await page.evaluate(() => document.body.style.overflow)).toBe('hidden');
+         |                                                                   ^
+      70 |   await expect(dialog.getByRole('spinbutton', { name: 'Cantidad del producto' })).toHaveValue('1');
+      71 |   await dialog.getByRole('button', { name: 'Aumentar cantidad', exact: true }).click();
+      72 |   await dialog.getByRole('button', { name: 'Agregar al carrito', exact: true }).click();
+        at /home/nico/worktrees/myckeo-mobile-premium-v1-20261125/e2e/mobile-premium-v1/mobile.spec.ts:69:67
+
+    Error Context: test-results/mobile-premium-v1/mobile-commerce-keeps-inde-b8d77-nd-pending-dialog-on-append/error-context.md
+
+  3) e2e/mobile-premium-v1/mobile.spec.ts:81:5 › sessions retain help, create, business and profile with predictable slots
+
+    Error: expect(page).toHaveURL(expected) failed
+
+    Expected pattern: /dashboard\/editar-perfil|auth\/login/
+    Received string:  "http://127.0.0.1:3400/"
+    Timeout: 30000ms
+
+    Call log:
+      - Expect "toHaveURL" with timeout 30000ms
+        33 × unexpected value "http://127.0.0.1:3400/"
+
+
+       99 |   for (let i = 1; i < records.length; i++) expect(records[i].positions.map(p => [p.x,p.width])).toEqual(records[0].positions.map(p => [p.x,p.width]));
+      100 |   const context = await browser.newContext({ viewport: { width: 390, height: 900 } }); const page = await context.newPage(); await setup(page, 'placeholder'); await page.goto('/');
+    > 101 |   await expect(page).toHaveURL(/dashboard\/editar-perfil|auth\/login/); await context.close();
+          |                      ^
+      102 |   writeFileSync(`${folder}/sessions.json`, JSON.stringify(records, null, 2));
+      103 | });
+      104 |
+        at /home/nico/worktrees/myckeo-mobile-premium-v1-20261125/e2e/mobile-premium-v1/mobile.spec.ts:101:22
+
+    Error Context: test-results/mobile-premium-v1/mobile-sessions-retain-hel-f126f-file-with-predictable-slots/error-context.md
+
+  4) e2e/mobile-premium-v1/mobile.spec.ts:105:5 › search, city, virtual viewport, safe areas and accessible publication dialog
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 44
+    Received: 39.6009521484375
+
+      122 |   const read = publication.getByRole('button', { name: 'Leer texto completo', exact: true }); await read.click(); await expect(publication.getByRole('button', { name: 'Mostrar menos', exact: true })).toHaveAttribute('aria-expanded', 'true');
+      123 |   await publication.getByRole('button', { name: 'Ver publicación', exact: true }).click(); const dialog = page.getByRole('dialog').filter({ has: page.getByRole('button', { name: 'Cerrar modal', exact: true }) }); await expect(dialog).toBeVisible();
+    > 124 |   const close = dialog.getByRole('button', { name: 'Cerrar modal', exact: true }); expect((await close.boundingBox())!.width).toBe(44); await expect(close).toBeFocused();
+          |                                                                                                                               ^
+      125 |   await page.keyboard.press('Shift+Tab'); expect(await dialog.evaluate(el => el.contains(document.activeElement))).toBe(true);
+      126 |   await page.keyboard.press('Escape'); await expect(dialog).toHaveCount(0); await expect(publication.getByRole('button', { name: 'Ver publicación', exact: true })).toBeFocused(); expect(errors).toEqual([]);
+      127 |   writeFileSync(`${folder}/keyboard-dialogs.json`, JSON.stringify({ safeTop: 24, safeBottom: 20, visualViewportHeight: 470, focusRestored: true, errors }, null, 2));
+        at /home/nico/worktrees/myckeo-mobile-premium-v1-20261125/e2e/mobile-premium-v1/mobile.spec.ts:124:127
+
+    Error Context: test-results/mobile-premium-v1/mobile-search-city-virtual-b2001-cessible-publication-dialog/error-context.md
+
+  5) e2e/mobile-premium-v1/mobile.spec.ts:130:5 › existing coordinator: completeness, geography, city and distinct empty/loading/error/end states
+
+    TimeoutError: locator.click: Timeout 15000ms exceeded.
+    Call log:
+      - waiting for getByRole('option', { name: 'Cundinamarca', exact: true })
+        - locator resolved to <li tabindex="-1" role="option" aria-selected="false" data-value="Cundinamarca" class="MuiButtonBase-root MuiMenuItem-root MuiMenuItem-gutters MuiMenuItem-root MuiMenuItem-gutters css-1rju2q6-MuiButtonBase-root-MuiMenuItem-root">Cundinamarca</li>
+      - attempting click action
+        2 × waiting for element to be visible, enabled and stable
+          - element is not stable
+        - retrying click action
+        - waiting 20ms
+        2 × waiting for element to be visible, enabled and stable
+          - element is not stable
+        - retrying click action
+          - waiting 100ms
+        7 × waiting for element to be visible, enabled and stable
+          - element is visible, enabled and stable
+          - scrolling into view if needed
+          - done scrolling
+          - <div tabindex="-1" role="presentation" class="MuiDialog-container MuiDialog-scrollPaper css-19do60a-MuiDialog-container">…</div> from <div aria-hidden="true" role="presentation" class="MuiDialog-root MuiModal-root css-e7i4sc-MuiModal-root-MuiDialog-root">…</div> subtree intercepts pointer events
+        - retrying click action
+          - waiting 500ms
+          - waiting for element to be visible, enabled and stable
+          - element is visible, enabled and stable
+          - scrolling into view if needed
+          - done scrolling
+          - <div tabindex="-1" role="presentation" class="MuiDialog-container MuiDialog-scrollPaper css-19do60a-MuiDialog-container">…</div> from <div aria-hidden="true" role="presentation" class="MuiDialog-root MuiModal-root css-e7i4sc-MuiModal-root-MuiDialog-root">…</div> subtree intercepts pointer events
+        - retrying click action
+          - waiting 500ms
+          - waiting for element to be visible, enabled and stable
+          - element is visible, enabled and stable
+          - scrolling into view if needed
+          - done scrolling
+          - <div tabindex="0" role="combobox" aria-expanded="false" aria-haspopup="listbox" class="MuiSelect-select MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input css-18jp67o-MuiNativeSelect-root-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input">Tunja</div> from <div aria-hidden="true" role="presentation" class="MuiDialog-root MuiModal-root css-e7i4sc-MuiModal-root-MuiDialog-root">…</div> subtree intercepts pointer events
+        - retrying click action
+          - waiting 500ms
+          - waiting for element to be visible, enabled and stable
+          - element is visible, enabled and stable
+          - scrolling into view if needed
+          - done scrolling
+          - <div tabindex="-1" role="presentation" class="MuiDialog-container MuiDialog-scrollPaper css-19do60a-MuiDialog-container">…</div> from <div aria-hidden="true" role="presentation" class="MuiDialog-root MuiModal-root css-e7i4sc-MuiModal-root-MuiDialog-root">…</div> subtree intercepts pointer events
+        - retrying click action
+          - waiting 500ms
+
+
+      135 |   for (let i = 1; i < groups.length; i++) expect(groups[i].top).toBeGreaterThanOrEqual(groups[i-1].bottom);
+      136 |   await page.getByRole('button', { name: /Cambiar ubicación:/ }).click(); let selects = page.getByRole('combobox').filter({ visible: true });
+    > 137 |   await selects.nth((await selects.count()) - 2).click(); await page.getByRole('option', { name: 'Cundinamarca', exact: true }).click(); selects = page.getByRole('combobox').filter({ visible: true });
+          |                                                                                                                                 ^
+      138 |   await selects.nth((await selects.count()) - 1).click(); await page.getByRole('option', { name: 'Bogotá', exact: true }).click(); await page.getByRole('button', { name: 'Actualizar Ubicación', exact: true }).click();
+      139 |   await expect(page.getByRole('button', { name: /Cambiar ubicación: Bogotá/ })).toBeVisible(); await drain(); const bogota = await keys(page); expect(bogota).toHaveLength(69); expect(new Set(bogota).size).toBe(69);
+      140 |   for (const state of ['empty','loading','pending-types','error']) {
+        at /home/nico/worktrees/myckeo-mobile-premium-v1-20261125/e2e/mobile-premium-v1/mobile.spec.ts:137:129
+
+    Error Context: test-results/mobile-premium-v1/mobile-existing-coordinato-b95b1-ty-loading-error-end-states/error-context.md
+
+  5 failed
+    e2e/mobile-premium-v1/mobile.spec.ts:11:5 › shell, stable navigation, categories and document clearance at all breakpoints
+    e2e/mobile-premium-v1/mobile.spec.ts:49:5 › commerce keeps independent 44px actions, product variants, cart badges and pending dialog on append
+    e2e/mobile-premium-v1/mobile.spec.ts:81:5 › sessions retain help, create, business and profile with predictable slots
+    e2e/mobile-premium-v1/mobile.spec.ts:105:5 › search, city, virtual viewport, safe areas and accessible publication dialog
+    e2e/mobile-premium-v1/mobile.spec.ts:130:5 › existing coordinator: completeness, geography, city and distinct empty/loading/error/end states

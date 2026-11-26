@@ -1,0 +1,22 @@
+{
+  "cityClose": [
+    {
+      "label": "Cerrar ubicación",
+      "width": 44,
+      "height": 44
+    }
+  ],
+  "publicationClose": {
+    "width": 44,
+    "height": 44
+  },
+  "video": {
+    "duration": null,
+    "currentTime": 0,
+    "paused": true,
+    "readyState": 0,
+    "error": "",
+    "canPlay": "maybe"
+  },
+  "errors": []
+}

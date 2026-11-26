@@ -72,12 +72,13 @@ export const CrearModal = ({ isOpen, onClose }: CrearModalProps) => {
       maxWidth="sm"
       transitionDuration={reducedMotion ? 0 : 180}
       aria-labelledby="create-content-title"
-      sx={{ zIndex: 10010 }}
+      sx={{ zIndex: 10010, "@media (max-width:768px)": { top: "var(--myckeo-visual-top, 0px)", height: "var(--myckeo-visual-height, 100dvh)", bottom: "auto", "& .MuiDialog-container": { paddingTop: "env(safe-area-inset-top, 0px)", paddingBottom: "env(safe-area-inset-bottom, 0px)" } } }}
       PaperProps={{
         sx: {
           m: 1.5,
           width: "calc(100% - 24px)",
           maxHeight: "calc(100dvh - 24px)",
+          "@media (max-width:768px)": { maxHeight: "calc(var(--myckeo-visual-height, 100dvh) - 24px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px))" },
           borderRadius: 3,
           fontFamily: inter.style.fontFamily,
           boxShadow: "0 16px 48px #11182726",

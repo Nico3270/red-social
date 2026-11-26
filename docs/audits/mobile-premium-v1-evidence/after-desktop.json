@@ -1,0 +1,796 @@
+[
+  {
+    "width": 769,
+    "position": "top",
+    "images": [
+      {
+        "src": "http://127.0.0.1:3400/imgs/Logo%20Final%20(1).png",
+        "natural": [
+          2048,
+          2048
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/home.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/cart.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/heart.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/profile.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/home.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/comidas.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/drinks.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/moda.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/tecnologia.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/hogar.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/belleza.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/salud.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/deportes.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/mascotas.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/libros.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/vehiculos.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/juguetesNinos.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/jardineria.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/viajes.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/inmuebles.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/hospedaje.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/servicios-profesionales.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/negocios.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_fill,g_auto,w_160,h_160/v1758509399/red-social/hco0zuwbphkf18ocrozc.png",
+        "natural": [
+          160,
+          160
+        ]
+      },
+      {
+        "src": "https://res.cloudinary.com/dkwosk8qd/image/upload/f_auto,q_auto:eco,c_fill,g_auto,w_640,h_640/v1776241252/zv0caubf62mqq9jjczqf.jpg",
+        "natural": [
+          640,
+          640
+        ]
+      },
+      {
+        "src": "https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_fill,g_auto,w_160,h_160/v1758329893/red-social/k7xcigjuxyfbpvc9qtpz.png",
+        "natural": [
+          160,
+          160
+        ]
+      },
+      {
+        "src": "https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_fill,g_auto,w_640,h_640/v1758330642/red-social/z1nm04fzthvozmgvson9.png",
+        "natural": [
+          640,
+          640
+        ]
+      },
+      {
+        "src": "https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_fill,g_auto,w_160,h_160/v1756782518/red-social/aj5j4djkthmkyij5vdtv.png",
+        "natural": [
+          160,
+          160
+        ]
+      },
+      {
+        "src": "https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_fill,g_auto,w_640,h_640/v1756786695/red-social/vvaorrchfn1igvikwtqe.png",
+        "natural": [
+          640,
+          640
+        ]
+      }
+    ]
+  },
+  {
+    "width": 769,
+    "position": "scroll",
+    "images": [
+      {
+        "src": "http://127.0.0.1:3400/imgs/Logo%20Final%20(1).png",
+        "natural": [
+          2048,
+          2048
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/home.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/cart.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/heart.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/profile.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/home.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/comidas.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/drinks.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/moda.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/tecnologia.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/hogar.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/belleza.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/salud.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/deportes.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/mascotas.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/libros.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/vehiculos.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/juguetesNinos.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/jardineria.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/viajes.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/inmuebles.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/hospedaje.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/servicios-profesionales.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/negocios.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_fill,g_auto,w_640,h_640/v1756786695/red-social/vvaorrchfn1igvikwtqe.png",
+        "natural": [
+          640,
+          640
+        ]
+      },
+      {
+        "src": "https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_fill,g_auto,w_160,h_160/v1756771272/red-social/s0b75ueknugqvykt2atr.png",
+        "natural": [
+          160,
+          160
+        ]
+      },
+      {
+        "src": "https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_fill,g_auto,w_720,h_540/v1756777234/red-social/xhtuxrzcsfall2rsdwzh.png",
+        "natural": [
+          720,
+          540
+        ]
+      },
+      {
+        "src": "https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_fill,g_auto,w_160,h_160/v1758329893/red-social/k7xcigjuxyfbpvc9qtpz.png",
+        "natural": [
+          160,
+          160
+        ]
+      },
+      {
+        "src": "https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_fill,g_auto,w_640,h_640/v1758331257/red-social/dvf9avlxlhuncnf8xar9.png",
+        "natural": [
+          640,
+          640
+        ]
+      },
+      {
+        "src": "https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_fill,g_auto,w_160,h_160/v1758509399/red-social/hco0zuwbphkf18ocrozc.png",
+        "natural": [
+          160,
+          160
+        ]
+      },
+      {
+        "src": "https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_fill,g_auto,w_640,h_640/v1751906406/magicSurprise_images/ghlywgfxsnursdbsew6z.avif",
+        "natural": [
+          640,
+          640
+        ]
+      }
+    ]
+  },
+  {
+    "width": 1440,
+    "position": "top",
+    "images": [
+      {
+        "src": "http://127.0.0.1:3400/imgs/Logo%20Final%20(1).png",
+        "natural": [
+          2048,
+          2048
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/home.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/cart.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/heart.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/profile.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/comidas.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/drinks.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/moda.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/tecnologia.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/hogar.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/belleza.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "",
+        "natural": [
+          0,
+          0
+        ]
+      },
+      {
+        "src": "",
+        "natural": [
+          0,
+          0
+        ]
+      },
+      {
+        "src": "",
+        "natural": [
+          0,
+          0
+        ]
+      },
+      {
+        "src": "",
+        "natural": [
+          0,
+          0
+        ]
+      },
+      {
+        "src": "https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_fill,g_auto,w_160,h_160/v1756771272/red-social/s0b75ueknugqvykt2atr.png",
+        "natural": [
+          160,
+          160
+        ]
+      },
+      {
+        "src": "https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_fill,g_auto,w_720,h_540/v1756777234/red-social/xhtuxrzcsfall2rsdwzh.png",
+        "natural": [
+          720,
+          540
+        ]
+      },
+      {
+        "src": "https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_fill,g_auto,w_160,h_160/v1756771272/red-social/s0b75ueknugqvykt2atr.png",
+        "natural": [
+          160,
+          160
+        ]
+      },
+      {
+        "src": "https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_fill,g_auto,w_720,h_540/v1756781542/red-social/dtmyl5uhebakzn7alufa.png",
+        "natural": [
+          720,
+          540
+        ]
+      },
+      {
+        "src": "https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_fill,g_auto,w_160,h_160/v1758509399/red-social/hco0zuwbphkf18ocrozc.png",
+        "natural": [
+          160,
+          160
+        ]
+      },
+      {
+        "src": "https://res.cloudinary.com/dkwosk8qd/image/upload/f_auto,q_auto:eco,c_fill,g_auto,w_640,h_640/v1776241252/zv0caubf62mqq9jjczqf.jpg",
+        "natural": [
+          640,
+          640
+        ]
+      },
+      {
+        "src": "https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_fill,g_auto,w_160,h_160/v1758332069/red-social/uvdcxwdpc9db14xpifgo.png",
+        "natural": [
+          160,
+          160
+        ]
+      },
+      {
+        "src": "https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_fill,g_auto,w_1200,h_400/v1758332072/red-social/uvd2vsix1cc77cfyfxwj.png",
+        "natural": [
+          1200,
+          400
+        ]
+      }
+    ]
+  },
+  {
+    "width": 1440,
+    "position": "scroll",
+    "images": [
+      {
+        "src": "http://127.0.0.1:3400/imgs/Logo%20Final%20(1).png",
+        "natural": [
+          2048,
+          2048
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/home.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/cart.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/heart.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/profile.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/comidas.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/drinks.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/moda.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/tecnologia.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/hogar.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "http://127.0.0.1:3400/imgs/iconos/belleza.png",
+        "natural": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "src": "",
+        "natural": [
+          0,
+          0
+        ]
+      },
+      {
+        "src": "",
+        "natural": [
+          0,
+          0
+        ]
+      },
+      {
+        "src": "",
+        "natural": [
+          0,
+          0
+        ]
+      },
+      {
+        "src": "",
+        "natural": [
+          0,
+          0
+        ]
+      },
+      {
+        "src": "",
+        "natural": [
+          0,
+          0
+        ]
+      },
+      {
+        "src": "https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_fill,g_auto,w_160,h_160/v1758332069/red-social/uvdcxwdpc9db14xpifgo.png",
+        "natural": [
+          160,
+          160
+        ]
+      },
+      {
+        "src": "https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_fill,g_auto,w_720,h_540/v1758423428/red-social/wlooqwn3jmik1avhgcfb.png",
+        "natural": [
+          720,
+          540
+        ]
+      },
+      {
+        "src": "https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_fill,g_auto,w_160,h_160/v1758509399/red-social/hco0zuwbphkf18ocrozc.png",
+        "natural": [
+          160,
+          160
+        ]
+      },
+      {
+        "src": "https://res.cloudinary.com/dkfsejtx9/video/upload/so_2,f_jpg,q_auto:eco,c_fill,g_auto,w_720,h_540/v1752810829/red-social/olqwhu1wztj6fqll5wna.jpg",
+        "natural": [
+          720,
+          540
+        ]
+      },
+      {
+        "src": "https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_fill,g_auto,w_160,h_160/v1758509399/red-social/hco0zuwbphkf18ocrozc.png",
+        "natural": [
+          160,
+          160
+        ]
+      },
+      {
+        "src": "https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_fill,g_auto,w_1200,h_400/v1758509405/red-social/qvlzyyjhkarekmunt9qx.png",
+        "natural": [
+          1200,
+          400
+        ]
+      },
+      {
+        "src": "https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_fill,g_auto,w_160,h_160/v1758329893/red-social/k7xcigjuxyfbpvc9qtpz.png",
+        "natural": [
+          160,
+          160
+        ]
+      },
+      {
+        "src": "https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_fill,g_auto,w_640,h_640/v1758330642/red-social/z1nm04fzthvozmgvson9.png",
+        "natural": [
+          640,
+          640
+        ]
+      },
+      {
+        "src": "https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_fill,g_auto,w_160,h_160/v1756771272/red-social/s0b75ueknugqvykt2atr.png",
+        "natural": [
+          160,
+          160
+        ]
+      },
+      {
+        "src": "https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_fill,g_auto,w_1200,h_400/v1756771278/red-social/mwjwtptwufkoyi0hlhlp.png",
+        "natural": [
+          1200,
+          400
+        ]
+      }
+    ]
+  }
+]

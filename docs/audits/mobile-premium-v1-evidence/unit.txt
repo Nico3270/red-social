@@ -1,0 +1,8 @@
+PASS src/feed/desktopDiscovery.test.ts
+PASS src/feed/geography.test.ts
+
+Test Suites: 2 passed, 2 total
+Tests:       12 passed, 12 total
+Snapshots:   0 total
+Time:        1.863 s
+Ran all test suites matching src/feed/desktopDiscovery.test.ts|src/feed/geography.test.ts.

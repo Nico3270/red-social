@@ -1,0 +1,6 @@
+
+Running 1 test using 1 worker
+
+  ✓  1 e2e/mobile-premium-v1/mobile.spec.ts:89:5 › content tabs return to the same inventory; images fit square, wide and portrait frames (13.5s)
+
+  1 passed (15.3s)

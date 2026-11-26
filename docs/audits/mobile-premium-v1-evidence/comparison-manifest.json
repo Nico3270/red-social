@@ -1,0 +1,296 @@
+[
+  {
+    "label": "Mixto · 320 px · inicio",
+    "width": 320,
+    "position": "top",
+    "before": "before-320-top.png",
+    "after": "after-320-top.png"
+  },
+  {
+    "label": "Mixto · 320 px · scroll 950",
+    "width": 320,
+    "position": "scroll",
+    "before": "before-320-scroll.png",
+    "after": "after-320-scroll.png"
+  },
+  {
+    "label": "Mixto · 360 px · inicio",
+    "width": 360,
+    "position": "top",
+    "before": "before-360-top.png",
+    "after": "after-360-top.png"
+  },
+  {
+    "label": "Mixto · 360 px · scroll 950",
+    "width": 360,
+    "position": "scroll",
+    "before": "before-360-scroll.png",
+    "after": "after-360-scroll.png"
+  },
+  {
+    "label": "Mixto · 390 px · inicio",
+    "width": 390,
+    "position": "top",
+    "before": "before-390-top.png",
+    "after": "after-390-top.png"
+  },
+  {
+    "label": "Mixto · 390 px · scroll 950",
+    "width": 390,
+    "position": "scroll",
+    "before": "before-390-scroll.png",
+    "after": "after-390-scroll.png"
+  },
+  {
+    "label": "Mixto · 430 px · inicio",
+    "width": 430,
+    "position": "top",
+    "before": "before-430-top.png",
+    "after": "after-430-top.png"
+  },
+  {
+    "label": "Mixto · 430 px · scroll 950",
+    "width": 430,
+    "position": "scroll",
+    "before": "before-430-scroll.png",
+    "after": "after-430-scroll.png"
+  },
+  {
+    "label": "Mixto · 768 px · inicio",
+    "width": 768,
+    "position": "top",
+    "before": "before-768-top.png",
+    "after": "after-768-top.png"
+  },
+  {
+    "label": "Mixto · 768 px · scroll 950",
+    "width": 768,
+    "position": "scroll",
+    "before": "before-768-scroll.png",
+    "after": "after-768-scroll.png"
+  },
+  {
+    "label": "Mixto · 769 px · inicio",
+    "width": 769,
+    "position": "top",
+    "before": "before-769-top.png",
+    "after": "after-769-top.png"
+  },
+  {
+    "label": "Mixto · 769 px · scroll 950",
+    "width": 769,
+    "position": "scroll",
+    "before": "before-769-scroll.png",
+    "after": "after-769-scroll.png"
+  },
+  {
+    "label": "Mixto · 1440 px · inicio",
+    "width": 1440,
+    "position": "top",
+    "before": "before-1440-top.png",
+    "after": "after-1440-top.png"
+  },
+  {
+    "label": "Mixto · 1440 px · scroll 950",
+    "width": 1440,
+    "position": "scroll",
+    "before": "before-1440-scroll.png",
+    "after": "after-1440-scroll.png"
+  },
+  {
+    "label": "Solo comercial · 390 px · inicio",
+    "width": 390,
+    "position": "top",
+    "before": "before-commerce-390-top.png",
+    "after": "after-commerce-390-top.png"
+  },
+  {
+    "label": "Solo comercial · 390 px · scroll 950",
+    "width": 390,
+    "position": "scroll",
+    "before": "before-commerce-390-scroll.png",
+    "after": "after-commerce-390-scroll.png"
+  },
+  {
+    "label": "Inventario escaso · 390 px · inicio",
+    "width": 390,
+    "position": "top",
+    "before": "before-sparse-390-top.png",
+    "after": "after-sparse-390-top.png"
+  },
+  {
+    "label": "Inventario escaso · 390 px · scroll 950",
+    "width": 390,
+    "position": "scroll",
+    "before": "before-sparse-390-scroll.png",
+    "after": "after-sparse-390-scroll.png"
+  },
+  {
+    "label": "Solo social · 390 px · inicio",
+    "width": 390,
+    "position": "top",
+    "before": "before-social-390-top.png",
+    "after": "after-social-390-top.png"
+  },
+  {
+    "label": "Solo social · 390 px · scroll 950",
+    "width": 390,
+    "position": "scroll",
+    "before": "before-social-390-scroll.png",
+    "after": "after-social-390-scroll.png"
+  },
+  {
+    "label": "Publicaciones con medios · 390 px · inicio",
+    "width": 390,
+    "position": "top",
+    "before": "before-media-390-top.png",
+    "after": "after-media-390-top.png"
+  },
+  {
+    "label": "Publicaciones con medios · 390 px · scroll 950",
+    "width": 390,
+    "position": "scroll",
+    "before": "before-media-390-scroll.png",
+    "after": "after-media-390-scroll.png"
+  },
+  {
+    "label": "Reseñas vinculadas · 390 px · inicio",
+    "width": 390,
+    "position": "top",
+    "before": "before-reviews-390-top.png",
+    "after": "after-reviews-390-top.png"
+  },
+  {
+    "label": "Reseñas vinculadas · 390 px · scroll 950",
+    "width": 390,
+    "position": "scroll",
+    "before": "before-reviews-390-scroll.png",
+    "after": "after-reviews-390-scroll.png"
+  },
+  {
+    "label": "Sesión personal · 390 px · inicio",
+    "width": 390,
+    "position": "top",
+    "before": "before-personal-390-top.png",
+    "after": "after-personal-390-top.png"
+  },
+  {
+    "label": "Sesión personal · 390 px · scroll 950",
+    "width": 390,
+    "position": "scroll",
+    "before": "before-personal-390-scroll.png",
+    "after": "after-personal-390-scroll.png"
+  },
+  {
+    "label": "Propietario · 390 px · inicio",
+    "width": 390,
+    "position": "top",
+    "before": "before-owner-390-top.png",
+    "after": "after-owner-390-top.png"
+  },
+  {
+    "label": "Propietario · 390 px · scroll 950",
+    "width": 390,
+    "position": "scroll",
+    "before": "before-owner-390-scroll.png",
+    "after": "after-owner-390-scroll.png"
+  },
+  {
+    "label": "Perfil incompleto · 390 px · inicio",
+    "width": 390,
+    "position": "top",
+    "before": "before-incomplete-390-top.png",
+    "after": "after-incomplete-390-top.png"
+  },
+  {
+    "label": "Perfil incompleto · 390 px · scroll 950",
+    "width": 390,
+    "position": "scroll",
+    "before": "before-incomplete-390-scroll.png",
+    "after": "after-incomplete-390-scroll.png"
+  },
+  {
+    "label": "Categorías · antes horizontales / después desplegadas",
+    "width": 390,
+    "position": "",
+    "before": "before-categories-390.png",
+    "after": "after-categories-390.png"
+  },
+  {
+    "label": "Búsqueda · 390 px",
+    "width": 390,
+    "position": "",
+    "before": "before-search-390.png",
+    "after": "after-search-390.png"
+  },
+  {
+    "label": "Selector de ciudad · 390 px",
+    "width": 390,
+    "position": "",
+    "before": "before-city-390.png",
+    "after": "after-city-390.png"
+  },
+  {
+    "label": "Variantes del producto · 390 px",
+    "width": 390,
+    "position": "",
+    "before": "before-variants-390.png",
+    "after": "after-variants-390.png"
+  },
+  {
+    "label": "Publicación con imagen · 390 px",
+    "width": 390,
+    "position": "",
+    "before": "before-publication-390.png",
+    "after": "after-publication-390.png"
+  },
+  {
+    "label": "Video original · reproducción no certificada · 390 px",
+    "width": 390,
+    "position": "",
+    "before": "before-video-390.png",
+    "after": "after-video-390.png"
+  },
+  {
+    "label": "Menú del propietario · 390 px",
+    "width": 390,
+    "position": "",
+    "before": "before-profile-owner-390.png",
+    "after": "after-profile-owner-390.png"
+  },
+  {
+    "label": "Estado controlado: empty · 390 px",
+    "width": 390,
+    "position": "",
+    "before": "before-state-empty-390.png",
+    "after": "after-state-empty-390.png"
+  },
+  {
+    "label": "Estado controlado: loading · 390 px",
+    "width": 390,
+    "position": "",
+    "before": "before-state-loading-390.png",
+    "after": "after-state-loading-390.png"
+  },
+  {
+    "label": "Estado controlado: pending-types · 390 px",
+    "width": 390,
+    "position": "",
+    "before": "before-state-pending-types-390.png",
+    "after": "after-state-pending-types-390.png"
+  },
+  {
+    "label": "Estado controlado: error · 390 px",
+    "width": 390,
+    "position": "",
+    "before": "before-state-error-390.png",
+    "after": "after-state-error-390.png"
+  },
+  {
+    "label": "Estado controlado: settled · 390 px",
+    "width": 390,
+    "position": "",
+    "before": "before-state-settled-390.png",
+    "after": "after-state-settled-390.png"
+  }
+]

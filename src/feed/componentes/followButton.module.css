@@ -61,3 +61,8 @@
     transform: rotate(360deg);
   }
 }
+@media (max-width: 768px) {
+  .authDialog { top: var(--myckeo-visual-top, 0px); bottom: auto; height: var(--myckeo-visual-height, 100dvh); padding-block: 12px; overflow-y: auto; }
+  .authDialog button { min-height: 44px; }
+  .authDialog button:focus-visible { outline: 2px solid #b72e45; outline-offset: -2px; }
+}

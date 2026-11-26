@@ -320,18 +320,18 @@ export default function SearchBar({ compact = false, iconOnly = false }: SearchB
       >
         <DialogTitle
           id={`${id}-title`}
-          sx={{ pr: 8, fontFamily: "inherit", fontSize: 20, ...(iconOnly ? { fontSize: 18, fontWeight: 600, borderBottom: "1px solid #f3e4e8" } : {}) }}
+          sx={{ pr: 8, fontFamily: "inherit", fontSize: 20, ...(iconOnly ? { fontSize: 18, fontWeight: 600, pt: "calc(12px + env(safe-area-inset-top, 0px))", borderBottom: "1px solid #f3e4e8" } : {}) }}
         >
           Buscar en Myckeo
         </DialogTitle>
         <IconButton
           aria-label="Cerrar búsqueda"
           onClick={closeLayer}
-          sx={{ position: "absolute", right: 8, top: 8, width: 44, height: 44 }}
+          sx={{ position: "absolute", right: 8, top: iconOnly ? "calc(8px + env(safe-area-inset-top, 0px))" : 8, width: 44, height: 44 }}
         >
           <X size={20} />
         </IconButton>
-        <DialogContent sx={{ p: 2, pt: 1, minHeight: 0, overflowY: "auto", ...(iconOnly ? { pt: 0, overscrollBehavior: "contain" } : {}) }}>
+        <DialogContent sx={{ p: 2, pt: 1, minHeight: 0, overflowY: "auto", ...(iconOnly ? { pt: 0, pb: "calc(16px + env(safe-area-inset-bottom, 0px))", overscrollBehavior: "contain" } : {}) }}>
           {field}
         </DialogContent>
       </Dialog>

@@ -1,0 +1,20 @@
+{
+  "temporaryPathsAbsent": [
+    "src/app/(catalogo)/feed-implementation-review",
+    "public/__feed-implementation-art",
+    "test-results/centered-feed",
+    "test-results/mobile-premium-v1",
+    "test-results/playwright/next-mobile-premium-review"
+  ],
+  "reviewPortsClosed": [
+    3400,
+    3402,
+    55439
+  ],
+  "temporaryReferenceWorktreeRemoved": true,
+  "temporaryRouteAbsentFromBuild": true,
+  "buildStaticPages": 74,
+  "ownDisposableDatabaseRemoved": true,
+  "applicationConfigurationChanged": false,
+  "pushMergeDeployPerformed": false
+}

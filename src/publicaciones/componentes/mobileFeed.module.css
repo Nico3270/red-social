@@ -1,0 +1,58 @@
+@media (max-width: 768px) {
+  .scope {
+    background: #f8fafc;
+  }
+  .scope .tabs {
+    padding: 3px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px #17203304;
+  }
+  .scope .tabs button {
+    min-height: 44px;
+    border-radius: 9px;
+    padding-inline: 12px;
+    color: #475569;
+    font-size: 13px;
+  }
+  .scope .tabs button svg {
+    color: #64748b;
+  }
+  .scope .tabs button[aria-pressed="true"] {
+    background: #fff1f2;
+    color: #b72e45;
+  }
+  .scope .tabs button[aria-pressed="true"] svg {
+    color: #b72e45;
+  }
+  .scope .tabs button:focus-visible {
+    outline: 2px solid #b72e45;
+    outline-offset: -2px;
+  }
+  .complete {
+    padding: 20px 16px;
+    margin-top: 16px;
+    border-top: 1px solid #e2e8f0;
+    text-align: center;
+    color: #64748b;
+    font-size: 13px;
+    line-height: 20px;
+  }
+  .incomplete {
+    padding: 28px 20px;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    background: #fff;
+    text-align: center;
+    color: #475569;
+    font-size: 14px;
+    line-height: 22px;
+  }
+  .empty img {
+    max-width: 200px;
+  }
+  .empty p {
+    font-size: 16px;
+    line-height: 24px;
+  }
+}

@@ -1,0 +1,28 @@
+
+Running 2 tests using 1 worker
+
+  ✓  1 e2e/mobile-premium-v1/mobile.spec.ts:51:5 › commerce keeps independent 44px actions, product variants, cart badges and pending dialog on append (11.1s)
+  ✘  2 e2e/mobile-premium-v1/mobile.spec.ts:89:5 › content tabs return to the same inventory; images fit square, wide and portrait frames (22.3s)
+
+
+  1) e2e/mobile-premium-v1/mobile.spec.ts:89:5 › content tabs return to the same inventory; images fit square, wide and portrait frames
+
+    TimeoutError: locator.click: Timeout 15000ms exceeded.
+    Call log:
+      - waiting for getByRole('button', { name: 'Productos', exact: true })
+
+
+      91 |   const original = (await keys(page)).sort();
+      92 |   for (const [name, type] of [['Productos','product'],['Negocios','business'],['Publicaciones','publication'],['Servicios','service']]) {
+    > 93 |     const tab = page.getByRole('button', { name, exact: true }); await tab.click(); await expect(tab).toHaveAttribute('aria-pressed', 'true');
+         |                                                                            ^
+      94 |     await expect.poll(async () => (await keys(page)).length).toBe(snapshot.items.filter(i => i.type === type).length);
+      95 |     expect((await keys(page)).every(key => key.startsWith(type+'-'))).toBe(true);
+      96 |   }
+        at /home/nico/worktrees/myckeo-mobile-premium-v1-20261125/e2e/mobile-premium-v1/mobile.spec.ts:93:76
+
+    Error Context: test-results/mobile-premium-v1/mobile-content-tabs-return-4e441-re-wide-and-portrait-frames/error-context.md
+
+  1 failed
+    e2e/mobile-premium-v1/mobile.spec.ts:89:5 › content tabs return to the same inventory; images fit square, wide and portrait frames
+  1 passed (34.4s)

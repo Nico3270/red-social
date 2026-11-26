@@ -1,0 +1,170 @@
+[
+  {
+    "session": "anonymous",
+    "positions": [
+      {
+        "text": "Inicio",
+        "href": "/",
+        "x": 6,
+        "width": 63
+      },
+      {
+        "text": "Carro",
+        "href": "/empty",
+        "x": 69,
+        "width": 63
+      },
+      {
+        "text": "Favoritos",
+        "href": "/favoritos",
+        "x": 132,
+        "width": 63
+      },
+      {
+        "text": "Negocio",
+        "href": "/config/completePerfil?negocio=1",
+        "x": 195,
+        "width": 63
+      },
+      {
+        "text": "Perfil",
+        "href": null,
+        "x": 258,
+        "width": 63
+      },
+      {
+        "text": "Ayuda",
+        "href": null,
+        "x": 321,
+        "width": 63
+      }
+    ],
+    "errors": []
+  },
+  {
+    "session": "personal",
+    "positions": [
+      {
+        "text": "Inicio",
+        "href": "/",
+        "x": 6,
+        "width": 63
+      },
+      {
+        "text": "Carro",
+        "href": "/empty",
+        "x": 69,
+        "width": 63
+      },
+      {
+        "text": "Favoritos",
+        "href": "/favoritos",
+        "x": 132,
+        "width": 63
+      },
+      {
+        "text": "Crear",
+        "href": null,
+        "x": 195,
+        "width": 63
+      },
+      {
+        "text": "Perfil",
+        "href": null,
+        "x": 258,
+        "width": 63
+      },
+      {
+        "text": "Ayuda",
+        "href": null,
+        "x": 321,
+        "width": 63
+      }
+    ],
+    "errors": []
+  },
+  {
+    "session": "owner",
+    "positions": [
+      {
+        "text": "Inicio",
+        "href": "/",
+        "x": 6,
+        "width": 63
+      },
+      {
+        "text": "Carro",
+        "href": "/empty",
+        "x": 69,
+        "width": 63
+      },
+      {
+        "text": "Favoritos",
+        "href": "/favoritos",
+        "x": 132,
+        "width": 63
+      },
+      {
+        "text": "Negocio",
+        "href": "/dashboard",
+        "x": 195,
+        "width": 63
+      },
+      {
+        "text": "Perfil",
+        "href": null,
+        "x": 258,
+        "width": 63
+      },
+      {
+        "text": "Ayuda",
+        "href": null,
+        "x": 321,
+        "width": 63
+      }
+    ],
+    "errors": []
+  },
+  {
+    "session": "incomplete",
+    "positions": [
+      {
+        "text": "Inicio",
+        "href": "/",
+        "x": 6,
+        "width": 63
+      },
+      {
+        "text": "Carro",
+        "href": "/empty",
+        "x": 69,
+        "width": 63
+      },
+      {
+        "text": "Favoritos",
+        "href": "/favoritos",
+        "x": 132,
+        "width": 63
+      },
+      {
+        "text": "Crear",
+        "href": null,
+        "x": 195,
+        "width": 63
+      },
+      {
+        "text": "Perfil",
+        "href": null,
+        "x": 258,
+        "width": 63
+      },
+      {
+        "text": "Ayuda",
+        "href": null,
+        "x": 321,
+        "width": 63
+      }
+    ],
+    "errors": []
+  }
+]

@@ -1,6 +1,8 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
+import { useId, useRef } from "react";
+import { useDialogFocus } from "@/hooks/useDialogFocus";
 import type { ProductVariantRedSocial } from "@/interfaces/productRedSocial.interface";
 import {
   getVariantOptionSummary,
@@ -63,10 +65,14 @@ export function ProductQuickAddModal({
   confirmLabel = "Agregar al carrito",
   cancelLabel = "Cancelar",
 }: ProductQuickAddModalProps) {
+  const root = useRef<HTMLDivElement>(null);
+  const titleId = useId();
+  useDialogFocus(isOpen, root, () => onClose("dismissed"));
   return (
     <AnimatePresence>
       {isOpen && (
         <motion.div
+          ref={root}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -74,6 +80,7 @@ export function ProductQuickAddModal({
           onClick={() => onClose("dismissed")}
           aria-modal="true"
           role="dialog"
+          aria-labelledby={titleId}
         >
           <motion.div
             initial={{ scale: 0.96, opacity: 0 }}
@@ -83,7 +90,7 @@ export function ProductQuickAddModal({
             className="relative w-full max-w-md rounded-3xl border border-gray-100 bg-white p-6 shadow-[0_18px_50px_rgba(0,0,0,0.18)]"
             onClick={(event) => event.stopPropagation()}
           >
-            <h5 className="mb-3 text-left text-base font-semibold text-gray-900">
+            <h5 id={titleId} className="mb-3 text-left text-base font-semibold text-gray-900">
               {hasVariants ? "Configura tu pedido" : "Agregar al carrito"}
             </h5>
 

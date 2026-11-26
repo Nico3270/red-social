@@ -898,3 +898,30 @@
   .desktopCompact .price { font-size: 21px; }
   .desktopCompact .cart { padding-inline: 10px; }
 }
+
+/* Mobile premium: the same actions and sources, with bounded, uncropped media. */
+@media (max-width: 768px) {
+  .feed { border-color: #e2e8f0; box-shadow: 0 1px 4px #17203308; }
+  .feed .businessName { color: #475569; font-size: 12px; }
+  .feed .imageBackdrop { display: none; }
+  .feed .image, .feed[data-feed-image-shape="square"] .image { object-fit: contain; transform: none; }
+  .feed .media { background: #f8fafc; }
+  .feed .title { min-height: 38px; font-size: 14px; line-height: 19px; font-weight: 650; }
+  .feed .price { color: #172033; font-weight: 700; }
+  .feed .priceBlock :global(.text-gray-400) { color: #64748b; font-size: 10px; letter-spacing: .04em; }
+  .feed .favorite button[aria-pressed="false"] svg { color: #64748b; }
+  .feed .favorite button::before { background: #f8fafc; }
+  .feed a:focus-visible, .feed button:focus-visible { outline-offset: -2px; }
+  .modalScope > [role="dialog"] {
+    top: var(--myckeo-visual-top, 0px);
+    bottom: auto;
+    height: var(--myckeo-visual-height, 100dvh);
+    padding: calc(12px + env(safe-area-inset-top, 0px)) 12px calc(12px + env(safe-area-inset-bottom, 0px));
+  }
+  .modalScope > [role="dialog"] > div { padding: 20px; }
+  .modalScope button, .modalScope input { min-width: 44px; min-height: 44px; }
+  .modalScope :is(button,input):focus-visible { outline: 2px solid #b72e45; outline-offset: -2px; }
+  @container feed-product-card (max-width:250px) {
+    .feed .media { aspect-ratio: 4 / 3; max-height: 190px; }
+  }
+}

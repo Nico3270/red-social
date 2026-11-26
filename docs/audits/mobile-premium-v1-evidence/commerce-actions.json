@@ -1,0 +1,39 @@
+{
+  "controls": {
+    "whatsapp": {
+      "x": 101,
+      "y": 505,
+      "width": 44,
+      "height": 44
+    },
+    "cart": {
+      "x": 145,
+      "y": 505,
+      "width": 44,
+      "height": 44
+    },
+    "price": {
+      "x": 11,
+      "y": 508,
+      "width": 90,
+      "height": 38
+    },
+    "avatar": {
+      "x": 11,
+      "y": 283,
+      "width": 24,
+      "height": 24
+    },
+    "badge": {
+      "x": 26.5,
+      "y": 282.5,
+      "width": 9,
+      "height": 9
+    },
+    "href": "https://wa.me/573182293083?text=%C2%A1Hola!%20Estoy%20interesado%20en%20el%20siguiente%20producto%3A%0A%0A*Salchipapas%20premium*%0APrecio%20desde%3A%20%24%C2%A025.000%0A%0AVeo%20que%20tiene%20opciones%20o%20variantes%2C%20me%20gustar%C3%ADa%20m%C3%A1s%20informaci%C3%B3n.%0A%0APuedes%20ver%20m%C3%A1s%20detalles%20aqu%C3%AD%3A%20https%3A%2F%2Fmyckeo.com%2Fproducto%2Fsalchipapas-premium-zyuv"
+  },
+  "unique": true,
+  "appended": 33,
+  "cartCount": 2,
+  "errors": []
+}

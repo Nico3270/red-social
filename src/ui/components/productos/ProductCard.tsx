@@ -14,7 +14,7 @@ import {
   isRenderableImageSource,
   resolveSafeImageSource,
 } from "@/lib/media/resolveSafeImageSource";
-import { getCloudinaryImageUrl } from "@/lib/cloudinary/buildCloudinaryDeliveryUrl";
+import { getCloudinaryImageUrl, buildCloudinaryDeliveryUrl } from "@/lib/cloudinary/buildCloudinaryDeliveryUrl";
 import { logProductImageDiagnostics } from "@/lib/media/productImageDiagnostics";
 import { reportOperationalWarning } from "@/lib/observability/operationalLogger";
 import { AddFavorites } from "./AddFavorites";
@@ -262,18 +262,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     const root = document.getElementById("modal-root") || document.body;
     setModalRoot(root);
   }, []);
-
-  useEffect(() => {
-    if (isModalOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
-    }
-
-    return () => {
-      document.body.style.overflow = "unset";
-    };
-  }, [isModalOpen]);
 
   useEffect(() => {
     if (isModalOpen && !quickAddWasOpenRef.current) {
@@ -765,6 +753,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                 className={styles.imageBackdrop}
               />
             )}
+            <picture>
+            {isFeedVariant && <source media="(max-width: 768px)" srcSet={buildCloudinaryDeliveryUrl(safeDisplayImage, { preset: "product-card", crop: "limit", gravity: undefined })} />}
             <Image
               src={optimizedProductImageUrl}
               alt={product.nombre}
@@ -782,6 +772,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               } : undefined}
               className={isFeedVariant ? styles.image : "object-cover transition-transform duration-300 hover:scale-[1.04]"}
             />
+            </picture>
 
             {!isFeedVariant && <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-100" />}
 
