@@ -17,10 +17,10 @@
   }
   .menuHost {
     display: block;
-    min-height: calc(var(--myckeo-header-height) + 104px);
+    min-height: calc(var(--myckeo-header-height) + 56px);
   }
   .menuHost[data-mobile-profile] {
-    min-height: calc(var(--myckeo-header-height) + 48px);
+    min-height: var(--myckeo-header-height);
   }
   /* The initial server render chooses desktop. Reserve the actual mobile shell
      before effects run, without mounting a second set of interactive controls. */
@@ -68,40 +68,6 @@
   }
   .headerSpace {
     height: var(--myckeo-header-height);
-  }
-  .businessRail {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    min-height: 48px;
-    padding-inline: 12px;
-    background: #fff;
-    box-shadow: inset 0 -1px #f1f5f9;
-  }
-  .businessRail > div {
-    margin: 0;
-    padding: 0;
-  }
-  .businessRail a {
-    gap: 6px;
-    padding-inline: 10px;
-    border-radius: 10px;
-    font-size: 13px;
-    background: #fff1f2;
-  }
-  .create {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    min-height: 44px;
-    min-width: 44px;
-    padding-inline: 12px;
-    border-radius: 10px;
-    color: #475569;
-    font-size: 13px;
-    font-weight: 600;
   }
   .bottom {
     position: fixed;
@@ -172,7 +138,6 @@
   }
   .header a:focus-visible,
   .header button:focus-visible,
-  .businessRail :is(a, button):focus-visible,
   .destination:focus-visible {
     outline: 2px solid #b72e45;
     outline-offset: -2px;
@@ -215,5 +180,90 @@
       width: 30px;
       height: 30px;
     }
+  }
+}
+
+/* Myckeo V2: color belongs to the destination, with a quiet inactive surface. */
+@media (max-width: 768px) {
+  .header {
+    box-shadow:
+      0 1px 0 #eadfe4,
+      0 3px 12px #52233c04;
+  }
+  .cityButton {
+    border-color: #efdae1;
+    background: #fffafb;
+  }
+  .bottom {
+    box-shadow:
+      0 -1px 0 #eadfe4,
+      0 -5px 24px #52233c08;
+  }
+  .destination {
+    --nav-color: #b72e45;
+    --nav-tint: #fff0f3;
+    gap: 2px;
+    color: #5b6170;
+    border-radius: 11px;
+  }
+  .destination[data-nav="cart"] {
+    --nav-color: #2563b5;
+    --nav-tint: #edf4ff;
+  }
+  .destination[data-nav="favorites"] {
+    --nav-color: #bb3e72;
+    --nav-tint: #fff0f7;
+  }
+  .destination[data-nav="business"] {
+    --nav-color: #95600e;
+    --nav-tint: #fff5df;
+  }
+  .destination[data-nav="create"] {
+    --nav-color: #7650aa;
+    --nav-tint: #f5efff;
+  }
+  .destination[data-nav="profile"] {
+    --nav-color: #267a94;
+    --nav-tint: #edf8fc;
+  }
+  .destination[data-nav="help"] {
+    --nav-color: #167b65;
+    --nav-tint: #edf9f4;
+  }
+  .destination svg {
+    width: 28px;
+    height: 28px;
+    padding: 3px;
+    border-radius: 9px;
+    color: var(--nav-color);
+    background: var(--nav-tint);
+    stroke-width: 1.9;
+  }
+  .destination::before {
+    position: absolute;
+    content: "";
+    top: 0;
+    width: 18px;
+    height: 3px;
+    border-radius: 99px;
+    background: var(--nav-color);
+    opacity: 0;
+  }
+  .destination[aria-current="page"],
+  .destination[aria-expanded="true"] {
+    color: var(--nav-color);
+    background: var(--nav-tint);
+  }
+  .destination[aria-current="page"]::before,
+  .destination[aria-expanded="true"]::before {
+    opacity: 1;
+  }
+  .destination[aria-current="page"] svg,
+  .destination[aria-expanded="true"] svg {
+    background: transparent;
+    stroke-width: 2.2;
+  }
+  .destination:active {
+    background: var(--nav-tint);
   }
 }

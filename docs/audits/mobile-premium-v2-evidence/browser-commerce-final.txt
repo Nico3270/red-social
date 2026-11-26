@@ -1,0 +1,6 @@
+
+Running 1 test using 1 worker
+
+  ✓  1 e2e/mobile-premium-v2/mobile.spec.ts:133:5 › commerce keeps independent 44px actions, product variants, cart badges and pending dialog on append (28.6s)
+
+  1 passed (30.1s)

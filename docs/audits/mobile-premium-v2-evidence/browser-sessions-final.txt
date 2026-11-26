@@ -1,0 +1,6 @@
+
+Running 1 test using 1 worker
+
+  ✓  1 e2e/mobile-premium-v2/mobile.spec.ts:368:5 › sessions retain help, create, business and profile with predictable slots (56.2s)
+
+  1 passed (58.4s)

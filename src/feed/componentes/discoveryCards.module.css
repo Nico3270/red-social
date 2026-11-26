@@ -280,3 +280,18 @@
   .business .header { align-items: center; }
   .service .thumbnail { width: 76px; height: 76px; }
 }
+
+/* V2 mobile only: a full-width social canvas follows the original photo/poster. */
+@media (max-width: 768px) {
+  .card { border-color: #ecdce3; border-radius: 18px; box-shadow: 0 3px 14px #642c420c; }
+  .publication .mediaFrame { aspect-ratio: var(--mobile-media-ratio, 1.3333); height: auto; max-height: 560px; background: #fff; }
+  .publication .mediaFrame img { object-fit: contain; }
+  .publication .authorName { color: #302333; font-weight: 700; }
+  .publication .header { background: linear-gradient(100deg, #fff 65%, #fff8fb); border-radius: 18px 18px 0 0; }
+  .publication .author span { color: #95506b; background: #fff1f6; }
+  .publication .actions { border-top: 1px solid #f4e7ed; padding-top: 8px; }
+  .publication .action { border-color: #eed5df; background: #fff7fa; color: #a52c50; border-radius: 12px; }
+  .publication .stats { color: #695468; }
+  .business .primary, .service .primary { background: #a92f50; border-color: #a92f50; }
+  .action:active { filter: brightness(.94); }
+}

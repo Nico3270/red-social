@@ -1,0 +1,3 @@
+
+> myckeo@0.1.0 typecheck /home/nico/worktrees/myckeo-mobile-premium-v2-20261126
+> tsc --noEmit

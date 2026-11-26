@@ -67,6 +67,7 @@ export const DiscoveryPublicationCard: React.FC<
 > = ({ publicacion, presentation = "default" }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [expandedText, setExpandedText] = useState(false);
+  const [mobileMediaRatio, setMobileMediaRatio] = useState(4 / 3);
   const [mediaOrientation, setMediaOrientation] =
     useState<MediaOrientation>("unknown");
   const [videoPosterAttempt, setVideoPosterAttempt] = useState(0);
@@ -209,7 +210,7 @@ export const DiscoveryPublicationCard: React.FC<
 
   return (
     <>
-      <article className={`${styles.card} ${styles.publication} ${inter.className} ${presentation === "desktop" ? styles.desktopPublication : ""} ${presentation === "desktop" && publicacion.tipo === "TESTIMONIO" ? styles.desktopReview : ""}`}>
+      <article style={{ "--mobile-media-ratio": mobileMediaRatio } as React.CSSProperties} className={`${styles.card} ${styles.publication} ${inter.className} ${presentation === "desktop" ? styles.desktopPublication : ""} ${presentation === "desktop" && publicacion.tipo === "TESTIMONIO" ? styles.desktopReview : ""}`}>
         <div className={styles.header}>
           <Link
             href={authorHref}
@@ -270,6 +271,7 @@ export const DiscoveryPublicationCard: React.FC<
                   {mobileMediaUrl && <source media="(max-width: 768px)" srcSet={mobileMediaUrl} />}
                   <Image
                     src={videoPosterUrl}
+                    onLoad={event => { const image = event.currentTarget; if (image.naturalWidth && image.naturalHeight) setMobileMediaRatio(image.naturalWidth / image.naturalHeight); }}
                     alt={mediaPreviewAlt}
                     fill
                     unoptimized
@@ -304,6 +306,7 @@ export const DiscoveryPublicationCard: React.FC<
                 {mobileMediaUrl && <source media="(max-width: 768px)" srcSet={mobileMediaUrl} />}
                 <Image
                   src={optimizedPublicationImageUrl}
+                    onLoad={event => { const image = event.currentTarget; if (image.naturalWidth && image.naturalHeight) setMobileMediaRatio(image.naturalWidth / image.naturalHeight); }}
                   alt={mediaPreviewAlt}
                   fill
                   sizes={presentation === "desktop" ? "680px" : "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 420px"}

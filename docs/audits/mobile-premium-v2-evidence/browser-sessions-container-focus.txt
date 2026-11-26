@@ -1,0 +1,29 @@
+
+Running 1 test using 1 worker
+
+  ✘  1 e2e/mobile-premium-v2/mobile.spec.ts:368:5 › sessions retain help, create, business and profile with predictable slots (51.6s)
+
+
+  1) e2e/mobile-premium-v2/mobile.spec.ts:368:5 › sessions retain help, create, business and profile with predictable slots
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+    Call Log:
+    - Timeout 30000ms exceeded while waiting on the predicate
+
+      456 |       await expect(create).toBeVisible();
+      457 |       await expect(create.getByRole("link")).toHaveCount(7);
+    > 458 |       await expect
+          |       ^
+      459 |         .poll(async () =>
+      460 |           create.evaluate((el) => el.contains(document.activeElement)),
+      461 |         )
+        at /home/nico/worktrees/myckeo-mobile-premium-v2-20261126/e2e/mobile-premium-v2/mobile.spec.ts:458:7
+
+    Error Context: test-results/mobile-premium-v2/mobile-sessions-retain-hel-f126f-file-with-predictable-slots/error-context.md
+
+  1 failed
+    e2e/mobile-premium-v2/mobile.spec.ts:368:5 › sessions retain help, create, business and profile with predictable slots

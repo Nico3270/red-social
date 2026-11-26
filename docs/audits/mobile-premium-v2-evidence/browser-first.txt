@@ -1,0 +1,45 @@
+
+Running 6 tests using 1 worker
+
+Checking shell at 280
+(node:453767) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Checking shell at 320
+Checking shell at 360
+Checking shell at 390
+Checking shell at 430
+Checking shell at 768
+Checking shell at 769
+Checking shell at 1440
+  ✓  1 e2e/mobile-premium-v2/mobile.spec.ts:14:5 › shell, stable navigation, categories and document clearance at all breakpoints (1.2m)
+  ✓  2 e2e/mobile-premium-v2/mobile.spec.ts:133:5 › commerce keeps independent 44px actions, product variants, cart badges and pending dialog on append (11.4s)
+  ✓  3 e2e/mobile-premium-v2/mobile.spec.ts:273:5 › content tabs return to the same inventory; images fit square, wide and portrait frames (11.9s)
+  ✘  4 e2e/mobile-premium-v2/mobile.spec.ts:368:5 › sessions retain help, create, business and profile with predictable slots (47.8s)
+  ✓  5 e2e/mobile-premium-v2/mobile.spec.ts:493:5 › search, city, virtual viewport, safe areas and accessible publication dialog (10.3s)
+  ✓  6 e2e/mobile-premium-v2/mobile.spec.ts:611:5 › existing coordinator: completeness, geography, city and distinct empty/loading/error/end states (45.0s)
+
+
+  1) e2e/mobile-premium-v2/mobile.spec.ts:368:5 › sessions retain help, create, business and profile with predictable slots
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+    Call Log:
+    - Timeout 30000ms exceeded while waiting on the predicate
+
+      456 |       await expect(create).toBeVisible();
+      457 |       await expect(create.getByRole("link")).toHaveCount(7);
+    > 458 |       await expect
+          |       ^
+      459 |         .poll(async () =>
+      460 |           create.evaluate((el) => el.contains(document.activeElement)),
+      461 |         )
+        at /home/nico/worktrees/myckeo-mobile-premium-v2-20261126/e2e/mobile-premium-v2/mobile.spec.ts:458:7
+
+    Error Context: test-results/mobile-premium-v2/mobile-sessions-retain-hel-f126f-file-with-predictable-slots/error-context.md
+
+  1 failed
+    e2e/mobile-premium-v2/mobile.spec.ts:368:5 › sessions retain help, create, business and profile with predictable slots
+  5 passed (3.3m)

@@ -48,6 +48,7 @@ export function MobileNavigation({
       <div className={styles.destinations}>
         <Link
           href="/"
+          data-nav="home"
           className={styles.destination}
           aria-current={pathname === "/" ? "page" : undefined}
         >
@@ -55,6 +56,7 @@ export function MobileNavigation({
           <span>Inicio</span>
         </Link>
         <Link
+          data-nav="cart"
           href={cartCount > 0 ? "/carro" : "/empty"}
           className={styles.destination}
           aria-label={`Carro${cartCount ? `, ${cartCount} productos` : ""}`}
@@ -72,6 +74,7 @@ export function MobileNavigation({
         </Link>
         <Link
           href="/favoritos"
+          data-nav="favorites"
           className={styles.destination}
           aria-label={`Favoritos${favoriteCount ? `, ${favoriteCount} guardados` : ""}`}
           aria-current={pathname.startsWith("/favoritos") ? "page" : undefined}
@@ -88,6 +91,7 @@ export function MobileNavigation({
           <button
             className={styles.destination}
             disabled
+            data-nav="business"
             aria-label="Cargando opciones de cuenta"
           >
             <Store aria-hidden="true" />
@@ -96,6 +100,7 @@ export function MobileNavigation({
         ) : context === "personal" ? (
           <button
             className={styles.destination}
+            data-nav="create"
             onClick={onCreate}
             aria-haspopup="dialog"
             aria-expanded={createOpen}
@@ -106,6 +111,7 @@ export function MobileNavigation({
           </button>
         ) : (
           <Link
+            data-nav="business"
             href={context === "owner" ? "/dashboard" : BUSINESS_ENTRY_PATH}
             prefetch={false}
             className={styles.destination}
@@ -117,6 +123,7 @@ export function MobileNavigation({
         )}
         <button
           className={styles.destination}
+          data-nav="profile"
           onClick={onProfile}
           aria-label="Perfil"
           aria-haspopup="dialog"
@@ -128,6 +135,7 @@ export function MobileNavigation({
         </button>
         <button
           className={styles.destination}
+          data-nav="help"
           onClick={onHelp}
           aria-label="Ayuda por WhatsApp"
         >

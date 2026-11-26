@@ -87,6 +87,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   const [feedImageShape, setFeedImageShape] = useState<
     "unknown" | "portrait" | "square" | "landscape"
   >("unknown");
+  const [feedImageRatio, setFeedImageRatio] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [modalRoot, setModalRoot] = useState<Element | null>(null);
@@ -650,6 +651,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       data-feed-product-id={isFeedVariant ? product.id : undefined}
       data-feed-action-layout={isFeedVariant ? feedActionLayout : undefined}
       data-feed-image-shape={isFeedVariant ? feedImageShape : undefined}
+      style={isFeedVariant ? { "--feed-image-ratio": feedImageRatio } as React.CSSProperties : undefined}
       className={
         isFeedVariant
           ? `${styles.feed} ${inter.className} ${desktopCompact ? styles.desktopCompact : ""}`
@@ -766,6 +768,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                 const { naturalWidth, naturalHeight } = event.currentTarget;
                 if (!naturalWidth || !naturalHeight) return;
                 const ratio = naturalWidth / naturalHeight;
+                setFeedImageRatio(ratio);
                 setFeedImageShape(
                   ratio < 0.85 ? "portrait" : ratio < 1.3 ? "square" : "landscape"
                 );

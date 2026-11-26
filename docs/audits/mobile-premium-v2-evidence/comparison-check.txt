@@ -1,0 +1,26 @@
+Verified equivalent inventory, six cards/relations and desktop pixels: [
+  {
+    width: 769,
+    position: 'top',
+    changedPixels: 0,
+    totalPixels: 692100
+  },
+  {
+    width: 769,
+    position: 'scroll',
+    changedPixels: 0,
+    totalPixels: 692100
+  },
+  {
+    width: 1440,
+    position: 'top',
+    changedPixels: 0,
+    totalPixels: 1296000
+  },
+  {
+    width: 1440,
+    position: 'scroll',
+    changedPixels: 0,
+    totalPixels: 1296000
+  }
+]

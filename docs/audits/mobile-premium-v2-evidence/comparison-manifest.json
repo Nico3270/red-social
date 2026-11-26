@@ -1,0 +1,338 @@
+[
+  {
+    "label": "320 px · inicio",
+    "width": 320,
+    "published": "published-320-top.png",
+    "v1": "v1-320-top.png",
+    "v2": "after-320-top.png"
+  },
+  {
+    "label": "320 px · scroll 950",
+    "width": 320,
+    "published": "published-320-scroll.png",
+    "v1": "v1-320-scroll.png",
+    "v2": "after-320-scroll.png"
+  },
+  {
+    "label": "360 px · inicio",
+    "width": 360,
+    "published": "published-360-top.png",
+    "v1": "v1-360-top.png",
+    "v2": "after-360-top.png"
+  },
+  {
+    "label": "360 px · scroll 950",
+    "width": 360,
+    "published": "published-360-scroll.png",
+    "v1": "v1-360-scroll.png",
+    "v2": "after-360-scroll.png"
+  },
+  {
+    "label": "390 px · inicio",
+    "width": 390,
+    "published": "published-390-top.png",
+    "v1": "v1-390-top.png",
+    "v2": "after-390-top.png"
+  },
+  {
+    "label": "390 px · scroll 950",
+    "width": 390,
+    "published": "published-390-scroll.png",
+    "v1": "v1-390-scroll.png",
+    "v2": "after-390-scroll.png"
+  },
+  {
+    "label": "430 px · inicio",
+    "width": 430,
+    "published": "published-430-top.png",
+    "v1": "v1-430-top.png",
+    "v2": "after-430-top.png"
+  },
+  {
+    "label": "430 px · scroll 950",
+    "width": 430,
+    "published": "published-430-scroll.png",
+    "v1": "v1-430-scroll.png",
+    "v2": "after-430-scroll.png"
+  },
+  {
+    "label": "768 px · inicio",
+    "width": 768,
+    "published": "published-768-top.png",
+    "v1": "v1-768-top.png",
+    "v2": "after-768-top.png"
+  },
+  {
+    "label": "768 px · scroll 950",
+    "width": 768,
+    "published": "published-768-scroll.png",
+    "v1": "v1-768-scroll.png",
+    "v2": "after-768-scroll.png"
+  },
+  {
+    "label": "769 px · inicio",
+    "width": 769,
+    "published": "published-769-top.png",
+    "v1": "v1-769-top.png",
+    "v2": "after-769-top.png"
+  },
+  {
+    "label": "769 px · scroll 950",
+    "width": 769,
+    "published": "published-769-scroll.png",
+    "v1": "v1-769-scroll.png",
+    "v2": "after-769-scroll.png"
+  },
+  {
+    "label": "1440 px · inicio",
+    "width": 1440,
+    "published": "published-1440-top.png",
+    "v1": "v1-1440-top.png",
+    "v2": "after-1440-top.png"
+  },
+  {
+    "label": "1440 px · scroll 950",
+    "width": 1440,
+    "published": "published-1440-scroll.png",
+    "v1": "v1-1440-scroll.png",
+    "v2": "after-1440-scroll.png"
+  },
+  {
+    "label": "Solo oferta comercial · inicio",
+    "width": 390,
+    "published": "published-commerce-390-top.png",
+    "v1": "v1-commerce-390-top.png",
+    "v2": "after-commerce-390-top.png"
+  },
+  {
+    "label": "Solo oferta comercial · scroll 950",
+    "width": 390,
+    "published": "published-commerce-390-scroll.png",
+    "v1": "v1-commerce-390-scroll.png",
+    "v2": "after-commerce-390-scroll.png"
+  },
+  {
+    "label": "Inventario escaso · inicio",
+    "width": 390,
+    "published": "published-sparse-390-top.png",
+    "v1": "v1-sparse-390-top.png",
+    "v2": "after-sparse-390-top.png"
+  },
+  {
+    "label": "Inventario escaso · scroll 950",
+    "width": 390,
+    "published": "published-sparse-390-scroll.png",
+    "v1": "v1-sparse-390-scroll.png",
+    "v2": "after-sparse-390-scroll.png"
+  },
+  {
+    "label": "Solo social · inicio",
+    "width": 390,
+    "published": "published-social-390-top.png",
+    "v1": "v1-social-390-top.png",
+    "v2": "after-social-390-top.png"
+  },
+  {
+    "label": "Solo social · scroll 950",
+    "width": 390,
+    "published": "published-social-390-scroll.png",
+    "v1": "v1-social-390-scroll.png",
+    "v2": "after-social-390-scroll.png"
+  },
+  {
+    "label": "Publicación con medio · inicio",
+    "width": 390,
+    "published": "published-media-390-top.png",
+    "v1": "v1-media-390-top.png",
+    "v2": "after-media-390-top.png"
+  },
+  {
+    "label": "Publicación con medio · scroll 950",
+    "width": 390,
+    "published": "published-media-390-scroll.png",
+    "v1": "v1-media-390-scroll.png",
+    "v2": "after-media-390-scroll.png"
+  },
+  {
+    "label": "Reseñas vinculadas · inicio",
+    "width": 390,
+    "published": "published-reviews-390-top.png",
+    "v1": "v1-reviews-390-top.png",
+    "v2": "after-reviews-390-top.png"
+  },
+  {
+    "label": "Reseñas vinculadas · scroll 950",
+    "width": 390,
+    "published": "published-reviews-390-scroll.png",
+    "v1": "v1-reviews-390-scroll.png",
+    "v2": "after-reviews-390-scroll.png"
+  },
+  {
+    "label": "Sesión personal · inicio",
+    "width": 390,
+    "published": "published-personal-390-top.png",
+    "v1": "v1-personal-390-top.png",
+    "v2": "after-personal-390-top.png"
+  },
+  {
+    "label": "Sesión personal · scroll 950",
+    "width": 390,
+    "published": "published-personal-390-scroll.png",
+    "v1": "v1-personal-390-scroll.png",
+    "v2": "after-personal-390-scroll.png"
+  },
+  {
+    "label": "Propietario · inicio",
+    "width": 390,
+    "published": "published-owner-390-top.png",
+    "v1": "v1-owner-390-top.png",
+    "v2": "after-owner-390-top.png"
+  },
+  {
+    "label": "Propietario · scroll 950",
+    "width": 390,
+    "published": "published-owner-390-scroll.png",
+    "v1": "v1-owner-390-scroll.png",
+    "v2": "after-owner-390-scroll.png"
+  },
+  {
+    "label": "Perfil incompleto · inicio",
+    "width": 390,
+    "published": "published-incomplete-390-top.png",
+    "v1": "v1-incomplete-390-top.png",
+    "v2": "after-incomplete-390-top.png"
+  },
+  {
+    "label": "Perfil incompleto · scroll 950",
+    "width": 390,
+    "published": "published-incomplete-390-scroll.png",
+    "v1": "v1-incomplete-390-scroll.png",
+    "v2": "after-incomplete-390-scroll.png"
+  },
+  {
+    "label": "Categorías · horizontal publicada / desplegadas V1 y V2",
+    "width": 390,
+    "published": "published-categories-390.png",
+    "v1": "v1-categories-390.png",
+    "v2": "after-categories-390.png"
+  },
+  {
+    "label": "Búsqueda",
+    "width": 390,
+    "published": "published-search-390.png",
+    "v1": "v1-search-390.png",
+    "v2": "after-search-390.png"
+  },
+  {
+    "label": "Ubicación",
+    "width": 390,
+    "published": "published-city-390.png",
+    "v1": "v1-city-390.png",
+    "v2": "after-city-390.png"
+  },
+  {
+    "label": "Variantes",
+    "width": 390,
+    "published": "published-variants-390.png",
+    "v1": "v1-variants-390.png",
+    "v2": "after-variants-390.png"
+  },
+  {
+    "label": "Diálogo de publicación",
+    "width": 390,
+    "published": "published-publication-390.png",
+    "v1": "v1-publication-390.png",
+    "v2": "after-publication-390.png"
+  },
+  {
+    "label": "Diálogo de video · H.264 no certificado",
+    "width": 390,
+    "published": "published-video-390.png",
+    "v1": "v1-video-390.png",
+    "v2": "after-video-390.png"
+  },
+  {
+    "label": "Perfil propietario",
+    "width": 390,
+    "published": "published-profile-owner-390.png",
+    "v1": "v1-profile-owner-390.png",
+    "v2": "after-profile-owner-390.png"
+  },
+  {
+    "label": "Estado controlado · empty",
+    "width": 390,
+    "published": "published-state-empty-390.png",
+    "v1": "v1-state-empty-390.png",
+    "v2": "after-state-empty-390.png"
+  },
+  {
+    "label": "Estado controlado · loading",
+    "width": 390,
+    "published": "published-state-loading-390.png",
+    "v1": "v1-state-loading-390.png",
+    "v2": "after-state-loading-390.png"
+  },
+  {
+    "label": "Estado controlado · pending-types",
+    "width": 390,
+    "published": "published-state-pending-types-390.png",
+    "v1": "v1-state-pending-types-390.png",
+    "v2": "after-state-pending-types-390.png"
+  },
+  {
+    "label": "Estado controlado · error",
+    "width": 390,
+    "published": "published-state-error-390.png",
+    "v1": "v1-state-error-390.png",
+    "v2": "after-state-error-390.png"
+  },
+  {
+    "label": "Estado controlado · settled",
+    "width": 390,
+    "published": "published-state-settled-390.png",
+    "v1": "v1-state-settled-390.png",
+    "v2": "after-state-settled-390.png"
+  },
+  {
+    "label": "Tarjeta · Comida",
+    "width": 390,
+    "published": "published-key-food-390.png",
+    "v1": "v1-key-food-390.png",
+    "v2": "v2-key-food-390.png"
+  },
+  {
+    "label": "Tarjeta · Calzado",
+    "width": 390,
+    "published": "published-key-shoe-390.png",
+    "v1": "v1-key-shoe-390.png",
+    "v2": "v2-key-shoe-390.png"
+  },
+  {
+    "label": "Tarjeta · Moda",
+    "width": 390,
+    "published": "published-key-fashion-390.png",
+    "v1": "v1-key-fashion-390.png",
+    "v2": "v2-key-fashion-390.png"
+  },
+  {
+    "label": "Tarjeta · Publicación social",
+    "width": 390,
+    "published": "published-key-social-390.png",
+    "v1": "v1-key-social-390.png",
+    "v2": "v2-key-social-390.png"
+  },
+  {
+    "label": "Tarjeta · Póster de video",
+    "width": 390,
+    "published": "published-key-poster-390.png",
+    "v1": "v1-key-poster-390.png",
+    "v2": "v2-key-poster-390.png"
+  },
+  {
+    "label": "Tarjeta · Reseña relacionada",
+    "width": 390,
+    "published": "published-key-review-390.png",
+    "v1": "v1-key-review-390.png",
+    "v2": "v2-key-review-390.png"
+  }
+]

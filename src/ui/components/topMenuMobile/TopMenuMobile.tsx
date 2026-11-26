@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState, useRef } from "react";
 import { usePathname } from "next/navigation";
-import { MapPin, Plus, X } from "lucide-react";
+import { MapPin, X } from "lucide-react";
 import { SideBar } from "../side-bar/SideBar";
 import { MenuSectionsBar } from "../menu-section-bar/MenuSectionBar";
 import { useCartCatalogoStore } from "@/store/carro/carro-store";
@@ -33,7 +33,6 @@ import { updateUserPreferences } from "@/preferences/actions/updateUserPreferenc
 import SearchBar from "@/busqueda/componentes/SearchBar";
 
 import { titleFont } from "@/config/fonts";
-import { BusinessEntryLink } from "../topMenu/BusinessEntryLink";
 import styles from "../topMenu/publicNavigation.module.css";
 import mobile from "./mobileExperience.module.css";
 import { MobileNavigation } from "./MobileNavigation";
@@ -393,21 +392,6 @@ export const TopMenuMobile = () => {
         </div>
       </header>
       <div className={mobile.headerSpace} aria-hidden="true" />
-      <div className={mobile.businessRail}>
-        <BusinessEntryLink />
-        {isNegocio && (
-          <button
-            className={mobile.create}
-            onClick={() => setIsCrearModalOpen(true)}
-            aria-haspopup="dialog"
-            aria-label="Crear"
-            aria-expanded={isCrearModalOpen}
-          >
-            <Plus size={18} aria-hidden="true" />
-            Crear
-          </button>
-        )}
-      </div>
       {!isBusinessProfilePage && (
         <MenuSectionsBar compact={isDiscoveryPage} presentation="mobile" />
       )}
@@ -430,8 +414,16 @@ export const TopMenuMobile = () => {
         onCreate={() => setIsCrearModalOpen(true)}
         onHelp={handleAyudaWhatsApp}
       />
-      <SideBar open={isDrawerOpen} toggleDrawer={setIsDrawerOpen} />
+      <SideBar
+        open={isDrawerOpen}
+        toggleDrawer={setIsDrawerOpen}
+        onMobileCreate={() => {
+          setIsDrawerOpen(false);
+          setIsCrearModalOpen(true);
+        }}
+      />
       <CrearModal
+        autoFocusClose
         isOpen={isCrearModalOpen}
         onClose={() => setIsCrearModalOpen(false)}
       />

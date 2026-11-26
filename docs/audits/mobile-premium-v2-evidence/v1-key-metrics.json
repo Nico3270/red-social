@@ -1,0 +1,140 @@
+{
+  "records": [
+    {
+      "label": "food",
+      "id": "63cdfdd0-a5cf-4da7-932b-1bbb874615f6",
+      "geometry": {
+        "card": {
+          "x": 4,
+          "y": 272,
+          "width": 186,
+          "height": 286
+        },
+        "media": {
+          "x": 5,
+          "y": 317,
+          "width": 184,
+          "height": 138
+        },
+        "title": {
+          "x": 13,
+          "y": 463,
+          "width": 168,
+          "height": 38
+        },
+        "row": {
+          "x": 11,
+          "y": 505,
+          "width": 178,
+          "height": 44
+        },
+        "image": {
+          "naturalWidth": 192,
+          "naturalHeight": 192,
+          "fit": "contain"
+        },
+        "ratio": ""
+      }
+    },
+    {
+      "label": "shoe",
+      "id": "fcea4193-4e78-49bc-988e-5ba411deaca2",
+      "geometry": {
+        "card": {
+          "x": 200,
+          "y": 272,
+          "width": 186,
+          "height": 286
+        },
+        "media": {
+          "x": 201,
+          "y": 317,
+          "width": 184,
+          "height": 138
+        },
+        "title": {
+          "x": 209,
+          "y": 463,
+          "width": 168,
+          "height": 38
+        },
+        "row": {
+          "x": 207,
+          "y": 505,
+          "width": 178,
+          "height": 44
+        },
+        "image": {
+          "naturalWidth": 640,
+          "naturalHeight": 640,
+          "fit": "contain"
+        },
+        "ratio": ""
+      }
+    },
+    {
+      "label": "fashion",
+      "id": "7e09bebd-af35-424f-9a13-e33d1862f42c",
+      "geometry": {
+        "card": {
+          "x": 4,
+          "y": 471,
+          "width": 382,
+          "height": 353.390625
+        },
+        "media": {
+          "x": 5,
+          "y": 516,
+          "width": 380,
+          "height": 205.390625
+        },
+        "title": {
+          "x": 15,
+          "y": 729.390625,
+          "width": 360,
+          "height": 38
+        },
+        "row": {
+          "x": 15,
+          "y": 771.390625,
+          "width": 370,
+          "height": 44
+        },
+        "image": {
+          "naturalWidth": 640,
+          "naturalHeight": 640,
+          "fit": "contain"
+        },
+        "ratio": ""
+      }
+    },
+    {
+      "label": "social",
+      "id": "cmf1vtl2l000043hsthjz3ep6",
+      "media": {
+        "width": 380,
+        "height": 319.796875,
+        "naturalWidth": 720,
+        "naturalHeight": 404,
+        "fit": "contain"
+      }
+    },
+    {
+      "label": "poster",
+      "id": "cmd8abuph000443wfzt9txx2e",
+      "media": {
+        "width": 380,
+        "height": 319.796875,
+        "naturalWidth": 675,
+        "naturalHeight": 1200,
+        "fit": "contain"
+      }
+    },
+    {
+      "label": "review",
+      "id": "publication-cmga1qf3t000143or68yyssiz",
+      "productHref": "/producto/empanadas-boyacenses-9qzg"
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,18 @@
+{
+  "distinctFunctionalStoriesPassed": 6,
+  "firstRun": "5 passed / focus assertion failed",
+  "sessionsFinal": "1 passed",
+  "commerceExpandedFinal": "1 passed",
+  "unitTests": 12,
+  "typecheck": "passed",
+  "lint": "passed, inherited _body warning",
+  "focusedLint": "passed, no warnings",
+  "build": "passed, 74 pages, external HTTP blocked",
+  "desktopPixelDifferences": 0,
+  "comparisonCases": 48,
+  "imagesInTriples": 144,
+  "offline": true,
+  "newDependencies": false,
+  "noRemoteWrites": true,
+  "noPushMergeDeploy": true
+}

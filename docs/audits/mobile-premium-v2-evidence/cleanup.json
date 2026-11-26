@@ -1,0 +1,20 @@
+{
+  "temporaryPathsAbsent": [
+    "src/app/(catalogo)/feed-implementation-review",
+    "public/__feed-implementation-art",
+    "test-results/centered-feed",
+    "test-results/mobile-premium-v2",
+    "test-results/playwright/next-mobile-premium-v2-review"
+  ],
+  "portsClosed": [
+    3400,
+    3402,
+    55439
+  ],
+  "temporaryReferenceWorktreeRemoved": true,
+  "temporaryRouteAbsentFromBuild": true,
+  "buildPages": 74,
+  "ownDatabaseRemoved": true,
+  "otherDatabasesUntouched": true,
+  "pushMergeDeployPerformed": false
+}

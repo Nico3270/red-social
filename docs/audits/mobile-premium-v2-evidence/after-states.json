@@ -1,0 +1,35 @@
+{
+  "records": [
+    {
+      "state": "empty",
+      "items": 0,
+      "completion": 0,
+      "unresolved": 0
+    },
+    {
+      "state": "loading",
+      "items": 0,
+      "completion": 0,
+      "unresolved": 0
+    },
+    {
+      "state": "pending-types",
+      "items": 2,
+      "completion": 0,
+      "unresolved": 0
+    },
+    {
+      "state": "error",
+      "items": 0,
+      "completion": 0,
+      "unresolved": 1
+    },
+    {
+      "state": "settled",
+      "items": 2,
+      "completion": 1,
+      "unresolved": 0
+    }
+  ],
+  "errors": []
+}

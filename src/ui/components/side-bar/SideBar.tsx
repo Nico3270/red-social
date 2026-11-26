@@ -18,11 +18,14 @@ import { FaMoneyBillTransfer, FaStore } from "react-icons/fa6";
 import { useSession, signIn, signOut } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
+import { Store, Plus } from "lucide-react";
+import { BUSINESS_ENTRY_PATH } from "@/lib/business/businessEntry";
 
 interface SideBarProps {
   open: boolean;
   toggleDrawer: (open: boolean) => void;
   role?: string;
+  onMobileCreate?: () => void;
 }
 
 type AppRole = "admin" | "super_admin" | "user" | "negocio";
@@ -37,7 +40,11 @@ type MenuItem = {
 const menuConfig: Record<AppRole, MenuItem[]> = {
   user: [{ name: "Dashboard", link: "/dashboard", icon: <DashboardIcon /> }],
   admin: [
-    { name: "Perfil", link: "/dashboard/perfil", icon: <FaMoneyBillTransfer /> },
+    {
+      name: "Perfil",
+      link: "/dashboard/perfil",
+      icon: <FaMoneyBillTransfer />,
+    },
     { name: "Perfil 2", link: "/perfil", icon: <FaStore /> },
   ],
   super_admin: [
@@ -69,8 +76,13 @@ function isAppRole(role: unknown): role is AppRole {
   );
 }
 
-export const SideBar: React.FC<SideBarProps> = ({ open, toggleDrawer }) => {
+export const SideBar: React.FC<SideBarProps> = ({
+  open,
+  toggleDrawer,
+  onMobileCreate,
+}) => {
   const { data: session } = useSession();
+  const createAfterClose = React.useRef(false);
   const isAuthenticated = !!session?.user;
 
   const role: AppRole = isAppRole(session?.user?.role)
@@ -133,6 +145,42 @@ export const SideBar: React.FC<SideBarProps> = ({ open, toggleDrawer }) => {
       </Link>
 
       <List sx={{ flexGrow: 1, py: 1 }}>
+        {onMobileCreate && (
+          <>
+            {(!isAuthenticated || role !== "negocio") && (
+              <ListItem disablePadding>
+                <ListItemButton
+                  component={Link}
+                  href={BUSINESS_ENTRY_PATH}
+                  sx={{ minHeight: 48, color: "#ffd9a2" }}
+                >
+                  <ListItemIcon sx={{ minWidth: 36, color: "inherit" }}>
+                    <Store size={22} />
+                  </ListItemIcon>
+                  <ListItemText primary="Tengo un negocio" />
+                </ListItemButton>
+              </ListItem>
+            )}
+            {isAuthenticated && (
+              <ListItem disablePadding>
+                <ListItemButton
+                  onClick={() => {
+                    createAfterClose.current = true;
+                    toggleDrawer(false);
+                  }}
+                  aria-haspopup="dialog"
+                  sx={{ minHeight: 48, color: "#eddaff" }}
+                >
+                  <ListItemIcon sx={{ minWidth: 36, color: "inherit" }}>
+                    <Plus size={22} />
+                  </ListItemIcon>
+                  <ListItemText primary="Crear" />
+                </ListItemButton>
+              </ListItem>
+            )}
+            <Divider sx={{ bgcolor: "#ffffff20", my: 1 }} />
+          </>
+        )}
         {isAuthenticated ? (
           <>
             {itemsToRender.map((item) => (
@@ -151,7 +199,15 @@ export const SideBar: React.FC<SideBarProps> = ({ open, toggleDrawer }) => {
                   <ListItemIcon sx={{ color: "white", minWidth: 36 }}>
                     {item.icon}
                   </ListItemIcon>
-                  <ListItemText primary={item.name} />
+                  <ListItemText
+                    primary={
+                      onMobileCreate &&
+                      role === "negocio" &&
+                      item.link === "/dashboard"
+                        ? "Gestionar mi negocio"
+                        : item.name
+                    }
+                  />
                 </ListItemButton>
               </ListItem>
             ))}
@@ -198,11 +254,29 @@ export const SideBar: React.FC<SideBarProps> = ({ open, toggleDrawer }) => {
       open={open}
       anchor="right"
       onClose={() => toggleDrawer(false)}
+      SlideProps={{
+        onExited: () => {
+          if (createAfterClose.current) {
+            createAfterClose.current = false;
+            onMobileCreate?.();
+          }
+        },
+      }}
       PaperProps={{
-        sx: { bgcolor: "transparent", boxShadow: "none", "@media (max-width:768px)": { paddingTop: "env(safe-area-inset-top, 0px)", paddingBottom: "env(safe-area-inset-bottom, 0px)", height: "var(--myckeo-visual-height, 100dvh)", top: "var(--myckeo-visual-top, 0px)", boxSizing: "border-box" } },
+        sx: {
+          bgcolor: "transparent",
+          boxShadow: "none",
+          "@media (max-width:768px)": {
+            paddingTop: "env(safe-area-inset-top, 0px)",
+            paddingBottom: "env(safe-area-inset-bottom, 0px)",
+            height: "var(--myckeo-visual-height, 100dvh)",
+            top: "var(--myckeo-visual-top, 0px)",
+            boxSizing: "border-box",
+          },
+        },
       }}
     >
       {DrawerList}
     </Drawer>
   );
-}
+};

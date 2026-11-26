@@ -925,3 +925,21 @@
     .feed .media { aspect-ratio: 4 / 3; max-height: 190px; }
   }
 }
+
+/* V2: image proportions come from the same asset, not a fixed shallow frame. */
+@media (max-width: 768px) {
+  .feed { border-color: #ecd6dd; border-radius: 18px; box-shadow: 0 3px 12px #642c4210; }
+  .feed .media { aspect-ratio: var(--feed-image-ratio, 1); max-height: 440px; background: #fff; }
+  .feed .image { object-fit: contain; }
+  .feed .content, .feed[data-feed-action-layout] .content { padding: 6px 8px; gap: 2px; }
+  .feed .title { min-height: 0; line-height: 19px; color: #252334; letter-spacing: -.015em; }
+  .feed .businessName { color: #625063; }
+  .feed .price { color: #342637; font-weight: 750; }
+  .feed .socialBadges > span { border: 1px solid #ffffffb3; backdrop-filter: blur(8px); }
+  .feed .favorite button::before { background: #fff3f7; }
+  .feed .favorite button[aria-pressed="false"] svg { color: #aa6580; }
+  .feed .cart:not(:disabled)::before { background: #bb3658; box-shadow: 0 2px 5px #bb365826; }
+  .feed .whatsapp::before { background: #227d58; }
+  .feed .cart:not(:disabled):active::before { background: #942640; }
+  .feed .whatsapp:active::before { background: #155e41; }
+}

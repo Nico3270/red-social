@@ -1,0 +1,116 @@
+{
+  "original": [
+    "business-5506619e-3b3a-4e87-adb4-325396a98c26",
+    "business-696ee6ca-d4cb-444b-b423-dce95cefdce3",
+    "business-738e54a1-b8f5-4813-a960-e2a663127604",
+    "business-82688f03-866c-476f-b8b8-c7653161101e",
+    "business-84712cc3-5d0f-41dc-b660-353baff57e78",
+    "business-9790c152-383e-4bc2-9ab1-7c268c5b4b70",
+    "business-9c43d4bf-7185-48d3-9c7a-70ce79aa82ad",
+    "business-c3c4b604-9d83-47ce-8690-30b555bacff1",
+    "business-df781d8a-26ac-4fff-92dc-3297ae9fd67f",
+    "business-f2a00461-bfb5-40d4-8d8e-d51281902152",
+    "product-31b18ab8-264d-48e0-a4a0-0385ed990eeb",
+    "product-45acac87-83a0-45d8-937c-5993d7027f71",
+    "product-5ee0be8d-ed2c-4f90-9afc-628c8c796e28",
+    "product-63cdfdd0-a5cf-4da7-932b-1bbb874615f6",
+    "product-6670a118-4714-43cd-9afb-4a0c6bd9f5d4",
+    "product-77d14ce8-363e-4816-9484-ed7c6456f98b",
+    "product-78a153ef-7fe0-4e27-a0c0-5b5fe5bf0a0c",
+    "product-7e09bebd-af35-424f-9a13-e33d1862f42c",
+    "product-e52cec36-50f8-4285-9515-76b0b53cf929",
+    "product-fcea4193-4e78-49bc-988e-5ba411deaca2",
+    "publication-cmcy9nj7m000543e7ou96o0pf",
+    "publication-cmd50isao000143kz3xyliykn",
+    "publication-cmd803gku000643ldvt829p32",
+    "publication-cmd8abuph000443wfzt9txx2e",
+    "publication-cmeumpcxx000143elvzbvboxy",
+    "publication-cmf1vtl2l000043hsthjz3ep6",
+    "publication-cmf1w0mt9000543hss56x55b7",
+    "publication-cmf1ydjgp000h43hsci8m5p55",
+    "publication-cmft41ko80000l404g83uz2oq",
+    "publication-cmhslo4up000243cl2hvcl8g7",
+    "service-0b213f9c-095d-4800-8552-07a008d30e16",
+    "service-484de355-eaf5-4698-b491-5e982787347e",
+    "service-99e0c4aa-ee7e-4632-9f48-8ca6e16d164d"
+  ],
+  "photographs": [
+    {
+      "width": 192,
+      "height": 192,
+      "fit": "contain",
+      "transform": "none",
+      "source": "https://res.cloudinary.com/dkwosk8qd/image/upload/f_auto,q_auto:eco,c_limit,w_640,h_640/v1776241252/zv0caubf62mqq9jjczqf.jpg"
+    },
+    {
+      "width": 640,
+      "height": 640,
+      "fit": "contain",
+      "transform": "none",
+      "source": "https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_limit,w_640,h_640/v1758330642/red-social/z1nm04fzthvozmgvson9.png"
+    },
+    {
+      "width": 640,
+      "height": 640,
+      "fit": "contain",
+      "transform": "none",
+      "source": "https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_limit,w_640,h_640/v1756786695/red-social/vvaorrchfn1igvikwtqe.png"
+    },
+    {
+      "width": 640,
+      "height": 640,
+      "fit": "contain",
+      "transform": "none",
+      "source": "https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_limit,w_640,h_640/v1758331257/red-social/dvf9avlxlhuncnf8xar9.png"
+    },
+    {
+      "width": 640,
+      "height": 427,
+      "fit": "contain",
+      "transform": "none",
+      "source": "https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_limit,w_640,h_640/v1751906406/magicSurprise_images/ghlywgfxsnursdbsew6z.avif"
+    },
+    {
+      "width": 640,
+      "height": 640,
+      "fit": "contain",
+      "transform": "none",
+      "source": "https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_limit,w_640,h_640/v1777590185/myckeo/products/generated/5ee0be8d-ed2c-4f90-9afc-628c8c796e28/custom-b98ae957326b-v1.png"
+    },
+    {
+      "width": 640,
+      "height": 640,
+      "fit": "contain",
+      "transform": "none",
+      "source": "https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_limit,w_640,h_640/v1777589525/myckeo/products/generated/31b18ab8-264d-48e0-a4a0-0385ed990eeb/custom-dd8109841197-v1.png"
+    },
+    {
+      "width": 640,
+      "height": 347,
+      "fit": "contain",
+      "transform": "none",
+      "source": "https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_limit,w_640,h_640/v1751913404/magicSurprise_images/ely07d6yfgbjdc2l7f5m.jpg"
+    },
+    {
+      "width": 284,
+      "height": 178,
+      "fit": "contain",
+      "transform": "none",
+      "source": "https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_limit,w_640,h_640/v1752647839/red-social/wmpbmjkvcpol63e9ssrv.jpg"
+    },
+    {
+      "width": 447,
+      "height": 447,
+      "fit": "contain",
+      "transform": "none",
+      "source": "https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_limit,w_640,h_640/v1757658199/red-social/jvvrvldj86ygnlot0gvu.jpg"
+    }
+  ],
+  "portraitGeometryProbe": {
+    "width": 480,
+    "height": 600,
+    "fit": "contain",
+    "transform": "none"
+  },
+  "errors": []
+}
