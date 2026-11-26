@@ -1,0 +1,9 @@
+{
+  "adbAvailable": false,
+  "xcrunAvailable": false,
+  "ideviceIdAvailable": false,
+  "connectedPhysicalDeviceToolAvailable": false,
+  "physicalIOSExecuted": false,
+  "physicalAndroidExecuted": false,
+  "reason": "No connected physical-device tool or local iOS/Android bridge is available in this environment; browser emulation is not physical evidence."
+}

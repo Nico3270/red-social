@@ -1,0 +1,35 @@
+{
+  "reviewCause": "isolated cache omission; not an origin 404 or valid-image application regression",
+  "cacheEntries": 39,
+  "old30EntriesUnchanged": true,
+  "validImageWidths": [
+    320,
+    390,
+    430,
+    1440
+  ],
+  "faultCasesPassed": 5,
+  "faultModes": [
+    "HTTP404",
+    "request abort",
+    "invalid image bytes"
+  ],
+  "faultRequestsPerCase": 1,
+  "reservedHeightUnchanged": true,
+  "desktopFreshPixelDifferences": 0,
+  "regressionWidths": [
+    320,
+    390,
+    430,
+    1440
+  ],
+  "typecheck": "passed",
+  "lint": "passed, inherited _body warning",
+  "focusedLint": "passed",
+  "unitTestsPassed": 12,
+  "build": "passed, 74 pages, isolated tmpfs PostgreSQL, outbound HTTP blocked",
+  "physicalIOS": "pending, not executed",
+  "physicalAndroid": "pending, not executed",
+  "integrationRecommendation": "GO technical; physical checks pending before publication",
+  "pushMergeDeploy": false
+}

@@ -1,0 +1,18 @@
+{
+  "image": {
+    "src": "https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_limit,w_720,h_540/v1759447677/red-social/xfb8zlanoqlishcrfyfx.png",
+    "currentSrc": "https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_limit,w_720,h_540/v1759447677/red-social/xfb8zlanoqlishcrfyfx.png",
+    "complete": true,
+    "naturalWidth": 720,
+    "naturalHeight": 404
+  },
+  "responses": [
+    {
+      "url": "https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_limit,w_720,h_540/v1759447677/red-social/xfb8zlanoqlishcrfyfx.png",
+      "status": 200,
+      "mime": "image/jpeg"
+    }
+  ],
+  "readOnly": true,
+  "fixtureInterception": false
+}

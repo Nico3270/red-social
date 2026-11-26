@@ -1,0 +1,107 @@
+[
+  {
+    "width": 320,
+    "mode": "404",
+    "before": {
+      "x": 5,
+      "y": 384,
+      "width": 310,
+      "height": 232.5
+    },
+    "after": {
+      "x": 5,
+      "y": 384,
+      "width": 310,
+      "height": 232.5
+    },
+    "requests": 1,
+    "fallbackVisible": true,
+    "relationPreserved": true,
+    "dialogAccessible": true,
+    "errors": []
+  },
+  {
+    "width": 390,
+    "mode": "404",
+    "before": {
+      "x": 5,
+      "y": 361,
+      "width": 380,
+      "height": 285
+    },
+    "after": {
+      "x": 5,
+      "y": 361,
+      "width": 380,
+      "height": 285
+    },
+    "requests": 1,
+    "fallbackVisible": true,
+    "relationPreserved": true,
+    "dialogAccessible": true,
+    "errors": []
+  },
+  {
+    "width": 430,
+    "mode": "404",
+    "before": {
+      "x": 5,
+      "y": 349,
+      "width": 420,
+      "height": 315
+    },
+    "after": {
+      "x": 5,
+      "y": 349,
+      "width": 420,
+      "height": 315
+    },
+    "requests": 1,
+    "fallbackVisible": true,
+    "relationPreserved": true,
+    "dialogAccessible": true,
+    "errors": []
+  },
+  {
+    "width": 390,
+    "mode": "abort",
+    "before": {
+      "x": 5,
+      "y": 361,
+      "width": 380,
+      "height": 285
+    },
+    "after": {
+      "x": 5,
+      "y": 361,
+      "width": 380,
+      "height": 285
+    },
+    "requests": 1,
+    "fallbackVisible": true,
+    "relationPreserved": true,
+    "dialogAccessible": true,
+    "errors": []
+  },
+  {
+    "width": 390,
+    "mode": "invalid-bytes",
+    "before": {
+      "x": 5,
+      "y": 361,
+      "width": 380,
+      "height": 285
+    },
+    "after": {
+      "x": 5,
+      "y": 361,
+      "width": 380,
+      "height": 285
+    },
+    "requests": 1,
+    "fallbackVisible": true,
+    "relationPreserved": true,
+    "dialogAccessible": true,
+    "errors": []
+  }
+]

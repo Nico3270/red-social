@@ -1,0 +1,1 @@
+PASS: 320/390/430 photos, actions, follow badge, header/navigation; desktop 1440 pixels unchanged

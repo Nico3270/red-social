@@ -1,0 +1,55 @@
+{
+  "views": [
+    {
+      "width": 320,
+      "published": "published-review-320.png",
+      "v1": "v1-review-320.png",
+      "candidate": "candidate-review-320.png"
+    },
+    {
+      "width": 390,
+      "published": "published-review-390.png",
+      "v1": "v1-review-390.png",
+      "candidate": "candidate-review-390.png"
+    },
+    {
+      "width": 430,
+      "published": "published-review-430.png",
+      "v1": "v1-review-430.png",
+      "candidate": "candidate-review-430.png"
+    },
+    {
+      "width": 1440,
+      "published": "published-review-1440.png",
+      "v1": "v1-review-1440.png",
+      "candidate": "candidate-review-1440.png"
+    }
+  ],
+  "fallbacks": [
+    {
+      "mode": "404",
+      "width": 320,
+      "file": "fallback-404-320.png"
+    },
+    {
+      "mode": "404",
+      "width": 390,
+      "file": "fallback-404-390.png"
+    },
+    {
+      "mode": "404",
+      "width": 430,
+      "file": "fallback-404-430.png"
+    },
+    {
+      "mode": "abort",
+      "width": 390,
+      "file": "fallback-abort-390.png"
+    },
+    {
+      "mode": "invalid-bytes",
+      "width": 390,
+      "file": "fallback-invalid-bytes-390.png"
+    }
+  ]
+}

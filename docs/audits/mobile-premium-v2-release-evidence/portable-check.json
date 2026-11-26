@@ -1,0 +1,9 @@
+{
+  "triples": 4,
+  "comparisonImages": 12,
+  "faultImages": 5,
+  "diagnosticImages": 2,
+  "offline": true,
+  "networkRequests": [],
+  "pageErrors": []
+}

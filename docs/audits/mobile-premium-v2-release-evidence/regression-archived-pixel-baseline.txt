@@ -1,0 +1,11 @@
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+1388 !== 0
+
+    at /home/nico/worktrees/myckeo-mobile-premium-v2-20261126/e2e/mobile-premium-v2-release/regression.cjs:8:1087 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: 1388,
+  expected: 0,
+  operator: 'strictEqual'
+}

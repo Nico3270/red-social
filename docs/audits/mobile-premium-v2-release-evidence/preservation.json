@@ -1,0 +1,46 @@
+{
+  "otherWorktrees": {
+    "/home/nico/red-social": {
+      "same": true,
+      "head": "1f491ff8ce6f80e333f07548e299141fc863d993",
+      "files": 2740
+    },
+    "/home/nico/worktrees/myckeo-centered-feed-20261125": {
+      "same": true,
+      "head": "d98e40984a9574b0aa2ecdcc9ab6d816c476c94c",
+      "files": 1365
+    },
+    "/home/nico/worktrees/myckeo-business-entry-20261125": {
+      "same": true,
+      "head": "058d13329ba6a81414e140a33d08cb50475d009b",
+      "files": 1136
+    },
+    "/home/nico/worktrees/myckeo-centered-desktop-final-20261125": {
+      "same": true,
+      "head": "89f2741578ec666fbcdcabb1e1d23126b5609f31",
+      "files": 1431
+    },
+    "/home/nico/worktrees/myckeo-desktop-feed-20261125": {
+      "same": true,
+      "head": "8ce16bc7779f846c386483a7d145369b51d8e461",
+      "files": 1225
+    },
+    "/home/nico/worktrees/myckeo-mobile-premium-v1-20261125": {
+      "same": true,
+      "head": "251f29501891a6896d85dbbb0f4d4d95ab151ded",
+      "files": 1629
+    },
+    "/home/nico/worktrees/myckeo-public-main-integration-20261125": {
+      "same": true,
+      "head": "89f2741578ec666fbcdcabb1e1d23126b5609f31",
+      "files": 1431
+    },
+    "/home/nico/worktrees/myckeo-public-candidate-20261125": {
+      "same": true,
+      "head": "65f5f14c4f9f0abfa9f48cd58cec0759f1334b2d",
+      "files": 1107
+    }
+  },
+  "oldV1V2ZipsUnchanged": true,
+  "approvedV2CommitPreserved": "547c5dd96c1de91729fb406338c1d003f40847bf"
+}

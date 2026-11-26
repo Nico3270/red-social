@@ -1,0 +1,18 @@
+{
+  "temporaryPathsAbsent": [
+    "src/app/(catalogo)/feed-implementation-review",
+    "public/__feed-implementation-art",
+    "test-results/centered-feed",
+    "test-results/playwright/next-mobile-premium-v2-review"
+  ],
+  "portsClosed": [
+    3400,
+    3402,
+    55439
+  ],
+  "ownTemporaryReferenceRemoved": true,
+  "ownDatabaseRemoved": true,
+  "noFixtureRouteInBuild": true,
+  "buildPages": 74,
+  "pushMergeDeployPerformed": false
+}

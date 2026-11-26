@@ -1,0 +1,47 @@
+[
+  {
+    mode: 'original-harness',
+    state: {
+      src: 'https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_fill,g_auto,w_720,h_540/v1759447677/red-social/xfb8zlanoqlishcrfyfx.png',
+      currentSrc: 'https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_limit,w_720,h_540/v1759447677/red-social/xfb8zlanoqlishcrfyfx.png',
+      complete: true,
+      naturalWidth: 0,
+      naturalHeight: 0,
+      pictureSources: [Array],
+      box: [Object]
+    },
+    requests: [ [Object], [Object] ],
+    productHref: '/producto/empanadas-boyacenses-9qzg',
+    errors: []
+  },
+  {
+    mode: 'valid-response',
+    state: {
+      src: 'https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_fill,g_auto,w_720,h_540/v1759447677/red-social/xfb8zlanoqlishcrfyfx.png',
+      currentSrc: 'https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_limit,w_720,h_540/v1759447677/red-social/xfb8zlanoqlishcrfyfx.png',
+      complete: true,
+      naturalWidth: 720,
+      naturalHeight: 404,
+      pictureSources: [Array],
+      box: [Object]
+    },
+    requests: [ [Object], [Object] ],
+    productHref: '/producto/empanadas-boyacenses-9qzg',
+    errors: []
+  },
+  {
+    mode: 'http-404',
+    state: {
+      src: 'https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_fill,g_auto,w_720,h_540/v1759447677/red-social/xfb8zlanoqlishcrfyfx.png',
+      currentSrc: 'https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_limit,w_720,h_540/v1759447677/red-social/xfb8zlanoqlishcrfyfx.png',
+      complete: true,
+      naturalWidth: 0,
+      naturalHeight: 0,
+      pictureSources: [Array],
+      box: [Object]
+    },
+    requests: [ [Object], [Object] ],
+    productHref: '/producto/empanadas-boyacenses-9qzg',
+    errors: []
+  }
+]

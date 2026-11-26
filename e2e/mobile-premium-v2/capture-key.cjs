@@ -93,13 +93,34 @@ const phase = process.argv[2] || "v2",
       });
     }
     await ready(page, "/?scenario=reviews");
-    const review = page.locator("[data-feed-item-key]").first();
+    const review = page.locator(
+      '[data-feed-item-key="publication-cmga1qf3t000143or68yyssiz"]',
+    );
     await review.scrollIntoViewIfNeeded();
     await settled(page);
+    const reviewImage = review.locator('[class*="mediaFrame"] img');
+    const media = await reviewImage.evaluate(async (image) => {
+      await Promise.race([
+        image.decode(),
+        new Promise((_, reject) =>
+          setTimeout(() => reject(Error("Review image decode timeout")), 5000),
+        ),
+      ]);
+      if (!image.complete || !image.naturalWidth)
+        throw Error("Review image did not load");
+      return {
+        src: image.getAttribute("src"),
+        currentSrc: image.currentSrc,
+        complete: image.complete,
+        naturalWidth: image.naturalWidth,
+        naturalHeight: image.naturalHeight,
+      };
+    });
     await review.screenshot({ path: `${folder}/${phase}-key-review-390.png` });
     records.push({
       label: "review",
       id: await review.getAttribute("data-feed-item-key"),
+      media,
       productHref: await review
         .locator('a[href^="/producto/"]')
         .first()

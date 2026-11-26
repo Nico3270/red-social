@@ -1,0 +1,360 @@
+[
+  {
+    "width": 320,
+    "label": "food",
+    "state": {
+      "image": {
+        "src": "https://res.cloudinary.com/dkwosk8qd/image/upload/f_auto,q_auto:eco,c_limit,w_640,h_640/v1776241252/zv0caubf62mqq9jjczqf.jpg",
+        "complete": true,
+        "naturalWidth": 192,
+        "naturalHeight": 192
+      },
+      "wa": {
+        "x": 229,
+        "y": 606,
+        "width": 44,
+        "height": 44
+      },
+      "cart": {
+        "x": 273,
+        "y": 606,
+        "width": 44,
+        "height": 44
+      },
+      "price": {
+        "x": 13,
+        "y": 609,
+        "width": 214,
+        "height": 38
+      },
+      "follow": "Seguir a Pariila Internacional Tunja",
+      "badge": true
+    }
+  },
+  {
+    "width": 320,
+    "label": "shoe",
+    "state": {
+      "image": {
+        "src": "https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_limit,w_640,h_640/v1758330642/red-social/z1nm04fzthvozmgvson9.png",
+        "complete": true,
+        "naturalWidth": 640,
+        "naturalHeight": 640
+      },
+      "wa": {
+        "x": 229,
+        "y": 773,
+        "width": 44,
+        "height": 44
+      },
+      "cart": {
+        "x": 273,
+        "y": 773,
+        "width": 44,
+        "height": 44
+      },
+      "price": {
+        "x": 13,
+        "y": 784,
+        "width": 214,
+        "height": 22
+      },
+      "follow": "Seguir a Zapatería don Jorge",
+      "badge": true
+    }
+  },
+  {
+    "width": 320,
+    "label": "fashion",
+    "state": {
+      "image": {
+        "src": "https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_limit,w_640,h_640/v1756786695/red-social/vvaorrchfn1igvikwtqe.png",
+        "complete": true,
+        "naturalWidth": 640,
+        "naturalHeight": 640
+      },
+      "wa": {
+        "x": 229,
+        "y": 615,
+        "width": 44,
+        "height": 44
+      },
+      "cart": {
+        "x": 273,
+        "y": 615,
+        "width": 44,
+        "height": 44
+      },
+      "price": {
+        "x": 13,
+        "y": 626,
+        "width": 214,
+        "height": 22
+      },
+      "follow": "Seguir a NovaThread",
+      "badge": true
+    }
+  },
+  {
+    "width": 320,
+    "label": "horizontal",
+    "state": {
+      "currentSrc": "https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_limit,w_720,h_540/v1756777234/red-social/xhtuxrzcsfall2rsdwzh.png",
+      "complete": true,
+      "width": 720,
+      "height": 404
+    }
+  },
+  {
+    "width": 320,
+    "label": "poster",
+    "state": {
+      "currentSrc": "https://res.cloudinary.com/dkfsejtx9/video/upload/so_2,f_jpg,q_auto:good,c_limit,w_1200,h_1200/v1752810829/red-social/olqwhu1wztj6fqll5wna.jpg",
+      "complete": true,
+      "width": 675,
+      "height": 1200
+    }
+  },
+  {
+    "width": 390,
+    "label": "food",
+    "state": {
+      "image": {
+        "src": "https://res.cloudinary.com/dkwosk8qd/image/upload/f_auto,q_auto:eco,c_limit,w_640,h_640/v1776241252/zv0caubf62mqq9jjczqf.jpg",
+        "complete": true,
+        "naturalWidth": 192,
+        "naturalHeight": 192
+      },
+      "wa": {
+        "x": 101,
+        "y": 480,
+        "width": 44,
+        "height": 44
+      },
+      "cart": {
+        "x": 145,
+        "y": 480,
+        "width": 44,
+        "height": 44
+      },
+      "price": {
+        "x": 11,
+        "y": 483,
+        "width": 90,
+        "height": 38
+      },
+      "follow": "Seguir a Pariila Internacional Tunja",
+      "badge": true
+    }
+  },
+  {
+    "width": 390,
+    "label": "shoe",
+    "state": {
+      "image": {
+        "src": "https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_limit,w_640,h_640/v1758330642/red-social/z1nm04fzthvozmgvson9.png",
+        "complete": true,
+        "naturalWidth": 640,
+        "naturalHeight": 640
+      },
+      "wa": {
+        "x": 297,
+        "y": 480,
+        "width": 44,
+        "height": 44
+      },
+      "cart": {
+        "x": 341,
+        "y": 480,
+        "width": 44,
+        "height": 44
+      },
+      "price": {
+        "x": 207,
+        "y": 491,
+        "width": 90,
+        "height": 22
+      },
+      "follow": "Seguir a Zapatería don Jorge",
+      "badge": true
+    }
+  },
+  {
+    "width": 390,
+    "label": "fashion",
+    "state": {
+      "image": {
+        "src": "https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_limit,w_640,h_640/v1756786695/red-social/vvaorrchfn1igvikwtqe.png",
+        "complete": true,
+        "naturalWidth": 640,
+        "naturalHeight": 640
+      },
+      "wa": {
+        "x": 299,
+        "y": 773,
+        "width": 44,
+        "height": 44
+      },
+      "cart": {
+        "x": 343,
+        "y": 773,
+        "width": 44,
+        "height": 44
+      },
+      "price": {
+        "x": 13,
+        "y": 784,
+        "width": 284,
+        "height": 22
+      },
+      "follow": "Seguir a NovaThread",
+      "badge": true
+    }
+  },
+  {
+    "width": 390,
+    "label": "horizontal",
+    "state": {
+      "currentSrc": "https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_limit,w_720,h_540/v1756777234/red-social/xhtuxrzcsfall2rsdwzh.png",
+      "complete": true,
+      "width": 720,
+      "height": 404
+    }
+  },
+  {
+    "width": 390,
+    "label": "poster",
+    "state": {
+      "currentSrc": "https://res.cloudinary.com/dkfsejtx9/video/upload/so_2,f_jpg,q_auto:good,c_limit,w_1200,h_1200/v1752810829/red-social/olqwhu1wztj6fqll5wna.jpg",
+      "complete": true,
+      "width": 675,
+      "height": 1200
+    }
+  },
+  {
+    "width": 430,
+    "label": "food",
+    "state": {
+      "image": {
+        "src": "https://res.cloudinary.com/dkwosk8qd/image/upload/f_auto,q_auto:eco,c_limit,w_640,h_640/v1776241252/zv0caubf62mqq9jjczqf.jpg",
+        "complete": true,
+        "naturalWidth": 192,
+        "naturalHeight": 192
+      },
+      "wa": {
+        "x": 121,
+        "y": 500,
+        "width": 44,
+        "height": 44
+      },
+      "cart": {
+        "x": 165,
+        "y": 500,
+        "width": 44,
+        "height": 44
+      },
+      "price": {
+        "x": 11,
+        "y": 503,
+        "width": 110,
+        "height": 38
+      },
+      "follow": "Seguir a Pariila Internacional Tunja",
+      "badge": true
+    }
+  },
+  {
+    "width": 430,
+    "label": "shoe",
+    "state": {
+      "image": {
+        "src": "https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_limit,w_640,h_640/v1758330642/red-social/z1nm04fzthvozmgvson9.png",
+        "complete": true,
+        "naturalWidth": 640,
+        "naturalHeight": 640
+      },
+      "wa": {
+        "x": 337,
+        "y": 500,
+        "width": 44,
+        "height": 44
+      },
+      "cart": {
+        "x": 381,
+        "y": 500,
+        "width": 44,
+        "height": 44
+      },
+      "price": {
+        "x": 227,
+        "y": 511,
+        "width": 110,
+        "height": 22
+      },
+      "follow": "Seguir a Zapatería don Jorge",
+      "badge": true
+    }
+  },
+  {
+    "width": 430,
+    "label": "fashion",
+    "state": {
+      "image": {
+        "src": "https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_limit,w_640,h_640/v1756786695/red-social/vvaorrchfn1igvikwtqe.png",
+        "complete": true,
+        "naturalWidth": 640,
+        "naturalHeight": 640
+      },
+      "wa": {
+        "x": 339,
+        "y": 773,
+        "width": 44,
+        "height": 44
+      },
+      "cart": {
+        "x": 383,
+        "y": 773,
+        "width": 44,
+        "height": 44
+      },
+      "price": {
+        "x": 13,
+        "y": 784,
+        "width": 324,
+        "height": 22
+      },
+      "follow": "Seguir a NovaThread",
+      "badge": true
+    }
+  },
+  {
+    "width": 430,
+    "label": "horizontal",
+    "state": {
+      "currentSrc": "https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_limit,w_720,h_540/v1756777234/red-social/xhtuxrzcsfall2rsdwzh.png",
+      "complete": true,
+      "width": 720,
+      "height": 404
+    }
+  },
+  {
+    "width": 430,
+    "label": "poster",
+    "state": {
+      "currentSrc": "https://res.cloudinary.com/dkfsejtx9/video/upload/so_2,f_jpg,q_auto:good,c_limit,w_1200,h_1200/v1752810829/red-social/olqwhu1wztj6fqll5wna.jpg",
+      "complete": true,
+      "width": 675,
+      "height": 1200
+    }
+  },
+  {
+    "width": 1440,
+    "pos": "top",
+    "changedPixels": 0
+  },
+  {
+    "width": 1440,
+    "pos": "scroll",
+    "changedPixels": 0
+  }
+]

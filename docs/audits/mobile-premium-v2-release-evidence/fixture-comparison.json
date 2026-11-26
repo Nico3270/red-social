@@ -1,0 +1,209 @@
+{
+  "published": {
+    "commit": "89f2741578ec666fbcdcabb1e1d23126b5609f31",
+    "snapshotSha256": "edea5d08b09afa57af4096473eeb54c8e12551993bc5da01961305df2869332a",
+    "review": {
+      "id": "cmga1qf3t000143or68yyssiz",
+      "type": "publication",
+      "score": 13.384,
+      "createdAt": "2025-10-02T23:28:21.498Z",
+      "title": "Publicaci\u00f3n",
+      "descriptionShort": "Me encantar\u00f3n estas empanadas y fue muy buena la atenci\u00f3n",
+      "imageUrl": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1759447677/red-social/xfb8zlanoqlishcrfyfx.png",
+      "businessSlug": "parrilla-internacional-tunja-tunja-r3jq",
+      "isFollowed": false,
+      "data": {
+        "id": "cmga1qf3t000143or68yyssiz",
+        "usuario": {
+          "id": "b9023a76-9bd8-47ec-b136-f76b32aab9fe",
+          "nombre": "Cristian",
+          "apellido": "Rodriguez",
+          "username": "cristianrodriguez3270",
+          "fotoPerfil": null
+        },
+        "tipo": "TESTIMONIO",
+        "titulo": null,
+        "descripcion": "Me encantar\u00f3n estas empanadas y fue muy buena la atenci\u00f3n",
+        "multimedia": [
+          {
+            "id": "91d874bf-d880-4763-a710-63e277f9650a",
+            "url": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1759447677/red-social/xfb8zlanoqlishcrfyfx.png",
+            "tipo": "IMAGEN",
+            "formato": null,
+            "orden": 0
+          },
+          {
+            "id": "09786fd3-d2bc-410b-b92a-fddf88d48f72",
+            "url": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1759447678/red-social/tyvm4zvrjjgrrth5igjz.png",
+            "tipo": "IMAGEN",
+            "formato": null,
+            "orden": 1
+          }
+        ],
+        "visibilidad": "PUBLICA",
+        "createdAt": "2025-10-02T23:28:21.498Z",
+        "numLikes": 2,
+        "numComentarios": 0,
+        "numCompartidos": 0,
+        "negocio": {
+          "id": "5506619e-3b3a-4e87-adb4-325396a98c26",
+          "nombre": "Pariila Internacional Tunja",
+          "fotoPerfil": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1758509399/red-social/hco0zuwbphkf18ocrozc.png",
+          "slug": "parrilla-internacional-tunja-tunja-r3jq",
+          "ciudad": "Tunja",
+          "departamento": "Boyac\u00e1"
+        },
+        "calificacion": 4,
+        "producto": {
+          "id": "40dc41e6-c33f-4d9d-bd66-36d86f73ca13",
+          "nombre": "Empanadas Boyacenses",
+          "slug": "empanadas-boyacenses-9qzg"
+        },
+        "userReaction": null,
+        "comments": [],
+        "isAuthenticated": false,
+        "negocioId": "5506619e-3b3a-4e87-adb4-325396a98c26"
+      },
+      "numLikes": 2,
+      "locationTier": 0
+    }
+  },
+  "v1": {
+    "commit": "251f29501891a6896d85dbbb0f4d4d95ab151ded",
+    "snapshotSha256": "edea5d08b09afa57af4096473eeb54c8e12551993bc5da01961305df2869332a",
+    "review": {
+      "id": "cmga1qf3t000143or68yyssiz",
+      "type": "publication",
+      "score": 13.384,
+      "createdAt": "2025-10-02T23:28:21.498Z",
+      "title": "Publicaci\u00f3n",
+      "descriptionShort": "Me encantar\u00f3n estas empanadas y fue muy buena la atenci\u00f3n",
+      "imageUrl": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1759447677/red-social/xfb8zlanoqlishcrfyfx.png",
+      "businessSlug": "parrilla-internacional-tunja-tunja-r3jq",
+      "isFollowed": false,
+      "data": {
+        "id": "cmga1qf3t000143or68yyssiz",
+        "usuario": {
+          "id": "b9023a76-9bd8-47ec-b136-f76b32aab9fe",
+          "nombre": "Cristian",
+          "apellido": "Rodriguez",
+          "username": "cristianrodriguez3270",
+          "fotoPerfil": null
+        },
+        "tipo": "TESTIMONIO",
+        "titulo": null,
+        "descripcion": "Me encantar\u00f3n estas empanadas y fue muy buena la atenci\u00f3n",
+        "multimedia": [
+          {
+            "id": "91d874bf-d880-4763-a710-63e277f9650a",
+            "url": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1759447677/red-social/xfb8zlanoqlishcrfyfx.png",
+            "tipo": "IMAGEN",
+            "formato": null,
+            "orden": 0
+          },
+          {
+            "id": "09786fd3-d2bc-410b-b92a-fddf88d48f72",
+            "url": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1759447678/red-social/tyvm4zvrjjgrrth5igjz.png",
+            "tipo": "IMAGEN",
+            "formato": null,
+            "orden": 1
+          }
+        ],
+        "visibilidad": "PUBLICA",
+        "createdAt": "2025-10-02T23:28:21.498Z",
+        "numLikes": 2,
+        "numComentarios": 0,
+        "numCompartidos": 0,
+        "negocio": {
+          "id": "5506619e-3b3a-4e87-adb4-325396a98c26",
+          "nombre": "Pariila Internacional Tunja",
+          "fotoPerfil": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1758509399/red-social/hco0zuwbphkf18ocrozc.png",
+          "slug": "parrilla-internacional-tunja-tunja-r3jq",
+          "ciudad": "Tunja",
+          "departamento": "Boyac\u00e1"
+        },
+        "calificacion": 4,
+        "producto": {
+          "id": "40dc41e6-c33f-4d9d-bd66-36d86f73ca13",
+          "nombre": "Empanadas Boyacenses",
+          "slug": "empanadas-boyacenses-9qzg"
+        },
+        "userReaction": null,
+        "comments": [],
+        "isAuthenticated": false,
+        "negocioId": "5506619e-3b3a-4e87-adb4-325396a98c26"
+      },
+      "numLikes": 2,
+      "locationTier": 0
+    }
+  },
+  "v2": {
+    "commit": "547c5dd96c1de91729fb406338c1d003f40847bf",
+    "snapshotSha256": "edea5d08b09afa57af4096473eeb54c8e12551993bc5da01961305df2869332a",
+    "review": {
+      "id": "cmga1qf3t000143or68yyssiz",
+      "type": "publication",
+      "score": 13.384,
+      "createdAt": "2025-10-02T23:28:21.498Z",
+      "title": "Publicaci\u00f3n",
+      "descriptionShort": "Me encantar\u00f3n estas empanadas y fue muy buena la atenci\u00f3n",
+      "imageUrl": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1759447677/red-social/xfb8zlanoqlishcrfyfx.png",
+      "businessSlug": "parrilla-internacional-tunja-tunja-r3jq",
+      "isFollowed": false,
+      "data": {
+        "id": "cmga1qf3t000143or68yyssiz",
+        "usuario": {
+          "id": "b9023a76-9bd8-47ec-b136-f76b32aab9fe",
+          "nombre": "Cristian",
+          "apellido": "Rodriguez",
+          "username": "cristianrodriguez3270",
+          "fotoPerfil": null
+        },
+        "tipo": "TESTIMONIO",
+        "titulo": null,
+        "descripcion": "Me encantar\u00f3n estas empanadas y fue muy buena la atenci\u00f3n",
+        "multimedia": [
+          {
+            "id": "91d874bf-d880-4763-a710-63e277f9650a",
+            "url": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1759447677/red-social/xfb8zlanoqlishcrfyfx.png",
+            "tipo": "IMAGEN",
+            "formato": null,
+            "orden": 0
+          },
+          {
+            "id": "09786fd3-d2bc-410b-b92a-fddf88d48f72",
+            "url": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1759447678/red-social/tyvm4zvrjjgrrth5igjz.png",
+            "tipo": "IMAGEN",
+            "formato": null,
+            "orden": 1
+          }
+        ],
+        "visibilidad": "PUBLICA",
+        "createdAt": "2025-10-02T23:28:21.498Z",
+        "numLikes": 2,
+        "numComentarios": 0,
+        "numCompartidos": 0,
+        "negocio": {
+          "id": "5506619e-3b3a-4e87-adb4-325396a98c26",
+          "nombre": "Pariila Internacional Tunja",
+          "fotoPerfil": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1758509399/red-social/hco0zuwbphkf18ocrozc.png",
+          "slug": "parrilla-internacional-tunja-tunja-r3jq",
+          "ciudad": "Tunja",
+          "departamento": "Boyac\u00e1"
+        },
+        "calificacion": 4,
+        "producto": {
+          "id": "40dc41e6-c33f-4d9d-bd66-36d86f73ca13",
+          "nombre": "Empanadas Boyacenses",
+          "slug": "empanadas-boyacenses-9qzg"
+        },
+        "userReaction": null,
+        "comments": [],
+        "isAuthenticated": false,
+        "negocioId": "5506619e-3b3a-4e87-adb4-325396a98c26"
+      },
+      "numLikes": 2,
+      "locationTier": 0
+    }
+  }
+}

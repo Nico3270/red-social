@@ -1,0 +1,26 @@
+{
+  "original": {
+    "requested": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1759447677/red-social/xfb8zlanoqlishcrfyfx.png",
+    "final": "https://res.cloudinary.com/dkfsejtx9/image/upload/v1759447677/red-social/xfb8zlanoqlishcrfyfx.png",
+    "status": 200,
+    "mime": "image/png",
+    "bytes": 1707759,
+    "sha256": "9cd9ad2d3ca21f657ed108d152e662e86641f1445429e3868831adabe2013f44"
+  },
+  "published": {
+    "requested": "https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_fill,g_auto,w_720,h_540/v1759447677/red-social/xfb8zlanoqlishcrfyfx.png",
+    "final": "https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_fill,g_auto,w_720,h_540/v1759447677/red-social/xfb8zlanoqlishcrfyfx.png",
+    "status": 200,
+    "mime": "image/jpeg",
+    "bytes": 40416,
+    "sha256": "6673eddd1a55be26db9906c4c94c8de07d85bde6ff9a4289f0611a491354f1ed"
+  },
+  "mobile": {
+    "requested": "https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_limit,w_720,h_540/v1759447677/red-social/xfb8zlanoqlishcrfyfx.png",
+    "final": "https://res.cloudinary.com/dkfsejtx9/image/upload/f_auto,q_auto:eco,c_limit,w_720,h_540/v1759447677/red-social/xfb8zlanoqlishcrfyfx.png",
+    "status": 200,
+    "mime": "image/jpeg",
+    "bytes": 36612,
+    "sha256": "3854032b30e6b18f0deaf267b7bab1099fc06556b75ecc6366f631ea7f8efef1"
+  }
+}

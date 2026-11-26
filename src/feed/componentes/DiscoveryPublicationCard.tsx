@@ -72,6 +72,7 @@ export const DiscoveryPublicationCard: React.FC<
     useState<MediaOrientation>("unknown");
   const [videoPosterAttempt, setVideoPosterAttempt] = useState(0);
   const [posterFailed, setPosterFailed] = useState(false);
+  const [failedImageUrl, setFailedImageUrl] = useState<string | null>(null);
 
   const authorName = buildAuthorName(publicacion);
   const authorHref = `/perfil/${publicacion.negocio?.slug || publicacion.usuario.id}`;
@@ -97,6 +98,7 @@ export const DiscoveryPublicationCard: React.FC<
     primaryMedia?.url,
     PLACEHOLDER_PRODUCT_IMAGE,
   );
+  const imageFailed = failedImageUrl === safeMediaImage;
   const optimizedPublicationImageUrl = isVideo
     ? safeMediaImage
     : getCloudinaryImageUrl(safeMediaImage, "publication-preview");
@@ -152,6 +154,7 @@ export const DiscoveryPublicationCard: React.FC<
   useEffect(() => {
     setVideoPosterAttempt(0);
     setPosterFailed(false);
+    setFailedImageUrl(null);
   }, [primaryMedia?.url]);
 
   useEffect(() => {
@@ -302,17 +305,35 @@ export const DiscoveryPublicationCard: React.FC<
               )
             ) : (
               <div className={`relative w-full overflow-hidden bg-slate-100 ${mediaAspectClass} ${styles.mediaFrame}`}>
-                <picture>
-                {mobileMediaUrl && <source media="(max-width: 768px)" srcSet={mobileMediaUrl} />}
-                <Image
-                  src={optimizedPublicationImageUrl}
-                    onLoad={event => { const image = event.currentTarget; if (image.naturalWidth && image.naturalHeight) setMobileMediaRatio(image.naturalWidth / image.naturalHeight); }}
-                  alt={mediaPreviewAlt}
-                  fill
-                  sizes={presentation === "desktop" ? "680px" : "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 420px"}
-                  className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-                />
-                </picture>
+                {imageFailed ? (
+                  <div
+                    role="img"
+                    aria-label="Imagen de la publicación no disponible"
+                    data-publication-image-fallback
+                    className="absolute inset-0 flex flex-col items-center justify-center gap-1 bg-slate-100 p-2 text-center text-xs text-slate-600"
+                  >
+                    <FaImage aria-hidden="true" className="text-xl" />
+                    <span>Imagen no disponible</span>
+                  </div>
+                ) : (
+                  <picture>
+                    {mobileMediaUrl && <source media="(max-width: 768px)" srcSet={mobileMediaUrl} />}
+                    <Image
+                      src={optimizedPublicationImageUrl}
+                      onError={() => setFailedImageUrl(safeMediaImage)}
+                      onLoad={event => {
+                        const image = event.currentTarget;
+                        if (image.naturalWidth && image.naturalHeight) {
+                          setMobileMediaRatio(image.naturalWidth / image.naturalHeight);
+                        }
+                      }}
+                      alt={mediaPreviewAlt}
+                      fill
+                      sizes={presentation === "desktop" ? "680px" : "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 420px"}
+                      className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                    />
+                  </picture>
+                )}
               </div>
             )}
           </button>

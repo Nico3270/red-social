@@ -1,0 +1,26 @@
+[
+  {
+    "width": 769,
+    "position": "top",
+    "changedPixels": 0,
+    "total": 692100
+  },
+  {
+    "width": 769,
+    "position": "scroll",
+    "changedPixels": 0,
+    "total": 692100
+  },
+  {
+    "width": 1440,
+    "position": "top",
+    "changedPixels": 0,
+    "total": 1296000
+  },
+  {
+    "width": 1440,
+    "position": "scroll",
+    "changedPixels": 0,
+    "total": 1296000
+  }
+]
