@@ -106,9 +106,11 @@ if (process.argv.includes("--package")) {
     path.join(dest, "revision.json"),
     JSON.stringify(revision, null, 2),
   );
-  cp.execFileSync("zip", ["-rq", dest + ".zip", path.basename(dest)], {
-    cwd: path.dirname(dest),
-  });
+  cp.execFileSync("python3", [
+    "-c",
+    "import sys, zipfile\nfrom pathlib import Path\nroot = Path(sys.argv[1])\nwith zipfile.ZipFile(str(root) + '.zip', 'x', compression=zipfile.ZIP_DEFLATED, compresslevel=6) as archive:\n for item in sorted(root.rglob('*')):\n  if item.is_file(): archive.write(item, item.relative_to(root.parent))",
+    dest,
+  ]);
   console.log(dest + ".zip");
 }
 console.log(pairs.length + " offline before/after pairs");
