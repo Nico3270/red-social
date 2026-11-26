@@ -1,0 +1,1 @@
+Public check passed: real content, sticky navigation, city/continuation, desktop and mobile.

@@ -1,0 +1,10 @@
+Query: red-social / Production / dpl_25uB96GqEAddmayEeDszLoKVTk7q / error,fatal / since 10m / group requestPath
+
+## Runtime Log Counts
+
+**Project:** prj_iB5Hr9oHgsqEAwnvsTqo5EyUuruy
+**Grouped by:** requestPath
+**Showing:** Top 25 groups by log count; this may omit other groups.
+
+| requestPath | count |
+|---|---|

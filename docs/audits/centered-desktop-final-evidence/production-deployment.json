@@ -1,0 +1,41 @@
+{
+  "id": "dpl_25uB96GqEAddmayEeDszLoKVTk7q",
+  "name": "red-social",
+  "url": "red-social-51a3n8csk-nico-rodriguezs-projects-63a84b64.vercel.app",
+  "type": "LAMBDAS",
+  "state": "READY",
+  "createdAt": 1795662593190,
+  "creator": {
+    "uid": "7rdcg8tnknGyZ10oz26B0oIS",
+    "username": "cristiannicolasrodriguez3270-6344"
+  },
+  "project": {
+    "id": "prj_iB5Hr9oHgsqEAwnvsTqo5EyUuruy",
+    "name": "red-social",
+    "framework": "nextjs"
+  },
+  "meta": {
+    "githubCommitRef": "main",
+    "githubCommitSha": "0f9d5df1682c123217ab4c8b696b1d34d45b28e6",
+    "githubCommitMessage": "feat(feed): finalize sticky desktop navigation and compact completion",
+    "githubRepo": "red-social",
+    "githubOrg": "Nico3270"
+  },
+  "alias": [
+    "myckeo.com",
+    "www.myckeo.com",
+    "red-social-codex.vercel.app",
+    "red-social-ashen.vercel.app",
+    "red-social-nico-rodriguezs-projects-63a84b64.vercel.app",
+    "red-social-git-main-nico-rodriguezs-projects-63a84b64.vercel.app"
+  ],
+  "target": "production",
+  "regions": [
+    "iad1"
+  ],
+  "buildingAt": 1795662705963,
+  "ready": 1795662843571,
+  "readyState": "READY",
+  "source": "git",
+  "aliasError": null
+}

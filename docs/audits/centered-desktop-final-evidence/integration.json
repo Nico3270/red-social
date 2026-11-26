@@ -1,0 +1,12 @@
+{
+  "reviewed": "d98e40984a9574b0aa2ecdcc9ab6d816c476c94c",
+  "base": "8ce16bc7779f846c386483a7d145369b51d8e461",
+  "functional": "0f9d5df1682c123217ab4c8b696b1d34d45b28e6",
+  "mode": "fast-forward",
+  "push": "normal; no force",
+  "remoteMainAfterPush": "0f9d5df1682c123217ab4c8b696b1d34d45b28e6",
+  "deploymentId": "dpl_25uB96GqEAddmayEeDszLoKVTk7q",
+  "source": "Git/main",
+  "localBuildNotUploaded": true,
+  "productionDataNotMutated": true
+}

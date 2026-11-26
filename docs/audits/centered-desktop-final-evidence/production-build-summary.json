@@ -1,0 +1,30 @@
+{
+  "deploymentId": "dpl_25uB96GqEAddmayEeDszLoKVTk7q",
+  "source": "Git/main",
+  "lines": [
+    {
+      "created": 1795662705622,
+      "text": "Running build in Washington, D.C., USA (East) – iad1"
+    },
+    {
+      "created": 1795662713448,
+      "text": "Running \"vercel build\""
+    },
+    {
+      "created": 1795662716043,
+      "text": "Running \"pnpm run build\""
+    },
+    {
+      "created": 1795662766814,
+      "text": " ✓ Compiled successfully in 43s"
+    },
+    {
+      "created": 1795662838224,
+      "text": "Build Completed in /vercel/output [2m]"
+    },
+    {
+      "created": 1795662843654,
+      "text": "Deployment completed"
+    }
+  ]
+}

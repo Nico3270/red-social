@@ -1,0 +1,16 @@
+[
+  {
+    "alias": "myckeo.com",
+    "projectId": "prj_iB5Hr9oHgsqEAwnvsTqo5EyUuruy",
+    "deploymentId": "dpl_25uB96GqEAddmayEeDszLoKVTk7q",
+    "redirect": null,
+    "updatedAt": 1795662843705
+  },
+  {
+    "alias": "www.myckeo.com",
+    "projectId": "prj_iB5Hr9oHgsqEAwnvsTqo5EyUuruy",
+    "deploymentId": "dpl_25uB96GqEAddmayEeDszLoKVTk7q",
+    "redirect": null,
+    "updatedAt": 1795662843709
+  }
+]

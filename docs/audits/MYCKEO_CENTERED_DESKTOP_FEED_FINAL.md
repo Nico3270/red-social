@@ -1,6 +1,6 @@
 # Myckeo — cierre del feed centrado de escritorio
 
-Estado: controles locales aprobados; lista para integración y publicación autorizadas.
+**Estado: MYCKEO_CENTERED_DESKTOP_FEED_PUBLISHED_AND_VERIFIED.** Integración y publicación funcional completadas; el cierre documental conserva el mismo código de aplicación.
 
 ## Referencias y conservación
 
@@ -60,3 +60,27 @@ Persisten los pendientes históricos: Public smoke por validación de entorno, s
 Reproducción local: [instrucciones](../../e2e/centered-desktop-final/README.md). No desplegar el harness, sus rewrites, fixtures generados o build local. La publicación se realiza exclusivamente desde Git y se registra después en este informe.
 
 Servidor y contenedor propios detenidos y retirados; ruta/arte temporales eliminados antes del build. [Limpieza](centered-desktop-final-evidence/cleanup.json) · [Conservación del original y del prototipo](centered-desktop-final-evidence/preservation-result.json).
+
+
+## Integración y resultado público
+
+Main y origin/main se volvieron a comprobar en 8ce16bc antes de integrar. Se aplicó fast-forward del prototipo aprobado y del commit funcional **`0f9d5df1682c123217ab4c8b696b1d34d45b28e6`**, seguido de push normal, sin conflictos, force push ni artefactos locales. [Registro](centered-desktop-final-evidence/integration.json).
+
+Vercel construyó desde **Git/main**: deployment funcional **`dpl_25uB96GqEAddmayEeDszLoKVTk7q`**, red-social, Production **READY**, SHA funcional exacto. Se verificó cada alias por separado: **myckeo.com** y **www.myckeo.com**, ambos sobre ese deployment. [Deployment](centered-desktop-final-evidence/production-deployment.json) · [Dominios](centered-desktop-final-evidence/production-aliases.json) · [Build remoto](centered-desktop-final-evidence/production-build-summary.json). No se subió el build sintético local, ni se ejecutaron migraciones o seeds remotos.
+
+La comprobación pública anónima real aprobó a **1440, 1920, 1439 y 390 px**. Conservó la principal de 680 px centrada, lateral de 320 px, cabecera fija de 72 px y Tengo un negocio. La navegación quedó visible durante varios desplazamientos; las categorías expandidas y su último enlace siguieron accesibles a 600 px de alto. Se comprobó pestaña Publicaciones → Para ti, continuación **33 → 59 → 79 → 99** con todas las tarjetas previas y sus columnas conservadas, sin duplicados, y cambio real a Bogotá con 29 elementos observados y solicitudes de lectura de la ciudad nueva. En móvil se conservaron fila precio/WhatsApp/carrito y distintivo sobre avatar. **Cero errores de página y cero respuestas HTTP fallidas** en este recorrido. No se agotó el catálogo público: el final compacto con oferta escasa se acredita mediante los estados controlados locales, sin manipular las políticas públicas para obtener la captura. [Resultado público](centered-desktop-final-evidence/production-results.json) · [Salida](centered-desktop-final-evidence/production-browser.txt).
+
+Consulta de errores/fatales del deployment funcional, Production, últimos diez minutos, agrupada por ruta: sin grupos de errores. [Resultado](centered-desktop-final-evidence/production-runtime.txt). No se identificó una regresión grave atribuible y no se requirió rollback. La referencia de recuperación anterior sigue registrada.
+
+**[Galería final con capturas públicas y estados locales](centered-desktop-final-evidence/index.html)**. Enlaces relativos; se distingue explícitamente la procedencia de cada imagen.
+
+| Capturas públicas | Inicio | Scroll |
+|---|---|---|
+| 1440 | [PNG](centered-desktop-final-evidence/production-1440-top.png) | [PNG](centered-desktop-final-evidence/production-1440-scroll.png) |
+| 1920 | [PNG](centered-desktop-final-evidence/production-1920-top.png) | [PNG](centered-desktop-final-evidence/production-1920-scroll.png) |
+
+[Categorías expandidas en producción](centered-desktop-final-evidence/production-expanded-600.png) · [Regresión 1439](centered-desktop-final-evidence/production-1439-top.png) · [Regresión móvil](centered-desktop-final-evidence/production-390-top.png).
+
+El pendiente histórico de **Public smoke** persiste: run **45747133425**, `Validate smoke environment` fallido; instalación, generación de fixtures y suite quedaron omitidas. No se anuncia como aprobado ni se alteran secretos, protección o reglas para eludirlo. [Pasos del run](centered-desktop-final-evidence/public-smoke-functional.json). La API del conector de workflows solo lista runs de PR; el run disparado por push se localizó por la API de GitHub y sus pasos se inspeccionaron con el conector. El proyecto separado de staging y los otros pendientes descritos arriba no forman parte de esta publicación.
+
+El cierre documental posterior se integra y publica por el mismo flujo Git. Su SHA y deployment efectivos se verifican al entregar; no cambia el árbol de aplicación funcional ni exige repetir esta matriz. El worktree final para desarrollo local es **`/home/nico/worktrees/myckeo-centered-desktop-final-20261125`**. El worktree aprobado original sigue limpio en d98e409; el árbol original conserva sus 2740 archivos, HEAD y estado Git, y el prototipo aprobado sus 1365 archivos. [Conservación](centered-desktop-final-evidence/preservation-result.json).
