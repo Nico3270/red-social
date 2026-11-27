@@ -1,0 +1,128 @@
+[
+  {
+    "width": 320,
+    "state": "create-dialog",
+    "viewport": 320,
+    "documentWidth": 320,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": {
+      "top": 12,
+      "bottom": 408,
+      "height": 420
+    }
+  },
+  {
+    "width": 320,
+    "state": "short-search",
+    "viewport": 320,
+    "documentWidth": 320,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": {
+      "top": 33,
+      "bottom": 387,
+      "height": 420
+    }
+  },
+  {
+    "width": 1440,
+    "state": "native-zoom-200",
+    "innerWidth": 720,
+    "outerWidth": 1440,
+    "dpr": 2
+  },
+  {
+    "width": 1440,
+    "state": "zoom-header",
+    "viewport": 720,
+    "documentWidth": 720,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": null
+  },
+  {
+    "width": 1440,
+    "state": "create-dialog",
+    "viewport": 720,
+    "documentWidth": 720,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": {
+      "top": 12.046875,
+      "bottom": 444.4453125,
+      "height": 456
+    }
+  },
+  {
+    "width": 1440,
+    "state": "zoom-search",
+    "viewport": 720,
+    "documentWidth": 720,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": {
+      "top": 42.125,
+      "bottom": 414.375,
+      "height": 456
+    }
+  },
+  {
+    "width": 1920,
+    "state": "native-zoom-200",
+    "innerWidth": 960,
+    "outerWidth": 1920,
+    "dpr": 2
+  },
+  {
+    "width": 1920,
+    "state": "zoom-header",
+    "viewport": 960,
+    "documentWidth": 960,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": null
+  },
+  {
+    "width": 1920,
+    "state": "create-dialog",
+    "viewport": 960,
+    "documentWidth": 960,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": {
+      "top": 12.046875,
+      "bottom": 444.4453125,
+      "height": 456
+    }
+  },
+  {
+    "width": 1920,
+    "state": "zoom-search",
+    "viewport": 960,
+    "documentWidth": 960,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": {
+      "top": 42.125,
+      "bottom": 414.375,
+      "height": 456
+    }
+  }
+]

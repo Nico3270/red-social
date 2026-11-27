@@ -76,17 +76,64 @@
 }
 .mobileRow {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: auto 44px minmax(44px, 1fr);
   align-items: center;
   gap: 8px;
   padding: 8px 12px;
 }
 .mobileRow .location {
-  max-width: min(150px, 38vw);
+  justify-self: end;
+  max-width: min(150px, 100%);
+}
+.mobileRow .brand {
+  min-height: 44px;
 }
 .mobileSearch {
-  grid-column: 1/-1;
-  min-width: 0;
+  width: 44px;
+  min-width: 44px;
+}
+.mobileOffset {
+  margin-top: 61px;
+}
+.mobileProfileOffset {
+  height: 61px;
+}
+/* At high browser zoom, reflow the location instead of crowding touch targets. */
+@media (max-width: 279px) {
+  .mobileRow {
+    grid-template-columns: minmax(0, 1fr) 44px;
+  }
+  .mobileRow .brand {
+    min-width: 0;
+  }
+  .mobileRow .brand > img {
+    width: 28px;
+    height: 28px;
+  }
+  .mobileRow .brand > span {
+    font-size: 20px;
+  }
+  .mobileRow .location {
+    grid-column: 1 / -1;
+  }
+  .mobileOffset {
+    margin-top: 113px;
+  }
+  .mobileProfileOffset {
+    height: 113px;
+  }
+}
+@media (max-width: 199px) {
+  .mobileRow {
+    padding-inline: 4px;
+  }
+  .mobileRow .brand > img {
+    width: 24px;
+    height: 24px;
+  }
+  .mobileRow .brand > span {
+    font-size: 16px;
+  }
 }
 .mobileActions > div {
   display: flex;

@@ -1,0 +1,7224 @@
+{
+  "width": 1440,
+  "metrics": {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "header": 171,
+    "bottomNavigation": 0,
+    "usableHeight": 729,
+    "overflow": false,
+    "fullProducts": 3,
+    "partialProducts": 0,
+    "identifiableProducts": 3,
+    "firstPublicationTop": 729.96875,
+    "cards": [
+      {
+        "product": true,
+        "label": "Café de origen · 250 g",
+        "width": 440,
+        "height": 412.97,
+        "top": 277,
+        "left": 48,
+        "viewportPercent": 45.89,
+        "usablePercent": 56.65,
+        "mediaWidth": 422,
+        "mediaHeight": 237.38,
+        "imageShare": 57.48,
+        "retainedSourceArea": 100,
+        "imageFit": "contain",
+        "source": [
+          640,
+          640
+        ],
+        "overlayAreaPercent": 0,
+        "full": true,
+        "visible": 412.97,
+        "identifiable": true,
+        "titleHeight": 21.59,
+        "priceFits": true,
+        "controls": [
+          {
+            "label": "Seguir",
+            "width": 44,
+            "height": 44,
+            "inside": true,
+            "hit": true,
+            "nestedInteractive": false
+          },
+          {
+            "label": "Guardar Café de origen · 250 g en favoritos",
+            "width": 44,
+            "height": 44,
+            "inside": true,
+            "hit": true,
+            "nestedInteractive": false
+          },
+          {
+            "label": "Contactar por WhatsApp sobre Café de origen · 250 g",
+            "width": 44,
+            "height": 44,
+            "inside": true,
+            "hit": true,
+            "nestedInteractive": false
+          },
+          {
+            "label": "Agregar Café de origen · 250 g al carrito",
+            "width": 104.63,
+            "height": 44,
+            "inside": true,
+            "hit": true,
+            "nestedInteractive": false
+          }
+        ]
+      },
+      {
+        "product": true,
+        "label": "Bolso tejido artesanal",
+        "width": 440,
+        "height": 412.97,
+        "top": 277,
+        "left": 500,
+        "viewportPercent": 45.89,
+        "usablePercent": 56.65,
+        "mediaWidth": 422,
+        "mediaHeight": 237.38,
+        "imageShare": 57.48,
+        "retainedSourceArea": 100,
+        "imageFit": "contain",
+        "source": [
+          640,
+          640
+        ],
+        "overlayAreaPercent": 0,
+        "full": true,
+        "visible": 412.97,
+        "identifiable": true,
+        "titleHeight": 21.59,
+        "priceFits": true,
+        "controls": [
+          {
+            "label": "Seguir",
+            "width": 44,
+            "height": 44,
+            "inside": true,
+            "hit": true,
+            "nestedInteractive": false
+          },
+          {
+            "label": "Guardar Bolso tejido artesanal en favoritos",
+            "width": 44,
+            "height": 44,
+            "inside": true,
+            "hit": true,
+            "nestedInteractive": false
+          },
+          {
+            "label": "Contactar por WhatsApp sobre Bolso tejido artesanal",
+            "width": 44,
+            "height": 44,
+            "inside": true,
+            "hit": true,
+            "nestedInteractive": false
+          },
+          {
+            "label": "Agregar Bolso tejido artesanal al carrito",
+            "width": 104.63,
+            "height": 44,
+            "inside": true,
+            "hit": true,
+            "nestedInteractive": false
+          }
+        ]
+      },
+      {
+        "product": true,
+        "label": "Planta con matera",
+        "width": 440,
+        "height": 412.97,
+        "top": 277,
+        "left": 952,
+        "viewportPercent": 45.89,
+        "usablePercent": 56.65,
+        "mediaWidth": 422,
+        "mediaHeight": 237.38,
+        "imageShare": 57.48,
+        "retainedSourceArea": 100,
+        "imageFit": "contain",
+        "source": [
+          640,
+          640
+        ],
+        "overlayAreaPercent": 0,
+        "full": true,
+        "visible": 412.97,
+        "identifiable": true,
+        "titleHeight": 21.59,
+        "priceFits": true,
+        "controls": [
+          {
+            "label": "Seguir",
+            "width": 44,
+            "height": 44,
+            "inside": true,
+            "hit": true,
+            "nestedInteractive": false
+          },
+          {
+            "label": "Guardar Planta con matera en favoritos",
+            "width": 44,
+            "height": 44,
+            "inside": true,
+            "hit": true,
+            "nestedInteractive": false
+          },
+          {
+            "label": "Contactar por WhatsApp sobre Planta con matera",
+            "width": 44,
+            "height": 44,
+            "inside": true,
+            "hit": true,
+            "nestedInteractive": false
+          },
+          {
+            "label": "Agregar Planta con matera al carrito",
+            "width": 104.63,
+            "height": 44,
+            "inside": true,
+            "hit": true,
+            "nestedInteractive": false
+          }
+        ]
+      },
+      {
+        "product": false,
+        "label": "Así empieza una buena mañana",
+        "width": 768,
+        "height": 636.88,
+        "top": 729.97,
+        "left": 208,
+        "viewportPercent": 70.76,
+        "usablePercent": 87.36,
+        "mediaWidth": 0,
+        "mediaHeight": 0,
+        "imageShare": 0,
+        "retainedSourceArea": 0,
+        "source": [],
+        "overlayAreaPercent": 0,
+        "full": false,
+        "visible": 268.03,
+        "identifiable": false,
+        "titleHeight": 22,
+        "priceFits": true,
+        "controls": [
+          {
+            "label": "Abrir publicación",
+            "width": 766,
+            "height": 430.88,
+            "inside": true,
+            "hit": true,
+            "nestedInteractive": false
+          },
+          {
+            "label": null,
+            "width": 131.36,
+            "height": 44,
+            "inside": true,
+            "hit": true,
+            "nestedInteractive": false
+          }
+        ]
+      },
+      {
+        "product": true,
+        "label": "Café de origen · 500 g",
+        "width": 506,
+        "height": 450.09,
+        "top": 1382.84,
+        "left": 208,
+        "viewportPercent": 50.01,
+        "usablePercent": 61.74,
+        "mediaWidth": 488,
+        "mediaHeight": 274.5,
+        "imageShare": 60.99,
+        "retainedSourceArea": 100,
+        "imageFit": "contain",
+        "source": [
+          640,
+          640
+        ],
+        "overlayAreaPercent": 0,
+        "full": false,
+        "visible": 0,
+        "identifiable": false,
+        "titleHeight": 21.59,
+        "priceFits": true,
+        "controls": [
+          {
+            "label": "Seguir",
+            "width": 44,
+            "height": 44,
+            "inside": true,
+            "hit": true,
+            "nestedInteractive": false
+          },
+          {
+            "label": "Guardar Café de origen · 500 g en favoritos",
+            "width": 44,
+            "height": 44,
+            "inside": true,
+            "hit": true,
+            "nestedInteractive": false
+          },
+          {
+            "label": "Contactar por WhatsApp sobre Café de origen · 500 g",
+            "width": 44,
+            "height": 44,
+            "inside": true,
+            "hit": true,
+            "nestedInteractive": false
+          },
+          {
+            "label": "Agregar Café de origen · 500 g al carrito",
+            "width": 104.63,
+            "height": 44,
+            "inside": true,
+            "hit": true,
+            "nestedInteractive": false
+          }
+        ]
+      },
+      {
+        "product": true,
+        "label": "Bolso de fibras naturales",
+        "width": 506,
+        "height": 450.09,
+        "top": 1382.84,
+        "left": 726,
+        "viewportPercent": 50.01,
+        "usablePercent": 61.74,
+        "mediaWidth": 488,
+        "mediaHeight": 274.5,
+        "imageShare": 60.99,
+        "retainedSourceArea": 100,
+        "imageFit": "contain",
+        "source": [
+          640,
+          640
+        ],
+        "overlayAreaPercent": 0,
+        "full": false,
+        "visible": 0,
+        "identifiable": false,
+        "titleHeight": 21.59,
+        "priceFits": true,
+        "controls": [
+          {
+            "label": "Seguir",
+            "width": 44,
+            "height": 44,
+            "inside": true,
+            "hit": true,
+            "nestedInteractive": false
+          },
+          {
+            "label": "Guardar Bolso de fibras naturales en favoritos",
+            "width": 44,
+            "height": 44,
+            "inside": true,
+            "hit": true,
+            "nestedInteractive": false
+          },
+          {
+            "label": "Contactar por WhatsApp sobre Bolso de fibras naturales",
+            "width": 44,
+            "height": 44,
+            "inside": true,
+            "hit": true,
+            "nestedInteractive": false
+          },
+          {
+            "label": "Agregar Bolso de fibras naturales al carrito",
+            "width": 104.63,
+            "height": 44,
+            "inside": true,
+            "hit": true,
+            "nestedInteractive": false
+          }
+        ]
+      },
+      {
+        "product": false,
+        "width": 768,
+        "height": 599.63,
+        "top": 1872.94,
+        "left": 208,
+        "viewportPercent": 66.63,
+        "usablePercent": 82.25,
+        "mediaWidth": 0,
+        "mediaHeight": 0,
+        "imageShare": 0,
+        "retainedSourceArea": 0,
+        "source": [],
+        "overlayAreaPercent": 0,
+        "full": false,
+        "visible": 0,
+        "identifiable": false,
+        "titleHeight": 0,
+        "priceFits": true,
+        "controls": [
+          {
+            "label": "Seguir",
+            "width": 44,
+            "height": 44,
+            "inside": true,
+            "hit": true,
+            "nestedInteractive": false
+          },
+          {
+            "label": "Contactar a Casa Origen por WhatsApp",
+            "width": 44,
+            "height": 44,
+            "inside": true,
+            "hit": true,
+            "nestedInteractive": false
+          }
+        ]
+      },
+      {
+        "product": true,
+        "label": "Planta para tu escritorio",
+        "width": 672,
+        "height": 455.59,
+        "top": 2488.56,
+        "left": 384,
+        "viewportPercent": 50.62,
+        "usablePercent": 62.5,
+        "mediaWidth": 654,
+        "mediaHeight": 280,
+        "imageShare": 61.46,
+        "retainedSourceArea": 100,
+        "imageFit": "contain",
+        "source": [
+          640,
+          640
+        ],
+        "overlayAreaPercent": 0,
+        "full": false,
+        "visible": 0,
+        "identifiable": false,
+        "titleHeight": 21.59,
+        "priceFits": true,
+        "controls": [
+          {
+            "label": "Seguir",
+            "width": 44,
+            "height": 44,
+            "inside": true,
+            "hit": true,
+            "nestedInteractive": false
+          },
+          {
+            "label": "Guardar Planta para tu escritorio en favoritos",
+            "width": 44,
+            "height": 44,
+            "inside": true,
+            "hit": true,
+            "nestedInteractive": false
+          },
+          {
+            "label": "Contactar por WhatsApp sobre Planta para tu escritorio",
+            "width": 44,
+            "height": 44,
+            "inside": true,
+            "hit": true,
+            "nestedInteractive": false
+          },
+          {
+            "label": "Agregar Planta para tu escritorio al carrito",
+            "width": 104.63,
+            "height": 44,
+            "inside": true,
+            "hit": true,
+            "nestedInteractive": false
+          }
+        ]
+      },
+      {
+        "product": false,
+        "label": "Taller de café en casa",
+        "width": 768,
+        "height": 216,
+        "top": 2984.16,
+        "left": 208,
+        "viewportPercent": 24,
+        "usablePercent": 29.63,
+        "mediaWidth": 0,
+        "mediaHeight": 0,
+        "imageShare": 0,
+        "retainedSourceArea": 0,
+        "source": [],
+        "overlayAreaPercent": 0,
+        "full": false,
+        "visible": 0,
+        "identifiable": false,
+        "titleHeight": 22,
+        "priceFits": true,
+        "controls": [
+          {
+            "label": "Consultar Taller de café en casa por WhatsApp",
+            "width": 44,
+            "height": 44,
+            "inside": true,
+            "hit": true,
+            "nestedInteractive": false
+          }
+        ]
+      }
+    ]
+  },
+  "visual": [
+    {
+      "price": "$ 28.000",
+      "size": "22px",
+      "weight": "700",
+      "lineHeight": "27.5px",
+      "tracking": "-0.44px",
+      "color": "rgb(23, 32, 51)",
+      "contrastOnWhite": 16.27,
+      "border": "1px solid rgb(226, 232, 240)",
+      "shadow": "rgba(23, 32, 51, 0.03) 0px 2px 6px 0px"
+    },
+    {
+      "price": "$ 89.000",
+      "size": "22px",
+      "weight": "700",
+      "lineHeight": "27.5px",
+      "tracking": "-0.44px",
+      "color": "rgb(23, 32, 51)",
+      "contrastOnWhite": 16.27,
+      "border": "1px solid rgb(226, 232, 240)",
+      "shadow": "rgba(23, 32, 51, 0.03) 0px 2px 6px 0px"
+    },
+    {
+      "price": "$ 42.000",
+      "size": "22px",
+      "weight": "700",
+      "lineHeight": "27.5px",
+      "tracking": "-0.44px",
+      "color": "rgb(23, 32, 51)",
+      "contrastOnWhite": 16.27,
+      "border": "1px solid rgb(226, 232, 240)",
+      "shadow": "rgba(23, 32, 51, 0.03) 0px 2px 6px 0px"
+    },
+    {
+      "price": "$ 49.000",
+      "size": "22px",
+      "weight": "700",
+      "lineHeight": "27.5px",
+      "tracking": "-0.44px",
+      "color": "rgb(23, 32, 51)",
+      "contrastOnWhite": 16.27,
+      "border": "1px solid rgb(226, 232, 240)",
+      "shadow": "rgba(23, 32, 51, 0.03) 0px 2px 6px 0px"
+    },
+    {
+      "price": "$ 119.000",
+      "size": "22px",
+      "weight": "700",
+      "lineHeight": "27.5px",
+      "tracking": "-0.44px",
+      "color": "rgb(23, 32, 51)",
+      "contrastOnWhite": 16.27,
+      "border": "1px solid rgb(226, 232, 240)",
+      "shadow": "rgba(23, 32, 51, 0.03) 0px 2px 6px 0px"
+    },
+    {
+      "price": "$ 35.000",
+      "size": "22px",
+      "weight": "700",
+      "lineHeight": "27.5px",
+      "tracking": "-0.44px",
+      "color": "rgb(23, 32, 51)",
+      "contrastOnWhite": 16.27,
+      "border": "1px solid rgb(226, 232, 240)",
+      "shadow": "rgba(23, 32, 51, 0.03) 0px 2px 6px 0px"
+    }
+  ],
+  "rendered": [
+    [
+      {
+        "tag": "DIV",
+        "rect": [
+          48,
+          179,
+          440,
+          412.97
+        ],
+        "styles": [
+          "flex",
+          "relative",
+          "440px",
+          "412.969px",
+          "8px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgb(255, 255, 255)",
+          "1px solid rgb(226, 232, 240)",
+          "16px",
+          "rgba(23, 32, 51, 0.03) 0px 2px 6px 0px",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          57,
+          188,
+          422,
+          44
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "422px",
+          "44px",
+          "0px",
+          "0px 0px 8px",
+          "8px",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          57,
+          194,
+          322,
+          32
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "322px",
+          "32px",
+          "0px",
+          "0px",
+          "8px",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          57,
+          194,
+          32,
+          32
+        ],
+        "styles": [
+          "block",
+          "relative",
+          "32px",
+          "32px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "9999px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "IMG",
+        "rect": [
+          57,
+          194,
+          32,
+          32
+        ],
+        "styles": [
+          "block",
+          "absolute",
+          "32px",
+          "32px",
+          "0px",
+          "0px",
+          "normal",
+          "rgba(0, 0, 0, 0)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "cover",
+          "none"
+        ]
+      },
+      {
+        "tag": "A",
+        "rect": [
+          97,
+          200,
+          83.28,
+          20
+        ],
+        "styles": [
+          "block",
+          "static",
+          "83.2812px",
+          "20px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "600",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          387,
+          188,
+          92,
+          44
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "92px",
+          "44px",
+          "0px",
+          "0px",
+          "4px",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "BUTTON",
+        "rect": [
+          387,
+          188,
+          44,
+          44
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "44px",
+          "44px",
+          "8px",
+          "0px",
+          "normal",
+          "rgb(255, 255, 255)",
+          "rgb(37, 99, 235)",
+          "0px solid rgb(229, 231, 235)",
+          "9999px",
+          "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 1px 2px 0px",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "500",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "SPAN",
+        "rect": [
+          400,
+          201,
+          18,
+          18
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "18px",
+          "18px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(255, 255, 255)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "500",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "svg",
+        "rect": [
+          400,
+          201,
+          18,
+          18
+        ],
+        "styles": [
+          "block",
+          "static",
+          "18px",
+          "18px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(255, 255, 255)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "500",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "path",
+        "rect": [
+          400,
+          202.8,
+          18,
+          14.4
+        ],
+        "styles": [
+          "inline",
+          "static",
+          "auto",
+          "auto",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(255, 255, 255)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "500",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          435,
+          188,
+          44,
+          44
+        ],
+        "styles": [
+          "block",
+          "relative",
+          "44px",
+          "44px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "BUTTON",
+        "rect": [
+          435,
+          188,
+          44,
+          44
+        ],
+        "styles": [
+          "inline-block",
+          "static",
+          "44px",
+          "44px",
+          "8px",
+          "0px",
+          "normal",
+          "rgb(107, 114, 128)",
+          "rgb(255, 255, 255)",
+          "0px solid rgb(229, 231, 235)",
+          "9999px",
+          "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 1px 2px 0px",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "svg",
+        "rect": [
+          443,
+          200,
+          20,
+          20
+        ],
+        "styles": [
+          "block",
+          "static",
+          "20px",
+          "20px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(156, 163, 175)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "20px",
+          "400",
+          "28px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "path",
+        "rect": [
+          443,
+          201.25,
+          20,
+          17.5
+        ],
+        "styles": [
+          "inline",
+          "static",
+          "auto",
+          "auto",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(156, 163, 175)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "20px",
+          "400",
+          "28px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          57,
+          240,
+          422,
+          237.38
+        ],
+        "styles": [
+          "block",
+          "relative",
+          "422px",
+          "237.375px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "A",
+        "rect": [
+          57,
+          240,
+          422,
+          237.38
+        ],
+        "styles": [
+          "block",
+          "relative",
+          "422px",
+          "237.375px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          57,
+          240,
+          422,
+          237.38
+        ],
+        "styles": [
+          "block",
+          "relative",
+          "422px",
+          "237.375px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgb(243, 244, 246)",
+          "0px solid rgb(229, 231, 235)",
+          "12px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "IMG",
+        "rect": [
+          57,
+          240,
+          422,
+          237.38
+        ],
+        "styles": [
+          "block",
+          "absolute",
+          "422px",
+          "237.375px",
+          "0px",
+          "0px",
+          "normal",
+          "rgba(0, 0, 0, 0)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "contain",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          57,
+          485.38,
+          422,
+          97.59
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "422px",
+          "97.5938px",
+          "0px",
+          "8px 0px 0px",
+          "8px",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          57,
+          485.38,
+          422,
+          45.59
+        ],
+        "styles": [
+          "block",
+          "static",
+          "422px",
+          "45.5938px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "A",
+        "rect": [
+          57,
+          485.38,
+          422,
+          21.59
+        ],
+        "styles": [
+          "block",
+          "static",
+          "422px",
+          "21.5938px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "H3",
+        "rect": [
+          57,
+          485.38,
+          422,
+          21.59
+        ],
+        "styles": [
+          "flow-root",
+          "static",
+          "422px",
+          "21.5938px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "650",
+          "21.6px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "P",
+        "rect": [
+          57,
+          510.97,
+          422,
+          20
+        ],
+        "styles": [
+          "flow-root",
+          "static",
+          "422px",
+          "20px",
+          "0px",
+          "4px 0px 0px",
+          "normal",
+          "rgb(89, 101, 121)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "400",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          57,
+          538.97,
+          422,
+          44
+        ],
+        "styles": [
+          "block",
+          "static",
+          "422px",
+          "44px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          57,
+          538.97,
+          422,
+          44
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "422px",
+          "44px",
+          "0px",
+          "0px",
+          "8px",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          57,
+          547.22,
+          261.38,
+          27.5
+        ],
+        "styles": [
+          "block",
+          "static",
+          "261.375px",
+          "27.5px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          57,
+          547.22,
+          261.38,
+          27.5
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "261.375px",
+          "27.5px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "SPAN",
+        "rect": [
+          57,
+          547.22,
+          261.38,
+          27.5
+        ],
+        "styles": [
+          "block",
+          "static",
+          "261.375px",
+          "27.5px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "22px",
+          "700",
+          "27.5px",
+          "-0.44px",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          326.38,
+          538.97,
+          152.63,
+          44
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "152.625px",
+          "44px",
+          "0px",
+          "0px",
+          "4px",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "A",
+        "rect": [
+          326.38,
+          538.97,
+          44,
+          44
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "44px",
+          "44px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(21, 128, 61)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "10px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "svg",
+        "rect": [
+          338.38,
+          550.97,
+          20,
+          20
+        ],
+        "styles": [
+          "block",
+          "static",
+          "20px",
+          "20px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(21, 128, 61)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "path",
+        "rect": [
+          338.38,
+          550.97,
+          19.91,
+          20
+        ],
+        "styles": [
+          "inline",
+          "static",
+          "auto",
+          "auto",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(21, 128, 61)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "BUTTON",
+        "rect": [
+          374.38,
+          538.97,
+          104.63,
+          44
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "104.625px",
+          "44px",
+          "8px 12px",
+          "0px",
+          "6px",
+          "rgb(255, 255, 255)",
+          "rgb(23, 32, 51)",
+          "0px solid rgb(229, 231, 235)",
+          "10px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "600",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "svg",
+        "rect": [
+          386.38,
+          550.97,
+          20,
+          20
+        ],
+        "styles": [
+          "block",
+          "static",
+          "20px",
+          "20px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(255, 255, 255)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "600",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "path",
+        "rect": [
+          386.38,
+          552.08,
+          20,
+          17.78
+        ],
+        "styles": [
+          "inline",
+          "static",
+          "auto",
+          "auto",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(255, 255, 255)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "600",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "SPAN",
+        "rect": [
+          412.38,
+          550.97,
+          54.63,
+          20
+        ],
+        "styles": [
+          "block",
+          "static",
+          "54.625px",
+          "20px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(255, 255, 255)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "600",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      }
+    ],
+    [
+      {
+        "tag": "DIV",
+        "rect": [
+          500,
+          179,
+          440,
+          412.97
+        ],
+        "styles": [
+          "flex",
+          "relative",
+          "440px",
+          "412.969px",
+          "8px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgb(255, 255, 255)",
+          "1px solid rgb(226, 232, 240)",
+          "16px",
+          "rgba(23, 32, 51, 0.03) 0px 2px 6px 0px",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          509,
+          188,
+          422,
+          44
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "422px",
+          "44px",
+          "0px",
+          "0px 0px 8px",
+          "8px",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          509,
+          194,
+          322,
+          32
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "322px",
+          "32px",
+          "0px",
+          "0px",
+          "8px",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          509,
+          194,
+          32,
+          32
+        ],
+        "styles": [
+          "block",
+          "relative",
+          "32px",
+          "32px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "9999px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "IMG",
+        "rect": [
+          509,
+          194,
+          32,
+          32
+        ],
+        "styles": [
+          "block",
+          "absolute",
+          "32px",
+          "32px",
+          "0px",
+          "0px",
+          "normal",
+          "rgba(0, 0, 0, 0)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "cover",
+          "none"
+        ]
+      },
+      {
+        "tag": "A",
+        "rect": [
+          549,
+          200,
+          83.28,
+          20
+        ],
+        "styles": [
+          "block",
+          "static",
+          "83.2812px",
+          "20px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "600",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          839,
+          188,
+          92,
+          44
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "92px",
+          "44px",
+          "0px",
+          "0px",
+          "4px",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "BUTTON",
+        "rect": [
+          839,
+          188,
+          44,
+          44
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "44px",
+          "44px",
+          "8px",
+          "0px",
+          "normal",
+          "rgb(255, 255, 255)",
+          "rgb(37, 99, 235)",
+          "0px solid rgb(229, 231, 235)",
+          "9999px",
+          "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 1px 2px 0px",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "500",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "SPAN",
+        "rect": [
+          852,
+          201,
+          18,
+          18
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "18px",
+          "18px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(255, 255, 255)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "500",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "svg",
+        "rect": [
+          852,
+          201,
+          18,
+          18
+        ],
+        "styles": [
+          "block",
+          "static",
+          "18px",
+          "18px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(255, 255, 255)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "500",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "path",
+        "rect": [
+          852,
+          202.8,
+          18,
+          14.4
+        ],
+        "styles": [
+          "inline",
+          "static",
+          "auto",
+          "auto",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(255, 255, 255)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "500",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          887,
+          188,
+          44,
+          44
+        ],
+        "styles": [
+          "block",
+          "relative",
+          "44px",
+          "44px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "BUTTON",
+        "rect": [
+          887,
+          188,
+          44,
+          44
+        ],
+        "styles": [
+          "inline-block",
+          "static",
+          "44px",
+          "44px",
+          "8px",
+          "0px",
+          "normal",
+          "rgb(107, 114, 128)",
+          "rgb(255, 255, 255)",
+          "0px solid rgb(229, 231, 235)",
+          "9999px",
+          "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 1px 2px 0px",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "svg",
+        "rect": [
+          895,
+          200,
+          20,
+          20
+        ],
+        "styles": [
+          "block",
+          "static",
+          "20px",
+          "20px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(156, 163, 175)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "20px",
+          "400",
+          "28px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "path",
+        "rect": [
+          895,
+          201.25,
+          20,
+          17.5
+        ],
+        "styles": [
+          "inline",
+          "static",
+          "auto",
+          "auto",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(156, 163, 175)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "20px",
+          "400",
+          "28px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          509,
+          240,
+          422,
+          237.38
+        ],
+        "styles": [
+          "block",
+          "relative",
+          "422px",
+          "237.375px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "A",
+        "rect": [
+          509,
+          240,
+          422,
+          237.38
+        ],
+        "styles": [
+          "block",
+          "relative",
+          "422px",
+          "237.375px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          509,
+          240,
+          422,
+          237.38
+        ],
+        "styles": [
+          "block",
+          "relative",
+          "422px",
+          "237.375px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgb(243, 244, 246)",
+          "0px solid rgb(229, 231, 235)",
+          "12px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "IMG",
+        "rect": [
+          509,
+          240,
+          422,
+          237.38
+        ],
+        "styles": [
+          "block",
+          "absolute",
+          "422px",
+          "237.375px",
+          "0px",
+          "0px",
+          "normal",
+          "rgba(0, 0, 0, 0)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "contain",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          509,
+          485.38,
+          422,
+          97.59
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "422px",
+          "97.5938px",
+          "0px",
+          "8px 0px 0px",
+          "8px",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          509,
+          485.38,
+          422,
+          45.59
+        ],
+        "styles": [
+          "block",
+          "static",
+          "422px",
+          "45.5938px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "A",
+        "rect": [
+          509,
+          485.38,
+          422,
+          21.59
+        ],
+        "styles": [
+          "block",
+          "static",
+          "422px",
+          "21.5938px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "H3",
+        "rect": [
+          509,
+          485.38,
+          422,
+          21.59
+        ],
+        "styles": [
+          "flow-root",
+          "static",
+          "422px",
+          "21.5938px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "650",
+          "21.6px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "P",
+        "rect": [
+          509,
+          510.97,
+          422,
+          20
+        ],
+        "styles": [
+          "flow-root",
+          "static",
+          "422px",
+          "20px",
+          "0px",
+          "4px 0px 0px",
+          "normal",
+          "rgb(89, 101, 121)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "400",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          509,
+          538.97,
+          422,
+          44
+        ],
+        "styles": [
+          "block",
+          "static",
+          "422px",
+          "44px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          509,
+          538.97,
+          422,
+          44
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "422px",
+          "44px",
+          "0px",
+          "0px",
+          "8px",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          509,
+          547.22,
+          261.38,
+          27.5
+        ],
+        "styles": [
+          "block",
+          "static",
+          "261.375px",
+          "27.5px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          509,
+          547.22,
+          261.38,
+          27.5
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "261.375px",
+          "27.5px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "SPAN",
+        "rect": [
+          509,
+          547.22,
+          261.38,
+          27.5
+        ],
+        "styles": [
+          "block",
+          "static",
+          "261.375px",
+          "27.5px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "22px",
+          "700",
+          "27.5px",
+          "-0.44px",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          778.38,
+          538.97,
+          152.63,
+          44
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "152.625px",
+          "44px",
+          "0px",
+          "0px",
+          "4px",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "A",
+        "rect": [
+          778.38,
+          538.97,
+          44,
+          44
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "44px",
+          "44px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(21, 128, 61)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "10px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "svg",
+        "rect": [
+          790.38,
+          550.97,
+          20,
+          20
+        ],
+        "styles": [
+          "block",
+          "static",
+          "20px",
+          "20px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(21, 128, 61)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "path",
+        "rect": [
+          790.38,
+          550.97,
+          19.91,
+          20
+        ],
+        "styles": [
+          "inline",
+          "static",
+          "auto",
+          "auto",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(21, 128, 61)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "BUTTON",
+        "rect": [
+          826.38,
+          538.97,
+          104.63,
+          44
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "104.625px",
+          "44px",
+          "8px 12px",
+          "0px",
+          "6px",
+          "rgb(255, 255, 255)",
+          "rgb(23, 32, 51)",
+          "0px solid rgb(229, 231, 235)",
+          "10px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "600",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "svg",
+        "rect": [
+          838.38,
+          550.97,
+          20,
+          20
+        ],
+        "styles": [
+          "block",
+          "static",
+          "20px",
+          "20px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(255, 255, 255)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "600",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "path",
+        "rect": [
+          838.38,
+          552.08,
+          20,
+          17.78
+        ],
+        "styles": [
+          "inline",
+          "static",
+          "auto",
+          "auto",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(255, 255, 255)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "600",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "SPAN",
+        "rect": [
+          864.38,
+          550.97,
+          54.63,
+          20
+        ],
+        "styles": [
+          "block",
+          "static",
+          "54.625px",
+          "20px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(255, 255, 255)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "600",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      }
+    ],
+    [
+      {
+        "tag": "DIV",
+        "rect": [
+          952,
+          179,
+          440,
+          412.97
+        ],
+        "styles": [
+          "flex",
+          "relative",
+          "440px",
+          "412.969px",
+          "8px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgb(255, 255, 255)",
+          "1px solid rgb(226, 232, 240)",
+          "16px",
+          "rgba(23, 32, 51, 0.03) 0px 2px 6px 0px",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          961,
+          188,
+          422,
+          44
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "422px",
+          "44px",
+          "0px",
+          "0px 0px 8px",
+          "8px",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          961,
+          194,
+          322,
+          32
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "322px",
+          "32px",
+          "0px",
+          "0px",
+          "8px",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          961,
+          194,
+          32,
+          32
+        ],
+        "styles": [
+          "block",
+          "relative",
+          "32px",
+          "32px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "9999px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "IMG",
+        "rect": [
+          961,
+          194,
+          32,
+          32
+        ],
+        "styles": [
+          "block",
+          "absolute",
+          "32px",
+          "32px",
+          "0px",
+          "0px",
+          "normal",
+          "rgba(0, 0, 0, 0)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "cover",
+          "none"
+        ]
+      },
+      {
+        "tag": "A",
+        "rect": [
+          1001,
+          200,
+          83.28,
+          20
+        ],
+        "styles": [
+          "block",
+          "static",
+          "83.2812px",
+          "20px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "600",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          1291,
+          188,
+          92,
+          44
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "92px",
+          "44px",
+          "0px",
+          "0px",
+          "4px",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "BUTTON",
+        "rect": [
+          1291,
+          188,
+          44,
+          44
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "44px",
+          "44px",
+          "8px",
+          "0px",
+          "normal",
+          "rgb(255, 255, 255)",
+          "rgb(37, 99, 235)",
+          "0px solid rgb(229, 231, 235)",
+          "9999px",
+          "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 1px 2px 0px",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "500",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "SPAN",
+        "rect": [
+          1304,
+          201,
+          18,
+          18
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "18px",
+          "18px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(255, 255, 255)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "500",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "svg",
+        "rect": [
+          1304,
+          201,
+          18,
+          18
+        ],
+        "styles": [
+          "block",
+          "static",
+          "18px",
+          "18px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(255, 255, 255)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "500",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "path",
+        "rect": [
+          1304,
+          202.8,
+          18,
+          14.4
+        ],
+        "styles": [
+          "inline",
+          "static",
+          "auto",
+          "auto",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(255, 255, 255)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "500",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          1339,
+          188,
+          44,
+          44
+        ],
+        "styles": [
+          "block",
+          "relative",
+          "44px",
+          "44px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "BUTTON",
+        "rect": [
+          1339,
+          188,
+          44,
+          44
+        ],
+        "styles": [
+          "inline-block",
+          "static",
+          "44px",
+          "44px",
+          "8px",
+          "0px",
+          "normal",
+          "rgb(107, 114, 128)",
+          "rgb(255, 255, 255)",
+          "0px solid rgb(229, 231, 235)",
+          "9999px",
+          "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 1px 2px 0px",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "svg",
+        "rect": [
+          1347,
+          200,
+          20,
+          20
+        ],
+        "styles": [
+          "block",
+          "static",
+          "20px",
+          "20px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(156, 163, 175)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "20px",
+          "400",
+          "28px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "path",
+        "rect": [
+          1347,
+          201.25,
+          20,
+          17.5
+        ],
+        "styles": [
+          "inline",
+          "static",
+          "auto",
+          "auto",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(156, 163, 175)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "20px",
+          "400",
+          "28px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          961,
+          240,
+          422,
+          237.38
+        ],
+        "styles": [
+          "block",
+          "relative",
+          "422px",
+          "237.375px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "A",
+        "rect": [
+          961,
+          240,
+          422,
+          237.38
+        ],
+        "styles": [
+          "block",
+          "relative",
+          "422px",
+          "237.375px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          961,
+          240,
+          422,
+          237.38
+        ],
+        "styles": [
+          "block",
+          "relative",
+          "422px",
+          "237.375px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgb(243, 244, 246)",
+          "0px solid rgb(229, 231, 235)",
+          "12px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "IMG",
+        "rect": [
+          961,
+          240,
+          422,
+          237.38
+        ],
+        "styles": [
+          "block",
+          "absolute",
+          "422px",
+          "237.375px",
+          "0px",
+          "0px",
+          "normal",
+          "rgba(0, 0, 0, 0)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "contain",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          961,
+          485.38,
+          422,
+          97.59
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "422px",
+          "97.5938px",
+          "0px",
+          "8px 0px 0px",
+          "8px",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          961,
+          485.38,
+          422,
+          45.59
+        ],
+        "styles": [
+          "block",
+          "static",
+          "422px",
+          "45.5938px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "A",
+        "rect": [
+          961,
+          485.38,
+          422,
+          21.59
+        ],
+        "styles": [
+          "block",
+          "static",
+          "422px",
+          "21.5938px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "H3",
+        "rect": [
+          961,
+          485.38,
+          422,
+          21.59
+        ],
+        "styles": [
+          "flow-root",
+          "static",
+          "422px",
+          "21.5938px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "650",
+          "21.6px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "P",
+        "rect": [
+          961,
+          510.97,
+          422,
+          20
+        ],
+        "styles": [
+          "flow-root",
+          "static",
+          "422px",
+          "20px",
+          "0px",
+          "4px 0px 0px",
+          "normal",
+          "rgb(89, 101, 121)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "400",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          961,
+          538.97,
+          422,
+          44
+        ],
+        "styles": [
+          "block",
+          "static",
+          "422px",
+          "44px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          961,
+          538.97,
+          422,
+          44
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "422px",
+          "44px",
+          "0px",
+          "0px",
+          "8px",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          961,
+          547.22,
+          261.38,
+          27.5
+        ],
+        "styles": [
+          "block",
+          "static",
+          "261.375px",
+          "27.5px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          961,
+          547.22,
+          261.38,
+          27.5
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "261.375px",
+          "27.5px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "SPAN",
+        "rect": [
+          961,
+          547.22,
+          261.38,
+          27.5
+        ],
+        "styles": [
+          "block",
+          "static",
+          "261.375px",
+          "27.5px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "22px",
+          "700",
+          "27.5px",
+          "-0.44px",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          1230.38,
+          538.97,
+          152.63,
+          44
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "152.625px",
+          "44px",
+          "0px",
+          "0px",
+          "4px",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "A",
+        "rect": [
+          1230.38,
+          538.97,
+          44,
+          44
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "44px",
+          "44px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(21, 128, 61)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "10px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "svg",
+        "rect": [
+          1242.38,
+          550.97,
+          20,
+          20
+        ],
+        "styles": [
+          "block",
+          "static",
+          "20px",
+          "20px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(21, 128, 61)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "path",
+        "rect": [
+          1242.38,
+          550.97,
+          19.91,
+          20
+        ],
+        "styles": [
+          "inline",
+          "static",
+          "auto",
+          "auto",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(21, 128, 61)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "BUTTON",
+        "rect": [
+          1278.38,
+          538.97,
+          104.63,
+          44
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "104.625px",
+          "44px",
+          "8px 12px",
+          "0px",
+          "6px",
+          "rgb(255, 255, 255)",
+          "rgb(23, 32, 51)",
+          "0px solid rgb(229, 231, 235)",
+          "10px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "600",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "svg",
+        "rect": [
+          1290.38,
+          550.97,
+          20,
+          20
+        ],
+        "styles": [
+          "block",
+          "static",
+          "20px",
+          "20px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(255, 255, 255)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "600",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "path",
+        "rect": [
+          1290.38,
+          552.08,
+          20,
+          17.78
+        ],
+        "styles": [
+          "inline",
+          "static",
+          "auto",
+          "auto",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(255, 255, 255)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "600",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "SPAN",
+        "rect": [
+          1316.38,
+          550.97,
+          54.63,
+          20
+        ],
+        "styles": [
+          "block",
+          "static",
+          "54.625px",
+          "20px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(255, 255, 255)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "600",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      }
+    ],
+    [
+      {
+        "tag": "DIV",
+        "rect": [
+          208,
+          1284.84,
+          506,
+          450.09
+        ],
+        "styles": [
+          "flex",
+          "relative",
+          "506px",
+          "450.094px",
+          "8px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgb(255, 255, 255)",
+          "1px solid rgb(226, 232, 240)",
+          "16px",
+          "rgba(23, 32, 51, 0.03) 0px 2px 6px 0px",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          217,
+          1293.84,
+          488,
+          44
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "488px",
+          "44px",
+          "0px",
+          "0px 0px 8px",
+          "8px",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          217,
+          1299.84,
+          388,
+          32
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "388px",
+          "32px",
+          "0px",
+          "0px",
+          "8px",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          217,
+          1299.84,
+          32,
+          32
+        ],
+        "styles": [
+          "block",
+          "relative",
+          "32px",
+          "32px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "9999px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "IMG",
+        "rect": [
+          217,
+          1299.84,
+          32,
+          32
+        ],
+        "styles": [
+          "block",
+          "absolute",
+          "32px",
+          "32px",
+          "0px",
+          "0px",
+          "normal",
+          "rgba(0, 0, 0, 0)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "cover",
+          "none"
+        ]
+      },
+      {
+        "tag": "A",
+        "rect": [
+          257,
+          1305.84,
+          83.28,
+          20
+        ],
+        "styles": [
+          "block",
+          "static",
+          "83.2812px",
+          "20px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "600",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          613,
+          1293.84,
+          92,
+          44
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "92px",
+          "44px",
+          "0px",
+          "0px",
+          "4px",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "BUTTON",
+        "rect": [
+          613,
+          1293.84,
+          44,
+          44
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "44px",
+          "44px",
+          "8px",
+          "0px",
+          "normal",
+          "rgb(255, 255, 255)",
+          "rgb(37, 99, 235)",
+          "0px solid rgb(229, 231, 235)",
+          "9999px",
+          "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 1px 2px 0px",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "500",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "SPAN",
+        "rect": [
+          626,
+          1306.84,
+          18,
+          18
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "18px",
+          "18px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(255, 255, 255)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "500",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "svg",
+        "rect": [
+          626,
+          1306.84,
+          18,
+          18
+        ],
+        "styles": [
+          "block",
+          "static",
+          "18px",
+          "18px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(255, 255, 255)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "500",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "path",
+        "rect": [
+          626,
+          1308.64,
+          18,
+          14.4
+        ],
+        "styles": [
+          "inline",
+          "static",
+          "auto",
+          "auto",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(255, 255, 255)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "500",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          661,
+          1293.84,
+          44,
+          44
+        ],
+        "styles": [
+          "block",
+          "relative",
+          "44px",
+          "44px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "BUTTON",
+        "rect": [
+          661,
+          1293.84,
+          44,
+          44
+        ],
+        "styles": [
+          "inline-block",
+          "static",
+          "44px",
+          "44px",
+          "8px",
+          "0px",
+          "normal",
+          "rgb(107, 114, 128)",
+          "rgb(255, 255, 255)",
+          "0px solid rgb(229, 231, 235)",
+          "9999px",
+          "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 1px 2px 0px",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "svg",
+        "rect": [
+          669,
+          1305.84,
+          20,
+          20
+        ],
+        "styles": [
+          "block",
+          "static",
+          "20px",
+          "20px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(156, 163, 175)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "20px",
+          "400",
+          "28px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "path",
+        "rect": [
+          669,
+          1307.09,
+          20,
+          17.5
+        ],
+        "styles": [
+          "inline",
+          "static",
+          "auto",
+          "auto",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(156, 163, 175)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "20px",
+          "400",
+          "28px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          217,
+          1345.84,
+          488,
+          274.5
+        ],
+        "styles": [
+          "block",
+          "relative",
+          "488px",
+          "274.5px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "A",
+        "rect": [
+          217,
+          1345.84,
+          488,
+          274.5
+        ],
+        "styles": [
+          "block",
+          "relative",
+          "488px",
+          "274.5px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          217,
+          1345.84,
+          488,
+          274.5
+        ],
+        "styles": [
+          "block",
+          "relative",
+          "488px",
+          "274.5px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgb(243, 244, 246)",
+          "0px solid rgb(229, 231, 235)",
+          "12px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "IMG",
+        "rect": [
+          217,
+          1345.84,
+          488,
+          274.5
+        ],
+        "styles": [
+          "block",
+          "absolute",
+          "488px",
+          "274.5px",
+          "0px",
+          "0px",
+          "normal",
+          "rgba(0, 0, 0, 0)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "contain",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          217,
+          1628.34,
+          488,
+          97.59
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "488px",
+          "97.5938px",
+          "0px",
+          "8px 0px 0px",
+          "8px",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          217,
+          1628.34,
+          488,
+          45.59
+        ],
+        "styles": [
+          "block",
+          "static",
+          "488px",
+          "45.5938px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "A",
+        "rect": [
+          217,
+          1628.34,
+          488,
+          21.59
+        ],
+        "styles": [
+          "block",
+          "static",
+          "488px",
+          "21.5938px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "H3",
+        "rect": [
+          217,
+          1628.34,
+          488,
+          21.59
+        ],
+        "styles": [
+          "flow-root",
+          "static",
+          "488px",
+          "21.5938px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "650",
+          "21.6px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "P",
+        "rect": [
+          217,
+          1653.94,
+          488,
+          20
+        ],
+        "styles": [
+          "flow-root",
+          "static",
+          "488px",
+          "20px",
+          "0px",
+          "4px 0px 0px",
+          "normal",
+          "rgb(89, 101, 121)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "400",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          217,
+          1681.94,
+          488,
+          44
+        ],
+        "styles": [
+          "block",
+          "static",
+          "488px",
+          "44px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          217,
+          1681.94,
+          488,
+          44
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "488px",
+          "44px",
+          "0px",
+          "0px",
+          "8px",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          217,
+          1690.19,
+          327.38,
+          27.5
+        ],
+        "styles": [
+          "block",
+          "static",
+          "327.375px",
+          "27.5px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          217,
+          1690.19,
+          327.38,
+          27.5
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "327.375px",
+          "27.5px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "SPAN",
+        "rect": [
+          217,
+          1690.19,
+          327.38,
+          27.5
+        ],
+        "styles": [
+          "block",
+          "static",
+          "327.375px",
+          "27.5px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "22px",
+          "700",
+          "27.5px",
+          "-0.44px",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          552.38,
+          1681.94,
+          152.63,
+          44
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "152.625px",
+          "44px",
+          "0px",
+          "0px",
+          "4px",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "A",
+        "rect": [
+          552.38,
+          1681.94,
+          44,
+          44
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "44px",
+          "44px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(21, 128, 61)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "10px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "svg",
+        "rect": [
+          564.38,
+          1693.94,
+          20,
+          20
+        ],
+        "styles": [
+          "block",
+          "static",
+          "20px",
+          "20px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(21, 128, 61)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "path",
+        "rect": [
+          564.38,
+          1693.94,
+          19.91,
+          20
+        ],
+        "styles": [
+          "inline",
+          "static",
+          "auto",
+          "auto",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(21, 128, 61)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "BUTTON",
+        "rect": [
+          600.38,
+          1681.94,
+          104.63,
+          44
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "104.625px",
+          "44px",
+          "8px 12px",
+          "0px",
+          "6px",
+          "rgb(255, 255, 255)",
+          "rgb(23, 32, 51)",
+          "0px solid rgb(229, 231, 235)",
+          "10px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "600",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "svg",
+        "rect": [
+          612.38,
+          1693.94,
+          20,
+          20
+        ],
+        "styles": [
+          "block",
+          "static",
+          "20px",
+          "20px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(255, 255, 255)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "600",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "path",
+        "rect": [
+          612.38,
+          1695.05,
+          20,
+          17.78
+        ],
+        "styles": [
+          "inline",
+          "static",
+          "auto",
+          "auto",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(255, 255, 255)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "600",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "SPAN",
+        "rect": [
+          638.38,
+          1693.94,
+          54.63,
+          20
+        ],
+        "styles": [
+          "block",
+          "static",
+          "54.625px",
+          "20px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(255, 255, 255)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "600",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      }
+    ],
+    [
+      {
+        "tag": "DIV",
+        "rect": [
+          726,
+          1284.84,
+          506,
+          450.09
+        ],
+        "styles": [
+          "flex",
+          "relative",
+          "506px",
+          "450.094px",
+          "8px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgb(255, 255, 255)",
+          "1px solid rgb(226, 232, 240)",
+          "16px",
+          "rgba(23, 32, 51, 0.03) 0px 2px 6px 0px",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          735,
+          1293.84,
+          488,
+          44
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "488px",
+          "44px",
+          "0px",
+          "0px 0px 8px",
+          "8px",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          735,
+          1299.84,
+          388,
+          32
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "388px",
+          "32px",
+          "0px",
+          "0px",
+          "8px",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          735,
+          1299.84,
+          32,
+          32
+        ],
+        "styles": [
+          "block",
+          "relative",
+          "32px",
+          "32px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "9999px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "IMG",
+        "rect": [
+          735,
+          1299.84,
+          32,
+          32
+        ],
+        "styles": [
+          "block",
+          "absolute",
+          "32px",
+          "32px",
+          "0px",
+          "0px",
+          "normal",
+          "rgba(0, 0, 0, 0)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "cover",
+          "none"
+        ]
+      },
+      {
+        "tag": "A",
+        "rect": [
+          775,
+          1305.84,
+          83.28,
+          20
+        ],
+        "styles": [
+          "block",
+          "static",
+          "83.2812px",
+          "20px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "600",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          1131,
+          1293.84,
+          92,
+          44
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "92px",
+          "44px",
+          "0px",
+          "0px",
+          "4px",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "BUTTON",
+        "rect": [
+          1131,
+          1293.84,
+          44,
+          44
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "44px",
+          "44px",
+          "8px",
+          "0px",
+          "normal",
+          "rgb(255, 255, 255)",
+          "rgb(37, 99, 235)",
+          "0px solid rgb(229, 231, 235)",
+          "9999px",
+          "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 1px 2px 0px",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "500",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "SPAN",
+        "rect": [
+          1144,
+          1306.84,
+          18,
+          18
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "18px",
+          "18px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(255, 255, 255)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "500",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "svg",
+        "rect": [
+          1144,
+          1306.84,
+          18,
+          18
+        ],
+        "styles": [
+          "block",
+          "static",
+          "18px",
+          "18px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(255, 255, 255)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "500",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "path",
+        "rect": [
+          1144,
+          1308.64,
+          18,
+          14.4
+        ],
+        "styles": [
+          "inline",
+          "static",
+          "auto",
+          "auto",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(255, 255, 255)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "500",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          1179,
+          1293.84,
+          44,
+          44
+        ],
+        "styles": [
+          "block",
+          "relative",
+          "44px",
+          "44px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "BUTTON",
+        "rect": [
+          1179,
+          1293.84,
+          44,
+          44
+        ],
+        "styles": [
+          "inline-block",
+          "static",
+          "44px",
+          "44px",
+          "8px",
+          "0px",
+          "normal",
+          "rgb(107, 114, 128)",
+          "rgb(255, 255, 255)",
+          "0px solid rgb(229, 231, 235)",
+          "9999px",
+          "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 1px 2px 0px",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "svg",
+        "rect": [
+          1187,
+          1305.84,
+          20,
+          20
+        ],
+        "styles": [
+          "block",
+          "static",
+          "20px",
+          "20px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(156, 163, 175)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "20px",
+          "400",
+          "28px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "path",
+        "rect": [
+          1187,
+          1307.09,
+          20,
+          17.5
+        ],
+        "styles": [
+          "inline",
+          "static",
+          "auto",
+          "auto",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(156, 163, 175)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "20px",
+          "400",
+          "28px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          735,
+          1345.84,
+          488,
+          274.5
+        ],
+        "styles": [
+          "block",
+          "relative",
+          "488px",
+          "274.5px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "A",
+        "rect": [
+          735,
+          1345.84,
+          488,
+          274.5
+        ],
+        "styles": [
+          "block",
+          "relative",
+          "488px",
+          "274.5px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          735,
+          1345.84,
+          488,
+          274.5
+        ],
+        "styles": [
+          "block",
+          "relative",
+          "488px",
+          "274.5px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgb(243, 244, 246)",
+          "0px solid rgb(229, 231, 235)",
+          "12px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "IMG",
+        "rect": [
+          735,
+          1345.84,
+          488,
+          274.5
+        ],
+        "styles": [
+          "block",
+          "absolute",
+          "488px",
+          "274.5px",
+          "0px",
+          "0px",
+          "normal",
+          "rgba(0, 0, 0, 0)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "contain",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          735,
+          1628.34,
+          488,
+          97.59
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "488px",
+          "97.5938px",
+          "0px",
+          "8px 0px 0px",
+          "8px",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          735,
+          1628.34,
+          488,
+          45.59
+        ],
+        "styles": [
+          "block",
+          "static",
+          "488px",
+          "45.5938px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "A",
+        "rect": [
+          735,
+          1628.34,
+          488,
+          21.59
+        ],
+        "styles": [
+          "block",
+          "static",
+          "488px",
+          "21.5938px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "H3",
+        "rect": [
+          735,
+          1628.34,
+          488,
+          21.59
+        ],
+        "styles": [
+          "flow-root",
+          "static",
+          "488px",
+          "21.5938px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "650",
+          "21.6px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "P",
+        "rect": [
+          735,
+          1653.94,
+          488,
+          20
+        ],
+        "styles": [
+          "flow-root",
+          "static",
+          "488px",
+          "20px",
+          "0px",
+          "4px 0px 0px",
+          "normal",
+          "rgb(89, 101, 121)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "400",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          735,
+          1681.94,
+          488,
+          44
+        ],
+        "styles": [
+          "block",
+          "static",
+          "488px",
+          "44px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          735,
+          1681.94,
+          488,
+          44
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "488px",
+          "44px",
+          "0px",
+          "0px",
+          "8px",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          735,
+          1690.19,
+          327.38,
+          27.5
+        ],
+        "styles": [
+          "block",
+          "static",
+          "327.375px",
+          "27.5px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          735,
+          1690.19,
+          327.38,
+          27.5
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "327.375px",
+          "27.5px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "SPAN",
+        "rect": [
+          735,
+          1690.19,
+          327.38,
+          27.5
+        ],
+        "styles": [
+          "block",
+          "static",
+          "327.375px",
+          "27.5px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "22px",
+          "700",
+          "27.5px",
+          "-0.44px",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          1070.38,
+          1681.94,
+          152.63,
+          44
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "152.625px",
+          "44px",
+          "0px",
+          "0px",
+          "4px",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "A",
+        "rect": [
+          1070.38,
+          1681.94,
+          44,
+          44
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "44px",
+          "44px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(21, 128, 61)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "10px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "svg",
+        "rect": [
+          1082.38,
+          1693.94,
+          20,
+          20
+        ],
+        "styles": [
+          "block",
+          "static",
+          "20px",
+          "20px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(21, 128, 61)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "path",
+        "rect": [
+          1082.38,
+          1693.94,
+          19.91,
+          20
+        ],
+        "styles": [
+          "inline",
+          "static",
+          "auto",
+          "auto",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(21, 128, 61)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "BUTTON",
+        "rect": [
+          1118.38,
+          1681.94,
+          104.63,
+          44
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "104.625px",
+          "44px",
+          "8px 12px",
+          "0px",
+          "6px",
+          "rgb(255, 255, 255)",
+          "rgb(23, 32, 51)",
+          "0px solid rgb(229, 231, 235)",
+          "10px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "600",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "svg",
+        "rect": [
+          1130.38,
+          1693.94,
+          20,
+          20
+        ],
+        "styles": [
+          "block",
+          "static",
+          "20px",
+          "20px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(255, 255, 255)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "600",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "path",
+        "rect": [
+          1130.38,
+          1695.05,
+          20,
+          17.78
+        ],
+        "styles": [
+          "inline",
+          "static",
+          "auto",
+          "auto",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(255, 255, 255)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "600",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "SPAN",
+        "rect": [
+          1156.38,
+          1693.94,
+          54.63,
+          20
+        ],
+        "styles": [
+          "block",
+          "static",
+          "54.625px",
+          "20px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(255, 255, 255)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "600",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      }
+    ],
+    [
+      {
+        "tag": "DIV",
+        "rect": [
+          384,
+          2390.56,
+          672,
+          455.59
+        ],
+        "styles": [
+          "flex",
+          "relative",
+          "672px",
+          "455.594px",
+          "8px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgb(255, 255, 255)",
+          "1px solid rgb(226, 232, 240)",
+          "16px",
+          "rgba(23, 32, 51, 0.03) 0px 2px 6px 0px",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          393,
+          2399.56,
+          654,
+          44
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "654px",
+          "44px",
+          "0px",
+          "0px 0px 8px",
+          "8px",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          393,
+          2405.56,
+          554,
+          32
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "554px",
+          "32px",
+          "0px",
+          "0px",
+          "8px",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          393,
+          2405.56,
+          32,
+          32
+        ],
+        "styles": [
+          "block",
+          "relative",
+          "32px",
+          "32px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "9999px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "IMG",
+        "rect": [
+          393,
+          2405.56,
+          32,
+          32
+        ],
+        "styles": [
+          "block",
+          "absolute",
+          "32px",
+          "32px",
+          "0px",
+          "0px",
+          "normal",
+          "rgba(0, 0, 0, 0)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "cover",
+          "none"
+        ]
+      },
+      {
+        "tag": "A",
+        "rect": [
+          433,
+          2411.56,
+          83.28,
+          20
+        ],
+        "styles": [
+          "block",
+          "static",
+          "83.2812px",
+          "20px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "600",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          955,
+          2399.56,
+          92,
+          44
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "92px",
+          "44px",
+          "0px",
+          "0px",
+          "4px",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "BUTTON",
+        "rect": [
+          955,
+          2399.56,
+          44,
+          44
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "44px",
+          "44px",
+          "8px",
+          "0px",
+          "normal",
+          "rgb(255, 255, 255)",
+          "rgb(37, 99, 235)",
+          "0px solid rgb(229, 231, 235)",
+          "9999px",
+          "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 1px 2px 0px",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "500",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "SPAN",
+        "rect": [
+          968,
+          2412.56,
+          18,
+          18
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "18px",
+          "18px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(255, 255, 255)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "500",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "svg",
+        "rect": [
+          968,
+          2412.56,
+          18,
+          18
+        ],
+        "styles": [
+          "block",
+          "static",
+          "18px",
+          "18px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(255, 255, 255)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "500",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "path",
+        "rect": [
+          968,
+          2414.36,
+          18,
+          14.4
+        ],
+        "styles": [
+          "inline",
+          "static",
+          "auto",
+          "auto",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(255, 255, 255)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "500",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          1003,
+          2399.56,
+          44,
+          44
+        ],
+        "styles": [
+          "block",
+          "relative",
+          "44px",
+          "44px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "BUTTON",
+        "rect": [
+          1003,
+          2399.56,
+          44,
+          44
+        ],
+        "styles": [
+          "inline-block",
+          "static",
+          "44px",
+          "44px",
+          "8px",
+          "0px",
+          "normal",
+          "rgb(107, 114, 128)",
+          "rgb(255, 255, 255)",
+          "0px solid rgb(229, 231, 235)",
+          "9999px",
+          "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 1px 2px 0px",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "svg",
+        "rect": [
+          1011,
+          2411.56,
+          20,
+          20
+        ],
+        "styles": [
+          "block",
+          "static",
+          "20px",
+          "20px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(156, 163, 175)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "20px",
+          "400",
+          "28px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "path",
+        "rect": [
+          1011,
+          2412.81,
+          20,
+          17.5
+        ],
+        "styles": [
+          "inline",
+          "static",
+          "auto",
+          "auto",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(156, 163, 175)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "20px",
+          "400",
+          "28px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          393,
+          2451.56,
+          654,
+          280
+        ],
+        "styles": [
+          "block",
+          "relative",
+          "654px",
+          "280px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "A",
+        "rect": [
+          393,
+          2451.56,
+          654,
+          280
+        ],
+        "styles": [
+          "block",
+          "relative",
+          "654px",
+          "280px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          393,
+          2451.56,
+          654,
+          280
+        ],
+        "styles": [
+          "block",
+          "relative",
+          "654px",
+          "280px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgb(243, 244, 246)",
+          "0px solid rgb(229, 231, 235)",
+          "12px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "IMG",
+        "rect": [
+          393,
+          2451.56,
+          654,
+          280
+        ],
+        "styles": [
+          "block",
+          "absolute",
+          "654px",
+          "280px",
+          "0px",
+          "0px",
+          "normal",
+          "rgba(0, 0, 0, 0)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "contain",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          393,
+          2739.56,
+          654,
+          97.59
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "654px",
+          "97.5938px",
+          "0px",
+          "8px 0px 0px",
+          "8px",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          393,
+          2739.56,
+          654,
+          45.59
+        ],
+        "styles": [
+          "block",
+          "static",
+          "654px",
+          "45.5938px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "A",
+        "rect": [
+          393,
+          2739.56,
+          654,
+          21.59
+        ],
+        "styles": [
+          "block",
+          "static",
+          "654px",
+          "21.5938px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "H3",
+        "rect": [
+          393,
+          2739.56,
+          654,
+          21.59
+        ],
+        "styles": [
+          "flow-root",
+          "static",
+          "654px",
+          "21.5938px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "650",
+          "21.6px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "P",
+        "rect": [
+          393,
+          2765.16,
+          654,
+          20
+        ],
+        "styles": [
+          "flow-root",
+          "static",
+          "654px",
+          "20px",
+          "0px",
+          "4px 0px 0px",
+          "normal",
+          "rgb(89, 101, 121)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "400",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          393,
+          2793.16,
+          654,
+          44
+        ],
+        "styles": [
+          "block",
+          "static",
+          "654px",
+          "44px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          393,
+          2793.16,
+          654,
+          44
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "654px",
+          "44px",
+          "0px",
+          "0px",
+          "8px",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          393,
+          2801.41,
+          493.38,
+          27.5
+        ],
+        "styles": [
+          "block",
+          "static",
+          "493.375px",
+          "27.5px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          393,
+          2801.41,
+          493.38,
+          27.5
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "493.375px",
+          "27.5px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "SPAN",
+        "rect": [
+          393,
+          2801.41,
+          493.38,
+          27.5
+        ],
+        "styles": [
+          "block",
+          "static",
+          "493.375px",
+          "27.5px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "22px",
+          "700",
+          "27.5px",
+          "-0.44px",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "DIV",
+        "rect": [
+          894.38,
+          2793.16,
+          152.63,
+          44
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "152.625px",
+          "44px",
+          "0px",
+          "0px",
+          "4px",
+          "rgb(23, 32, 51)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "A",
+        "rect": [
+          894.38,
+          2793.16,
+          44,
+          44
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "44px",
+          "44px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(21, 128, 61)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "10px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "svg",
+        "rect": [
+          906.38,
+          2805.16,
+          20,
+          20
+        ],
+        "styles": [
+          "block",
+          "static",
+          "20px",
+          "20px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(21, 128, 61)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "path",
+        "rect": [
+          906.38,
+          2805.16,
+          19.91,
+          20
+        ],
+        "styles": [
+          "inline",
+          "static",
+          "auto",
+          "auto",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(21, 128, 61)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "16px",
+          "400",
+          "24px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "BUTTON",
+        "rect": [
+          942.38,
+          2793.16,
+          104.63,
+          44
+        ],
+        "styles": [
+          "flex",
+          "static",
+          "104.625px",
+          "44px",
+          "8px 12px",
+          "0px",
+          "6px",
+          "rgb(255, 255, 255)",
+          "rgb(23, 32, 51)",
+          "0px solid rgb(229, 231, 235)",
+          "10px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "600",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "svg",
+        "rect": [
+          954.38,
+          2805.16,
+          20,
+          20
+        ],
+        "styles": [
+          "block",
+          "static",
+          "20px",
+          "20px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(255, 255, 255)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "600",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "path",
+        "rect": [
+          954.38,
+          2806.27,
+          20,
+          17.78
+        ],
+        "styles": [
+          "inline",
+          "static",
+          "auto",
+          "auto",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(255, 255, 255)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "600",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      },
+      {
+        "tag": "SPAN",
+        "rect": [
+          980.38,
+          2805.16,
+          54.63,
+          20
+        ],
+        "styles": [
+          "block",
+          "static",
+          "54.625px",
+          "20px",
+          "0px",
+          "0px",
+          "normal",
+          "rgb(255, 255, 255)",
+          "rgba(0, 0, 0, 0)",
+          "0px solid rgb(229, 231, 235)",
+          "0px",
+          "none",
+          "inter, \"inter Fallback\"",
+          "14px",
+          "600",
+          "20px",
+          "normal",
+          "fill",
+          "none"
+        ]
+      }
+    ]
+  ],
+  "pixelDifference": 0
+}

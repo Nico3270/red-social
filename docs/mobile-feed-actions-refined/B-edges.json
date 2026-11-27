@@ -1,0 +1,1562 @@
+[
+  {
+    "id": "p1",
+    "root": {
+      "x": 4,
+      "y": 77,
+      "width": 186,
+      "height": 314,
+      "right": 190,
+      "bottom": 391
+    },
+    "header": {
+      "x": 5,
+      "y": 78,
+      "width": 184,
+      "height": 44,
+      "right": 189,
+      "bottom": 122
+    },
+    "business": {
+      "x": 49,
+      "y": 78,
+      "width": 96,
+      "height": 44,
+      "right": 145,
+      "bottom": 122
+    },
+    "name": "Casa Origen",
+    "labelHeight": 16,
+    "nameWidth": 96,
+    "approximateVisibleCharacters": 11,
+    "fullNameVisible": true,
+    "photo": {
+      "x": 5,
+      "y": 122,
+      "width": 184,
+      "height": 184,
+      "right": 189,
+      "bottom": 306
+    },
+    "price": {
+      "box": {
+        "x": 13,
+        "y": 349,
+        "width": 80,
+        "height": 22,
+        "right": 93,
+        "bottom": 371
+      },
+      "glyphWidth": 76.16,
+      "fits": true,
+      "size": "16px"
+    },
+    "controls": [
+      {
+        "label": "Seguir",
+        "box": {
+          "x": 5,
+          "y": 78,
+          "width": 44,
+          "height": 44,
+          "right": 49,
+          "bottom": 122
+        },
+        "photoOverlap": 0,
+        "headerOverlap": 1936,
+        "nameOverlap": 0,
+        "priceOverlap": 0,
+        "nested": false,
+        "hit": true,
+        "paint": {
+          "width": "20px",
+          "height": "20px",
+          "top": "22px",
+          "bottom": "2px",
+          "border": "2px solid rgb(255, 255, 255)",
+          "radius": "50%"
+        }
+      },
+      {
+        "label": "Guardar Reloj minimalista en favoritos",
+        "box": {
+          "x": 145,
+          "y": 78,
+          "width": 44,
+          "height": 44,
+          "right": 189,
+          "bottom": 122
+        },
+        "photoOverlap": 0,
+        "headerOverlap": 1936,
+        "nameOverlap": 0,
+        "priceOverlap": 0,
+        "nested": false,
+        "hit": true,
+        "paint": {
+          "width": "28px",
+          "height": "28px",
+          "top": "8px",
+          "bottom": "8px",
+          "border": "0px none rgb(107, 114, 128)",
+          "radius": "50%"
+        }
+      },
+      {
+        "label": "Contactar por WhatsApp sobre Reloj minimalista",
+        "box": {
+          "x": 93,
+          "y": 338,
+          "width": 44,
+          "height": 44,
+          "right": 137,
+          "bottom": 382
+        },
+        "photoOverlap": 0,
+        "headerOverlap": 0,
+        "nameOverlap": 0,
+        "priceOverlap": 0,
+        "nested": false,
+        "hit": true,
+        "paint": {
+          "width": "32px",
+          "height": "32px",
+          "top": "6px",
+          "bottom": "6px",
+          "border": "0px none rgb(255, 255, 255)",
+          "radius": "50%"
+        }
+      },
+      {
+        "label": "Agregar Reloj minimalista al carrito",
+        "box": {
+          "x": 137,
+          "y": 338,
+          "width": 44,
+          "height": 44,
+          "right": 181,
+          "bottom": 382
+        },
+        "photoOverlap": 0,
+        "headerOverlap": 0,
+        "nameOverlap": 0,
+        "priceOverlap": 0,
+        "nested": false,
+        "hit": true,
+        "paint": {
+          "width": "32px",
+          "height": "32px",
+          "top": "6px",
+          "bottom": "6px",
+          "border": "0px none rgb(255, 255, 255)",
+          "radius": "50%"
+        }
+      }
+    ],
+    "collisions": [],
+    "follow": {
+      "label": "Seguir",
+      "box": {
+        "x": 5,
+        "y": 78,
+        "width": 44,
+        "height": 44,
+        "right": 49,
+        "bottom": 122
+      },
+      "photoOverlap": 0,
+      "headerOverlap": 1936,
+      "nameOverlap": 0,
+      "priceOverlap": 0,
+      "nested": false,
+      "hit": true,
+      "paint": {
+        "width": "20px",
+        "height": "20px",
+        "top": "22px",
+        "bottom": "2px",
+        "border": "2px solid rgb(255, 255, 255)",
+        "radius": "50%"
+      }
+    },
+    "favorite": {
+      "label": "Guardar Reloj minimalista en favoritos",
+      "box": {
+        "x": 145,
+        "y": 78,
+        "width": 44,
+        "height": 44,
+        "right": 189,
+        "bottom": 122
+      },
+      "photoOverlap": 0,
+      "headerOverlap": 1936,
+      "nameOverlap": 0,
+      "priceOverlap": 0,
+      "nested": false,
+      "hit": true,
+      "paint": {
+        "width": "28px",
+        "height": "28px",
+        "top": "8px",
+        "bottom": "8px",
+        "border": "0px none rgb(107, 114, 128)",
+        "radius": "50%"
+      }
+    },
+    "whatsapp": {
+      "label": "Contactar por WhatsApp sobre Reloj minimalista",
+      "box": {
+        "x": 93,
+        "y": 338,
+        "width": 44,
+        "height": 44,
+        "right": 137,
+        "bottom": 382
+      },
+      "photoOverlap": 0,
+      "headerOverlap": 0,
+      "nameOverlap": 0,
+      "priceOverlap": 0,
+      "nested": false,
+      "hit": true,
+      "paint": {
+        "width": "32px",
+        "height": "32px",
+        "top": "6px",
+        "bottom": "6px",
+        "border": "0px none rgb(255, 255, 255)",
+        "radius": "50%"
+      }
+    },
+    "cart": {
+      "label": "Agregar Reloj minimalista al carrito",
+      "box": {
+        "x": 137,
+        "y": 338,
+        "width": 44,
+        "height": 44,
+        "right": 181,
+        "bottom": 382
+      },
+      "photoOverlap": 0,
+      "headerOverlap": 0,
+      "nameOverlap": 0,
+      "priceOverlap": 0,
+      "nested": false,
+      "hit": true,
+      "paint": {
+        "width": "32px",
+        "height": "32px",
+        "top": "6px",
+        "bottom": "6px",
+        "border": "0px none rgb(255, 255, 255)",
+        "radius": "50%"
+      }
+    },
+    "marginTop": "0px",
+    "headerGapAboveEar": 0,
+    "controlsOnPhoto": 0,
+    "controlsWrapped": false
+  },
+  {
+    "id": "p2",
+    "root": {
+      "x": 200,
+      "y": 77,
+      "width": 186,
+      "height": 334,
+      "right": 386,
+      "bottom": 411
+    },
+    "header": {
+      "x": 201,
+      "y": 78,
+      "width": 184,
+      "height": 44,
+      "right": 385,
+      "bottom": 122
+    },
+    "business": {
+      "x": 245,
+      "y": 78,
+      "width": 96,
+      "height": 44,
+      "right": 341,
+      "bottom": 122
+    },
+    "name": "Mercado del Barrio",
+    "labelHeight": 32,
+    "nameWidth": 96,
+    "approximateVisibleCharacters": 18,
+    "fullNameVisible": true,
+    "photo": {
+      "x": 201,
+      "y": 122,
+      "width": 184,
+      "height": 184,
+      "right": 385,
+      "bottom": 306
+    },
+    "price": {
+      "box": {
+        "x": 209,
+        "y": 369,
+        "width": 80,
+        "height": 22,
+        "right": 289,
+        "bottom": 391
+      },
+      "glyphWidth": 76.44,
+      "fits": true,
+      "size": "16px"
+    },
+    "controls": [
+      {
+        "label": "Seguir",
+        "box": {
+          "x": 201,
+          "y": 78,
+          "width": 44,
+          "height": 44,
+          "right": 245,
+          "bottom": 122
+        },
+        "photoOverlap": 0,
+        "headerOverlap": 1936,
+        "nameOverlap": 0,
+        "priceOverlap": 0,
+        "nested": false,
+        "hit": true,
+        "paint": {
+          "width": "20px",
+          "height": "20px",
+          "top": "22px",
+          "bottom": "2px",
+          "border": "2px solid rgb(255, 255, 255)",
+          "radius": "50%"
+        }
+      },
+      {
+        "label": "Guardar Bolso de cuero con correa ajustable en favoritos",
+        "box": {
+          "x": 341,
+          "y": 78,
+          "width": 44,
+          "height": 44,
+          "right": 385,
+          "bottom": 122
+        },
+        "photoOverlap": 0,
+        "headerOverlap": 1936,
+        "nameOverlap": 0,
+        "priceOverlap": 0,
+        "nested": false,
+        "hit": true,
+        "paint": {
+          "width": "28px",
+          "height": "28px",
+          "top": "8px",
+          "bottom": "8px",
+          "border": "0px none rgb(107, 114, 128)",
+          "radius": "50%"
+        }
+      },
+      {
+        "label": "Contactar por WhatsApp sobre Bolso de cuero con correa ajustable",
+        "box": {
+          "x": 289,
+          "y": 358,
+          "width": 44,
+          "height": 44,
+          "right": 333,
+          "bottom": 402
+        },
+        "photoOverlap": 0,
+        "headerOverlap": 0,
+        "nameOverlap": 0,
+        "priceOverlap": 0,
+        "nested": false,
+        "hit": true,
+        "paint": {
+          "width": "32px",
+          "height": "32px",
+          "top": "6px",
+          "bottom": "6px",
+          "border": "0px none rgb(255, 255, 255)",
+          "radius": "50%"
+        }
+      },
+      {
+        "label": "Agregar Bolso de cuero con correa ajustable al carrito",
+        "box": {
+          "x": 333,
+          "y": 358,
+          "width": 44,
+          "height": 44,
+          "right": 377,
+          "bottom": 402
+        },
+        "photoOverlap": 0,
+        "headerOverlap": 0,
+        "nameOverlap": 0,
+        "priceOverlap": 0,
+        "nested": false,
+        "hit": true,
+        "paint": {
+          "width": "32px",
+          "height": "32px",
+          "top": "6px",
+          "bottom": "6px",
+          "border": "0px none rgb(255, 255, 255)",
+          "radius": "50%"
+        }
+      }
+    ],
+    "collisions": [],
+    "follow": {
+      "label": "Seguir",
+      "box": {
+        "x": 201,
+        "y": 78,
+        "width": 44,
+        "height": 44,
+        "right": 245,
+        "bottom": 122
+      },
+      "photoOverlap": 0,
+      "headerOverlap": 1936,
+      "nameOverlap": 0,
+      "priceOverlap": 0,
+      "nested": false,
+      "hit": true,
+      "paint": {
+        "width": "20px",
+        "height": "20px",
+        "top": "22px",
+        "bottom": "2px",
+        "border": "2px solid rgb(255, 255, 255)",
+        "radius": "50%"
+      }
+    },
+    "favorite": {
+      "label": "Guardar Bolso de cuero con correa ajustable en favoritos",
+      "box": {
+        "x": 341,
+        "y": 78,
+        "width": 44,
+        "height": 44,
+        "right": 385,
+        "bottom": 122
+      },
+      "photoOverlap": 0,
+      "headerOverlap": 1936,
+      "nameOverlap": 0,
+      "priceOverlap": 0,
+      "nested": false,
+      "hit": true,
+      "paint": {
+        "width": "28px",
+        "height": "28px",
+        "top": "8px",
+        "bottom": "8px",
+        "border": "0px none rgb(107, 114, 128)",
+        "radius": "50%"
+      }
+    },
+    "whatsapp": {
+      "label": "Contactar por WhatsApp sobre Bolso de cuero con correa ajustable",
+      "box": {
+        "x": 289,
+        "y": 358,
+        "width": 44,
+        "height": 44,
+        "right": 333,
+        "bottom": 402
+      },
+      "photoOverlap": 0,
+      "headerOverlap": 0,
+      "nameOverlap": 0,
+      "priceOverlap": 0,
+      "nested": false,
+      "hit": true,
+      "paint": {
+        "width": "32px",
+        "height": "32px",
+        "top": "6px",
+        "bottom": "6px",
+        "border": "0px none rgb(255, 255, 255)",
+        "radius": "50%"
+      }
+    },
+    "cart": {
+      "label": "Agregar Bolso de cuero con correa ajustable al carrito",
+      "box": {
+        "x": 333,
+        "y": 358,
+        "width": 44,
+        "height": 44,
+        "right": 377,
+        "bottom": 402
+      },
+      "photoOverlap": 0,
+      "headerOverlap": 0,
+      "nameOverlap": 0,
+      "priceOverlap": 0,
+      "nested": false,
+      "hit": true,
+      "paint": {
+        "width": "32px",
+        "height": "32px",
+        "top": "6px",
+        "bottom": "6px",
+        "border": "0px none rgb(255, 255, 255)",
+        "radius": "50%"
+      }
+    },
+    "marginTop": "0px",
+    "headerGapAboveEar": 0,
+    "controlsOnPhoto": 0,
+    "controlsWrapped": false
+  },
+  {
+    "id": "p4",
+    "root": {
+      "x": 4,
+      "y": 77.39,
+      "width": 186,
+      "height": 314,
+      "right": 190,
+      "bottom": 391.39
+    },
+    "header": {
+      "x": 5,
+      "y": 78.39,
+      "width": 184,
+      "height": 44,
+      "right": 189,
+      "bottom": 122.39
+    },
+    "business": {
+      "x": 49,
+      "y": 78.39,
+      "width": 96,
+      "height": 44,
+      "right": 145,
+      "bottom": 122.39
+    },
+    "name": "Casa Origen",
+    "labelHeight": 16,
+    "nameWidth": 96,
+    "approximateVisibleCharacters": 11,
+    "fullNameVisible": true,
+    "photo": {
+      "x": 5,
+      "y": 122.39,
+      "width": 184,
+      "height": 184,
+      "right": 189,
+      "bottom": 306.39
+    },
+    "price": {
+      "box": {
+        "x": 13,
+        "y": 357.39,
+        "width": 80,
+        "height": 22,
+        "right": 93,
+        "bottom": 379.39
+      },
+      "glyphWidth": 76.16,
+      "fits": true,
+      "size": "16px"
+    },
+    "controls": [
+      {
+        "label": "Seguir",
+        "box": {
+          "x": 5,
+          "y": 78.39,
+          "width": 44,
+          "height": 44,
+          "right": 49,
+          "bottom": 122.39
+        },
+        "photoOverlap": 0,
+        "headerOverlap": 1936,
+        "nameOverlap": 0,
+        "priceOverlap": 0,
+        "nested": false,
+        "hit": true,
+        "paint": {
+          "width": "20px",
+          "height": "20px",
+          "top": "22px",
+          "bottom": "2px",
+          "border": "2px solid rgb(255, 255, 255)",
+          "radius": "50%"
+        }
+      },
+      {
+        "label": "Guardar Tenis con talla a elección en favoritos",
+        "box": {
+          "x": 145,
+          "y": 78.39,
+          "width": 44,
+          "height": 44,
+          "right": 189,
+          "bottom": 122.39
+        },
+        "photoOverlap": 0,
+        "headerOverlap": 1936,
+        "nameOverlap": 0,
+        "priceOverlap": 0,
+        "nested": false,
+        "hit": true,
+        "paint": {
+          "width": "28px",
+          "height": "28px",
+          "top": "8px",
+          "bottom": "8px",
+          "border": "0px none rgb(107, 114, 128)",
+          "radius": "50%"
+        }
+      },
+      {
+        "label": "Contactar por WhatsApp sobre Tenis con talla a elección",
+        "box": {
+          "x": 93,
+          "y": 338.39,
+          "width": 44,
+          "height": 44,
+          "right": 137,
+          "bottom": 382.39
+        },
+        "photoOverlap": 0,
+        "headerOverlap": 0,
+        "nameOverlap": 0,
+        "priceOverlap": 0,
+        "nested": false,
+        "hit": true,
+        "paint": {
+          "width": "32px",
+          "height": "32px",
+          "top": "6px",
+          "bottom": "6px",
+          "border": "0px none rgb(255, 255, 255)",
+          "radius": "50%"
+        }
+      },
+      {
+        "label": "Elegir opciones de Tenis con talla a elección",
+        "box": {
+          "x": 137,
+          "y": 338.39,
+          "width": 44,
+          "height": 44,
+          "right": 181,
+          "bottom": 382.39
+        },
+        "photoOverlap": 0,
+        "headerOverlap": 0,
+        "nameOverlap": 0,
+        "priceOverlap": 0,
+        "nested": false,
+        "hit": true,
+        "paint": {
+          "width": "32px",
+          "height": "32px",
+          "top": "6px",
+          "bottom": "6px",
+          "border": "0px none rgb(255, 255, 255)",
+          "radius": "50%"
+        }
+      }
+    ],
+    "collisions": [],
+    "follow": {
+      "label": "Seguir",
+      "box": {
+        "x": 5,
+        "y": 78.39,
+        "width": 44,
+        "height": 44,
+        "right": 49,
+        "bottom": 122.39
+      },
+      "photoOverlap": 0,
+      "headerOverlap": 1936,
+      "nameOverlap": 0,
+      "priceOverlap": 0,
+      "nested": false,
+      "hit": true,
+      "paint": {
+        "width": "20px",
+        "height": "20px",
+        "top": "22px",
+        "bottom": "2px",
+        "border": "2px solid rgb(255, 255, 255)",
+        "radius": "50%"
+      }
+    },
+    "favorite": {
+      "label": "Guardar Tenis con talla a elección en favoritos",
+      "box": {
+        "x": 145,
+        "y": 78.39,
+        "width": 44,
+        "height": 44,
+        "right": 189,
+        "bottom": 122.39
+      },
+      "photoOverlap": 0,
+      "headerOverlap": 1936,
+      "nameOverlap": 0,
+      "priceOverlap": 0,
+      "nested": false,
+      "hit": true,
+      "paint": {
+        "width": "28px",
+        "height": "28px",
+        "top": "8px",
+        "bottom": "8px",
+        "border": "0px none rgb(107, 114, 128)",
+        "radius": "50%"
+      }
+    },
+    "whatsapp": {
+      "label": "Contactar por WhatsApp sobre Tenis con talla a elección",
+      "box": {
+        "x": 93,
+        "y": 338.39,
+        "width": 44,
+        "height": 44,
+        "right": 137,
+        "bottom": 382.39
+      },
+      "photoOverlap": 0,
+      "headerOverlap": 0,
+      "nameOverlap": 0,
+      "priceOverlap": 0,
+      "nested": false,
+      "hit": true,
+      "paint": {
+        "width": "32px",
+        "height": "32px",
+        "top": "6px",
+        "bottom": "6px",
+        "border": "0px none rgb(255, 255, 255)",
+        "radius": "50%"
+      }
+    },
+    "cart": {
+      "label": "Elegir opciones de Tenis con talla a elección",
+      "box": {
+        "x": 137,
+        "y": 338.39,
+        "width": 44,
+        "height": 44,
+        "right": 181,
+        "bottom": 382.39
+      },
+      "photoOverlap": 0,
+      "headerOverlap": 0,
+      "nameOverlap": 0,
+      "priceOverlap": 0,
+      "nested": false,
+      "hit": true,
+      "paint": {
+        "width": "32px",
+        "height": "32px",
+        "top": "6px",
+        "bottom": "6px",
+        "border": "0px none rgb(255, 255, 255)",
+        "radius": "50%"
+      }
+    },
+    "marginTop": "0px",
+    "headerGapAboveEar": 0,
+    "controlsOnPhoto": 0,
+    "controlsWrapped": false
+  },
+  {
+    "id": "p5",
+    "root": {
+      "x": 4,
+      "y": 76.89,
+      "width": 186,
+      "height": 314,
+      "right": 190,
+      "bottom": 390.89
+    },
+    "header": {
+      "x": 5,
+      "y": 77.89,
+      "width": 184,
+      "height": 44,
+      "right": 189,
+      "bottom": 121.89
+    },
+    "business": {
+      "x": 49,
+      "y": 77.89,
+      "width": 96,
+      "height": 44,
+      "right": 145,
+      "bottom": 121.89
+    },
+    "name": "Mercado del Barrio",
+    "labelHeight": 32,
+    "nameWidth": 96,
+    "approximateVisibleCharacters": 18,
+    "fullNameVisible": true,
+    "photo": {
+      "x": 5,
+      "y": 121.89,
+      "width": 184,
+      "height": 184,
+      "right": 189,
+      "bottom": 305.89
+    },
+    "price": {
+      "box": {
+        "x": 13,
+        "y": 348.89,
+        "width": 80,
+        "height": 22,
+        "right": 93,
+        "bottom": 370.89
+      },
+      "glyphWidth": 76.44,
+      "fits": true,
+      "size": "16px"
+    },
+    "controls": [
+      {
+        "label": "Seguir",
+        "box": {
+          "x": 5,
+          "y": 77.89,
+          "width": 44,
+          "height": 44,
+          "right": 49,
+          "bottom": 121.89
+        },
+        "photoOverlap": 0,
+        "headerOverlap": 1936,
+        "nameOverlap": 0,
+        "priceOverlap": 0,
+        "nested": false,
+        "hit": true,
+        "paint": {
+          "width": "20px",
+          "height": "20px",
+          "top": "22px",
+          "bottom": "2px",
+          "border": "2px solid rgb(255, 255, 255)",
+          "radius": "50%"
+        }
+      },
+      {
+        "label": "Guardar Bolso agotado en favoritos",
+        "box": {
+          "x": 145,
+          "y": 77.89,
+          "width": 44,
+          "height": 44,
+          "right": 189,
+          "bottom": 121.89
+        },
+        "photoOverlap": 0,
+        "headerOverlap": 1936,
+        "nameOverlap": 0,
+        "priceOverlap": 0,
+        "nested": false,
+        "hit": true,
+        "paint": {
+          "width": "28px",
+          "height": "28px",
+          "top": "8px",
+          "bottom": "8px",
+          "border": "0px none rgb(107, 114, 128)",
+          "radius": "50%"
+        }
+      },
+      {
+        "label": "Contactar por WhatsApp sobre Bolso agotado",
+        "box": {
+          "x": 93,
+          "y": 337.89,
+          "width": 44,
+          "height": 44,
+          "right": 137,
+          "bottom": 381.89
+        },
+        "photoOverlap": 0,
+        "headerOverlap": 0,
+        "nameOverlap": 0,
+        "priceOverlap": 0,
+        "nested": false,
+        "hit": true,
+        "paint": {
+          "width": "32px",
+          "height": "32px",
+          "top": "6px",
+          "bottom": "6px",
+          "border": "0px none rgb(255, 255, 255)",
+          "radius": "50%"
+        }
+      },
+      {
+        "label": "Bolso agotado agotado",
+        "box": {
+          "x": 137,
+          "y": 337.89,
+          "width": 44,
+          "height": 44,
+          "right": 181,
+          "bottom": 381.89
+        },
+        "photoOverlap": 0,
+        "headerOverlap": 0,
+        "nameOverlap": 0,
+        "priceOverlap": 0,
+        "nested": false,
+        "hit": true,
+        "paint": {
+          "width": "32px",
+          "height": "32px",
+          "top": "6px",
+          "bottom": "6px",
+          "border": "0px none rgb(100, 116, 139)",
+          "radius": "50%"
+        }
+      }
+    ],
+    "collisions": [],
+    "follow": {
+      "label": "Seguir",
+      "box": {
+        "x": 5,
+        "y": 77.89,
+        "width": 44,
+        "height": 44,
+        "right": 49,
+        "bottom": 121.89
+      },
+      "photoOverlap": 0,
+      "headerOverlap": 1936,
+      "nameOverlap": 0,
+      "priceOverlap": 0,
+      "nested": false,
+      "hit": true,
+      "paint": {
+        "width": "20px",
+        "height": "20px",
+        "top": "22px",
+        "bottom": "2px",
+        "border": "2px solid rgb(255, 255, 255)",
+        "radius": "50%"
+      }
+    },
+    "favorite": {
+      "label": "Guardar Bolso agotado en favoritos",
+      "box": {
+        "x": 145,
+        "y": 77.89,
+        "width": 44,
+        "height": 44,
+        "right": 189,
+        "bottom": 121.89
+      },
+      "photoOverlap": 0,
+      "headerOverlap": 1936,
+      "nameOverlap": 0,
+      "priceOverlap": 0,
+      "nested": false,
+      "hit": true,
+      "paint": {
+        "width": "28px",
+        "height": "28px",
+        "top": "8px",
+        "bottom": "8px",
+        "border": "0px none rgb(107, 114, 128)",
+        "radius": "50%"
+      }
+    },
+    "whatsapp": {
+      "label": "Contactar por WhatsApp sobre Bolso agotado",
+      "box": {
+        "x": 93,
+        "y": 337.89,
+        "width": 44,
+        "height": 44,
+        "right": 137,
+        "bottom": 381.89
+      },
+      "photoOverlap": 0,
+      "headerOverlap": 0,
+      "nameOverlap": 0,
+      "priceOverlap": 0,
+      "nested": false,
+      "hit": true,
+      "paint": {
+        "width": "32px",
+        "height": "32px",
+        "top": "6px",
+        "bottom": "6px",
+        "border": "0px none rgb(255, 255, 255)",
+        "radius": "50%"
+      }
+    },
+    "cart": {
+      "label": "Bolso agotado agotado",
+      "box": {
+        "x": 137,
+        "y": 337.89,
+        "width": 44,
+        "height": 44,
+        "right": 181,
+        "bottom": 381.89
+      },
+      "photoOverlap": 0,
+      "headerOverlap": 0,
+      "nameOverlap": 0,
+      "priceOverlap": 0,
+      "nested": false,
+      "hit": true,
+      "paint": {
+        "width": "32px",
+        "height": "32px",
+        "top": "6px",
+        "bottom": "6px",
+        "border": "0px none rgb(100, 116, 139)",
+        "radius": "50%"
+      }
+    },
+    "marginTop": "0px",
+    "headerGapAboveEar": 0,
+    "controlsOnPhoto": 0,
+    "controlsWrapped": false
+  },
+  {
+    "id": "p7",
+    "root": {
+      "x": 200,
+      "y": 77.39,
+      "width": 186,
+      "height": 356,
+      "right": 386,
+      "bottom": 433.39
+    },
+    "header": {
+      "x": 201,
+      "y": 78.39,
+      "width": 184,
+      "height": 44,
+      "right": 385,
+      "bottom": 122.39
+    },
+    "business": {
+      "x": 245,
+      "y": 78.39,
+      "width": 96,
+      "height": 44,
+      "right": 341,
+      "bottom": 122.39
+    },
+    "name": "Cooperativa de Productores Artesanales de Bogotá",
+    "labelHeight": 32,
+    "nameWidth": 96,
+    "approximateVisibleCharacters": 27,
+    "fullNameVisible": false,
+    "photo": {
+      "x": 201,
+      "y": 122.39,
+      "width": 184,
+      "height": 184,
+      "right": 385,
+      "bottom": 306.39
+    },
+    "price": {
+      "box": {
+        "x": 209,
+        "y": 358.39,
+        "width": 168,
+        "height": 22,
+        "right": 377,
+        "bottom": 380.39
+      },
+      "glyphWidth": 108.45,
+      "fits": true,
+      "size": "16px"
+    },
+    "controls": [
+      {
+        "label": "Seguir",
+        "box": {
+          "x": 201,
+          "y": 78.39,
+          "width": 44,
+          "height": 44,
+          "right": 245,
+          "bottom": 122.39
+        },
+        "photoOverlap": 0,
+        "headerOverlap": 1936,
+        "nameOverlap": 0,
+        "priceOverlap": 0,
+        "nested": false,
+        "hit": true,
+        "paint": {
+          "width": "20px",
+          "height": "20px",
+          "top": "22px",
+          "bottom": "2px",
+          "border": "2px solid rgb(255, 255, 255)",
+          "radius": "50%"
+        }
+      },
+      {
+        "label": "Guardar Edición artesanal colombiana con acabados hechos a mano y nombre de producto especialmente largo en favoritos",
+        "box": {
+          "x": 341,
+          "y": 78.39,
+          "width": 44,
+          "height": 44,
+          "right": 385,
+          "bottom": 122.39
+        },
+        "photoOverlap": 0,
+        "headerOverlap": 1936,
+        "nameOverlap": 0,
+        "priceOverlap": 0,
+        "nested": false,
+        "hit": true,
+        "paint": {
+          "width": "28px",
+          "height": "28px",
+          "top": "8px",
+          "bottom": "8px",
+          "border": "0px none rgb(107, 114, 128)",
+          "radius": "50%"
+        }
+      },
+      {
+        "label": "Contactar por WhatsApp sobre Edición artesanal colombiana con acabados hechos a mano y nombre de producto especialmente largo",
+        "box": {
+          "x": 289,
+          "y": 380.39,
+          "width": 44,
+          "height": 44,
+          "right": 333,
+          "bottom": 424.39
+        },
+        "photoOverlap": 0,
+        "headerOverlap": 0,
+        "nameOverlap": 0,
+        "priceOverlap": 0,
+        "nested": false,
+        "hit": true,
+        "paint": {
+          "width": "32px",
+          "height": "32px",
+          "top": "6px",
+          "bottom": "6px",
+          "border": "0px none rgb(255, 255, 255)",
+          "radius": "50%"
+        }
+      },
+      {
+        "label": "Agregar Edición artesanal colombiana con acabados hechos a mano y nombre de producto especialmente largo al carrito",
+        "box": {
+          "x": 333,
+          "y": 380.39,
+          "width": 44,
+          "height": 44,
+          "right": 377,
+          "bottom": 424.39
+        },
+        "photoOverlap": 0,
+        "headerOverlap": 0,
+        "nameOverlap": 0,
+        "priceOverlap": 0,
+        "nested": false,
+        "hit": true,
+        "paint": {
+          "width": "32px",
+          "height": "32px",
+          "top": "6px",
+          "bottom": "6px",
+          "border": "0px none rgb(255, 255, 255)",
+          "radius": "50%"
+        }
+      }
+    ],
+    "collisions": [],
+    "follow": {
+      "label": "Seguir",
+      "box": {
+        "x": 201,
+        "y": 78.39,
+        "width": 44,
+        "height": 44,
+        "right": 245,
+        "bottom": 122.39
+      },
+      "photoOverlap": 0,
+      "headerOverlap": 1936,
+      "nameOverlap": 0,
+      "priceOverlap": 0,
+      "nested": false,
+      "hit": true,
+      "paint": {
+        "width": "20px",
+        "height": "20px",
+        "top": "22px",
+        "bottom": "2px",
+        "border": "2px solid rgb(255, 255, 255)",
+        "radius": "50%"
+      }
+    },
+    "favorite": {
+      "label": "Guardar Edición artesanal colombiana con acabados hechos a mano y nombre de producto especialmente largo en favoritos",
+      "box": {
+        "x": 341,
+        "y": 78.39,
+        "width": 44,
+        "height": 44,
+        "right": 385,
+        "bottom": 122.39
+      },
+      "photoOverlap": 0,
+      "headerOverlap": 1936,
+      "nameOverlap": 0,
+      "priceOverlap": 0,
+      "nested": false,
+      "hit": true,
+      "paint": {
+        "width": "28px",
+        "height": "28px",
+        "top": "8px",
+        "bottom": "8px",
+        "border": "0px none rgb(107, 114, 128)",
+        "radius": "50%"
+      }
+    },
+    "whatsapp": {
+      "label": "Contactar por WhatsApp sobre Edición artesanal colombiana con acabados hechos a mano y nombre de producto especialmente largo",
+      "box": {
+        "x": 289,
+        "y": 380.39,
+        "width": 44,
+        "height": 44,
+        "right": 333,
+        "bottom": 424.39
+      },
+      "photoOverlap": 0,
+      "headerOverlap": 0,
+      "nameOverlap": 0,
+      "priceOverlap": 0,
+      "nested": false,
+      "hit": true,
+      "paint": {
+        "width": "32px",
+        "height": "32px",
+        "top": "6px",
+        "bottom": "6px",
+        "border": "0px none rgb(255, 255, 255)",
+        "radius": "50%"
+      }
+    },
+    "cart": {
+      "label": "Agregar Edición artesanal colombiana con acabados hechos a mano y nombre de producto especialmente largo al carrito",
+      "box": {
+        "x": 333,
+        "y": 380.39,
+        "width": 44,
+        "height": 44,
+        "right": 377,
+        "bottom": 424.39
+      },
+      "photoOverlap": 0,
+      "headerOverlap": 0,
+      "nameOverlap": 0,
+      "priceOverlap": 0,
+      "nested": false,
+      "hit": true,
+      "paint": {
+        "width": "32px",
+        "height": "32px",
+        "top": "6px",
+        "bottom": "6px",
+        "border": "0px none rgb(255, 255, 255)",
+        "radius": "50%"
+      }
+    },
+    "marginTop": "0px",
+    "headerGapAboveEar": 0,
+    "controlsOnPhoto": 0,
+    "controlsWrapped": true
+  },
+  {
+    "id": "p8",
+    "root": {
+      "x": 4,
+      "y": 77.39,
+      "width": 382,
+      "height": 349.39,
+      "right": 386,
+      "bottom": 426.78
+    },
+    "header": {
+      "x": 5,
+      "y": 78.39,
+      "width": 380,
+      "height": 44,
+      "right": 385,
+      "bottom": 122.39
+    },
+    "business": {
+      "x": 49,
+      "y": 78.39,
+      "width": 292,
+      "height": 44,
+      "right": 341,
+      "bottom": 122.39
+    },
+    "name": "Comercio Local",
+    "labelHeight": 18,
+    "nameWidth": 292,
+    "approximateVisibleCharacters": 14,
+    "fullNameVisible": true,
+    "photo": {
+      "x": 5,
+      "y": 122.39,
+      "width": 380,
+      "height": 205.39,
+      "right": 385,
+      "bottom": 327.78
+    },
+    "price": {
+      "box": {
+        "x": 15,
+        "y": 375.78,
+        "width": 272,
+        "height": 22,
+        "right": 287,
+        "bottom": 397.78
+      },
+      "glyphWidth": 86,
+      "fits": true,
+      "size": "18px"
+    },
+    "controls": [
+      {
+        "label": "Seguir",
+        "box": {
+          "x": 5,
+          "y": 78.39,
+          "width": 44,
+          "height": 44,
+          "right": 49,
+          "bottom": 122.39
+        },
+        "photoOverlap": 0,
+        "headerOverlap": 1936,
+        "nameOverlap": 0,
+        "priceOverlap": 0,
+        "nested": false,
+        "hit": true,
+        "paint": {
+          "width": "20px",
+          "height": "20px",
+          "top": "22px",
+          "bottom": "2px",
+          "border": "2px solid rgb(255, 255, 255)",
+          "radius": "50%"
+        }
+      },
+      {
+        "label": "Guardar Selección especial en favoritos",
+        "box": {
+          "x": 341,
+          "y": 78.39,
+          "width": 44,
+          "height": 44,
+          "right": 385,
+          "bottom": 122.39
+        },
+        "photoOverlap": 0,
+        "headerOverlap": 1936,
+        "nameOverlap": 0,
+        "priceOverlap": 0,
+        "nested": false,
+        "hit": true,
+        "paint": {
+          "width": "28px",
+          "height": "28px",
+          "top": "8px",
+          "bottom": "8px",
+          "border": "0px none rgb(107, 114, 128)",
+          "radius": "50%"
+        }
+      },
+      {
+        "label": "Contactar por WhatsApp sobre Selección especial",
+        "box": {
+          "x": 287,
+          "y": 366.78,
+          "width": 44,
+          "height": 44,
+          "right": 331,
+          "bottom": 410.78
+        },
+        "photoOverlap": 0,
+        "headerOverlap": 0,
+        "nameOverlap": 0,
+        "priceOverlap": 0,
+        "nested": false,
+        "hit": true,
+        "paint": {
+          "width": "32px",
+          "height": "32px",
+          "top": "6px",
+          "bottom": "6px",
+          "border": "0px none rgb(255, 255, 255)",
+          "radius": "50%"
+        }
+      },
+      {
+        "label": "Selección especial agotado",
+        "box": {
+          "x": 331,
+          "y": 366.78,
+          "width": 44,
+          "height": 44,
+          "right": 375,
+          "bottom": 410.78
+        },
+        "photoOverlap": 0,
+        "headerOverlap": 0,
+        "nameOverlap": 0,
+        "priceOverlap": 0,
+        "nested": false,
+        "hit": true,
+        "paint": {
+          "width": "32px",
+          "height": "32px",
+          "top": "6px",
+          "bottom": "6px",
+          "border": "0px none rgb(100, 116, 139)",
+          "radius": "50%"
+        }
+      }
+    ],
+    "collisions": [],
+    "follow": {
+      "label": "Seguir",
+      "box": {
+        "x": 5,
+        "y": 78.39,
+        "width": 44,
+        "height": 44,
+        "right": 49,
+        "bottom": 122.39
+      },
+      "photoOverlap": 0,
+      "headerOverlap": 1936,
+      "nameOverlap": 0,
+      "priceOverlap": 0,
+      "nested": false,
+      "hit": true,
+      "paint": {
+        "width": "20px",
+        "height": "20px",
+        "top": "22px",
+        "bottom": "2px",
+        "border": "2px solid rgb(255, 255, 255)",
+        "radius": "50%"
+      }
+    },
+    "favorite": {
+      "label": "Guardar Selección especial en favoritos",
+      "box": {
+        "x": 341,
+        "y": 78.39,
+        "width": 44,
+        "height": 44,
+        "right": 385,
+        "bottom": 122.39
+      },
+      "photoOverlap": 0,
+      "headerOverlap": 1936,
+      "nameOverlap": 0,
+      "priceOverlap": 0,
+      "nested": false,
+      "hit": true,
+      "paint": {
+        "width": "28px",
+        "height": "28px",
+        "top": "8px",
+        "bottom": "8px",
+        "border": "0px none rgb(107, 114, 128)",
+        "radius": "50%"
+      }
+    },
+    "whatsapp": {
+      "label": "Contactar por WhatsApp sobre Selección especial",
+      "box": {
+        "x": 287,
+        "y": 366.78,
+        "width": 44,
+        "height": 44,
+        "right": 331,
+        "bottom": 410.78
+      },
+      "photoOverlap": 0,
+      "headerOverlap": 0,
+      "nameOverlap": 0,
+      "priceOverlap": 0,
+      "nested": false,
+      "hit": true,
+      "paint": {
+        "width": "32px",
+        "height": "32px",
+        "top": "6px",
+        "bottom": "6px",
+        "border": "0px none rgb(255, 255, 255)",
+        "radius": "50%"
+      }
+    },
+    "cart": {
+      "label": "Selección especial agotado",
+      "box": {
+        "x": 331,
+        "y": 366.78,
+        "width": 44,
+        "height": 44,
+        "right": 375,
+        "bottom": 410.78
+      },
+      "photoOverlap": 0,
+      "headerOverlap": 0,
+      "nameOverlap": 0,
+      "priceOverlap": 0,
+      "nested": false,
+      "hit": true,
+      "paint": {
+        "width": "32px",
+        "height": "32px",
+        "top": "6px",
+        "bottom": "6px",
+        "border": "0px none rgb(100, 116, 139)",
+        "radius": "50%"
+      }
+    },
+    "marginTop": "0px",
+    "headerGapAboveEar": 0,
+    "controlsOnPhoto": 0,
+    "controlsWrapped": false
+  }
+]

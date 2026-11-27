@@ -1,0 +1,1708 @@
+{
+  "innerWidth": 430,
+  "innerHeight": 844,
+  "scrollWidth": 430,
+  "visualScale": 1,
+  "cards": [
+    {
+      "id": "p1",
+      "c2": true,
+      "root": {
+        "x": 4,
+        "y": 141,
+        "width": 206,
+        "height": 320,
+        "right": 210,
+        "bottom": 461
+      },
+      "header": {
+        "x": 5,
+        "y": 142,
+        "width": 204,
+        "height": 44,
+        "right": 209,
+        "bottom": 186
+      },
+      "photo": {
+        "x": 5,
+        "y": 186,
+        "width": 204,
+        "height": 190,
+        "right": 209,
+        "bottom": 376
+      },
+      "content": {
+        "x": 5,
+        "y": 376,
+        "width": 204,
+        "height": 84,
+        "right": 209,
+        "bottom": 460
+      },
+      "contentPadding": "8px",
+      "row": {
+        "x": 11,
+        "y": 408,
+        "width": 198,
+        "height": 44,
+        "right": 209,
+        "bottom": 452
+      },
+      "priceBlock": {
+        "x": 11,
+        "y": 419,
+        "width": 110,
+        "height": 22,
+        "right": 121,
+        "bottom": 441
+      },
+      "amount": "$ 45.000",
+      "price": {
+        "x": 11,
+        "y": 419,
+        "width": 110,
+        "height": 22,
+        "right": 121,
+        "bottom": 441
+      },
+      "glyphWidth": 69.546875,
+      "glyphLines": 1,
+      "priceFullyVisible": true,
+      "priceSize": "16px",
+      "priceWeight": "600",
+      "priceColor": "rgb(168, 60, 75)",
+      "priceFont": "inter, \"inter Fallback\"",
+      "actions": {
+        "x": 121,
+        "y": 408,
+        "width": 88,
+        "height": 44,
+        "right": 209,
+        "bottom": 452
+      },
+      "wa": {
+        "x": 121,
+        "y": 408,
+        "width": 44,
+        "height": 44,
+        "right": 165,
+        "bottom": 452
+      },
+      "cart": {
+        "x": 165,
+        "y": 408,
+        "width": 44,
+        "height": 44,
+        "right": 209,
+        "bottom": 452
+      },
+      "paintWa": {
+        "width": "30px",
+        "height": "30px",
+        "radius": "50%",
+        "iconWidth": 18,
+        "iconHeight": 18
+      },
+      "paintCart": {
+        "width": "30px",
+        "height": "30px",
+        "radius": "50%",
+        "iconWidth": 18,
+        "iconHeight": 18
+      },
+      "cartDisabled": false,
+      "wrapped": false,
+      "priceCapacity": 110,
+      "controls": [
+        {
+          "label": "Casa Origen",
+          "box": {
+            "x": 49,
+            "y": 142,
+            "width": 116,
+            "height": 44,
+            "right": 165,
+            "bottom": 186
+          },
+          "interactive": false,
+          "hit": true,
+          "nested": false
+        },
+        {
+          "label": "Seguir a Casa Origen",
+          "box": {
+            "x": 5,
+            "y": 142,
+            "width": 44,
+            "height": 44,
+            "right": 49,
+            "bottom": 186
+          },
+          "interactive": true,
+          "hit": true,
+          "nested": false
+        },
+        {
+          "label": "Guardar Tenis urbanos en favoritos",
+          "box": {
+            "x": 165,
+            "y": 142,
+            "width": 44,
+            "height": 44,
+            "right": 209,
+            "bottom": 186
+          },
+          "interactive": true,
+          "hit": true,
+          "nested": false
+        },
+        {
+          "label": "",
+          "box": {
+            "x": 5,
+            "y": 186,
+            "width": 204,
+            "height": 190,
+            "right": 209,
+            "bottom": 376
+          },
+          "interactive": false,
+          "hit": true,
+          "nested": false
+        },
+        {
+          "label": "Tenis urbanos",
+          "box": {
+            "x": 13,
+            "y": 384,
+            "width": 188,
+            "height": 20,
+            "right": 201,
+            "bottom": 404
+          },
+          "interactive": false,
+          "hit": true,
+          "nested": false
+        },
+        {
+          "label": "Contactar por WhatsApp sobre Tenis urbanos",
+          "box": {
+            "x": 121,
+            "y": 408,
+            "width": 44,
+            "height": 44,
+            "right": 165,
+            "bottom": 452
+          },
+          "interactive": true,
+          "hit": true,
+          "nested": false
+        },
+        {
+          "label": "Agregar Tenis urbanos al carrito",
+          "box": {
+            "x": 165,
+            "y": 408,
+            "width": 44,
+            "height": 44,
+            "right": 209,
+            "bottom": 452
+          },
+          "interactive": true,
+          "hit": true,
+          "nested": false
+        }
+      ],
+      "collisions": [],
+      "completeInViewport": true
+    },
+    {
+      "id": "p2",
+      "c2": true,
+      "root": {
+        "x": 220,
+        "y": 141,
+        "width": 206,
+        "height": 340,
+        "right": 426,
+        "bottom": 481
+      },
+      "header": {
+        "x": 221,
+        "y": 142,
+        "width": 204,
+        "height": 44,
+        "right": 425,
+        "bottom": 186
+      },
+      "photo": {
+        "x": 221,
+        "y": 186,
+        "width": 204,
+        "height": 190,
+        "right": 425,
+        "bottom": 376
+      },
+      "content": {
+        "x": 221,
+        "y": 376,
+        "width": 204,
+        "height": 104,
+        "right": 425,
+        "bottom": 480
+      },
+      "contentPadding": "8px",
+      "row": {
+        "x": 227,
+        "y": 428,
+        "width": 198,
+        "height": 44,
+        "right": 425,
+        "bottom": 472
+      },
+      "priceBlock": {
+        "x": 227,
+        "y": 439,
+        "width": 110,
+        "height": 22,
+        "right": 337,
+        "bottom": 461
+      },
+      "amount": "$ 180.000",
+      "price": {
+        "x": 227,
+        "y": 439,
+        "width": 110,
+        "height": 22,
+        "right": 337,
+        "bottom": 461
+      },
+      "glyphWidth": 76.4375,
+      "glyphLines": 1,
+      "priceFullyVisible": true,
+      "priceSize": "16px",
+      "priceWeight": "600",
+      "priceColor": "rgb(168, 60, 75)",
+      "priceFont": "inter, \"inter Fallback\"",
+      "actions": {
+        "x": 337,
+        "y": 428,
+        "width": 88,
+        "height": 44,
+        "right": 425,
+        "bottom": 472
+      },
+      "wa": {
+        "x": 337,
+        "y": 428,
+        "width": 44,
+        "height": 44,
+        "right": 381,
+        "bottom": 472
+      },
+      "cart": {
+        "x": 381,
+        "y": 428,
+        "width": 44,
+        "height": 44,
+        "right": 425,
+        "bottom": 472
+      },
+      "paintWa": {
+        "width": "30px",
+        "height": "30px",
+        "radius": "50%",
+        "iconWidth": 18,
+        "iconHeight": 18
+      },
+      "paintCart": {
+        "width": "30px",
+        "height": "30px",
+        "radius": "50%",
+        "iconWidth": 18,
+        "iconHeight": 18
+      },
+      "cartDisabled": false,
+      "wrapped": false,
+      "priceCapacity": 110,
+      "controls": [
+        {
+          "label": "Mercado del Barrio",
+          "box": {
+            "x": 265,
+            "y": 142,
+            "width": 116,
+            "height": 44,
+            "right": 381,
+            "bottom": 186
+          },
+          "interactive": false,
+          "hit": true,
+          "nested": false
+        },
+        {
+          "label": "Seguir a Mercado del Barrio",
+          "box": {
+            "x": 221,
+            "y": 142,
+            "width": 44,
+            "height": 44,
+            "right": 265,
+            "bottom": 186
+          },
+          "interactive": true,
+          "hit": true,
+          "nested": false
+        },
+        {
+          "label": "Guardar Bolso de cuero con correa ajustable en favoritos",
+          "box": {
+            "x": 381,
+            "y": 142,
+            "width": 44,
+            "height": 44,
+            "right": 425,
+            "bottom": 186
+          },
+          "interactive": true,
+          "hit": true,
+          "nested": false
+        },
+        {
+          "label": "",
+          "box": {
+            "x": 221,
+            "y": 186,
+            "width": 204,
+            "height": 190,
+            "right": 425,
+            "bottom": 376
+          },
+          "interactive": false,
+          "hit": true,
+          "nested": false
+        },
+        {
+          "label": "Bolso de cuero con correa ajustable",
+          "box": {
+            "x": 229,
+            "y": 384,
+            "width": 188,
+            "height": 40,
+            "right": 417,
+            "bottom": 424
+          },
+          "interactive": false,
+          "hit": true,
+          "nested": false
+        },
+        {
+          "label": "Contactar por WhatsApp sobre Bolso de cuero con correa ajustable",
+          "box": {
+            "x": 337,
+            "y": 428,
+            "width": 44,
+            "height": 44,
+            "right": 381,
+            "bottom": 472
+          },
+          "interactive": true,
+          "hit": true,
+          "nested": false
+        },
+        {
+          "label": "Agregar Bolso de cuero con correa ajustable al carrito",
+          "box": {
+            "x": 381,
+            "y": 428,
+            "width": 44,
+            "height": 44,
+            "right": 425,
+            "bottom": 472
+          },
+          "interactive": true,
+          "hit": true,
+          "nested": false
+        }
+      ],
+      "collisions": [],
+      "completeInViewport": true
+    },
+    {
+      "id": "p3",
+      "c2": false,
+      "root": {
+        "x": 4,
+        "y": 491,
+        "width": 422,
+        "height": 344,
+        "right": 426,
+        "bottom": 835
+      },
+      "header": {
+        "x": 5,
+        "y": 492,
+        "width": 420,
+        "height": 44,
+        "right": 425,
+        "bottom": 536
+      },
+      "photo": {
+        "x": 5,
+        "y": 536,
+        "width": 420,
+        "height": 214,
+        "right": 425,
+        "bottom": 750
+      },
+      "content": {
+        "x": 5,
+        "y": 750,
+        "width": 420,
+        "height": 84,
+        "right": 425,
+        "bottom": 834
+      },
+      "contentPadding": "8px 10px",
+      "row": {
+        "x": 15,
+        "y": 782,
+        "width": 410,
+        "height": 44,
+        "right": 425,
+        "bottom": 826
+      },
+      "priceBlock": {
+        "x": 15,
+        "y": 793,
+        "width": 320,
+        "height": 22,
+        "right": 335,
+        "bottom": 815
+      },
+      "amount": "$ 8.000.000",
+      "price": {
+        "x": 15,
+        "y": 793,
+        "width": 320,
+        "height": 22,
+        "right": 335,
+        "bottom": 815
+      },
+      "glyphWidth": 106.625,
+      "glyphLines": 1,
+      "priceFullyVisible": true,
+      "priceSize": "18px",
+      "priceWeight": "600",
+      "priceColor": "rgb(168, 60, 75)",
+      "priceFont": "inter, \"inter Fallback\"",
+      "actions": {
+        "x": 337,
+        "y": 782,
+        "width": 88,
+        "height": 44,
+        "right": 425,
+        "bottom": 826
+      },
+      "wa": {
+        "x": 337,
+        "y": 782,
+        "width": 44,
+        "height": 44,
+        "right": 381,
+        "bottom": 826
+      },
+      "cart": {
+        "x": 381,
+        "y": 782,
+        "width": 44,
+        "height": 44,
+        "right": 425,
+        "bottom": 826
+      },
+      "paintWa": {
+        "width": "30px",
+        "height": "30px",
+        "radius": "50%",
+        "iconWidth": 18,
+        "iconHeight": 18
+      },
+      "paintCart": {
+        "width": "30px",
+        "height": "30px",
+        "radius": "50%",
+        "iconWidth": 18,
+        "iconHeight": 18
+      },
+      "cartDisabled": false,
+      "wrapped": false,
+      "priceCapacity": 320,
+      "controls": [
+        {
+          "label": "Casa Origen",
+          "box": {
+            "x": 49,
+            "y": 492,
+            "width": 332,
+            "height": 44,
+            "right": 381,
+            "bottom": 536
+          },
+          "interactive": false,
+          "hit": true,
+          "nested": false
+        },
+        {
+          "label": "Seguir a Casa Origen",
+          "box": {
+            "x": 5,
+            "y": 492,
+            "width": 44,
+            "height": 44,
+            "right": 49,
+            "bottom": 536
+          },
+          "interactive": true,
+          "hit": true,
+          "nested": false
+        },
+        {
+          "label": "Guardar Bolso artesanal en favoritos",
+          "box": {
+            "x": 381,
+            "y": 492,
+            "width": 44,
+            "height": 44,
+            "right": 425,
+            "bottom": 536
+          },
+          "interactive": true,
+          "hit": true,
+          "nested": false
+        },
+        {
+          "label": "",
+          "box": {
+            "x": 5,
+            "y": 536,
+            "width": 420,
+            "height": 214,
+            "right": 425,
+            "bottom": 750
+          },
+          "interactive": false,
+          "hit": true,
+          "nested": false
+        },
+        {
+          "label": "Bolso artesanal",
+          "box": {
+            "x": 15,
+            "y": 758,
+            "width": 400,
+            "height": 20,
+            "right": 415,
+            "bottom": 778
+          },
+          "interactive": false,
+          "hit": true,
+          "nested": false
+        },
+        {
+          "label": "Contactar por WhatsApp sobre Bolso artesanal",
+          "box": {
+            "x": 337,
+            "y": 782,
+            "width": 44,
+            "height": 44,
+            "right": 381,
+            "bottom": 826
+          },
+          "interactive": true,
+          "hit": true,
+          "nested": false
+        },
+        {
+          "label": "Agregar Bolso artesanal al carrito",
+          "box": {
+            "x": 381,
+            "y": 782,
+            "width": 44,
+            "height": 44,
+            "right": 425,
+            "bottom": 826
+          },
+          "interactive": true,
+          "hit": true,
+          "nested": false
+        }
+      ],
+      "collisions": [],
+      "completeInViewport": false
+    },
+    {
+      "id": "p4",
+      "c2": true,
+      "root": {
+        "x": 4,
+        "y": 1359.5,
+        "width": 206,
+        "height": 320,
+        "right": 210,
+        "bottom": 1679.5
+      },
+      "header": {
+        "x": 5,
+        "y": 1360.5,
+        "width": 204,
+        "height": 44,
+        "right": 209,
+        "bottom": 1404.5
+      },
+      "photo": {
+        "x": 5,
+        "y": 1404.5,
+        "width": 204,
+        "height": 190,
+        "right": 209,
+        "bottom": 1594.5
+      },
+      "content": {
+        "x": 5,
+        "y": 1594.5,
+        "width": 204,
+        "height": 84,
+        "right": 209,
+        "bottom": 1678.5
+      },
+      "contentPadding": "8px",
+      "row": {
+        "x": 11,
+        "y": 1626.5,
+        "width": 198,
+        "height": 44,
+        "right": 209,
+        "bottom": 1670.5
+      },
+      "priceBlock": {
+        "x": 11,
+        "y": 1629.5,
+        "width": 110,
+        "height": 38,
+        "right": 121,
+        "bottom": 1667.5
+      },
+      "amount": "$ 8.000.000",
+      "price": {
+        "x": 11,
+        "y": 1645.5,
+        "width": 110,
+        "height": 22,
+        "right": 121,
+        "bottom": 1667.5
+      },
+      "glyphWidth": 94.78125,
+      "glyphLines": 1,
+      "priceFullyVisible": true,
+      "priceSize": "16px",
+      "priceWeight": "600",
+      "priceColor": "rgb(168, 60, 75)",
+      "priceFont": "inter, \"inter Fallback\"",
+      "actions": {
+        "x": 121,
+        "y": 1626.5,
+        "width": 88,
+        "height": 44,
+        "right": 209,
+        "bottom": 1670.5
+      },
+      "wa": {
+        "x": 121,
+        "y": 1626.5,
+        "width": 44,
+        "height": 44,
+        "right": 165,
+        "bottom": 1670.5
+      },
+      "cart": {
+        "x": 165,
+        "y": 1626.5,
+        "width": 44,
+        "height": 44,
+        "right": 209,
+        "bottom": 1670.5
+      },
+      "paintWa": {
+        "width": "30px",
+        "height": "30px",
+        "radius": "50%",
+        "iconWidth": 18,
+        "iconHeight": 18
+      },
+      "paintCart": {
+        "width": "30px",
+        "height": "30px",
+        "radius": "50%",
+        "iconWidth": 18,
+        "iconHeight": 18
+      },
+      "cartDisabled": false,
+      "wrapped": false,
+      "priceCapacity": 110,
+      "controls": [
+        {
+          "label": "Casa Origen",
+          "box": {
+            "x": 49,
+            "y": 1360.5,
+            "width": 116,
+            "height": 44,
+            "right": 165,
+            "bottom": 1404.5
+          },
+          "interactive": false,
+          "hit": true,
+          "nested": false
+        },
+        {
+          "label": "Seguir a Casa Origen",
+          "box": {
+            "x": 5,
+            "y": 1360.5,
+            "width": 44,
+            "height": 44,
+            "right": 49,
+            "bottom": 1404.5
+          },
+          "interactive": true,
+          "hit": true,
+          "nested": false
+        },
+        {
+          "label": "Guardar Tenis con talla a elección en favoritos",
+          "box": {
+            "x": 165,
+            "y": 1360.5,
+            "width": 44,
+            "height": 44,
+            "right": 209,
+            "bottom": 1404.5
+          },
+          "interactive": true,
+          "hit": true,
+          "nested": false
+        },
+        {
+          "label": "Variantes",
+          "box": {
+            "x": 5,
+            "y": 1404.5,
+            "width": 204,
+            "height": 190,
+            "right": 209,
+            "bottom": 1594.5
+          },
+          "interactive": false,
+          "hit": true,
+          "nested": false
+        },
+        {
+          "label": "Tenis con talla a elección",
+          "box": {
+            "x": 13,
+            "y": 1602.5,
+            "width": 188,
+            "height": 20,
+            "right": 201,
+            "bottom": 1622.5
+          },
+          "interactive": false,
+          "hit": true,
+          "nested": false
+        },
+        {
+          "label": "Contactar por WhatsApp sobre Tenis con talla a elección",
+          "box": {
+            "x": 121,
+            "y": 1626.5,
+            "width": 44,
+            "height": 44,
+            "right": 165,
+            "bottom": 1670.5
+          },
+          "interactive": true,
+          "hit": true,
+          "nested": false
+        },
+        {
+          "label": "Elegir opciones de Tenis con talla a elección",
+          "box": {
+            "x": 165,
+            "y": 1626.5,
+            "width": 44,
+            "height": 44,
+            "right": 209,
+            "bottom": 1670.5
+          },
+          "interactive": true,
+          "hit": true,
+          "nested": false
+        }
+      ],
+      "collisions": [],
+      "completeInViewport": false
+    },
+    {
+      "id": "p5",
+      "c2": true,
+      "root": {
+        "x": 220,
+        "y": 1359.5,
+        "width": 206,
+        "height": 320,
+        "right": 426,
+        "bottom": 1679.5
+      },
+      "header": {
+        "x": 221,
+        "y": 1360.5,
+        "width": 204,
+        "height": 44,
+        "right": 425,
+        "bottom": 1404.5
+      },
+      "photo": {
+        "x": 221,
+        "y": 1404.5,
+        "width": 204,
+        "height": 190,
+        "right": 425,
+        "bottom": 1594.5
+      },
+      "content": {
+        "x": 221,
+        "y": 1594.5,
+        "width": 204,
+        "height": 84,
+        "right": 425,
+        "bottom": 1678.5
+      },
+      "contentPadding": "8px",
+      "row": {
+        "x": 227,
+        "y": 1626.5,
+        "width": 198,
+        "height": 44,
+        "right": 425,
+        "bottom": 1670.5
+      },
+      "priceBlock": {
+        "x": 227,
+        "y": 1637.5,
+        "width": 110,
+        "height": 22,
+        "right": 337,
+        "bottom": 1659.5
+      },
+      "amount": "$ 31.200.000",
+      "price": {
+        "x": 227,
+        "y": 1637.5,
+        "width": 110,
+        "height": 22,
+        "right": 337,
+        "bottom": 1659.5
+      },
+      "glyphWidth": 101.53125,
+      "glyphLines": 1,
+      "priceFullyVisible": true,
+      "priceSize": "16px",
+      "priceWeight": "600",
+      "priceColor": "rgb(168, 60, 75)",
+      "priceFont": "inter, \"inter Fallback\"",
+      "actions": {
+        "x": 337,
+        "y": 1626.5,
+        "width": 88,
+        "height": 44,
+        "right": 425,
+        "bottom": 1670.5
+      },
+      "wa": {
+        "x": 337,
+        "y": 1626.5,
+        "width": 44,
+        "height": 44,
+        "right": 381,
+        "bottom": 1670.5
+      },
+      "cart": {
+        "x": 381,
+        "y": 1626.5,
+        "width": 44,
+        "height": 44,
+        "right": 425,
+        "bottom": 1670.5
+      },
+      "paintWa": {
+        "width": "30px",
+        "height": "30px",
+        "radius": "50%",
+        "iconWidth": 18,
+        "iconHeight": 18
+      },
+      "paintCart": {
+        "width": "30px",
+        "height": "30px",
+        "radius": "50%",
+        "iconWidth": 18,
+        "iconHeight": 18
+      },
+      "cartDisabled": true,
+      "wrapped": false,
+      "priceCapacity": 110,
+      "controls": [
+        {
+          "label": "Casa Origen",
+          "box": {
+            "x": 265,
+            "y": 1360.5,
+            "width": 116,
+            "height": 44,
+            "right": 381,
+            "bottom": 1404.5
+          },
+          "interactive": false,
+          "hit": true,
+          "nested": false
+        },
+        {
+          "label": "Seguir a Casa Origen",
+          "box": {
+            "x": 221,
+            "y": 1360.5,
+            "width": 44,
+            "height": 44,
+            "right": 265,
+            "bottom": 1404.5
+          },
+          "interactive": true,
+          "hit": true,
+          "nested": false
+        },
+        {
+          "label": "Guardar Bolso agotado en favoritos",
+          "box": {
+            "x": 381,
+            "y": 1360.5,
+            "width": 44,
+            "height": 44,
+            "right": 425,
+            "bottom": 1404.5
+          },
+          "interactive": true,
+          "hit": true,
+          "nested": false
+        },
+        {
+          "label": "Agotado",
+          "box": {
+            "x": 221,
+            "y": 1404.5,
+            "width": 204,
+            "height": 190,
+            "right": 425,
+            "bottom": 1594.5
+          },
+          "interactive": false,
+          "hit": true,
+          "nested": false
+        },
+        {
+          "label": "Bolso agotado",
+          "box": {
+            "x": 229,
+            "y": 1602.5,
+            "width": 188,
+            "height": 20,
+            "right": 417,
+            "bottom": 1622.5
+          },
+          "interactive": false,
+          "hit": true,
+          "nested": false
+        },
+        {
+          "label": "Contactar por WhatsApp sobre Bolso agotado",
+          "box": {
+            "x": 337,
+            "y": 1626.5,
+            "width": 44,
+            "height": 44,
+            "right": 381,
+            "bottom": 1670.5
+          },
+          "interactive": true,
+          "hit": true,
+          "nested": false
+        },
+        {
+          "label": "Bolso agotado agotado",
+          "box": {
+            "x": 381,
+            "y": 1626.5,
+            "width": 44,
+            "height": 44,
+            "right": 425,
+            "bottom": 1670.5
+          },
+          "interactive": true,
+          "hit": true,
+          "nested": false
+        }
+      ],
+      "collisions": [],
+      "completeInViewport": false
+    },
+    {
+      "id": "p6",
+      "c2": true,
+      "root": {
+        "x": 4,
+        "y": 2140.5,
+        "width": 206,
+        "height": 320,
+        "right": 210,
+        "bottom": 2460.5
+      },
+      "header": {
+        "x": 5,
+        "y": 2141.5,
+        "width": 204,
+        "height": 44,
+        "right": 209,
+        "bottom": 2185.5
+      },
+      "photo": {
+        "x": 5,
+        "y": 2185.5,
+        "width": 204,
+        "height": 190,
+        "right": 209,
+        "bottom": 2375.5
+      },
+      "content": {
+        "x": 5,
+        "y": 2375.5,
+        "width": 204,
+        "height": 84,
+        "right": 209,
+        "bottom": 2459.5
+      },
+      "contentPadding": "8px",
+      "row": {
+        "x": 11,
+        "y": 2407.5,
+        "width": 198,
+        "height": 44,
+        "right": 209,
+        "bottom": 2451.5
+      },
+      "priceBlock": {
+        "x": 11,
+        "y": 2418.5,
+        "width": 110,
+        "height": 22,
+        "right": 121,
+        "bottom": 2440.5
+      },
+      "amount": "$ 123.456.789",
+      "price": {
+        "x": 11,
+        "y": 2418.5,
+        "width": 110,
+        "height": 22,
+        "right": 121,
+        "bottom": 2440.5
+      },
+      "glyphWidth": 108.453125,
+      "glyphLines": 1,
+      "priceFullyVisible": true,
+      "priceSize": "16px",
+      "priceWeight": "600",
+      "priceColor": "rgb(168, 60, 75)",
+      "priceFont": "inter, \"inter Fallback\"",
+      "actions": {
+        "x": 121,
+        "y": 2407.5,
+        "width": 88,
+        "height": 44,
+        "right": 209,
+        "bottom": 2451.5
+      },
+      "wa": {
+        "x": 121,
+        "y": 2407.5,
+        "width": 44,
+        "height": 44,
+        "right": 165,
+        "bottom": 2451.5
+      },
+      "cart": {
+        "x": 165,
+        "y": 2407.5,
+        "width": 44,
+        "height": 44,
+        "right": 209,
+        "bottom": 2451.5
+      },
+      "paintWa": {
+        "width": "30px",
+        "height": "30px",
+        "radius": "50%",
+        "iconWidth": 18,
+        "iconHeight": 18
+      },
+      "paintCart": {
+        "width": "30px",
+        "height": "30px",
+        "radius": "50%",
+        "iconWidth": 18,
+        "iconHeight": 18
+      },
+      "cartDisabled": false,
+      "wrapped": false,
+      "priceCapacity": 110,
+      "controls": [
+        {
+          "label": "Casa Origen",
+          "box": {
+            "x": 49,
+            "y": 2141.5,
+            "width": 116,
+            "height": 44,
+            "right": 165,
+            "bottom": 2185.5
+          },
+          "interactive": false,
+          "hit": true,
+          "nested": false
+        },
+        {
+          "label": "Seguir a Casa Origen",
+          "box": {
+            "x": 5,
+            "y": 2141.5,
+            "width": 44,
+            "height": 44,
+            "right": 49,
+            "bottom": 2185.5
+          },
+          "interactive": true,
+          "hit": true,
+          "nested": false
+        },
+        {
+          "label": "Guardar Producto sin fotografía en favoritos",
+          "box": {
+            "x": 165,
+            "y": 2141.5,
+            "width": 44,
+            "height": 44,
+            "right": 209,
+            "bottom": 2185.5
+          },
+          "interactive": true,
+          "hit": true,
+          "nested": false
+        },
+        {
+          "label": "",
+          "box": {
+            "x": 5,
+            "y": 2185.5,
+            "width": 204,
+            "height": 190,
+            "right": 209,
+            "bottom": 2375.5
+          },
+          "interactive": false,
+          "hit": true,
+          "nested": false
+        },
+        {
+          "label": "Producto sin fotografía",
+          "box": {
+            "x": 13,
+            "y": 2383.5,
+            "width": 188,
+            "height": 20,
+            "right": 201,
+            "bottom": 2403.5
+          },
+          "interactive": false,
+          "hit": true,
+          "nested": false
+        },
+        {
+          "label": "Contactar por WhatsApp sobre Producto sin fotografía",
+          "box": {
+            "x": 121,
+            "y": 2407.5,
+            "width": 44,
+            "height": 44,
+            "right": 165,
+            "bottom": 2451.5
+          },
+          "interactive": true,
+          "hit": true,
+          "nested": false
+        },
+        {
+          "label": "Agregar Producto sin fotografía al carrito",
+          "box": {
+            "x": 165,
+            "y": 2407.5,
+            "width": 44,
+            "height": 44,
+            "right": 209,
+            "bottom": 2451.5
+          },
+          "interactive": true,
+          "hit": true,
+          "nested": false
+        }
+      ],
+      "collisions": [],
+      "completeInViewport": false
+    },
+    {
+      "id": "p7",
+      "c2": true,
+      "root": {
+        "x": 220,
+        "y": 2140.5,
+        "width": 206,
+        "height": 340,
+        "right": 426,
+        "bottom": 2480.5
+      },
+      "header": {
+        "x": 221,
+        "y": 2141.5,
+        "width": 204,
+        "height": 44,
+        "right": 425,
+        "bottom": 2185.5
+      },
+      "photo": {
+        "x": 221,
+        "y": 2185.5,
+        "width": 204,
+        "height": 190,
+        "right": 425,
+        "bottom": 2375.5
+      },
+      "content": {
+        "x": 221,
+        "y": 2375.5,
+        "width": 204,
+        "height": 104,
+        "right": 425,
+        "bottom": 2479.5
+      },
+      "contentPadding": "8px",
+      "row": {
+        "x": 227,
+        "y": 2427.5,
+        "width": 198,
+        "height": 44,
+        "right": 425,
+        "bottom": 2471.5
+      },
+      "priceBlock": {
+        "x": 227,
+        "y": 2438.5,
+        "width": 110,
+        "height": 22,
+        "right": 337,
+        "bottom": 2460.5
+      },
+      "amount": "$ 8.000",
+      "price": {
+        "x": 227,
+        "y": 2438.5,
+        "width": 110,
+        "height": 22,
+        "right": 337,
+        "bottom": 2460.5
+      },
+      "glyphWidth": 59.546875,
+      "glyphLines": 1,
+      "priceFullyVisible": true,
+      "priceSize": "16px",
+      "priceWeight": "600",
+      "priceColor": "rgb(168, 60, 75)",
+      "priceFont": "inter, \"inter Fallback\"",
+      "actions": {
+        "x": 337,
+        "y": 2427.5,
+        "width": 88,
+        "height": 44,
+        "right": 425,
+        "bottom": 2471.5
+      },
+      "wa": {
+        "x": 337,
+        "y": 2427.5,
+        "width": 44,
+        "height": 44,
+        "right": 381,
+        "bottom": 2471.5
+      },
+      "cart": {
+        "x": 381,
+        "y": 2427.5,
+        "width": 44,
+        "height": 44,
+        "right": 425,
+        "bottom": 2471.5
+      },
+      "paintWa": {
+        "width": "30px",
+        "height": "30px",
+        "radius": "50%",
+        "iconWidth": 18,
+        "iconHeight": 18
+      },
+      "paintCart": {
+        "width": "30px",
+        "height": "30px",
+        "radius": "50%",
+        "iconWidth": 18,
+        "iconHeight": 18
+      },
+      "cartDisabled": false,
+      "wrapped": false,
+      "priceCapacity": 110,
+      "controls": [
+        {
+          "label": "Cooperativa de Productores Artesanales de Bogotá",
+          "box": {
+            "x": 265,
+            "y": 2141.5,
+            "width": 116,
+            "height": 44,
+            "right": 381,
+            "bottom": 2185.5
+          },
+          "interactive": false,
+          "hit": true,
+          "nested": false
+        },
+        {
+          "label": "Seguir a Cooperativa de Productores Artesanales de Bogotá",
+          "box": {
+            "x": 221,
+            "y": 2141.5,
+            "width": 44,
+            "height": 44,
+            "right": 265,
+            "bottom": 2185.5
+          },
+          "interactive": true,
+          "hit": true,
+          "nested": false
+        },
+        {
+          "label": "Guardar Edición artesanal colombiana con acabados hechos a mano y nombre de producto especialmente largo en favoritos",
+          "box": {
+            "x": 381,
+            "y": 2141.5,
+            "width": 44,
+            "height": 44,
+            "right": 425,
+            "bottom": 2185.5
+          },
+          "interactive": true,
+          "hit": true,
+          "nested": false
+        },
+        {
+          "label": "",
+          "box": {
+            "x": 221,
+            "y": 2185.5,
+            "width": 204,
+            "height": 190,
+            "right": 425,
+            "bottom": 2375.5
+          },
+          "interactive": false,
+          "hit": true,
+          "nested": false
+        },
+        {
+          "label": "Edición artesanal colombiana con acabados hechos a mano y nombre de producto especialmente largo",
+          "box": {
+            "x": 229,
+            "y": 2383.5,
+            "width": 188,
+            "height": 40,
+            "right": 417,
+            "bottom": 2423.5
+          },
+          "interactive": false,
+          "hit": true,
+          "nested": false
+        },
+        {
+          "label": "Contactar por WhatsApp sobre Edición artesanal colombiana con acabados hechos a mano y nombre de producto especialmente largo",
+          "box": {
+            "x": 337,
+            "y": 2427.5,
+            "width": 44,
+            "height": 44,
+            "right": 381,
+            "bottom": 2471.5
+          },
+          "interactive": true,
+          "hit": true,
+          "nested": false
+        },
+        {
+          "label": "Agregar Edición artesanal colombiana con acabados hechos a mano y nombre de producto especialmente largo al carrito",
+          "box": {
+            "x": 381,
+            "y": 2427.5,
+            "width": 44,
+            "height": 44,
+            "right": 425,
+            "bottom": 2471.5
+          },
+          "interactive": true,
+          "hit": true,
+          "nested": false
+        }
+      ],
+      "collisions": [],
+      "completeInViewport": false
+    },
+    {
+      "id": "p8",
+      "c2": false,
+      "root": {
+        "x": 4,
+        "y": 2752.5,
+        "width": 422,
+        "height": 358,
+        "right": 426,
+        "bottom": 3110.5
+      },
+      "header": {
+        "x": 5,
+        "y": 2753.5,
+        "width": 420,
+        "height": 44,
+        "right": 425,
+        "bottom": 2797.5
+      },
+      "photo": {
+        "x": 5,
+        "y": 2797.5,
+        "width": 420,
+        "height": 214,
+        "right": 425,
+        "bottom": 3011.5
+      },
+      "content": {
+        "x": 5,
+        "y": 3011.5,
+        "width": 420,
+        "height": 98,
+        "right": 425,
+        "bottom": 3109.5
+      },
+      "contentPadding": "8px 10px",
+      "row": {
+        "x": 15,
+        "y": 3043.5,
+        "width": 410,
+        "height": 58,
+        "right": 425,
+        "bottom": 3101.5
+      },
+      "priceBlock": {
+        "x": 15,
+        "y": 3043.5,
+        "width": 320,
+        "height": 58,
+        "right": 335,
+        "bottom": 3101.5
+      },
+      "amount": "$ 180.000",
+      "price": {
+        "x": 15,
+        "y": 3059.5,
+        "width": 320,
+        "height": 22,
+        "right": 335,
+        "bottom": 3081.5
+      },
+      "glyphWidth": 86,
+      "glyphLines": 1,
+      "priceFullyVisible": true,
+      "priceSize": "18px",
+      "priceWeight": "600",
+      "priceColor": "rgb(168, 60, 75)",
+      "priceFont": "inter, \"inter Fallback\"",
+      "actions": {
+        "x": 337,
+        "y": 3043.5,
+        "width": 88,
+        "height": 44,
+        "right": 425,
+        "bottom": 3087.5
+      },
+      "wa": {
+        "x": 337,
+        "y": 3043.5,
+        "width": 44,
+        "height": 44,
+        "right": 381,
+        "bottom": 3087.5
+      },
+      "cart": {
+        "x": 381,
+        "y": 3043.5,
+        "width": 44,
+        "height": 44,
+        "right": 425,
+        "bottom": 3087.5
+      },
+      "paintWa": {
+        "width": "30px",
+        "height": "30px",
+        "radius": "50%",
+        "iconWidth": 18,
+        "iconHeight": 18
+      },
+      "paintCart": {
+        "width": "30px",
+        "height": "30px",
+        "radius": "50%",
+        "iconWidth": 18,
+        "iconHeight": 18
+      },
+      "cartDisabled": true,
+      "wrapped": false,
+      "priceCapacity": 320,
+      "controls": [
+        {
+          "label": "Casa Origen",
+          "box": {
+            "x": 49,
+            "y": 2753.5,
+            "width": 332,
+            "height": 44,
+            "right": 381,
+            "bottom": 2797.5
+          },
+          "interactive": false,
+          "hit": true,
+          "nested": false
+        },
+        {
+          "label": "Seguir a Casa Origen",
+          "box": {
+            "x": 5,
+            "y": 2753.5,
+            "width": 44,
+            "height": 44,
+            "right": 49,
+            "bottom": 2797.5
+          },
+          "interactive": true,
+          "hit": true,
+          "nested": false
+        },
+        {
+          "label": "Guardar Selección especial en favoritos",
+          "box": {
+            "x": 381,
+            "y": 2753.5,
+            "width": 44,
+            "height": 44,
+            "right": 425,
+            "bottom": 2797.5
+          },
+          "interactive": true,
+          "hit": true,
+          "nested": false
+        },
+        {
+          "label": "1 opcionAgotado",
+          "box": {
+            "x": 5,
+            "y": 2797.5,
+            "width": 420,
+            "height": 214,
+            "right": 425,
+            "bottom": 3011.5
+          },
+          "interactive": false,
+          "hit": true,
+          "nested": false
+        },
+        {
+          "label": "Selección especial",
+          "box": {
+            "x": 15,
+            "y": 3019.5,
+            "width": 400,
+            "height": 20,
+            "right": 415,
+            "bottom": 3039.5
+          },
+          "interactive": false,
+          "hit": true,
+          "nested": false
+        },
+        {
+          "label": "Contactar por WhatsApp sobre Selección especial",
+          "box": {
+            "x": 337,
+            "y": 3043.5,
+            "width": 44,
+            "height": 44,
+            "right": 381,
+            "bottom": 3087.5
+          },
+          "interactive": true,
+          "hit": true,
+          "nested": false
+        },
+        {
+          "label": "Selección especial agotado",
+          "box": {
+            "x": 381,
+            "y": 3043.5,
+            "width": 44,
+            "height": 44,
+            "right": 425,
+            "bottom": 3087.5
+          },
+          "interactive": true,
+          "hit": true,
+          "nested": false
+        }
+      ],
+      "collisions": [],
+      "completeInViewport": false
+    }
+  ],
+  "completeProducts": 2,
+  "upper": 61,
+  "lower": 775,
+  "desktopPixels": null
+}

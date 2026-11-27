@@ -1,0 +1,28 @@
+
+Running 17 tests using 1 worker
+
+
+Rebuilding...
+
+Done in 522ms.
+(node:324485) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 e2e/new-product/new-product.spec.ts:381:7 › responsive 320: initial, gallery, menus, variants and dialogs (4.7s)
+  ✓   2 e2e/new-product/new-product.spec.ts:381:7 › responsive 360: initial, gallery, menus, variants and dialogs (4.4s)
+  ✓   3 e2e/new-product/new-product.spec.ts:381:7 › responsive 390: initial, gallery, menus, variants and dialogs (4.4s)
+  ✓   4 e2e/new-product/new-product.spec.ts:381:7 › responsive 430: initial, gallery, menus, variants and dialogs (4.8s)
+  ✓   5 e2e/new-product/new-product.spec.ts:381:7 › responsive 768: initial, gallery, menus, variants and dialogs (4.7s)
+  ✓   6 e2e/new-product/new-product.spec.ts:381:7 › responsive 1024: initial, gallery, menus, variants and dialogs (5.0s)
+  ✓   7 e2e/new-product/new-product.spec.ts:381:7 › responsive 1440: initial, gallery, menus, variants and dialogs (5.1s)
+  ✓   8 e2e/new-product/new-product.spec.ts:445:5 › required messages, price zero, stock and keyboard classification (2.7s)
+  ✓   9 e2e/new-product/new-product.spec.ts:496:5 › AI is optional, previews results and requires explicit application (2.0s)
+  ✓  10 e2e/new-product/new-product.spec.ts:535:5 › photos show pending/complete, block create, remove and report errors locally (4.9s)
+  ✓  11 e2e/new-product/new-product.spec.ts:564:5 › payload preserves components, attributes, variants, image URL, status and priority; blocks reentry (4.6s)
+  ✓  12 e2e/new-product/new-product.spec.ts:639:5 › baseline screenshots use original form/uploader with identical fixture shell (2.7s)
+  ✓  13 e2e/new-product/new-product.spec.ts:653:5 › browser zoom 200%, reduced motion, focus and short-height menus (7.3s)
+  ✓  14 e2e/new-product/new-product.spec.ts:743:5 › stock mode changes do not leave a hidden required field; errors preserve data and allow retry (3.2s)
+  ✓  15 e2e/new-product/new-product.spec.ts:782:5 › AI failure and invalid file errors stay local without losing manual content (1.5s)
+  ✓  16 e2e/new-product/new-product.spec.ts:809:5 › limited inventory and product status persist with a zero stock (2.9s)
+  ✓  17 e2e/new-product/new-product.spec.ts:838:5 › variant own price, inactive state and removing optional data keep the payload intact (3.9s)
+
+  17 passed (1.2m)

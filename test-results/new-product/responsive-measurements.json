@@ -1,0 +1,458 @@
+[
+  {
+    "width": 320,
+    "state": "initial",
+    "viewport": 320,
+    "scrollWidth": 320,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 320,
+    "state": "category-menu",
+    "viewport": 320,
+    "scrollWidth": 320,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 320,
+    "state": "sections-menu",
+    "viewport": 320,
+    "scrollWidth": 320,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 320,
+    "state": "expanded",
+    "viewport": 320,
+    "scrollWidth": 320,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 320,
+    "state": "progress-dialog",
+    "viewport": 320,
+    "scrollWidth": 320,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 320,
+    "state": "error-dialog",
+    "viewport": 320,
+    "scrollWidth": 320,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 360,
+    "state": "initial",
+    "viewport": 360,
+    "scrollWidth": 360,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 360,
+    "state": "category-menu",
+    "viewport": 360,
+    "scrollWidth": 360,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 360,
+    "state": "sections-menu",
+    "viewport": 360,
+    "scrollWidth": 360,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 360,
+    "state": "expanded",
+    "viewport": 360,
+    "scrollWidth": 360,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 360,
+    "state": "progress-dialog",
+    "viewport": 360,
+    "scrollWidth": 360,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 360,
+    "state": "error-dialog",
+    "viewport": 360,
+    "scrollWidth": 360,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 390,
+    "state": "initial",
+    "viewport": 390,
+    "scrollWidth": 390,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 390,
+    "state": "category-menu",
+    "viewport": 390,
+    "scrollWidth": 390,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 390,
+    "state": "sections-menu",
+    "viewport": 390,
+    "scrollWidth": 390,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 390,
+    "state": "expanded",
+    "viewport": 390,
+    "scrollWidth": 390,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 390,
+    "state": "progress-dialog",
+    "viewport": 390,
+    "scrollWidth": 390,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 390,
+    "state": "error-dialog",
+    "viewport": 390,
+    "scrollWidth": 390,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 430,
+    "state": "initial",
+    "viewport": 430,
+    "scrollWidth": 430,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 430,
+    "state": "category-menu",
+    "viewport": 430,
+    "scrollWidth": 430,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 430,
+    "state": "sections-menu",
+    "viewport": 430,
+    "scrollWidth": 430,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 430,
+    "state": "expanded",
+    "viewport": 430,
+    "scrollWidth": 430,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 430,
+    "state": "progress-dialog",
+    "viewport": 430,
+    "scrollWidth": 430,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 430,
+    "state": "error-dialog",
+    "viewport": 430,
+    "scrollWidth": 430,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 768,
+    "state": "initial",
+    "viewport": 768,
+    "scrollWidth": 768,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 768,
+    "state": "category-menu",
+    "viewport": 768,
+    "scrollWidth": 768,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 768,
+    "state": "sections-menu",
+    "viewport": 768,
+    "scrollWidth": 768,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 768,
+    "state": "expanded",
+    "viewport": 768,
+    "scrollWidth": 768,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 768,
+    "state": "progress-dialog",
+    "viewport": 768,
+    "scrollWidth": 768,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 768,
+    "state": "error-dialog",
+    "viewport": 768,
+    "scrollWidth": 768,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 1024,
+    "state": "initial",
+    "viewport": 1024,
+    "scrollWidth": 1024,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 1024,
+    "state": "category-menu",
+    "viewport": 1024,
+    "scrollWidth": 1024,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 1024,
+    "state": "sections-menu",
+    "viewport": 1024,
+    "scrollWidth": 1024,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 1024,
+    "state": "expanded",
+    "viewport": 1024,
+    "scrollWidth": 1024,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 1024,
+    "state": "progress-dialog",
+    "viewport": 1024,
+    "scrollWidth": 1024,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 1024,
+    "state": "error-dialog",
+    "viewport": 1024,
+    "scrollWidth": 1024,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 1440,
+    "state": "initial",
+    "viewport": 1440,
+    "scrollWidth": 1440,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 1440,
+    "state": "category-menu",
+    "viewport": 1440,
+    "scrollWidth": 1440,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 1440,
+    "state": "sections-menu",
+    "viewport": 1440,
+    "scrollWidth": 1440,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 1440,
+    "state": "expanded",
+    "viewport": 1440,
+    "scrollWidth": 1440,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 1440,
+    "state": "progress-dialog",
+    "viewport": 1440,
+    "scrollWidth": 1440,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 1440,
+    "state": "error-dialog",
+    "viewport": 1440,
+    "scrollWidth": 1440,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 390,
+    "state": "short-height-expanded",
+    "viewport": 390,
+    "scrollWidth": 390,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 390,
+    "state": "short-height-help",
+    "viewport": 390,
+    "scrollWidth": 390,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "state": "real-browser-zoom-200",
+    "innerWidth": 720,
+    "outerWidth": 1440,
+    "dpr": 2
+  },
+  {
+    "width": 1440,
+    "state": "real-browser-zoom-200",
+    "viewport": 720,
+    "scrollWidth": 720,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  }
+]

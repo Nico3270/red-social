@@ -1,0 +1,121 @@
+{
+  "config": {
+    "configFile": "/home/nico/red-social/e2e/mobile-feed-commerce-row-compact/playwright.config.ts",
+    "rootDir": "/home/nico/red-social/e2e/mobile-feed-commerce-row-compact",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/home/nico/red-social/test-results/playwright/mobile-feed-commerce-row-compact",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "/home/nico/red-social/e2e/mobile-feed-commerce-row-compact",
+        "testIgnore": [],
+        "testMatch": [
+          "*.spec.ts"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "../../docs/mobile-feed-commerce-row-compact/diagnosis-results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.59.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "diagnose.spec.ts",
+      "file": "diagnose.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "measure the real 390px C2 before changing CSS",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 24008,
+                  "errors": [],
+                  "stdout": [
+                    {
+                      "text": "[\n  {\n    \"value\": 8000,\n    \"cardWidth\": 186,\n    \"contentPadding\": \"8px\",\n    \"rowWidth\": 168,\n    \"glyphWidth\": 59.546875,\n    \"priceBlock\": 80,\n    \"actionsWidth\": 88,\n    \"priceCapacity\": 80,\n    \"footerHeight\": 44,\n    \"wrapped\": false,\n    \"priceSize\": \"16px\"\n  },\n  {\n    \"value\": 45000,\n    \"cardWidth\": 186,\n    \"contentPadding\": \"8px\",\n    \"rowWidth\": 168,\n    \"glyphWidth\": 69.546875,\n    \"priceBlock\": 80,\n    \"actionsWidth\": 88,\n    \"priceCapacity\": 80,\n    \"footerHeight\": 44,\n    \"wrapped\": false,\n    \"priceSize\": \"16px\"\n  },\n  {\n    \"value\": 180000,\n    \"cardWidth\": 186,\n    \"contentPadding\": \"8px\",\n    \"rowWidth\": 168,\n    \"glyphWidth\": 76.4375,\n    \"priceBlock\": 80,\n    \"actionsWidth\": 88,\n    \"priceCapacity\": 80,\n    \"footerHeight\": 44,\n    \"wrapped\": false,\n    \"priceSize\": \"16px\"\n  },\n  {\n    \"value\": 8000000,\n    \"cardWidth\": 186,\n    \"contentPadding\": \"8px\",\n    \"rowWidth\": 168,\n    \"glyphWidth\": 94.78125,\n    \"priceBlock\": 168,\n    \"actionsWidth\": 88,\n    \"priceCapacity\": 80,\n    \"footerHeight\": 66,\n    \"wrapped\": true,\n    \"priceSize\": \"16px\"\n  },\n  {\n    \"value\": 31200000,\n    \"cardWidth\": 186,\n    \"contentPadding\": \"8px\",\n    \"rowWidth\": 168,\n    \"glyphWidth\": 101.53125,\n    \"priceBlock\": 168,\n    \"actionsWidth\": 88,\n    \"priceCapacity\": 80,\n    \"footerHeight\": 66,\n    \"wrapped\": true,\n    \"priceSize\": \"16px\"\n  },\n  {\n    \"value\": 123456789,\n    \"cardWidth\": 186,\n    \"contentPadding\": \"8px\",\n    \"rowWidth\": 168,\n    \"glyphWidth\": 108.453125,\n    \"priceBlock\": 168,\n    \"actionsWidth\": 88,\n    \"priceCapacity\": 80,\n    \"footerHeight\": 66,\n    \"wrapped\": true,\n    \"priceSize\": \"16px\"\n  }\n]\n"
+                    }
+                  ],
+                  "stderr": [
+                    {
+                      "text": "(node:818969) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+                    }
+                  ],
+                  "retry": 0,
+                  "startTime": "2026-11-16T20:12:41.490Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "8a7ff944faaba737bf75-c07a3d2599be8e153ac9",
+          "file": "diagnose.spec.ts",
+          "line": 4,
+          "column": 5
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-11-16T20:12:40.541Z",
+    "duration": 25542.239999999998,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

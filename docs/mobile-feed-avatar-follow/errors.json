@@ -1,0 +1,7 @@
+{
+  "rejected": 2,
+  "followRollback": true,
+  "unfollowRollback": true,
+  "retry": true,
+  "liveFeedback": true
+}

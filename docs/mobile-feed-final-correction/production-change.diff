@@ -1,0 +1,137 @@
+--- approved-before-correction
++++ corrected-mobile-feed
+@@ -224,11 +224,11 @@
+     height: auto;
+     margin-inline: auto;
+     padding: 0;
+-    border: 1px solid #e6d7dc;
++    border: 1px solid #e8cdd3;
+     border-radius: 16px;
+     background: white;
+     color: #1c283c;
+-    box-shadow: 0 3px 10px #392e330d;
++    box-shadow: 0 3px 12px rgba(44, 47, 51, 0.09);
+   }
+   .header {
+     display: flex;
+@@ -339,23 +339,24 @@
+   }
+   .content {
+     display: flex;
+-    flex-wrap: wrap;
+-    align-items: center;
+-    gap: 2px 8px;
++    flex-direction: column;
++    flex-wrap: nowrap;
++    align-items: stretch;
++    justify-content: flex-start;
++    gap: 4px;
+     min-width: 0;
+     padding: 8px 10px;
+   }
+   .content > div:first-child {
+-    flex: 1 1 9ch;
++    flex: none;
+     min-width: 0;
+   }
+   .title {
+-    display: block;
++    display: -webkit-box;
+     overflow: hidden;
+-    white-space: nowrap;
+-    text-overflow: ellipsis;
++    white-space: normal;
+     font-size: 15px;
+-    line-height: 22px;
++    line-height: 20px;
+     font-weight: 600;
+     letter-spacing: -0.015em;
+   }
+@@ -367,19 +368,20 @@
+     display: contents;
+   }
+   .priceBlock {
+-    flex: 0 1 auto;
++    flex: none;
+     min-width: 0;
+     max-width: 100%;
+-    text-align: right;
++    text-align: left;
+   }
+   .price {
+     display: block;
+     overflow-wrap: anywhere;
+     color: #a83c4b;
+-    font-size: 19px;
+-    line-height: 26px;
++    font-size: 18px;
++    line-height: 22px;
+     font-weight: 600;
+     letter-spacing: -0.01em;
++    text-shadow: none;
+   }
+   .variantLabel {
+     margin-top: 4px;
+@@ -509,36 +511,23 @@
+       transform: none;
+     }
+     .content {
+-      flex-direction: column;
+-      align-items: stretch;
+-      gap: 2px;
+       padding: 8px;
+     }
+-    .content > div:first-child {
+-      flex: none;
+-    }
+     .title {
+-      display: -webkit-box;
+-      -webkit-box-orient: vertical;
+-      -webkit-line-clamp: 2;
+-      white-space: normal;
+-      overflow-wrap: anywhere;
+-      min-height: 36px;
+-      font-size: 13px;
+-      line-height: 18px;
+-    }
+-    .priceBlock {
+-      text-align: left;
+-    }
+-    .price {
+-      font-size: 18px;
+-      line-height: 26px;
++      font-size: 14px;
+     }
+     .actionsDock {
+       right: 6px;
+       bottom: 6px;
+       padding: 1px;
+       border-radius: 14px;
++    }
++  }
++  /* Match C2's actual container threshold. An odd last item spans the module
++     and keeps B3 pricing, as do single-card modules and narrow containers. */
++  @container feed-products (min-width: 382px) {
++    [data-product-module] > div > div:not(:last-child:nth-child(odd)) .price {
++      font-size: 16px;
+     }
+   }
+   /* Keep commercial controls below the image if an unusually narrow embed cannot fit the pill. */
+@@ -567,7 +556,6 @@
+     display: block;
+   }
+   .content {
+-    flex-direction: row;
+     margin-top: 0;
+   }
+   .actionsDock {
+@@ -655,9 +643,6 @@
+     }
+   }
+   @container feed-product-card (max-width:250px) {
+-    .content {
+-      flex-direction: column;
+-    }
+     .actionsDock {
+       padding: 0;
+       border: 0;

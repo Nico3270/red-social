@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 import Script from "next/script";
 import {
@@ -9,10 +10,10 @@ import {
   trackAnalyticsPageView,
 } from "@/analytics/config";
 
-setupAnalytics();
-
 export function AnalyticsBootstrap() {
-  const measurementId = getGa4MeasurementId();
+  const pathname = usePathname();
+  const privatePage = /^\/(?:demo|activar|myckeoAdmin)(?:\/|$)/.test(pathname);
+  const measurementId = privatePage ? undefined : getGa4MeasurementId();
   const debugEnabled = isAnalyticsDebugEnabled();
 
   useEffect(() => {
@@ -20,10 +21,15 @@ export function AnalyticsBootstrap() {
       return;
     }
 
+    setupAnalytics();
     const trackCurrentPage = () => {
+      if (
+        /^\/(?:demo|activar|myckeoAdmin)(?:\/|$)/.test(window.location.pathname)
+      )
+        return;
       trackAnalyticsPageView(
         window.location.pathname,
-        window.location.search.replace(/^\?/, "")
+        window.location.search.replace(/^\?/, ""),
       );
     };
 
@@ -32,14 +38,20 @@ export function AnalyticsBootstrap() {
     };
 
     const originalPushState = window.history.pushState.bind(window.history);
-    const originalReplaceState = window.history.replaceState.bind(window.history);
+    const originalReplaceState = window.history.replaceState.bind(
+      window.history,
+    );
 
-    window.history.pushState = function (...args: Parameters<History["pushState"]>) {
+    window.history.pushState = function (
+      ...args: Parameters<History["pushState"]>
+    ) {
       originalPushState(...args);
       scheduleTrackCurrentPage();
     };
 
-    window.history.replaceState = function (...args: Parameters<History["replaceState"]>) {
+    window.history.replaceState = function (
+      ...args: Parameters<History["replaceState"]>
+    ) {
       originalReplaceState(...args);
       scheduleTrackCurrentPage();
     };

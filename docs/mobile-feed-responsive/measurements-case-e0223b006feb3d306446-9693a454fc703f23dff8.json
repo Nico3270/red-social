@@ -1,0 +1,12 @@
+{
+  "browserName": "chromium",
+  "records": [
+    {
+      "case": "desktop-category",
+      "diff": {
+        "different": 0,
+        "total": 1728000
+      }
+    }
+  ]
+}

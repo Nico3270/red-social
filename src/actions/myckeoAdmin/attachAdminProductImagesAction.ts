@@ -1,10 +1,15 @@
 "use server";
 
+import {
+  lockWritableBusiness,
+  requireSuperAdmin,
+} from "@/lib/business/productAccess";
 import { auth } from "@/auth.config";
 import { logProductImageDiagnostics } from "@/lib/media/productImageDiagnostics";
 import prisma from "@/lib/prisma";
 import { EstadoNegocio, Prisma } from "@prisma/client";
 import { z } from "zod";
+import { replaceGallery } from "@/lib/products/imageGallery";
 import { revalidateAdminProductSurfaces } from "./revalidateAdminProductSurfaces";
 
 const cloudinaryUrlPattern = /^https:\/\/res\.cloudinary\.com\//;
@@ -23,8 +28,8 @@ const attachAdminProductImagesInputSchema = z.object({
           "Las imágenes deben venir de Cloudinary.",
         ),
     )
-    .max(12, "Usa máximo 12 imágenes por producto.")
-    .default([]),
+    .max(12, "Usa máximo 12 imágenes por producto."),
+  expectedImageUrls: z.array(z.string().url()).optional(),
 });
 
 export type AttachAdminProductImagesActionInput = z.input<
@@ -75,6 +80,8 @@ export async function attachAdminProductImagesAction(
       };
     }
 
+    await requireSuperAdmin();
+
     const parsedInput = attachAdminProductImagesInputSchema.safeParse(rawInput);
 
     if (!parsedInput.success) {
@@ -122,7 +129,8 @@ export async function attachAdminProductImagesAction(
 
     if (
       product.negocio.archivedAt ||
-      product.negocio.estado !== EstadoNegocio.activo
+      (product.negocio.estado !== EstadoNegocio.activo &&
+        product.negocio.estado !== EstadoNegocio.suspendido)
     ) {
       return {
         ok: false,
@@ -132,18 +140,13 @@ export async function attachAdminProductImagesAction(
     }
 
     const storedImages = await prisma.$transaction(async (tx) => {
-      await tx.image.deleteMany({
-        where: { productId: product.id },
-      });
-
-      if (imageUrls.length > 0) {
-        await tx.image.createMany({
-          data: imageUrls.map((url) => ({
-            productId: product.id,
-            url,
-          })),
-        });
-      }
+      await lockWritableBusiness(tx, businessId, "oculto");
+      await replaceGallery(
+        tx,
+        product.id,
+        imageUrls,
+        parsedInput.data.expectedImageUrls ?? [],
+      );
 
       return tx.image.findMany({
         where: { productId: product.id },

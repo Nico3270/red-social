@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="es">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Myckeo · Comparación de tarjetas</title>
+<style>
+  *{box-sizing:border-box}body{margin:0;background:#f5f3f5;color:#1c283c;font:15px system-ui,sans-serif}header{padding:24px;max-width:1600px;margin:auto}h1{font-size:26px;margin:0 0 8px}p{line-height:1.5;max-width:920px}label{display:inline-flex;align-items:center;gap:8px;margin:8px 16px 8px 0}select,a{min-height:44px}select{border:1px solid #dacbd2;border-radius:10px;padding:8px;background:white;color:inherit}main{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;padding:0 24px 32px;max-width:2000px;margin:auto}article{min-width:0;background:white;border:1px solid #ead3de;border-radius:16px;padding:12px}h2{font-size:18px;margin:0 0 6px}article p{font-size:13px;min-height:60px;margin:0 0 8px;color:#566070}img{display:block;width:100%;height:auto;border:1px solid #edf0f4}a{display:inline-flex;align-items:center;color:#a82c5c;text-decoration:underline;font-weight:600;padding:6px 0}article>a:has(img){display:block;padding:0}small{color:#566070}a:focus-visible,select:focus-visible{outline:2px solid #a82c5c;outline-offset:3px}
+</style>
+<header>
+  <h1>Myckeo · B2 / B3 / B4 / C1 / C2</h1>
+  <p>Exploración local. Ninguna propuesta está adoptada. Mismos seis productos sintéticos, negocio, publicación y servicio. Las imágenes se muestran a escala: ábrelas para inspeccionarlas a su tamaño original.</p>
+  <label>Ancho de captura <select id="width"><option>320</option><option selected>390</option><option>430</option><option>768</option></select></label>
+  <label>Comparación <select id="view"><option value="aligned">Primera tarjeta alineada</option><option value="initial">Llegada al feed</option><option value="card">Primera tarjeta</option><option value="portrait">Imagen vertical</option><option value="landscape">Imagen horizontal</option><option value="long">Nombre y precio largos</option><option value="full">Feed completo · 390 px</option></select></label>
+  <p><small>Viewport de referencia: 844 px de alto. Header: 113 px; navegación inferior: 69 px; espacio útil: 662 px. Las pruebas de texto y orientación usan también un viewport bajo de 568 px. Los enlaces de interacción requieren el servidor local del README.</small></p>
+</header>
+<main id="cards"></main>
+<script>
+  const descriptions={b2:'Actual. Acciones junto al precio y nombre en bloque de dos filas.',b3:'Una columna. Pill blanca sobre foto; nombre y precio en una fila; acento rubí.',b4:'Una columna editorial. Foto más alta, mayor aire y precio sobrio.',c1:'Cuadrícula continua de productos desde 390 px. Agrupación solo en este prototipo de catálogo.',c2:'Módulos de productos desde 390 px. Conserva la secuencia mixta; el producto impar ocupa todo el ancho.'};
+  const width=document.querySelector('#width'),view=document.querySelector('#view');
+  function update(){const w=width.value,v=view.value;document.querySelector('#cards').innerHTML=Object.entries(descriptions).map(([design,description])=>{let suffix=['portrait','landscape','long'].includes(v)?v:v;let actualWidth=v==='full'?'390':w;if(actualWidth==='768'&&['portrait','landscape','long'].includes(v))actualWidth='430';const src=`screenshots/${design}-${actualWidth}-${suffix}.png`;return `<article><h2>${design.toUpperCase()}</h2><p>${description}</p><a href="../?design=${design}" target="_blank" rel="noopener">Probar interacciones</a> · <a href="../?design=${design}&view=cases" target="_blank" rel="noopener">Casos especiales</a><a href="${src}" target="_blank" rel="noopener"><img src="${src}" alt="${design.toUpperCase()} · ${actualWidth} px · ${v}"></a><small>${actualWidth} px · ${v}</small></article>`}).join('')}
+  width.addEventListener('change',update);view.addEventListener('change',update);update();
+</script>
+</html>

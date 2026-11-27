@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="es">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Myckeo · Comparación de paletas</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f5f6f8;color:#292c32;font:15px/1.6 system-ui,sans-serif}main{max-width:1500px;margin:auto;padding:24px}h1{font-size:28px;letter-spacing:-.04em;margin:0}p{color:#596273}nav{display:flex;flex-wrap:wrap;align-items:center;gap:16px;margin:24px 0}label{display:grid;gap:6px;font-size:13px;font-weight:600}select{min-height:44px;padding:8px 12px;border:1px solid #cbd5e1;border-radius:10px;background:white;color:#292c32;font:inherit}a{color:inherit;min-height:44px;display:inline-flex;align-items:center;text-underline-offset:4px}select:focus-visible,a:focus-visible{outline:2px solid #292c32;outline-offset:4px}.pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}.card{min-width:0;border:1px solid #e5e7eb;border-radius:14px;overflow:hidden;background:white}.card header{padding:16px 20px;border-bottom:1px solid #e5e7eb}.card h2{margin:0;font-size:18px;display:flex;gap:8px;align-items:center}.swatch{width:14px;height:14px;border-radius:50%;display:inline-block}.card p{margin:4px 0 0;font-size:13px}.preview{max-height:760px;overflow:auto;background:#f5f5f5}.preview img{display:block;width:100%;height:auto}.card footer{padding:8px 20px;font-size:13px}@media(max-width:650px){main{padding:16px}.pair{grid-template-columns:1fr}}
+</style>
+<main>
+<h1>Dos acentos. El mismo formulario.</h1>
+<p>Comparación local de capturas simuladas. Este archivo no añade un selector de temas a Myckeo ni modifica la aplicación.</p>
+<nav>
+<label>Ancho de referencia<select id="width"><option>320</option><option>360</option><option selected>390</option><option>430</option><option>768</option><option>1024</option><option>1440</option></select></label>
+<label>Estado<select id="state"><option value="initial">Formulario inicial</option><option value="assistant" selected>Asistente con componentes y propuesta</option><option value="category">Categoría seleccionada</option><option value="dialog">Diálogo de error</option></select></label>
+<span>Desplázate dentro de cada imagen o ábrela a tamaño completo.</span>
+</nav>
+<div class="pair">
+<article class="card"><header><h2><span class="swatch" style="background:#C93545"></span>Myckeo Ruby</h2><p>#C93545 · #FFF0F1 · #292C32</p></header><div class="preview"><img id="ruby" alt="Myckeo Ruby, captura simulada del formulario"></div><footer><a id="ruby-link" target="_blank" rel="noopener">Abrir captura completa de Ruby</a></footer></article>
+<article class="card"><header><h2><span class="swatch" style="background:#2563EB"></span>Ocean Blue</h2><p>#2563EB · #EFF6FF · #1E293B</p></header><div class="preview"><img id="ocean" alt="Ocean Blue, captura simulada del mismo formulario"></div><footer><a id="ocean-link" target="_blank" rel="noopener">Abrir captura completa de Ocean</a></footer></article>
+</div>
+<p>Preferencia propuesta: Myckeo Ruby, por su relación con la identidad gris/rojo de la marca. La elección definitiva sigue pendiente.</p>
+</main>
+<script>
+const width = document.getElementById('width'), state = document.getElementById('state');
+function render() { for (const palette of ['ruby', 'ocean']) { const path = `${palette}-${width.value}-${state.value}.png`; const image = document.getElementById(palette); image.src = path; image.style.maxWidth = `${width.value}px`; image.style.margin = 'auto'; document.getElementById(`${palette}-link`).href = path; } }
+width.addEventListener('change', render); state.addEventListener('change', render); render();
+</script>
+</html>

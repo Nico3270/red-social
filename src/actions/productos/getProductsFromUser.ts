@@ -3,7 +3,7 @@
 
 import { ProductRedSocial } from "@/interfaces/productRedSocial.interface";
 import prisma from "@/lib/prisma";
-
+import { requireProductActor } from "@/lib/products/productAuthorization";
 
 interface GetProductsByUserResult {
   ok: boolean;
@@ -11,7 +11,9 @@ interface GetProductsByUserResult {
   message?: string;
 }
 
-export async function getProductsByUser(id: string): Promise<GetProductsByUserResult> {
+export async function getProductsByUser(
+  id: string,
+): Promise<GetProductsByUserResult> {
   // console.log("Iniciando getProductsByUser con id:", id);
   try {
     // console.log("Validando ID del usuario...");
@@ -19,6 +21,9 @@ export async function getProductsByUser(id: string): Promise<GetProductsByUserRe
       return { ok: false, message: "El ID del usuario es obligatorio." };
     }
 
+    const actor = await requireProductActor();
+    if (actor.role !== "super_admin" && id !== actor.id)
+      return { ok: false, message: "No autorizado." };
     // Obtnener el negocio del usuario
     const negocio = await prisma.negocio.findUnique({
       where: { usuarioId: id },
@@ -31,7 +36,7 @@ export async function getProductsByUser(id: string): Promise<GetProductsByUserRe
     const products = await prisma.product.findMany({
       where: { negocioId: negocio.id },
       select: {
-         id: true,
+        id: true,
         nombre: true,
         precio: true,
         descripcion: true,

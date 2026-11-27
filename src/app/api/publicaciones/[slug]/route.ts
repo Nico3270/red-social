@@ -25,9 +25,12 @@ interface PublicacionesResult {
   publicaciones: EnhancedPublicacion[];
 }
 
+// Publication and suspension must be reflected on the next request.
+export const dynamic = "force-dynamic";
+
 export async function GET(
   req: NextRequest,
-  context: { params: Promise<{ slug: string }> }
+  context: { params: Promise<{ slug: string }> },
 ) {
   const params = await context.params;
   const { slug } = params;
@@ -48,7 +51,7 @@ export async function GET(
         message: "Slug de negocio inválido o no proporcionado",
         publicaciones: [],
       },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -79,7 +82,7 @@ export async function GET(
           message: "Negocio no encontrado para el slug proporcionado",
           publicaciones: [],
         },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -146,7 +149,15 @@ export async function GET(
         where: {
           usuarioId: userId,
           publicacionId: { in: publicaciones.map((pub) => pub.id) },
-          tipo: { in: ["LIKE", "LOVE", "WOW", "SAD", "ANGRY"] as unknown as InteraccionTipo[] },
+          tipo: {
+            in: [
+              "LIKE",
+              "LOVE",
+              "WOW",
+              "SAD",
+              "ANGRY",
+            ] as unknown as InteraccionTipo[],
+          },
         },
         select: {
           publicacionId: true,
@@ -159,65 +170,73 @@ export async function GET(
         if (!["LIKE", "LOVE", "WOW", "SAD", "ANGRY"].includes(tipo)) {
           throw new Error(`Tipo de reacción inválido: ${tipo}`);
         }
-        return { publicacionId, tipo: tipo as "LIKE" | "LOVE" | "WOW" | "SAD" | "ANGRY", id };
+        return {
+          publicacionId,
+          tipo: tipo as "LIKE" | "LOVE" | "WOW" | "SAD" | "ANGRY",
+          id,
+        };
       });
     }
 
-    const formattedPublicaciones: EnhancedPublicacion[] = publicaciones.map((pub) => {
-      const userReaction = userId
-        ? userReactions.find((reaction) => reaction.publicacionId === pub.id) || null
-        : null;
+    const formattedPublicaciones: EnhancedPublicacion[] = publicaciones.map(
+      (pub) => {
+        const userReaction = userId
+          ? userReactions.find(
+              (reaction) => reaction.publicacionId === pub.id,
+            ) || null
+          : null;
 
-      return {
-        id: pub.id,
-        usuario: {
-          id: pub.usuario.id,
-          nombre: pub.usuario.nombre,
-          apellido: pub.usuario.apellido ?? "",
-          username: pub.usuario.username ?? "",
-          fotoPerfil: pub.usuario.fotoPerfil ?? undefined,
-        },
-        negocio: {
-          id: negocio.id,
-          nombre: negocio.nombre,
-          slug: negocio.slug,
-          fotoPerfil: negocio.fotoPerfil ?? undefined,
-        },
-        tipo: pub.tipo,
-        titulo: pub.titulo ?? undefined,
-        descripcion: pub.descripcion ?? undefined,
-        multimedia: pub.multimedia.map((media) => ({
-          id: media.id,
-          url: media.url,
-          tipo: media.tipo,
-          formato: media.formato ?? undefined,
-          orden: media.orden,
-        })),
-        visibilidad: pub.visibilidad ?? "PUBLICA",
-        createdAt: pub.createdAt.toISOString(),
-        numLikes: pub.numLikes,
-        numComentarios: pub.numComentarios,
-        numCompartidos: pub.numCompartidos,
-        userReaction: userReaction
-          ? {
-              id: userReaction.id,
-              tipo: userReaction.tipo,
-            }
-          : null,
-        comments: pub.interacciones.map((interaccion) => ({
-          id: interaccion.id,
-          contenido: interaccion.contenido ?? "",
-          createdAt: interaccion.createdAt.toISOString(),
+        return {
+          id: pub.id,
           usuario: {
-            id: interaccion.usuario.id,
-            nombre: interaccion.usuario.nombre,
-            apellido: interaccion.usuario.apellido ?? "",
-            username: interaccion.usuario.username ?? "",
-            fotoPerfil: interaccion.usuario.fotoPerfil ?? undefined,
+            id: pub.usuario.id,
+            nombre: pub.usuario.nombre,
+            apellido: pub.usuario.apellido ?? "",
+            username: pub.usuario.username ?? "",
+            fotoPerfil: pub.usuario.fotoPerfil ?? undefined,
           },
-        })),
-      };
-    });
+          negocio: {
+            id: negocio.id,
+            nombre: negocio.nombre,
+            slug: negocio.slug,
+            fotoPerfil: negocio.fotoPerfil ?? undefined,
+          },
+          tipo: pub.tipo,
+          titulo: pub.titulo ?? undefined,
+          descripcion: pub.descripcion ?? undefined,
+          multimedia: pub.multimedia.map((media) => ({
+            id: media.id,
+            url: media.url,
+            tipo: media.tipo,
+            formato: media.formato ?? undefined,
+            orden: media.orden,
+          })),
+          visibilidad: pub.visibilidad ?? "PUBLICA",
+          createdAt: pub.createdAt.toISOString(),
+          numLikes: pub.numLikes,
+          numComentarios: pub.numComentarios,
+          numCompartidos: pub.numCompartidos,
+          userReaction: userReaction
+            ? {
+                id: userReaction.id,
+                tipo: userReaction.tipo,
+              }
+            : null,
+          comments: pub.interacciones.map((interaccion) => ({
+            id: interaccion.id,
+            contenido: interaccion.contenido ?? "",
+            createdAt: interaccion.createdAt.toISOString(),
+            usuario: {
+              id: interaccion.usuario.id,
+              nombre: interaccion.usuario.nombre,
+              apellido: interaccion.usuario.apellido ?? "",
+              username: interaccion.usuario.username ?? "",
+              fotoPerfil: interaccion.usuario.fotoPerfil ?? undefined,
+            },
+          })),
+        };
+      },
+    );
 
     // console.log("API: Returning publicaciones:", formattedPublicaciones.length);
     return NextResponse.json<PublicacionesResult>(
@@ -226,7 +245,7 @@ export async function GET(
         message: "Publicaciones obtenidas exitosamente",
         publicaciones: formattedPublicaciones,
       },
-      { status: 200, headers: { "Cache-Control": "s-maxage=600, stale-while-revalidate" } }
+      { status: 200, headers: { "Cache-Control": "no-store, max-age=0" } },
     );
   } catch (error) {
     console.error("API: Error fetching publicaciones:", error);
@@ -236,7 +255,7 @@ export async function GET(
     }
     return NextResponse.json<PublicacionesResult>(
       { ok: false, message, publicaciones: [] },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

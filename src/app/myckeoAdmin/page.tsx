@@ -17,6 +17,18 @@ type HubCard = {
 
 const hubCards: HubCard[] = [
   {
+    title: "Incorporación asistida",
+    description:
+      "Prepara un negocio suspendido, su catálogo y una demo privada; activa la cuenta y publica con aprobación.",
+    href: "/myckeoAdmin/incorporacion",
+    cta: "Incorporar negocio",
+    status: "Disponible",
+    priority: "Alta",
+    tone: "emerald",
+    routeLabel: "/myckeoAdmin/incorporacion",
+    helperText: "Sin contraseñas compartidas ni publicación anticipada.",
+  },
+  {
     title: "Negocios",
     description:
       "Administra negocios, estados, archivados, perfiles, productos y catálogo desde un solo lugar.",
@@ -116,8 +128,7 @@ function getToneClasses(tone: CardTone) {
       return {
         panel:
           "border-emerald-200/80 bg-[linear-gradient(180deg,rgba(236,253,245,0.92),rgba(255,255,255,0.98))]",
-        status:
-          "border border-emerald-200 bg-emerald-50 text-emerald-700",
+        status: "border border-emerald-200 bg-emerald-50 text-emerald-700",
         cta: "bg-emerald-600 text-white hover:bg-emerald-500",
       };
     case "sky":
@@ -131,8 +142,7 @@ function getToneClasses(tone: CardTone) {
       return {
         panel:
           "border-amber-200/80 bg-[linear-gradient(180deg,rgba(255,251,235,0.94),rgba(255,255,255,0.98))]",
-        status:
-          "border border-amber-200 bg-amber-50 text-amber-700",
+        status: "border border-amber-200 bg-amber-50 text-amber-700",
         cta: "bg-amber-500 text-slate-950 hover:bg-amber-400",
       };
     case "slate":
@@ -140,8 +150,7 @@ function getToneClasses(tone: CardTone) {
       return {
         panel:
           "border-slate-200/80 bg-[linear-gradient(180deg,rgba(248,250,252,0.96),rgba(255,255,255,0.98))]",
-        status:
-          "border border-slate-200 bg-slate-100 text-slate-700",
+        status: "border border-slate-200 bg-slate-100 text-slate-700",
         cta: "bg-slate-950 text-white hover:bg-slate-800",
       };
   }
@@ -220,7 +229,8 @@ export default function MyckeoAdminHubPage() {
           </span>
         </div>
         <p className="mt-3 text-xs leading-5 text-slate-500">
-          Esta landing centraliza accesos del super-admin sin ejecutar acciones ni cargar datos operativos.
+          Esta landing centraliza accesos del super-admin sin ejecutar acciones
+          ni cargar datos operativos.
         </p>
       </div>
 
@@ -232,7 +242,9 @@ export default function MyckeoAdminHubPage() {
           <p className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">
             2
           </p>
-          <p className="mt-1 text-xs text-slate-500">negocios y creación asistida</p>
+          <p className="mt-1 text-xs text-slate-500">
+            negocios y creación asistida
+          </p>
         </div>
 
         <div className="rounded-3xl border border-slate-200/80 bg-white/90 px-4 py-4 text-sm text-slate-700 shadow-[0_16px_34px_-24px_rgba(15,23,42,0.24)]">
@@ -242,7 +254,9 @@ export default function MyckeoAdminHubPage() {
           <p className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">
             4
           </p>
-          <p className="mt-1 text-xs text-slate-500">requieren contexto previo</p>
+          <p className="mt-1 text-xs text-slate-500">
+            requieren contexto previo
+          </p>
         </div>
 
         <div className="rounded-3xl border border-slate-200/80 bg-white/90 px-4 py-4 text-sm text-slate-700 shadow-[0_16px_34px_-24px_rgba(15,23,42,0.24)]">
@@ -252,7 +266,9 @@ export default function MyckeoAdminHubPage() {
           <p className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">
             6
           </p>
-          <p className="mt-1 text-xs text-slate-500">accesos priorizados en esta fase</p>
+          <p className="mt-1 text-xs text-slate-500">
+            accesos priorizados en esta fase
+          </p>
         </div>
       </div>
     </>
@@ -261,7 +277,8 @@ export default function MyckeoAdminHubPage() {
   const footer = (
     <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
       <p className="text-sm text-slate-600">
-        Algunas herramientas requieren seleccionar primero un negocio desde el módulo de negocios antes de editar perfil, catálogo o productos.
+        Algunas herramientas requieren seleccionar primero un negocio desde el
+        módulo de negocios antes de editar perfil, catálogo o productos.
       </p>
 
       <div className="flex flex-wrap gap-2">
@@ -299,7 +316,8 @@ export default function MyckeoAdminHubPage() {
                 Herramientas principales
               </h2>
               <p className="mt-1 text-sm text-slate-600">
-                Accesos centrales del super-admin para operar con claridad, contexto y rutas reales ya existentes.
+                Accesos centrales del super-admin para operar con claridad,
+                contexto y rutas reales ya existentes.
               </p>
             </div>
 
@@ -322,7 +340,8 @@ export default function MyckeoAdminHubPage() {
                 Buenas prácticas admin
               </h2>
               <p className="mt-1 text-sm text-slate-600">
-                Reglas operativas para mantener consistencia y reducir errores en los módulos sensibles.
+                Reglas operativas para mantener consistencia y reducir errores
+                en los módulos sensibles.
               </p>
             </div>
 
@@ -347,7 +366,8 @@ export default function MyckeoAdminHubPage() {
                 Flujo recomendado
               </h2>
               <p className="mt-1 text-sm text-slate-600">
-                Secuencia sugerida para entrar, operar y validar cambios con el menor riesgo posible.
+                Secuencia sugerida para entrar, operar y validar cambios con el
+                menor riesgo posible.
               </p>
             </div>
 
@@ -364,7 +384,9 @@ export default function MyckeoAdminHubPage() {
                     <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
                       Paso {index + 1}
                     </p>
-                    <p className="mt-2 text-sm leading-6 text-slate-700">{step}</p>
+                    <p className="mt-2 text-sm leading-6 text-slate-700">
+                      {step}
+                    </p>
                   </div>
                 </li>
               ))}

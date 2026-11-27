@@ -1,5 +1,9 @@
+import { lockWritableBusiness } from "@/lib/business/productAccess";
 import { NextResponse } from "next/server";
+import { parseCopPrice } from "@/lib/products/copPrice";
 import prisma from "@/lib/prisma";
+import { assertCanPublishProduct } from "@/lib/products/productAuthorization";
+import { replaceGallery, lockProduct } from "@/lib/products/imageGallery";
 import { ProductStatus, Currency } from "@prisma/client";
 
 const ADMIN_KEY = process.env.MYCKEO_ADMIN_KEY;
@@ -18,7 +22,7 @@ interface UpdateProductBody {
   nombre?: string;
   descripcion?: string;
   descripcionCorta?: string | null;
-  precio?: number;
+  precio?: number | string;
   prioridad?: number | null;
   status?: ProductStatus;
   currency?: Currency;
@@ -26,6 +30,7 @@ interface UpdateProductBody {
   componentes?: string[];
   categoryId?: string;
   imagenes?: string[] | string | null;
+  expectedImageUrls?: string[];
   seccionIds?: string[] | string | null;
 }
 
@@ -52,13 +57,13 @@ function ensureArray(value: unknown): string[] {
    ============================================================ */
 export async function GET(
   req: Request,
-  context: { params: Promise<RouteParams> }
+  context: { params: Promise<RouteParams> },
 ) {
   try {
     if (!validateApiKey(req)) {
       return NextResponse.json(
         { error: "Unauthorized: invalid API key." },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -67,7 +72,7 @@ export async function GET(
     if (!id) {
       return NextResponse.json(
         { error: "Falta el ID del producto." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -83,7 +88,7 @@ export async function GET(
     if (!product) {
       return NextResponse.json(
         { error: "Producto no encontrado." },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -92,7 +97,7 @@ export async function GET(
     console.error("❌ Error GET /api/products/update/[id]:", error);
     return NextResponse.json(
       { error: "Error interno al obtener el producto." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -102,13 +107,13 @@ export async function GET(
    ============================================================ */
 export async function PATCH(
   req: Request,
-  context: { params: Promise<RouteParams> }
+  context: { params: Promise<RouteParams> },
 ) {
   try {
     if (!validateApiKey(req)) {
       return NextResponse.json(
         { error: "Unauthorized: invalid API key." },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -117,16 +122,18 @@ export async function PATCH(
     if (!productId) {
       return NextResponse.json(
         { error: "Falta el ID del producto." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    const body = (await req.json().catch(() => null)) as UpdateProductBody | null;
+    const body = (await req
+      .json()
+      .catch(() => null)) as UpdateProductBody | null;
 
     if (!body) {
       return NextResponse.json(
         { error: "Debes enviar un body JSON válido." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -134,7 +141,7 @@ export async function PATCH(
       nombre,
       descripcion,
       descripcionCorta,
-      precio,
+      precio: rawPrice,
       prioridad,
       status,
       currency,
@@ -145,6 +152,15 @@ export async function PATCH(
       seccionIds,
     } = body;
 
+    let precio: number | undefined;
+    try {
+      precio = rawPrice === undefined ? undefined : parseCopPrice(rawPrice);
+    } catch {
+      return NextResponse.json(
+        { error: "Precio COP inválido." },
+        { status: 400 },
+      );
+    }
     /* ============================================================
        Verificar existencia del producto
        ============================================================ */
@@ -155,9 +171,12 @@ export async function PATCH(
     if (!existing) {
       return NextResponse.json(
         { error: "Producto no encontrado." },
-        { status: 404 }
+        { status: 404 },
       );
     }
+
+    if (status === "disponible")
+      await assertCanPublishProduct(existing.negocioId);
 
     /* ============================================================
        Validar categoría si viene
@@ -170,7 +189,7 @@ export async function PATCH(
       if (!categoryExists) {
         return NextResponse.json(
           { error: "La categoría enviada no existe." },
-          { status: 400 }
+          { status: 400 },
         );
       }
     }
@@ -188,7 +207,7 @@ export async function PATCH(
       if (sectionsExist.length !== finalSections.length) {
         return NextResponse.json(
           { error: "Una o más secciones enviadas no existen." },
-          { status: 400 }
+          { status: 400 },
         );
       }
     }
@@ -198,14 +217,14 @@ export async function PATCH(
        ============================================================ */
     const finalImages = ensureArray(imagenes);
 
-    if (finalImages.length > 0) {
+    if (imagenes !== undefined) {
       const isValid = finalImages.every((url) =>
-        /^https:\/\/res\.cloudinary\.com\//.test(url)
+        /^https:\/\/res\.cloudinary\.com\//.test(url),
       );
       if (!isValid) {
         return NextResponse.json(
           { error: "Una o más imágenes no son URLs Cloudinary válidas." },
-          { status: 400 }
+          { status: 400 },
         );
       }
     }
@@ -214,6 +233,12 @@ export async function PATCH(
        Transacción: actualizar producto + imágenes + secciones
        ============================================================ */
     const updated = await prisma.$transaction(async (tx) => {
+      await lockWritableBusiness(
+        tx,
+        existing.negocioId,
+        status ?? existing.status,
+      );
+      await lockProduct(tx, productId);
       // 1. Actualizar base del producto
       const product = await tx.product.update({
         where: { id: productId },
@@ -232,12 +257,13 @@ export async function PATCH(
       });
 
       // 2. Reemplazar imágenes si vienen nuevas
-      if (finalImages.length > 0) {
-        await tx.image.deleteMany({ where: { productId } });
-
-        await tx.image.createMany({
-          data: finalImages.map((url) => ({ url, productId })),
-        });
+      if (imagenes !== undefined) {
+        const expected = (
+          body as UpdateProductBody & { expectedImageUrls?: string[] }
+        ).expectedImageUrls;
+        if (!Array.isArray(expected))
+          throw new Error("Se requiere snapshot de galería.");
+        await replaceGallery(tx, productId, finalImages, expected);
       }
 
       // 3. Reemplazar secciones si vienen nuevas
@@ -261,7 +287,7 @@ export async function PATCH(
         message: "Producto actualizado correctamente.",
         product: updated,
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("❌ Error PATCH /api/products/update/[id]:", error);
@@ -271,13 +297,13 @@ export async function PATCH(
     if (err.code === "P2002") {
       return NextResponse.json(
         { error: "Slug en uso. Intente otro." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     return NextResponse.json(
       { error: "Error interno al actualizar el producto." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

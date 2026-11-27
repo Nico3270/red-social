@@ -1,5 +1,9 @@
 "use server";
 
+import {
+  lockWritableBusiness,
+  requireSuperAdmin,
+} from "@/lib/business/productAccess";
 import { auth } from "@/auth.config";
 import { deleteCloudinaryAssets } from "@/lib/cloudinary/deleteCloudinaryAssets";
 import { uploadGeneratedProductImage } from "@/lib/cloudinary/uploadGeneratedProductImage";
@@ -9,6 +13,7 @@ import {
   type ProductImageOutputFormat,
 } from "@/lib/openai/generateProductImage";
 import prisma from "@/lib/prisma";
+import { lockProduct } from "@/lib/products/imageGallery";
 import { createHash } from "crypto";
 import {
   EstadoNegocio,
@@ -267,6 +272,7 @@ async function cleanupUploadedAsset(input: {
 async function ensureImageRowForSucceededGeneration(input: {
   generation: GenerationRecord;
   productId: string;
+  businessId: string;
   cloudinaryUrl: string;
 }) {
   if (input.generation.image) {
@@ -297,6 +303,8 @@ async function ensureImageRowForSucceededGeneration(input: {
   }
 
   const image = await prisma.$transaction(async (tx) => {
+    await lockWritableBusiness(tx, input.businessId, "oculto");
+    await lockProduct(tx, input.productId);
     const createdImage = await tx.image.create({
       data: {
         productId: input.productId,
@@ -353,6 +361,8 @@ export async function generateAdminProductImageAction(
       };
     }
 
+    await requireSuperAdmin();
+
     const parsedInput =
       generateAdminProductImageInputSchema.safeParse(rawInput);
 
@@ -407,7 +417,8 @@ export async function generateAdminProductImageAction(
 
     if (
       product.negocio.archivedAt ||
-      product.negocio.estado !== EstadoNegocio.activo
+      (product.negocio.estado !== EstadoNegocio.activo &&
+        product.negocio.estado !== EstadoNegocio.suspendido)
     ) {
       return {
         ok: false,
@@ -484,6 +495,7 @@ export async function generateAdminProductImageAction(
       const image = await ensureImageRowForSucceededGeneration({
         generation,
         productId: product.id,
+        businessId: product.negocioId,
         cloudinaryUrl: generation.image?.url || generation.cloudinaryUrl || "",
       });
 
@@ -643,6 +655,8 @@ export async function generateAdminProductImageAction(
 
     try {
       const persisted = await prisma.$transaction(async (tx) => {
+        await lockWritableBusiness(tx, product.negocioId, "oculto");
+        await lockProduct(tx, product.id);
         const image = await tx.image.create({
           data: {
             productId: product.id,

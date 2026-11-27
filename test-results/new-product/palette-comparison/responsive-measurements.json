@@ -1,0 +1,1022 @@
+[
+  {
+    "width": 320,
+    "state": "refinement-ruby-initial",
+    "viewport": 320,
+    "scrollWidth": 320,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 320,
+    "state": "refinement-ruby-assistant-open",
+    "viewport": 320,
+    "scrollWidth": 320,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 320,
+    "state": "refinement-ruby-variants",
+    "viewport": 320,
+    "scrollWidth": 320,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 320,
+    "state": "refinement-ruby-category-menu",
+    "viewport": 320,
+    "scrollWidth": 320,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 320,
+    "state": "refinement-ruby-sections-menu",
+    "viewport": 320,
+    "scrollWidth": 320,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 320,
+    "state": "refinement-ruby-progress-dialog",
+    "viewport": 320,
+    "scrollWidth": 320,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 320,
+    "state": "refinement-ruby-error-dialog",
+    "viewport": 320,
+    "scrollWidth": 320,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 360,
+    "state": "refinement-ruby-initial",
+    "viewport": 360,
+    "scrollWidth": 360,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 360,
+    "state": "refinement-ruby-assistant-open",
+    "viewport": 360,
+    "scrollWidth": 360,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 360,
+    "state": "refinement-ruby-variants",
+    "viewport": 360,
+    "scrollWidth": 360,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 360,
+    "state": "refinement-ruby-category-menu",
+    "viewport": 360,
+    "scrollWidth": 360,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 360,
+    "state": "refinement-ruby-sections-menu",
+    "viewport": 360,
+    "scrollWidth": 360,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 360,
+    "state": "refinement-ruby-progress-dialog",
+    "viewport": 360,
+    "scrollWidth": 360,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 360,
+    "state": "refinement-ruby-error-dialog",
+    "viewport": 360,
+    "scrollWidth": 360,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 390,
+    "state": "refinement-ruby-initial",
+    "viewport": 390,
+    "scrollWidth": 390,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 390,
+    "state": "refinement-ruby-assistant-open",
+    "viewport": 390,
+    "scrollWidth": 390,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 390,
+    "state": "refinement-ruby-variants",
+    "viewport": 390,
+    "scrollWidth": 390,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 390,
+    "state": "refinement-ruby-category-menu",
+    "viewport": 390,
+    "scrollWidth": 390,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 390,
+    "state": "refinement-ruby-sections-menu",
+    "viewport": 390,
+    "scrollWidth": 390,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 390,
+    "state": "refinement-ruby-progress-dialog",
+    "viewport": 390,
+    "scrollWidth": 390,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 390,
+    "state": "refinement-ruby-error-dialog",
+    "viewport": 390,
+    "scrollWidth": 390,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 430,
+    "state": "refinement-ruby-initial",
+    "viewport": 430,
+    "scrollWidth": 430,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 430,
+    "state": "refinement-ruby-assistant-open",
+    "viewport": 430,
+    "scrollWidth": 430,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 430,
+    "state": "refinement-ruby-variants",
+    "viewport": 430,
+    "scrollWidth": 430,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 430,
+    "state": "refinement-ruby-category-menu",
+    "viewport": 430,
+    "scrollWidth": 430,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 430,
+    "state": "refinement-ruby-sections-menu",
+    "viewport": 430,
+    "scrollWidth": 430,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 430,
+    "state": "refinement-ruby-progress-dialog",
+    "viewport": 430,
+    "scrollWidth": 430,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 430,
+    "state": "refinement-ruby-error-dialog",
+    "viewport": 430,
+    "scrollWidth": 430,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 768,
+    "state": "refinement-ruby-initial",
+    "viewport": 768,
+    "scrollWidth": 768,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 768,
+    "state": "refinement-ruby-assistant-open",
+    "viewport": 768,
+    "scrollWidth": 768,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 768,
+    "state": "refinement-ruby-variants",
+    "viewport": 768,
+    "scrollWidth": 768,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 768,
+    "state": "refinement-ruby-category-menu",
+    "viewport": 768,
+    "scrollWidth": 768,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 768,
+    "state": "refinement-ruby-sections-menu",
+    "viewport": 768,
+    "scrollWidth": 768,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 768,
+    "state": "refinement-ruby-progress-dialog",
+    "viewport": 768,
+    "scrollWidth": 768,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 768,
+    "state": "refinement-ruby-error-dialog",
+    "viewport": 768,
+    "scrollWidth": 768,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 1024,
+    "state": "refinement-ruby-initial",
+    "viewport": 1024,
+    "scrollWidth": 1024,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 1024,
+    "state": "refinement-ruby-assistant-open",
+    "viewport": 1024,
+    "scrollWidth": 1024,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 1024,
+    "state": "refinement-ruby-variants",
+    "viewport": 1024,
+    "scrollWidth": 1024,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 1024,
+    "state": "refinement-ruby-category-menu",
+    "viewport": 1024,
+    "scrollWidth": 1024,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 1024,
+    "state": "refinement-ruby-sections-menu",
+    "viewport": 1024,
+    "scrollWidth": 1024,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 1024,
+    "state": "refinement-ruby-progress-dialog",
+    "viewport": 1024,
+    "scrollWidth": 1024,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 1024,
+    "state": "refinement-ruby-error-dialog",
+    "viewport": 1024,
+    "scrollWidth": 1024,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 1440,
+    "state": "refinement-ruby-initial",
+    "viewport": 1440,
+    "scrollWidth": 1440,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 1440,
+    "state": "refinement-ruby-assistant-open",
+    "viewport": 1440,
+    "scrollWidth": 1440,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 1440,
+    "state": "refinement-ruby-variants",
+    "viewport": 1440,
+    "scrollWidth": 1440,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 1440,
+    "state": "refinement-ruby-category-menu",
+    "viewport": 1440,
+    "scrollWidth": 1440,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 1440,
+    "state": "refinement-ruby-sections-menu",
+    "viewport": 1440,
+    "scrollWidth": 1440,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 1440,
+    "state": "refinement-ruby-progress-dialog",
+    "viewport": 1440,
+    "scrollWidth": 1440,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 1440,
+    "state": "refinement-ruby-error-dialog",
+    "viewport": 1440,
+    "scrollWidth": 1440,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 390,
+    "state": "refinement-ruby-short-height",
+    "viewport": 390,
+    "scrollWidth": 390,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 390,
+    "state": "refinement-ruby-short-height-dialog",
+    "viewport": 390,
+    "scrollWidth": 390,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 320,
+    "state": "refinement-ocean-initial",
+    "viewport": 320,
+    "scrollWidth": 320,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 320,
+    "state": "refinement-ocean-assistant-open",
+    "viewport": 320,
+    "scrollWidth": 320,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 320,
+    "state": "refinement-ocean-variants",
+    "viewport": 320,
+    "scrollWidth": 320,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 320,
+    "state": "refinement-ocean-category-menu",
+    "viewport": 320,
+    "scrollWidth": 320,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 320,
+    "state": "refinement-ocean-sections-menu",
+    "viewport": 320,
+    "scrollWidth": 320,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 320,
+    "state": "refinement-ocean-progress-dialog",
+    "viewport": 320,
+    "scrollWidth": 320,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 320,
+    "state": "refinement-ocean-error-dialog",
+    "viewport": 320,
+    "scrollWidth": 320,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 360,
+    "state": "refinement-ocean-initial",
+    "viewport": 360,
+    "scrollWidth": 360,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 360,
+    "state": "refinement-ocean-assistant-open",
+    "viewport": 360,
+    "scrollWidth": 360,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 360,
+    "state": "refinement-ocean-variants",
+    "viewport": 360,
+    "scrollWidth": 360,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 360,
+    "state": "refinement-ocean-category-menu",
+    "viewport": 360,
+    "scrollWidth": 360,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 360,
+    "state": "refinement-ocean-sections-menu",
+    "viewport": 360,
+    "scrollWidth": 360,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 360,
+    "state": "refinement-ocean-progress-dialog",
+    "viewport": 360,
+    "scrollWidth": 360,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 360,
+    "state": "refinement-ocean-error-dialog",
+    "viewport": 360,
+    "scrollWidth": 360,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 390,
+    "state": "refinement-ocean-initial",
+    "viewport": 390,
+    "scrollWidth": 390,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 390,
+    "state": "refinement-ocean-assistant-open",
+    "viewport": 390,
+    "scrollWidth": 390,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 390,
+    "state": "refinement-ocean-variants",
+    "viewport": 390,
+    "scrollWidth": 390,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 390,
+    "state": "refinement-ocean-category-menu",
+    "viewport": 390,
+    "scrollWidth": 390,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 390,
+    "state": "refinement-ocean-sections-menu",
+    "viewport": 390,
+    "scrollWidth": 390,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 390,
+    "state": "refinement-ocean-progress-dialog",
+    "viewport": 390,
+    "scrollWidth": 390,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 390,
+    "state": "refinement-ocean-error-dialog",
+    "viewport": 390,
+    "scrollWidth": 390,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 430,
+    "state": "refinement-ocean-initial",
+    "viewport": 430,
+    "scrollWidth": 430,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 430,
+    "state": "refinement-ocean-assistant-open",
+    "viewport": 430,
+    "scrollWidth": 430,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 430,
+    "state": "refinement-ocean-variants",
+    "viewport": 430,
+    "scrollWidth": 430,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 430,
+    "state": "refinement-ocean-category-menu",
+    "viewport": 430,
+    "scrollWidth": 430,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 430,
+    "state": "refinement-ocean-sections-menu",
+    "viewport": 430,
+    "scrollWidth": 430,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 430,
+    "state": "refinement-ocean-progress-dialog",
+    "viewport": 430,
+    "scrollWidth": 430,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 430,
+    "state": "refinement-ocean-error-dialog",
+    "viewport": 430,
+    "scrollWidth": 430,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 768,
+    "state": "refinement-ocean-initial",
+    "viewport": 768,
+    "scrollWidth": 768,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 768,
+    "state": "refinement-ocean-assistant-open",
+    "viewport": 768,
+    "scrollWidth": 768,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 768,
+    "state": "refinement-ocean-variants",
+    "viewport": 768,
+    "scrollWidth": 768,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 768,
+    "state": "refinement-ocean-category-menu",
+    "viewport": 768,
+    "scrollWidth": 768,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 768,
+    "state": "refinement-ocean-sections-menu",
+    "viewport": 768,
+    "scrollWidth": 768,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 768,
+    "state": "refinement-ocean-progress-dialog",
+    "viewport": 768,
+    "scrollWidth": 768,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 768,
+    "state": "refinement-ocean-error-dialog",
+    "viewport": 768,
+    "scrollWidth": 768,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 1024,
+    "state": "refinement-ocean-initial",
+    "viewport": 1024,
+    "scrollWidth": 1024,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 1024,
+    "state": "refinement-ocean-assistant-open",
+    "viewport": 1024,
+    "scrollWidth": 1024,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 1024,
+    "state": "refinement-ocean-variants",
+    "viewport": 1024,
+    "scrollWidth": 1024,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 1024,
+    "state": "refinement-ocean-category-menu",
+    "viewport": 1024,
+    "scrollWidth": 1024,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 1024,
+    "state": "refinement-ocean-sections-menu",
+    "viewport": 1024,
+    "scrollWidth": 1024,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 1024,
+    "state": "refinement-ocean-progress-dialog",
+    "viewport": 1024,
+    "scrollWidth": 1024,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 1024,
+    "state": "refinement-ocean-error-dialog",
+    "viewport": 1024,
+    "scrollWidth": 1024,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 1440,
+    "state": "refinement-ocean-initial",
+    "viewport": 1440,
+    "scrollWidth": 1440,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 1440,
+    "state": "refinement-ocean-assistant-open",
+    "viewport": 1440,
+    "scrollWidth": 1440,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 1440,
+    "state": "refinement-ocean-variants",
+    "viewport": 1440,
+    "scrollWidth": 1440,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 1440,
+    "state": "refinement-ocean-category-menu",
+    "viewport": 1440,
+    "scrollWidth": 1440,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 1440,
+    "state": "refinement-ocean-sections-menu",
+    "viewport": 1440,
+    "scrollWidth": 1440,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 1440,
+    "state": "refinement-ocean-progress-dialog",
+    "viewport": 1440,
+    "scrollWidth": 1440,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 1440,
+    "state": "refinement-ocean-error-dialog",
+    "viewport": 1440,
+    "scrollWidth": 1440,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 390,
+    "state": "refinement-ocean-short-height",
+    "viewport": 390,
+    "scrollWidth": 390,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  },
+  {
+    "width": 390,
+    "state": "refinement-ocean-short-height-dialog",
+    "viewport": 390,
+    "scrollWidth": 390,
+    "overflow": [],
+    "clippedLabels": [],
+    "sidebarOverlap": false,
+    "smallTargets": []
+  }
+]

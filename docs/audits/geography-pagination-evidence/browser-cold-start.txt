@@ -1,0 +1,5 @@
+
+Running 3 tests using 1 worker
+
+  ✘  1 e2e/geography-pagination/geography.spec.ts:212:5 › real actions: multiple pages, global priority, new city and delayed old response (1.5m)
+  ✓  2 e2e/geography-pagination/geography.spec.ts:276:5 › category filter: all local pages then expansion, exclusions and final page (11.8s)

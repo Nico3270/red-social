@@ -1,0 +1,32 @@
+.module {
+  container: feed-products / inline-size;
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto 16px;
+}
+.single {
+  max-width: 480px;
+}
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  gap: 12px;
+}
+.grid > div {
+  min-width: 0;
+}
+/* Two 186px cards + 10px gap. A 390px viewport has 382px after feed gutters.
+   Available container width (including zoom and side panels) decides. */
+@container feed-products (min-width: 382px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .grid > div:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+    justify-self: center;
+    width: 100%;
+    max-width: 480px;
+  }
+}

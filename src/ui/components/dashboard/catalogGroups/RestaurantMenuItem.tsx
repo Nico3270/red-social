@@ -1,5 +1,6 @@
 "use client";
 
+import { toWhatsAppNumber } from "@/lib/contact/phone";
 import React, { useCallback, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -71,7 +72,7 @@ export const RestaurantMenuItem: React.FC<RestaurantMenuItemProps> = ({
     typeof product.stock === "number" &&
     product.stock <= 0;
   const isOutOfStock = hasConfigurableVariants ? areAllVariantsOutOfStock : simpleProductOutOfStock;
-  const phoneNumber = product.telefonoContacto?.replace(/\D/g, "") ?? "";
+  const phoneNumber = toWhatsAppNumber(product.telefonoContacto, "CO");
   const detailHref = `/producto/${product.slug}`;
   const activeVariantCount = activeVariants.length;
   const variantPriceFloor = activeVariants

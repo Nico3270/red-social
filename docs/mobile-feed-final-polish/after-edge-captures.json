@@ -1,0 +1,50 @@
+[
+  {
+    "name": "long",
+    "price": "$ 123.456.789",
+    "visible": true,
+    "cardWidth": 186
+  },
+  {
+    "name": "variants",
+    "price": "$ 29.000",
+    "visible": true,
+    "cardWidth": 186
+  },
+  {
+    "name": "sold-out",
+    "price": "$ 28.000",
+    "visible": true,
+    "cardWidth": 186
+  },
+  {
+    "name": "missing",
+    "price": "$ 28.000",
+    "visible": true,
+    "cardWidth": 186
+  },
+  {
+    "name": "long",
+    "price": "$ 123.456.789",
+    "visible": true,
+    "cardWidth": 366
+  },
+  {
+    "name": "variants",
+    "price": "$ 29.000",
+    "visible": true,
+    "cardWidth": 366
+  },
+  {
+    "name": "sold-out",
+    "price": "$ 28.000",
+    "visible": true,
+    "cardWidth": 366
+  },
+  {
+    "name": "missing",
+    "price": "$ 28.000",
+    "visible": true,
+    "cardWidth": 366
+  }
+]

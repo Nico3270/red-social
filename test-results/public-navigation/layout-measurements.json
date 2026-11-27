@@ -1,0 +1,1103 @@
+[
+  {
+    "width": 320,
+    "state": "header-guest",
+    "viewport": 320,
+    "documentWidth": 320,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": null
+  },
+  {
+    "width": 320,
+    "state": "search-guest",
+    "viewport": 320,
+    "documentWidth": 320,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": {
+      "top": 223,
+      "bottom": 677,
+      "height": 900
+    }
+  },
+  {
+    "width": 320,
+    "state": "header-user",
+    "viewport": 320,
+    "documentWidth": 320,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": null
+  },
+  {
+    "width": 320,
+    "state": "search-user",
+    "viewport": 320,
+    "documentWidth": 320,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": {
+      "top": 223,
+      "bottom": 677,
+      "height": 900
+    }
+  },
+  {
+    "width": 320,
+    "state": "create-dialog",
+    "viewport": 320,
+    "documentWidth": 320,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": {
+      "top": 131,
+      "bottom": 769,
+      "height": 900
+    }
+  },
+  {
+    "width": 320,
+    "state": "header-negocio",
+    "viewport": 320,
+    "documentWidth": 320,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": null
+  },
+  {
+    "width": 320,
+    "state": "search-negocio",
+    "viewport": 320,
+    "documentWidth": 320,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": {
+      "top": 223,
+      "bottom": 677,
+      "height": 900
+    }
+  },
+  {
+    "width": 360,
+    "state": "header-guest",
+    "viewport": 360,
+    "documentWidth": 360,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": null
+  },
+  {
+    "width": 360,
+    "state": "search-guest",
+    "viewport": 360,
+    "documentWidth": 360,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": {
+      "top": 223,
+      "bottom": 677,
+      "height": 900
+    }
+  },
+  {
+    "width": 360,
+    "state": "header-user",
+    "viewport": 360,
+    "documentWidth": 360,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": null
+  },
+  {
+    "width": 360,
+    "state": "search-user",
+    "viewport": 360,
+    "documentWidth": 360,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": {
+      "top": 223,
+      "bottom": 677,
+      "height": 900
+    }
+  },
+  {
+    "width": 360,
+    "state": "create-dialog",
+    "viewport": 360,
+    "documentWidth": 360,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": {
+      "top": 167,
+      "bottom": 733,
+      "height": 900
+    }
+  },
+  {
+    "width": 360,
+    "state": "header-negocio",
+    "viewport": 360,
+    "documentWidth": 360,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": null
+  },
+  {
+    "width": 360,
+    "state": "search-negocio",
+    "viewport": 360,
+    "documentWidth": 360,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": {
+      "top": 223,
+      "bottom": 677,
+      "height": 900
+    }
+  },
+  {
+    "width": 390,
+    "state": "header-guest",
+    "viewport": 390,
+    "documentWidth": 390,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": null
+  },
+  {
+    "width": 390,
+    "state": "search-guest",
+    "viewport": 390,
+    "documentWidth": 390,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": {
+      "top": 223,
+      "bottom": 677,
+      "height": 900
+    }
+  },
+  {
+    "width": 390,
+    "state": "header-user",
+    "viewport": 390,
+    "documentWidth": 390,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": null
+  },
+  {
+    "width": 390,
+    "state": "search-user",
+    "viewport": 390,
+    "documentWidth": 390,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": {
+      "top": 223,
+      "bottom": 677,
+      "height": 900
+    }
+  },
+  {
+    "width": 390,
+    "state": "create-dialog",
+    "viewport": 390,
+    "documentWidth": 390,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": {
+      "top": 179,
+      "bottom": 721,
+      "height": 900
+    }
+  },
+  {
+    "width": 390,
+    "state": "header-negocio",
+    "viewport": 390,
+    "documentWidth": 390,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": null
+  },
+  {
+    "width": 390,
+    "state": "search-negocio",
+    "viewport": 390,
+    "documentWidth": 390,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": {
+      "top": 223,
+      "bottom": 677,
+      "height": 900
+    }
+  },
+  {
+    "width": 430,
+    "state": "header-guest",
+    "viewport": 430,
+    "documentWidth": 430,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": null
+  },
+  {
+    "width": 430,
+    "state": "search-guest",
+    "viewport": 430,
+    "documentWidth": 430,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": {
+      "top": 223,
+      "bottom": 677,
+      "height": 900
+    }
+  },
+  {
+    "width": 430,
+    "state": "header-user",
+    "viewport": 430,
+    "documentWidth": 430,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": null
+  },
+  {
+    "width": 430,
+    "state": "search-user",
+    "viewport": 430,
+    "documentWidth": 430,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": {
+      "top": 223,
+      "bottom": 677,
+      "height": 900
+    }
+  },
+  {
+    "width": 430,
+    "state": "create-dialog",
+    "viewport": 430,
+    "documentWidth": 430,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": {
+      "top": 179,
+      "bottom": 721,
+      "height": 900
+    }
+  },
+  {
+    "width": 430,
+    "state": "header-negocio",
+    "viewport": 430,
+    "documentWidth": 430,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": null
+  },
+  {
+    "width": 430,
+    "state": "search-negocio",
+    "viewport": 430,
+    "documentWidth": 430,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": {
+      "top": 223,
+      "bottom": 677,
+      "height": 900
+    }
+  },
+  {
+    "width": 768,
+    "state": "header-guest",
+    "viewport": 768,
+    "documentWidth": 768,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": null
+  },
+  {
+    "width": 768,
+    "state": "search-guest",
+    "viewport": 768,
+    "documentWidth": 768,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": {
+      "top": 223,
+      "bottom": 677,
+      "height": 900
+    }
+  },
+  {
+    "width": 768,
+    "state": "header-user",
+    "viewport": 768,
+    "documentWidth": 768,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": null
+  },
+  {
+    "width": 768,
+    "state": "search-user",
+    "viewport": 768,
+    "documentWidth": 768,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": {
+      "top": 223,
+      "bottom": 677,
+      "height": 900
+    }
+  },
+  {
+    "width": 768,
+    "state": "create-dialog",
+    "viewport": 768,
+    "documentWidth": 768,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": {
+      "top": 233.796875,
+      "bottom": 666.1875,
+      "height": 900
+    }
+  },
+  {
+    "width": 768,
+    "state": "header-negocio",
+    "viewport": 768,
+    "documentWidth": 768,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": null
+  },
+  {
+    "width": 768,
+    "state": "search-negocio",
+    "viewport": 768,
+    "documentWidth": 768,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": {
+      "top": 223,
+      "bottom": 677,
+      "height": 900
+    }
+  },
+  {
+    "width": 1024,
+    "state": "header-guest",
+    "viewport": 1024,
+    "documentWidth": 1024,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": null
+  },
+  {
+    "width": 1024,
+    "state": "search-guest",
+    "viewport": 1024,
+    "documentWidth": 1024,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": {
+      "top": 223,
+      "bottom": 677,
+      "height": 900
+    }
+  },
+  {
+    "width": 1024,
+    "state": "header-user",
+    "viewport": 1024,
+    "documentWidth": 1024,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": null
+  },
+  {
+    "width": 1024,
+    "state": "search-user",
+    "viewport": 1024,
+    "documentWidth": 1024,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": {
+      "top": 223,
+      "bottom": 677,
+      "height": 900
+    }
+  },
+  {
+    "width": 1024,
+    "state": "header-negocio",
+    "viewport": 1024,
+    "documentWidth": 1024,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": null
+  },
+  {
+    "width": 1024,
+    "state": "search-negocio",
+    "viewport": 1024,
+    "documentWidth": 1024,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": {
+      "top": 223,
+      "bottom": 677,
+      "height": 900
+    }
+  },
+  {
+    "width": 1024,
+    "state": "create-dialog",
+    "viewport": 1024,
+    "documentWidth": 1024,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": {
+      "top": 233.796875,
+      "bottom": 666.1875,
+      "height": 900
+    }
+  },
+  {
+    "width": 1280,
+    "state": "header-guest",
+    "viewport": 1280,
+    "documentWidth": 1280,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": null
+  },
+  {
+    "width": 1280,
+    "state": "search-guest",
+    "viewport": 1280,
+    "documentWidth": 1280,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": null
+  },
+  {
+    "width": 1280,
+    "state": "header-user",
+    "viewport": 1280,
+    "documentWidth": 1280,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": null
+  },
+  {
+    "width": 1280,
+    "state": "search-user",
+    "viewport": 1280,
+    "documentWidth": 1280,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": null
+  },
+  {
+    "width": 1280,
+    "state": "header-negocio",
+    "viewport": 1280,
+    "documentWidth": 1280,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": null
+  },
+  {
+    "width": 1280,
+    "state": "search-negocio",
+    "viewport": 1280,
+    "documentWidth": 1280,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": null
+  },
+  {
+    "width": 1280,
+    "state": "create-dialog",
+    "viewport": 1280,
+    "documentWidth": 1280,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": {
+      "top": 233.796875,
+      "bottom": 666.1875,
+      "height": 900
+    }
+  },
+  {
+    "width": 1440,
+    "state": "header-guest",
+    "viewport": 1440,
+    "documentWidth": 1440,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": null
+  },
+  {
+    "width": 1440,
+    "state": "search-guest",
+    "viewport": 1440,
+    "documentWidth": 1440,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": null
+  },
+  {
+    "width": 1440,
+    "state": "header-user",
+    "viewport": 1440,
+    "documentWidth": 1440,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": null
+  },
+  {
+    "width": 1440,
+    "state": "search-user",
+    "viewport": 1440,
+    "documentWidth": 1440,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": null
+  },
+  {
+    "width": 1440,
+    "state": "header-negocio",
+    "viewport": 1440,
+    "documentWidth": 1440,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": null
+  },
+  {
+    "width": 1440,
+    "state": "search-negocio",
+    "viewport": 1440,
+    "documentWidth": 1440,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": null
+  },
+  {
+    "width": 1440,
+    "state": "create-dialog",
+    "viewport": 1440,
+    "documentWidth": 1440,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": {
+      "top": 233.796875,
+      "bottom": 666.1875,
+      "height": 900
+    }
+  },
+  {
+    "width": 1920,
+    "state": "header-guest",
+    "viewport": 1920,
+    "documentWidth": 1920,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": null
+  },
+  {
+    "width": 1920,
+    "state": "search-guest",
+    "viewport": 1920,
+    "documentWidth": 1920,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": null
+  },
+  {
+    "width": 1920,
+    "state": "header-user",
+    "viewport": 1920,
+    "documentWidth": 1920,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": null
+  },
+  {
+    "width": 1920,
+    "state": "search-user",
+    "viewport": 1920,
+    "documentWidth": 1920,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": null
+  },
+  {
+    "width": 1920,
+    "state": "header-negocio",
+    "viewport": 1920,
+    "documentWidth": 1920,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": null
+  },
+  {
+    "width": 1920,
+    "state": "search-negocio",
+    "viewport": 1920,
+    "documentWidth": 1920,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": null
+  },
+  {
+    "width": 1920,
+    "state": "create-dialog",
+    "viewport": 1920,
+    "documentWidth": 1920,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": {
+      "top": 233.796875,
+      "bottom": 666.1875,
+      "height": 900
+    }
+  },
+  {
+    "width": 390,
+    "state": "/category/comida",
+    "viewport": 390,
+    "documentWidth": 390,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": null
+  },
+  {
+    "width": 390,
+    "state": "/producto/cafe",
+    "viewport": 390,
+    "documentWidth": 390,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": null
+  },
+  {
+    "width": 390,
+    "state": "/perfil/cafe",
+    "viewport": 390,
+    "documentWidth": 390,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": null
+  },
+  {
+    "width": 1024,
+    "state": "/category/comida",
+    "viewport": 1024,
+    "documentWidth": 1024,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": null
+  },
+  {
+    "width": 1024,
+    "state": "/producto/cafe",
+    "viewport": 1024,
+    "documentWidth": 1024,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": null
+  },
+  {
+    "width": 1024,
+    "state": "/perfil/cafe",
+    "viewport": 1024,
+    "documentWidth": 1024,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": null
+  },
+  {
+    "width": 1440,
+    "state": "/category/comida",
+    "viewport": 1440,
+    "documentWidth": 1440,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": null
+  },
+  {
+    "width": 1440,
+    "state": "/producto/cafe",
+    "viewport": 1440,
+    "documentWidth": 1440,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": null
+  },
+  {
+    "width": 1440,
+    "state": "/perfil/cafe",
+    "viewport": 1440,
+    "documentWidth": 1440,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": null
+  },
+  {
+    "width": 390,
+    "state": "baseline-header",
+    "viewport": 390,
+    "documentWidth": 390,
+    "brand": {
+      "left": 12,
+      "right": 112
+    },
+    "search": {
+      "left": 124,
+      "right": 213.671875
+    },
+    "brandSearchOverlap": false
+  },
+  {
+    "width": 390,
+    "state": "baseline-create-title",
+    "bounds": {
+      "x": 40,
+      "y": 114,
+      "width": 310,
+      "height": 28
+    }
+  },
+  {
+    "width": 1024,
+    "state": "baseline-header",
+    "viewport": 1024,
+    "documentWidth": 1024,
+    "brand": {
+      "left": 120,
+      "right": 222.4375
+    },
+    "search": {
+      "left": 146.4375,
+      "right": 359.671875
+    },
+    "brandSearchOverlap": true
+  },
+  {
+    "width": 1024,
+    "state": "baseline-create-title",
+    "bounds": {
+      "x": 248,
+      "y": -150,
+      "width": 528,
+      "height": 32
+    }
+  },
+  {
+    "width": 1440,
+    "state": "baseline-header",
+    "viewport": 1440,
+    "documentWidth": 1440,
+    "brand": {
+      "left": 200,
+      "right": 302.4375
+    },
+    "search": {
+      "left": 327.21875,
+      "right": 694.890625
+    },
+    "brandSearchOverlap": false
+  },
+  {
+    "width": 1440,
+    "state": "baseline-create-title",
+    "bounds": {
+      "x": 456,
+      "y": -150,
+      "width": 528,
+      "height": 32
+    }
+  },
+  {
+    "width": 320,
+    "state": "create-dialog",
+    "viewport": 320,
+    "documentWidth": 320,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": {
+      "top": 12,
+      "bottom": 408,
+      "height": 420
+    }
+  },
+  {
+    "width": 320,
+    "state": "short-search",
+    "viewport": 320,
+    "documentWidth": 320,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": {
+      "top": 33,
+      "bottom": 387,
+      "height": 420
+    }
+  },
+  {
+    "width": 1440,
+    "state": "native-zoom-200",
+    "innerWidth": 720,
+    "outerWidth": 1440,
+    "dpr": 2
+  },
+  {
+    "width": 1440,
+    "state": "zoom-header",
+    "viewport": 720,
+    "documentWidth": 720,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": null
+  },
+  {
+    "width": 1440,
+    "state": "create-dialog",
+    "viewport": 720,
+    "documentWidth": 720,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": {
+      "top": 12.046875,
+      "bottom": 444.4453125,
+      "height": 456
+    }
+  },
+  {
+    "width": 1440,
+    "state": "zoom-search",
+    "viewport": 720,
+    "documentWidth": 720,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": {
+      "top": 42.125,
+      "bottom": 414.375,
+      "height": 456
+    }
+  },
+  {
+    "width": 1920,
+    "state": "native-zoom-200",
+    "innerWidth": 960,
+    "outerWidth": 1920,
+    "dpr": 2
+  },
+  {
+    "width": 1920,
+    "state": "zoom-header",
+    "viewport": 960,
+    "documentWidth": 960,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": null
+  },
+  {
+    "width": 1920,
+    "state": "create-dialog",
+    "viewport": 960,
+    "documentWidth": 960,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": {
+      "top": 12.046875,
+      "bottom": 444.4453125,
+      "height": 456
+    }
+  },
+  {
+    "width": 1920,
+    "state": "zoom-search",
+    "viewport": 960,
+    "documentWidth": 960,
+    "outside": [],
+    "smallTargets": [],
+    "collisions": [],
+    "brandSearchOverlap": false,
+    "dialog": {
+      "top": 42.125,
+      "bottom": 414.375,
+      "height": 456
+    }
+  }
+]

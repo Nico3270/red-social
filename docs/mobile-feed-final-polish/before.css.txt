@@ -1,0 +1,676 @@
+.feed {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  height: auto;
+  margin-inline: auto;
+  padding: 8px;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: white;
+  color: #172033;
+  box-shadow: 0 2px 6px #17203308;
+}
+.header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  margin-bottom: 8px;
+}
+.business {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.business > div {
+  flex-shrink: 0;
+}
+.businessName {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 600;
+}
+.headerActions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 4px;
+}
+.headerActions > button,
+.favorite button {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+}
+.favorite {
+  position: relative;
+}
+.media {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: 280px;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #f3f4f6;
+}
+.image {
+  object-fit: contain;
+}
+.imageBackdrop {
+  display: none;
+}
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  margin-top: 8px;
+}
+.title {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow-wrap: anywhere;
+  font-size: 16px;
+  line-height: 1.35;
+  font-weight: 650;
+}
+.description {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  overflow-wrap: anywhere;
+  margin-top: 4px;
+  font-size: 14px;
+  line-height: 20px;
+  color: #596579;
+}
+.footer {
+  min-width: 0;
+}
+.purchaseRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+}
+.priceBlock {
+  flex: 1 1 max-content;
+  min-width: 0;
+}
+.price {
+  display: block;
+  overflow-wrap: anywhere;
+  font-size: 22px;
+  line-height: 1.25;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.variantLabel {
+  margin-top: 4px;
+  overflow-wrap: anywhere;
+  font-size: 12px;
+  line-height: 16px;
+  color: #596579;
+}
+.purchaseActions {
+  display: flex;
+  flex: 0 1 auto;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.whatsapp,
+.cart {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  min-width: 44px;
+  border-radius: 10px;
+}
+.whatsapp {
+  color: #15803d;
+}
+.cart {
+  gap: 6px;
+  padding: 8px 12px;
+  background: #172033;
+  color: white;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 600;
+}
+.cart:disabled {
+  background: #e2e8f0;
+  color: #64748b;
+  cursor: not-allowed;
+}
+.actionIcon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+}
+.feed a:focus-visible,
+.feed button:focus-visible {
+  outline: 2px solid #c93545;
+  outline-offset: 2px;
+}
+.modalScope > [role="dialog"] {
+  align-items: flex-start;
+  overflow-y: auto;
+  padding-block: 16px;
+}
+.modalScope > [role="dialog"] > div {
+  flex-shrink: 0;
+  min-width: 0;
+  margin-block: auto;
+}
+.modalScope p {
+  overflow-wrap: anywhere;
+}
+.modalScope :global(.justify-between) {
+  flex-wrap: wrap;
+}
+.modalScope button {
+  min-height: 44px;
+}
+@media (hover: hover) {
+  .cart:not(:disabled):hover {
+    background: #334155;
+  }
+  .whatsapp:hover {
+    background: #f0fdf4;
+  }
+  .businessName:hover,
+  .title:hover {
+    color: #274494;
+  }
+}
+
+/* Desktop keeps the pre-B3 feed. Mobile controls are SSR-safe and hidden here. */
+.actionsDock,
+.secondaryContact {
+  display: none;
+}
+.desktopActions {
+  display: flex;
+}
+
+/* B3/C2 are authorized only through the mobile breakpoint. */
+@media (max-width: 768px) {
+  /* Explicit feed variant. Other ProductCard consumers retain their existing styles. */
+  .feed {
+    container: feed-product-card / inline-size;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-width: 0;
+    height: auto;
+    margin-inline: auto;
+    padding: 0;
+    border: 1px solid #ecdde1;
+    border-radius: 16px;
+    background: white;
+    color: #1c283c;
+    box-shadow: 0 2px 8px #1c283c0a;
+  }
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-height: 44px;
+    padding: 0 6px 0 10px;
+  }
+  .business {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+  }
+  .business > div {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+  }
+  .businessName {
+    min-width: 0;
+    min-height: 44px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 13px;
+    line-height: 44px;
+    font-weight: 600;
+  }
+  .headerActions {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 0;
+  }
+  .headerActions > button,
+  .favorite button {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .headerActions > button {
+    position: relative;
+    isolation: isolate;
+    padding: 0;
+    background: transparent;
+    color: #377c85;
+    box-shadow: none;
+  }
+  .headerActions > button::before {
+    position: absolute;
+    z-index: -1;
+    inset: 6px;
+    border-radius: 50%;
+    background: #edf6f7;
+    content: "";
+  }
+  .headerActions > button[aria-label="Siguiendo"] {
+    color: white;
+  }
+  .headerActions > button[aria-label="Siguiendo"]::before {
+    background: #377c85;
+  }
+  .headerActions > button[aria-label="Dejar de seguir"] {
+    color: #be123c;
+  }
+  .headerActions > button[aria-label="Dejar de seguir"]::before {
+    background: #fff1f2;
+  }
+  .favorite {
+    position: relative;
+  }
+  .favorite button {
+    background: transparent;
+    box-shadow: none;
+  }
+  .favorite button[aria-pressed="false"] svg {
+    color: #a08a95;
+  }
+  .favorite button[aria-pressed="true"] svg {
+    color: #c93545;
+  }
+  .media {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1.85;
+    max-height: 214px;
+    overflow: hidden;
+    background: #f3eeee;
+  }
+  .image {
+    object-fit: cover;
+  }
+  .imageBackdrop {
+    object-fit: cover;
+    opacity: 0.3;
+    filter: blur(12px);
+    transform: scale(1.1);
+  }
+  .feed[data-feed-image-shape="square"] .image {
+    object-fit: contain;
+    transform: scale(1.4);
+  }
+  .feed[data-feed-image-shape="portrait"] .image {
+    object-fit: contain;
+  }
+  .content {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 2px 8px;
+    min-width: 0;
+    padding: 8px 10px;
+  }
+  .content > div:first-child {
+    flex: 1 1 9ch;
+    min-width: 0;
+  }
+  .title {
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 15px;
+    line-height: 22px;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+  }
+  .description {
+    display: none;
+  }
+  .footer,
+  .purchaseRow {
+    display: contents;
+  }
+  .priceBlock {
+    flex: 0 1 auto;
+    min-width: 0;
+    max-width: 100%;
+    text-align: right;
+  }
+  .price {
+    display: block;
+    overflow-wrap: anywhere;
+    color: #c93545;
+    font-size: 21px;
+    line-height: 26px;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+  }
+  .variantLabel {
+    margin-top: 4px;
+    overflow-wrap: anywhere;
+    font-size: 12px;
+    line-height: 16px;
+    color: #596579;
+  }
+  .actionsDock {
+    position: absolute;
+    z-index: 2;
+    right: 8px;
+    bottom: 8px;
+    padding: 2px;
+    border: 1px solid #ffffffc9;
+    border-radius: 16px;
+    background: white;
+    box-shadow: 0 3px 12px #1c283c20;
+  }
+  .purchaseActions {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 0;
+  }
+  .whatsapp,
+  .cart {
+    position: relative;
+    isolation: isolate;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0;
+    border-radius: 12px;
+    background: transparent;
+  }
+  .whatsapp {
+    color: #15803d;
+  }
+  .cart {
+    color: #c93545;
+  }
+  .cart::before {
+    position: absolute;
+    z-index: -1;
+    inset: 6px;
+    border-radius: 10px;
+    background: #fbecee;
+    content: "";
+  }
+  .cart > span {
+    display: none;
+  }
+  .cart:disabled {
+    color: #64748b;
+    cursor: not-allowed;
+  }
+  .cart:disabled::before {
+    background: #f1f5f9;
+  }
+  .actionIcon {
+    width: 18px;
+    height: 18px;
+  }
+  .feed a:focus-visible,
+  .feed button:focus-visible {
+    outline: 2px solid #c93545;
+    outline-offset: 2px;
+  }
+  .modalScope > [role="dialog"] {
+    align-items: flex-start;
+    overflow-y: auto;
+    padding-block: 16px;
+  }
+  .modalScope > [role="dialog"] > div {
+    flex-shrink: 0;
+    min-width: 0;
+    margin-block: auto;
+  }
+  .modalScope p {
+    overflow-wrap: anywhere;
+  }
+  .modalScope :global(.justify-between) {
+    flex-wrap: wrap;
+  }
+  .modalScope button {
+    min-height: 44px;
+  }
+  @media (hover: hover) {
+    .cart:not(:disabled):hover::before {
+      background: #f7dce0;
+    }
+    .whatsapp:hover {
+      background: #f0fdf4;
+    }
+    .businessName:hover,
+    .title:hover {
+      color: #c93545;
+    }
+  }
+  /* Compact information is based on the card's width, not the viewport. */
+  @container feed-product-card (max-width:250px) {
+    .header {
+      gap: 0;
+      padding-inline: 6px 0;
+    }
+    .business {
+      gap: 4px;
+    }
+    .business > div {
+      width: 18px;
+      height: 18px;
+    }
+    .businessName {
+      font-size: 12px;
+    }
+    .media {
+      aspect-ratio: 1;
+      max-height: 190px;
+    }
+    .feed[data-feed-image-shape="square"] .image {
+      transform: none;
+    }
+    .content {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 2px;
+      padding: 8px;
+    }
+    .content > div:first-child {
+      flex: none;
+    }
+    .title {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      white-space: normal;
+      overflow-wrap: anywhere;
+      min-height: 36px;
+      font-size: 13px;
+      line-height: 18px;
+    }
+    .priceBlock {
+      text-align: left;
+    }
+    .price {
+      font-size: 20px;
+      line-height: 26px;
+    }
+    .actionsDock {
+      right: 6px;
+      bottom: 6px;
+      padding: 1px;
+      border-radius: 14px;
+    }
+  }
+  /* Keep commercial controls below the image if an unusually narrow embed cannot fit the pill. */
+  @container feed-product-card (max-width:119px) {
+    .actionsDock {
+      position: static;
+      width: max-content;
+      max-width: 100%;
+      margin: 6px auto 0;
+    }
+    .purchaseActions {
+      flex-wrap: wrap;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  /* A: independent 32px painted circles within separate 44px touch targets. */
+  .header {
+    margin: 0;
+  }
+  .media {
+    border-radius: 0;
+  }
+  .imageBackdrop {
+    display: block;
+  }
+  .content {
+    flex-direction: row;
+    margin-top: 0;
+  }
+  .actionsDock {
+    display: block;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    pointer-events: none;
+  }
+  .actionsDock .purchaseActions {
+    display: flex;
+    gap: 2px;
+  }
+  .actionsDock :is(a, button) {
+    pointer-events: auto;
+  }
+  .desktopActions {
+    display: none;
+  }
+  .cart,
+  .whatsapp {
+    background: transparent;
+  }
+  .cart {
+    color: #fff;
+  }
+  .cart::before,
+  .whatsapp::before {
+    position: absolute;
+    z-index: -1;
+    inset: 6px;
+    border-radius: 50%;
+    box-shadow: 0 1px 3px #1c283c1a;
+    content: "";
+  }
+  .cart::before {
+    background: #c93545;
+  }
+  .whatsapp::before {
+    background: #fff;
+  }
+  .cart:disabled {
+    background: transparent;
+    color: #64748b;
+  }
+  .cart:disabled::before {
+    background: #e2e8f0;
+    box-shadow: none;
+  }
+  /* B: the same WhatsApp handler becomes secondary, beside the price. */
+  .secondaryContact {
+    display: flex;
+    flex: 0 0 44px;
+    align-items: center;
+  }
+  .secondaryContact .whatsapp::before {
+    background: transparent;
+    box-shadow: none;
+  }
+  .feed[data-feed-action-layout="split"] .content {
+    padding-block: 4px;
+  }
+  .feed[data-feed-action-layout="split"] .purchaseRow {
+    display: flex;
+    flex: 0 1 auto;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+    min-width: 0;
+    max-width: 100%;
+  }
+  .feed[data-feed-action-layout="split"] .priceBlock {
+    /* Wrap the secondary action before breaking an amount that fits the card. */
+    flex: 1 1 max-content;
+  }
+  @media (hover: hover) {
+    .cart:not(:disabled):hover,
+    .whatsapp:hover {
+      background: transparent;
+    }
+    .cart:not(:disabled):hover::before {
+      background: #c93545;
+    }
+  }
+  @container feed-product-card (max-width:250px) {
+    .content {
+      flex-direction: column;
+    }
+    .actionsDock {
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+    }
+    .feed[data-feed-action-layout="split"] .content {
+      padding: 8px;
+    }
+    .feed[data-feed-action-layout="split"] .title {
+      min-height: 0;
+    }
+    .feed[data-feed-action-layout="split"] .purchaseRow {
+      width: 100%;
+    }
+  }
+}

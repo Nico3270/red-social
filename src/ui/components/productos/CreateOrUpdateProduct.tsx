@@ -111,7 +111,9 @@ export default function CreateOrUpdateProduct({ product }: Props) {
 
   const [selectedCategorySlug, setSelectedCategorySlug] = useState("");
   const [submitted, setSubmitted] = useState(false);
-  const [selectedSections, setSelectedSections] = useState<Set<string>>(new Set());
+  const [selectedSections, setSelectedSections] = useState<Set<string>>(
+    new Set(),
+  );
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [generating, setGenerating] = useState(false);
@@ -123,15 +125,19 @@ export default function CreateOrUpdateProduct({ product }: Props) {
   const [showAdvancedInventory, setShowAdvancedInventory] = useState(false);
   const [showAttributesBlock, setShowAttributesBlock] = useState(false);
   const [showVariantsBlock, setShowVariantsBlock] = useState(false);
-  const [modalState, setModalState] = useState<"idle" | "loading" | "success" | "error">(
-    "idle"
-  );
+  const [modalState, setModalState] = useState<
+    "idle" | "loading" | "success" | "error"
+  >("idle");
   const [modalMessage, setModalMessage] = useState("");
   const [redirectUrl, setRedirectUrl] = useState("");
 
   const router = useRouter();
-  const addProducto = useProductosTransaccionesStore((state) => state.addProducto);
-  const updateProducto = useProductosTransaccionesStore((state) => state.updateProducto);
+  const addProducto = useProductosTransaccionesStore(
+    (state) => state.addProducto,
+  );
+  const updateProducto = useProductosTransaccionesStore(
+    (state) => state.updateProducto,
+  );
 
   const selectedCategoryId = watch("categoriaId");
   const nombreProducto = watch("nombre");
@@ -141,9 +147,9 @@ export default function CreateOrUpdateProduct({ product }: Props) {
   const filteredSections = useMemo(
     () =>
       initialData.secciones.filter(
-        (section) => section.categorySlug === selectedCategorySlug
+        (section) => section.categorySlug === selectedCategorySlug,
       ),
-    [selectedCategorySlug]
+    [selectedCategorySlug],
   );
 
   const multiple = true;
@@ -192,7 +198,9 @@ export default function CreateOrUpdateProduct({ product }: Props) {
       return;
     }
 
-    const categoria = initialData.categorias.find((cat) => cat.id === product.categoriaId);
+    const categoria = initialData.categorias.find(
+      (cat) => cat.id === product.categoriaId,
+    );
     const atributosIniciales = (product.atributos ?? []).map((atributo) => ({
       id: atributo.id || createId(),
       nombre: atributo.nombre,
@@ -202,8 +210,14 @@ export default function CreateOrUpdateProduct({ product }: Props) {
       id: variant.id || createId(),
       nombre: variant.nombre ?? "",
       sku: variant.sku ?? "",
-      precio: variant.precio !== null && variant.precio !== undefined ? String(variant.precio) : "",
-      stock: variant.stock !== null && variant.stock !== undefined ? String(variant.stock) : "",
+      precio:
+        variant.precio !== null && variant.precio !== undefined
+          ? String(variant.precio)
+          : "",
+      stock:
+        variant.stock !== null && variant.stock !== undefined
+          ? String(variant.stock)
+          : "",
       stockIlimitado: variant.stockIlimitado ?? true,
       imagenUrl: variant.imagenUrl ?? "",
       isActive: variant.isActive,
@@ -238,15 +252,18 @@ export default function CreateOrUpdateProduct({ product }: Props) {
     setShowAdvancedInventory(
       (product.stockIlimitado ?? true) === false ||
         product.usaVariantes === true ||
-        (product.stock ?? null) !== null
+        (product.stock ?? null) !== null,
     );
     setShowAttributesBlock(atributosIniciales.length > 0);
     setShowVariantsBlock(variantesIniciales.length > 0);
   }, [product, reset]);
 
-  const handleMediaChange = useCallback((urls: string[] | string | undefined) => {
-    setUploadedImages(Array.isArray(urls) ? urls : urls ? [urls] : []);
-  }, []);
+  const handleMediaChange = useCallback(
+    (urls: string[] | string | undefined) => {
+      setUploadedImages(Array.isArray(urls) ? urls : urls ? [urls] : []);
+    },
+    [],
+  );
 
   const toggleSection = (id: string) => {
     setSelectedSections((prev) => {
@@ -272,7 +289,8 @@ export default function CreateOrUpdateProduct({ product }: Props) {
     if (!nombre) {
       setAlert({
         type: "error",
-        message: "Debes ingresar un nombre para el producto antes de generar la descripción.",
+        message:
+          "Debes ingresar un nombre para el producto antes de generar la descripción.",
       });
       return;
     }
@@ -280,7 +298,8 @@ export default function CreateOrUpdateProduct({ product }: Props) {
     if (!caracteristicas.trim()) {
       setAlert({
         type: "error",
-        message: "Ingresa las características del producto antes de generar la descripción.",
+        message:
+          "Ingresa las características del producto antes de generar la descripción.",
       });
       return;
     }
@@ -292,7 +311,7 @@ export default function CreateOrUpdateProduct({ product }: Props) {
       const result = await generateDescriptionFromText(
         nombre,
         caracteristicas,
-        componentes
+        componentes,
       );
 
       if (result.ok) {
@@ -346,16 +365,19 @@ export default function CreateOrUpdateProduct({ product }: Props) {
   };
 
   const addAtributo = () => {
-    setAtributos((prev) => [...prev, { id: createId(), nombre: "", valor: "" }]);
+    setAtributos((prev) => [
+      ...prev,
+      { id: createId(), nombre: "", valor: "" },
+    ]);
   };
 
   const updateAtributo = (
     id: string,
     field: keyof Omit<ProductAttributeInput, "id">,
-    value: string
+    value: string,
   ) => {
     setAtributos((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, [field]: value } : item))
+      prev.map((item) => (item.id === id ? { ...item, [field]: value } : item)),
     );
   };
 
@@ -383,10 +405,10 @@ export default function CreateOrUpdateProduct({ product }: Props) {
   const updateVariant = (
     id: string,
     field: keyof Omit<ProductVariantInput, "id" | "options">,
-    value: string | boolean
+    value: string | boolean,
   ) => {
     setVariantes((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, [field]: value } : item))
+      prev.map((item) => (item.id === id ? { ...item, [field]: value } : item)),
     );
   };
 
@@ -400,10 +422,13 @@ export default function CreateOrUpdateProduct({ product }: Props) {
         variant.id === variantId
           ? {
               ...variant,
-              options: [...variant.options, { id: createId(), nombre: "", valor: "" }],
+              options: [
+                ...variant.options,
+                { id: createId(), nombre: "", valor: "" },
+              ],
             }
-          : variant
-      )
+          : variant,
+      ),
     );
   };
 
@@ -411,7 +436,7 @@ export default function CreateOrUpdateProduct({ product }: Props) {
     variantId: string,
     optionId: string,
     field: keyof Omit<ProductVariantOptionInput, "id">,
-    value: string
+    value: string,
   ) => {
     setVariantes((prev) =>
       prev.map((variant) =>
@@ -419,11 +444,11 @@ export default function CreateOrUpdateProduct({ product }: Props) {
           ? {
               ...variant,
               options: variant.options.map((option) =>
-                option.id === optionId ? { ...option, [field]: value } : option
+                option.id === optionId ? { ...option, [field]: value } : option,
               ),
             }
-          : variant
-      )
+          : variant,
+      ),
     );
   };
 
@@ -433,10 +458,12 @@ export default function CreateOrUpdateProduct({ product }: Props) {
         variant.id === variantId
           ? {
               ...variant,
-              options: variant.options.filter((option) => option.id !== optionId),
+              options: variant.options.filter(
+                (option) => option.id !== optionId,
+              ),
             }
-          : variant
-      )
+          : variant,
+      ),
     );
   };
 
@@ -444,7 +471,9 @@ export default function CreateOrUpdateProduct({ product }: Props) {
     setLoading(true);
     setModalState("loading");
     setModalMessage(
-      product ? "Estamos actualizando tu producto..." : "Estamos creando tu producto..."
+      product
+        ? "Estamos actualizando tu producto..."
+        : "Estamos creando tu producto...",
     );
 
     try {
@@ -459,7 +488,7 @@ export default function CreateOrUpdateProduct({ product }: Props) {
         setModalMessage(
           product
             ? "Debes mantener al menos una imagen para actualizar el producto."
-            : "Debes subir al menos una imagen antes de crear el producto."
+            : "Debes subir al menos una imagen antes de crear el producto.",
         );
         return;
       }
@@ -488,7 +517,8 @@ export default function CreateOrUpdateProduct({ product }: Props) {
           nombre: variant.nombre.trim() || null,
           sku: variant.sku.trim() || null,
           precio:
-            variant.precio.trim() !== "" && !Number.isNaN(Number(variant.precio))
+            variant.precio.trim() !== "" &&
+            !Number.isNaN(Number(variant.precio))
               ? Number(variant.precio)
               : null,
           stock:
@@ -521,6 +551,11 @@ export default function CreateOrUpdateProduct({ product }: Props) {
         });
 
       const formData = new FormData();
+      if (product)
+        formData.append(
+          "expectedImageUrls",
+          JSON.stringify(product.imagenes ?? []),
+        );
       formData.append("nombre", data.nombre.trim());
       formData.append("precio", String(Number(data.precio) || 0));
       formData.append("descripcion", data.descripcion);
@@ -533,13 +568,19 @@ export default function CreateOrUpdateProduct({ product }: Props) {
       formData.append("stockIlimitado", String(data.stockIlimitado));
       formData.append("usaVariantes", String(data.usaVariantes));
 
-      if (!data.usaVariantes && data.stockIlimitado === false && data.stock !== null) {
+      if (
+        !data.usaVariantes &&
+        data.stockIlimitado === false &&
+        data.stock !== null
+      ) {
         formData.append("stock", String(data.stock));
       }
 
       selectedSections.forEach((id) => formData.append("seccionIds", id));
       uploadedImages.forEach((url) => formData.append("imageUrls", url));
-      componentes.forEach((componente) => formData.append("componentes", componente));
+      componentes.forEach((componente) =>
+        formData.append("componentes", componente),
+      );
 
       if (atributosValidos.length > 0) {
         formData.append("atributos", JSON.stringify(atributosValidos));
@@ -556,12 +597,16 @@ export default function CreateOrUpdateProduct({ product }: Props) {
 
       if (!result.ok) {
         setModalState("error");
-        setModalMessage(result.message || "Ocurrió un error al guardar el producto.");
+        setModalMessage(
+          result.message || "Ocurrió un error al guardar el producto.",
+        );
         return;
       }
 
       const firstSectionId = Array.from(selectedSections)[0];
-      const section = initialData.secciones.find((sec) => sec.id === firstSectionId);
+      const section = initialData.secciones.find(
+        (sec) => sec.id === firstSectionId,
+      );
 
       if (!section) {
         setModalState("error");
@@ -581,7 +626,9 @@ export default function CreateOrUpdateProduct({ product }: Props) {
 
         if (!createdProduct) {
           setModalState("error");
-          setModalMessage("No se pudo obtener la información del producto creado.");
+          setModalMessage(
+            "No se pudo obtener la información del producto creado.",
+          );
           return;
         }
 
@@ -599,7 +646,9 @@ export default function CreateOrUpdateProduct({ product }: Props) {
       setSubmitted(true);
       setModalState("success");
       setModalMessage(
-        product ? "Producto actualizado exitosamente." : "Producto creado exitosamente."
+        product
+          ? "Producto actualizado exitosamente."
+          : "Producto creado exitosamente.",
       );
 
       window.setTimeout(() => {
@@ -629,7 +678,11 @@ export default function CreateOrUpdateProduct({ product }: Props) {
           <FormLabel sx={{ mb: 1, color: "info.main", fontWeight: "bold" }}>
             Ingresa el nombre de tu producto
           </FormLabel>
-          <TextField label="Nombre" {...register("nombre", { required: true })} fullWidth />
+          <TextField
+            label="Nombre"
+            {...register("nombre", { required: true })}
+            fullWidth
+          />
         </FormControl>
 
         <FormControl fullWidth>
@@ -666,7 +719,9 @@ export default function CreateOrUpdateProduct({ product }: Props) {
                   return (
                     <Box
                       key={`${category.id}-${category.slug}`}
-                      onClick={() => handleCategoryChange(category.slug, category.id)}
+                      onClick={() =>
+                        handleCategoryChange(category.slug, category.id)
+                      }
                       sx={{
                         display: "inline-flex",
                         alignItems: "center",
@@ -683,7 +738,9 @@ export default function CreateOrUpdateProduct({ product }: Props) {
                         minWidth: "140px",
                         "&:hover": {
                           boxShadow: 3,
-                          backgroundColor: isSelected ? "primary.dark" : "grey.100",
+                          backgroundColor: isSelected
+                            ? "primary.dark"
+                            : "grey.100",
                           borderColor: "primary.main",
                         },
                       }}
@@ -808,11 +865,13 @@ export default function CreateOrUpdateProduct({ product }: Props) {
             🚀 Generación Automática de Descripciones y Tags con IA
           </h4>
           <p className="mt-1 text-md text-gray-600">
-            Para optimizar la visibilidad de tu producto y atraer más clientes, ingresa
-            una descripción detallada con sus principales características.
+            Para optimizar la visibilidad de tu producto y atraer más clientes,
+            ingresa una descripción detallada con sus principales
+            características.
             <br />
             <br />
-            Luego, presiona <strong>&quot;Generar Descripciones con IA&quot;</strong>.
+            Luego, presiona{" "}
+            <strong>&quot;Generar Descripciones con IA&quot;</strong>.
           </p>
         </div>
 
@@ -856,7 +915,9 @@ Huevos de codorniz`}
 
         {componentes.length > 0 && (
           <div className="rounded-lg bg-gray-100 p-4 shadow-sm">
-            <h4 className="mb-2 font-semibold text-blue-700">📦 Componentes generados</h4>
+            <h4 className="mb-2 font-semibold text-blue-700">
+              📦 Componentes generados
+            </h4>
             <Stack direction="row" spacing={1} flexWrap="wrap">
               {componentes.map((componente, index) => (
                 <Chip
@@ -900,12 +961,20 @@ Huevos de codorniz`}
                 width: { xs: "100%", sm: "300px" },
               }}
             >
-              {generating ? <CircularProgress size={24} /> : "Generar Descripciones con IA"}
+              {generating ? (
+                <CircularProgress size={24} />
+              ) : (
+                "Generar Descripciones con IA"
+              )}
             </Button>
           </Box>
 
           {alert && (
-            <Alert severity={alert.type} onClose={() => setAlert(null)} sx={{ mt: 2 }}>
+            <Alert
+              severity={alert.type}
+              onClose={() => setAlert(null)}
+              sx={{ mt: 2 }}
+            >
               {alert.message}
             </Alert>
           )}
@@ -916,7 +985,8 @@ Huevos de codorniz`}
         <div className="rounded-lg border-l-4 border-blue-600 bg-gray-100 p-4 shadow-sm">
           <h5 className="font-semibold text-blue-600">Descripción completa</h5>
           <p className="mt-1 text-md text-gray-600">
-            Esta es la descripción que aparecerá en la información completa del producto.
+            Esta es la descripción que aparecerá en la información completa del
+            producto.
           </p>
         </div>
 
@@ -964,9 +1034,12 @@ Huevos de codorniz`}
         <Divider />
 
         <div className="rounded-lg border-l-4 border-blue-600 bg-gray-100 p-4 shadow-sm">
-          <h5 className="font-semibold text-blue-600">🔍 Tags (Palabras Clave)</h5>
+          <h5 className="font-semibold text-blue-600">
+            🔍 Tags (Palabras Clave)
+          </h5>
           <p className="mt-1 text-md text-gray-600">
-            Los tags ayudan a que tu producto sea más fácil de encontrar en búsquedas.
+            Los tags ayudan a que tu producto sea más fácil de encontrar en
+            búsquedas.
           </p>
         </div>
 
@@ -992,7 +1065,9 @@ Huevos de codorniz`}
         <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h5 className="font-semibold text-gray-800">Inventario y opciones avanzadas</h5>
+              <h5 className="font-semibold text-gray-800">
+                Inventario y opciones avanzadas
+              </h5>
               <p className="mt-1 text-sm text-gray-500">
                 Activa estas opciones solo si tu producto lo necesita.
               </p>
@@ -1074,9 +1149,12 @@ Huevos de codorniz`}
         <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h5 className="font-semibold text-gray-800">Atributos adicionales</h5>
+              <h5 className="font-semibold text-gray-800">
+                Atributos adicionales
+              </h5>
               <p className="mt-1 text-sm text-gray-500">
-                Úsalos para datos como material, marca, estilo, potencia, uso, etc.
+                Úsalos para datos como material, marca, estilo, potencia, uso,
+                etc.
               </p>
             </div>
 
@@ -1141,7 +1219,11 @@ Huevos de codorniz`}
                             label="Nombre"
                             value={atributo.nombre}
                             onChange={(e) =>
-                              updateAtributo(atributo.id, "nombre", e.target.value)
+                              updateAtributo(
+                                atributo.id,
+                                "nombre",
+                                e.target.value,
+                              )
                             }
                             fullWidth
                           />
@@ -1149,7 +1231,11 @@ Huevos de codorniz`}
                             label="Valor"
                             value={atributo.valor}
                             onChange={(e) =>
-                              updateAtributo(atributo.id, "valor", e.target.value)
+                              updateAtributo(
+                                atributo.id,
+                                "valor",
+                                e.target.value,
+                              )
                             }
                             fullWidth
                           />
@@ -1168,7 +1254,9 @@ Huevos de codorniz`}
         <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h5 className="font-semibold text-gray-800">Variantes del producto</h5>
+              <h5 className="font-semibold text-gray-800">
+                Variantes del producto
+              </h5>
               <p className="mt-1 text-sm text-gray-500">
                 Ejemplo: talla, color, presentación, capacidad o tamaño.
               </p>
@@ -1209,38 +1297,68 @@ Huevos de codorniz`}
               <Typography fontWeight={700} color="text.primary">
                 Como crear variantes sin confusion
               </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mt: 1.2 }}>
-                Cada bloque de variante representa una opcion comprable distinta.
-                Si vendes &quot;Grande&quot; y &quot;Extra grande&quot;, debes crear 2 variantes
-                separadas.
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{ mt: 1.2 }}
+              >
+                Cada bloque de variante representa una opcion comprable
+                distinta. Si vendes &quot;Grande&quot; y &quot;Extra
+                grande&quot;, debes crear 2 variantes separadas.
               </Typography>
 
-              <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap sx={{ mt: 2 }}>
-                <Chip label="Variante 1: Grande" size="small" color="primary" variant="outlined" />
-                <Chip label="Variante 2: Extra grande" size="small" color="primary" variant="outlined" />
+              <Stack
+                direction="row"
+                spacing={1}
+                flexWrap="wrap"
+                useFlexGap
+                sx={{ mt: 2 }}
+              >
+                <Chip
+                  label="Variante 1: Grande"
+                  size="small"
+                  color="primary"
+                  variant="outlined"
+                />
+                <Chip
+                  label="Variante 2: Extra grande"
+                  size="small"
+                  color="primary"
+                  variant="outlined"
+                />
               </Stack>
 
               <Stack spacing={1} sx={{ mt: 2 }}>
                 <Typography variant="body2" color="text.secondary">
-                  <Box component="span" sx={{ fontWeight: 700, color: "text.primary" }}>
+                  <Box
+                    component="span"
+                    sx={{ fontWeight: 700, color: "text.primary" }}
+                  >
                     Nombre que ve el cliente:
                   </Box>{" "}
                   escribe la opcion real, por ejemplo: &quot;Grande&quot;.
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  <Box component="span" sx={{ fontWeight: 700, color: "text.primary" }}>
+                  <Box
+                    component="span"
+                    sx={{ fontWeight: 700, color: "text.primary" }}
+                  >
                     SKU interno:
                   </Box>{" "}
-                  es un codigo opcional para inventario o integraciones, por ejemplo:
-                  &quot;SALCH-GRA&quot;. Si no usas codigos internos, puedes dejarlo vacio.
+                  es un codigo opcional para inventario o integraciones, por
+                  ejemplo: &quot;SALCH-GRA&quot;. Si no usas codigos internos,
+                  puedes dejarlo vacio.
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  <Box component="span" sx={{ fontWeight: 700, color: "text.primary" }}>
+                  <Box
+                    component="span"
+                    sx={{ fontWeight: 700, color: "text.primary" }}
+                  >
                     Detalles de la variante:
                   </Box>{" "}
                   sirven para describir esa variante, por ejemplo: atributo
-                  &quot;Tamano&quot; y valor &quot;Grande&quot;. No crean variantes nuevas por si
-                  solos.
+                  &quot;Tamano&quot; y valor &quot;Grande&quot;. No crean
+                  variantes nuevas por si solos.
                 </Typography>
               </Stack>
             </Box>
@@ -1269,7 +1387,9 @@ Huevos de codorniz`}
                         className="rounded-2xl border border-gray-200 bg-gray-50 p-4"
                       >
                         <div className="mb-3 flex items-center justify-between">
-                          <Typography fontWeight={700}>Variante {index + 1}</Typography>
+                          <Typography fontWeight={700}>
+                            Variante {index + 1}
+                          </Typography>
                           <IconButton
                             onClick={() => removeVariant(variant.id)}
                             size="small"
@@ -1284,13 +1404,20 @@ Huevos de codorniz`}
                             label="Nombre que vera el cliente"
                             value={variant.nombre}
                             onChange={(e) =>
-                              updateVariant(variant.id, "nombre", e.target.value)
+                              updateVariant(
+                                variant.id,
+                                "nombre",
+                                e.target.value,
+                              )
                             }
                             fullWidth
-                            helperText='Ej: Grande, Extra grande, Roja, 1 kg. Este es el texto que el cliente elegira.'
+                            helperText="Ej: Grande, Extra grande, Roja, 1 kg. Este es el texto que el cliente elegira."
                           />
 
-                          <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
+                          <Stack
+                            direction={{ xs: "column", md: "row" }}
+                            spacing={2}
+                          >
                             <TextField
                               label="SKU interno (opcional)"
                               value={variant.sku}
@@ -1298,21 +1425,28 @@ Huevos de codorniz`}
                                 updateVariant(variant.id, "sku", e.target.value)
                               }
                               fullWidth
-                              helperText='Codigo interno para inventario. Ej: SALCH-GRA. No es el nombre visible.'
+                              helperText="Codigo interno para inventario. Ej: SALCH-GRA. No es el nombre visible."
                             />
                             <TextField
                               label="Precio"
                               type="number"
                               value={variant.precio}
                               onChange={(e) =>
-                                updateVariant(variant.id, "precio", e.target.value)
+                                updateVariant(
+                                  variant.id,
+                                  "precio",
+                                  e.target.value,
+                                )
                               }
                               fullWidth
                               helperText="Precio final de esta variante."
                             />
                           </Stack>
 
-                          <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
+                          <Stack
+                            direction={{ xs: "column", md: "row" }}
+                            spacing={2}
+                          >
                             <FormControlLabel
                               control={
                                 <Switch
@@ -1321,7 +1455,7 @@ Huevos de codorniz`}
                                     updateVariant(
                                       variant.id,
                                       "stockIlimitado",
-                                      e.target.checked
+                                      e.target.checked,
                                     )
                                   }
                                 />
@@ -1334,7 +1468,11 @@ Huevos de codorniz`}
                                 <Switch
                                   checked={variant.isActive}
                                   onChange={(e) =>
-                                    updateVariant(variant.id, "isActive", e.target.checked)
+                                    updateVariant(
+                                      variant.id,
+                                      "isActive",
+                                      e.target.checked,
+                                    )
                                   }
                                 />
                               }
@@ -1348,7 +1486,11 @@ Huevos de codorniz`}
                               type="number"
                               value={variant.stock}
                               onChange={(e) =>
-                                updateVariant(variant.id, "stock", e.target.value)
+                                updateVariant(
+                                  variant.id,
+                                  "stock",
+                                  e.target.value,
+                                )
                               }
                               fullWidth
                               helperText="Cantidad disponible solo para esta variante."
@@ -1359,7 +1501,11 @@ Huevos de codorniz`}
                             label="URL de imagen específica (opcional)"
                             value={variant.imagenUrl}
                             onChange={(e) =>
-                              updateVariant(variant.id, "imagenUrl", e.target.value)
+                              updateVariant(
+                                variant.id,
+                                "imagenUrl",
+                                e.target.value,
+                              )
                             }
                             fullWidth
                             helperText="Usala si esta variante tiene una foto distinta al producto principal."
@@ -1375,23 +1521,35 @@ Huevos de codorniz`}
                                 variant="outlined"
                                 startIcon={<FaPlus />}
                                 onClick={() => addVariantOption(variant.id)}
-                                sx={{ textTransform: "none", borderRadius: "10px" }}
+                                sx={{
+                                  textTransform: "none",
+                                  borderRadius: "10px",
+                                }}
                               >
                                 Opción
                               </Button>
                             </div>
 
-                            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                              Estos campos describen esta variante. Ejemplo: atributo
-                              &quot;Tamano&quot; y valor &quot;Grande&quot;. Si solo quieres crear
-                              opciones comprables como &quot;Grande&quot; y &quot;Extra grande&quot;,
-                              crea dos variantes separadas arriba.
+                            <Typography
+                              variant="body2"
+                              color="text.secondary"
+                              sx={{ mb: 2 }}
+                            >
+                              Estos campos describen esta variante. Ejemplo:
+                              atributo &quot;Tamano&quot; y valor
+                              &quot;Grande&quot;. Si solo quieres crear opciones
+                              comprables como &quot;Grande&quot; y &quot;Extra
+                              grande&quot;, crea dos variantes separadas arriba.
                             </Typography>
 
                             {variant.options.length === 0 ? (
-                              <Typography variant="body2" color="text.secondary">
-                                Agrega detalles como tamano, color, sabor o presentacion
-                                si necesitas mostrarlos con mas claridad.
+                              <Typography
+                                variant="body2"
+                                color="text.secondary"
+                              >
+                                Agrega detalles como tamano, color, sabor o
+                                presentacion si necesitas mostrarlos con mas
+                                claridad.
                               </Typography>
                             ) : (
                               <Stack spacing={2}>
@@ -1401,10 +1559,15 @@ Huevos de codorniz`}
                                     className="rounded-xl border border-gray-200 bg-gray-50 p-3"
                                   >
                                     <div className="mb-2 flex items-center justify-between">
-                                      <Typography fontWeight={600}>Opción</Typography>
+                                      <Typography fontWeight={600}>
+                                        Opción
+                                      </Typography>
                                       <IconButton
                                         onClick={() =>
-                                          removeVariantOption(variant.id, option.id)
+                                          removeVariantOption(
+                                            variant.id,
+                                            option.id,
+                                          )
                                         }
                                         size="small"
                                         color="error"
@@ -1413,7 +1576,10 @@ Huevos de codorniz`}
                                       </IconButton>
                                     </div>
 
-                                    <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
+                                    <Stack
+                                      direction={{ xs: "column", md: "row" }}
+                                      spacing={2}
+                                    >
                                       <TextField
                                         label="Atributo"
                                         value={option.nombre}
@@ -1422,7 +1588,7 @@ Huevos de codorniz`}
                                             variant.id,
                                             option.id,
                                             "nombre",
-                                            e.target.value
+                                            e.target.value,
                                           )
                                         }
                                         fullWidth
@@ -1436,7 +1602,7 @@ Huevos de codorniz`}
                                             variant.id,
                                             option.id,
                                             "valor",
-                                            e.target.value
+                                            e.target.value,
                                           )
                                         }
                                         fullWidth
@@ -1593,7 +1759,11 @@ Huevos de codorniz`}
                         variant="contained"
                         color="primary"
                         className="mt-4"
-                        sx={{ mt: 3, textTransform: "none", borderRadius: "12px" }}
+                        sx={{
+                          mt: 3,
+                          textTransform: "none",
+                          borderRadius: "12px",
+                        }}
                       >
                         Cerrar
                       </Button>
@@ -1610,7 +1780,11 @@ Huevos de codorniz`}
                         variant="contained"
                         color="primary"
                         className="mt-4"
-                        sx={{ mt: 3, textTransform: "none", borderRadius: "12px" }}
+                        sx={{
+                          mt: 3,
+                          textTransform: "none",
+                          borderRadius: "12px",
+                        }}
                       >
                         Cerrar
                       </Button>
@@ -1620,7 +1794,7 @@ Huevos de codorniz`}
               </motion.div>
             </motion.div>
           </AnimatePresence>,
-          document.body
+          document.body,
         )}
     </>
   );

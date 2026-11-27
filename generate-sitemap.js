@@ -18,13 +18,20 @@ async function fetchDynamicEntities(client = prisma) {
       select: { slug: true, updatedAt: true },
     }),
     client.product.findMany({
-      where: { negocio: buildPublishedBusinessRelationWhere() },
+      where: {
+        status: "disponible",
+        negocio: buildPublishedBusinessRelationWhere(),
+      },
       select: { slug: true, updatedAt: true },
     }),
     client.category.findMany({ select: { slug: true, updatedAt: true } }),
     client.encuesta.findMany({
       where: { negocio: buildPublishedBusinessRelationWhere() },
-      select: { id: true, updatedAt: true, negocio: { select: { slug: true } } },
+      select: {
+        id: true,
+        updatedAt: true,
+        negocio: { select: { slug: true } },
+      },
     }),
   ]);
 
@@ -34,9 +41,24 @@ async function fetchDynamicEntities(client = prisma) {
 function buildSitemapContent({ negocios, productos, categorias, encuestas }) {
   // URLs estáticas (de tu sitemap actual)
   const staticUrls = [
-    { loc: `${siteUrl}/`, lastmod: new Date().toISOString(), changefreq: "daily", priority: 0.7 },
-    { loc: `${siteUrl}/inicio`, lastmod: new Date().toISOString(), changefreq: "daily", priority: 0.7 },
-    { loc: `${siteUrl}/carrusel`, lastmod: new Date().toISOString(), changefreq: "daily", priority: 0.7 },
+    {
+      loc: `${siteUrl}/`,
+      lastmod: new Date().toISOString(),
+      changefreq: "daily",
+      priority: 0.7,
+    },
+    {
+      loc: `${siteUrl}/inicio`,
+      lastmod: new Date().toISOString(),
+      changefreq: "daily",
+      priority: 0.7,
+    },
+    {
+      loc: `${siteUrl}/carrusel`,
+      lastmod: new Date().toISOString(),
+      changefreq: "daily",
+      priority: 0.7,
+    },
   ];
 
   // URLs dinámicas para perfiles/negocios
@@ -80,7 +102,13 @@ function buildSitemapContent({ negocios, productos, categorias, encuestas }) {
     }));
 
   // Combina todas las URLs
-  const allUrls = [...staticUrls, ...perfilUrls, ...productoUrls, ...categoriaUrls, ...encuestaUrls];
+  const allUrls = [
+    ...staticUrls,
+    ...perfilUrls,
+    ...productoUrls,
+    ...categoriaUrls,
+    ...encuestaUrls,
+  ];
 
   // Genera XML
   return `<?xml version="1.0" encoding="UTF-8"?>
@@ -94,7 +122,7 @@ function buildSitemapContent({ negocios, productos, categorias, encuestas }) {
                 <changefreq>${url.changefreq}</changefreq>
                 <priority>${url.priority}</priority>
               </url>
-            `
+            `,
           )
           .join("\n")}
       </urlset>`;
@@ -110,7 +138,9 @@ async function main(client = prisma, fileSystem = fs) {
     // Escribe el archivo en public/
     const targetPath = path.join(process.cwd(), "public", "sitemap.xml");
     fileSystem.writeFileSync(targetPath, sitemapContent.trim());
-    console.log(`✅ Sitemap generated successfully at ${targetPath} with updated routes!`);
+    console.log(
+      `✅ Sitemap generated successfully at ${targetPath} with updated routes!`,
+    );
   } catch (error) {
     console.error("❌ Error generating sitemap:", error);
     process.exit(1);

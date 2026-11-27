@@ -1,0 +1,1032 @@
+[
+  {
+    "width": 320,
+    "geometry": {
+      "id": "p7",
+      "root": {
+        "x": 4,
+        "y": 77.25,
+        "width": 312,
+        "height": 317.56,
+        "right": 316,
+        "bottom": 394.81
+      },
+      "header": {
+        "x": 5,
+        "y": 78.25,
+        "width": 310,
+        "height": 44,
+        "right": 315,
+        "bottom": 122.25
+      },
+      "photo": {
+        "x": 5,
+        "y": 122.25,
+        "width": 310,
+        "height": 167.56,
+        "right": 315,
+        "bottom": 289.81
+      },
+      "name": {
+        "text": "Cooperativa de Productores Artesanales de Bogotá",
+        "width": 198,
+        "labelHeight": 36,
+        "font": "13px"
+      },
+      "avatar": {
+        "x": 5,
+        "y": 88.25,
+        "width": 24,
+        "height": 24,
+        "right": 29,
+        "bottom": 112.25
+      },
+      "controls": [
+        {
+          "label": "Abrir perfil de Cooperativa de Productores Artesanales de Bogotá",
+          "follow": false,
+          "avatar": true,
+          "name": false,
+          "box": {
+            "x": 5,
+            "y": 88.25,
+            "width": 24,
+            "height": 24,
+            "right": 29,
+            "bottom": 112.25
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(28, 40, 60)",
+          "paint": {
+            "width": "auto",
+            "height": "auto",
+            "background": "rgba(0, 0, 0, 0)"
+          },
+          "disabled": false
+        },
+        {
+          "label": "Cooperativa de Productores Artesanales de Bogotá",
+          "follow": false,
+          "avatar": false,
+          "name": true,
+          "box": {
+            "x": 73,
+            "y": 78.25,
+            "width": 198,
+            "height": 44,
+            "right": 271,
+            "bottom": 122.25
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(28, 40, 60)",
+          "paint": {
+            "width": "auto",
+            "height": "auto",
+            "background": "rgba(0, 0, 0, 0)"
+          },
+          "disabled": false
+        },
+        {
+          "label": "Seguir a Cooperativa de Productores Artesanales de Bogotá",
+          "follow": true,
+          "avatar": false,
+          "name": false,
+          "box": {
+            "x": 29,
+            "y": 78.25,
+            "width": 44,
+            "height": 44,
+            "right": 73,
+            "bottom": 122.25
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(255, 255, 255)",
+          "paint": {
+            "width": "20px",
+            "height": "20px",
+            "background": "rgb(201, 53, 69)"
+          },
+          "disabled": false
+        },
+        {
+          "label": "Guardar Edición artesanal colombiana con acabados hechos a mano y nombre de producto especialmente largo en favoritos",
+          "follow": false,
+          "avatar": false,
+          "name": false,
+          "box": {
+            "x": 271,
+            "y": 78.25,
+            "width": 44,
+            "height": 44,
+            "right": 315,
+            "bottom": 122.25
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(107, 114, 128)",
+          "paint": {
+            "width": "28px",
+            "height": "28px",
+            "background": "rgb(250, 243, 245)"
+          },
+          "disabled": false
+        },
+        {
+          "label": "Contactar por WhatsApp sobre Edición artesanal colombiana con acabados hechos a mano y nombre de producto especialmente largo",
+          "follow": false,
+          "avatar": false,
+          "name": false,
+          "box": {
+            "x": 217,
+            "y": 341.81,
+            "width": 44,
+            "height": 44,
+            "right": 261,
+            "bottom": 385.81
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(255, 255, 255)",
+          "paint": {
+            "width": "32px",
+            "height": "32px",
+            "background": "rgb(37, 128, 84)"
+          },
+          "disabled": false
+        },
+        {
+          "label": "Agregar Edición artesanal colombiana con acabados hechos a mano y nombre de producto especialmente largo al carrito",
+          "follow": false,
+          "avatar": false,
+          "name": false,
+          "box": {
+            "x": 261,
+            "y": 341.81,
+            "width": 44,
+            "height": 44,
+            "right": 305,
+            "bottom": 385.81
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(255, 255, 255)",
+          "paint": {
+            "width": "32px",
+            "height": "32px",
+            "background": "rgb(201, 53, 69)"
+          },
+          "disabled": false
+        }
+      ],
+      "collisions": [],
+      "price": {
+        "text": "$ 123.456.789",
+        "box": {
+          "x": 15,
+          "y": 352.81,
+          "width": 202,
+          "height": 22,
+          "right": 217,
+          "bottom": 374.81
+        },
+        "font": "18px"
+      },
+      "title": "Edición artesanal colombiana con acabados hechos a mano y nombre de producto especialmente largo",
+      "border": "1px solid rgb(226, 184, 194)",
+      "shadow": "rgba(44, 47, 51, 0.12) 0px 4px 14px 0px"
+    }
+  },
+  {
+    "width": 360,
+    "geometry": {
+      "id": "p7",
+      "root": {
+        "x": 4,
+        "y": 76.5,
+        "width": 352,
+        "height": 339.19,
+        "right": 356,
+        "bottom": 415.69
+      },
+      "header": {
+        "x": 5,
+        "y": 77.5,
+        "width": 350,
+        "height": 44,
+        "right": 355,
+        "bottom": 121.5
+      },
+      "photo": {
+        "x": 5,
+        "y": 121.5,
+        "width": 350,
+        "height": 189.19,
+        "right": 355,
+        "bottom": 310.69
+      },
+      "name": {
+        "text": "Cooperativa de Productores Artesanales de Bogotá",
+        "width": 238,
+        "labelHeight": 36,
+        "font": "13px"
+      },
+      "avatar": {
+        "x": 5,
+        "y": 87.5,
+        "width": 24,
+        "height": 24,
+        "right": 29,
+        "bottom": 111.5
+      },
+      "controls": [
+        {
+          "label": "Abrir perfil de Cooperativa de Productores Artesanales de Bogotá",
+          "follow": false,
+          "avatar": true,
+          "name": false,
+          "box": {
+            "x": 5,
+            "y": 87.5,
+            "width": 24,
+            "height": 24,
+            "right": 29,
+            "bottom": 111.5
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(28, 40, 60)",
+          "paint": {
+            "width": "auto",
+            "height": "auto",
+            "background": "rgba(0, 0, 0, 0)"
+          },
+          "disabled": false
+        },
+        {
+          "label": "Cooperativa de Productores Artesanales de Bogotá",
+          "follow": false,
+          "avatar": false,
+          "name": true,
+          "box": {
+            "x": 73,
+            "y": 77.5,
+            "width": 238,
+            "height": 44,
+            "right": 311,
+            "bottom": 121.5
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(28, 40, 60)",
+          "paint": {
+            "width": "auto",
+            "height": "auto",
+            "background": "rgba(0, 0, 0, 0)"
+          },
+          "disabled": false
+        },
+        {
+          "label": "Seguir a Cooperativa de Productores Artesanales de Bogotá",
+          "follow": true,
+          "avatar": false,
+          "name": false,
+          "box": {
+            "x": 29,
+            "y": 77.5,
+            "width": 44,
+            "height": 44,
+            "right": 73,
+            "bottom": 121.5
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(255, 255, 255)",
+          "paint": {
+            "width": "20px",
+            "height": "20px",
+            "background": "rgb(201, 53, 69)"
+          },
+          "disabled": false
+        },
+        {
+          "label": "Guardar Edición artesanal colombiana con acabados hechos a mano y nombre de producto especialmente largo en favoritos",
+          "follow": false,
+          "avatar": false,
+          "name": false,
+          "box": {
+            "x": 311,
+            "y": 77.5,
+            "width": 44,
+            "height": 44,
+            "right": 355,
+            "bottom": 121.5
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(107, 114, 128)",
+          "paint": {
+            "width": "28px",
+            "height": "28px",
+            "background": "rgb(250, 243, 245)"
+          },
+          "disabled": false
+        },
+        {
+          "label": "Contactar por WhatsApp sobre Edición artesanal colombiana con acabados hechos a mano y nombre de producto especialmente largo",
+          "follow": false,
+          "avatar": false,
+          "name": false,
+          "box": {
+            "x": 257,
+            "y": 362.69,
+            "width": 44,
+            "height": 44,
+            "right": 301,
+            "bottom": 406.69
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(255, 255, 255)",
+          "paint": {
+            "width": "32px",
+            "height": "32px",
+            "background": "rgb(37, 128, 84)"
+          },
+          "disabled": false
+        },
+        {
+          "label": "Agregar Edición artesanal colombiana con acabados hechos a mano y nombre de producto especialmente largo al carrito",
+          "follow": false,
+          "avatar": false,
+          "name": false,
+          "box": {
+            "x": 301,
+            "y": 362.69,
+            "width": 44,
+            "height": 44,
+            "right": 345,
+            "bottom": 406.69
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(255, 255, 255)",
+          "paint": {
+            "width": "32px",
+            "height": "32px",
+            "background": "rgb(201, 53, 69)"
+          },
+          "disabled": false
+        }
+      ],
+      "collisions": [],
+      "price": {
+        "text": "$ 123.456.789",
+        "box": {
+          "x": 15,
+          "y": 373.69,
+          "width": 242,
+          "height": 22,
+          "right": 257,
+          "bottom": 395.69
+        },
+        "font": "18px"
+      },
+      "title": "Edición artesanal colombiana con acabados hechos a mano y nombre de producto especialmente largo",
+      "border": "1px solid rgb(226, 184, 194)",
+      "shadow": "rgba(44, 47, 51, 0.12) 0px 4px 14px 0px"
+    }
+  },
+  {
+    "width": 390,
+    "geometry": {
+      "id": "p7",
+      "root": {
+        "x": 200,
+        "y": 77.39,
+        "width": 186,
+        "height": 356,
+        "right": 386,
+        "bottom": 433.39
+      },
+      "header": {
+        "x": 201,
+        "y": 78.39,
+        "width": 184,
+        "height": 44,
+        "right": 385,
+        "bottom": 122.39
+      },
+      "photo": {
+        "x": 201,
+        "y": 122.39,
+        "width": 184,
+        "height": 184,
+        "right": 385,
+        "bottom": 306.39
+      },
+      "name": {
+        "text": "Cooperativa de Productores Artesanales de Bogotá",
+        "width": 72,
+        "labelHeight": 32,
+        "font": "12px"
+      },
+      "avatar": {
+        "x": 201,
+        "y": 88.39,
+        "width": 24,
+        "height": 24,
+        "right": 225,
+        "bottom": 112.39
+      },
+      "controls": [
+        {
+          "label": "Abrir perfil de Cooperativa de Productores Artesanales de Bogotá",
+          "follow": false,
+          "avatar": true,
+          "name": false,
+          "box": {
+            "x": 201,
+            "y": 88.39,
+            "width": 24,
+            "height": 24,
+            "right": 225,
+            "bottom": 112.39
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(28, 40, 60)",
+          "paint": {
+            "width": "auto",
+            "height": "auto",
+            "background": "rgba(0, 0, 0, 0)"
+          },
+          "disabled": false
+        },
+        {
+          "label": "Cooperativa de Productores Artesanales de Bogotá",
+          "follow": false,
+          "avatar": false,
+          "name": true,
+          "box": {
+            "x": 269,
+            "y": 78.39,
+            "width": 72,
+            "height": 44,
+            "right": 341,
+            "bottom": 122.39
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(28, 40, 60)",
+          "paint": {
+            "width": "auto",
+            "height": "auto",
+            "background": "rgba(0, 0, 0, 0)"
+          },
+          "disabled": false
+        },
+        {
+          "label": "Seguir a Cooperativa de Productores Artesanales de Bogotá",
+          "follow": true,
+          "avatar": false,
+          "name": false,
+          "box": {
+            "x": 225,
+            "y": 78.39,
+            "width": 44,
+            "height": 44,
+            "right": 269,
+            "bottom": 122.39
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(255, 255, 255)",
+          "paint": {
+            "width": "20px",
+            "height": "20px",
+            "background": "rgb(201, 53, 69)"
+          },
+          "disabled": false
+        },
+        {
+          "label": "Guardar Edición artesanal colombiana con acabados hechos a mano y nombre de producto especialmente largo en favoritos",
+          "follow": false,
+          "avatar": false,
+          "name": false,
+          "box": {
+            "x": 341,
+            "y": 78.39,
+            "width": 44,
+            "height": 44,
+            "right": 385,
+            "bottom": 122.39
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(107, 114, 128)",
+          "paint": {
+            "width": "28px",
+            "height": "28px",
+            "background": "rgb(250, 243, 245)"
+          },
+          "disabled": false
+        },
+        {
+          "label": "Contactar por WhatsApp sobre Edición artesanal colombiana con acabados hechos a mano y nombre de producto especialmente largo",
+          "follow": false,
+          "avatar": false,
+          "name": false,
+          "box": {
+            "x": 289,
+            "y": 380.39,
+            "width": 44,
+            "height": 44,
+            "right": 333,
+            "bottom": 424.39
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(255, 255, 255)",
+          "paint": {
+            "width": "32px",
+            "height": "32px",
+            "background": "rgb(37, 128, 84)"
+          },
+          "disabled": false
+        },
+        {
+          "label": "Agregar Edición artesanal colombiana con acabados hechos a mano y nombre de producto especialmente largo al carrito",
+          "follow": false,
+          "avatar": false,
+          "name": false,
+          "box": {
+            "x": 333,
+            "y": 380.39,
+            "width": 44,
+            "height": 44,
+            "right": 377,
+            "bottom": 424.39
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(255, 255, 255)",
+          "paint": {
+            "width": "32px",
+            "height": "32px",
+            "background": "rgb(201, 53, 69)"
+          },
+          "disabled": false
+        }
+      ],
+      "collisions": [],
+      "price": {
+        "text": "$ 123.456.789",
+        "box": {
+          "x": 209,
+          "y": 358.39,
+          "width": 168,
+          "height": 22,
+          "right": 377,
+          "bottom": 380.39
+        },
+        "font": "16px"
+      },
+      "title": "Edición artesanal colombiana con acabados hechos a mano y nombre de producto especialmente largo",
+      "border": "1px solid rgb(226, 184, 194)",
+      "shadow": "rgba(44, 47, 51, 0.12) 0px 4px 14px 0px"
+    }
+  },
+  {
+    "width": 430,
+    "geometry": {
+      "id": "p7",
+      "root": {
+        "x": 220,
+        "y": 76.5,
+        "width": 206,
+        "height": 362,
+        "right": 426,
+        "bottom": 438.5
+      },
+      "header": {
+        "x": 221,
+        "y": 77.5,
+        "width": 204,
+        "height": 44,
+        "right": 425,
+        "bottom": 121.5
+      },
+      "photo": {
+        "x": 221,
+        "y": 121.5,
+        "width": 204,
+        "height": 190,
+        "right": 425,
+        "bottom": 311.5
+      },
+      "name": {
+        "text": "Cooperativa de Productores Artesanales de Bogotá",
+        "width": 92,
+        "labelHeight": 32,
+        "font": "12px"
+      },
+      "avatar": {
+        "x": 221,
+        "y": 87.5,
+        "width": 24,
+        "height": 24,
+        "right": 245,
+        "bottom": 111.5
+      },
+      "controls": [
+        {
+          "label": "Abrir perfil de Cooperativa de Productores Artesanales de Bogotá",
+          "follow": false,
+          "avatar": true,
+          "name": false,
+          "box": {
+            "x": 221,
+            "y": 87.5,
+            "width": 24,
+            "height": 24,
+            "right": 245,
+            "bottom": 111.5
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(28, 40, 60)",
+          "paint": {
+            "width": "auto",
+            "height": "auto",
+            "background": "rgba(0, 0, 0, 0)"
+          },
+          "disabled": false
+        },
+        {
+          "label": "Cooperativa de Productores Artesanales de Bogotá",
+          "follow": false,
+          "avatar": false,
+          "name": true,
+          "box": {
+            "x": 289,
+            "y": 77.5,
+            "width": 92,
+            "height": 44,
+            "right": 381,
+            "bottom": 121.5
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(28, 40, 60)",
+          "paint": {
+            "width": "auto",
+            "height": "auto",
+            "background": "rgba(0, 0, 0, 0)"
+          },
+          "disabled": false
+        },
+        {
+          "label": "Seguir a Cooperativa de Productores Artesanales de Bogotá",
+          "follow": true,
+          "avatar": false,
+          "name": false,
+          "box": {
+            "x": 245,
+            "y": 77.5,
+            "width": 44,
+            "height": 44,
+            "right": 289,
+            "bottom": 121.5
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(255, 255, 255)",
+          "paint": {
+            "width": "20px",
+            "height": "20px",
+            "background": "rgb(201, 53, 69)"
+          },
+          "disabled": false
+        },
+        {
+          "label": "Guardar Edición artesanal colombiana con acabados hechos a mano y nombre de producto especialmente largo en favoritos",
+          "follow": false,
+          "avatar": false,
+          "name": false,
+          "box": {
+            "x": 381,
+            "y": 77.5,
+            "width": 44,
+            "height": 44,
+            "right": 425,
+            "bottom": 121.5
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(107, 114, 128)",
+          "paint": {
+            "width": "28px",
+            "height": "28px",
+            "background": "rgb(250, 243, 245)"
+          },
+          "disabled": false
+        },
+        {
+          "label": "Contactar por WhatsApp sobre Edición artesanal colombiana con acabados hechos a mano y nombre de producto especialmente largo",
+          "follow": false,
+          "avatar": false,
+          "name": false,
+          "box": {
+            "x": 329,
+            "y": 385.5,
+            "width": 44,
+            "height": 44,
+            "right": 373,
+            "bottom": 429.5
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(255, 255, 255)",
+          "paint": {
+            "width": "32px",
+            "height": "32px",
+            "background": "rgb(37, 128, 84)"
+          },
+          "disabled": false
+        },
+        {
+          "label": "Agregar Edición artesanal colombiana con acabados hechos a mano y nombre de producto especialmente largo al carrito",
+          "follow": false,
+          "avatar": false,
+          "name": false,
+          "box": {
+            "x": 373,
+            "y": 385.5,
+            "width": 44,
+            "height": 44,
+            "right": 417,
+            "bottom": 429.5
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(255, 255, 255)",
+          "paint": {
+            "width": "32px",
+            "height": "32px",
+            "background": "rgb(201, 53, 69)"
+          },
+          "disabled": false
+        }
+      ],
+      "collisions": [],
+      "price": {
+        "text": "$ 123.456.789",
+        "box": {
+          "x": 229,
+          "y": 363.5,
+          "width": 188,
+          "height": 22,
+          "right": 417,
+          "bottom": 385.5
+        },
+        "font": "16px"
+      },
+      "title": "Edición artesanal colombiana con acabados hechos a mano y nombre de producto especialmente largo",
+      "border": "1px solid rgb(226, 184, 194)",
+      "shadow": "rgba(44, 47, 51, 0.12) 0px 4px 14px 0px"
+    }
+  },
+  {
+    "width": 768,
+    "geometry": {
+      "id": "p7",
+      "root": {
+        "x": 389,
+        "y": 77.41,
+        "width": 371,
+        "height": 349.45,
+        "right": 760,
+        "bottom": 426.86
+      },
+      "header": {
+        "x": 390,
+        "y": 78.41,
+        "width": 369,
+        "height": 44,
+        "right": 759,
+        "bottom": 122.41
+      },
+      "photo": {
+        "x": 390,
+        "y": 122.41,
+        "width": 369,
+        "height": 199.45,
+        "right": 759,
+        "bottom": 321.86
+      },
+      "name": {
+        "text": "Cooperativa de Productores Artesanales de Bogotá",
+        "width": 257,
+        "labelHeight": 36,
+        "font": "13px"
+      },
+      "avatar": {
+        "x": 390,
+        "y": 88.41,
+        "width": 24,
+        "height": 24,
+        "right": 414,
+        "bottom": 112.41
+      },
+      "controls": [
+        {
+          "label": "Abrir perfil de Cooperativa de Productores Artesanales de Bogotá",
+          "follow": false,
+          "avatar": true,
+          "name": false,
+          "box": {
+            "x": 390,
+            "y": 88.41,
+            "width": 24,
+            "height": 24,
+            "right": 414,
+            "bottom": 112.41
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(28, 40, 60)",
+          "paint": {
+            "width": "auto",
+            "height": "auto",
+            "background": "rgba(0, 0, 0, 0)"
+          },
+          "disabled": false
+        },
+        {
+          "label": "Cooperativa de Productores Artesanales de Bogotá",
+          "follow": false,
+          "avatar": false,
+          "name": true,
+          "box": {
+            "x": 458,
+            "y": 78.41,
+            "width": 257,
+            "height": 44,
+            "right": 715,
+            "bottom": 122.41
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(28, 40, 60)",
+          "paint": {
+            "width": "auto",
+            "height": "auto",
+            "background": "rgba(0, 0, 0, 0)"
+          },
+          "disabled": false
+        },
+        {
+          "label": "Seguir a Cooperativa de Productores Artesanales de Bogotá",
+          "follow": true,
+          "avatar": false,
+          "name": false,
+          "box": {
+            "x": 414,
+            "y": 78.41,
+            "width": 44,
+            "height": 44,
+            "right": 458,
+            "bottom": 122.41
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(255, 255, 255)",
+          "paint": {
+            "width": "20px",
+            "height": "20px",
+            "background": "rgb(201, 53, 69)"
+          },
+          "disabled": false
+        },
+        {
+          "label": "Guardar Edición artesanal colombiana con acabados hechos a mano y nombre de producto especialmente largo en favoritos",
+          "follow": false,
+          "avatar": false,
+          "name": false,
+          "box": {
+            "x": 715,
+            "y": 78.41,
+            "width": 44,
+            "height": 44,
+            "right": 759,
+            "bottom": 122.41
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(107, 114, 128)",
+          "paint": {
+            "width": "28px",
+            "height": "28px",
+            "background": "rgb(250, 243, 245)"
+          },
+          "disabled": false
+        },
+        {
+          "label": "Contactar por WhatsApp sobre Edición artesanal colombiana con acabados hechos a mano y nombre de producto especialmente largo",
+          "follow": false,
+          "avatar": false,
+          "name": false,
+          "box": {
+            "x": 661,
+            "y": 373.86,
+            "width": 44,
+            "height": 44,
+            "right": 705,
+            "bottom": 417.86
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(255, 255, 255)",
+          "paint": {
+            "width": "32px",
+            "height": "32px",
+            "background": "rgb(37, 128, 84)"
+          },
+          "disabled": false
+        },
+        {
+          "label": "Agregar Edición artesanal colombiana con acabados hechos a mano y nombre de producto especialmente largo al carrito",
+          "follow": false,
+          "avatar": false,
+          "name": false,
+          "box": {
+            "x": 705,
+            "y": 373.86,
+            "width": 44,
+            "height": 44,
+            "right": 749,
+            "bottom": 417.86
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(255, 255, 255)",
+          "paint": {
+            "width": "32px",
+            "height": "32px",
+            "background": "rgb(201, 53, 69)"
+          },
+          "disabled": false
+        }
+      ],
+      "collisions": [],
+      "price": {
+        "text": "$ 123.456.789",
+        "box": {
+          "x": 400,
+          "y": 384.86,
+          "width": 261,
+          "height": 22,
+          "right": 661,
+          "bottom": 406.86
+        },
+        "font": "16px"
+      },
+      "title": "Edición artesanal colombiana con acabados hechos a mano y nombre de producto especialmente largo",
+      "border": "1px solid rgb(226, 184, 194)",
+      "shadow": "rgba(44, 47, 51, 0.12) 0px 4px 14px 0px"
+    }
+  }
+]

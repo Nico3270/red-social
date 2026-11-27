@@ -1,0 +1,6 @@
+{
+  "requests": 2,
+  "oneRequestWhilePending": true,
+  "keyboardUnfollow": true,
+  "pendingHasSpinner": true
+}

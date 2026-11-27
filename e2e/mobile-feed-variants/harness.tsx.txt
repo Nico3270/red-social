@@ -1,0 +1,384 @@
+import React from "react";
+import { createRoot } from "react-dom/client";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import FeedRenderer from "@/publicaciones/componentes/FeedRederer";
+import { TopMenuMobile } from "@/ui/components/topMenuMobile/TopMenuMobile";
+import { TopMenu } from "@/ui/components/topMenu/TopMenu";
+import { ProductCard } from "@/ui/components/productos/ProductCard";
+import DiscoveryPublicationCard from "@/feed/componentes/DiscoveryPublicationCard";
+import DiscoveryBusinessCard from "@/feed/componentes/DiscoveryBusinessCard";
+import DiscoveryServiceCard from "@/feed/componentes/DiscoveryServiceCard";
+import { useCartCatalogoStore } from "@/store/carro/carro-store";
+import { useFavoritesCatalogoStore } from "@/store/favoritos/favoritos-store";
+const base = {
+  id: "p1",
+  nombre: "Café de origen · 250 g",
+  precio: 28000,
+  descripcion:
+    "Café de origen colombiano, tostado en lotes pequeños. Notas de chocolate y panela. Consulta molienda y disponibilidad en la ficha.",
+  descripcionCorta:
+    "Café colombiano con notas de chocolate y panela. Tostado fresco para cada mañana.",
+  slug: "cafe-origen",
+  prioridad: 1,
+  status: "activo",
+  tags: [],
+  categoriaId: "2",
+  imagenes: ["/audit-art/coffee.svg"],
+  componentes: [],
+  sections: [],
+  slugNegocio: "casa-origen",
+  nombreNegocio: "Casa Origen",
+  negocioId: "b1",
+  telefonoContacto: "3100000000",
+  negocioFotoPerfil: "/audit-art/avatar.svg",
+  stock: 10,
+  stockIlimitado: false,
+  usaVariantes: false,
+  variantes: [],
+};
+export const products = [
+  base,
+  {
+    ...base,
+    id: "p2",
+    nombre: "Bolso tejido artesanal",
+    slug: "bolso",
+    precio: 89000,
+    descripcionCorta:
+      "Hecho a mano con fibras naturales. Ligero y cómodo para todos los días.",
+    imagenes: ["/audit-art/bag.svg"],
+  },
+  {
+    ...base,
+    id: "p3",
+    nombre: "Planta con matera",
+    slug: "planta",
+    precio: 42000,
+    descripcionCorta:
+      "Un toque verde para tu hogar. Incluye matera de cerámica artesanal.",
+    imagenes: ["/audit-art/plant.svg"],
+  },
+];
+products.push(
+  {
+    ...base,
+    id: "p4",
+    nombre: "Café de origen · 500 g",
+    precio: 49000,
+    slug: "cafe-500",
+    imagenes: ["/audit-art/coffee.svg"],
+  },
+  {
+    ...base,
+    id: "p5",
+    nombre: "Bolso de fibras naturales",
+    precio: 119000,
+    slug: "bolso-fibras",
+    imagenes: ["/audit-art/bag.svg"],
+  },
+  {
+    ...base,
+    id: "p6",
+    nombre: "Planta para tu escritorio",
+    precio: 35000,
+    slug: "planta-escritorio",
+    imagenes: ["/audit-art/plant.svg"],
+  },
+);
+const publication = {
+  id: "pub1",
+  usuario: { id: "u1", nombre: "Laura", apellido: "Rojas", username: "laura" },
+  negocio: {
+    id: "b1",
+    nombre: "Casa Origen",
+    slug: "casa-origen",
+    fotoPerfil: "/audit-art/avatar.svg",
+  },
+  tipo: "CARRUSEL_IMAGENES",
+  titulo: "Así empieza una buena mañana",
+  descripcion:
+    "Nos encontramos en el barrio para compartir café, historias y productos hechos con cuidado. Descubre a quienes están detrás de cada taza.",
+  multimedia: [
+    { id: "m1", tipo: "IMAGEN", orden: 0, url: "/audit-art/morning.svg" },
+  ],
+  createdAt: "2026-11-14T15:00:00Z",
+  visibilidad: "PUBLICA",
+  numLikes: 24,
+  numComentarios: 6,
+  numCompartidos: 2,
+  userReaction: null,
+  comments: [],
+};
+const service = {
+  id: "s1",
+  titulo: "Taller de café en casa",
+  descripcion: [
+    "Aprende a preparar tu café favorito con métodos sencillos. Una experiencia para compartir en grupos pequeños.",
+  ],
+  precio: 65000,
+  currency: "COP",
+  negocioSlug: "casa-origen",
+  nombreNegocio: "Casa Origen",
+  telefonoNegocio: "3100000000",
+  multimedia: [
+    { id: "sm1", tipo: "IMAGEN", orden: 0, url: "/audit-art/morning.svg" },
+  ],
+};
+const business = {
+  id: "b1",
+  negocioId: "b1",
+  nombre: "Casa Origen",
+  slug: "casa-origen",
+  descripcion:
+    "Café de especialidad, objetos hechos a mano y encuentros para disfrutar el barrio. Conoce nuestro catálogo y visítanos.",
+  ciudad: "Bogotá",
+  departamento: "Bogotá D.C.",
+  imagenPerfil: "/audit-art/avatar.svg",
+  imagenPortada: "/audit-art/morning.svg",
+  telefonoContacto: "3100000000",
+  urlGoogleMaps: "https://maps.google.com/",
+  categorias: ["comida"],
+  secciones: [],
+  estado: "activo",
+  createdAt: new Date("2026-11-14"),
+};
+const item = (type: string, data: any) => ({
+  id: data.id,
+  type,
+  data,
+  score: 1,
+  createdAt: new Date("2026-11-14"),
+  title: data.nombre || data.titulo,
+  descriptionShort: "",
+  imageUrl: "",
+  businessSlug: "casa-origen",
+  isFollowed: false,
+});
+const params = new URLSearchParams(location.search);
+const productMedia = params.get("productMedia");
+if (productMedia === "portrait" || productMedia === "landscape") {
+  base.imagenes = [
+    productMedia === "portrait"
+      ? "/audit-art/portrait.svg"
+      : "/audit-art/morning.svg",
+  ];
+  products[0] = { ...products[0], imagenes: base.imagenes };
+}
+const stress = params.has("stress");
+if (stress) {
+  products[0] = {
+    ...base,
+    nombre:
+      "Café artesanal colombiano de origen con molienda personalizada para prensa francesa y filtro de papel",
+    nombreNegocio:
+      "Cooperativa de productores artesanales del barrio de Bogotá",
+    precio: 1234567,
+    descripcionCorta:
+      "Descripción extensa para comprobar la legibilidad y los límites de dos líneas a todos los anchos sin desplazar las acciones comerciales fuera de la tarjeta.",
+  };
+}
+if (params.get("media") === "portrait")
+  publication.multimedia[0].url = "/audit-art/portrait.svg";
+if (params.get("media") === "square")
+  publication.multimedia[0].url = "/audit-art/coffee.svg";
+if (params.get("media") === "video")
+  publication.multimedia[0] = {
+    ...publication.multimedia[0],
+    tipo: "VIDEO",
+    url: "/audit-art/synthetic.webm",
+  };
+if (params.get("media") === "none") {
+  publication.multimedia = [];
+  service.multimedia = [];
+}
+const fixtures = [
+  ...products.map((p) => item("product", p)),
+  item("publication", publication),
+  item("service", service),
+  item("business", business),
+];
+
+const variants = [
+  {
+    id: "v1",
+    nombre: "Grano",
+    precio: 29000,
+    stock: 2,
+    stockIlimitado: false,
+    isActive: true,
+    options: [],
+    orden: 0,
+  },
+  {
+    id: "v2",
+    nombre: "Molido",
+    precio: 32000,
+    stock: 0,
+    stockIlimitado: false,
+    isActive: true,
+    options: [],
+    orden: 1,
+  },
+];
+const cases = [
+  ["normal", base],
+  [
+    "long",
+    {
+      ...products[0],
+      id: "long",
+      nombre:
+        "Café artesanal colombiano de origen con molienda personalizada para prensa francesa y filtro de papel",
+      precio: 123456789,
+      nombreNegocio:
+        "Cooperativa de productores artesanales del barrio de Bogotá",
+    },
+  ],
+  [
+    "variants",
+    { ...base, id: "variants", usaVariantes: true, variantes: variants },
+  ],
+  [
+    "single-variant",
+    {
+      ...base,
+      id: "single-variant",
+      usaVariantes: true,
+      variantes: [variants[0]],
+    },
+  ],
+  ["sold-out", { ...base, id: "sold-out", stock: 0 }],
+  [
+    "variants-sold-out",
+    {
+      ...base,
+      id: "variants-sold-out",
+      usaVariantes: true,
+      variantes: variants.map((v) => ({ ...v, stock: 0 })),
+    },
+  ],
+  ["missing", { ...base, id: "missing", imagenes: [], descripcionCorta: "" }],
+  ["failed", { ...base, id: "failed", imagenes: ["/audit-art/missing.svg"] }],
+];
+(window as any).__feedTest = {
+  cart: useCartCatalogoStore,
+  favorites: useFavoritesCatalogoStore,
+};
+function App() {
+  const [width, setWidth] = React.useState(innerWidth);
+  React.useEffect(() => {
+    const f = () => setWidth(innerWidth);
+    window.addEventListener("resize", f);
+    return () => window.removeEventListener("resize", f);
+  }, []);
+  const [tab, setTab] = React.useState<any>(params.get("tab") || "Para ti");
+  if (params.get("view") === "cases")
+    return (
+      <main
+        data-discovery-design={params.get("design") || "b2"}
+        className="test-cases"
+      >
+        <div className="prototype-product-cluster">
+          {cases.map(([name, p]) => (
+            <section data-case={name} key={name as string}>
+              <h2>{name as string}</h2>
+              <ProductCard
+                product={p as any}
+                variant={(params.get("variant") || "feed") as any}
+              />
+            </section>
+          ))}
+        </div>
+        <section data-case="publication">
+          <DiscoveryPublicationCard publicacion={publication as any} />
+        </section>
+        <section data-case="review">
+          <DiscoveryPublicationCard
+            publicacion={
+              {
+                ...publication,
+                id: "review",
+                tipo: "TESTIMONIO",
+                calificacion: 4.5,
+                producto: {
+                  id: "p1",
+                  nombre: products[0].nombre,
+                  slug: "cafe-origen",
+                },
+              } as any
+            }
+          />
+        </section>
+        <section data-case="business">
+          <DiscoveryBusinessCard
+            business={
+              {
+                ...business,
+                nombre: "Cooperativa de negocios locales de Bogotá",
+                categorias: ["artesania-y-diseño-local"],
+                descripcion: business.descripcion.repeat(3),
+              } as any
+            }
+          />
+        </section>
+        <section data-case="service">
+          <DiscoveryServiceCard servicio={service as any} />
+        </section>
+        <section data-case="service-no-price">
+          <DiscoveryServiceCard
+            servicio={{ ...service, precio: undefined, multimedia: [] } as any}
+          />
+        </section>
+        <section data-case="service-long">
+          <DiscoveryServiceCard
+            servicio={
+              {
+                ...service,
+                titulo:
+                  "Asesoría personalizada para preparar café en casa y en tu negocio con técnicas artesanales",
+                precio: 123456789,
+              } as any
+            }
+          />
+        </section>
+        <section data-case="service-video">
+          <DiscoveryServiceCard
+            servicio={
+              {
+                ...service,
+                multimedia: [
+                  { tipo: "VIDEO", url: "/audit-art/synthetic.webm", orden: 0 },
+                ],
+              } as any
+            }
+          />
+        </section>
+      </main>
+    );
+  return (
+    <div className="bg-white min-h-screen flex flex-col relative">
+      {width <= 768 ? <TopMenuMobile /> : <TopMenu />}
+      <main>
+        <div className="mb-20 w-full">
+          <FeedRenderer
+            items={fixtures as any}
+            hasMore={true}
+            isLoadingNext={false}
+            sentinelRef={() => {}}
+            activeTab={tab}
+            onTabChange={setTab}
+            discoveryContext={params.has("category") ? "category" : "home"}
+            categoriaSlug={params.has("category") ? "comida" : undefined}
+            categoriaNombre={params.has("category") ? "Comida" : undefined}
+            ciudad="Bogotá"
+          />
+        </div>
+      </main>
+    </div>
+  );
+}
+createRoot(document.getElementById("root")!).render(
+  <QueryClientProvider client={new QueryClient()}>
+    <App />
+  </QueryClientProvider>,
+);

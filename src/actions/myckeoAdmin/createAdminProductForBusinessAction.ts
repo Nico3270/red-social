@@ -1,5 +1,9 @@
 "use server";
 
+import {
+  lockWritableBusiness,
+  requireSuperAdmin,
+} from "@/lib/business/productAccess";
 import { auth } from "@/auth.config";
 import prisma from "@/lib/prisma";
 import {
@@ -16,35 +20,40 @@ import {
   ProductStatus,
 } from "@prisma/client";
 import { z } from "zod";
+import { parseCopPrice } from "@/lib/products/copPrice";
+import { createHash } from "node:crypto";
+import { lockProduct } from "@/lib/products/imageGallery";
 import { revalidateAdminProductSurfaces } from "./revalidateAdminProductSurfaces";
 
 const MAX_SLUG_ATTEMPTS = 40;
 
 const priceInputSchema = z
   .union([z.string(), z.number()])
-  .transform((value) =>
-    typeof value === "number" ? String(value) : value.trim(),
-  )
-  .transform((value) => value.replace(/[^\d.,-]/g, "").replace(",", "."))
-  .transform((value) => Number(value))
-  .refine(
-    (value) => Number.isFinite(value),
-    "El precio debe ser un número válido.",
-  )
-  .refine((value) => value >= 0, "El precio no puede ser negativo.");
-
+  .transform((value, ctx) => {
+    try {
+      return parseCopPrice(value);
+    } catch {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Precio COP inválido.",
+      });
+      return z.NEVER;
+    }
+  });
 const optionalPriceInputSchema = z
   .union([z.string(), z.number(), z.null(), z.undefined()])
-  .transform((value) => {
-    if (value === null || value === undefined) return null;
-    const raw = typeof value === "number" ? String(value) : value.trim();
-    if (!raw) return null;
-    return Number(raw.replace(/[^\d.,-]/g, "").replace(",", "."));
-  })
-  .refine(
-    (value) => value === null || (Number.isFinite(value) && value >= 0),
-    "El precio sugerido de variante debe ser válido.",
-  );
+  .transform((value, ctx) => {
+    if (value === null || value === undefined || value === "") return null;
+    try {
+      return parseCopPrice(value);
+    } catch {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Precio de variante inválido.",
+      });
+      return z.NEVER;
+    }
+  });
 
 const suggestedOptionInputSchema = z.object({
   id: z.string().trim().max(120).optional().default(""),
@@ -58,13 +67,19 @@ const variantOptionInputSchema = z.object({
   valor: z.string().trim().min(1, "La opción necesita valor.").max(80),
 });
 
-const variantInputSchema = z.object({
-  nombre: z.string().trim().min(1, "Cada variante necesita nombre.").max(90),
-  skuSugerido: z.string().trim().max(80).optional().default(""),
-  precioSugerido: optionalPriceInputSchema,
-  stockIlimitadoSugerido: z.boolean().optional().default(true),
-  opciones: z.array(variantOptionInputSchema).max(8).optional().default([]),
-});
+const variantInputSchema = z
+  .object({
+    existingVariantId: z.string().uuid().optional(),
+    nombre: z.string().trim().min(1, "Cada variante necesita nombre.").max(90),
+    skuSugerido: z.string().trim().max(80).optional().default(""),
+    precioSugerido: optionalPriceInputSchema,
+    stockIlimitadoSugerido: z.boolean().optional().default(true),
+    opciones: z.array(variantOptionInputSchema).max(8).optional().default([]),
+  })
+  .refine(
+    (v) => v.stockIlimitadoSugerido || Boolean(v.existingVariantId),
+    "Las variantes nuevas deben usar stock ilimitado; el inventario se gestiona desde su editor.",
+  );
 
 const productEtiquetaEspecialInputSchema = z
   .string()
@@ -80,13 +95,11 @@ const productEtiquetaEspecialInputSchema = z
 
 const createAdminProductForBusinessInputSchema = z.object({
   businessId: z.string().trim().min(1, "El negocio es obligatorio."),
+  operationId: z.string().uuid().optional(),
+  productId: z.string().uuid().optional(),
   categoryId: z.string().trim().min(1).max(120).optional(),
-  sectionIds: z
-    .array(z.string().trim().min(1).max(120))
-    .optional(),
-  catalogGroupIds: z
-    .array(z.string().trim().min(1).max(120))
-    .optional(),
+  sectionIds: z.array(z.string().trim().min(1).max(120)).optional(),
+  catalogGroupIds: z.array(z.string().trim().min(1).max(120)).optional(),
   draft: z
     .object({
       nombre: z
@@ -176,6 +189,7 @@ export interface CreateAdminProductForBusinessActionResult {
       usaVariantes: boolean;
     };
     warnings: string[];
+    imageUrls: string[];
   } | null;
   error: string | null;
   validationErrors?: string[];
@@ -478,6 +492,8 @@ export async function createAdminProductForBusinessAction(
       };
     }
 
+    await requireSuperAdmin();
+
     const parsedInput =
       createAdminProductForBusinessInputSchema.safeParse(rawInput);
 
@@ -492,8 +508,15 @@ export async function createAdminProductForBusinessAction(
       };
     }
 
-    const { businessId, categoryId, sectionIds, catalogGroupIds, draft } =
-      parsedInput.data;
+    const {
+      businessId,
+      operationId,
+      productId,
+      categoryId,
+      sectionIds,
+      catalogGroupIds,
+      draft,
+    } = parsedInput.data;
 
     const business = await prisma.negocio.findUnique({
       where: { id: businessId },
@@ -514,7 +537,11 @@ export async function createAdminProductForBusinessAction(
       };
     }
 
-    if (business.archivedAt || business.estado !== EstadoNegocio.activo) {
+    if (
+      business.archivedAt ||
+      (business.estado !== EstadoNegocio.activo &&
+        business.estado !== EstadoNegocio.suspendido)
+    ) {
       return {
         ok: false,
         data: null,
@@ -626,66 +653,139 @@ export async function createAdminProductForBusinessAction(
       resolvedCatalogGroupIds = catalogGroups.resolvedIds;
     }
 
-    const slug = await buildUniqueProductSlug(draft.slugSugerido, draft.nombre);
+    const slug = operationId
+      ? `admin-${createHash("sha256").update(`${businessId}:${operationId}`).digest("hex").slice(0, 48)}`
+      : await buildUniqueProductSlug(draft.slugSugerido, draft.nombre);
     const tags = cleanStringArray(draft.tags, 16);
     const componentes = cleanStringArray(draft.componentes, 24);
     const usaVariantes = draft.usaVariantesSugerido;
 
     const product = await prisma.$transaction(async (tx) => {
-      const createdProduct = await tx.product.create({
-        data: {
-          nombre: draft.nombre,
-          slug,
-          descripcion: draft.descripcion,
-          descripcionCorta: draft.descripcionCorta,
-          precio: draft.precioBase,
-          status: ProductStatus.oculto,
-          tags,
-          componentes,
-          etiquetaEspecial: draft.etiquetaEspecialSugerida,
-          negocioId: business.id,
-          categoryId: category.id,
-          stock: null,
-          stockIlimitado: true,
-          usaVariantes,
-          variantes:
-            usaVariantes && draft.variantesSugeridas.length > 0
-              ? {
-                  create: draft.variantesSugeridas.map((variant, index) => ({
-                    nombre: variant.nombre,
-                    sku: variant.skuSugerido || undefined,
-                    precio: variant.precioSugerido,
-                    stock: null,
-                    stockIlimitado: variant.stockIlimitadoSugerido,
-                    isActive: true,
-                    orden: index,
-                    options:
-                      variant.opciones.length > 0
-                        ? {
-                            create: variant.opciones.map(
-                              (option, optionIndex) => ({
-                                nombre: option.nombre,
-                                valor: option.valor,
-                                orden: optionIndex,
-                              }),
-                            ),
-                          }
-                        : undefined,
-                  })),
-                }
-              : undefined,
-        },
-        select: {
-          id: true,
-          nombre: true,
-          slug: true,
-          status: true,
-          negocioId: true,
-          categoryId: true,
-          precio: true,
-          usaVariantes: true,
-        },
-      });
+      await lockWritableBusiness(tx, business.id, "oculto");
+      if (operationId && !productId) {
+        await tx.$queryRaw`SELECT pg_advisory_xact_lock(hashtextextended(${slug}, 0))::text`;
+        const existing = await tx.product.findUnique({
+          where: { slug },
+          select: {
+            id: true,
+            nombre: true,
+            slug: true,
+            status: true,
+            negocioId: true,
+            categoryId: true,
+            precio: true,
+            usaVariantes: true,
+          },
+        });
+        if (existing) {
+          if (existing.negocioId !== business.id)
+            throw new Error("Operación incompatible.");
+          return existing;
+        }
+      }
+      const data: Prisma.ProductUncheckedCreateInput = {
+        nombre: draft.nombre,
+        slug,
+        descripcion: draft.descripcion,
+        descripcionCorta: draft.descripcionCorta,
+        precio: draft.precioBase,
+        status: ProductStatus.oculto,
+        tags,
+        componentes,
+        etiquetaEspecial: draft.etiquetaEspecialSugerida,
+        negocioId: business.id,
+        categoryId: category.id,
+        stock: null,
+        stockIlimitado: true,
+        usaVariantes,
+        variantes:
+          usaVariantes && draft.variantesSugeridas.length > 0
+            ? {
+                create: draft.variantesSugeridas.map((variant, index) => ({
+                  nombre: variant.nombre,
+                  sku: variant.skuSugerido || undefined,
+                  precio: variant.precioSugerido,
+                  stock: null,
+                  stockIlimitado: variant.stockIlimitadoSugerido,
+                  isActive: true,
+                  orden: index,
+                  options:
+                    variant.opciones.length > 0
+                      ? {
+                          create: variant.opciones.map(
+                            (option, optionIndex) => ({
+                              nombre: option.nombre,
+                              valor: option.valor,
+                              orden: optionIndex,
+                            }),
+                          ),
+                        }
+                      : undefined,
+                })),
+              }
+            : undefined,
+      };
+      const select = {
+        id: true,
+        nombre: true,
+        slug: true,
+        status: true,
+        negocioId: true,
+        categoryId: true,
+        precio: true,
+        usaVariantes: true,
+      } as const;
+      if (productId) {
+        await lockProduct(tx, productId);
+        const current = await tx.product.findFirst({
+          where: {
+            id: productId,
+            negocioId: business.id,
+            status: "oculto",
+            orderItems: { none: {} },
+          },
+          select: {
+            id: true,
+            slug: true,
+            stock: true,
+            stockIlimitado: true,
+            variantes: true,
+          },
+        });
+        if (!current)
+          throw new Error(
+            "Solo puedes editar aquí un borrador sin pedidos del negocio seleccionado.",
+          );
+        data.slug = current.slug;
+        data.stock = current.stock;
+        data.stockIlimitado = current.stockIlimitado;
+        const creates = data.variantes?.create;
+        if (Array.isArray(creates)) {
+          creates.forEach((variant, i) => {
+            const existingId = draft.variantesSugeridas[i]?.existingVariantId;
+            const previous = current.variantes.find((v) => v.id === existingId);
+            if (existingId && !previous)
+              throw new Error("La variante no pertenece al producto.");
+            if (previous) {
+              variant.id = previous.id;
+              variant.stock = previous.stock;
+              variant.stockIlimitado = previous.stockIlimitado;
+              variant.imagenUrl = previous.imagenUrl;
+              variant.isActive = previous.isActive;
+            } else if (!variant.stockIlimitado) {
+              throw new Error(
+                "Prepara las variantes nuevas con stock ilimitado o utiliza el editor de inventario.",
+              );
+            }
+          });
+        }
+        await tx.productVariant.deleteMany({ where: { productId } });
+        await tx.productSection.deleteMany({ where: { productId } });
+        await tx.catalogGroupProduct.deleteMany({ where: { productId } });
+      }
+      const createdProduct = productId
+        ? await tx.product.update({ where: { id: productId }, data, select })
+        : await tx.product.create({ data, select });
 
       if (resolvedSectionIds.length > 0) {
         await tx.productSection.createMany({
@@ -731,6 +831,12 @@ export async function createAdminProductForBusinessAction(
       data: {
         product,
         warnings,
+        imageUrls: (
+          await prisma.image.findMany({
+            where: { productId: product.id },
+            select: { url: true },
+          })
+        ).map((i) => i.url),
       },
       error: null,
     };

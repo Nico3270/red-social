@@ -1,0 +1,33 @@
+{
+  "brokenLinks": [],
+  "sourceChangesAfterValidation": [],
+  "modifiedExistingSources": [
+    "src/app/dashboard/page.tsx",
+    "src/dashboard/componentes/DashboardSections.tsx"
+  ],
+  "newWorkingTreeEntries": [
+    " M src/app/dashboard/page.tsx",
+    " M src/dashboard/componentes/DashboardSections.tsx",
+    "?? docs/dashboard-premium-redesign/",
+    "?? src/dashboard/componentes/dashboardMenu.module.css",
+    "?? src/dashboard/dashboardMenu.ts"
+  ],
+  "baselineSourceFiles": 795,
+  "preservedSourceFiles": 793,
+  "viewports": [
+    320,
+    360,
+    390,
+    430,
+    768,
+    1024,
+    1440
+  ],
+  "businessLinks": 11,
+  "administrativeLinks": 2,
+  "businessHelp": 11,
+  "administrativeHelp": 2,
+  "errors": [],
+  "screenshots": 10,
+  "readyMarker": true
+}

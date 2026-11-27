@@ -1,0 +1,338 @@
+{
+  "createdAt": "2026-11-17T18:57:50.913Z",
+  "scope": "Visual-only comparison of isolated components. No authenticated sessions.",
+  "baselineFiles": 797,
+  "changedProductFiles": [
+    "src/dashboard/componentes/DashboardSections.tsx",
+    "src/dashboard/componentes/dashboardMenu.module.css"
+  ],
+  "preservedFiles": 795,
+  "dialogSubtreeIdentical": true,
+  "navigationAndHelpAttributesIdentical": true,
+  "hooksAndCloseCallbackIdentical": true,
+  "elevenBusinessAndTwoAdminDestinationsPreserved": true,
+  "comparisons": [
+    {
+      "width": 320,
+      "beforeHeight": 1450,
+      "afterHeight": 1530,
+      "heightDifference": 80,
+      "cardHeightDifference": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "columns": [
+        "288px",
+        "288px",
+        "288px",
+        "288px"
+      ],
+      "horizontalScroll": false,
+      "categories": [
+        {
+          "name": "Catálogo y oferta",
+          "color": "#3974c6",
+          "iconBackground": "rgb(234, 242, 255)",
+          "iconContrast": 4.15443813302718
+        },
+        {
+          "name": "Operación",
+          "color": "#278459",
+          "iconBackground": "rgb(233, 247, 239)",
+          "iconContrast": 4.196716313703435
+        },
+        {
+          "name": "Presencia del negocio",
+          "color": "#8355c6",
+          "iconBackground": "rgb(242, 237, 255)",
+          "iconContrast": 4.493520468978256
+        }
+      ]
+    },
+    {
+      "width": 360,
+      "beforeHeight": 1414,
+      "afterHeight": 1493,
+      "heightDifference": 79,
+      "cardHeightDifference": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "columns": [
+        "328px",
+        "328px",
+        "328px",
+        "328px"
+      ],
+      "horizontalScroll": false,
+      "categories": [
+        {
+          "name": "Catálogo y oferta",
+          "color": "#3974c6",
+          "iconBackground": "rgb(234, 242, 255)",
+          "iconContrast": 4.15443813302718
+        },
+        {
+          "name": "Operación",
+          "color": "#278459",
+          "iconBackground": "rgb(233, 247, 239)",
+          "iconContrast": 4.196716313703435
+        },
+        {
+          "name": "Presencia del negocio",
+          "color": "#8355c6",
+          "iconBackground": "rgb(242, 237, 255)",
+          "iconContrast": 4.493520468978256
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "beforeHeight": 1414,
+      "afterHeight": 1493,
+      "heightDifference": 79,
+      "cardHeightDifference": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "columns": [
+        "358px",
+        "358px",
+        "358px",
+        "358px"
+      ],
+      "horizontalScroll": false,
+      "categories": [
+        {
+          "name": "Catálogo y oferta",
+          "color": "#3974c6",
+          "iconBackground": "rgb(234, 242, 255)",
+          "iconContrast": 4.15443813302718
+        },
+        {
+          "name": "Operación",
+          "color": "#278459",
+          "iconBackground": "rgb(233, 247, 239)",
+          "iconContrast": 4.196716313703435
+        },
+        {
+          "name": "Presencia del negocio",
+          "color": "#8355c6",
+          "iconBackground": "rgb(242, 237, 255)",
+          "iconContrast": 4.493520468978256
+        }
+      ]
+    },
+    {
+      "width": 430,
+      "beforeHeight": 1372,
+      "afterHeight": 1451,
+      "heightDifference": 79,
+      "cardHeightDifference": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "columns": [
+        "194px 194px",
+        "398px",
+        "398px",
+        "398px"
+      ],
+      "horizontalScroll": false,
+      "categories": [
+        {
+          "name": "Catálogo y oferta",
+          "color": "#3974c6",
+          "iconBackground": "rgb(234, 242, 255)",
+          "iconContrast": 4.15443813302718
+        },
+        {
+          "name": "Operación",
+          "color": "#278459",
+          "iconBackground": "rgb(233, 247, 239)",
+          "iconContrast": 4.196716313703435
+        },
+        {
+          "name": "Presencia del negocio",
+          "color": "#8355c6",
+          "iconBackground": "rgb(242, 237, 255)",
+          "iconContrast": 4.493520468978256
+        }
+      ]
+    },
+    {
+      "width": 768,
+      "beforeHeight": 1069,
+      "afterHeight": 1149,
+      "heightDifference": 80,
+      "cardHeightDifference": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "columns": [
+        "347px 347px",
+        "347px 347px",
+        "347px 347px",
+        "347px 347px"
+      ],
+      "horizontalScroll": false,
+      "categories": [
+        {
+          "name": "Catálogo y oferta",
+          "color": "#3974c6",
+          "iconBackground": "rgb(234, 242, 255)",
+          "iconContrast": 4.15443813302718
+        },
+        {
+          "name": "Operación",
+          "color": "#278459",
+          "iconBackground": "rgb(233, 247, 239)",
+          "iconContrast": 4.196716313703435
+        },
+        {
+          "name": "Presencia del negocio",
+          "color": "#8355c6",
+          "iconBackground": "rgb(242, 237, 255)",
+          "iconContrast": 4.493520468978256
+        }
+      ]
+    },
+    {
+      "width": 1024,
+      "beforeHeight": 1091,
+      "afterHeight": 1171,
+      "heightDifference": 80,
+      "cardHeightDifference": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "columns": [
+        "343px 343px",
+        "343px 343px",
+        "343px 343px",
+        "343px 343px"
+      ],
+      "horizontalScroll": false,
+      "categories": [
+        {
+          "name": "Catálogo y oferta",
+          "color": "#3974c6",
+          "iconBackground": "rgb(234, 242, 255)",
+          "iconContrast": 4.15443813302718
+        },
+        {
+          "name": "Operación",
+          "color": "#278459",
+          "iconBackground": "rgb(233, 247, 239)",
+          "iconContrast": 4.196716313703435
+        },
+        {
+          "name": "Presencia del negocio",
+          "color": "#8355c6",
+          "iconBackground": "rgb(242, 237, 255)",
+          "iconContrast": 4.493520468978256
+        }
+      ]
+    },
+    {
+      "width": 1440,
+      "beforeHeight": 844,
+      "afterHeight": 907,
+      "heightDifference": 63,
+      "cardHeightDifference": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "columns": [
+        "551px 551px",
+        "364px 364px 364px",
+        "364px 364px 364px",
+        "364px 364px 364px"
+      ],
+      "horizontalScroll": false,
+      "categories": [
+        {
+          "name": "Catálogo y oferta",
+          "color": "#3974c6",
+          "iconBackground": "rgb(234, 242, 255)",
+          "iconContrast": 4.15443813302718
+        },
+        {
+          "name": "Operación",
+          "color": "#278459",
+          "iconBackground": "rgb(233, 247, 239)",
+          "iconContrast": 4.196716313703435
+        },
+        {
+          "name": "Presencia del negocio",
+          "color": "#8355c6",
+          "iconBackground": "rgb(242, 237, 255)",
+          "iconContrast": 4.493520468978256
+        }
+      ]
+    }
+  ]
+}

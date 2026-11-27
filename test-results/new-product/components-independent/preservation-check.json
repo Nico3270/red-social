@@ -1,0 +1,17 @@
+{
+  "src/ui/actions/productos/createNewProduct.ts": true,
+  "prisma/schema.prisma": true,
+  "src/ui/components/autoUpload/AutoUploadMedia.tsx": true,
+  "src/ui/components/productos/CreateOrUpdateProduct.tsx": true,
+  "src/app/dashboard/layout.tsx": true,
+  "src/ui/components/dashboard/perfil/LayoutDashboardComponent.tsx": true,
+  "src/ui/components/productos/newProduct/newProduct.module.css": true,
+  "src/ui/components/productos/newProduct/newProductPalette.ts": true,
+  "src/app/api/cloudinary/upload-authorization/route.ts": true,
+  "src/app/api/cloudinary/upload-authorization/route.test.ts": true,
+  "src/app/api/cloudinary/delete/route.ts": true,
+  "src/app/api/cloudinary/delete/route.test.ts": true,
+  "const handleGenerateDescription = unchanged": true,
+  "const handleGenerateComponentes = unchanged": true,
+  "const onSubmit = unchanged": true
+}

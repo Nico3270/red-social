@@ -284,6 +284,9 @@ export const TopMenuMobile = () => {
               Myckeo
             </span>
           </Link>
+          <div className={styles.mobileSearch}>
+            <SearchBar compact={isDiscoveryPage} iconOnly />
+          </div>
           <button
             onClick={() => setIsLocationModalOpen(true)}
             className={styles.location}
@@ -296,16 +299,13 @@ export const TopMenuMobile = () => {
             <span className={styles.city}>{ciudad || "Ciudad"}</span>
             {showGpsIcon && <span className="text-xs text-green-600">GPS</span>}
           </button>
-          <div className={styles.mobileSearch}>
-            <SearchBar compact={isDiscoveryPage} />
-          </div>
         </div>
       </header>
 
       {isBusinessProfilePage ? (
-        <div className="h-28" />
+        <div className={styles.mobileProfileOffset} />
       ) : (
-        <div className="mt-28">
+        <div className={styles.mobileOffset}>
           <MenuSectionsBar compact={isDiscoveryPage} />
         </div>
       )}

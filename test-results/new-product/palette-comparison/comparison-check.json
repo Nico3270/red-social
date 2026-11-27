@@ -1,0 +1,9 @@
+{
+  "localOnly": true,
+  "desktopImagesLoaded": true,
+  "mobileImagesLoaded": true,
+  "palettes": [
+    "ruby",
+    "ocean"
+  ]
+}

@@ -1,0 +1,63 @@
+/* Opt-in presentation only; the original desktop icon keeps its layout. */
+.legacyIcon {
+  display: contents;
+}
+.avatarIcon,
+.avatarPhoto {
+  display: none;
+}
+.feedback {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+@media (max-width: 768px) {
+  .avatarPresentation .legacyIcon {
+    display: none;
+  }
+  .avatarPresentation .avatarPhoto {
+    position: absolute;
+    z-index: 0;
+    top: 10px;
+    left: 6px;
+    display: block;
+    width: 24px;
+    height: 24px;
+    overflow: hidden;
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .avatarPresentation .avatarIcon {
+    position: absolute;
+    z-index: 2;
+    top: 9px;
+    left: 19px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 12px;
+    height: 12px;
+    pointer-events: none;
+  }
+  .avatarIcon svg {
+    width: 12px;
+    height: 12px;
+  }
+  .spinner {
+    animation: follow-spin 800ms linear infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .spinner {
+      animation: none;
+    }
+  }
+}
+@keyframes follow-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

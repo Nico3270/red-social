@@ -1,5 +1,6 @@
 "use client";
 
+import { toWhatsAppNumber } from "@/lib/contact/phone";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -112,7 +113,7 @@ export function BusinessGuideResults({ selection, onExploreMore, onResultClick, 
             primaryImage,
             "product-card",
           );
-          const telefonoLimpio = item.product.telefonoContacto?.replace(/\D/g, "") ?? "";
+          const telefonoLimpio = toWhatsAppNumber(item.product.telefonoContacto, "CO");
           const displayPrice = getDisplayPrice(
             item.product.precio,
             (item.product.variantes ?? []).map((variant) => variant.precio)

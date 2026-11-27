@@ -1,0 +1,9 @@
+PASS src/lib/cloudinary/isCloudinaryAssetReferenced.test.ts
+PASS src/lib/cloudinary/uploadAuthorizedMedia.test.ts
+PASS src/lib/cloudinary/temporaryUploadAuthorization.test.ts
+
+Test Suites: 3 passed, 3 total
+Tests:       44 passed, 44 total
+Snapshots:   0 total
+Time:        0.634 s, estimated 1 s
+Ran all test suites matching src/lib/cloudinary/uploadAuthorizedMedia.test.ts|src/lib/cloudinary/temporaryUploadAuthorization.test.ts|src/lib/cloudinary/isCloudinaryAssetReferenced.test.ts.

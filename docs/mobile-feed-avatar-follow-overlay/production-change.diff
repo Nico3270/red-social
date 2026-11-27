@@ -1,0 +1,182 @@
+--- src/ui/components/productos/ProductCard.tsx (antes)
++++ src/ui/components/productos/ProductCard.tsx (después)
+@@ -680,28 +680,6 @@
+               />
+             </div>
+ 
+-            {isFeedVariant && product.slugNegocio && (
+-              <Link
+-                href={`/perfil/${product.slugNegocio}`}
+-                className={styles.mobileAvatar}
+-                data-avatar-profile="true"
+-                aria-label={`Abrir perfil de ${product.nombreNegocio || "negocio"}`}
+-              >
+-                <Image
+-                  src={optimizedBusinessProfileImageUrl}
+-                  alt=""
+-                  fill
+-                  sizes="24px"
+-                  className="object-cover"
+-                />
+-              </Link>
+-            )}
+-            {isFeedVariant && !product.slugNegocio && (
+-              <span className={styles.mobileAvatar} aria-hidden="true">
+-                <Image src={optimizedBusinessProfileImageUrl} alt="" fill sizes="24px" className="object-cover" />
+-              </span>
+-            )}
+-
+             {product.nombreNegocio && product.slugNegocio ? (
+               <Link
+                 href={`/perfil/${product.slugNegocio}`}
+@@ -725,6 +703,15 @@
+               type="USER_TO_BUSINESS"
+               className="text-sm"
+               mobileAvatarBusinessName={isFeedVariant ? product.nombreNegocio || "negocio" : undefined}
++              mobileAvatarImage={isFeedVariant ? (
++                <Image
++                  src={optimizedBusinessProfileImageUrl}
++                  alt=""
++                  fill
++                  sizes="24px"
++                  className="object-cover"
++                />
++              ) : undefined}
+             />
+ 
+             <div className={isFeedVariant ? styles.favorite : "z-20 ml-2"}>
+--- src/ui/components/productos/feedProductCard.module.css (antes)
++++ src/ui/components/productos/feedProductCard.module.css (después)
+@@ -665,10 +665,6 @@
+   display: contents;
+ }
+ 
+-.mobileAvatar {
+-  display: none;
+-}
+-
+ /* Refined mobile actions: compact avatar/follow cluster, contained favorite,
+    and equally weighted commercial controls beside the price. */
+ @media (max-width: 768px) {
+@@ -678,7 +674,7 @@
+   .header {
+     position: relative;
+     display: grid;
+-    grid-template-columns: 68px minmax(0, 1fr) 44px;
++    grid-template-columns: 44px minmax(0, 1fr) 44px;
+     grid-template-rows: 44px;
+     gap: 0;
+     padding: 0;
+@@ -715,20 +711,10 @@
+     overflow-wrap: anywhere;
+     line-height: 18px;
+   }
+-  /* Two separate destinations: a 24px avatar link, then a full 44px
+-     follow target. Its small painted badge sits at the avatar's upper right. */
++  /* Avatar and badge share the existing 44px follow button. The business
++     name remains the independent profile link; no separate follow column. */
+   .business > .desktopAvatar {
+     display: none;
+-  }
+-  .mobileAvatar {
+-    position: absolute;
+-    top: 10px;
+-    left: 0;
+-    display: block;
+-    width: 24px;
+-    height: 24px;
+-    overflow: hidden;
+-    border-radius: 50%;
+   }
+   .headerActions > button {
+     grid-column: 1;
+@@ -740,7 +726,8 @@
+     color: white;
+   }
+   .headerActions > button::before {
+-    inset: 4px auto auto 0;
++    z-index: 1;
++    inset: 5px auto auto 15px;
+     width: 20px;
+     height: 20px;
+     border: 2px solid white;
+--- src/feed/componentes/FollowButton.tsx (antes)
++++ src/feed/componentes/FollowButton.tsx (después)
+@@ -1,7 +1,7 @@
+ // src/components/follow/FollowButton.tsx
+ "use client";
+ 
+-import { useState, useEffect } from "react";
++import { useState, useEffect, type ReactNode } from "react";
+ import { useSession } from "next-auth/react";
+ import { usePathname } from "next/navigation";
+ import { motion, AnimatePresence } from "framer-motion";
+@@ -30,6 +30,7 @@
+   version?: 1 | 2; // Nueva prop opcional, default 1
+   /** Optional feed presentation; the existing query, mutation and login flow are shared. */
+   mobileAvatarBusinessName?: string;
++  mobileAvatarImage?: ReactNode;
+ }
+ 
+ export const FollowButton: React.FC<FollowButtonProps> = ({
+@@ -38,6 +39,7 @@
+   className,
+   version = 1,
+   mobileAvatarBusinessName,
++  mobileAvatarImage,
+ }) => {
+   const { data: session, status } = useSession();
+   const pathname = usePathname();
+@@ -208,8 +210,13 @@
+       >
+         {mobileAvatarBusinessName ? (
+           <>
++            {mobileAvatarImage && (
++              <span className={styles.avatarPhoto} data-avatar-image="true" aria-hidden="true">
++                {mobileAvatarImage}
++              </span>
++            )}
+             <span className={styles.legacyIcon}>{legacyIcon}</span>
+-            <span className={styles.avatarIcon} aria-hidden="true">
++            <span className={styles.avatarIcon} data-avatar-indicator="true" aria-hidden="true">
+               {isLoading || mutation.isPending ? (
+                 <FaSpinner className={styles.spinner} />
+               ) : isFollowing ? (
+--- src/feed/componentes/followButton.module.css (antes)
++++ src/feed/componentes/followButton.module.css (después)
+@@ -2,7 +2,8 @@
+ .legacyIcon {
+   display: contents;
+ }
+-.avatarIcon {
++.avatarIcon,
++.avatarPhoto {
+   display: none;
+ }
+ .feedback {
+@@ -18,10 +19,23 @@
+   .avatarPresentation .legacyIcon {
+     display: none;
+   }
++  .avatarPresentation .avatarPhoto {
++    position: absolute;
++    z-index: 0;
++    top: 10px;
++    left: 6px;
++    display: block;
++    width: 24px;
++    height: 24px;
++    overflow: hidden;
++    border-radius: 50%;
++    pointer-events: none;
++  }
+   .avatarPresentation .avatarIcon {
+     position: absolute;
+-    top: 8px;
+-    left: 4px;
++    z-index: 2;
++    top: 9px;
++    left: 19px;
+     display: flex;
+     align-items: center;
+     justify-content: center;

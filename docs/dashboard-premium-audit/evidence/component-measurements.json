@@ -1,0 +1,3189 @@
+{
+  "createdAt": "2026-11-17T17:55:27.353Z",
+  "revision": "1f491ff8ce6f80e333f07548e299141fc863d993",
+  "scope": "Actual unmodified DashboardSections and actual static section definitions, isolated; geometry host reproduces shell padding/margin only. No authenticated route, sidebar, topbar, database, session, role mocks, API, mutations or navigation tested. Next Link left unmodified; all requests intercepted locally.",
+  "viewportHeight": 844,
+  "results": [
+    {
+      "width": 320,
+      "height": 844,
+      "documentScrollWidth": 320,
+      "documentScrollHeight": 884,
+      "grid": {
+        "x": 16,
+        "y": 80,
+        "width": 288,
+        "height": 787.6875,
+        "right": 304,
+        "bottom": 867.6875
+      },
+      "columns": "138px 138px",
+      "gap": "12px",
+      "links": [
+        "/dashboard/productos",
+        "/dashboard/productos/nuevo_producto",
+        "/dashboard/orders",
+        "/dashboard/transacciones",
+        "/dashboard/crear-publicacion",
+        "/dashboard/reservas",
+        "/dashboard/servicios",
+        "/dashboard/encuestas",
+        "/dashboard/qr",
+        "/dashboard/editar-perfil"
+      ],
+      "cards": [
+        {
+          "title": "Gestión de Productos",
+          "card": {
+            "x": 16,
+            "y": 80,
+            "width": 138,
+            "height": 147.9375,
+            "right": 154,
+            "bottom": 227.9375
+          },
+          "info": {
+            "x": 110,
+            "y": 88,
+            "width": 36,
+            "height": 36,
+            "right": 146,
+            "bottom": 124
+          },
+          "icon": {
+            "x": 61,
+            "y": 96,
+            "width": 48,
+            "height": 48,
+            "right": 109,
+            "bottom": 144
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 32,
+            "y": 160,
+            "width": 106,
+            "height": 43.9375,
+            "right": 138,
+            "bottom": 203.9375
+          },
+          "titleScrollWidth": 106,
+          "titleClientWidth": 106,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Nuevo Producto",
+          "card": {
+            "x": 166,
+            "y": 80,
+            "width": 138,
+            "height": 125.96875,
+            "right": 304,
+            "bottom": 205.96875
+          },
+          "info": {
+            "x": 260,
+            "y": 88,
+            "width": 36,
+            "height": 36,
+            "right": 296,
+            "bottom": 124
+          },
+          "icon": {
+            "x": 211,
+            "y": 96,
+            "width": 48,
+            "height": 48,
+            "right": 259,
+            "bottom": 144
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 184.09375,
+            "y": 160,
+            "width": 101.796875,
+            "height": 21.96875,
+            "right": 285.890625,
+            "bottom": 181.96875
+          },
+          "titleScrollWidth": 102,
+          "titleClientWidth": 102,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Gestión de Órdenes",
+          "card": {
+            "x": 16,
+            "y": 239.9375,
+            "width": 138,
+            "height": 147.9375,
+            "right": 154,
+            "bottom": 387.875
+          },
+          "info": {
+            "x": 110,
+            "y": 247.9375,
+            "width": 36,
+            "height": 36,
+            "right": 146,
+            "bottom": 283.9375
+          },
+          "icon": {
+            "x": 61,
+            "y": 255.9375,
+            "width": 48,
+            "height": 48,
+            "right": 109,
+            "bottom": 303.9375
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 32,
+            "y": 319.9375,
+            "width": 106,
+            "height": 43.9375,
+            "right": 138,
+            "bottom": 363.875
+          },
+          "titleScrollWidth": 106,
+          "titleClientWidth": 106,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Transacciones",
+          "card": {
+            "x": 166,
+            "y": 239.9375,
+            "width": 138,
+            "height": 125.96875,
+            "right": 304,
+            "bottom": 365.90625
+          },
+          "info": {
+            "x": 260,
+            "y": 247.9375,
+            "width": 36,
+            "height": 36,
+            "right": 296,
+            "bottom": 283.9375
+          },
+          "icon": {
+            "x": 211,
+            "y": 255.9375,
+            "width": 48,
+            "height": 48,
+            "right": 259,
+            "bottom": 303.9375
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 189.078125,
+            "y": 319.9375,
+            "width": 91.828125,
+            "height": 21.96875,
+            "right": 280.90625,
+            "bottom": 341.90625
+          },
+          "titleScrollWidth": 92,
+          "titleClientWidth": 92,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Nueva Publicación",
+          "card": {
+            "x": 16,
+            "y": 399.875,
+            "width": 138,
+            "height": 147.9375,
+            "right": 154,
+            "bottom": 547.8125
+          },
+          "info": {
+            "x": 110,
+            "y": 407.875,
+            "width": 36,
+            "height": 36,
+            "right": 146,
+            "bottom": 443.875
+          },
+          "icon": {
+            "x": 61,
+            "y": 415.875,
+            "width": 48,
+            "height": 48,
+            "right": 109,
+            "bottom": 463.875
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 32,
+            "y": 479.875,
+            "width": 106,
+            "height": 43.9375,
+            "right": 138,
+            "bottom": 523.8125
+          },
+          "titleScrollWidth": 106,
+          "titleClientWidth": 106,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Módulo de Reservas",
+          "card": {
+            "x": 166,
+            "y": 399.875,
+            "width": 138,
+            "height": 147.9375,
+            "right": 304,
+            "bottom": 547.8125
+          },
+          "info": {
+            "x": 260,
+            "y": 407.875,
+            "width": 36,
+            "height": 36,
+            "right": 296,
+            "bottom": 443.875
+          },
+          "icon": {
+            "x": 211,
+            "y": 415.875,
+            "width": 48,
+            "height": 48,
+            "right": 259,
+            "bottom": 463.875
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 182,
+            "y": 479.875,
+            "width": 106,
+            "height": 43.9375,
+            "right": 288,
+            "bottom": 523.8125
+          },
+          "titleScrollWidth": 106,
+          "titleClientWidth": 106,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Servicios",
+          "card": {
+            "x": 16,
+            "y": 559.8125,
+            "width": 138,
+            "height": 125.96875,
+            "right": 154,
+            "bottom": 685.78125
+          },
+          "info": {
+            "x": 110,
+            "y": 567.8125,
+            "width": 36,
+            "height": 36,
+            "right": 146,
+            "bottom": 603.8125
+          },
+          "icon": {
+            "x": 61,
+            "y": 575.8125,
+            "width": 48,
+            "height": 48,
+            "right": 109,
+            "bottom": 623.8125
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 56.140625,
+            "y": 639.8125,
+            "width": 57.703125,
+            "height": 21.96875,
+            "right": 113.84375,
+            "bottom": 661.78125
+          },
+          "titleScrollWidth": 58,
+          "titleClientWidth": 58,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Módulo de Encuestas",
+          "card": {
+            "x": 166,
+            "y": 559.8125,
+            "width": 138,
+            "height": 147.9375,
+            "right": 304,
+            "bottom": 707.75
+          },
+          "info": {
+            "x": 260,
+            "y": 567.8125,
+            "width": 36,
+            "height": 36,
+            "right": 296,
+            "bottom": 603.8125
+          },
+          "icon": {
+            "x": 211,
+            "y": 575.8125,
+            "width": 48,
+            "height": 48,
+            "right": 259,
+            "bottom": 623.8125
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 182,
+            "y": 639.8125,
+            "width": 106,
+            "height": 43.9375,
+            "right": 288,
+            "bottom": 683.75
+          },
+          "titleScrollWidth": 106,
+          "titleClientWidth": 106,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Código QR de tu negocio",
+          "card": {
+            "x": 16,
+            "y": 719.75,
+            "width": 138,
+            "height": 147.9375,
+            "right": 154,
+            "bottom": 867.6875
+          },
+          "info": {
+            "x": 110,
+            "y": 727.75,
+            "width": 36,
+            "height": 36,
+            "right": 146,
+            "bottom": 763.75
+          },
+          "icon": {
+            "x": 61,
+            "y": 735.75,
+            "width": 48,
+            "height": 48,
+            "right": 109,
+            "bottom": 783.75
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 32,
+            "y": 799.75,
+            "width": 106,
+            "height": 43.9375,
+            "right": 138,
+            "bottom": 843.6875
+          },
+          "titleScrollWidth": 106,
+          "titleClientWidth": 106,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Editar Perfil",
+          "card": {
+            "x": 166,
+            "y": 719.75,
+            "width": 138,
+            "height": 125.96875,
+            "right": 304,
+            "bottom": 845.71875
+          },
+          "info": {
+            "x": 260,
+            "y": 727.75,
+            "width": 36,
+            "height": 36,
+            "right": 296,
+            "bottom": 763.75
+          },
+          "icon": {
+            "x": 211,
+            "y": 735.75,
+            "width": 48,
+            "height": 48,
+            "right": 259,
+            "bottom": 783.75
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 198.15625,
+            "y": 799.75,
+            "width": 73.671875,
+            "height": 21.96875,
+            "right": 271.828125,
+            "bottom": 821.71875
+          },
+          "titleScrollWidth": 74,
+          "titleClientWidth": 74,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        }
+      ]
+    },
+    {
+      "width": 360,
+      "height": 844,
+      "documentScrollWidth": 360,
+      "documentScrollHeight": 884,
+      "grid": {
+        "x": 16,
+        "y": 80,
+        "width": 328,
+        "height": 787.6875,
+        "right": 344,
+        "bottom": 867.6875
+      },
+      "columns": "158px 158px",
+      "gap": "12px",
+      "links": [
+        "/dashboard/productos",
+        "/dashboard/productos/nuevo_producto",
+        "/dashboard/orders",
+        "/dashboard/transacciones",
+        "/dashboard/crear-publicacion",
+        "/dashboard/reservas",
+        "/dashboard/servicios",
+        "/dashboard/encuestas",
+        "/dashboard/qr",
+        "/dashboard/editar-perfil"
+      ],
+      "cards": [
+        {
+          "title": "Gestión de Productos",
+          "card": {
+            "x": 16,
+            "y": 80,
+            "width": 158,
+            "height": 147.9375,
+            "right": 174,
+            "bottom": 227.9375
+          },
+          "info": {
+            "x": 130,
+            "y": 88,
+            "width": 36,
+            "height": 36,
+            "right": 166,
+            "bottom": 124
+          },
+          "icon": {
+            "x": 71,
+            "y": 96,
+            "width": 48,
+            "height": 48,
+            "right": 119,
+            "bottom": 144
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 32,
+            "y": 160,
+            "width": 126,
+            "height": 43.9375,
+            "right": 158,
+            "bottom": 203.9375
+          },
+          "titleScrollWidth": 126,
+          "titleClientWidth": 126,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Nuevo Producto",
+          "card": {
+            "x": 186,
+            "y": 80,
+            "width": 158,
+            "height": 125.96875,
+            "right": 344,
+            "bottom": 205.96875
+          },
+          "info": {
+            "x": 300,
+            "y": 88,
+            "width": 36,
+            "height": 36,
+            "right": 336,
+            "bottom": 124
+          },
+          "icon": {
+            "x": 241,
+            "y": 96,
+            "width": 48,
+            "height": 48,
+            "right": 289,
+            "bottom": 144
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 214.09375,
+            "y": 160,
+            "width": 101.796875,
+            "height": 21.96875,
+            "right": 315.890625,
+            "bottom": 181.96875
+          },
+          "titleScrollWidth": 102,
+          "titleClientWidth": 102,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Gestión de Órdenes",
+          "card": {
+            "x": 16,
+            "y": 239.9375,
+            "width": 158,
+            "height": 147.9375,
+            "right": 174,
+            "bottom": 387.875
+          },
+          "info": {
+            "x": 130,
+            "y": 247.9375,
+            "width": 36,
+            "height": 36,
+            "right": 166,
+            "bottom": 283.9375
+          },
+          "icon": {
+            "x": 71,
+            "y": 255.9375,
+            "width": 48,
+            "height": 48,
+            "right": 119,
+            "bottom": 303.9375
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 32,
+            "y": 319.9375,
+            "width": 126,
+            "height": 43.9375,
+            "right": 158,
+            "bottom": 363.875
+          },
+          "titleScrollWidth": 126,
+          "titleClientWidth": 126,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Transacciones",
+          "card": {
+            "x": 186,
+            "y": 239.9375,
+            "width": 158,
+            "height": 125.96875,
+            "right": 344,
+            "bottom": 365.90625
+          },
+          "info": {
+            "x": 300,
+            "y": 247.9375,
+            "width": 36,
+            "height": 36,
+            "right": 336,
+            "bottom": 283.9375
+          },
+          "icon": {
+            "x": 241,
+            "y": 255.9375,
+            "width": 48,
+            "height": 48,
+            "right": 289,
+            "bottom": 303.9375
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 219.078125,
+            "y": 319.9375,
+            "width": 91.828125,
+            "height": 21.96875,
+            "right": 310.90625,
+            "bottom": 341.90625
+          },
+          "titleScrollWidth": 92,
+          "titleClientWidth": 92,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Nueva Publicación",
+          "card": {
+            "x": 16,
+            "y": 399.875,
+            "width": 158,
+            "height": 125.96875,
+            "right": 174,
+            "bottom": 525.84375
+          },
+          "info": {
+            "x": 130,
+            "y": 407.875,
+            "width": 36,
+            "height": 36,
+            "right": 166,
+            "bottom": 443.875
+          },
+          "icon": {
+            "x": 71,
+            "y": 415.875,
+            "width": 48,
+            "height": 48,
+            "right": 119,
+            "bottom": 463.875
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 36.15625,
+            "y": 479.875,
+            "width": 117.671875,
+            "height": 21.96875,
+            "right": 153.828125,
+            "bottom": 501.84375
+          },
+          "titleScrollWidth": 118,
+          "titleClientWidth": 118,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Módulo de Reservas",
+          "card": {
+            "x": 186,
+            "y": 399.875,
+            "width": 158,
+            "height": 147.9375,
+            "right": 344,
+            "bottom": 547.8125
+          },
+          "info": {
+            "x": 300,
+            "y": 407.875,
+            "width": 36,
+            "height": 36,
+            "right": 336,
+            "bottom": 443.875
+          },
+          "icon": {
+            "x": 241,
+            "y": 415.875,
+            "width": 48,
+            "height": 48,
+            "right": 289,
+            "bottom": 463.875
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 202,
+            "y": 479.875,
+            "width": 126,
+            "height": 43.9375,
+            "right": 328,
+            "bottom": 523.8125
+          },
+          "titleScrollWidth": 126,
+          "titleClientWidth": 126,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Servicios",
+          "card": {
+            "x": 16,
+            "y": 559.8125,
+            "width": 158,
+            "height": 125.96875,
+            "right": 174,
+            "bottom": 685.78125
+          },
+          "info": {
+            "x": 130,
+            "y": 567.8125,
+            "width": 36,
+            "height": 36,
+            "right": 166,
+            "bottom": 603.8125
+          },
+          "icon": {
+            "x": 71,
+            "y": 575.8125,
+            "width": 48,
+            "height": 48,
+            "right": 119,
+            "bottom": 623.8125
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 66.140625,
+            "y": 639.8125,
+            "width": 57.703125,
+            "height": 21.96875,
+            "right": 123.84375,
+            "bottom": 661.78125
+          },
+          "titleScrollWidth": 58,
+          "titleClientWidth": 58,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Módulo de Encuestas",
+          "card": {
+            "x": 186,
+            "y": 559.8125,
+            "width": 158,
+            "height": 147.9375,
+            "right": 344,
+            "bottom": 707.75
+          },
+          "info": {
+            "x": 300,
+            "y": 567.8125,
+            "width": 36,
+            "height": 36,
+            "right": 336,
+            "bottom": 603.8125
+          },
+          "icon": {
+            "x": 241,
+            "y": 575.8125,
+            "width": 48,
+            "height": 48,
+            "right": 289,
+            "bottom": 623.8125
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 202,
+            "y": 639.8125,
+            "width": 126,
+            "height": 43.9375,
+            "right": 328,
+            "bottom": 683.75
+          },
+          "titleScrollWidth": 126,
+          "titleClientWidth": 126,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Código QR de tu negocio",
+          "card": {
+            "x": 16,
+            "y": 719.75,
+            "width": 158,
+            "height": 147.9375,
+            "right": 174,
+            "bottom": 867.6875
+          },
+          "info": {
+            "x": 130,
+            "y": 727.75,
+            "width": 36,
+            "height": 36,
+            "right": 166,
+            "bottom": 763.75
+          },
+          "icon": {
+            "x": 71,
+            "y": 735.75,
+            "width": 48,
+            "height": 48,
+            "right": 119,
+            "bottom": 783.75
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 32,
+            "y": 799.75,
+            "width": 126,
+            "height": 43.9375,
+            "right": 158,
+            "bottom": 843.6875
+          },
+          "titleScrollWidth": 126,
+          "titleClientWidth": 126,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Editar Perfil",
+          "card": {
+            "x": 186,
+            "y": 719.75,
+            "width": 158,
+            "height": 125.96875,
+            "right": 344,
+            "bottom": 845.71875
+          },
+          "info": {
+            "x": 300,
+            "y": 727.75,
+            "width": 36,
+            "height": 36,
+            "right": 336,
+            "bottom": 763.75
+          },
+          "icon": {
+            "x": 241,
+            "y": 735.75,
+            "width": 48,
+            "height": 48,
+            "right": 289,
+            "bottom": 783.75
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 228.15625,
+            "y": 799.75,
+            "width": 73.671875,
+            "height": 21.96875,
+            "right": 301.828125,
+            "bottom": 821.71875
+          },
+          "titleScrollWidth": 74,
+          "titleClientWidth": 74,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "documentScrollWidth": 390,
+      "documentScrollHeight": 844,
+      "grid": {
+        "x": 16,
+        "y": 80,
+        "width": 358,
+        "height": 699.8125,
+        "right": 374,
+        "bottom": 779.8125
+      },
+      "columns": "173px 173px",
+      "gap": "12px",
+      "links": [
+        "/dashboard/productos",
+        "/dashboard/productos/nuevo_producto",
+        "/dashboard/orders",
+        "/dashboard/transacciones",
+        "/dashboard/crear-publicacion",
+        "/dashboard/reservas",
+        "/dashboard/servicios",
+        "/dashboard/encuestas",
+        "/dashboard/qr",
+        "/dashboard/editar-perfil"
+      ],
+      "cards": [
+        {
+          "title": "Gestión de Productos",
+          "card": {
+            "x": 16,
+            "y": 80,
+            "width": 173,
+            "height": 125.96875,
+            "right": 189,
+            "bottom": 205.96875
+          },
+          "info": {
+            "x": 145,
+            "y": 88,
+            "width": 36,
+            "height": 36,
+            "right": 181,
+            "bottom": 124
+          },
+          "icon": {
+            "x": 78.5,
+            "y": 96,
+            "width": 48,
+            "height": 48,
+            "right": 126.5,
+            "bottom": 144
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 34.171875,
+            "y": 160,
+            "width": 136.640625,
+            "height": 21.96875,
+            "right": 170.8125,
+            "bottom": 181.96875
+          },
+          "titleScrollWidth": 137,
+          "titleClientWidth": 137,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Nuevo Producto",
+          "card": {
+            "x": 201,
+            "y": 80,
+            "width": 173,
+            "height": 125.96875,
+            "right": 374,
+            "bottom": 205.96875
+          },
+          "info": {
+            "x": 330,
+            "y": 88,
+            "width": 36,
+            "height": 36,
+            "right": 366,
+            "bottom": 124
+          },
+          "icon": {
+            "x": 263.5,
+            "y": 96,
+            "width": 48,
+            "height": 48,
+            "right": 311.5,
+            "bottom": 144
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 236.59375,
+            "y": 160,
+            "width": 101.796875,
+            "height": 21.96875,
+            "right": 338.390625,
+            "bottom": 181.96875
+          },
+          "titleScrollWidth": 102,
+          "titleClientWidth": 102,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Gestión de Órdenes",
+          "card": {
+            "x": 16,
+            "y": 217.96875,
+            "width": 173,
+            "height": 125.96875,
+            "right": 189,
+            "bottom": 343.9375
+          },
+          "info": {
+            "x": 145,
+            "y": 225.96875,
+            "width": 36,
+            "height": 36,
+            "right": 181,
+            "bottom": 261.96875
+          },
+          "icon": {
+            "x": 78.5,
+            "y": 233.96875,
+            "width": 48,
+            "height": 48,
+            "right": 126.5,
+            "bottom": 281.96875
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 38.9375,
+            "y": 297.96875,
+            "width": 127.109375,
+            "height": 21.96875,
+            "right": 166.046875,
+            "bottom": 319.9375
+          },
+          "titleScrollWidth": 127,
+          "titleClientWidth": 127,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Transacciones",
+          "card": {
+            "x": 201,
+            "y": 217.96875,
+            "width": 173,
+            "height": 125.96875,
+            "right": 374,
+            "bottom": 343.9375
+          },
+          "info": {
+            "x": 330,
+            "y": 225.96875,
+            "width": 36,
+            "height": 36,
+            "right": 366,
+            "bottom": 261.96875
+          },
+          "icon": {
+            "x": 263.5,
+            "y": 233.96875,
+            "width": 48,
+            "height": 48,
+            "right": 311.5,
+            "bottom": 281.96875
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 241.578125,
+            "y": 297.96875,
+            "width": 91.828125,
+            "height": 21.96875,
+            "right": 333.40625,
+            "bottom": 319.9375
+          },
+          "titleScrollWidth": 92,
+          "titleClientWidth": 92,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Nueva Publicación",
+          "card": {
+            "x": 16,
+            "y": 355.9375,
+            "width": 173,
+            "height": 125.96875,
+            "right": 189,
+            "bottom": 481.90625
+          },
+          "info": {
+            "x": 145,
+            "y": 363.9375,
+            "width": 36,
+            "height": 36,
+            "right": 181,
+            "bottom": 399.9375
+          },
+          "icon": {
+            "x": 78.5,
+            "y": 371.9375,
+            "width": 48,
+            "height": 48,
+            "right": 126.5,
+            "bottom": 419.9375
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 43.65625,
+            "y": 435.9375,
+            "width": 117.671875,
+            "height": 21.96875,
+            "right": 161.328125,
+            "bottom": 457.90625
+          },
+          "titleScrollWidth": 118,
+          "titleClientWidth": 118,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Módulo de Reservas",
+          "card": {
+            "x": 201,
+            "y": 355.9375,
+            "width": 173,
+            "height": 125.96875,
+            "right": 374,
+            "bottom": 481.90625
+          },
+          "info": {
+            "x": 330,
+            "y": 363.9375,
+            "width": 36,
+            "height": 36,
+            "right": 366,
+            "bottom": 399.9375
+          },
+          "icon": {
+            "x": 263.5,
+            "y": 371.9375,
+            "width": 48,
+            "height": 48,
+            "right": 311.5,
+            "bottom": 419.9375
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 222.390625,
+            "y": 435.9375,
+            "width": 130.203125,
+            "height": 21.96875,
+            "right": 352.59375,
+            "bottom": 457.90625
+          },
+          "titleScrollWidth": 130,
+          "titleClientWidth": 130,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Servicios",
+          "card": {
+            "x": 16,
+            "y": 493.90625,
+            "width": 173,
+            "height": 125.96875,
+            "right": 189,
+            "bottom": 619.875
+          },
+          "info": {
+            "x": 145,
+            "y": 501.90625,
+            "width": 36,
+            "height": 36,
+            "right": 181,
+            "bottom": 537.90625
+          },
+          "icon": {
+            "x": 78.5,
+            "y": 509.90625,
+            "width": 48,
+            "height": 48,
+            "right": 126.5,
+            "bottom": 557.90625
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 73.640625,
+            "y": 573.90625,
+            "width": 57.703125,
+            "height": 21.96875,
+            "right": 131.34375,
+            "bottom": 595.875
+          },
+          "titleScrollWidth": 58,
+          "titleClientWidth": 58,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Módulo de Encuestas",
+          "card": {
+            "x": 201,
+            "y": 493.90625,
+            "width": 173,
+            "height": 125.96875,
+            "right": 374,
+            "bottom": 619.875
+          },
+          "info": {
+            "x": 330,
+            "y": 501.90625,
+            "width": 36,
+            "height": 36,
+            "right": 366,
+            "bottom": 537.90625
+          },
+          "icon": {
+            "x": 263.5,
+            "y": 509.90625,
+            "width": 48,
+            "height": 48,
+            "right": 311.5,
+            "bottom": 557.90625
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 219.21875,
+            "y": 573.90625,
+            "width": 136.546875,
+            "height": 21.96875,
+            "right": 355.765625,
+            "bottom": 595.875
+          },
+          "titleScrollWidth": 137,
+          "titleClientWidth": 137,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Código QR de tu negocio",
+          "card": {
+            "x": 16,
+            "y": 631.875,
+            "width": 173,
+            "height": 147.9375,
+            "right": 189,
+            "bottom": 779.8125
+          },
+          "info": {
+            "x": 145,
+            "y": 639.875,
+            "width": 36,
+            "height": 36,
+            "right": 181,
+            "bottom": 675.875
+          },
+          "icon": {
+            "x": 78.5,
+            "y": 647.875,
+            "width": 48,
+            "height": 48,
+            "right": 126.5,
+            "bottom": 695.875
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 32,
+            "y": 711.875,
+            "width": 141,
+            "height": 43.9375,
+            "right": 173,
+            "bottom": 755.8125
+          },
+          "titleScrollWidth": 141,
+          "titleClientWidth": 141,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Editar Perfil",
+          "card": {
+            "x": 201,
+            "y": 631.875,
+            "width": 173,
+            "height": 125.96875,
+            "right": 374,
+            "bottom": 757.84375
+          },
+          "info": {
+            "x": 330,
+            "y": 639.875,
+            "width": 36,
+            "height": 36,
+            "right": 366,
+            "bottom": 675.875
+          },
+          "icon": {
+            "x": 263.5,
+            "y": 647.875,
+            "width": 48,
+            "height": 48,
+            "right": 311.5,
+            "bottom": 695.875
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 250.65625,
+            "y": 711.875,
+            "width": 73.671875,
+            "height": 21.96875,
+            "right": 324.328125,
+            "bottom": 733.84375
+          },
+          "titleScrollWidth": 74,
+          "titleClientWidth": 74,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        }
+      ]
+    },
+    {
+      "width": 430,
+      "height": 844,
+      "documentScrollWidth": 430,
+      "documentScrollHeight": 844,
+      "grid": {
+        "x": 16,
+        "y": 80,
+        "width": 398,
+        "height": 677.84375,
+        "right": 414,
+        "bottom": 757.84375
+      },
+      "columns": "193px 193px",
+      "gap": "12px",
+      "links": [
+        "/dashboard/productos",
+        "/dashboard/productos/nuevo_producto",
+        "/dashboard/orders",
+        "/dashboard/transacciones",
+        "/dashboard/crear-publicacion",
+        "/dashboard/reservas",
+        "/dashboard/servicios",
+        "/dashboard/encuestas",
+        "/dashboard/qr",
+        "/dashboard/editar-perfil"
+      ],
+      "cards": [
+        {
+          "title": "Gestión de Productos",
+          "card": {
+            "x": 16,
+            "y": 80,
+            "width": 193,
+            "height": 125.96875,
+            "right": 209,
+            "bottom": 205.96875
+          },
+          "info": {
+            "x": 165,
+            "y": 88,
+            "width": 36,
+            "height": 36,
+            "right": 201,
+            "bottom": 124
+          },
+          "icon": {
+            "x": 88.5,
+            "y": 96,
+            "width": 48,
+            "height": 48,
+            "right": 136.5,
+            "bottom": 144
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 44.171875,
+            "y": 160,
+            "width": 136.640625,
+            "height": 21.96875,
+            "right": 180.8125,
+            "bottom": 181.96875
+          },
+          "titleScrollWidth": 137,
+          "titleClientWidth": 137,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Nuevo Producto",
+          "card": {
+            "x": 221,
+            "y": 80,
+            "width": 193,
+            "height": 125.96875,
+            "right": 414,
+            "bottom": 205.96875
+          },
+          "info": {
+            "x": 370,
+            "y": 88,
+            "width": 36,
+            "height": 36,
+            "right": 406,
+            "bottom": 124
+          },
+          "icon": {
+            "x": 293.5,
+            "y": 96,
+            "width": 48,
+            "height": 48,
+            "right": 341.5,
+            "bottom": 144
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 266.59375,
+            "y": 160,
+            "width": 101.796875,
+            "height": 21.96875,
+            "right": 368.390625,
+            "bottom": 181.96875
+          },
+          "titleScrollWidth": 102,
+          "titleClientWidth": 102,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Gestión de Órdenes",
+          "card": {
+            "x": 16,
+            "y": 217.96875,
+            "width": 193,
+            "height": 125.96875,
+            "right": 209,
+            "bottom": 343.9375
+          },
+          "info": {
+            "x": 165,
+            "y": 225.96875,
+            "width": 36,
+            "height": 36,
+            "right": 201,
+            "bottom": 261.96875
+          },
+          "icon": {
+            "x": 88.5,
+            "y": 233.96875,
+            "width": 48,
+            "height": 48,
+            "right": 136.5,
+            "bottom": 281.96875
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 48.9375,
+            "y": 297.96875,
+            "width": 127.109375,
+            "height": 21.96875,
+            "right": 176.046875,
+            "bottom": 319.9375
+          },
+          "titleScrollWidth": 127,
+          "titleClientWidth": 127,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Transacciones",
+          "card": {
+            "x": 221,
+            "y": 217.96875,
+            "width": 193,
+            "height": 125.96875,
+            "right": 414,
+            "bottom": 343.9375
+          },
+          "info": {
+            "x": 370,
+            "y": 225.96875,
+            "width": 36,
+            "height": 36,
+            "right": 406,
+            "bottom": 261.96875
+          },
+          "icon": {
+            "x": 293.5,
+            "y": 233.96875,
+            "width": 48,
+            "height": 48,
+            "right": 341.5,
+            "bottom": 281.96875
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 271.578125,
+            "y": 297.96875,
+            "width": 91.828125,
+            "height": 21.96875,
+            "right": 363.40625,
+            "bottom": 319.9375
+          },
+          "titleScrollWidth": 92,
+          "titleClientWidth": 92,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Nueva Publicación",
+          "card": {
+            "x": 16,
+            "y": 355.9375,
+            "width": 193,
+            "height": 125.96875,
+            "right": 209,
+            "bottom": 481.90625
+          },
+          "info": {
+            "x": 165,
+            "y": 363.9375,
+            "width": 36,
+            "height": 36,
+            "right": 201,
+            "bottom": 399.9375
+          },
+          "icon": {
+            "x": 88.5,
+            "y": 371.9375,
+            "width": 48,
+            "height": 48,
+            "right": 136.5,
+            "bottom": 419.9375
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 53.65625,
+            "y": 435.9375,
+            "width": 117.671875,
+            "height": 21.96875,
+            "right": 171.328125,
+            "bottom": 457.90625
+          },
+          "titleScrollWidth": 118,
+          "titleClientWidth": 118,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Módulo de Reservas",
+          "card": {
+            "x": 221,
+            "y": 355.9375,
+            "width": 193,
+            "height": 125.96875,
+            "right": 414,
+            "bottom": 481.90625
+          },
+          "info": {
+            "x": 370,
+            "y": 363.9375,
+            "width": 36,
+            "height": 36,
+            "right": 406,
+            "bottom": 399.9375
+          },
+          "icon": {
+            "x": 293.5,
+            "y": 371.9375,
+            "width": 48,
+            "height": 48,
+            "right": 341.5,
+            "bottom": 419.9375
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 252.390625,
+            "y": 435.9375,
+            "width": 130.203125,
+            "height": 21.96875,
+            "right": 382.59375,
+            "bottom": 457.90625
+          },
+          "titleScrollWidth": 130,
+          "titleClientWidth": 130,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Servicios",
+          "card": {
+            "x": 16,
+            "y": 493.90625,
+            "width": 193,
+            "height": 125.96875,
+            "right": 209,
+            "bottom": 619.875
+          },
+          "info": {
+            "x": 165,
+            "y": 501.90625,
+            "width": 36,
+            "height": 36,
+            "right": 201,
+            "bottom": 537.90625
+          },
+          "icon": {
+            "x": 88.5,
+            "y": 509.90625,
+            "width": 48,
+            "height": 48,
+            "right": 136.5,
+            "bottom": 557.90625
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 83.640625,
+            "y": 573.90625,
+            "width": 57.703125,
+            "height": 21.96875,
+            "right": 141.34375,
+            "bottom": 595.875
+          },
+          "titleScrollWidth": 58,
+          "titleClientWidth": 58,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Módulo de Encuestas",
+          "card": {
+            "x": 221,
+            "y": 493.90625,
+            "width": 193,
+            "height": 125.96875,
+            "right": 414,
+            "bottom": 619.875
+          },
+          "info": {
+            "x": 370,
+            "y": 501.90625,
+            "width": 36,
+            "height": 36,
+            "right": 406,
+            "bottom": 537.90625
+          },
+          "icon": {
+            "x": 293.5,
+            "y": 509.90625,
+            "width": 48,
+            "height": 48,
+            "right": 341.5,
+            "bottom": 557.90625
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 249.21875,
+            "y": 573.90625,
+            "width": 136.546875,
+            "height": 21.96875,
+            "right": 385.765625,
+            "bottom": 595.875
+          },
+          "titleScrollWidth": 137,
+          "titleClientWidth": 137,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Código QR de tu negocio",
+          "card": {
+            "x": 16,
+            "y": 631.875,
+            "width": 193,
+            "height": 125.96875,
+            "right": 209,
+            "bottom": 757.84375
+          },
+          "info": {
+            "x": 165,
+            "y": 639.875,
+            "width": 36,
+            "height": 36,
+            "right": 201,
+            "bottom": 675.875
+          },
+          "icon": {
+            "x": 88.5,
+            "y": 647.875,
+            "width": 48,
+            "height": 48,
+            "right": 136.5,
+            "bottom": 695.875
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 32.734375,
+            "y": 711.875,
+            "width": 159.515625,
+            "height": 21.96875,
+            "right": 192.25,
+            "bottom": 733.84375
+          },
+          "titleScrollWidth": 160,
+          "titleClientWidth": 160,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Editar Perfil",
+          "card": {
+            "x": 221,
+            "y": 631.875,
+            "width": 193,
+            "height": 125.96875,
+            "right": 414,
+            "bottom": 757.84375
+          },
+          "info": {
+            "x": 370,
+            "y": 639.875,
+            "width": 36,
+            "height": 36,
+            "right": 406,
+            "bottom": 675.875
+          },
+          "icon": {
+            "x": 293.5,
+            "y": 647.875,
+            "width": 48,
+            "height": 48,
+            "right": 341.5,
+            "bottom": 695.875
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 280.65625,
+            "y": 711.875,
+            "width": 73.671875,
+            "height": 21.96875,
+            "right": 354.328125,
+            "bottom": 733.84375
+          },
+          "titleScrollWidth": 74,
+          "titleClientWidth": 74,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        }
+      ]
+    },
+    {
+      "width": 768,
+      "height": 844,
+      "documentScrollWidth": 768,
+      "documentScrollHeight": 844,
+      "grid": {
+        "x": 32,
+        "y": 96,
+        "width": 704,
+        "height": 551.875,
+        "right": 736,
+        "bottom": 647.875
+      },
+      "columns": "224px 224px 224px",
+      "gap": "16px",
+      "links": [
+        "/dashboard/productos",
+        "/dashboard/productos/nuevo_producto",
+        "/dashboard/orders",
+        "/dashboard/transacciones",
+        "/dashboard/crear-publicacion",
+        "/dashboard/reservas",
+        "/dashboard/servicios",
+        "/dashboard/encuestas",
+        "/dashboard/qr",
+        "/dashboard/editar-perfil"
+      ],
+      "cards": [
+        {
+          "title": "Gestión de Productos",
+          "card": {
+            "x": 32,
+            "y": 96,
+            "width": 224,
+            "height": 125.96875,
+            "right": 256,
+            "bottom": 221.96875
+          },
+          "info": {
+            "x": 212,
+            "y": 104,
+            "width": 36,
+            "height": 36,
+            "right": 248,
+            "bottom": 140
+          },
+          "icon": {
+            "x": 120,
+            "y": 112,
+            "width": 48,
+            "height": 48,
+            "right": 168,
+            "bottom": 160
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 75.671875,
+            "y": 176,
+            "width": 136.640625,
+            "height": 21.96875,
+            "right": 212.3125,
+            "bottom": 197.96875
+          },
+          "titleScrollWidth": 137,
+          "titleClientWidth": 137,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Nuevo Producto",
+          "card": {
+            "x": 272,
+            "y": 96,
+            "width": 224,
+            "height": 125.96875,
+            "right": 496,
+            "bottom": 221.96875
+          },
+          "info": {
+            "x": 452,
+            "y": 104,
+            "width": 36,
+            "height": 36,
+            "right": 488,
+            "bottom": 140
+          },
+          "icon": {
+            "x": 360,
+            "y": 112,
+            "width": 48,
+            "height": 48,
+            "right": 408,
+            "bottom": 160
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 333.09375,
+            "y": 176,
+            "width": 101.796875,
+            "height": 21.96875,
+            "right": 434.890625,
+            "bottom": 197.96875
+          },
+          "titleScrollWidth": 102,
+          "titleClientWidth": 102,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Gestión de Órdenes",
+          "card": {
+            "x": 512,
+            "y": 96,
+            "width": 224,
+            "height": 125.96875,
+            "right": 736,
+            "bottom": 221.96875
+          },
+          "info": {
+            "x": 692,
+            "y": 104,
+            "width": 36,
+            "height": 36,
+            "right": 728,
+            "bottom": 140
+          },
+          "icon": {
+            "x": 600,
+            "y": 112,
+            "width": 48,
+            "height": 48,
+            "right": 648,
+            "bottom": 160
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 560.4375,
+            "y": 176,
+            "width": 127.109375,
+            "height": 21.96875,
+            "right": 687.546875,
+            "bottom": 197.96875
+          },
+          "titleScrollWidth": 127,
+          "titleClientWidth": 127,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Transacciones",
+          "card": {
+            "x": 32,
+            "y": 237.96875,
+            "width": 224,
+            "height": 125.96875,
+            "right": 256,
+            "bottom": 363.9375
+          },
+          "info": {
+            "x": 212,
+            "y": 245.96875,
+            "width": 36,
+            "height": 36,
+            "right": 248,
+            "bottom": 281.96875
+          },
+          "icon": {
+            "x": 120,
+            "y": 253.96875,
+            "width": 48,
+            "height": 48,
+            "right": 168,
+            "bottom": 301.96875
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 98.078125,
+            "y": 317.96875,
+            "width": 91.828125,
+            "height": 21.96875,
+            "right": 189.90625,
+            "bottom": 339.9375
+          },
+          "titleScrollWidth": 92,
+          "titleClientWidth": 92,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Nueva Publicación",
+          "card": {
+            "x": 272,
+            "y": 237.96875,
+            "width": 224,
+            "height": 125.96875,
+            "right": 496,
+            "bottom": 363.9375
+          },
+          "info": {
+            "x": 452,
+            "y": 245.96875,
+            "width": 36,
+            "height": 36,
+            "right": 488,
+            "bottom": 281.96875
+          },
+          "icon": {
+            "x": 360,
+            "y": 253.96875,
+            "width": 48,
+            "height": 48,
+            "right": 408,
+            "bottom": 301.96875
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 325.15625,
+            "y": 317.96875,
+            "width": 117.671875,
+            "height": 21.96875,
+            "right": 442.828125,
+            "bottom": 339.9375
+          },
+          "titleScrollWidth": 118,
+          "titleClientWidth": 118,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Módulo de Reservas",
+          "card": {
+            "x": 512,
+            "y": 237.96875,
+            "width": 224,
+            "height": 125.96875,
+            "right": 736,
+            "bottom": 363.9375
+          },
+          "info": {
+            "x": 692,
+            "y": 245.96875,
+            "width": 36,
+            "height": 36,
+            "right": 728,
+            "bottom": 281.96875
+          },
+          "icon": {
+            "x": 600,
+            "y": 253.96875,
+            "width": 48,
+            "height": 48,
+            "right": 648,
+            "bottom": 301.96875
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 558.890625,
+            "y": 317.96875,
+            "width": 130.203125,
+            "height": 21.96875,
+            "right": 689.09375,
+            "bottom": 339.9375
+          },
+          "titleScrollWidth": 130,
+          "titleClientWidth": 130,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Servicios",
+          "card": {
+            "x": 32,
+            "y": 379.9375,
+            "width": 224,
+            "height": 125.96875,
+            "right": 256,
+            "bottom": 505.90625
+          },
+          "info": {
+            "x": 212,
+            "y": 387.9375,
+            "width": 36,
+            "height": 36,
+            "right": 248,
+            "bottom": 423.9375
+          },
+          "icon": {
+            "x": 120,
+            "y": 395.9375,
+            "width": 48,
+            "height": 48,
+            "right": 168,
+            "bottom": 443.9375
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 115.140625,
+            "y": 459.9375,
+            "width": 57.703125,
+            "height": 21.96875,
+            "right": 172.84375,
+            "bottom": 481.90625
+          },
+          "titleScrollWidth": 58,
+          "titleClientWidth": 58,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Módulo de Encuestas",
+          "card": {
+            "x": 272,
+            "y": 379.9375,
+            "width": 224,
+            "height": 125.96875,
+            "right": 496,
+            "bottom": 505.90625
+          },
+          "info": {
+            "x": 452,
+            "y": 387.9375,
+            "width": 36,
+            "height": 36,
+            "right": 488,
+            "bottom": 423.9375
+          },
+          "icon": {
+            "x": 360,
+            "y": 395.9375,
+            "width": 48,
+            "height": 48,
+            "right": 408,
+            "bottom": 443.9375
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 315.71875,
+            "y": 459.9375,
+            "width": 136.546875,
+            "height": 21.96875,
+            "right": 452.265625,
+            "bottom": 481.90625
+          },
+          "titleScrollWidth": 137,
+          "titleClientWidth": 137,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Código QR de tu negocio",
+          "card": {
+            "x": 512,
+            "y": 379.9375,
+            "width": 224,
+            "height": 125.96875,
+            "right": 736,
+            "bottom": 505.90625
+          },
+          "info": {
+            "x": 692,
+            "y": 387.9375,
+            "width": 36,
+            "height": 36,
+            "right": 728,
+            "bottom": 423.9375
+          },
+          "icon": {
+            "x": 600,
+            "y": 395.9375,
+            "width": 48,
+            "height": 48,
+            "right": 648,
+            "bottom": 443.9375
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 544.234375,
+            "y": 459.9375,
+            "width": 159.515625,
+            "height": 21.96875,
+            "right": 703.75,
+            "bottom": 481.90625
+          },
+          "titleScrollWidth": 160,
+          "titleClientWidth": 160,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Editar Perfil",
+          "card": {
+            "x": 32,
+            "y": 521.90625,
+            "width": 224,
+            "height": 125.96875,
+            "right": 256,
+            "bottom": 647.875
+          },
+          "info": {
+            "x": 212,
+            "y": 529.90625,
+            "width": 36,
+            "height": 36,
+            "right": 248,
+            "bottom": 565.90625
+          },
+          "icon": {
+            "x": 120,
+            "y": 537.90625,
+            "width": 48,
+            "height": 48,
+            "right": 168,
+            "bottom": 585.90625
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 107.15625,
+            "y": 601.90625,
+            "width": 73.671875,
+            "height": 21.96875,
+            "right": 180.828125,
+            "bottom": 623.875
+          },
+          "titleScrollWidth": 74,
+          "titleClientWidth": 74,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        }
+      ]
+    },
+    {
+      "width": 1024,
+      "height": 844,
+      "documentScrollWidth": 1024,
+      "documentScrollHeight": 844,
+      "grid": {
+        "x": 240,
+        "y": 104,
+        "width": 744,
+        "height": 333.84375,
+        "right": 984,
+        "bottom": 437.84375
+      },
+      "columns": "110.656px 110.672px 110.656px 110.672px 110.672px 110.656px",
+      "gap": "16px",
+      "links": [
+        "/dashboard/productos",
+        "/dashboard/productos/nuevo_producto",
+        "/dashboard/orders",
+        "/dashboard/transacciones",
+        "/dashboard/crear-publicacion",
+        "/dashboard/reservas",
+        "/dashboard/servicios",
+        "/dashboard/encuestas",
+        "/dashboard/qr",
+        "/dashboard/editar-perfil"
+      ],
+      "cards": [
+        {
+          "title": "Gestión de Productos",
+          "card": {
+            "x": 240,
+            "y": 104,
+            "width": 110.65625,
+            "height": 147.9375,
+            "right": 350.65625,
+            "bottom": 251.9375
+          },
+          "info": {
+            "x": 306.65625,
+            "y": 112,
+            "width": 36,
+            "height": 36,
+            "right": 342.65625,
+            "bottom": 148
+          },
+          "icon": {
+            "x": 271.328125,
+            "y": 120,
+            "width": 48,
+            "height": 48,
+            "right": 319.328125,
+            "bottom": 168
+          },
+          "iconInfoIntersectionArea": 354.8125,
+          "titleBox": {
+            "x": 256,
+            "y": 184,
+            "width": 78.65625,
+            "height": 43.9375,
+            "right": 334.65625,
+            "bottom": 227.9375
+          },
+          "titleScrollWidth": 79,
+          "titleClientWidth": 79,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Nuevo Producto",
+          "card": {
+            "x": 366.65625,
+            "y": 104,
+            "width": 110.671875,
+            "height": 147.9375,
+            "right": 477.328125,
+            "bottom": 251.9375
+          },
+          "info": {
+            "x": 433.328125,
+            "y": 112,
+            "width": 36,
+            "height": 36,
+            "right": 469.328125,
+            "bottom": 148
+          },
+          "icon": {
+            "x": 397.984375,
+            "y": 120,
+            "width": 48,
+            "height": 48,
+            "right": 445.984375,
+            "bottom": 168
+          },
+          "iconInfoIntersectionArea": 354.375,
+          "titleBox": {
+            "x": 382.65625,
+            "y": 184,
+            "width": 78.671875,
+            "height": 43.9375,
+            "right": 461.328125,
+            "bottom": 227.9375
+          },
+          "titleScrollWidth": 79,
+          "titleClientWidth": 79,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Gestión de Órdenes",
+          "card": {
+            "x": 493.328125,
+            "y": 104,
+            "width": 110.65625,
+            "height": 147.9375,
+            "right": 603.984375,
+            "bottom": 251.9375
+          },
+          "info": {
+            "x": 559.984375,
+            "y": 112,
+            "width": 36,
+            "height": 36,
+            "right": 595.984375,
+            "bottom": 148
+          },
+          "icon": {
+            "x": 524.65625,
+            "y": 120,
+            "width": 48,
+            "height": 48,
+            "right": 572.65625,
+            "bottom": 168
+          },
+          "iconInfoIntersectionArea": 354.8125,
+          "titleBox": {
+            "x": 509.328125,
+            "y": 184,
+            "width": 78.65625,
+            "height": 43.9375,
+            "right": 587.984375,
+            "bottom": 227.9375
+          },
+          "titleScrollWidth": 79,
+          "titleClientWidth": 79,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Transacciones",
+          "card": {
+            "x": 619.984375,
+            "y": 104,
+            "width": 110.671875,
+            "height": 125.96875,
+            "right": 730.65625,
+            "bottom": 229.96875
+          },
+          "info": {
+            "x": 686.65625,
+            "y": 112,
+            "width": 36,
+            "height": 36,
+            "right": 722.65625,
+            "bottom": 148
+          },
+          "icon": {
+            "x": 651.3125,
+            "y": 120,
+            "width": 48,
+            "height": 48,
+            "right": 699.3125,
+            "bottom": 168
+          },
+          "iconInfoIntersectionArea": 354.375,
+          "titleBox": {
+            "x": 629.40625,
+            "y": 184,
+            "width": 91.828125,
+            "height": 21.96875,
+            "right": 721.234375,
+            "bottom": 205.96875
+          },
+          "titleScrollWidth": 92,
+          "titleClientWidth": 92,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Nueva Publicación",
+          "card": {
+            "x": 746.65625,
+            "y": 104,
+            "width": 110.671875,
+            "height": 147.9375,
+            "right": 857.328125,
+            "bottom": 251.9375
+          },
+          "info": {
+            "x": 813.328125,
+            "y": 112,
+            "width": 36,
+            "height": 36,
+            "right": 849.328125,
+            "bottom": 148
+          },
+          "icon": {
+            "x": 777.984375,
+            "y": 120,
+            "width": 48,
+            "height": 48,
+            "right": 825.984375,
+            "bottom": 168
+          },
+          "iconInfoIntersectionArea": 354.375,
+          "titleBox": {
+            "x": 762.65625,
+            "y": 184,
+            "width": 78.671875,
+            "height": 43.9375,
+            "right": 841.328125,
+            "bottom": 227.9375
+          },
+          "titleScrollWidth": 79,
+          "titleClientWidth": 79,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Módulo de Reservas",
+          "card": {
+            "x": 873.328125,
+            "y": 104,
+            "width": 110.65625,
+            "height": 147.9375,
+            "right": 983.984375,
+            "bottom": 251.9375
+          },
+          "info": {
+            "x": 939.984375,
+            "y": 112,
+            "width": 36,
+            "height": 36,
+            "right": 975.984375,
+            "bottom": 148
+          },
+          "icon": {
+            "x": 904.65625,
+            "y": 120,
+            "width": 48,
+            "height": 48,
+            "right": 952.65625,
+            "bottom": 168
+          },
+          "iconInfoIntersectionArea": 354.8125,
+          "titleBox": {
+            "x": 889.328125,
+            "y": 184,
+            "width": 78.65625,
+            "height": 43.9375,
+            "right": 967.984375,
+            "bottom": 227.9375
+          },
+          "titleScrollWidth": 79,
+          "titleClientWidth": 79,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Servicios",
+          "card": {
+            "x": 240,
+            "y": 267.9375,
+            "width": 110.65625,
+            "height": 125.96875,
+            "right": 350.65625,
+            "bottom": 393.90625
+          },
+          "info": {
+            "x": 306.65625,
+            "y": 275.9375,
+            "width": 36,
+            "height": 36,
+            "right": 342.65625,
+            "bottom": 311.9375
+          },
+          "icon": {
+            "x": 271.328125,
+            "y": 283.9375,
+            "width": 48,
+            "height": 48,
+            "right": 319.328125,
+            "bottom": 331.9375
+          },
+          "iconInfoIntersectionArea": 354.8125,
+          "titleBox": {
+            "x": 266.46875,
+            "y": 347.9375,
+            "width": 57.703125,
+            "height": 21.96875,
+            "right": 324.171875,
+            "bottom": 369.90625
+          },
+          "titleScrollWidth": 58,
+          "titleClientWidth": 58,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Módulo de Encuestas",
+          "card": {
+            "x": 366.65625,
+            "y": 267.9375,
+            "width": 110.671875,
+            "height": 147.9375,
+            "right": 477.328125,
+            "bottom": 415.875
+          },
+          "info": {
+            "x": 433.328125,
+            "y": 275.9375,
+            "width": 36,
+            "height": 36,
+            "right": 469.328125,
+            "bottom": 311.9375
+          },
+          "icon": {
+            "x": 397.984375,
+            "y": 283.9375,
+            "width": 48,
+            "height": 48,
+            "right": 445.984375,
+            "bottom": 331.9375
+          },
+          "iconInfoIntersectionArea": 354.375,
+          "titleBox": {
+            "x": 382.65625,
+            "y": 347.9375,
+            "width": 78.671875,
+            "height": 43.9375,
+            "right": 461.328125,
+            "bottom": 391.875
+          },
+          "titleScrollWidth": 79,
+          "titleClientWidth": 79,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Código QR de tu negocio",
+          "card": {
+            "x": 493.328125,
+            "y": 267.9375,
+            "width": 110.65625,
+            "height": 169.90625,
+            "right": 603.984375,
+            "bottom": 437.84375
+          },
+          "info": {
+            "x": 559.984375,
+            "y": 275.9375,
+            "width": 36,
+            "height": 36,
+            "right": 595.984375,
+            "bottom": 311.9375
+          },
+          "icon": {
+            "x": 524.65625,
+            "y": 283.9375,
+            "width": 48,
+            "height": 48,
+            "right": 572.65625,
+            "bottom": 331.9375
+          },
+          "iconInfoIntersectionArea": 354.8125,
+          "titleBox": {
+            "x": 509.328125,
+            "y": 347.9375,
+            "width": 78.65625,
+            "height": 65.90625,
+            "right": 587.984375,
+            "bottom": 413.84375
+          },
+          "titleScrollWidth": 79,
+          "titleClientWidth": 79,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Editar Perfil",
+          "card": {
+            "x": 619.984375,
+            "y": 267.9375,
+            "width": 110.671875,
+            "height": 125.96875,
+            "right": 730.65625,
+            "bottom": 393.90625
+          },
+          "info": {
+            "x": 686.65625,
+            "y": 275.9375,
+            "width": 36,
+            "height": 36,
+            "right": 722.65625,
+            "bottom": 311.9375
+          },
+          "icon": {
+            "x": 651.3125,
+            "y": 283.9375,
+            "width": 48,
+            "height": 48,
+            "right": 699.3125,
+            "bottom": 331.9375
+          },
+          "iconInfoIntersectionArea": 354.375,
+          "titleBox": {
+            "x": 638.484375,
+            "y": 347.9375,
+            "width": 73.671875,
+            "height": 21.96875,
+            "right": 712.15625,
+            "bottom": 369.90625
+          },
+          "titleScrollWidth": 74,
+          "titleClientWidth": 74,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        }
+      ]
+    },
+    {
+      "width": 1440,
+      "height": 844,
+      "documentScrollWidth": 1440,
+      "documentScrollHeight": 844,
+      "grid": {
+        "x": 240,
+        "y": 104,
+        "width": 1160,
+        "height": 289.90625,
+        "right": 1400,
+        "bottom": 393.90625
+      },
+      "columns": "180px 180px 180px 180px 180px 180px",
+      "gap": "16px",
+      "links": [
+        "/dashboard/productos",
+        "/dashboard/productos/nuevo_producto",
+        "/dashboard/orders",
+        "/dashboard/transacciones",
+        "/dashboard/crear-publicacion",
+        "/dashboard/reservas",
+        "/dashboard/servicios",
+        "/dashboard/encuestas",
+        "/dashboard/qr",
+        "/dashboard/editar-perfil"
+      ],
+      "cards": [
+        {
+          "title": "Gestión de Productos",
+          "card": {
+            "x": 240,
+            "y": 104,
+            "width": 180,
+            "height": 125.96875,
+            "right": 420,
+            "bottom": 229.96875
+          },
+          "info": {
+            "x": 376,
+            "y": 112,
+            "width": 36,
+            "height": 36,
+            "right": 412,
+            "bottom": 148
+          },
+          "icon": {
+            "x": 306,
+            "y": 120,
+            "width": 48,
+            "height": 48,
+            "right": 354,
+            "bottom": 168
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 261.671875,
+            "y": 184,
+            "width": 136.640625,
+            "height": 21.96875,
+            "right": 398.3125,
+            "bottom": 205.96875
+          },
+          "titleScrollWidth": 137,
+          "titleClientWidth": 137,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Nuevo Producto",
+          "card": {
+            "x": 436,
+            "y": 104,
+            "width": 180,
+            "height": 125.96875,
+            "right": 616,
+            "bottom": 229.96875
+          },
+          "info": {
+            "x": 572,
+            "y": 112,
+            "width": 36,
+            "height": 36,
+            "right": 608,
+            "bottom": 148
+          },
+          "icon": {
+            "x": 502,
+            "y": 120,
+            "width": 48,
+            "height": 48,
+            "right": 550,
+            "bottom": 168
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 475.09375,
+            "y": 184,
+            "width": 101.796875,
+            "height": 21.96875,
+            "right": 576.890625,
+            "bottom": 205.96875
+          },
+          "titleScrollWidth": 102,
+          "titleClientWidth": 102,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Gestión de Órdenes",
+          "card": {
+            "x": 632,
+            "y": 104,
+            "width": 180,
+            "height": 125.96875,
+            "right": 812,
+            "bottom": 229.96875
+          },
+          "info": {
+            "x": 768,
+            "y": 112,
+            "width": 36,
+            "height": 36,
+            "right": 804,
+            "bottom": 148
+          },
+          "icon": {
+            "x": 698,
+            "y": 120,
+            "width": 48,
+            "height": 48,
+            "right": 746,
+            "bottom": 168
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 658.4375,
+            "y": 184,
+            "width": 127.109375,
+            "height": 21.96875,
+            "right": 785.546875,
+            "bottom": 205.96875
+          },
+          "titleScrollWidth": 127,
+          "titleClientWidth": 127,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Transacciones",
+          "card": {
+            "x": 828,
+            "y": 104,
+            "width": 180,
+            "height": 125.96875,
+            "right": 1008,
+            "bottom": 229.96875
+          },
+          "info": {
+            "x": 964,
+            "y": 112,
+            "width": 36,
+            "height": 36,
+            "right": 1000,
+            "bottom": 148
+          },
+          "icon": {
+            "x": 894,
+            "y": 120,
+            "width": 48,
+            "height": 48,
+            "right": 942,
+            "bottom": 168
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 872.078125,
+            "y": 184,
+            "width": 91.828125,
+            "height": 21.96875,
+            "right": 963.90625,
+            "bottom": 205.96875
+          },
+          "titleScrollWidth": 92,
+          "titleClientWidth": 92,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Nueva Publicación",
+          "card": {
+            "x": 1024,
+            "y": 104,
+            "width": 180,
+            "height": 125.96875,
+            "right": 1204,
+            "bottom": 229.96875
+          },
+          "info": {
+            "x": 1160,
+            "y": 112,
+            "width": 36,
+            "height": 36,
+            "right": 1196,
+            "bottom": 148
+          },
+          "icon": {
+            "x": 1090,
+            "y": 120,
+            "width": 48,
+            "height": 48,
+            "right": 1138,
+            "bottom": 168
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 1055.15625,
+            "y": 184,
+            "width": 117.671875,
+            "height": 21.96875,
+            "right": 1172.828125,
+            "bottom": 205.96875
+          },
+          "titleScrollWidth": 118,
+          "titleClientWidth": 118,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Módulo de Reservas",
+          "card": {
+            "x": 1220,
+            "y": 104,
+            "width": 180,
+            "height": 125.96875,
+            "right": 1400,
+            "bottom": 229.96875
+          },
+          "info": {
+            "x": 1356,
+            "y": 112,
+            "width": 36,
+            "height": 36,
+            "right": 1392,
+            "bottom": 148
+          },
+          "icon": {
+            "x": 1286,
+            "y": 120,
+            "width": 48,
+            "height": 48,
+            "right": 1334,
+            "bottom": 168
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 1244.890625,
+            "y": 184,
+            "width": 130.203125,
+            "height": 21.96875,
+            "right": 1375.09375,
+            "bottom": 205.96875
+          },
+          "titleScrollWidth": 130,
+          "titleClientWidth": 130,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Servicios",
+          "card": {
+            "x": 240,
+            "y": 245.96875,
+            "width": 180,
+            "height": 125.96875,
+            "right": 420,
+            "bottom": 371.9375
+          },
+          "info": {
+            "x": 376,
+            "y": 253.96875,
+            "width": 36,
+            "height": 36,
+            "right": 412,
+            "bottom": 289.96875
+          },
+          "icon": {
+            "x": 306,
+            "y": 261.96875,
+            "width": 48,
+            "height": 48,
+            "right": 354,
+            "bottom": 309.96875
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 301.140625,
+            "y": 325.96875,
+            "width": 57.703125,
+            "height": 21.96875,
+            "right": 358.84375,
+            "bottom": 347.9375
+          },
+          "titleScrollWidth": 58,
+          "titleClientWidth": 58,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Módulo de Encuestas",
+          "card": {
+            "x": 436,
+            "y": 245.96875,
+            "width": 180,
+            "height": 125.96875,
+            "right": 616,
+            "bottom": 371.9375
+          },
+          "info": {
+            "x": 572,
+            "y": 253.96875,
+            "width": 36,
+            "height": 36,
+            "right": 608,
+            "bottom": 289.96875
+          },
+          "icon": {
+            "x": 502,
+            "y": 261.96875,
+            "width": 48,
+            "height": 48,
+            "right": 550,
+            "bottom": 309.96875
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 457.71875,
+            "y": 325.96875,
+            "width": 136.546875,
+            "height": 21.96875,
+            "right": 594.265625,
+            "bottom": 347.9375
+          },
+          "titleScrollWidth": 137,
+          "titleClientWidth": 137,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Código QR de tu negocio",
+          "card": {
+            "x": 632,
+            "y": 245.96875,
+            "width": 180,
+            "height": 147.9375,
+            "right": 812,
+            "bottom": 393.90625
+          },
+          "info": {
+            "x": 768,
+            "y": 253.96875,
+            "width": 36,
+            "height": 36,
+            "right": 804,
+            "bottom": 289.96875
+          },
+          "icon": {
+            "x": 698,
+            "y": 261.96875,
+            "width": 48,
+            "height": 48,
+            "right": 746,
+            "bottom": 309.96875
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 648,
+            "y": 325.96875,
+            "width": 148,
+            "height": 43.9375,
+            "right": 796,
+            "bottom": 369.90625
+          },
+          "titleScrollWidth": 148,
+          "titleClientWidth": 148,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        },
+        {
+          "title": "Editar Perfil",
+          "card": {
+            "x": 828,
+            "y": 245.96875,
+            "width": 180,
+            "height": 125.96875,
+            "right": 1008,
+            "bottom": 371.9375
+          },
+          "info": {
+            "x": 964,
+            "y": 253.96875,
+            "width": 36,
+            "height": 36,
+            "right": 1000,
+            "bottom": 289.96875
+          },
+          "icon": {
+            "x": 894,
+            "y": 261.96875,
+            "width": 48,
+            "height": 48,
+            "right": 942,
+            "bottom": 309.96875
+          },
+          "iconInfoIntersectionArea": 0,
+          "titleBox": {
+            "x": 881.15625,
+            "y": 325.96875,
+            "width": 73.671875,
+            "height": 21.96875,
+            "right": 954.828125,
+            "bottom": 347.9375
+          },
+          "titleScrollWidth": 74,
+          "titleClientWidth": 74,
+          "fontFamily": "Roboto, Helvetica, Arial, sans-serif",
+          "fontSize": "14px",
+          "lineHeight": "21.98px",
+          "contentPadding": "16px 16px 24px"
+        }
+      ]
+    }
+  ],
+  "modal": {
+    "dialogRoleCount": 0,
+    "ariaModalCount": 0,
+    "closeName": null,
+    "closeWidth": 32,
+    "closeHeight": 32,
+    "activeElementLabel": "Información sobre Gestión de Productos",
+    "bodyOverflow": "visible",
+    "nestedInteractive": 11,
+    "hasDescription": true,
+    "stillOpenAfterEscape": true,
+    "nextTabLabel": "Nuevo Producto"
+  },
+  "superAdminLinks": [
+    {
+      "text": "Panel Myckeo Admin",
+      "href": "/myckeoAdmin"
+    },
+    {
+      "text": "Editar usuario",
+      "href": "/dashboard/editar-usuario"
+    }
+  ],
+  "errors": [],
+  "sourceHashes": {
+    "src/app/dashboard/page.tsx": "b2a2dc2fc12b61abac8f6618f0010b9f58d5584a2cc4e790785249a8975890fe",
+    "src/app/globals.css": "0d9ec762099a4df01bd861455154d82ff67afc156641d14886bd5dddcd305436",
+    "src/dashboard/componentes/DashboardSections.tsx": "6bb8a364ef477f47d8b5d4233018c2bcebecebe80aa5367b8d9de76416df93f2",
+    "src/ui/components/dashboard/perfil/LayoutDashboardComponent.tsx": "202151fa830206a0376238e2761c7ffa28d43f608a89b0d81641b64f461318a5",
+    "tailwind.config.ts": "ed30812f281f74e799d66444675f6fd24100202a8fbdd08f186a8b564260d358"
+  }
+}

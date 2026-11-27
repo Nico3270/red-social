@@ -27,9 +27,10 @@ interface SearchResult {
 }
 interface SearchBarProps {
   compact?: boolean;
+  iconOnly?: boolean;
 }
 
-export default function SearchBar({ compact = false }: SearchBarProps) {
+export default function SearchBar({ compact = false, iconOnly = false }: SearchBarProps) {
   const router = useRouter();
   const needsLayer = useMediaQuery("(max-width:1199px)");
   const reducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
@@ -40,10 +41,24 @@ export default function SearchBar({ compact = false }: SearchBarProps) {
   const [focused, setFocused] = useState(false);
   const [layerOpen, setLayerOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
+  const [layerViewport, setLayerViewport] = useState<{ height: number; top: number } | null>(null);
   const rootRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const id = useId();
   const showResults = focused && Boolean(searchTerm.trim());
+
+  useEffect(() => {
+    if (!iconOnly || !layerOpen || !window.visualViewport) return;
+    const viewport = window.visualViewport;
+    const update = () => setLayerViewport({ height: viewport.height, top: viewport.offsetTop });
+    update();
+    viewport.addEventListener("resize", update);
+    viewport.addEventListener("scroll", update);
+    return () => {
+      viewport.removeEventListener("resize", update);
+      viewport.removeEventListener("scroll", update);
+    };
+  }, [iconOnly, layerOpen]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -94,6 +109,7 @@ export default function SearchBar({ compact = false }: SearchBarProps) {
   const closeLayer = () => {
     setLayerOpen(false);
     setFocused(false);
+    setLayerViewport(null);
   };
   const navigate = (result: SearchResult) => {
     let url = "";
@@ -142,14 +158,16 @@ export default function SearchBar({ compact = false }: SearchBarProps) {
 
   const field = (
     <div
-      className={`${styles.root} ${compact && !layerOpen ? styles.compact : ""}`}
+      className={`${styles.root} ${compact && !layerOpen ? styles.compact : ""} ${iconOnly && layerOpen ? styles.mobileLayer : ""}`}
     >
+      <div className={iconOnly && layerOpen ? styles.mobileFieldRow : styles.fieldSlot}>
       <div className={styles.field}>
         <FaSearch aria-hidden="true" />
         <input
           ref={inputRef}
           autoFocus={layerOpen}
           type="search"
+          enterKeyHint={iconOnly ? "search" : undefined}
           role="combobox"
           aria-label="Buscar productos, negocios o categorías"
           aria-autocomplete="list"
@@ -175,6 +193,10 @@ export default function SearchBar({ compact = false }: SearchBarProps) {
           onKeyDown={onKeyDown}
         />
       </div>
+      </div>
+      {iconOnly && layerOpen && !searchTerm.trim() && (
+        <p className={styles.feedback}>Escribe para buscar en Myckeo.</p>
+      )}
       {showResults && (
         <div
           className={`${styles.results} ${layerOpen ? styles.inDialog : ""}`}
@@ -235,13 +257,15 @@ export default function SearchBar({ compact = false }: SearchBarProps) {
   );
 
   return (
-    <div ref={rootRef} className={styles.root}>
-      {needsLayer || layerOpen ? (
+    <div ref={rootRef} className={`${styles.root} ${iconOnly ? styles.iconRoot : ""}`}>
+      {iconOnly || needsLayer || layerOpen ? (
         <button
           type="button"
-          className={styles.trigger}
+          className={`${styles.trigger} ${iconOnly ? styles.iconTrigger : ""}`}
           aria-label="Abrir búsqueda"
           aria-haspopup="dialog"
+          aria-expanded={layerOpen}
+          aria-controls={layerOpen ? `${id}-dialog` : undefined}
           onClick={() => {
             setLayerOpen(true);
             setFocused(true);
@@ -257,13 +281,19 @@ export default function SearchBar({ compact = false }: SearchBarProps) {
         open={layerOpen}
         onClose={closeLayer}
         fullWidth
+        fullScreen={iconOnly}
         maxWidth="sm"
         transitionDuration={reducedMotion ? 0 : 180}
         slotProps={{
           transition: {
+            onEntered: () => {
+              // The dialog's focus trap mounts after the input. Focus once it
+              // is active, without moving the feed behind the mobile layer.
+              if (iconOnly) inputRef.current?.focus({ preventScroll: true });
+            },
             onExited: () => {
               // If resizing removed the launcher, restore focus to the inline field.
-              if (!needsLayer) {
+              if (!needsLayer && !iconOnly) {
                 inputRef.current?.focus();
                 setFocused(false);
               }
@@ -271,8 +301,12 @@ export default function SearchBar({ compact = false }: SearchBarProps) {
           },
         }}
         aria-labelledby={`${id}-title`}
-        sx={{ zIndex: 10010 }}
+        sx={{
+          zIndex: 10010,
+          ...(iconOnly ? { top: layerViewport?.top ?? 0, height: layerViewport?.height ?? "100dvh", bottom: "auto" } : {}),
+        }}
         PaperProps={{
+          id: `${id}-dialog`,
           sx: {
             m: 1.5,
             width: "calc(100% - 24px)",
@@ -280,12 +314,13 @@ export default function SearchBar({ compact = false }: SearchBarProps) {
             borderRadius: 3,
             overflow: "visible",
             fontFamily: inter.style.fontFamily,
+            ...(iconOnly ? { m: 0, width: "100%", maxWidth: "100%", height: "100%", maxHeight: "100%", borderRadius: 0, overflow: "hidden" } : {}),
           },
         }}
       >
         <DialogTitle
           id={`${id}-title`}
-          sx={{ pr: 8, fontFamily: "inherit", fontSize: 20 }}
+          sx={{ pr: 8, fontFamily: "inherit", fontSize: 20, ...(iconOnly ? { fontSize: 18, fontWeight: 600, borderBottom: "1px solid #f3e4e8" } : {}) }}
         >
           Buscar en Myckeo
         </DialogTitle>
@@ -296,7 +331,7 @@ export default function SearchBar({ compact = false }: SearchBarProps) {
         >
           <X size={20} />
         </IconButton>
-        <DialogContent sx={{ p: 2, pt: 1, minHeight: 0, overflowY: "auto" }}>
+        <DialogContent sx={{ p: 2, pt: 1, minHeight: 0, overflowY: "auto", ...(iconOnly ? { pt: 0, overscrollBehavior: "contain" } : {}) }}>
           {field}
         </DialogContent>
       </Dialog>

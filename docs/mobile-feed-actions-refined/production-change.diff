@@ -1,0 +1,156 @@
+--- docs/mobile-feed-actions-refined/sources/feedProductCard.module.css.before.txt	2026-11-16 04:27:11.245511466 -0500
++++ src/ui/components/productos/feedProductCard.module.css	2026-11-16 04:36:06.364549725 -0500
+@@ -665,15 +665,36 @@
+   display: contents;
+ }
+ 
+-/* Final mobile actions: follow in the header, favorite on the top border,
+-   and the original commercial actions beside the price. */
++/* Refined mobile actions: compact avatar/follow cluster, contained favorite,
++   and equally weighted commercial controls beside the price. */
+ @media (max-width: 768px) {
+   .feed {
+-    /* The grid's smallest row gap is 10px. Together these reserve a full 44px
+-       target above the card, without covering the preceding row or the header. */
+-    margin-top: 34px;
++    margin-top: 0;
++  }
++  .header {
++    position: relative;
++    display: grid;
++    grid-template-columns: 44px minmax(0, 1fr) 44px;
++    grid-template-rows: 44px;
++    gap: 0;
++    padding: 0;
++  }
++  .business,
++  .headerActions {
++    display: contents;
++  }
++  .business > div {
++    position: absolute;
++    z-index: 1;
++    top: 10px;
++    left: 6px;
++    width: 24px;
++    height: 24px;
++    pointer-events: none;
+   }
+   .businessName {
++    grid-column: 2;
++    grid-row: 1;
+     display: flex;
+     flex: 1;
+     align-items: center;
+@@ -690,17 +711,36 @@
+     overflow-wrap: anywhere;
+     line-height: 18px;
+   }
+-  .headerActions {
+-    flex: 0 0 44px;
+-  }
++  /* Follow keeps its original handler and 44px hit area. Only its paint is
++     a small badge beside the non-interactive avatar, leaving room for the name. */
+   .headerActions > button {
++    grid-column: 1;
++    grid-row: 1;
+     flex-shrink: 0;
++    align-items: flex-end;
++    justify-content: flex-end;
++    padding: 0 2px 4px 0;
++  }
++  .headerActions > button::before {
++    inset: auto 0 2px auto;
++    width: 20px;
++    height: 20px;
++    border: 2px solid white;
++  }
++  .headerActions > button > span {
++    position: relative;
++  }
++  .headerActions > button svg {
++    width: 14px;
++    height: 14px;
+   }
+   .favorite {
+-    position: absolute;
+-    z-index: 3;
+-    top: -44px;
+-    right: 15px;
++    grid-column: 3;
++    grid-row: 1;
++    position: relative;
++    z-index: 2;
++    top: auto;
++    right: auto;
+     width: 44px;
+     height: 44px;
+   }
+@@ -708,22 +748,27 @@
+     position: relative;
+     isolation: isolate;
+     display: inline-flex;
+-    align-items: flex-end;
++    align-items: center;
+     justify-content: center;
+-    padding: 0 0 4px;
++    padding: 0;
+   }
+   .favorite button::before {
+     position: absolute;
+     z-index: -1;
+-    inset: auto 0 0;
+-    height: 28px;
+-    border: 1px solid #e2b8c2;
+-    border-bottom: 0;
+-    border-radius: 12px 12px 0 0;
+-    background: white;
+-    box-shadow: 0 -1px 3px #2c2f3308;
++    inset: 8px;
++    border: 0;
++    border-radius: 50%;
++    background: #faf3f5;
++    box-shadow: none;
+     content: "";
+   }
++  .favorite button svg {
++    width: 16px;
++    height: 16px;
++  }
++  .favorite button[aria-pressed="true"]::before {
++    background: #fbecee;
++  }
+   .feed .favorite button:focus-visible {
+     outline-offset: -2px;
+   }
+@@ -759,10 +804,29 @@
+     gap: 0;
+     margin-left: auto;
+   }
++  /* Same 44px target, 32px circular base, 18px icon and shadow on both. */
++  .feed .whatsapp,
++  .feed .cart:not(:disabled) {
++    color: white;
++  }
++  .feed .whatsapp::before,
++  .feed .cart::before {
++    inset: 6px;
++    border: 0;
++    border-radius: 50%;
++    box-shadow: 0 1px 3px #1c283c1a;
++  }
+   .feed .whatsapp::before {
+-    background: transparent;
++    background: #258054;
++  }
++  .feed .cart:disabled::before {
+     box-shadow: none;
+   }
++  @media (hover: hover) {
++    .feed .whatsapp:hover::before {
++      background: #1d6b45;
++    }
++  }
+   @container feed-product-card (max-width: 250px) {
+     .businessLabel {
+       line-height: 16px;

@@ -1,0 +1,47 @@
+{
+  "zoom": {
+    "innerWidth": 390,
+    "outerWidth": 780,
+    "dpr": 2
+  },
+  "header": {
+    "height": 61,
+    "firstProductTop": 241,
+    "firstProductViewportTop": 241,
+    "scrollY": 0,
+    "boxes": [
+      {
+        "label": "Myckeo",
+        "x": 12,
+        "y": 8,
+        "width": 150.44,
+        "height": 44,
+        "right": 162.44,
+        "bottom": 52
+      },
+      {
+        "label": "Abrir búsqueda",
+        "x": 170.44,
+        "y": 8,
+        "width": 44,
+        "height": 44,
+        "right": 214.44,
+        "bottom": 52
+      },
+      {
+        "label": "Cambiar ubicación: Bogotá",
+        "x": 290.85,
+        "y": 8,
+        "width": 87.15,
+        "height": 44,
+        "right": 378,
+        "bottom": 52
+      }
+    ],
+    "collisions": [],
+    "brandContentFits": true,
+    "overflow": false,
+    "searchLocationGap": 76.41
+  },
+  "focusRestored": true
+}

@@ -1,0 +1,5 @@
+{
+  "realTouchEvents": true,
+  "oneRequestForTwoTapsWhilePending": true,
+  "unfollowTouch": true
+}

@@ -7,7 +7,6 @@ import {
 } from "@/lib/business/create-negocio-core";
 export const dynamic = "force-dynamic";
 
-
 const API_KEY = process.env.MYCKEO_ADMIN_KEY;
 
 if (!API_KEY) {
@@ -18,13 +17,17 @@ export async function POST(request: NextRequest) {
   try {
     const apiKey = request.headers.get("x-api-key");
     if (apiKey !== API_KEY) {
-      return NextResponse.json({ ok: false, message: "Unauthorized" }, { status: 401 });
+      return NextResponse.json(
+        { ok: false, message: "Unauthorized" },
+        { status: 401 },
+      );
     }
 
     const body = await request.json();
 
     const {
       nombre,
+      prepararOculto,
       descripcion = "Negocio creado automáticamente por Myckeo. Completa tu perfil para personalizarlo.",
       ciudad,
       departamento,
@@ -48,20 +51,48 @@ export async function POST(request: NextRequest) {
     } = body;
 
     // Validaciones
+    if (prepararOculto !== undefined && typeof prepararOculto !== "boolean")
+      return NextResponse.json(
+        { ok: false, message: "Opción inválida" },
+        { status: 400 },
+      );
+    if (prepararOculto) {
+      const pending = await prisma.usuario.findUnique({
+        where: { id: usuarioId },
+        select: { isPlaceholder: true },
+      });
+      if (!pending?.isPlaceholder)
+        return NextResponse.json(
+          { ok: false, message: "Requiere usuario provisional" },
+          { status: 409 },
+        );
+    }
     if (!nombre || !ciudad || !departamento || !usuarioId) {
-      return NextResponse.json({ ok: false, message: "Faltan campos obligatorios" }, { status: 400 });
+      return NextResponse.json(
+        { ok: false, message: "Faltan campos obligatorios" },
+        { status: 400 },
+      );
     }
 
     if (!Array.isArray(categoriaIds) || categoriaIds.length === 0) {
-      return NextResponse.json({ ok: false, message: "Debe seleccionar al menos una categoría" }, { status: 400 });
+      return NextResponse.json(
+        { ok: false, message: "Debe seleccionar al menos una categoría" },
+        { status: 400 },
+      );
     }
 
     if (!Array.isArray(seccionIds) || seccionIds.length === 0) {
-      return NextResponse.json({ ok: false, message: "Debe seleccionar al menos una sección" }, { status: 400 });
+      return NextResponse.json(
+        { ok: false, message: "Debe seleccionar al menos una sección" },
+        { status: 400 },
+      );
     }
 
     if (palabrasClave && !Array.isArray(palabrasClave)) {
-      return NextResponse.json({ ok: false, message: "palabrasClave debe ser un array" }, { status: 400 });
+      return NextResponse.json(
+        { ok: false, message: "palabrasClave debe ser un array" },
+        { status: 400 },
+      );
     }
 
     // Construir URL de Google Maps
@@ -71,6 +102,7 @@ export async function POST(request: NextRequest) {
     }
 
     const coreInput: CreateNegocioCoreInput = {
+      ...(prepararOculto ? { prepararOculto: true } : {}),
       usuarioId,
       nombre,
       descripcion,
@@ -88,8 +120,22 @@ export async function POST(request: NextRequest) {
     const result = await createNegocioCore(coreInput);
 
     if (!result.ok) {
-      return NextResponse.json({ ok: false, message: result.message }, { status: 400 });
+      return NextResponse.json(
+        { ok: false, message: result.message },
+        { status: 400 },
+      );
     }
+
+    if (prepararOculto)
+      return NextResponse.json(
+        {
+          ok: true,
+          status: result.status,
+          negocioId: result.negocioId,
+          slug: result.slugNegocio,
+        },
+        { status: result.status === "CREATED" ? 201 : 200 },
+      );
 
     // Actualizar negocio con campos nuevos
     await prisma.negocio.update({
@@ -115,21 +161,27 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    return NextResponse.json({
-      ok: true,
-      status: result.status,
-      negocio: result.negocio,
-      message: result.status === "CREATED"
-        ? "Negocio creado exitosamente con todos los detalles"
-        : result.message,
-      negocioId: result.negocioId,
-      slug: result.slugNegocio,
-      url: `https://myckeo.com/${result.slugNegocio}`,
-      googleMapsUrl: urlGoogleMaps,
-    }, { status: result.status === "CREATED" ? 201 : 200 });
-
+    return NextResponse.json(
+      {
+        ok: true,
+        status: result.status,
+        negocio: result.negocio,
+        message:
+          result.status === "CREATED"
+            ? "Negocio creado exitosamente con todos los detalles"
+            : result.message,
+        negocioId: result.negocioId,
+        slug: result.slugNegocio,
+        url: `https://myckeo.com/${result.slugNegocio}`,
+        googleMapsUrl: urlGoogleMaps,
+      },
+      { status: result.status === "CREATED" ? 201 : 200 },
+    );
   } catch (error) {
     console.error("Error en API /api/negocio:", error);
-    return NextResponse.json({ ok: false, message: "Error interno del servidor" }, { status: 500 });
+    return NextResponse.json(
+      { ok: false, message: "Error interno del servidor" },
+      { status: 500 },
+    );
   }
 }

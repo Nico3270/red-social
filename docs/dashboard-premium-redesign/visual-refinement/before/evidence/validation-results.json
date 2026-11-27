@@ -1,0 +1,4405 @@
+{
+  "scope": "Isolated production menu, actual metadata/CSS/MUI/Next Link. No sessions or auth mocks. Geometry host copies current shell offsets/padding only, without rendering sidebar/topbar. Font adapter loads existing local Inter asset. Navigation is intercepted, never runs destination modules.",
+  "sourceRevision": "1f491ff8ce6f80e333f07548e299141fc863d993",
+  "widths": [
+    {
+      "width": 320,
+      "height": 844,
+      "collapsed": false,
+      "documentScrollWidth": 320,
+      "documentScrollHeight": 1450,
+      "firstContentX": 16,
+      "sidebarRight": 0,
+      "entries": [
+        {
+          "href": "/dashboard/productos/nuevo_producto",
+          "row": {
+            "x": 16,
+            "y": 251.78125,
+            "width": 288,
+            "height": 88,
+            "right": 304,
+            "bottom": 339.78125
+          },
+          "link": {
+            "x": 17,
+            "y": 252.78125,
+            "width": 242,
+            "height": 86,
+            "right": 259,
+            "bottom": 338.78125
+          },
+          "help": {
+            "x": 259,
+            "y": 273.78125,
+            "width": 44,
+            "height": 44,
+            "right": 303,
+            "bottom": 317.78125
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/crear-publicacion",
+          "row": {
+            "x": 16,
+            "y": 349.78125,
+            "width": 288,
+            "height": 92.75,
+            "right": 304,
+            "bottom": 442.53125
+          },
+          "link": {
+            "x": 17,
+            "y": 350.78125,
+            "width": 242,
+            "height": 90.75,
+            "right": 259,
+            "bottom": 441.53125
+          },
+          "help": {
+            "x": 259,
+            "y": 374.15625,
+            "width": 44,
+            "height": 44,
+            "right": 303,
+            "bottom": 418.15625
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/productos",
+          "row": {
+            "x": 16,
+            "y": 500.53125,
+            "width": 288,
+            "height": 78,
+            "right": 304,
+            "bottom": 578.53125
+          },
+          "link": {
+            "x": 17,
+            "y": 501.53125,
+            "width": 242,
+            "height": 76,
+            "right": 259,
+            "bottom": 577.53125
+          },
+          "help": {
+            "x": 259,
+            "y": 517.53125,
+            "width": 44,
+            "height": 44,
+            "right": 303,
+            "bottom": 561.53125
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/organizacion-catalogo",
+          "row": {
+            "x": 16,
+            "y": 588.53125,
+            "width": 288,
+            "height": 95,
+            "right": 304,
+            "bottom": 683.53125
+          },
+          "link": {
+            "x": 17,
+            "y": 589.53125,
+            "width": 242,
+            "height": 93,
+            "right": 259,
+            "bottom": 682.53125
+          },
+          "help": {
+            "x": 259,
+            "y": 614.03125,
+            "width": 44,
+            "height": 44,
+            "right": 303,
+            "bottom": 658.03125
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/servicios",
+          "row": {
+            "x": 16,
+            "y": 693.53125,
+            "width": 288,
+            "height": 78,
+            "right": 304,
+            "bottom": 771.53125
+          },
+          "link": {
+            "x": 17,
+            "y": 694.53125,
+            "width": 242,
+            "height": 76,
+            "right": 259,
+            "bottom": 770.53125
+          },
+          "help": {
+            "x": 259,
+            "y": 710.53125,
+            "width": 44,
+            "height": 44,
+            "right": 303,
+            "bottom": 754.53125
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/orders",
+          "row": {
+            "x": 16,
+            "y": 829.53125,
+            "width": 288,
+            "height": 92.75,
+            "right": 304,
+            "bottom": 922.28125
+          },
+          "link": {
+            "x": 17,
+            "y": 830.53125,
+            "width": 242,
+            "height": 90.75,
+            "right": 259,
+            "bottom": 921.28125
+          },
+          "help": {
+            "x": 259,
+            "y": 853.90625,
+            "width": 44,
+            "height": 44,
+            "right": 303,
+            "bottom": 897.90625
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/reservas",
+          "row": {
+            "x": 16,
+            "y": 932.28125,
+            "width": 288,
+            "height": 78,
+            "right": 304,
+            "bottom": 1010.28125
+          },
+          "link": {
+            "x": 17,
+            "y": 933.28125,
+            "width": 242,
+            "height": 76,
+            "right": 259,
+            "bottom": 1009.28125
+          },
+          "help": {
+            "x": 259,
+            "y": 949.28125,
+            "width": 44,
+            "height": 44,
+            "right": 303,
+            "bottom": 993.28125
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/transacciones",
+          "row": {
+            "x": 16,
+            "y": 1020.28125,
+            "width": 288,
+            "height": 78,
+            "right": 304,
+            "bottom": 1098.28125
+          },
+          "link": {
+            "x": 17,
+            "y": 1021.28125,
+            "width": 242,
+            "height": 76,
+            "right": 259,
+            "bottom": 1097.28125
+          },
+          "help": {
+            "x": 259,
+            "y": 1037.28125,
+            "width": 44,
+            "height": 44,
+            "right": 303,
+            "bottom": 1081.28125
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/encuestas",
+          "row": {
+            "x": 16,
+            "y": 1156.28125,
+            "width": 288,
+            "height": 78,
+            "right": 304,
+            "bottom": 1234.28125
+          },
+          "link": {
+            "x": 17,
+            "y": 1157.28125,
+            "width": 242,
+            "height": 76,
+            "right": 259,
+            "bottom": 1233.28125
+          },
+          "help": {
+            "x": 259,
+            "y": 1173.28125,
+            "width": 44,
+            "height": 44,
+            "right": 303,
+            "bottom": 1217.28125
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/qr",
+          "row": {
+            "x": 16,
+            "y": 1244.28125,
+            "width": 288,
+            "height": 78,
+            "right": 304,
+            "bottom": 1322.28125
+          },
+          "link": {
+            "x": 17,
+            "y": 1245.28125,
+            "width": 242,
+            "height": 76,
+            "right": 259,
+            "bottom": 1321.28125
+          },
+          "help": {
+            "x": 259,
+            "y": 1261.28125,
+            "width": 44,
+            "height": 44,
+            "right": 303,
+            "bottom": 1305.28125
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/editar-perfil",
+          "row": {
+            "x": 16,
+            "y": 1332.28125,
+            "width": 288,
+            "height": 78,
+            "right": 304,
+            "bottom": 1410.28125
+          },
+          "link": {
+            "x": 17,
+            "y": 1333.28125,
+            "width": 242,
+            "height": 76,
+            "right": 259,
+            "bottom": 1409.28125
+          },
+          "help": {
+            "x": 259,
+            "y": 1349.28125,
+            "width": 44,
+            "height": 44,
+            "right": 303,
+            "bottom": 1393.28125
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        }
+      ],
+      "menus": [
+        {
+          "columns": "288px",
+          "gap": "10px",
+          "rect": {
+            "x": 16,
+            "y": 251.78125,
+            "width": 288,
+            "height": 190.75,
+            "right": 304,
+            "bottom": 442.53125
+          }
+        },
+        {
+          "columns": "288px",
+          "gap": "10px",
+          "rect": {
+            "x": 16,
+            "y": 500.53125,
+            "width": 288,
+            "height": 271,
+            "right": 304,
+            "bottom": 771.53125
+          }
+        },
+        {
+          "columns": "288px",
+          "gap": "10px",
+          "rect": {
+            "x": 16,
+            "y": 829.53125,
+            "width": 288,
+            "height": 268.75,
+            "right": 304,
+            "bottom": 1098.28125
+          }
+        },
+        {
+          "columns": "288px",
+          "gap": "10px",
+          "rect": {
+            "x": 16,
+            "y": 1156.28125,
+            "width": 288,
+            "height": 254,
+            "right": 304,
+            "bottom": 1410.28125
+          }
+        }
+      ],
+      "sectionHeaders": [
+        {
+          "title": "Acciones rápidas",
+          "description": null,
+          "category": null,
+          "color": "",
+          "iconColor": "rgb(189, 47, 67)",
+          "iconBackground": "rgb(255, 241, 243)",
+          "titleClipped": false,
+          "descriptionClipped": false,
+          "headerIconPresent": false
+        },
+        {
+          "title": "Catálogo y oferta",
+          "description": null,
+          "category": null,
+          "color": "",
+          "iconColor": "rgb(83, 86, 97)",
+          "iconBackground": "rgb(248, 248, 250)",
+          "titleClipped": false,
+          "descriptionClipped": false,
+          "headerIconPresent": false
+        },
+        {
+          "title": "Operación",
+          "description": null,
+          "category": null,
+          "color": "",
+          "iconColor": "rgb(83, 86, 97)",
+          "iconBackground": "rgb(248, 248, 250)",
+          "titleClipped": false,
+          "descriptionClipped": false,
+          "headerIconPresent": false
+        },
+        {
+          "title": "Presencia del negocio",
+          "description": null,
+          "category": null,
+          "color": "",
+          "iconColor": "rgb(83, 86, 97)",
+          "iconBackground": "rgb(248, 248, 250)",
+          "titleClipped": false,
+          "descriptionClipped": false,
+          "headerIconPresent": false
+        }
+      ],
+      "nestedControls": 0
+    },
+    {
+      "width": 360,
+      "height": 844,
+      "collapsed": false,
+      "documentScrollWidth": 360,
+      "documentScrollHeight": 1414,
+      "firstContentX": 16,
+      "sidebarRight": 0,
+      "entries": [
+        {
+          "href": "/dashboard/productos/nuevo_producto",
+          "row": {
+            "x": 16,
+            "y": 251.78125,
+            "width": 328,
+            "height": 88,
+            "right": 344,
+            "bottom": 339.78125
+          },
+          "link": {
+            "x": 17,
+            "y": 252.78125,
+            "width": 282,
+            "height": 86,
+            "right": 299,
+            "bottom": 338.78125
+          },
+          "help": {
+            "x": 299,
+            "y": 273.78125,
+            "width": 44,
+            "height": 44,
+            "right": 343,
+            "bottom": 317.78125
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/crear-publicacion",
+          "row": {
+            "x": 16,
+            "y": 349.78125,
+            "width": 328,
+            "height": 88,
+            "right": 344,
+            "bottom": 437.78125
+          },
+          "link": {
+            "x": 17,
+            "y": 350.78125,
+            "width": 282,
+            "height": 86,
+            "right": 299,
+            "bottom": 436.78125
+          },
+          "help": {
+            "x": 299,
+            "y": 371.78125,
+            "width": 44,
+            "height": 44,
+            "right": 343,
+            "bottom": 415.78125
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/productos",
+          "row": {
+            "x": 16,
+            "y": 495.78125,
+            "width": 328,
+            "height": 78,
+            "right": 344,
+            "bottom": 573.78125
+          },
+          "link": {
+            "x": 17,
+            "y": 496.78125,
+            "width": 282,
+            "height": 76,
+            "right": 299,
+            "bottom": 572.78125
+          },
+          "help": {
+            "x": 299,
+            "y": 512.78125,
+            "width": 44,
+            "height": 44,
+            "right": 343,
+            "bottom": 556.78125
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/organizacion-catalogo",
+          "row": {
+            "x": 16,
+            "y": 583.78125,
+            "width": 328,
+            "height": 78,
+            "right": 344,
+            "bottom": 661.78125
+          },
+          "link": {
+            "x": 17,
+            "y": 584.78125,
+            "width": 282,
+            "height": 76,
+            "right": 299,
+            "bottom": 660.78125
+          },
+          "help": {
+            "x": 299,
+            "y": 600.78125,
+            "width": 44,
+            "height": 44,
+            "right": 343,
+            "bottom": 644.78125
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/servicios",
+          "row": {
+            "x": 16,
+            "y": 671.78125,
+            "width": 328,
+            "height": 78,
+            "right": 344,
+            "bottom": 749.78125
+          },
+          "link": {
+            "x": 17,
+            "y": 672.78125,
+            "width": 282,
+            "height": 76,
+            "right": 299,
+            "bottom": 748.78125
+          },
+          "help": {
+            "x": 299,
+            "y": 688.78125,
+            "width": 44,
+            "height": 44,
+            "right": 343,
+            "bottom": 732.78125
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/orders",
+          "row": {
+            "x": 16,
+            "y": 807.78125,
+            "width": 328,
+            "height": 78,
+            "right": 344,
+            "bottom": 885.78125
+          },
+          "link": {
+            "x": 17,
+            "y": 808.78125,
+            "width": 282,
+            "height": 76,
+            "right": 299,
+            "bottom": 884.78125
+          },
+          "help": {
+            "x": 299,
+            "y": 824.78125,
+            "width": 44,
+            "height": 44,
+            "right": 343,
+            "bottom": 868.78125
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/reservas",
+          "row": {
+            "x": 16,
+            "y": 895.78125,
+            "width": 328,
+            "height": 78,
+            "right": 344,
+            "bottom": 973.78125
+          },
+          "link": {
+            "x": 17,
+            "y": 896.78125,
+            "width": 282,
+            "height": 76,
+            "right": 299,
+            "bottom": 972.78125
+          },
+          "help": {
+            "x": 299,
+            "y": 912.78125,
+            "width": 44,
+            "height": 44,
+            "right": 343,
+            "bottom": 956.78125
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/transacciones",
+          "row": {
+            "x": 16,
+            "y": 983.78125,
+            "width": 328,
+            "height": 78,
+            "right": 344,
+            "bottom": 1061.78125
+          },
+          "link": {
+            "x": 17,
+            "y": 984.78125,
+            "width": 282,
+            "height": 76,
+            "right": 299,
+            "bottom": 1060.78125
+          },
+          "help": {
+            "x": 299,
+            "y": 1000.78125,
+            "width": 44,
+            "height": 44,
+            "right": 343,
+            "bottom": 1044.78125
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/encuestas",
+          "row": {
+            "x": 16,
+            "y": 1119.78125,
+            "width": 328,
+            "height": 78,
+            "right": 344,
+            "bottom": 1197.78125
+          },
+          "link": {
+            "x": 17,
+            "y": 1120.78125,
+            "width": 282,
+            "height": 76,
+            "right": 299,
+            "bottom": 1196.78125
+          },
+          "help": {
+            "x": 299,
+            "y": 1136.78125,
+            "width": 44,
+            "height": 44,
+            "right": 343,
+            "bottom": 1180.78125
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/qr",
+          "row": {
+            "x": 16,
+            "y": 1207.78125,
+            "width": 328,
+            "height": 78,
+            "right": 344,
+            "bottom": 1285.78125
+          },
+          "link": {
+            "x": 17,
+            "y": 1208.78125,
+            "width": 282,
+            "height": 76,
+            "right": 299,
+            "bottom": 1284.78125
+          },
+          "help": {
+            "x": 299,
+            "y": 1224.78125,
+            "width": 44,
+            "height": 44,
+            "right": 343,
+            "bottom": 1268.78125
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/editar-perfil",
+          "row": {
+            "x": 16,
+            "y": 1295.78125,
+            "width": 328,
+            "height": 78,
+            "right": 344,
+            "bottom": 1373.78125
+          },
+          "link": {
+            "x": 17,
+            "y": 1296.78125,
+            "width": 282,
+            "height": 76,
+            "right": 299,
+            "bottom": 1372.78125
+          },
+          "help": {
+            "x": 299,
+            "y": 1312.78125,
+            "width": 44,
+            "height": 44,
+            "right": 343,
+            "bottom": 1356.78125
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        }
+      ],
+      "menus": [
+        {
+          "columns": "328px",
+          "gap": "10px",
+          "rect": {
+            "x": 16,
+            "y": 251.78125,
+            "width": 328,
+            "height": 186,
+            "right": 344,
+            "bottom": 437.78125
+          }
+        },
+        {
+          "columns": "328px",
+          "gap": "10px",
+          "rect": {
+            "x": 16,
+            "y": 495.78125,
+            "width": 328,
+            "height": 254,
+            "right": 344,
+            "bottom": 749.78125
+          }
+        },
+        {
+          "columns": "328px",
+          "gap": "10px",
+          "rect": {
+            "x": 16,
+            "y": 807.78125,
+            "width": 328,
+            "height": 254,
+            "right": 344,
+            "bottom": 1061.78125
+          }
+        },
+        {
+          "columns": "328px",
+          "gap": "10px",
+          "rect": {
+            "x": 16,
+            "y": 1119.78125,
+            "width": 328,
+            "height": 254,
+            "right": 344,
+            "bottom": 1373.78125
+          }
+        }
+      ],
+      "sectionHeaders": [
+        {
+          "title": "Acciones rápidas",
+          "description": null,
+          "category": null,
+          "color": "",
+          "iconColor": "rgb(189, 47, 67)",
+          "iconBackground": "rgb(255, 241, 243)",
+          "titleClipped": false,
+          "descriptionClipped": false,
+          "headerIconPresent": false
+        },
+        {
+          "title": "Catálogo y oferta",
+          "description": null,
+          "category": null,
+          "color": "",
+          "iconColor": "rgb(83, 86, 97)",
+          "iconBackground": "rgb(248, 248, 250)",
+          "titleClipped": false,
+          "descriptionClipped": false,
+          "headerIconPresent": false
+        },
+        {
+          "title": "Operación",
+          "description": null,
+          "category": null,
+          "color": "",
+          "iconColor": "rgb(83, 86, 97)",
+          "iconBackground": "rgb(248, 248, 250)",
+          "titleClipped": false,
+          "descriptionClipped": false,
+          "headerIconPresent": false
+        },
+        {
+          "title": "Presencia del negocio",
+          "description": null,
+          "category": null,
+          "color": "",
+          "iconColor": "rgb(83, 86, 97)",
+          "iconBackground": "rgb(248, 248, 250)",
+          "titleClipped": false,
+          "descriptionClipped": false,
+          "headerIconPresent": false
+        }
+      ],
+      "nestedControls": 0
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "collapsed": false,
+      "documentScrollWidth": 390,
+      "documentScrollHeight": 1414,
+      "firstContentX": 16,
+      "sidebarRight": 0,
+      "entries": [
+        {
+          "href": "/dashboard/productos/nuevo_producto",
+          "row": {
+            "x": 16,
+            "y": 251.78125,
+            "width": 358,
+            "height": 88,
+            "right": 374,
+            "bottom": 339.78125
+          },
+          "link": {
+            "x": 17,
+            "y": 252.78125,
+            "width": 312,
+            "height": 86,
+            "right": 329,
+            "bottom": 338.78125
+          },
+          "help": {
+            "x": 329,
+            "y": 273.78125,
+            "width": 44,
+            "height": 44,
+            "right": 373,
+            "bottom": 317.78125
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/crear-publicacion",
+          "row": {
+            "x": 16,
+            "y": 349.78125,
+            "width": 358,
+            "height": 88,
+            "right": 374,
+            "bottom": 437.78125
+          },
+          "link": {
+            "x": 17,
+            "y": 350.78125,
+            "width": 312,
+            "height": 86,
+            "right": 329,
+            "bottom": 436.78125
+          },
+          "help": {
+            "x": 329,
+            "y": 371.78125,
+            "width": 44,
+            "height": 44,
+            "right": 373,
+            "bottom": 415.78125
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/productos",
+          "row": {
+            "x": 16,
+            "y": 495.78125,
+            "width": 358,
+            "height": 78,
+            "right": 374,
+            "bottom": 573.78125
+          },
+          "link": {
+            "x": 17,
+            "y": 496.78125,
+            "width": 312,
+            "height": 76,
+            "right": 329,
+            "bottom": 572.78125
+          },
+          "help": {
+            "x": 329,
+            "y": 512.78125,
+            "width": 44,
+            "height": 44,
+            "right": 373,
+            "bottom": 556.78125
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/organizacion-catalogo",
+          "row": {
+            "x": 16,
+            "y": 583.78125,
+            "width": 358,
+            "height": 78,
+            "right": 374,
+            "bottom": 661.78125
+          },
+          "link": {
+            "x": 17,
+            "y": 584.78125,
+            "width": 312,
+            "height": 76,
+            "right": 329,
+            "bottom": 660.78125
+          },
+          "help": {
+            "x": 329,
+            "y": 600.78125,
+            "width": 44,
+            "height": 44,
+            "right": 373,
+            "bottom": 644.78125
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/servicios",
+          "row": {
+            "x": 16,
+            "y": 671.78125,
+            "width": 358,
+            "height": 78,
+            "right": 374,
+            "bottom": 749.78125
+          },
+          "link": {
+            "x": 17,
+            "y": 672.78125,
+            "width": 312,
+            "height": 76,
+            "right": 329,
+            "bottom": 748.78125
+          },
+          "help": {
+            "x": 329,
+            "y": 688.78125,
+            "width": 44,
+            "height": 44,
+            "right": 373,
+            "bottom": 732.78125
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/orders",
+          "row": {
+            "x": 16,
+            "y": 807.78125,
+            "width": 358,
+            "height": 78,
+            "right": 374,
+            "bottom": 885.78125
+          },
+          "link": {
+            "x": 17,
+            "y": 808.78125,
+            "width": 312,
+            "height": 76,
+            "right": 329,
+            "bottom": 884.78125
+          },
+          "help": {
+            "x": 329,
+            "y": 824.78125,
+            "width": 44,
+            "height": 44,
+            "right": 373,
+            "bottom": 868.78125
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/reservas",
+          "row": {
+            "x": 16,
+            "y": 895.78125,
+            "width": 358,
+            "height": 78,
+            "right": 374,
+            "bottom": 973.78125
+          },
+          "link": {
+            "x": 17,
+            "y": 896.78125,
+            "width": 312,
+            "height": 76,
+            "right": 329,
+            "bottom": 972.78125
+          },
+          "help": {
+            "x": 329,
+            "y": 912.78125,
+            "width": 44,
+            "height": 44,
+            "right": 373,
+            "bottom": 956.78125
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/transacciones",
+          "row": {
+            "x": 16,
+            "y": 983.78125,
+            "width": 358,
+            "height": 78,
+            "right": 374,
+            "bottom": 1061.78125
+          },
+          "link": {
+            "x": 17,
+            "y": 984.78125,
+            "width": 312,
+            "height": 76,
+            "right": 329,
+            "bottom": 1060.78125
+          },
+          "help": {
+            "x": 329,
+            "y": 1000.78125,
+            "width": 44,
+            "height": 44,
+            "right": 373,
+            "bottom": 1044.78125
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/encuestas",
+          "row": {
+            "x": 16,
+            "y": 1119.78125,
+            "width": 358,
+            "height": 78,
+            "right": 374,
+            "bottom": 1197.78125
+          },
+          "link": {
+            "x": 17,
+            "y": 1120.78125,
+            "width": 312,
+            "height": 76,
+            "right": 329,
+            "bottom": 1196.78125
+          },
+          "help": {
+            "x": 329,
+            "y": 1136.78125,
+            "width": 44,
+            "height": 44,
+            "right": 373,
+            "bottom": 1180.78125
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/qr",
+          "row": {
+            "x": 16,
+            "y": 1207.78125,
+            "width": 358,
+            "height": 78,
+            "right": 374,
+            "bottom": 1285.78125
+          },
+          "link": {
+            "x": 17,
+            "y": 1208.78125,
+            "width": 312,
+            "height": 76,
+            "right": 329,
+            "bottom": 1284.78125
+          },
+          "help": {
+            "x": 329,
+            "y": 1224.78125,
+            "width": 44,
+            "height": 44,
+            "right": 373,
+            "bottom": 1268.78125
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/editar-perfil",
+          "row": {
+            "x": 16,
+            "y": 1295.78125,
+            "width": 358,
+            "height": 78,
+            "right": 374,
+            "bottom": 1373.78125
+          },
+          "link": {
+            "x": 17,
+            "y": 1296.78125,
+            "width": 312,
+            "height": 76,
+            "right": 329,
+            "bottom": 1372.78125
+          },
+          "help": {
+            "x": 329,
+            "y": 1312.78125,
+            "width": 44,
+            "height": 44,
+            "right": 373,
+            "bottom": 1356.78125
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        }
+      ],
+      "menus": [
+        {
+          "columns": "358px",
+          "gap": "10px",
+          "rect": {
+            "x": 16,
+            "y": 251.78125,
+            "width": 358,
+            "height": 186,
+            "right": 374,
+            "bottom": 437.78125
+          }
+        },
+        {
+          "columns": "358px",
+          "gap": "10px",
+          "rect": {
+            "x": 16,
+            "y": 495.78125,
+            "width": 358,
+            "height": 254,
+            "right": 374,
+            "bottom": 749.78125
+          }
+        },
+        {
+          "columns": "358px",
+          "gap": "10px",
+          "rect": {
+            "x": 16,
+            "y": 807.78125,
+            "width": 358,
+            "height": 254,
+            "right": 374,
+            "bottom": 1061.78125
+          }
+        },
+        {
+          "columns": "358px",
+          "gap": "10px",
+          "rect": {
+            "x": 16,
+            "y": 1119.78125,
+            "width": 358,
+            "height": 254,
+            "right": 374,
+            "bottom": 1373.78125
+          }
+        }
+      ],
+      "sectionHeaders": [
+        {
+          "title": "Acciones rápidas",
+          "description": null,
+          "category": null,
+          "color": "",
+          "iconColor": "rgb(189, 47, 67)",
+          "iconBackground": "rgb(255, 241, 243)",
+          "titleClipped": false,
+          "descriptionClipped": false,
+          "headerIconPresent": false
+        },
+        {
+          "title": "Catálogo y oferta",
+          "description": null,
+          "category": null,
+          "color": "",
+          "iconColor": "rgb(83, 86, 97)",
+          "iconBackground": "rgb(248, 248, 250)",
+          "titleClipped": false,
+          "descriptionClipped": false,
+          "headerIconPresent": false
+        },
+        {
+          "title": "Operación",
+          "description": null,
+          "category": null,
+          "color": "",
+          "iconColor": "rgb(83, 86, 97)",
+          "iconBackground": "rgb(248, 248, 250)",
+          "titleClipped": false,
+          "descriptionClipped": false,
+          "headerIconPresent": false
+        },
+        {
+          "title": "Presencia del negocio",
+          "description": null,
+          "category": null,
+          "color": "",
+          "iconColor": "rgb(83, 86, 97)",
+          "iconBackground": "rgb(248, 248, 250)",
+          "titleClipped": false,
+          "descriptionClipped": false,
+          "headerIconPresent": false
+        }
+      ],
+      "nestedControls": 0
+    },
+    {
+      "width": 430,
+      "height": 844,
+      "collapsed": false,
+      "documentScrollWidth": 430,
+      "documentScrollHeight": 1372,
+      "firstContentX": 16,
+      "sidebarRight": 0,
+      "entries": [
+        {
+          "href": "/dashboard/productos/nuevo_producto",
+          "row": {
+            "x": 16,
+            "y": 229.390625,
+            "width": 194,
+            "height": 166.5,
+            "right": 210,
+            "bottom": 395.890625
+          },
+          "link": {
+            "x": 17,
+            "y": 230.390625,
+            "width": 148,
+            "height": 164.5,
+            "right": 165,
+            "bottom": 394.890625
+          },
+          "help": {
+            "x": 165,
+            "y": 236.390625,
+            "width": 44,
+            "height": 44,
+            "right": 209,
+            "bottom": 280.390625
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/crear-publicacion",
+          "row": {
+            "x": 220,
+            "y": 229.390625,
+            "width": 194,
+            "height": 166.5,
+            "right": 414,
+            "bottom": 395.890625
+          },
+          "link": {
+            "x": 221,
+            "y": 230.390625,
+            "width": 148,
+            "height": 164.5,
+            "right": 369,
+            "bottom": 394.890625
+          },
+          "help": {
+            "x": 369,
+            "y": 236.390625,
+            "width": 44,
+            "height": 44,
+            "right": 413,
+            "bottom": 280.390625
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/productos",
+          "row": {
+            "x": 16,
+            "y": 453.890625,
+            "width": 398,
+            "height": 78,
+            "right": 414,
+            "bottom": 531.890625
+          },
+          "link": {
+            "x": 17,
+            "y": 454.890625,
+            "width": 352,
+            "height": 76,
+            "right": 369,
+            "bottom": 530.890625
+          },
+          "help": {
+            "x": 369,
+            "y": 470.890625,
+            "width": 44,
+            "height": 44,
+            "right": 413,
+            "bottom": 514.890625
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/organizacion-catalogo",
+          "row": {
+            "x": 16,
+            "y": 541.890625,
+            "width": 398,
+            "height": 78,
+            "right": 414,
+            "bottom": 619.890625
+          },
+          "link": {
+            "x": 17,
+            "y": 542.890625,
+            "width": 352,
+            "height": 76,
+            "right": 369,
+            "bottom": 618.890625
+          },
+          "help": {
+            "x": 369,
+            "y": 558.890625,
+            "width": 44,
+            "height": 44,
+            "right": 413,
+            "bottom": 602.890625
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/servicios",
+          "row": {
+            "x": 16,
+            "y": 629.890625,
+            "width": 398,
+            "height": 78,
+            "right": 414,
+            "bottom": 707.890625
+          },
+          "link": {
+            "x": 17,
+            "y": 630.890625,
+            "width": 352,
+            "height": 76,
+            "right": 369,
+            "bottom": 706.890625
+          },
+          "help": {
+            "x": 369,
+            "y": 646.890625,
+            "width": 44,
+            "height": 44,
+            "right": 413,
+            "bottom": 690.890625
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/orders",
+          "row": {
+            "x": 16,
+            "y": 765.890625,
+            "width": 398,
+            "height": 78,
+            "right": 414,
+            "bottom": 843.890625
+          },
+          "link": {
+            "x": 17,
+            "y": 766.890625,
+            "width": 352,
+            "height": 76,
+            "right": 369,
+            "bottom": 842.890625
+          },
+          "help": {
+            "x": 369,
+            "y": 782.890625,
+            "width": 44,
+            "height": 44,
+            "right": 413,
+            "bottom": 826.890625
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/reservas",
+          "row": {
+            "x": 16,
+            "y": 853.890625,
+            "width": 398,
+            "height": 78,
+            "right": 414,
+            "bottom": 931.890625
+          },
+          "link": {
+            "x": 17,
+            "y": 854.890625,
+            "width": 352,
+            "height": 76,
+            "right": 369,
+            "bottom": 930.890625
+          },
+          "help": {
+            "x": 369,
+            "y": 870.890625,
+            "width": 44,
+            "height": 44,
+            "right": 413,
+            "bottom": 914.890625
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/transacciones",
+          "row": {
+            "x": 16,
+            "y": 941.890625,
+            "width": 398,
+            "height": 78,
+            "right": 414,
+            "bottom": 1019.890625
+          },
+          "link": {
+            "x": 17,
+            "y": 942.890625,
+            "width": 352,
+            "height": 76,
+            "right": 369,
+            "bottom": 1018.890625
+          },
+          "help": {
+            "x": 369,
+            "y": 958.890625,
+            "width": 44,
+            "height": 44,
+            "right": 413,
+            "bottom": 1002.890625
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/encuestas",
+          "row": {
+            "x": 16,
+            "y": 1077.890625,
+            "width": 398,
+            "height": 78,
+            "right": 414,
+            "bottom": 1155.890625
+          },
+          "link": {
+            "x": 17,
+            "y": 1078.890625,
+            "width": 352,
+            "height": 76,
+            "right": 369,
+            "bottom": 1154.890625
+          },
+          "help": {
+            "x": 369,
+            "y": 1094.890625,
+            "width": 44,
+            "height": 44,
+            "right": 413,
+            "bottom": 1138.890625
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/qr",
+          "row": {
+            "x": 16,
+            "y": 1165.890625,
+            "width": 398,
+            "height": 78,
+            "right": 414,
+            "bottom": 1243.890625
+          },
+          "link": {
+            "x": 17,
+            "y": 1166.890625,
+            "width": 352,
+            "height": 76,
+            "right": 369,
+            "bottom": 1242.890625
+          },
+          "help": {
+            "x": 369,
+            "y": 1182.890625,
+            "width": 44,
+            "height": 44,
+            "right": 413,
+            "bottom": 1226.890625
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/editar-perfil",
+          "row": {
+            "x": 16,
+            "y": 1253.890625,
+            "width": 398,
+            "height": 78,
+            "right": 414,
+            "bottom": 1331.890625
+          },
+          "link": {
+            "x": 17,
+            "y": 1254.890625,
+            "width": 352,
+            "height": 76,
+            "right": 369,
+            "bottom": 1330.890625
+          },
+          "help": {
+            "x": 369,
+            "y": 1270.890625,
+            "width": 44,
+            "height": 44,
+            "right": 413,
+            "bottom": 1314.890625
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        }
+      ],
+      "menus": [
+        {
+          "columns": "194px 194px",
+          "gap": "10px",
+          "rect": {
+            "x": 16,
+            "y": 229.390625,
+            "width": 398,
+            "height": 166.5,
+            "right": 414,
+            "bottom": 395.890625
+          }
+        },
+        {
+          "columns": "398px",
+          "gap": "10px",
+          "rect": {
+            "x": 16,
+            "y": 453.890625,
+            "width": 398,
+            "height": 254,
+            "right": 414,
+            "bottom": 707.890625
+          }
+        },
+        {
+          "columns": "398px",
+          "gap": "10px",
+          "rect": {
+            "x": 16,
+            "y": 765.890625,
+            "width": 398,
+            "height": 254,
+            "right": 414,
+            "bottom": 1019.890625
+          }
+        },
+        {
+          "columns": "398px",
+          "gap": "10px",
+          "rect": {
+            "x": 16,
+            "y": 1077.890625,
+            "width": 398,
+            "height": 254,
+            "right": 414,
+            "bottom": 1331.890625
+          }
+        }
+      ],
+      "sectionHeaders": [
+        {
+          "title": "Acciones rápidas",
+          "description": null,
+          "category": null,
+          "color": "",
+          "iconColor": "rgb(189, 47, 67)",
+          "iconBackground": "rgb(255, 241, 243)",
+          "titleClipped": false,
+          "descriptionClipped": false,
+          "headerIconPresent": false
+        },
+        {
+          "title": "Catálogo y oferta",
+          "description": null,
+          "category": null,
+          "color": "",
+          "iconColor": "rgb(83, 86, 97)",
+          "iconBackground": "rgb(248, 248, 250)",
+          "titleClipped": false,
+          "descriptionClipped": false,
+          "headerIconPresent": false
+        },
+        {
+          "title": "Operación",
+          "description": null,
+          "category": null,
+          "color": "",
+          "iconColor": "rgb(83, 86, 97)",
+          "iconBackground": "rgb(248, 248, 250)",
+          "titleClipped": false,
+          "descriptionClipped": false,
+          "headerIconPresent": false
+        },
+        {
+          "title": "Presencia del negocio",
+          "description": null,
+          "category": null,
+          "color": "",
+          "iconColor": "rgb(83, 86, 97)",
+          "iconBackground": "rgb(248, 248, 250)",
+          "titleClipped": false,
+          "descriptionClipped": false,
+          "headerIconPresent": false
+        }
+      ],
+      "nestedControls": 0
+    },
+    {
+      "width": 768,
+      "height": 844,
+      "collapsed": false,
+      "documentScrollWidth": 768,
+      "documentScrollHeight": 1069,
+      "firstContentX": 32,
+      "sidebarRight": 0,
+      "entries": [
+        {
+          "href": "/dashboard/productos/nuevo_producto",
+          "row": {
+            "x": 32,
+            "y": 245.390625,
+            "width": 347,
+            "height": 96,
+            "right": 379,
+            "bottom": 341.390625
+          },
+          "link": {
+            "x": 33,
+            "y": 246.390625,
+            "width": 301,
+            "height": 94,
+            "right": 334,
+            "bottom": 340.390625
+          },
+          "help": {
+            "x": 334,
+            "y": 271.390625,
+            "width": 44,
+            "height": 44,
+            "right": 378,
+            "bottom": 315.390625
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/crear-publicacion",
+          "row": {
+            "x": 389,
+            "y": 245.390625,
+            "width": 347,
+            "height": 96,
+            "right": 736,
+            "bottom": 341.390625
+          },
+          "link": {
+            "x": 390,
+            "y": 246.390625,
+            "width": 301,
+            "height": 94,
+            "right": 691,
+            "bottom": 340.390625
+          },
+          "help": {
+            "x": 691,
+            "y": 271.390625,
+            "width": 44,
+            "height": 44,
+            "right": 735,
+            "bottom": 315.390625
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/productos",
+          "row": {
+            "x": 32,
+            "y": 399.390625,
+            "width": 347,
+            "height": 78,
+            "right": 379,
+            "bottom": 477.390625
+          },
+          "link": {
+            "x": 33,
+            "y": 400.390625,
+            "width": 301,
+            "height": 76,
+            "right": 334,
+            "bottom": 476.390625
+          },
+          "help": {
+            "x": 334,
+            "y": 416.390625,
+            "width": 44,
+            "height": 44,
+            "right": 378,
+            "bottom": 460.390625
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/organizacion-catalogo",
+          "row": {
+            "x": 389,
+            "y": 399.390625,
+            "width": 347,
+            "height": 78,
+            "right": 736,
+            "bottom": 477.390625
+          },
+          "link": {
+            "x": 390,
+            "y": 400.390625,
+            "width": 301,
+            "height": 76,
+            "right": 691,
+            "bottom": 476.390625
+          },
+          "help": {
+            "x": 691,
+            "y": 416.390625,
+            "width": 44,
+            "height": 44,
+            "right": 735,
+            "bottom": 460.390625
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/servicios",
+          "row": {
+            "x": 32,
+            "y": 487.390625,
+            "width": 347,
+            "height": 78,
+            "right": 379,
+            "bottom": 565.390625
+          },
+          "link": {
+            "x": 33,
+            "y": 488.390625,
+            "width": 301,
+            "height": 76,
+            "right": 334,
+            "bottom": 564.390625
+          },
+          "help": {
+            "x": 334,
+            "y": 504.390625,
+            "width": 44,
+            "height": 44,
+            "right": 378,
+            "bottom": 548.390625
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/orders",
+          "row": {
+            "x": 32,
+            "y": 623.390625,
+            "width": 347,
+            "height": 78,
+            "right": 379,
+            "bottom": 701.390625
+          },
+          "link": {
+            "x": 33,
+            "y": 624.390625,
+            "width": 301,
+            "height": 76,
+            "right": 334,
+            "bottom": 700.390625
+          },
+          "help": {
+            "x": 334,
+            "y": 640.390625,
+            "width": 44,
+            "height": 44,
+            "right": 378,
+            "bottom": 684.390625
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/reservas",
+          "row": {
+            "x": 389,
+            "y": 623.390625,
+            "width": 347,
+            "height": 78,
+            "right": 736,
+            "bottom": 701.390625
+          },
+          "link": {
+            "x": 390,
+            "y": 624.390625,
+            "width": 301,
+            "height": 76,
+            "right": 691,
+            "bottom": 700.390625
+          },
+          "help": {
+            "x": 691,
+            "y": 640.390625,
+            "width": 44,
+            "height": 44,
+            "right": 735,
+            "bottom": 684.390625
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/transacciones",
+          "row": {
+            "x": 32,
+            "y": 711.390625,
+            "width": 347,
+            "height": 78,
+            "right": 379,
+            "bottom": 789.390625
+          },
+          "link": {
+            "x": 33,
+            "y": 712.390625,
+            "width": 301,
+            "height": 76,
+            "right": 334,
+            "bottom": 788.390625
+          },
+          "help": {
+            "x": 334,
+            "y": 728.390625,
+            "width": 44,
+            "height": 44,
+            "right": 378,
+            "bottom": 772.390625
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/encuestas",
+          "row": {
+            "x": 32,
+            "y": 847.390625,
+            "width": 347,
+            "height": 78,
+            "right": 379,
+            "bottom": 925.390625
+          },
+          "link": {
+            "x": 33,
+            "y": 848.390625,
+            "width": 301,
+            "height": 76,
+            "right": 334,
+            "bottom": 924.390625
+          },
+          "help": {
+            "x": 334,
+            "y": 864.390625,
+            "width": 44,
+            "height": 44,
+            "right": 378,
+            "bottom": 908.390625
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/qr",
+          "row": {
+            "x": 389,
+            "y": 847.390625,
+            "width": 347,
+            "height": 78,
+            "right": 736,
+            "bottom": 925.390625
+          },
+          "link": {
+            "x": 390,
+            "y": 848.390625,
+            "width": 301,
+            "height": 76,
+            "right": 691,
+            "bottom": 924.390625
+          },
+          "help": {
+            "x": 691,
+            "y": 864.390625,
+            "width": 44,
+            "height": 44,
+            "right": 735,
+            "bottom": 908.390625
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/editar-perfil",
+          "row": {
+            "x": 32,
+            "y": 935.390625,
+            "width": 347,
+            "height": 78,
+            "right": 379,
+            "bottom": 1013.390625
+          },
+          "link": {
+            "x": 33,
+            "y": 936.390625,
+            "width": 301,
+            "height": 76,
+            "right": 334,
+            "bottom": 1012.390625
+          },
+          "help": {
+            "x": 334,
+            "y": 952.390625,
+            "width": 44,
+            "height": 44,
+            "right": 378,
+            "bottom": 996.390625
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        }
+      ],
+      "menus": [
+        {
+          "columns": "347px 347px",
+          "gap": "10px",
+          "rect": {
+            "x": 32,
+            "y": 245.390625,
+            "width": 704,
+            "height": 96,
+            "right": 736,
+            "bottom": 341.390625
+          }
+        },
+        {
+          "columns": "347px 347px",
+          "gap": "10px",
+          "rect": {
+            "x": 32,
+            "y": 399.390625,
+            "width": 704,
+            "height": 166,
+            "right": 736,
+            "bottom": 565.390625
+          }
+        },
+        {
+          "columns": "347px 347px",
+          "gap": "10px",
+          "rect": {
+            "x": 32,
+            "y": 623.390625,
+            "width": 704,
+            "height": 166,
+            "right": 736,
+            "bottom": 789.390625
+          }
+        },
+        {
+          "columns": "347px 347px",
+          "gap": "10px",
+          "rect": {
+            "x": 32,
+            "y": 847.390625,
+            "width": 704,
+            "height": 166,
+            "right": 736,
+            "bottom": 1013.390625
+          }
+        }
+      ],
+      "sectionHeaders": [
+        {
+          "title": "Acciones rápidas",
+          "description": null,
+          "category": null,
+          "color": "",
+          "iconColor": "rgb(189, 47, 67)",
+          "iconBackground": "rgb(255, 241, 243)",
+          "titleClipped": false,
+          "descriptionClipped": false,
+          "headerIconPresent": false
+        },
+        {
+          "title": "Catálogo y oferta",
+          "description": null,
+          "category": null,
+          "color": "",
+          "iconColor": "rgb(83, 86, 97)",
+          "iconBackground": "rgb(248, 248, 250)",
+          "titleClipped": false,
+          "descriptionClipped": false,
+          "headerIconPresent": false
+        },
+        {
+          "title": "Operación",
+          "description": null,
+          "category": null,
+          "color": "",
+          "iconColor": "rgb(83, 86, 97)",
+          "iconBackground": "rgb(248, 248, 250)",
+          "titleClipped": false,
+          "descriptionClipped": false,
+          "headerIconPresent": false
+        },
+        {
+          "title": "Presencia del negocio",
+          "description": null,
+          "category": null,
+          "color": "",
+          "iconColor": "rgb(83, 86, 97)",
+          "iconBackground": "rgb(248, 248, 250)",
+          "titleClipped": false,
+          "descriptionClipped": false,
+          "headerIconPresent": false
+        }
+      ],
+      "nestedControls": 0
+    },
+    {
+      "width": 1024,
+      "height": 844,
+      "collapsed": false,
+      "documentScrollWidth": 1024,
+      "documentScrollHeight": 1091,
+      "firstContentX": 264,
+      "sidebarRight": 250,
+      "entries": [
+        {
+          "href": "/dashboard/productos/nuevo_producto",
+          "row": {
+            "x": 264,
+            "y": 259.390625,
+            "width": 343,
+            "height": 96,
+            "right": 607,
+            "bottom": 355.390625
+          },
+          "link": {
+            "x": 265,
+            "y": 260.390625,
+            "width": 297,
+            "height": 94,
+            "right": 562,
+            "bottom": 354.390625
+          },
+          "help": {
+            "x": 562,
+            "y": 285.390625,
+            "width": 44,
+            "height": 44,
+            "right": 606,
+            "bottom": 329.390625
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/crear-publicacion",
+          "row": {
+            "x": 617,
+            "y": 259.390625,
+            "width": 343,
+            "height": 96,
+            "right": 960,
+            "bottom": 355.390625
+          },
+          "link": {
+            "x": 618,
+            "y": 260.390625,
+            "width": 297,
+            "height": 94,
+            "right": 915,
+            "bottom": 354.390625
+          },
+          "help": {
+            "x": 915,
+            "y": 285.390625,
+            "width": 44,
+            "height": 44,
+            "right": 959,
+            "bottom": 329.390625
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/productos",
+          "row": {
+            "x": 264,
+            "y": 413.390625,
+            "width": 343,
+            "height": 78,
+            "right": 607,
+            "bottom": 491.390625
+          },
+          "link": {
+            "x": 265,
+            "y": 414.390625,
+            "width": 297,
+            "height": 76,
+            "right": 562,
+            "bottom": 490.390625
+          },
+          "help": {
+            "x": 562,
+            "y": 430.390625,
+            "width": 44,
+            "height": 44,
+            "right": 606,
+            "bottom": 474.390625
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/organizacion-catalogo",
+          "row": {
+            "x": 617,
+            "y": 413.390625,
+            "width": 343,
+            "height": 78,
+            "right": 960,
+            "bottom": 491.390625
+          },
+          "link": {
+            "x": 618,
+            "y": 414.390625,
+            "width": 297,
+            "height": 76,
+            "right": 915,
+            "bottom": 490.390625
+          },
+          "help": {
+            "x": 915,
+            "y": 430.390625,
+            "width": 44,
+            "height": 44,
+            "right": 959,
+            "bottom": 474.390625
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/servicios",
+          "row": {
+            "x": 264,
+            "y": 501.390625,
+            "width": 343,
+            "height": 78,
+            "right": 607,
+            "bottom": 579.390625
+          },
+          "link": {
+            "x": 265,
+            "y": 502.390625,
+            "width": 297,
+            "height": 76,
+            "right": 562,
+            "bottom": 578.390625
+          },
+          "help": {
+            "x": 562,
+            "y": 518.390625,
+            "width": 44,
+            "height": 44,
+            "right": 606,
+            "bottom": 562.390625
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/orders",
+          "row": {
+            "x": 264,
+            "y": 637.390625,
+            "width": 343,
+            "height": 78,
+            "right": 607,
+            "bottom": 715.390625
+          },
+          "link": {
+            "x": 265,
+            "y": 638.390625,
+            "width": 297,
+            "height": 76,
+            "right": 562,
+            "bottom": 714.390625
+          },
+          "help": {
+            "x": 562,
+            "y": 654.390625,
+            "width": 44,
+            "height": 44,
+            "right": 606,
+            "bottom": 698.390625
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/reservas",
+          "row": {
+            "x": 617,
+            "y": 637.390625,
+            "width": 343,
+            "height": 78,
+            "right": 960,
+            "bottom": 715.390625
+          },
+          "link": {
+            "x": 618,
+            "y": 638.390625,
+            "width": 297,
+            "height": 76,
+            "right": 915,
+            "bottom": 714.390625
+          },
+          "help": {
+            "x": 915,
+            "y": 654.390625,
+            "width": 44,
+            "height": 44,
+            "right": 959,
+            "bottom": 698.390625
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/transacciones",
+          "row": {
+            "x": 264,
+            "y": 725.390625,
+            "width": 343,
+            "height": 78,
+            "right": 607,
+            "bottom": 803.390625
+          },
+          "link": {
+            "x": 265,
+            "y": 726.390625,
+            "width": 297,
+            "height": 76,
+            "right": 562,
+            "bottom": 802.390625
+          },
+          "help": {
+            "x": 562,
+            "y": 742.390625,
+            "width": 44,
+            "height": 44,
+            "right": 606,
+            "bottom": 786.390625
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/encuestas",
+          "row": {
+            "x": 264,
+            "y": 861.390625,
+            "width": 343,
+            "height": 78,
+            "right": 607,
+            "bottom": 939.390625
+          },
+          "link": {
+            "x": 265,
+            "y": 862.390625,
+            "width": 297,
+            "height": 76,
+            "right": 562,
+            "bottom": 938.390625
+          },
+          "help": {
+            "x": 562,
+            "y": 878.390625,
+            "width": 44,
+            "height": 44,
+            "right": 606,
+            "bottom": 922.390625
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/qr",
+          "row": {
+            "x": 617,
+            "y": 861.390625,
+            "width": 343,
+            "height": 78,
+            "right": 960,
+            "bottom": 939.390625
+          },
+          "link": {
+            "x": 618,
+            "y": 862.390625,
+            "width": 297,
+            "height": 76,
+            "right": 915,
+            "bottom": 938.390625
+          },
+          "help": {
+            "x": 915,
+            "y": 878.390625,
+            "width": 44,
+            "height": 44,
+            "right": 959,
+            "bottom": 922.390625
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/editar-perfil",
+          "row": {
+            "x": 264,
+            "y": 949.390625,
+            "width": 343,
+            "height": 78,
+            "right": 607,
+            "bottom": 1027.390625
+          },
+          "link": {
+            "x": 265,
+            "y": 950.390625,
+            "width": 297,
+            "height": 76,
+            "right": 562,
+            "bottom": 1026.390625
+          },
+          "help": {
+            "x": 562,
+            "y": 966.390625,
+            "width": 44,
+            "height": 44,
+            "right": 606,
+            "bottom": 1010.390625
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        }
+      ],
+      "menus": [
+        {
+          "columns": "343px 343px",
+          "gap": "10px",
+          "rect": {
+            "x": 264,
+            "y": 259.390625,
+            "width": 696,
+            "height": 96,
+            "right": 960,
+            "bottom": 355.390625
+          }
+        },
+        {
+          "columns": "343px 343px",
+          "gap": "10px",
+          "rect": {
+            "x": 264,
+            "y": 413.390625,
+            "width": 696,
+            "height": 166,
+            "right": 960,
+            "bottom": 579.390625
+          }
+        },
+        {
+          "columns": "343px 343px",
+          "gap": "10px",
+          "rect": {
+            "x": 264,
+            "y": 637.390625,
+            "width": 696,
+            "height": 166,
+            "right": 960,
+            "bottom": 803.390625
+          }
+        },
+        {
+          "columns": "343px 343px",
+          "gap": "10px",
+          "rect": {
+            "x": 264,
+            "y": 861.390625,
+            "width": 696,
+            "height": 166,
+            "right": 960,
+            "bottom": 1027.390625
+          }
+        }
+      ],
+      "sectionHeaders": [
+        {
+          "title": "Acciones rápidas",
+          "description": null,
+          "category": null,
+          "color": "",
+          "iconColor": "rgb(189, 47, 67)",
+          "iconBackground": "rgb(255, 241, 243)",
+          "titleClipped": false,
+          "descriptionClipped": false,
+          "headerIconPresent": false
+        },
+        {
+          "title": "Catálogo y oferta",
+          "description": null,
+          "category": null,
+          "color": "",
+          "iconColor": "rgb(83, 86, 97)",
+          "iconBackground": "rgb(248, 248, 250)",
+          "titleClipped": false,
+          "descriptionClipped": false,
+          "headerIconPresent": false
+        },
+        {
+          "title": "Operación",
+          "description": null,
+          "category": null,
+          "color": "",
+          "iconColor": "rgb(83, 86, 97)",
+          "iconBackground": "rgb(248, 248, 250)",
+          "titleClipped": false,
+          "descriptionClipped": false,
+          "headerIconPresent": false
+        },
+        {
+          "title": "Presencia del negocio",
+          "description": null,
+          "category": null,
+          "color": "",
+          "iconColor": "rgb(83, 86, 97)",
+          "iconBackground": "rgb(248, 248, 250)",
+          "titleClipped": false,
+          "descriptionClipped": false,
+          "headerIconPresent": false
+        }
+      ],
+      "nestedControls": 0
+    },
+    {
+      "width": 1440,
+      "height": 844,
+      "collapsed": false,
+      "documentScrollWidth": 1440,
+      "documentScrollHeight": 844,
+      "firstContentX": 264,
+      "sidebarRight": 250,
+      "entries": [
+        {
+          "href": "/dashboard/productos/nuevo_producto",
+          "row": {
+            "x": 264,
+            "y": 259.390625,
+            "width": 551,
+            "height": 96,
+            "right": 815,
+            "bottom": 355.390625
+          },
+          "link": {
+            "x": 265,
+            "y": 260.390625,
+            "width": 505,
+            "height": 94,
+            "right": 770,
+            "bottom": 354.390625
+          },
+          "help": {
+            "x": 770,
+            "y": 285.390625,
+            "width": 44,
+            "height": 44,
+            "right": 814,
+            "bottom": 329.390625
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/crear-publicacion",
+          "row": {
+            "x": 825,
+            "y": 259.390625,
+            "width": 551,
+            "height": 96,
+            "right": 1376,
+            "bottom": 355.390625
+          },
+          "link": {
+            "x": 826,
+            "y": 260.390625,
+            "width": 505,
+            "height": 94,
+            "right": 1331,
+            "bottom": 354.390625
+          },
+          "help": {
+            "x": 1331,
+            "y": 285.390625,
+            "width": 44,
+            "height": 44,
+            "right": 1375,
+            "bottom": 329.390625
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/productos",
+          "row": {
+            "x": 264,
+            "y": 413.390625,
+            "width": 364,
+            "height": 78,
+            "right": 628,
+            "bottom": 491.390625
+          },
+          "link": {
+            "x": 265,
+            "y": 414.390625,
+            "width": 318,
+            "height": 76,
+            "right": 583,
+            "bottom": 490.390625
+          },
+          "help": {
+            "x": 583,
+            "y": 430.390625,
+            "width": 44,
+            "height": 44,
+            "right": 627,
+            "bottom": 474.390625
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/organizacion-catalogo",
+          "row": {
+            "x": 638,
+            "y": 413.390625,
+            "width": 364,
+            "height": 78,
+            "right": 1002,
+            "bottom": 491.390625
+          },
+          "link": {
+            "x": 639,
+            "y": 414.390625,
+            "width": 318,
+            "height": 76,
+            "right": 957,
+            "bottom": 490.390625
+          },
+          "help": {
+            "x": 957,
+            "y": 430.390625,
+            "width": 44,
+            "height": 44,
+            "right": 1001,
+            "bottom": 474.390625
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/servicios",
+          "row": {
+            "x": 1012,
+            "y": 413.390625,
+            "width": 364,
+            "height": 78,
+            "right": 1376,
+            "bottom": 491.390625
+          },
+          "link": {
+            "x": 1013,
+            "y": 414.390625,
+            "width": 318,
+            "height": 76,
+            "right": 1331,
+            "bottom": 490.390625
+          },
+          "help": {
+            "x": 1331,
+            "y": 430.390625,
+            "width": 44,
+            "height": 44,
+            "right": 1375,
+            "bottom": 474.390625
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/orders",
+          "row": {
+            "x": 264,
+            "y": 549.390625,
+            "width": 364,
+            "height": 78,
+            "right": 628,
+            "bottom": 627.390625
+          },
+          "link": {
+            "x": 265,
+            "y": 550.390625,
+            "width": 318,
+            "height": 76,
+            "right": 583,
+            "bottom": 626.390625
+          },
+          "help": {
+            "x": 583,
+            "y": 566.390625,
+            "width": 44,
+            "height": 44,
+            "right": 627,
+            "bottom": 610.390625
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/reservas",
+          "row": {
+            "x": 638,
+            "y": 549.390625,
+            "width": 364,
+            "height": 78,
+            "right": 1002,
+            "bottom": 627.390625
+          },
+          "link": {
+            "x": 639,
+            "y": 550.390625,
+            "width": 318,
+            "height": 76,
+            "right": 957,
+            "bottom": 626.390625
+          },
+          "help": {
+            "x": 957,
+            "y": 566.390625,
+            "width": 44,
+            "height": 44,
+            "right": 1001,
+            "bottom": 610.390625
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/transacciones",
+          "row": {
+            "x": 1012,
+            "y": 549.390625,
+            "width": 364,
+            "height": 78,
+            "right": 1376,
+            "bottom": 627.390625
+          },
+          "link": {
+            "x": 1013,
+            "y": 550.390625,
+            "width": 318,
+            "height": 76,
+            "right": 1331,
+            "bottom": 626.390625
+          },
+          "help": {
+            "x": 1331,
+            "y": 566.390625,
+            "width": 44,
+            "height": 44,
+            "right": 1375,
+            "bottom": 610.390625
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/encuestas",
+          "row": {
+            "x": 264,
+            "y": 685.390625,
+            "width": 364,
+            "height": 78,
+            "right": 628,
+            "bottom": 763.390625
+          },
+          "link": {
+            "x": 265,
+            "y": 686.390625,
+            "width": 318,
+            "height": 76,
+            "right": 583,
+            "bottom": 762.390625
+          },
+          "help": {
+            "x": 583,
+            "y": 702.390625,
+            "width": 44,
+            "height": 44,
+            "right": 627,
+            "bottom": 746.390625
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/qr",
+          "row": {
+            "x": 638,
+            "y": 685.390625,
+            "width": 364,
+            "height": 78,
+            "right": 1002,
+            "bottom": 763.390625
+          },
+          "link": {
+            "x": 639,
+            "y": 686.390625,
+            "width": 318,
+            "height": 76,
+            "right": 957,
+            "bottom": 762.390625
+          },
+          "help": {
+            "x": 957,
+            "y": 702.390625,
+            "width": 44,
+            "height": 44,
+            "right": 1001,
+            "bottom": 746.390625
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        },
+        {
+          "href": "/dashboard/editar-perfil",
+          "row": {
+            "x": 1012,
+            "y": 685.390625,
+            "width": 364,
+            "height": 78,
+            "right": 1376,
+            "bottom": 763.390625
+          },
+          "link": {
+            "x": 1013,
+            "y": 686.390625,
+            "width": 318,
+            "height": 76,
+            "right": 1331,
+            "bottom": 762.390625
+          },
+          "help": {
+            "x": 1331,
+            "y": 702.390625,
+            "width": 44,
+            "height": 44,
+            "right": 1375,
+            "bottom": 746.390625
+          },
+          "iconHelpOverlap": 0,
+          "linkHelpOverlap": 0,
+          "clippedText": [],
+          "clippedRow": false
+        }
+      ],
+      "menus": [
+        {
+          "columns": "551px 551px",
+          "gap": "10px",
+          "rect": {
+            "x": 264,
+            "y": 259.390625,
+            "width": 1112,
+            "height": 96,
+            "right": 1376,
+            "bottom": 355.390625
+          }
+        },
+        {
+          "columns": "364px 364px 364px",
+          "gap": "10px",
+          "rect": {
+            "x": 264,
+            "y": 413.390625,
+            "width": 1112,
+            "height": 78,
+            "right": 1376,
+            "bottom": 491.390625
+          }
+        },
+        {
+          "columns": "364px 364px 364px",
+          "gap": "10px",
+          "rect": {
+            "x": 264,
+            "y": 549.390625,
+            "width": 1112,
+            "height": 78,
+            "right": 1376,
+            "bottom": 627.390625
+          }
+        },
+        {
+          "columns": "364px 364px 364px",
+          "gap": "10px",
+          "rect": {
+            "x": 264,
+            "y": 685.390625,
+            "width": 1112,
+            "height": 78,
+            "right": 1376,
+            "bottom": 763.390625
+          }
+        }
+      ],
+      "sectionHeaders": [
+        {
+          "title": "Acciones rápidas",
+          "description": null,
+          "category": null,
+          "color": "",
+          "iconColor": "rgb(189, 47, 67)",
+          "iconBackground": "rgb(255, 241, 243)",
+          "titleClipped": false,
+          "descriptionClipped": false,
+          "headerIconPresent": false
+        },
+        {
+          "title": "Catálogo y oferta",
+          "description": null,
+          "category": null,
+          "color": "",
+          "iconColor": "rgb(83, 86, 97)",
+          "iconBackground": "rgb(248, 248, 250)",
+          "titleClipped": false,
+          "descriptionClipped": false,
+          "headerIconPresent": false
+        },
+        {
+          "title": "Operación",
+          "description": null,
+          "category": null,
+          "color": "",
+          "iconColor": "rgb(83, 86, 97)",
+          "iconBackground": "rgb(248, 248, 250)",
+          "titleClipped": false,
+          "descriptionClipped": false,
+          "headerIconPresent": false
+        },
+        {
+          "title": "Presencia del negocio",
+          "description": null,
+          "category": null,
+          "color": "",
+          "iconColor": "rgb(83, 86, 97)",
+          "iconBackground": "rgb(248, 248, 250)",
+          "titleClipped": false,
+          "descriptionClipped": false,
+          "headerIconPresent": false
+        }
+      ],
+      "nestedControls": 0
+    }
+  ],
+  "help": [
+    {
+      "title": "Nuevo Producto",
+      "descriptionPreserved": true,
+      "correctDestination": true,
+      "initialFocus": true,
+      "tabContained": true,
+      "escapeCloses": true,
+      "focusRestored": true
+    },
+    {
+      "title": "Nueva Publicación",
+      "descriptionPreserved": true,
+      "correctDestination": true,
+      "initialFocus": true,
+      "tabContained": true,
+      "escapeCloses": true,
+      "focusRestored": true
+    },
+    {
+      "title": "Gestión de Productos",
+      "descriptionPreserved": true,
+      "correctDestination": true,
+      "initialFocus": true,
+      "tabContained": true,
+      "escapeCloses": true,
+      "focusRestored": true
+    },
+    {
+      "title": "Organización del Catálogo",
+      "descriptionPreserved": true,
+      "correctDestination": true,
+      "initialFocus": true,
+      "tabContained": true,
+      "escapeCloses": true,
+      "focusRestored": true
+    },
+    {
+      "title": "Servicios",
+      "descriptionPreserved": true,
+      "correctDestination": true,
+      "initialFocus": true,
+      "tabContained": true,
+      "escapeCloses": true,
+      "focusRestored": true
+    },
+    {
+      "title": "Gestión de Pedidos",
+      "descriptionPreserved": true,
+      "correctDestination": true,
+      "initialFocus": true,
+      "tabContained": true,
+      "escapeCloses": true,
+      "focusRestored": true
+    },
+    {
+      "title": "Reservas",
+      "descriptionPreserved": true,
+      "correctDestination": true,
+      "initialFocus": true,
+      "tabContained": true,
+      "escapeCloses": true,
+      "focusRestored": true
+    },
+    {
+      "title": "Transacciones",
+      "descriptionPreserved": true,
+      "correctDestination": true,
+      "initialFocus": true,
+      "tabContained": true,
+      "escapeCloses": true,
+      "focusRestored": true
+    },
+    {
+      "title": "Encuestas",
+      "descriptionPreserved": true,
+      "correctDestination": true,
+      "initialFocus": true,
+      "tabContained": true,
+      "escapeCloses": true,
+      "focusRestored": true
+    },
+    {
+      "title": "Código QR",
+      "descriptionPreserved": true,
+      "correctDestination": true,
+      "initialFocus": true,
+      "tabContained": true,
+      "escapeCloses": true,
+      "focusRestored": true
+    },
+    {
+      "title": "Editar Negocio",
+      "descriptionPreserved": true,
+      "correctDestination": true,
+      "initialFocus": true,
+      "tabContained": true,
+      "escapeCloses": true,
+      "focusRestored": true
+    }
+  ],
+  "navigation": [
+    {
+      "title": "Nuevo Producto",
+      "path": "/dashboard/productos/nuevo_producto",
+      "kind": "native click, locally intercepted"
+    },
+    {
+      "title": "Nueva Publicación",
+      "path": "/dashboard/crear-publicacion",
+      "kind": "native click, locally intercepted"
+    },
+    {
+      "title": "Gestión de Productos",
+      "path": "/dashboard/productos",
+      "kind": "native click, locally intercepted"
+    },
+    {
+      "title": "Organización del Catálogo",
+      "path": "/dashboard/organizacion-catalogo",
+      "kind": "native click, locally intercepted"
+    },
+    {
+      "title": "Servicios",
+      "path": "/dashboard/servicios",
+      "kind": "native click, locally intercepted"
+    },
+    {
+      "title": "Gestión de Pedidos",
+      "path": "/dashboard/orders",
+      "kind": "native click, locally intercepted"
+    },
+    {
+      "title": "Reservas",
+      "path": "/dashboard/reservas",
+      "kind": "native click, locally intercepted"
+    },
+    {
+      "title": "Transacciones",
+      "path": "/dashboard/transacciones",
+      "kind": "native click, locally intercepted"
+    },
+    {
+      "title": "Encuestas",
+      "path": "/dashboard/encuestas",
+      "kind": "native click, locally intercepted"
+    },
+    {
+      "title": "Código QR",
+      "path": "/dashboard/qr",
+      "kind": "native click, locally intercepted"
+    },
+    {
+      "title": "Editar Negocio",
+      "path": "/dashboard/editar-perfil",
+      "kind": "native click, locally intercepted"
+    }
+  ],
+  "roleStateVerification": {
+    "method": "Static AST comparison with initial source and source hash comparison; no authenticated role simulation",
+    "roleConditionsIdentical": true,
+    "authAndRestrictionEvaluationIdentical": true,
+    "restrictedBranchIdentical": true,
+    "userAndAdminFallbackIdentical": true,
+    "sharedLayoutAndSessionPolicyUntouched": true
+  },
+  "originalBusinessRoutes": [
+    "/dashboard/productos",
+    "/dashboard/productos/nuevo_producto",
+    "/dashboard/orders",
+    "/dashboard/transacciones",
+    "/dashboard/crear-publicacion",
+    "/dashboard/reservas",
+    "/dashboard/servicios",
+    "/dashboard/encuestas",
+    "/dashboard/qr",
+    "/dashboard/editar-perfil"
+  ],
+  "preservedBusinessRoutes": [
+    "/dashboard/productos/nuevo_producto",
+    "/dashboard/crear-publicacion",
+    "/dashboard/productos",
+    "/dashboard/organizacion-catalogo",
+    "/dashboard/servicios",
+    "/dashboard/orders",
+    "/dashboard/reservas",
+    "/dashboard/transacciones",
+    "/dashboard/encuestas",
+    "/dashboard/qr",
+    "/dashboard/editar-perfil"
+  ],
+  "adminRoutes": [
+    "/myckeoAdmin",
+    "/dashboard/editar-usuario"
+  ],
+  "changedExistingSources": [
+    "src/app/dashboard/page.tsx",
+    "src/dashboard/componentes/DashboardSections.tsx"
+  ],
+  "errors": [],
+  "boundaries": [
+    {
+      "width": 599,
+      "contentX": 16,
+      "sidebarRight": 0,
+      "columns": [
+        "278.5px 278.5px",
+        "567px",
+        "567px",
+        "567px"
+      ]
+    },
+    {
+      "width": 600,
+      "contentX": 24,
+      "sidebarRight": 0,
+      "columns": [
+        "271px 271px",
+        "552px",
+        "552px",
+        "552px"
+      ]
+    },
+    {
+      "width": 639,
+      "contentX": 24,
+      "sidebarRight": 0,
+      "columns": [
+        "290.5px 290.5px",
+        "290.5px 290.5px",
+        "290.5px 290.5px",
+        "290.5px 290.5px"
+      ]
+    },
+    {
+      "width": 640,
+      "contentX": 32,
+      "sidebarRight": 0,
+      "columns": [
+        "283px 283px",
+        "576px",
+        "576px",
+        "576px"
+      ]
+    },
+    {
+      "width": 767,
+      "contentX": 32,
+      "sidebarRight": 0,
+      "columns": [
+        "346.5px 346.5px",
+        "346.5px 346.5px",
+        "346.5px 346.5px",
+        "346.5px 346.5px"
+      ]
+    },
+    {
+      "width": 769,
+      "contentX": 256,
+      "sidebarRight": 250,
+      "columns": [
+        "223.5px 223.5px",
+        "457px",
+        "457px",
+        "457px"
+      ]
+    },
+    {
+      "width": 899,
+      "contentX": 256,
+      "sidebarRight": 250,
+      "columns": [
+        "288.5px 288.5px",
+        "587px",
+        "587px",
+        "587px"
+      ]
+    },
+    {
+      "width": 900,
+      "contentX": 264,
+      "sidebarRight": 250,
+      "columns": [
+        "281px 281px",
+        "572px",
+        "572px",
+        "572px"
+      ]
+    },
+    {
+      "width": 1023,
+      "contentX": 264,
+      "sidebarRight": 250,
+      "columns": [
+        "342.5px 342.5px",
+        "342.5px 342.5px",
+        "342.5px 342.5px",
+        "342.5px 342.5px"
+      ]
+    }
+  ],
+  "collapsed": {
+    "width": 1024,
+    "height": 844,
+    "collapsed": true,
+    "documentScrollWidth": 1024,
+    "documentScrollHeight": 1091,
+    "firstContentX": 128,
+    "sidebarRight": 64,
+    "entries": [
+      {
+        "href": "/dashboard/productos/nuevo_producto",
+        "row": {
+          "x": 128,
+          "y": 259.390625,
+          "width": 411,
+          "height": 96,
+          "right": 539,
+          "bottom": 355.390625
+        },
+        "link": {
+          "x": 129,
+          "y": 260.390625,
+          "width": 365,
+          "height": 94,
+          "right": 494,
+          "bottom": 354.390625
+        },
+        "help": {
+          "x": 494,
+          "y": 285.390625,
+          "width": 44,
+          "height": 44,
+          "right": 538,
+          "bottom": 329.390625
+        },
+        "iconHelpOverlap": 0,
+        "linkHelpOverlap": 0,
+        "clippedText": [],
+        "clippedRow": false
+      },
+      {
+        "href": "/dashboard/crear-publicacion",
+        "row": {
+          "x": 549,
+          "y": 259.390625,
+          "width": 411,
+          "height": 96,
+          "right": 960,
+          "bottom": 355.390625
+        },
+        "link": {
+          "x": 550,
+          "y": 260.390625,
+          "width": 365,
+          "height": 94,
+          "right": 915,
+          "bottom": 354.390625
+        },
+        "help": {
+          "x": 915,
+          "y": 285.390625,
+          "width": 44,
+          "height": 44,
+          "right": 959,
+          "bottom": 329.390625
+        },
+        "iconHelpOverlap": 0,
+        "linkHelpOverlap": 0,
+        "clippedText": [],
+        "clippedRow": false
+      },
+      {
+        "href": "/dashboard/productos",
+        "row": {
+          "x": 128,
+          "y": 413.390625,
+          "width": 411,
+          "height": 78,
+          "right": 539,
+          "bottom": 491.390625
+        },
+        "link": {
+          "x": 129,
+          "y": 414.390625,
+          "width": 365,
+          "height": 76,
+          "right": 494,
+          "bottom": 490.390625
+        },
+        "help": {
+          "x": 494,
+          "y": 430.390625,
+          "width": 44,
+          "height": 44,
+          "right": 538,
+          "bottom": 474.390625
+        },
+        "iconHelpOverlap": 0,
+        "linkHelpOverlap": 0,
+        "clippedText": [],
+        "clippedRow": false
+      },
+      {
+        "href": "/dashboard/organizacion-catalogo",
+        "row": {
+          "x": 549,
+          "y": 413.390625,
+          "width": 411,
+          "height": 78,
+          "right": 960,
+          "bottom": 491.390625
+        },
+        "link": {
+          "x": 550,
+          "y": 414.390625,
+          "width": 365,
+          "height": 76,
+          "right": 915,
+          "bottom": 490.390625
+        },
+        "help": {
+          "x": 915,
+          "y": 430.390625,
+          "width": 44,
+          "height": 44,
+          "right": 959,
+          "bottom": 474.390625
+        },
+        "iconHelpOverlap": 0,
+        "linkHelpOverlap": 0,
+        "clippedText": [],
+        "clippedRow": false
+      },
+      {
+        "href": "/dashboard/servicios",
+        "row": {
+          "x": 128,
+          "y": 501.390625,
+          "width": 411,
+          "height": 78,
+          "right": 539,
+          "bottom": 579.390625
+        },
+        "link": {
+          "x": 129,
+          "y": 502.390625,
+          "width": 365,
+          "height": 76,
+          "right": 494,
+          "bottom": 578.390625
+        },
+        "help": {
+          "x": 494,
+          "y": 518.390625,
+          "width": 44,
+          "height": 44,
+          "right": 538,
+          "bottom": 562.390625
+        },
+        "iconHelpOverlap": 0,
+        "linkHelpOverlap": 0,
+        "clippedText": [],
+        "clippedRow": false
+      },
+      {
+        "href": "/dashboard/orders",
+        "row": {
+          "x": 128,
+          "y": 637.390625,
+          "width": 411,
+          "height": 78,
+          "right": 539,
+          "bottom": 715.390625
+        },
+        "link": {
+          "x": 129,
+          "y": 638.390625,
+          "width": 365,
+          "height": 76,
+          "right": 494,
+          "bottom": 714.390625
+        },
+        "help": {
+          "x": 494,
+          "y": 654.390625,
+          "width": 44,
+          "height": 44,
+          "right": 538,
+          "bottom": 698.390625
+        },
+        "iconHelpOverlap": 0,
+        "linkHelpOverlap": 0,
+        "clippedText": [],
+        "clippedRow": false
+      },
+      {
+        "href": "/dashboard/reservas",
+        "row": {
+          "x": 549,
+          "y": 637.390625,
+          "width": 411,
+          "height": 78,
+          "right": 960,
+          "bottom": 715.390625
+        },
+        "link": {
+          "x": 550,
+          "y": 638.390625,
+          "width": 365,
+          "height": 76,
+          "right": 915,
+          "bottom": 714.390625
+        },
+        "help": {
+          "x": 915,
+          "y": 654.390625,
+          "width": 44,
+          "height": 44,
+          "right": 959,
+          "bottom": 698.390625
+        },
+        "iconHelpOverlap": 0,
+        "linkHelpOverlap": 0,
+        "clippedText": [],
+        "clippedRow": false
+      },
+      {
+        "href": "/dashboard/transacciones",
+        "row": {
+          "x": 128,
+          "y": 725.390625,
+          "width": 411,
+          "height": 78,
+          "right": 539,
+          "bottom": 803.390625
+        },
+        "link": {
+          "x": 129,
+          "y": 726.390625,
+          "width": 365,
+          "height": 76,
+          "right": 494,
+          "bottom": 802.390625
+        },
+        "help": {
+          "x": 494,
+          "y": 742.390625,
+          "width": 44,
+          "height": 44,
+          "right": 538,
+          "bottom": 786.390625
+        },
+        "iconHelpOverlap": 0,
+        "linkHelpOverlap": 0,
+        "clippedText": [],
+        "clippedRow": false
+      },
+      {
+        "href": "/dashboard/encuestas",
+        "row": {
+          "x": 128,
+          "y": 861.390625,
+          "width": 411,
+          "height": 78,
+          "right": 539,
+          "bottom": 939.390625
+        },
+        "link": {
+          "x": 129,
+          "y": 862.390625,
+          "width": 365,
+          "height": 76,
+          "right": 494,
+          "bottom": 938.390625
+        },
+        "help": {
+          "x": 494,
+          "y": 878.390625,
+          "width": 44,
+          "height": 44,
+          "right": 538,
+          "bottom": 922.390625
+        },
+        "iconHelpOverlap": 0,
+        "linkHelpOverlap": 0,
+        "clippedText": [],
+        "clippedRow": false
+      },
+      {
+        "href": "/dashboard/qr",
+        "row": {
+          "x": 549,
+          "y": 861.390625,
+          "width": 411,
+          "height": 78,
+          "right": 960,
+          "bottom": 939.390625
+        },
+        "link": {
+          "x": 550,
+          "y": 862.390625,
+          "width": 365,
+          "height": 76,
+          "right": 915,
+          "bottom": 938.390625
+        },
+        "help": {
+          "x": 915,
+          "y": 878.390625,
+          "width": 44,
+          "height": 44,
+          "right": 959,
+          "bottom": 922.390625
+        },
+        "iconHelpOverlap": 0,
+        "linkHelpOverlap": 0,
+        "clippedText": [],
+        "clippedRow": false
+      },
+      {
+        "href": "/dashboard/editar-perfil",
+        "row": {
+          "x": 128,
+          "y": 949.390625,
+          "width": 411,
+          "height": 78,
+          "right": 539,
+          "bottom": 1027.390625
+        },
+        "link": {
+          "x": 129,
+          "y": 950.390625,
+          "width": 365,
+          "height": 76,
+          "right": 494,
+          "bottom": 1026.390625
+        },
+        "help": {
+          "x": 494,
+          "y": 966.390625,
+          "width": 44,
+          "height": 44,
+          "right": 538,
+          "bottom": 1010.390625
+        },
+        "iconHelpOverlap": 0,
+        "linkHelpOverlap": 0,
+        "clippedText": [],
+        "clippedRow": false
+      }
+    ],
+    "menus": [
+      {
+        "columns": "411px 411px",
+        "gap": "10px",
+        "rect": {
+          "x": 128,
+          "y": 259.390625,
+          "width": 832,
+          "height": 96,
+          "right": 960,
+          "bottom": 355.390625
+        }
+      },
+      {
+        "columns": "411px 411px",
+        "gap": "10px",
+        "rect": {
+          "x": 128,
+          "y": 413.390625,
+          "width": 832,
+          "height": 166,
+          "right": 960,
+          "bottom": 579.390625
+        }
+      },
+      {
+        "columns": "411px 411px",
+        "gap": "10px",
+        "rect": {
+          "x": 128,
+          "y": 637.390625,
+          "width": 832,
+          "height": 166,
+          "right": 960,
+          "bottom": 803.390625
+        }
+      },
+      {
+        "columns": "411px 411px",
+        "gap": "10px",
+        "rect": {
+          "x": 128,
+          "y": 861.390625,
+          "width": 832,
+          "height": 166,
+          "right": 960,
+          "bottom": 1027.390625
+        }
+      }
+    ],
+    "sectionHeaders": [
+      {
+        "title": "Acciones rápidas",
+        "description": null,
+        "category": null,
+        "color": "",
+        "iconColor": "rgb(189, 47, 67)",
+        "iconBackground": "rgb(255, 241, 243)",
+        "titleClipped": false,
+        "descriptionClipped": false,
+        "headerIconPresent": false
+      },
+      {
+        "title": "Catálogo y oferta",
+        "description": null,
+        "category": null,
+        "color": "",
+        "iconColor": "rgb(83, 86, 97)",
+        "iconBackground": "rgb(248, 248, 250)",
+        "titleClipped": false,
+        "descriptionClipped": false,
+        "headerIconPresent": false
+      },
+      {
+        "title": "Operación",
+        "description": null,
+        "category": null,
+        "color": "",
+        "iconColor": "rgb(83, 86, 97)",
+        "iconBackground": "rgb(248, 248, 250)",
+        "titleClipped": false,
+        "descriptionClipped": false,
+        "headerIconPresent": false
+      },
+      {
+        "title": "Presencia del negocio",
+        "description": null,
+        "category": null,
+        "color": "",
+        "iconColor": "rgb(83, 86, 97)",
+        "iconBackground": "rgb(248, 248, 250)",
+        "titleClipped": false,
+        "descriptionClipped": false,
+        "headerIconPresent": false
+      }
+    ],
+    "nestedControls": 0
+  },
+  "closeButtonAndBackdrop": true,
+  "focusOutline": {
+    "style": "solid",
+    "width": "2px",
+    "color": "rgb(189, 47, 67)"
+  },
+  "keyboardLink": true,
+  "dialogLink": true,
+  "administrativePresentation": "Actual superAdminGroups passed directly to menu; no role/session simulation",
+  "adminHelp": [
+    {
+      "title": "Panel Myckeo Admin",
+      "descriptionPreserved": true,
+      "initialFocus": true,
+      "focusContained": true,
+      "escapeCloses": true,
+      "focusRestored": true
+    },
+    {
+      "title": "Editar usuario",
+      "descriptionPreserved": true,
+      "initialFocus": true,
+      "focusContained": true,
+      "escapeCloses": true,
+      "focusRestored": true
+    }
+  ],
+  "adminNavigation": [
+    "/myckeoAdmin",
+    "/dashboard/editar-usuario"
+  ],
+  "longNameProp": "Controlled text stress test passed; not an authenticated business name or session",
+  "textEnlargement": {
+    "width": 320,
+    "height": 844,
+    "collapsed": false,
+    "documentScrollWidth": 320,
+    "documentScrollHeight": 3098,
+    "firstContentX": 16,
+    "sidebarRight": 0,
+    "entries": [
+      {
+        "href": "/dashboard/productos/nuevo_producto",
+        "row": {
+          "x": 16,
+          "y": 512.1875,
+          "width": 288,
+          "height": 197,
+          "right": 304,
+          "bottom": 709.1875
+        },
+        "link": {
+          "x": 17,
+          "y": 513.1875,
+          "width": 242,
+          "height": 195,
+          "right": 259,
+          "bottom": 708.1875
+        },
+        "help": {
+          "x": 259,
+          "y": 588.6875,
+          "width": 44,
+          "height": 44,
+          "right": 303,
+          "bottom": 632.6875
+        },
+        "iconHelpOverlap": 0,
+        "linkHelpOverlap": 0,
+        "clippedText": [],
+        "clippedRow": false
+      },
+      {
+        "href": "/dashboard/crear-publicacion",
+        "row": {
+          "x": 16,
+          "y": 719.1875,
+          "width": 288,
+          "height": 279.5,
+          "right": 304,
+          "bottom": 998.6875
+        },
+        "link": {
+          "x": 17,
+          "y": 720.1875,
+          "width": 242,
+          "height": 277.5,
+          "right": 259,
+          "bottom": 997.6875
+        },
+        "help": {
+          "x": 259,
+          "y": 836.9375,
+          "width": 44,
+          "height": 44,
+          "right": 303,
+          "bottom": 880.9375
+        },
+        "iconHelpOverlap": 0,
+        "linkHelpOverlap": 0,
+        "clippedText": [],
+        "clippedRow": false
+      },
+      {
+        "href": "/dashboard/productos",
+        "row": {
+          "x": 16,
+          "y": 1077.6875,
+          "width": 288,
+          "height": 197,
+          "right": 304,
+          "bottom": 1274.6875
+        },
+        "link": {
+          "x": 17,
+          "y": 1078.6875,
+          "width": 242,
+          "height": 195,
+          "right": 259,
+          "bottom": 1273.6875
+        },
+        "help": {
+          "x": 259,
+          "y": 1154.1875,
+          "width": 44,
+          "height": 44,
+          "right": 303,
+          "bottom": 1198.1875
+        },
+        "iconHelpOverlap": 0,
+        "linkHelpOverlap": 0,
+        "clippedText": [],
+        "clippedRow": false
+      },
+      {
+        "href": "/dashboard/organizacion-catalogo",
+        "row": {
+          "x": 16,
+          "y": 1284.6875,
+          "width": 288,
+          "height": 240.5,
+          "right": 304,
+          "bottom": 1525.1875
+        },
+        "link": {
+          "x": 17,
+          "y": 1285.6875,
+          "width": 242,
+          "height": 238.5,
+          "right": 259,
+          "bottom": 1524.1875
+        },
+        "help": {
+          "x": 259,
+          "y": 1382.9375,
+          "width": 44,
+          "height": 44,
+          "right": 303,
+          "bottom": 1426.9375
+        },
+        "iconHelpOverlap": 0,
+        "linkHelpOverlap": 0,
+        "clippedText": [],
+        "clippedRow": false
+      },
+      {
+        "href": "/dashboard/servicios",
+        "row": {
+          "x": 16,
+          "y": 1535.1875,
+          "width": 288,
+          "height": 153.5,
+          "right": 304,
+          "bottom": 1688.6875
+        },
+        "link": {
+          "x": 17,
+          "y": 1536.1875,
+          "width": 242,
+          "height": 151.5,
+          "right": 259,
+          "bottom": 1687.6875
+        },
+        "help": {
+          "x": 259,
+          "y": 1589.9375,
+          "width": 44,
+          "height": 44,
+          "right": 303,
+          "bottom": 1633.9375
+        },
+        "iconHelpOverlap": 0,
+        "linkHelpOverlap": 0,
+        "clippedText": [],
+        "clippedRow": false
+      },
+      {
+        "href": "/dashboard/orders",
+        "row": {
+          "x": 16,
+          "y": 1767.6875,
+          "width": 288,
+          "height": 236,
+          "right": 304,
+          "bottom": 2003.6875
+        },
+        "link": {
+          "x": 17,
+          "y": 1768.6875,
+          "width": 242,
+          "height": 234,
+          "right": 259,
+          "bottom": 2002.6875
+        },
+        "help": {
+          "x": 259,
+          "y": 1863.6875,
+          "width": 44,
+          "height": 44,
+          "right": 303,
+          "bottom": 1907.6875
+        },
+        "iconHelpOverlap": 0,
+        "linkHelpOverlap": 0,
+        "clippedText": [],
+        "clippedRow": false
+      },
+      {
+        "href": "/dashboard/reservas",
+        "row": {
+          "x": 16,
+          "y": 2013.6875,
+          "width": 288,
+          "height": 153.5,
+          "right": 304,
+          "bottom": 2167.1875
+        },
+        "link": {
+          "x": 17,
+          "y": 2014.6875,
+          "width": 242,
+          "height": 151.5,
+          "right": 259,
+          "bottom": 2166.1875
+        },
+        "help": {
+          "x": 259,
+          "y": 2068.4375,
+          "width": 44,
+          "height": 44,
+          "right": 303,
+          "bottom": 2112.4375
+        },
+        "iconHelpOverlap": 0,
+        "linkHelpOverlap": 0,
+        "clippedText": [],
+        "clippedRow": false
+      },
+      {
+        "href": "/dashboard/transacciones",
+        "row": {
+          "x": 16,
+          "y": 2177.1875,
+          "width": 288,
+          "height": 236,
+          "right": 304,
+          "bottom": 2413.1875
+        },
+        "link": {
+          "x": 17,
+          "y": 2178.1875,
+          "width": 242,
+          "height": 234,
+          "right": 259,
+          "bottom": 2412.1875
+        },
+        "help": {
+          "x": 259,
+          "y": 2273.1875,
+          "width": 44,
+          "height": 44,
+          "right": 303,
+          "bottom": 2317.1875
+        },
+        "iconHelpOverlap": 0,
+        "linkHelpOverlap": 0,
+        "clippedText": [],
+        "clippedRow": false
+      },
+      {
+        "href": "/dashboard/encuestas",
+        "row": {
+          "x": 16,
+          "y": 2534.1875,
+          "width": 288,
+          "height": 153.5,
+          "right": 304,
+          "bottom": 2687.6875
+        },
+        "link": {
+          "x": 17,
+          "y": 2535.1875,
+          "width": 242,
+          "height": 151.5,
+          "right": 259,
+          "bottom": 2686.6875
+        },
+        "help": {
+          "x": 259,
+          "y": 2588.9375,
+          "width": 44,
+          "height": 44,
+          "right": 303,
+          "bottom": 2632.9375
+        },
+        "iconHelpOverlap": 0,
+        "linkHelpOverlap": 0,
+        "clippedText": [],
+        "clippedRow": false
+      },
+      {
+        "href": "/dashboard/qr",
+        "row": {
+          "x": 16,
+          "y": 2697.6875,
+          "width": 288,
+          "height": 153.5,
+          "right": 304,
+          "bottom": 2851.1875
+        },
+        "link": {
+          "x": 17,
+          "y": 2698.6875,
+          "width": 242,
+          "height": 151.5,
+          "right": 259,
+          "bottom": 2850.1875
+        },
+        "help": {
+          "x": 259,
+          "y": 2752.4375,
+          "width": 44,
+          "height": 44,
+          "right": 303,
+          "bottom": 2796.4375
+        },
+        "iconHelpOverlap": 0,
+        "linkHelpOverlap": 0,
+        "clippedText": [],
+        "clippedRow": false
+      },
+      {
+        "href": "/dashboard/editar-perfil",
+        "row": {
+          "x": 16,
+          "y": 2861.1875,
+          "width": 288,
+          "height": 197,
+          "right": 304,
+          "bottom": 3058.1875
+        },
+        "link": {
+          "x": 17,
+          "y": 2862.1875,
+          "width": 242,
+          "height": 195,
+          "right": 259,
+          "bottom": 3057.1875
+        },
+        "help": {
+          "x": 259,
+          "y": 2937.6875,
+          "width": 44,
+          "height": 44,
+          "right": 303,
+          "bottom": 2981.6875
+        },
+        "iconHelpOverlap": 0,
+        "linkHelpOverlap": 0,
+        "clippedText": [],
+        "clippedRow": false
+      }
+    ],
+    "menus": [
+      {
+        "columns": "288px",
+        "gap": "10px",
+        "rect": {
+          "x": 16,
+          "y": 512.1875,
+          "width": 288,
+          "height": 486.5,
+          "right": 304,
+          "bottom": 998.6875
+        }
+      },
+      {
+        "columns": "288px",
+        "gap": "10px",
+        "rect": {
+          "x": 16,
+          "y": 1077.6875,
+          "width": 288,
+          "height": 611,
+          "right": 304,
+          "bottom": 1688.6875
+        }
+      },
+      {
+        "columns": "288px",
+        "gap": "10px",
+        "rect": {
+          "x": 16,
+          "y": 1767.6875,
+          "width": 288,
+          "height": 645.5,
+          "right": 304,
+          "bottom": 2413.1875
+        }
+      },
+      {
+        "columns": "288px",
+        "gap": "10px",
+        "rect": {
+          "x": 16,
+          "y": 2534.1875,
+          "width": 288,
+          "height": 524,
+          "right": 304,
+          "bottom": 3058.1875
+        }
+      }
+    ],
+    "sectionHeaders": [
+      {
+        "title": "Acciones rápidas",
+        "description": null,
+        "category": null,
+        "color": "",
+        "iconColor": "rgb(189, 47, 67)",
+        "iconBackground": "rgb(255, 241, 243)",
+        "titleClipped": false,
+        "descriptionClipped": false,
+        "headerIconPresent": false
+      },
+      {
+        "title": "Catálogo y oferta",
+        "description": null,
+        "category": null,
+        "color": "",
+        "iconColor": "rgb(83, 86, 97)",
+        "iconBackground": "rgb(248, 248, 250)",
+        "titleClipped": false,
+        "descriptionClipped": false,
+        "headerIconPresent": false
+      },
+      {
+        "title": "Operación",
+        "description": null,
+        "category": null,
+        "color": "",
+        "iconColor": "rgb(83, 86, 97)",
+        "iconBackground": "rgb(248, 248, 250)",
+        "titleClipped": false,
+        "descriptionClipped": false,
+        "headerIconPresent": false
+      },
+      {
+        "title": "Presencia del negocio",
+        "description": null,
+        "category": null,
+        "color": "",
+        "iconColor": "rgb(83, 86, 97)",
+        "iconBackground": "rgb(248, 248, 250)",
+        "titleClipped": false,
+        "descriptionClipped": false,
+        "headerIconPresent": false
+      }
+    ],
+    "nestedControls": 0,
+    "scope": "CSS stress test: actual text font sizes and line heights doubled at 320px; not a browser zoom certification"
+  },
+  "shortDialog": {
+    "top": 60,
+    "bottom": 420,
+    "viewport": 480,
+    "scrollHeight": 358,
+    "clientHeight": 358
+  },
+  "normalMotionDialog": true,
+  "reducedMotion": "0s",
+  "sourceHashes": {
+    "src/app/dashboard/page.tsx": "06233396b870819dcf5b9487cde833b98c3dfc3cfc86f997e742922b1e07c682",
+    "src/dashboard/dashboardMenu.ts": "2edf05fff735280eefd7e975937925ee4f83429740d77ae0632e684561db4f8e",
+    "src/dashboard/componentes/DashboardSections.tsx": "67112995bad8bec82de75f6b5e213ea821f8be6ec352fe57825e632567775e3e",
+    "src/dashboard/componentes/dashboardMenu.module.css": "4c5d51da3d53c53fb033e9a11f2c5ceaafcbf44ffc4943381cb8a7bf62c5d212",
+    "src/ui/components/dashboard/perfil/LayoutDashboardComponent.tsx": "202151fa830206a0376238e2761c7ffa28d43f608a89b0d81641b64f461318a5",
+    "src/app/dashboard/layout.tsx": "3157f226aff0b05b334e2ad26f9cc889259d4e7f7a43f40fd01cf5d4668cf118",
+    "src/auth.config.ts": "20197e7c98bf32e1498807c3e2cabb983311c0c6ee122cb2ed57abd545577602"
+  },
+  "renderedSources": [
+    "src/dashboard/componentes/dashboardMenu.module.css",
+    "src/dashboard/componentes/DashboardSections.tsx",
+    "src/dashboard/dashboardMenu.ts"
+  ],
+  "createdAt": "2026-11-17T18:52:35.831Z"
+}

@@ -1,0 +1,55 @@
+--- src/ui/components/productos/feedProductCard.module.css (antes)
++++ src/ui/components/productos/feedProductCard.module.css (después)
+@@ -727,10 +727,10 @@
+   }
+   .headerActions > button::before {
+     z-index: 1;
+-    inset: 5px auto auto 15px;
+-    width: 20px;
+-    height: 20px;
+-    border: 2px solid white;
++    inset: 7px auto auto 19px;
++    width: 14px;
++    height: 14px;
++    border: 1px solid white;
+     background: #c93545;
+   }
+   .headerActions > button[data-avatar-follow] {
+@@ -748,8 +748,8 @@
+     background: #e2e8f0;
+   }
+   .headerActions > button svg {
+-    width: 12px;
+-    height: 12px;
++    width: 9px;
++    height: 9px;
+   }
+   .favorite {
+     grid-column: 3;
+--- src/feed/componentes/followButton.module.css (antes)
++++ src/feed/componentes/followButton.module.css (después)
+@@ -34,18 +34,18 @@
+   .avatarPresentation .avatarIcon {
+     position: absolute;
+     z-index: 2;
+-    top: 9px;
+-    left: 19px;
++    top: 9.5px;
++    left: 21.5px;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+-    width: 12px;
+-    height: 12px;
++    width: 9px;
++    height: 9px;
+     pointer-events: none;
+   }
+   .avatarIcon svg {
+-    width: 12px;
+-    height: 12px;
++    width: 9px;
++    height: 9px;
+   }
+   .spinner {
+     animation: follow-spin 800ms linear infinite;

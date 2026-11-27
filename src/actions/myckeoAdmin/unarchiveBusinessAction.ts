@@ -1,5 +1,6 @@
 "use server";
 
+import { requireSuperAdmin } from "@/lib/business/productAccess";
 import { auth } from "@/auth.config";
 import prisma from "@/lib/prisma";
 
@@ -33,7 +34,7 @@ function normalizeBusinessId(value: string): string {
 }
 
 export async function unarchiveBusinessAction(
-  input: UnarchiveBusinessActionInput
+  input: UnarchiveBusinessActionInput,
 ): Promise<UnarchiveBusinessActionResult> {
   const traceId = buildTraceId();
   const startedAt = Date.now();
@@ -53,10 +54,13 @@ export async function unarchiveBusinessAction(
     }
 
     if (session.user.role !== "super_admin") {
-      console.warn(`[unarchiveBusinessAction][${traceId}] Acceso denegado por rol`, {
-        userId: session.user.id,
-        role: session.user.role,
-      });
+      console.warn(
+        `[unarchiveBusinessAction][${traceId}] Acceso denegado por rol`,
+        {
+          userId: session.user.id,
+          role: session.user.role,
+        },
+      );
 
       return {
         ok: false,
@@ -65,6 +69,8 @@ export async function unarchiveBusinessAction(
         error: "No tienes permisos para desarchivar este negocio.",
       };
     }
+
+    await requireSuperAdmin();
 
     const businessId = normalizeBusinessId(input.businessId);
 
@@ -93,6 +99,7 @@ export async function unarchiveBusinessAction(
         nombre: true,
         slug: true,
         estado: true,
+        usuario: { select: { placeholderProvisioningKeyHash: true } },
         isTestData: true,
         archivedAt: true,
         updatedAt: true,
@@ -104,7 +111,7 @@ export async function unarchiveBusinessAction(
         `[unarchiveBusinessAction][${traceId}] Negocio no encontrado`,
         {
           businessId,
-        }
+        },
       );
 
       return {
@@ -120,7 +127,7 @@ export async function unarchiveBusinessAction(
         `[unarchiveBusinessAction][${traceId}] El negocio no estaba archivado`,
         {
           businessId,
-        }
+        },
       );
 
       return {
@@ -137,7 +144,13 @@ export async function unarchiveBusinessAction(
       },
       data: {
         archivedAt: null,
-        ...(existingBusiness.estado === "eliminado" ? { estado: "activo" } : {}),
+        ...(existingBusiness.estado === "eliminado"
+          ? {
+              estado: existingBusiness.usuario.placeholderProvisioningKeyHash
+                ? "suspendido"
+                : "activo",
+            }
+          : {}),
       },
       select: {
         id: true,

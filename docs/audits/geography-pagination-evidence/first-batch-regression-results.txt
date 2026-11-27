@@ -1,0 +1,13 @@
+
+Running 8 tests using 1 worker
+
+  ✓  1 e2e/public-ui-audit/public-ui.spec.ts:10:7 › after: feed and contact at 360px (6.4s)
+  ✓  2 e2e/public-ui-audit/public-ui.spec.ts:10:7 › after: feed and contact at 390px (5.5s)
+  ✓  3 e2e/public-ui-audit/public-ui.spec.ts:10:7 › after: feed and contact at 430px (3.6s)
+  ✓  4 e2e/public-ui-audit/public-ui.spec.ts:10:7 › after: feed and contact at 1440px (4.3s)
+  ✓  5 e2e/public-ui-audit/public-ui.spec.ts:41:5 › after: categories and unknown slugs (26.5s)
+  ✓  6 e2e/public-ui-audit/public-ui.spec.ts:61:5 › after: business, service, product, detail and profile agree on destination (26.3s)
+  ✓  7 e2e/public-ui-audit/public-ui.spec.ts:85:5 › after: independent mobile actions, business link and commerce row (30.1s)
+  ✓  8 e2e/public-ui-audit/public-ui.spec.ts:130:5 › after: footer, favorites, cart and existing owner entry (51.3s)
+
+  8 passed (2.6m)

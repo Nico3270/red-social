@@ -1,0 +1,16 @@
+{
+  "beforeCount": 620,
+  "afterCount": 620,
+  "modified": [
+    "src/ui/components/productos/feedProductCard.module.css"
+  ],
+  "unchanged": 619,
+  "added": [],
+  "removed": [],
+  "desktopBaseIdentical": true,
+  "cssBeforeSha256": "1b6cb7e63d0da22477d4fa6d73288ff4a79b30c2250658ab2752809220ac4088",
+  "cssAfterSha256": "f316979ca4929e7dd9b570f38fe2f8a7ae07ae6b94d570b30172008a900ffa77",
+  "activeServerPid": 566567,
+  "activeServerCwd": "/home/nico/red-social",
+  "testRoutesAdded": false
+}

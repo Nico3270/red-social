@@ -1,6 +1,10 @@
 "use server";
 
+import { lockWritableBusiness } from "@/lib/business/productAccess";
+import { parseCopPrice } from "@/lib/products/copPrice";
 import prisma from "@/lib/prisma";
+import { assertCanPublishProduct } from "@/lib/products/productAuthorization";
+import { replaceGallery, lockProduct } from "@/lib/products/imageGallery";
 import OpenAI from "openai";
 import { Prisma, Product, ProductStatus } from "@prisma/client";
 import { auth } from "@/auth.config";
@@ -41,7 +45,7 @@ interface VariantInput {
 }
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: process.env.OPENAI_API_KEY || "not-configured",
 });
 
 const openaiDescriptionModel =
@@ -54,7 +58,10 @@ const normalizeString = (value: FormDataEntryValue | null): string => {
   return typeof value === "string" ? value.trim() : "";
 };
 
-const parseBoolean = (value: FormDataEntryValue | null, defaultValue = false): boolean => {
+const parseBoolean = (
+  value: FormDataEntryValue | null,
+  defaultValue = false,
+): boolean => {
   if (typeof value !== "string") return defaultValue;
   const normalized = value.trim().toLowerCase();
   if (normalized === "true") return true;
@@ -62,7 +69,9 @@ const parseBoolean = (value: FormDataEntryValue | null, defaultValue = false): b
   return defaultValue;
 };
 
-const parseOptionalNumber = (value: FormDataEntryValue | null): number | null => {
+const parseOptionalNumber = (
+  value: FormDataEntryValue | null,
+): number | null => {
   if (typeof value !== "string") return null;
   const trimmed = value.trim();
   if (!trimmed) return null;
@@ -85,7 +94,9 @@ async function buildUniqueProductSlug(slugInput: string, fallbackName: string) {
   const baseSlug = buildSlugBase(slugInput, fallbackName);
 
   if (!baseSlug) {
-    throw new Error("No fue posible construir un slug válido para el producto.");
+    throw new Error(
+      "No fue posible construir un slug válido para el producto.",
+    );
   }
 
   const baseWithoutExistingSuffix = hasShortSlugSuffix(baseSlug)
@@ -108,7 +119,9 @@ async function buildUniqueProductSlug(slugInput: string, fallbackName: string) {
   return `${normalizeUrlSlug(baseSlug, 128)}-${Date.now().toString(36)}`;
 }
 
-export async function createProduct(formData: FormData): Promise<CreacionProduct> {
+export async function createProduct(
+  formData: FormData,
+): Promise<CreacionProduct> {
   const session = await auth();
 
   if (!session?.user?.id) {
@@ -134,9 +147,11 @@ export async function createProduct(formData: FormData): Promise<CreacionProduct
     }
 
     const nombre = normalizeString(formData.get("nombre"));
-    const precio = parseOptionalNumber(formData.get("precio"));
+    const precio = parseCopPrice(formData.get("precio"));
     const descripcion = normalizeString(formData.get("descripcion"));
-    const descripcionCortaRaw = normalizeString(formData.get("descripcionCorta"));
+    const descripcionCortaRaw = normalizeString(
+      formData.get("descripcionCorta"),
+    );
     const descripcionCorta = descripcionCortaRaw || null;
     const slugInput = normalizeString(formData.get("slug"));
     const prioridad = parseOptionalNumber(formData.get("prioridad"));
@@ -166,29 +181,38 @@ export async function createProduct(formData: FormData): Promise<CreacionProduct
     const stockIlimitado = parseBoolean(formData.get("stockIlimitado"), true);
     const usaVariantes = parseBoolean(formData.get("usaVariantes"), false);
 
-    const atributos = safeJsonParse<AttributeInput[]>(formData.get("atributos"), [])
+    const atributos = safeJsonParse<AttributeInput[]>(
+      formData.get("atributos"),
+      [],
+    )
       .map((item) => ({
         nombre: item?.nombre?.trim?.() || "",
         valor: item?.valor?.trim?.() || "",
       }))
       .filter((item) => item.nombre && item.valor);
 
-    const variantes = safeJsonParse<VariantInput[]>(formData.get("variantes"), [])
+    const variantes = safeJsonParse<VariantInput[]>(
+      formData.get("variantes"),
+      [],
+    )
       .map((variant) => ({
         nombre: variant?.nombre?.trim?.() || null,
         sku: variant?.sku?.trim?.() || null,
         precio:
-          typeof variant?.precio === "number" && Number.isFinite(variant.precio)
-            ? variant.precio
-            : null,
+          variant?.precio === null || variant?.precio === undefined
+            ? null
+            : parseCopPrice(variant.precio),
         stock:
           typeof variant?.stock === "number" && Number.isFinite(variant.stock)
             ? variant.stock
             : null,
         stockIlimitado:
-          typeof variant?.stockIlimitado === "boolean" ? variant.stockIlimitado : true,
+          typeof variant?.stockIlimitado === "boolean"
+            ? variant.stockIlimitado
+            : true,
         imagenUrl: variant?.imagenUrl?.trim?.() || null,
-        isActive: typeof variant?.isActive === "boolean" ? variant.isActive : true,
+        isActive:
+          typeof variant?.isActive === "boolean" ? variant.isActive : true,
         options: Array.isArray(variant?.options)
           ? variant.options
               .map((option) => ({
@@ -253,6 +277,8 @@ export async function createProduct(formData: FormData): Promise<CreacionProduct
       };
     }
 
+    if (statusRaw === "disponible") await assertCanPublishProduct(negocio.id);
+
     const categoryExists = await prisma.category.findUnique({
       where: { id: categoryId },
       select: { id: true },
@@ -300,7 +326,10 @@ export async function createProduct(formData: FormData): Promise<CreacionProduct
       }
 
       for (const variant of variantes) {
-        if (!variant.stockIlimitado && (variant.stock === null || variant.stock < 0)) {
+        if (
+          !variant.stockIlimitado &&
+          (variant.stock === null || variant.stock < 0)
+        ) {
           return {
             ok: false,
             message:
@@ -314,13 +343,15 @@ export async function createProduct(formData: FormData): Promise<CreacionProduct
         ) {
           return {
             ok: false,
-            message: "Una o más imágenes de variantes no tienen una URL válida.",
+            message:
+              "Una o más imágenes de variantes no tienen una URL válida.",
           };
         }
       }
     }
 
     const product = await prisma.$transaction(async (tx) => {
+      await lockWritableBusiness(tx, negocio.id, statusRaw);
       const newProduct = await tx.product.create({
         data: {
           nombre,
@@ -365,11 +396,13 @@ export async function createProduct(formData: FormData): Promise<CreacionProduct
                     options:
                       variant.options.length > 0
                         ? {
-                            create: variant.options.map((option, optionIndex) => ({
-                              nombre: option.nombre,
-                              valor: option.valor,
-                              orden: optionIndex,
-                            })),
+                            create: variant.options.map(
+                              (option, optionIndex) => ({
+                                nombre: option.nombre,
+                                valor: option.valor,
+                                orden: optionIndex,
+                              }),
+                            ),
                           }
                         : undefined,
                   })),
@@ -409,7 +442,8 @@ export async function createProduct(formData: FormData): Promise<CreacionProduct
       if (error.code === "P2003") {
         return {
           ok: false,
-          message: "Error de integridad: categoría, negocio o relaciones no válidas.",
+          message:
+            "Error de integridad: categoría, negocio o relaciones no válidas.",
         };
       }
     }
@@ -430,7 +464,7 @@ export async function createProduct(formData: FormData): Promise<CreacionProduct
 export async function generateDescriptionFromText(
   nombreProducto: string,
   caracteristicas: string,
-  componentes: string[]
+  componentes: string[],
 ) {
   try {
     if (!process.env.OPENAI_API_KEY) {

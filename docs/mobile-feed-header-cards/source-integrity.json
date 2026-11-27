@@ -1,0 +1,25 @@
+{
+  "beforeCount": 620,
+  "afterCount": 620,
+  "modified": [
+    "src/busqueda/componentes/SearchBar.tsx",
+    "src/busqueda/componentes/searchBar.module.css",
+    "src/ui/components/productos/feedProductCard.module.css",
+    "src/ui/components/topMenu/publicNavigation.module.css",
+    "src/ui/components/topMenuMobile/TopMenuMobile.tsx"
+  ],
+  "unchanged": 615,
+  "added": [],
+  "removed": [],
+  "searchFetchAndDebounceIdentical": true,
+  "searchNavigationAndKeyboardIdentical": true,
+  "afterSha256": {
+    "src/busqueda/componentes/SearchBar.tsx": "6d0f60e7b215c1356448e6f2133c919e4a003fbdb8f88227fa192f75a88e2272",
+    "src/busqueda/componentes/searchBar.module.css": "e4feeeed7395a190ce31d93617c3f565004f2de25028549707aefab92d7a2a8e",
+    "src/ui/components/productos/feedProductCard.module.css": "fa67f934698f726073a7483b015c20c395251b045518f2b886d5ce36ec1e3b85",
+    "src/ui/components/topMenu/publicNavigation.module.css": "0f15cee310f995e162e5f044826e87f1d59a10cec08248ac30c73e4f2d9cb0e9",
+    "src/ui/components/topMenuMobile/TopMenuMobile.tsx": "d5c6f252cd1c8a46453baad0f2144f86dea00b2ade02db072d7d53b7176295a0"
+  },
+  "serverPid": 647629,
+  "serverCwd": "/home/nico/red-social"
+}

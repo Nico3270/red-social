@@ -1,0 +1,217 @@
+{
+  "status": "IMPLEMENTADO_Y_VALIDADO_EN_ENTORNO_AISLADO",
+  "entrypoint": "/myckeoAdmin/incorporacion",
+  "git": {
+    "branch": "feat/premium-product-form-navigation",
+    "HEAD": "1f491ff8ce6f80e333f07548e299141fc863d993",
+    "stagedFiles": 0,
+    "commitsCreated": 0,
+    "deployments": 0,
+    "preexistingTrackedFiles": 15,
+    "preservedUnchanged": [
+      "src/app/dashboard/page.tsx",
+      "src/busqueda/componentes/SearchBar.tsx",
+      "src/busqueda/componentes/searchBar.module.css",
+      "src/dashboard/componentes/DashboardSections.tsx",
+      "src/feed/componentes/DiscoveryBusinessCard.tsx",
+      "src/feed/componentes/DiscoveryPublicationCard.tsx",
+      "src/feed/componentes/DiscoveryPulseModule.tsx",
+      "src/feed/componentes/DiscoveryServiceCard.tsx",
+      "src/feed/componentes/FollowButton.tsx",
+      "src/publicaciones/componentes/FeedRederer.tsx",
+      "src/ui/components/productos/AddFavorites.tsx",
+      "src/ui/components/productos/ProductCard.tsx",
+      "src/ui/components/topMenu/publicNavigation.module.css",
+      "src/ui/components/topMenuMobile/TopMenuMobile.tsx"
+    ],
+    "extendedExistingFile": {
+      "path": "prisma/schema.prisma",
+      "scope": "BusinessDemoLink y relación Negocio; normalización de enum Role sin cambiar sus valores"
+    },
+    "preexistingUntrackedFilesPreserved": 1615
+  },
+  "files": {
+    "created": [
+      "docs/assisted-onboarding-v1/OPERACION.txt",
+      "docs/assisted-onboarding-v1/RESULTADOS.json",
+      "docs/assisted-onboarding-v1/demo-mobile.png",
+      "e2e/assisted-onboarding/concurrency.spec.ts",
+      "e2e/assisted-onboarding/flow.spec.ts",
+      "e2e/assisted-onboarding/isolated-fixtures.ts",
+      "e2e/assisted-onboarding/playwright.config.ts",
+      "e2e/assisted-onboarding/redis-rest.cjs",
+      "e2e/assisted-onboarding/run-isolated.cjs",
+      "e2e/assisted-onboarding/synthetic-product.png",
+      "prisma/migrations/20261118090000_business_demo_links/migration.sql",
+      "src/actions/myckeoAdmin/assistedOnboarding.test.ts",
+      "src/actions/myckeoAdmin/assistedOnboarding.ts",
+      "src/actions/productos/productAccess.test.ts",
+      "src/app/api/business-demo/bootstrap/route.test.ts",
+      "src/app/api/business-demo/bootstrap/route.ts",
+      "src/app/api/public-sitemap/route.ts",
+      "src/app/demo/DemoBootstrap.tsx",
+      "src/app/demo/page.tsx",
+      "src/app/myckeoAdmin/incorporacion/AssistedOnboardingClient.tsx",
+      "src/app/myckeoAdmin/incorporacion/page.tsx",
+      "src/lib/business/create-negocio-provisional.test.ts",
+      "src/lib/business/productAccess.test.ts",
+      "src/lib/business/productAccess.ts",
+      "src/lib/business/publicSitemap.ts",
+      "src/lib/cloudinary/cloudinaryRequestAuthorization.test.ts",
+      "src/lib/onboarding/contracts.test.ts",
+      "src/lib/onboarding/contracts.ts",
+      "src/lib/onboarding/demo-access.test.ts",
+      "src/lib/onboarding/demo-access.ts",
+      "src/lib/onboarding/demo-security.test.ts",
+      "src/lib/onboarding/demo-security.ts",
+      "src/lib/products/copPrice.test.ts",
+      "src/lib/products/copPrice.ts",
+      "src/lib/products/imageGallery.test.ts",
+      "src/lib/products/imageGallery.ts",
+      "src/lib/products/productAuthorization.ts",
+      "src/ui/components/onboarding/BusinessDemoProfile.tsx"
+    ],
+    "modified": [
+      "generate-sitemap.js",
+      "generate-sitemap.test.ts",
+      "next.config.ts",
+      "prisma/schema.prisma",
+      "src/actions/myckeoAdmin/attachAdminProductImagesAction.ts",
+      "src/actions/myckeoAdmin/createAdminProductForBusinessAction.ts",
+      "src/actions/myckeoAdmin/generateAdminProductBatchDraftAction.ts",
+      "src/actions/myckeoAdmin/generateAdminProductDraftAction.ts",
+      "src/actions/myckeoAdmin/generateAdminProductImageAction.ts",
+      "src/actions/myckeoAdmin/getBusinessesForProductCreationAction.ts",
+      "src/actions/myckeoAdmin/publishAdminProductAction.ts",
+      "src/actions/myckeoAdmin/unarchiveBusinessAction.ts",
+      "src/actions/myckeoAdmin/updateAdminBusinessProfileAction.ts",
+      "src/actions/myckeoAdmin/updateAdminProductStatusAction.ts",
+      "src/actions/productos/changeStatusProduct.ts",
+      "src/actions/productos/getProductById.ts",
+      "src/actions/productos/getProductsFromUser.ts",
+      "src/analytics/AnalyticsBootstrap.tsx",
+      "src/app/api/negocio/route.ts",
+      "src/app/api/productos/[slug]/route.ts",
+      "src/app/api/products/create/route.ts",
+      "src/app/api/products/update/[id]/route.ts",
+      "src/app/api/publicaciones/[slug]/route.ts",
+      "src/app/myckeoAdmin/crearProductos/_componentes/AssistedProductCreationClient.tsx",
+      "src/app/myckeoAdmin/crearProductos/page.tsx",
+      "src/app/myckeoAdmin/page.tsx",
+      "src/lib/business/create-negocio-core.ts",
+      "src/lib/cloudinary/administrativeCleanupAuthorization.test.ts",
+      "src/lib/cloudinary/cloudinaryRequestAuthorization.ts",
+      "src/ui/actions/productos/createNewProduct.ts",
+      "src/ui/actions/productos/updateProduct.ts",
+      "src/ui/components/productos/CreateOrUpdateProduct.tsx"
+    ]
+  },
+  "phases": {
+    "1_preparacion_segura": "Autorización actual del actor; propiedad de productos; provisión idempotente y negocio suspendido desde INSERT; bloqueo de publicación; precios COP; conservación y CAS de galerías.",
+    "2_interfaz": "Módulo super_admin, catálogo real de ubicaciones, coincidencias y decisión humana, continuidad de operación, lista y accesos; formulario existente preseleccionado y guardar/crear otro; edición de borradores.",
+    "3_demo": "Token independiente de 256 bits, hash separado, snapshot autorizado, siete días, revocación serializada, cookie cifrada, solo lectura, sin caché pública, sin analítica y noindex; rate limit cerrado ante fallos.",
+    "4_activacion_publicacion": "Reutiliza emisor AccountClaim y /activar; no fusiona cuentas; preserva identidad y catálogo; sigue suspendido tras activar; aprobación y selección publicadas atómicamente; sitemap actual y retirada pública.",
+    "5_validacion": "Recorrido completo con cinco productos y fotos sintéticas, cuatro publicados por selección, suspensión, enlaces adversos, concurrencia, reintentos, recuperación y migración revertida."
+  },
+  "validation": {
+    "jest": {
+      "command": "pnpm exec jest --runInBand --coverage=false",
+      "suitesPassed": 73,
+      "testsPassed": 2049,
+      "newTests": 118,
+      "failed": 0,
+      "skipped": 0
+    },
+    "playwright": {
+      "command": "node e2e/assisted-onboarding/run-isolated.cjs",
+      "passed": 8,
+      "failed": 0,
+      "skipped": 0,
+      "flaky": 0,
+      "postgresql": 16,
+      "cases": [
+        {
+          "name": "concurrent HTTP provisioning and business creation keep one suspended identity",
+          "passed": true,
+          "statuses": [
+            "passed"
+          ]
+        },
+        {
+          "name": "a partial setup failure recovers with the same provisional user",
+          "passed": true,
+          "statuses": [
+            "passed"
+          ]
+        },
+        {
+          "name": "conventional registration remains active and cannot use provisional mode",
+          "passed": true,
+          "statuses": [
+            "passed"
+          ]
+        },
+        {
+          "name": "public APIs and administrative product API cannot publish a suspended business",
+          "passed": true,
+          "statuses": [
+            "passed"
+          ]
+        },
+        {
+          "name": "a suspension that commits while publication waits wins the publication guard",
+          "passed": true,
+          "statuses": [
+            "passed"
+          ]
+        },
+        {
+          "name": "concurrent image replacements use snapshots and preserve unchanged image identities",
+          "passed": true,
+          "statuses": [
+            "passed"
+          ]
+        },
+        {
+          "name": "the limited demo migration executes and rolls back in an isolated schema",
+          "passed": true,
+          "statuses": [
+            "passed"
+          ]
+        },
+        {
+          "name": "superadministrator completes the entire assisted flow with synthetic data",
+          "passed": true,
+          "statuses": [
+            "passed"
+          ]
+        }
+      ],
+      "rawArtifacts": "/tmp/myckeo-assisted-v1-FnR2A6/artifacts"
+    },
+    "typecheck": {
+      "command": "pnpm typecheck --incremental false",
+      "result": "PASS"
+    },
+    "gitDiffCheck": "PASS",
+    "mobileScreenshot": {
+      "path": "docs/assisted-onboarding-v1/demo-mobile.png",
+      "width": 390,
+      "horizontalOverflow": false,
+      "syntheticContentOnly": true
+    },
+    "cloudinary": "Proveedor sustituido; autorización local y asociación real Prisma comprobadas. Sin cargas reales.",
+    "productionDataAccessed": false,
+    "commercialMessagesSent": 0,
+    "anaFilesModified": false,
+    "testContainersRemoved": true
+  },
+  "remaining": [
+    "Aplicar la migración limitada de BusinessDemoLink durante una entrega autorizada; no se aplicó en producción.",
+    "La verificación de identidad, representación, derechos de contenido y aprobación comercial continúa siendo manual.",
+    "No se validaron escrituras reales de Cloudinary, infraestructura productiva ni despliegues.",
+    "Los enlaces pueden reenviarse; la revocación no retira copias descargadas ni hace privadas las imágenes de Cloudinary.",
+    "Provision conserva su error seguro ante ciertas colisiones simultáneas; el reintento de la misma referencia converge sin recuperar por email."
+  ],
+  "operationGuide": "docs/assisted-onboarding-v1/OPERACION.txt"
+}

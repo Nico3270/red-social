@@ -1,0 +1,1332 @@
+[
+  {
+    "width": 320,
+    "desktopPixels": null,
+    "cards": [
+      {
+        "id": "p1",
+        "name": "Casa Origen",
+        "beforeNameWidth": 222,
+        "afterNameWidth": 198,
+        "nameDelta": -24,
+        "headerHeight": 44,
+        "avatar": {
+          "x": 5,
+          "y": 152,
+          "width": 24,
+          "height": 24,
+          "right": 29,
+          "bottom": 176
+        },
+        "follow": {
+          "x": 29,
+          "y": 142,
+          "width": 44,
+          "height": 44,
+          "right": 73,
+          "bottom": 186
+        },
+        "collisions": []
+      },
+      {
+        "id": "p2",
+        "name": "Mercado del Barrio",
+        "beforeNameWidth": 222,
+        "afterNameWidth": 198,
+        "nameDelta": -24,
+        "headerHeight": 44,
+        "avatar": {
+          "x": 5,
+          "y": 461.56,
+          "width": 24,
+          "height": 24,
+          "right": 29,
+          "bottom": 485.56
+        },
+        "follow": {
+          "x": 29,
+          "y": 451.56,
+          "width": 44,
+          "height": 44,
+          "right": 73,
+          "bottom": 495.56
+        },
+        "collisions": []
+      },
+      {
+        "id": "p3",
+        "name": "Taller Artesanal de Bogotá",
+        "beforeNameWidth": 222,
+        "afterNameWidth": 198,
+        "nameDelta": -24,
+        "headerHeight": 44,
+        "avatar": {
+          "x": 5,
+          "y": 771.13,
+          "width": 24,
+          "height": 24,
+          "right": 29,
+          "bottom": 795.13
+        },
+        "follow": {
+          "x": 29,
+          "y": 761.13,
+          "width": 44,
+          "height": 44,
+          "right": 73,
+          "bottom": 805.13
+        },
+        "collisions": []
+      },
+      {
+        "id": "p5",
+        "name": "Mercado del Barrio",
+        "beforeNameWidth": 222,
+        "afterNameWidth": 198,
+        "nameDelta": -24,
+        "headerHeight": 44,
+        "avatar": {
+          "x": 5,
+          "y": 1524.44,
+          "width": 24,
+          "height": 24,
+          "right": 29,
+          "bottom": 1548.44
+        },
+        "follow": {
+          "x": 29,
+          "y": 1514.44,
+          "width": 44,
+          "height": 44,
+          "right": 73,
+          "bottom": 1558.44
+        },
+        "collisions": []
+      },
+      {
+        "id": "p6",
+        "name": "Cooperativa Artesanal del Norte",
+        "beforeNameWidth": 222,
+        "afterNameWidth": 198,
+        "nameDelta": -24,
+        "headerHeight": 44,
+        "avatar": {
+          "x": 5,
+          "y": 1834,
+          "width": 24,
+          "height": 24,
+          "right": 29,
+          "bottom": 1858
+        },
+        "follow": {
+          "x": 29,
+          "y": 1824,
+          "width": 44,
+          "height": 44,
+          "right": 73,
+          "bottom": 1868
+        },
+        "collisions": []
+      },
+      {
+        "id": "p4",
+        "name": "Casa Origen",
+        "beforeNameWidth": 222,
+        "afterNameWidth": 198,
+        "nameDelta": -24,
+        "headerHeight": 44,
+        "avatar": {
+          "x": 5,
+          "y": 2530.69,
+          "width": 24,
+          "height": 24,
+          "right": 29,
+          "bottom": 2554.69
+        },
+        "follow": {
+          "x": 29,
+          "y": 2520.69,
+          "width": 44,
+          "height": 44,
+          "right": 73,
+          "bottom": 2564.69
+        },
+        "collisions": []
+      },
+      {
+        "id": "p7",
+        "name": "Cooperativa de Productores Artesanales de Bogotá",
+        "beforeNameWidth": 222,
+        "afterNameWidth": 198,
+        "nameDelta": -24,
+        "headerHeight": 44,
+        "avatar": {
+          "x": 5,
+          "y": 2840.25,
+          "width": 24,
+          "height": 24,
+          "right": 29,
+          "bottom": 2864.25
+        },
+        "follow": {
+          "x": 29,
+          "y": 2830.25,
+          "width": 44,
+          "height": 44,
+          "right": 73,
+          "bottom": 2874.25
+        },
+        "collisions": []
+      },
+      {
+        "id": "p8",
+        "name": "Comercio Local",
+        "beforeNameWidth": 222,
+        "afterNameWidth": 198,
+        "nameDelta": -24,
+        "headerHeight": 44,
+        "avatar": {
+          "x": 5,
+          "y": 3429.81,
+          "width": 24,
+          "height": 24,
+          "right": 29,
+          "bottom": 3453.81
+        },
+        "follow": {
+          "x": 29,
+          "y": 3419.81,
+          "width": 44,
+          "height": 44,
+          "right": 73,
+          "bottom": 3463.81
+        },
+        "collisions": []
+      }
+    ]
+  },
+  {
+    "width": 360,
+    "desktopPixels": null,
+    "cards": [
+      {
+        "id": "p1",
+        "name": "Casa Origen",
+        "beforeNameWidth": 262,
+        "afterNameWidth": 238,
+        "nameDelta": -24,
+        "headerHeight": 44,
+        "avatar": {
+          "x": 5,
+          "y": 152,
+          "width": 24,
+          "height": 24,
+          "right": 29,
+          "bottom": 176
+        },
+        "follow": {
+          "x": 29,
+          "y": 142,
+          "width": 44,
+          "height": 44,
+          "right": 73,
+          "bottom": 186
+        },
+        "collisions": []
+      },
+      {
+        "id": "p2",
+        "name": "Mercado del Barrio",
+        "beforeNameWidth": 262,
+        "afterNameWidth": 238,
+        "nameDelta": -24,
+        "headerHeight": 44,
+        "avatar": {
+          "x": 5,
+          "y": 483.19,
+          "width": 24,
+          "height": 24,
+          "right": 29,
+          "bottom": 507.19
+        },
+        "follow": {
+          "x": 29,
+          "y": 473.19,
+          "width": 44,
+          "height": 44,
+          "right": 73,
+          "bottom": 517.19
+        },
+        "collisions": []
+      },
+      {
+        "id": "p3",
+        "name": "Taller Artesanal de Bogotá",
+        "beforeNameWidth": 262,
+        "afterNameWidth": 238,
+        "nameDelta": -24,
+        "headerHeight": 44,
+        "avatar": {
+          "x": 5,
+          "y": 814.38,
+          "width": 24,
+          "height": 24,
+          "right": 29,
+          "bottom": 838.38
+        },
+        "follow": {
+          "x": 29,
+          "y": 804.38,
+          "width": 44,
+          "height": 44,
+          "right": 73,
+          "bottom": 848.38
+        },
+        "collisions": []
+      },
+      {
+        "id": "p5",
+        "name": "Mercado del Barrio",
+        "beforeNameWidth": 262,
+        "afterNameWidth": 238,
+        "nameDelta": -24,
+        "headerHeight": 44,
+        "avatar": {
+          "x": 5,
+          "y": 1614.31,
+          "width": 24,
+          "height": 24,
+          "right": 29,
+          "bottom": 1638.31
+        },
+        "follow": {
+          "x": 29,
+          "y": 1604.31,
+          "width": 44,
+          "height": 44,
+          "right": 73,
+          "bottom": 1648.31
+        },
+        "collisions": []
+      },
+      {
+        "id": "p6",
+        "name": "Cooperativa Artesanal del Norte",
+        "beforeNameWidth": 262,
+        "afterNameWidth": 238,
+        "nameDelta": -24,
+        "headerHeight": 44,
+        "avatar": {
+          "x": 5,
+          "y": 1945.5,
+          "width": 24,
+          "height": 24,
+          "right": 29,
+          "bottom": 1969.5
+        },
+        "follow": {
+          "x": 29,
+          "y": 1935.5,
+          "width": 44,
+          "height": 44,
+          "right": 73,
+          "bottom": 1979.5
+        },
+        "collisions": []
+      },
+      {
+        "id": "p4",
+        "name": "Casa Origen",
+        "beforeNameWidth": 262,
+        "afterNameWidth": 238,
+        "nameDelta": -24,
+        "headerHeight": 44,
+        "avatar": {
+          "x": 5,
+          "y": 2686.31,
+          "width": 24,
+          "height": 24,
+          "right": 29,
+          "bottom": 2710.31
+        },
+        "follow": {
+          "x": 29,
+          "y": 2676.31,
+          "width": 44,
+          "height": 44,
+          "right": 73,
+          "bottom": 2720.31
+        },
+        "collisions": []
+      },
+      {
+        "id": "p7",
+        "name": "Cooperativa de Productores Artesanales de Bogotá",
+        "beforeNameWidth": 262,
+        "afterNameWidth": 238,
+        "nameDelta": -24,
+        "headerHeight": 44,
+        "avatar": {
+          "x": 5,
+          "y": 3017.5,
+          "width": 24,
+          "height": 24,
+          "right": 29,
+          "bottom": 3041.5
+        },
+        "follow": {
+          "x": 29,
+          "y": 3007.5,
+          "width": 44,
+          "height": 44,
+          "right": 73,
+          "bottom": 3051.5
+        },
+        "collisions": []
+      },
+      {
+        "id": "p8",
+        "name": "Comercio Local",
+        "beforeNameWidth": 262,
+        "afterNameWidth": 238,
+        "nameDelta": -24,
+        "headerHeight": 44,
+        "avatar": {
+          "x": 5,
+          "y": 3628.69,
+          "width": 24,
+          "height": 24,
+          "right": 29,
+          "bottom": 3652.69
+        },
+        "follow": {
+          "x": 29,
+          "y": 3618.69,
+          "width": 44,
+          "height": 44,
+          "right": 73,
+          "bottom": 3662.69
+        },
+        "collisions": []
+      }
+    ]
+  },
+  {
+    "width": 390,
+    "desktopPixels": null,
+    "cards": [
+      {
+        "id": "p1",
+        "name": "Casa Origen",
+        "beforeNameWidth": 96,
+        "afterNameWidth": 72,
+        "nameDelta": -24,
+        "headerHeight": 44,
+        "avatar": {
+          "x": 5,
+          "y": 152,
+          "width": 24,
+          "height": 24,
+          "right": 29,
+          "bottom": 176
+        },
+        "follow": {
+          "x": 29,
+          "y": 142,
+          "width": 44,
+          "height": 44,
+          "right": 73,
+          "bottom": 186
+        },
+        "collisions": []
+      },
+      {
+        "id": "p2",
+        "name": "Mercado del Barrio",
+        "beforeNameWidth": 96,
+        "afterNameWidth": 72,
+        "nameDelta": -24,
+        "headerHeight": 44,
+        "avatar": {
+          "x": 201,
+          "y": 152,
+          "width": 24,
+          "height": 24,
+          "right": 225,
+          "bottom": 176
+        },
+        "follow": {
+          "x": 225,
+          "y": 142,
+          "width": 44,
+          "height": 44,
+          "right": 269,
+          "bottom": 186
+        },
+        "collisions": []
+      },
+      {
+        "id": "p3",
+        "name": "Taller Artesanal de Bogotá",
+        "beforeNameWidth": 292,
+        "afterNameWidth": 268,
+        "nameDelta": -24,
+        "headerHeight": 44,
+        "avatar": {
+          "x": 5,
+          "y": 496,
+          "width": 24,
+          "height": 24,
+          "right": 29,
+          "bottom": 520
+        },
+        "follow": {
+          "x": 29,
+          "y": 486,
+          "width": 44,
+          "height": 44,
+          "right": 73,
+          "bottom": 530
+        },
+        "collisions": []
+      },
+      {
+        "id": "p5",
+        "name": "Mercado del Barrio",
+        "beforeNameWidth": 96,
+        "afterNameWidth": 72,
+        "nameDelta": -24,
+        "headerHeight": 44,
+        "avatar": {
+          "x": 5,
+          "y": 1330.89,
+          "width": 24,
+          "height": 24,
+          "right": 29,
+          "bottom": 1354.89
+        },
+        "follow": {
+          "x": 29,
+          "y": 1320.89,
+          "width": 44,
+          "height": 44,
+          "right": 73,
+          "bottom": 1364.89
+        },
+        "collisions": []
+      },
+      {
+        "id": "p6",
+        "name": "Cooperativa Artesanal del Norte",
+        "beforeNameWidth": 96,
+        "afterNameWidth": 72,
+        "nameDelta": -24,
+        "headerHeight": 44,
+        "avatar": {
+          "x": 201,
+          "y": 1330.89,
+          "width": 24,
+          "height": 24,
+          "right": 225,
+          "bottom": 1354.89
+        },
+        "follow": {
+          "x": 225,
+          "y": 1320.89,
+          "width": 44,
+          "height": 44,
+          "right": 269,
+          "bottom": 1364.89
+        },
+        "collisions": []
+      },
+      {
+        "id": "p4",
+        "name": "Casa Origen",
+        "beforeNameWidth": 96,
+        "afterNameWidth": 72,
+        "nameDelta": -24,
+        "headerHeight": 44,
+        "avatar": {
+          "x": 5,
+          "y": 2083.39,
+          "width": 24,
+          "height": 24,
+          "right": 29,
+          "bottom": 2107.39
+        },
+        "follow": {
+          "x": 29,
+          "y": 2073.39,
+          "width": 44,
+          "height": 44,
+          "right": 73,
+          "bottom": 2117.39
+        },
+        "collisions": []
+      },
+      {
+        "id": "p7",
+        "name": "Cooperativa de Productores Artesanales de Bogotá",
+        "beforeNameWidth": 96,
+        "afterNameWidth": 72,
+        "nameDelta": -24,
+        "headerHeight": 44,
+        "avatar": {
+          "x": 201,
+          "y": 2083.39,
+          "width": 24,
+          "height": 24,
+          "right": 225,
+          "bottom": 2107.39
+        },
+        "follow": {
+          "x": 225,
+          "y": 2073.39,
+          "width": 44,
+          "height": 44,
+          "right": 269,
+          "bottom": 2117.39
+        },
+        "collisions": []
+      },
+      {
+        "id": "p8",
+        "name": "Comercio Local",
+        "beforeNameWidth": 292,
+        "afterNameWidth": 268,
+        "nameDelta": -24,
+        "headerHeight": 44,
+        "avatar": {
+          "x": 5,
+          "y": 2711.39,
+          "width": 24,
+          "height": 24,
+          "right": 29,
+          "bottom": 2735.39
+        },
+        "follow": {
+          "x": 29,
+          "y": 2701.39,
+          "width": 44,
+          "height": 44,
+          "right": 73,
+          "bottom": 2745.39
+        },
+        "collisions": []
+      }
+    ]
+  },
+  {
+    "width": 430,
+    "desktopPixels": null,
+    "cards": [
+      {
+        "id": "p1",
+        "name": "Casa Origen",
+        "beforeNameWidth": 116,
+        "afterNameWidth": 92,
+        "nameDelta": -24,
+        "headerHeight": 44,
+        "avatar": {
+          "x": 5,
+          "y": 152,
+          "width": 24,
+          "height": 24,
+          "right": 29,
+          "bottom": 176
+        },
+        "follow": {
+          "x": 29,
+          "y": 142,
+          "width": 44,
+          "height": 44,
+          "right": 73,
+          "bottom": 186
+        },
+        "collisions": []
+      },
+      {
+        "id": "p2",
+        "name": "Mercado del Barrio",
+        "beforeNameWidth": 116,
+        "afterNameWidth": 92,
+        "nameDelta": -24,
+        "headerHeight": 44,
+        "avatar": {
+          "x": 221,
+          "y": 152,
+          "width": 24,
+          "height": 24,
+          "right": 245,
+          "bottom": 176
+        },
+        "follow": {
+          "x": 245,
+          "y": 142,
+          "width": 44,
+          "height": 44,
+          "right": 289,
+          "bottom": 186
+        },
+        "collisions": []
+      },
+      {
+        "id": "p3",
+        "name": "Taller Artesanal de Bogotá",
+        "beforeNameWidth": 332,
+        "afterNameWidth": 308,
+        "nameDelta": -24,
+        "headerHeight": 44,
+        "avatar": {
+          "x": 5,
+          "y": 502,
+          "width": 24,
+          "height": 24,
+          "right": 29,
+          "bottom": 526
+        },
+        "follow": {
+          "x": 29,
+          "y": 492,
+          "width": 44,
+          "height": 44,
+          "right": 73,
+          "bottom": 536
+        },
+        "collisions": []
+      },
+      {
+        "id": "p5",
+        "name": "Mercado del Barrio",
+        "beforeNameWidth": 116,
+        "afterNameWidth": 92,
+        "nameDelta": -24,
+        "headerHeight": 44,
+        "avatar": {
+          "x": 5,
+          "y": 1370.5,
+          "width": 24,
+          "height": 24,
+          "right": 29,
+          "bottom": 1394.5
+        },
+        "follow": {
+          "x": 29,
+          "y": 1360.5,
+          "width": 44,
+          "height": 44,
+          "right": 73,
+          "bottom": 1404.5
+        },
+        "collisions": []
+      },
+      {
+        "id": "p6",
+        "name": "Cooperativa Artesanal del Norte",
+        "beforeNameWidth": 116,
+        "afterNameWidth": 92,
+        "nameDelta": -24,
+        "headerHeight": 44,
+        "avatar": {
+          "x": 221,
+          "y": 1370.5,
+          "width": 24,
+          "height": 24,
+          "right": 245,
+          "bottom": 1394.5
+        },
+        "follow": {
+          "x": 245,
+          "y": 1360.5,
+          "width": 44,
+          "height": 44,
+          "right": 289,
+          "bottom": 1404.5
+        },
+        "collisions": []
+      },
+      {
+        "id": "p4",
+        "name": "Casa Origen",
+        "beforeNameWidth": 116,
+        "afterNameWidth": 92,
+        "nameDelta": -24,
+        "headerHeight": 44,
+        "avatar": {
+          "x": 5,
+          "y": 2151.5,
+          "width": 24,
+          "height": 24,
+          "right": 29,
+          "bottom": 2175.5
+        },
+        "follow": {
+          "x": 29,
+          "y": 2141.5,
+          "width": 44,
+          "height": 44,
+          "right": 73,
+          "bottom": 2185.5
+        },
+        "collisions": []
+      },
+      {
+        "id": "p7",
+        "name": "Cooperativa de Productores Artesanales de Bogotá",
+        "beforeNameWidth": 116,
+        "afterNameWidth": 92,
+        "nameDelta": -24,
+        "headerHeight": 44,
+        "avatar": {
+          "x": 221,
+          "y": 2151.5,
+          "width": 24,
+          "height": 24,
+          "right": 245,
+          "bottom": 2175.5
+        },
+        "follow": {
+          "x": 245,
+          "y": 2141.5,
+          "width": 44,
+          "height": 44,
+          "right": 289,
+          "bottom": 2185.5
+        },
+        "collisions": []
+      },
+      {
+        "id": "p8",
+        "name": "Comercio Local",
+        "beforeNameWidth": 332,
+        "afterNameWidth": 308,
+        "nameDelta": -24,
+        "headerHeight": 44,
+        "avatar": {
+          "x": 5,
+          "y": 2785.5,
+          "width": 24,
+          "height": 24,
+          "right": 29,
+          "bottom": 2809.5
+        },
+        "follow": {
+          "x": 29,
+          "y": 2775.5,
+          "width": 44,
+          "height": 44,
+          "right": 73,
+          "bottom": 2819.5
+        },
+        "collisions": []
+      }
+    ]
+  },
+  {
+    "width": 768,
+    "desktopPixels": null,
+    "cards": [
+      {
+        "id": "p1",
+        "name": "Casa Origen",
+        "beforeNameWidth": 281,
+        "afterNameWidth": 257,
+        "nameDelta": -24,
+        "headerHeight": 44,
+        "avatar": {
+          "x": 9,
+          "y": 184,
+          "width": 24,
+          "height": 24,
+          "right": 33,
+          "bottom": 208
+        },
+        "follow": {
+          "x": 33,
+          "y": 174,
+          "width": 44,
+          "height": 44,
+          "right": 77,
+          "bottom": 218
+        },
+        "collisions": []
+      },
+      {
+        "id": "p2",
+        "name": "Mercado del Barrio",
+        "beforeNameWidth": 281,
+        "afterNameWidth": 257,
+        "nameDelta": -24,
+        "headerHeight": 44,
+        "avatar": {
+          "x": 390,
+          "y": 184,
+          "width": 24,
+          "height": 24,
+          "right": 414,
+          "bottom": 208
+        },
+        "follow": {
+          "x": 414,
+          "y": 174,
+          "width": 44,
+          "height": 44,
+          "right": 458,
+          "bottom": 218
+        },
+        "collisions": []
+      },
+      {
+        "id": "p3",
+        "name": "Taller Artesanal de Bogotá",
+        "beforeNameWidth": 390,
+        "afterNameWidth": 366,
+        "nameDelta": -24,
+        "headerHeight": 44,
+        "avatar": {
+          "x": 145,
+          "y": 523.45,
+          "width": 24,
+          "height": 24,
+          "right": 169,
+          "bottom": 547.45
+        },
+        "follow": {
+          "x": 169,
+          "y": 513.45,
+          "width": 44,
+          "height": 44,
+          "right": 213,
+          "bottom": 557.45
+        },
+        "collisions": []
+      },
+      {
+        "id": "p5",
+        "name": "Mercado del Barrio",
+        "beforeNameWidth": 281,
+        "afterNameWidth": 257,
+        "nameDelta": -24,
+        "headerHeight": 44,
+        "avatar": {
+          "x": 9,
+          "y": 1551.33,
+          "width": 24,
+          "height": 24,
+          "right": 33,
+          "bottom": 1575.33
+        },
+        "follow": {
+          "x": 33,
+          "y": 1541.33,
+          "width": 44,
+          "height": 44,
+          "right": 77,
+          "bottom": 1585.33
+        },
+        "collisions": []
+      },
+      {
+        "id": "p6",
+        "name": "Cooperativa Artesanal del Norte",
+        "beforeNameWidth": 281,
+        "afterNameWidth": 257,
+        "nameDelta": -24,
+        "headerHeight": 44,
+        "avatar": {
+          "x": 390,
+          "y": 1551.33,
+          "width": 24,
+          "height": 24,
+          "right": 414,
+          "bottom": 1575.33
+        },
+        "follow": {
+          "x": 414,
+          "y": 1541.33,
+          "width": 44,
+          "height": 44,
+          "right": 458,
+          "bottom": 1585.33
+        },
+        "collisions": []
+      },
+      {
+        "id": "p4",
+        "name": "Casa Origen",
+        "beforeNameWidth": 281,
+        "afterNameWidth": 257,
+        "nameDelta": -24,
+        "headerHeight": 44,
+        "avatar": {
+          "x": 9,
+          "y": 2527.41,
+          "width": 24,
+          "height": 24,
+          "right": 33,
+          "bottom": 2551.41
+        },
+        "follow": {
+          "x": 33,
+          "y": 2517.41,
+          "width": 44,
+          "height": 44,
+          "right": 77,
+          "bottom": 2561.41
+        },
+        "collisions": []
+      },
+      {
+        "id": "p7",
+        "name": "Cooperativa de Productores Artesanales de Bogotá",
+        "beforeNameWidth": 281,
+        "afterNameWidth": 257,
+        "nameDelta": -24,
+        "headerHeight": 44,
+        "avatar": {
+          "x": 390,
+          "y": 2527.41,
+          "width": 24,
+          "height": 24,
+          "right": 414,
+          "bottom": 2551.41
+        },
+        "follow": {
+          "x": 414,
+          "y": 2517.41,
+          "width": 44,
+          "height": 44,
+          "right": 458,
+          "bottom": 2561.41
+        },
+        "collisions": []
+      },
+      {
+        "id": "p8",
+        "name": "Comercio Local",
+        "beforeNameWidth": 390,
+        "afterNameWidth": 366,
+        "nameDelta": -24,
+        "headerHeight": 44,
+        "avatar": {
+          "x": 145,
+          "y": 3148.86,
+          "width": 24,
+          "height": 24,
+          "right": 169,
+          "bottom": 3172.86
+        },
+        "follow": {
+          "x": 169,
+          "y": 3138.86,
+          "width": 44,
+          "height": 44,
+          "right": 213,
+          "bottom": 3182.86
+        },
+        "collisions": []
+      }
+    ]
+  },
+  {
+    "width": 769,
+    "desktopPixels": 0,
+    "cards": [
+      {
+        "id": "p1",
+        "name": "Casa Origen",
+        "beforeNameWidth": 83.28,
+        "afterNameWidth": 83.28,
+        "nameDelta": 0,
+        "headerHeight": 44,
+        "avatar": null,
+        "follow": {
+          "x": 277.5,
+          "y": 186,
+          "width": 44,
+          "height": 44,
+          "right": 321.5,
+          "bottom": 230
+        },
+        "collisions": []
+      },
+      {
+        "id": "p2",
+        "name": "Mercado del Barrio",
+        "beforeNameWidth": 128.58,
+        "afterNameWidth": 128.58,
+        "nameDelta": 0,
+        "headerHeight": 44,
+        "avatar": null,
+        "follow": {
+          "x": 660,
+          "y": 186,
+          "width": 44,
+          "height": 44,
+          "right": 704,
+          "bottom": 230
+        },
+        "collisions": []
+      },
+      {
+        "id": "p3",
+        "name": "Taller Artesanal de Bogotá",
+        "beforeNameWidth": 178.19,
+        "afterNameWidth": 178.19,
+        "nameDelta": 0,
+        "headerHeight": 44,
+        "avatar": null,
+        "follow": {
+          "x": 277.5,
+          "y": 571.88,
+          "width": 44,
+          "height": 44,
+          "right": 321.5,
+          "bottom": 615.88
+        },
+        "collisions": []
+      },
+      {
+        "id": "p5",
+        "name": "Mercado del Barrio",
+        "beforeNameWidth": 128.58,
+        "afterNameWidth": 128.58,
+        "nameDelta": 0,
+        "headerHeight": 44,
+        "avatar": null,
+        "follow": {
+          "x": 277.5,
+          "y": 1630.19,
+          "width": 44,
+          "height": 44,
+          "right": 321.5,
+          "bottom": 1674.19
+        },
+        "collisions": []
+      },
+      {
+        "id": "p6",
+        "name": "Cooperativa Artesanal del Norte",
+        "beforeNameWidth": 212.5,
+        "afterNameWidth": 212.5,
+        "nameDelta": 0,
+        "headerHeight": 44,
+        "avatar": null,
+        "follow": {
+          "x": 660,
+          "y": 1630.19,
+          "width": 44,
+          "height": 44,
+          "right": 704,
+          "bottom": 1674.19
+        },
+        "collisions": []
+      },
+      {
+        "id": "p4",
+        "name": "Casa Origen",
+        "beforeNameWidth": 83.28,
+        "afterNameWidth": 83.28,
+        "nameDelta": 0,
+        "headerHeight": 44,
+        "avatar": null,
+        "follow": {
+          "x": 277.5,
+          "y": 2651.25,
+          "width": 44,
+          "height": 44,
+          "right": 321.5,
+          "bottom": 2695.25
+        },
+        "collisions": []
+      },
+      {
+        "id": "p7",
+        "name": "Cooperativa de Productores Artesanales de Bogotá",
+        "beforeNameWidth": 212.5,
+        "afterNameWidth": 212.5,
+        "nameDelta": 0,
+        "headerHeight": 44,
+        "avatar": null,
+        "follow": {
+          "x": 660,
+          "y": 2651.25,
+          "width": 44,
+          "height": 44,
+          "right": 704,
+          "bottom": 2695.25
+        },
+        "collisions": []
+      },
+      {
+        "id": "p8",
+        "name": "Comercio Local",
+        "beforeNameWidth": 105.3,
+        "afterNameWidth": 105.3,
+        "nameDelta": 0,
+        "headerHeight": 44,
+        "avatar": null,
+        "follow": {
+          "x": 619.5,
+          "y": 3318.72,
+          "width": 44,
+          "height": 44,
+          "right": 663.5,
+          "bottom": 3362.72
+        },
+        "collisions": []
+      }
+    ]
+  },
+  {
+    "width": 1024,
+    "desktopPixels": 0,
+    "cards": [
+      {
+        "id": "p1",
+        "name": "Casa Origen",
+        "beforeNameWidth": 83.28,
+        "afterNameWidth": 83.28,
+        "nameDelta": 0,
+        "headerHeight": 44,
+        "avatar": null,
+        "follow": {
+          "x": 405,
+          "y": 186,
+          "width": 44,
+          "height": 44,
+          "right": 449,
+          "bottom": 230
+        },
+        "collisions": []
+      },
+      {
+        "id": "p2",
+        "name": "Mercado del Barrio",
+        "beforeNameWidth": 128.58,
+        "afterNameWidth": 128.58,
+        "nameDelta": 0,
+        "headerHeight": 44,
+        "avatar": null,
+        "follow": {
+          "x": 899,
+          "y": 186,
+          "width": 44,
+          "height": 44,
+          "right": 943,
+          "bottom": 230
+        },
+        "collisions": []
+      },
+      {
+        "id": "p3",
+        "name": "Taller Artesanal de Bogotá",
+        "beforeNameWidth": 178.19,
+        "afterNameWidth": 178.19,
+        "nameDelta": 0,
+        "headerHeight": 44,
+        "avatar": null,
+        "follow": {
+          "x": 405,
+          "y": 634.59,
+          "width": 44,
+          "height": 44,
+          "right": 449,
+          "bottom": 678.59
+        },
+        "collisions": []
+      },
+      {
+        "id": "p5",
+        "name": "Mercado del Barrio",
+        "beforeNameWidth": 128.58,
+        "afterNameWidth": 128.58,
+        "nameDelta": 0,
+        "headerHeight": 44,
+        "avatar": null,
+        "follow": {
+          "x": 405,
+          "y": 1764.06,
+          "width": 44,
+          "height": 44,
+          "right": 449,
+          "bottom": 1808.06
+        },
+        "collisions": []
+      },
+      {
+        "id": "p6",
+        "name": "Cooperativa Artesanal del Norte",
+        "beforeNameWidth": 216.98,
+        "afterNameWidth": 216.98,
+        "nameDelta": 0,
+        "headerHeight": 44,
+        "avatar": null,
+        "follow": {
+          "x": 899,
+          "y": 1764.06,
+          "width": 44,
+          "height": 44,
+          "right": 943,
+          "bottom": 1808.06
+        },
+        "collisions": []
+      },
+      {
+        "id": "p4",
+        "name": "Casa Origen",
+        "beforeNameWidth": 83.28,
+        "afterNameWidth": 83.28,
+        "nameDelta": 0,
+        "headerHeight": 44,
+        "avatar": null,
+        "follow": {
+          "x": 405,
+          "y": 2856.28,
+          "width": 44,
+          "height": 44,
+          "right": 449,
+          "bottom": 2900.28
+        },
+        "collisions": []
+      },
+      {
+        "id": "p7",
+        "name": "Cooperativa de Productores Artesanales de Bogotá",
+        "beforeNameWidth": 324,
+        "afterNameWidth": 324,
+        "nameDelta": 0,
+        "headerHeight": 44,
+        "avatar": null,
+        "follow": {
+          "x": 899,
+          "y": 2856.28,
+          "width": 44,
+          "height": 44,
+          "right": 943,
+          "bottom": 2900.28
+        },
+        "collisions": []
+      },
+      {
+        "id": "p8",
+        "name": "Comercio Local",
+        "beforeNameWidth": 105.3,
+        "afterNameWidth": 105.3,
+        "nameDelta": 0,
+        "headerHeight": 44,
+        "avatar": null,
+        "follow": {
+          "x": 747,
+          "y": 3586.47,
+          "width": 44,
+          "height": 44,
+          "right": 791,
+          "bottom": 3630.47
+        },
+        "collisions": []
+      }
+    ]
+  }
+]

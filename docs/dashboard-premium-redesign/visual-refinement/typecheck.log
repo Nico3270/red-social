@@ -1,0 +1,4 @@
+
+> myckeo@0.1.0 typecheck /home/nico/red-social
+> tsc --noEmit --incremental false
+

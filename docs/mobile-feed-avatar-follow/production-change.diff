@@ -1,0 +1,441 @@
+--- src/feed/componentes/FollowButton.tsx (antes)
++++ src/feed/componentes/FollowButton.tsx (después)
+@@ -5,10 +5,20 @@
+ import { useSession } from "next-auth/react";
+ import { usePathname } from "next/navigation";
+ import { motion, AnimatePresence } from "framer-motion";
+-import { FaCheck, FaTimes, FaUserPlus, FaUserCheck, FaUserTimes, FaSignInAlt } from "react-icons/fa";
++import {
++  FaCheck,
++  FaPlus,
++  FaSpinner,
++  FaTimes,
++  FaUserPlus,
++  FaUserCheck,
++  FaUserTimes,
++  FaSignInAlt,
++} from "react-icons/fa";
+ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+ 
+ import clsx from "clsx";
++import styles from "./followButton.module.css";
+ import { checkIsFollowing, toggleFollow } from "../actions/toggleFollow";
+ import { createPortal } from "react-dom";
+ import { useRouter } from "next/navigation";
+@@ -18,9 +28,17 @@
+   type: "USER_TO_BUSINESS" | "BUSINESS_TO_USER" | "USER_TO_USER"; // Del enum
+   className?: string;
+   version?: 1 | 2; // Nueva prop opcional, default 1
++  /** Optional feed presentation; the existing query, mutation and login flow are shared. */
++  mobileAvatarBusinessName?: string;
+ }
+ 
+-export const FollowButton: React.FC<FollowButtonProps> = ({ followedId, type, className, version = 1 }) => {
++export const FollowButton: React.FC<FollowButtonProps> = ({
++  followedId,
++  type,
++  className,
++  version = 1,
++  mobileAvatarBusinessName,
++}) => {
+   const { data: session, status } = useSession();
+   const pathname = usePathname();
+   const queryClient = useQueryClient();
+@@ -72,6 +90,78 @@
+   // Soporte para touch en mobile (fallback para hover)
+   const handleTouchStart = () => isFollowing && setHoverUnfollow(true);
+   const handleTouchEnd = () => setHoverUnfollow(false);
++
++  const legacyIcon = (
++    <AnimatePresence mode="wait">
++      {version === 1 ? (
++        // Versión 1: Con texto (tal como estaba)
++        isFollowing ? (
++          hoverUnfollow ? (
++            <motion.span
++              key="unfollow"
++              initial={{ opacity: 0, scale: 0.9 }}
++              animate={{ opacity: 1, scale: 1 }}
++              exit={{ opacity: 0, scale: 0.9 }}
++              transition={{ duration: 0.2 }}
++              className="flex items-center gap-1"
++            >
++              <FaTimes size={14} /> Dejar de seguir
++            </motion.span>
++          ) : (
++            <motion.span
++              key="following"
++              initial={{ opacity: 0, scale: 0.9 }}
++              animate={{ opacity: 1, scale: 1 }}
++              exit={{ opacity: 0, scale: 0.9 }}
++              transition={{ duration: 0.2 }}
++              className="flex items-center gap-1"
++            >
++              <FaCheck size={14} /> Siguiendo
++            </motion.span>
++          )
++        ) : (
++          <motion.span
++            key="follow"
++            initial={{ opacity: 0, scale: 0.9 }}
++            animate={{ opacity: 1, scale: 1 }}
++            exit={{ opacity: 0, scale: 0.9 }}
++            transition={{ duration: 0.2 }}
++          >
++            Seguir
++          </motion.span>
++        )
++      ) : (
++        // Versión 2: Solo iconos (tu estilo implementado)
++        <motion.span
++          key={
++            isFollowing
++              ? hoverUnfollow
++                ? "unfollow-icon"
++                : "following-icon"
++              : "follow-icon"
++          }
++          initial={{ opacity: 0, scale: 0.8 }}
++          animate={{ opacity: 1, scale: 1 }}
++          exit={{ opacity: 0, scale: 0.8 }}
++          transition={{ duration: 0.2 }}
++          className="flex items-center"
++        >
++          {isFollowing ? (
++            hoverUnfollow ? (
++              // 🔴 Estado hover unfollow → icono user con X
++              <FaUserTimes size={18} />
++            ) : (
++              // 🟢 Estado siguiendo → icono user con check
++              <FaUserCheck size={18} />
++            )
++          ) : (
++            // 🔵 Estado no siguiendo → icono user con +
++            <FaUserPlus size={18} />
++          )}
++        </motion.span>
++      )}
++    </AnimatePresence>
++  );
+ 
+   return (
+     <>
+@@ -90,80 +180,56 @@
+               ? "bg-red-100 text-red-600 hover:bg-red-200"
+               : "bg-green-500 text-white hover:bg-green-600"
+             : "bg-blue-600 text-white hover:bg-blue-700",
+-          className
++          className,
++          mobileAvatarBusinessName && styles.avatarPresentation,
+         )}
+-        aria-label={isFollowing ? (hoverUnfollow ? "Dejar de seguir" : "Siguiendo") : "Seguir"}
++        data-avatar-follow={mobileAvatarBusinessName ? "true" : undefined}
++        data-follow-state={
++          mobileAvatarBusinessName
++            ? isLoading || mutation.isPending
++              ? "pending"
++              : isFollowing
++                ? "following"
++                : "idle"
++            : undefined
++        }
++        aria-busy={
++          mobileAvatarBusinessName ? isLoading || mutation.isPending : undefined
++        }
++        aria-label={
++          mobileAvatarBusinessName
++            ? `${isFollowing ? "Dejar de seguir a" : "Seguir a"} ${mobileAvatarBusinessName}`
++            : isFollowing
++              ? hoverUnfollow
++                ? "Dejar de seguir"
++                : "Siguiendo"
++              : "Seguir"
++        }
+       >
+-        <AnimatePresence mode="wait">
+-          {version === 1 ? (
+-            // Versión 1: Con texto (tal como estaba)
+-            isFollowing ? (
+-              hoverUnfollow ? (
+-                <motion.span
+-                  key="unfollow"
+-                  initial={{ opacity: 0, scale: 0.9 }}
+-                  animate={{ opacity: 1, scale: 1 }}
+-                  exit={{ opacity: 0, scale: 0.9 }}
+-                  transition={{ duration: 0.2 }}
+-                  className="flex items-center gap-1"
+-                >
+-                  <FaTimes size={14} /> Dejar de seguir
+-                </motion.span>
++        {mobileAvatarBusinessName ? (
++          <>
++            <span className={styles.legacyIcon}>{legacyIcon}</span>
++            <span className={styles.avatarIcon} aria-hidden="true">
++              {isLoading || mutation.isPending ? (
++                <FaSpinner className={styles.spinner} />
++              ) : isFollowing ? (
++                <FaCheck />
+               ) : (
+-                <motion.span
+-                  key="following"
+-                  initial={{ opacity: 0, scale: 0.9 }}
+-                  animate={{ opacity: 1, scale: 1 }}
+-                  exit={{ opacity: 0, scale: 0.9 }}
+-                  transition={{ duration: 0.2 }}
+-                  className="flex items-center gap-1"
+-                >
+-                  <FaCheck size={14} /> Siguiendo
+-                </motion.span>
+-              )
+-            ) : (
+-              <motion.span
+-                key="follow"
+-                initial={{ opacity: 0, scale: 0.9 }}
+-                animate={{ opacity: 1, scale: 1 }}
+-                exit={{ opacity: 0, scale: 0.9 }}
+-                transition={{ duration: 0.2 }}
+-              >
+-                Seguir
+-              </motion.span>
+-            )
+-          ) : (
+-            // Versión 2: Solo iconos (tu estilo implementado)
+-            <motion.span
+-              key={
+-                isFollowing
+-                  ? hoverUnfollow
+-                    ? "unfollow-icon"
+-                    : "following-icon"
+-                  : "follow-icon"
+-              }
+-              initial={{ opacity: 0, scale: 0.8 }}
+-              animate={{ opacity: 1, scale: 1 }}
+-              exit={{ opacity: 0, scale: 0.8 }}
+-              transition={{ duration: 0.2 }}
+-              className="flex items-center"
+-            >
+-              {isFollowing ? (
+-                hoverUnfollow ? (
+-                  // 🔴 Estado hover unfollow → icono user con X
+-                  <FaUserTimes size={18} />
+-                ) : (
+-                  // 🟢 Estado siguiendo → icono user con check
+-                  <FaUserCheck size={18} />
+-                )
+-              ) : (
+-                // 🔵 Estado no siguiendo → icono user con +
+-                <FaUserPlus size={18} />
++                <FaPlus />
+               )}
+-            </motion.span>
+-          )}
+-        </AnimatePresence>
++            </span>
++          </>
++        ) : (
++          legacyIcon
++        )}
+       </button>
++      {mobileAvatarBusinessName && (
++        <span className={styles.feedback} role="status" aria-live="polite">
++          {mutation.isError
++            ? "No se pudo actualizar el seguimiento. Inténtalo de nuevo."
++            : ""}
++        </span>
++      )}
+ 
+       {/* Modal para no autenticados (mismo que antes, pero con estilos responsivos) */}
+       {mounted && createPortal(
+@@ -211,4 +277,4 @@
+       )}
+     </>
+   );
+-};+};
+--- src/ui/components/productos/ProductCard.tsx (antes)
++++ src/ui/components/productos/ProductCard.tsx (después)
+@@ -670,7 +670,7 @@
+       {!isBusinessProfileVariant && (
+         <div className={isFeedVariant ? styles.header : "mb-3 flex items-center justify-between px-3"}>
+           <div className={isFeedVariant ? styles.business : "flex min-w-0 items-center gap-2"}>
+-            <div className="relative h-8 w-8 overflow-hidden rounded-full">
++            <div className={`${isFeedVariant ? styles.desktopAvatar : ""} relative h-8 w-8 overflow-hidden rounded-full`}>
+               <Image
+                 src={optimizedBusinessProfileImageUrl}
+                 alt={`Perfil de ${product.nombreNegocio ?? "negocio"}`}
+@@ -679,6 +679,28 @@
+                 className="object-cover"
+               />
+             </div>
++
++            {isFeedVariant && product.slugNegocio && (
++              <Link
++                href={`/perfil/${product.slugNegocio}`}
++                className={styles.mobileAvatar}
++                data-avatar-profile="true"
++                aria-label={`Abrir perfil de ${product.nombreNegocio || "negocio"}`}
++              >
++                <Image
++                  src={optimizedBusinessProfileImageUrl}
++                  alt=""
++                  fill
++                  sizes="24px"
++                  className="object-cover"
++                />
++              </Link>
++            )}
++            {isFeedVariant && !product.slugNegocio && (
++              <span className={styles.mobileAvatar} aria-hidden="true">
++                <Image src={optimizedBusinessProfileImageUrl} alt="" fill sizes="24px" className="object-cover" />
++              </span>
++            )}
+ 
+             {product.nombreNegocio && product.slugNegocio ? (
+               <Link
+@@ -702,6 +724,7 @@
+               version={2}
+               type="USER_TO_BUSINESS"
+               className="text-sm"
++              mobileAvatarBusinessName={isFeedVariant ? product.nombreNegocio || "negocio" : undefined}
+             />
+ 
+             <div className={isFeedVariant ? styles.favorite : "z-20 ml-2"}>
+--- src/ui/components/productos/feedProductCard.module.css (antes)
++++ src/ui/components/productos/feedProductCard.module.css (después)
+@@ -665,6 +665,10 @@
+   display: contents;
+ }
+ 
++.mobileAvatar {
++  display: none;
++}
++
+ /* Refined mobile actions: compact avatar/follow cluster, contained favorite,
+    and equally weighted commercial controls beside the price. */
+ @media (max-width: 768px) {
+@@ -674,7 +678,7 @@
+   .header {
+     position: relative;
+     display: grid;
+-    grid-template-columns: 44px minmax(0, 1fr) 44px;
++    grid-template-columns: 68px minmax(0, 1fr) 44px;
+     grid-template-rows: 44px;
+     gap: 0;
+     padding: 0;
+@@ -711,28 +715,54 @@
+     overflow-wrap: anywhere;
+     line-height: 18px;
+   }
+-  /* Follow keeps its original handler and 44px hit area. Only its paint is
+-     a small badge beside the non-interactive avatar, leaving room for the name. */
++  /* Two separate destinations: a 24px avatar link, then a full 44px
++     follow target. Its small painted badge sits at the avatar's upper right. */
++  .business > .desktopAvatar {
++    display: none;
++  }
++  .mobileAvatar {
++    position: absolute;
++    top: 10px;
++    left: 0;
++    display: block;
++    width: 24px;
++    height: 24px;
++    overflow: hidden;
++    border-radius: 50%;
++  }
+   .headerActions > button {
+     grid-column: 1;
+     grid-row: 1;
++    justify-self: end;
+     flex-shrink: 0;
+-    align-items: flex-end;
+-    justify-content: flex-end;
+-    padding: 0 2px 4px 0;
++    padding: 0;
++    border-radius: 0;
++    color: white;
+   }
+   .headerActions > button::before {
+-    inset: auto 0 2px auto;
++    inset: 4px auto auto 0;
+     width: 20px;
+     height: 20px;
+     border: 2px solid white;
+-  }
+-  .headerActions > button > span {
+-    position: relative;
++    background: #c93545;
++  }
++  .headerActions > button[data-avatar-follow] {
++    background: transparent;
++    box-shadow: none;
++  }
++  .headerActions > button[data-follow-state="following"]::before {
++    background: #377c85;
++  }
++  .headerActions > button[data-follow-state="pending"] {
++    color: #64748b;
++    cursor: wait;
++  }
++  .headerActions > button[data-follow-state="pending"]::before {
++    background: #e2e8f0;
+   }
+   .headerActions > button svg {
+-    width: 14px;
+-    height: 14px;
++    width: 12px;
++    height: 12px;
+   }
+   .favorite {
+     grid-column: 3;
+--- /dev/null
++++ src/feed/componentes/followButton.module.css
+@@ -0,0 +1,49 @@
++/* Opt-in presentation only; the original desktop icon keeps its layout. */
++.legacyIcon {
++  display: contents;
++}
++.avatarIcon {
++  display: none;
++}
++.feedback {
++  position: absolute;
++  width: 1px;
++  height: 1px;
++  padding: 0;
++  overflow: hidden;
++  clip-path: inset(50%);
++  white-space: nowrap;
++}
++@media (max-width: 768px) {
++  .avatarPresentation .legacyIcon {
++    display: none;
++  }
++  .avatarPresentation .avatarIcon {
++    position: absolute;
++    top: 8px;
++    left: 4px;
++    display: flex;
++    align-items: center;
++    justify-content: center;
++    width: 12px;
++    height: 12px;
++    pointer-events: none;
++  }
++  .avatarIcon svg {
++    width: 12px;
++    height: 12px;
++  }
++  .spinner {
++    animation: follow-spin 800ms linear infinite;
++  }
++  @media (prefers-reduced-motion: reduce) {
++    .spinner {
++      animation: none;
++    }
++  }
++}
++@keyframes follow-spin {
++  to {
++    transform: rotate(360deg);
++  }
++}

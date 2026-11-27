@@ -28,6 +28,14 @@ const nextConfig = withBundleAnalyzer({
   reactStrictMode: true,
   productionBrowserSourceMaps: false,
   compress: true,
+  async rewrites() {
+    // Read current visibility even when a build-time public/sitemap.xml exists.
+    return {
+      beforeFiles: [
+        { source: "/sitemap.xml", destination: "/api/public-sitemap" },
+      ],
+    };
+  },
   async headers() {
     const globalNoIndex = process.env.MYCKEO_NO_INDEX === "true";
     const globalRobotsTag = "noindex, nofollow, noarchive, nosnippet";
@@ -37,19 +45,21 @@ const nextConfig = withBundleAnalyzer({
       { key: "Referrer-Policy", value: "no-referrer" },
       {
         key: "X-Robots-Tag",
-        value: globalNoIndex
-          ? globalRobotsTag
-          : "noindex, nofollow, noarchive",
+        value: globalNoIndex ? globalRobotsTag : "noindex, nofollow, noarchive",
       },
     ];
 
     return [
       ...(globalNoIndex
-        ? [{
-            source: "/:path*",
-            headers: [{ key: "X-Robots-Tag", value: globalRobotsTag }],
-          }]
+        ? [
+            {
+              source: "/:path*",
+              headers: [{ key: "X-Robots-Tag", value: globalRobotsTag }],
+            },
+          ]
         : []),
+      { source: "/demo", headers: activationHeaders },
+      { source: "/api/business-demo/:path*", headers: activationHeaders },
       { source: "/activar", headers: activationHeaders },
       { source: "/activar/:path*", headers: activationHeaders },
     ];

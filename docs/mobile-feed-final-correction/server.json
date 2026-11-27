@@ -1,0 +1,13 @@
+{
+  "origin": "http://127.0.0.1:3000",
+  "userFacingOrigin": "http://localhost:3000",
+  "pid": 566567,
+  "parentPid": 566531,
+  "cwd": "/home/nico/red-social",
+  "command": "next dev",
+  "nextVersion": "15.5.9",
+  "route": "/",
+  "rewritesInstalled": false,
+  "serverRestarted": false,
+  "cachesDeleted": false
+}

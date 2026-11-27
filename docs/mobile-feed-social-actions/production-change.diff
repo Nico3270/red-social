@@ -1,0 +1,94 @@
+--- src/ui/components/productos/ProductCard.tsx (before)
++++ src/ui/components/productos/ProductCard.tsx (selected B)
+@@ -776,7 +776,7 @@
+               className={
+                 isBusinessProfileVariant
+                   ? "pointer-events-none absolute left-2.5 top-2.5 flex max-w-[calc(100%-72px)] flex-wrap gap-1.5"
+-                  : "pointer-events-none absolute left-3 top-3 flex flex-wrap gap-2"
++                  : `pointer-events-none absolute left-3 top-3 flex flex-wrap gap-2 ${isFeedVariant ? styles.socialBadges : ""}`
+               }
+             >
+               {hasVariants && (
+
+--- src/ui/components/productos/feedProductCard.module.css (before)
++++ src/ui/components/productos/feedProductCard.module.css (selected B)
+@@ -659,3 +659,79 @@
+     }
+   }
+ }
++
++/* Social actions B: follow shares the avatar area; favorite stays on the image. */
++@media (max-width: 768px) {
++  .business > div {
++    width: 24px;
++    height: 24px;
++    margin-right: 20px;
++  }
++  .headerActions {
++    display: contents;
++  }
++  .headerActions > button {
++    position: absolute;
++    z-index: 3;
++    left: 10px;
++    top: 0;
++  }
++  .headerActions > button::before {
++    inset: auto 4px 4px auto;
++    width: 20px;
++    height: 20px;
++    background: rgba(255, 255, 255, 0.96);
++    box-shadow: 0 1px 3px #1c283c1a;
++  }
++  .headerActions > button > span {
++    position: absolute;
++    right: 8px;
++    bottom: 8px;
++    width: 12px;
++    height: 12px;
++  }
++  .headerActions > button > span svg {
++    width: 12px;
++    height: 12px;
++  }
++  .favorite {
++    position: absolute;
++    z-index: 3;
++    top: 50px;
++    right: 6px;
++    width: 44px;
++    height: 44px;
++  }
++  .favorite button {
++    display: inline-flex;
++    align-items: center;
++    justify-content: center;
++    position: relative;
++    isolation: isolate;
++    padding: 0;
++  }
++  .favorite button::before {
++    position: absolute;
++    z-index: -1;
++    inset: 6px;
++    border-radius: 50%;
++    background: rgba(255, 255, 255, 0.96);
++    box-shadow: 0 1px 3px #1c283c1a;
++    content: "";
++  }
++  .feed .socialBadges {
++    top: 8px;
++    left: 8px;
++    right: 56px;
++    max-width: calc(100% - 64px);
++    gap: 4px;
++  }
++  .socialBadges > span {
++    padding-block: 2px;
++  }
++  @container feed-product-card (max-width: 250px) {
++    .headerActions > button {
++      left: 6px;
++    }
++  }
++}

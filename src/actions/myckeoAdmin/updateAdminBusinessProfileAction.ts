@@ -1,5 +1,6 @@
 "use server";
 
+import { requireSuperAdmin } from "@/lib/business/productAccess";
 import { auth } from "@/auth.config";
 import prisma from "@/lib/prisma";
 import { EstadoNegocio, Prisma } from "@prisma/client";
@@ -112,7 +113,8 @@ function normalizeOptionalString(value: unknown) {
   if (value === undefined) return undefined;
   if (value === null) return null;
 
-  const normalized = typeof value === "string" ? value.trim() : String(value).trim();
+  const normalized =
+    typeof value === "string" ? value.trim() : String(value).trim();
   return normalized || null;
 }
 
@@ -131,8 +133,8 @@ function normalizeStringArray(value: unknown, fieldLabel: string) {
       value
         .filter((item): item is string => typeof item === "string")
         .map((item) => item.trim())
-        .filter(Boolean)
-    )
+        .filter(Boolean),
+    ),
   );
 
   if (normalized.length === 0) {
@@ -152,7 +154,7 @@ function normalizeCoordinate(
   value: NullableNumber,
   fieldLabel: string,
   min: number,
-  max: number
+  max: number,
 ) {
   if (value === undefined) return { ok: true, value: undefined } as const;
   if (value === null || value === "") return { ok: true, value: null } as const;
@@ -176,7 +178,8 @@ function normalizeColombianPhone(value: unknown) {
   if (value === undefined) return { ok: true, value: undefined } as const;
   if (value === null) return { ok: true, value: null } as const;
 
-  const rawValue = typeof value === "string" ? value.trim() : String(value).trim();
+  const rawValue =
+    typeof value === "string" ? value.trim() : String(value).trim();
   if (!rawValue) return { ok: true, value: null } as const;
 
   const digitsOnly = rawValue.replace(/\D/g, "");
@@ -206,7 +209,10 @@ function normalizeUrl(value: unknown, fieldLabel: string) {
     return { ok: true, value: normalized } as const;
   }
 
-  if (/^[a-z][a-z0-9+.-]*:/i.test(normalized) && !/^https?:\/\//i.test(normalized)) {
+  if (
+    /^[a-z][a-z0-9+.-]*:/i.test(normalized) &&
+    !/^https?:\/\//i.test(normalized)
+  ) {
     return {
       ok: false,
       error: `${fieldLabel} debe usar http o https.`,
@@ -297,7 +303,7 @@ function normalizeImageUrl(value: unknown, fieldLabel: string) {
 function normalizeSocialUrl(
   value: unknown,
   fieldLabel: string,
-  pattern: RegExp
+  pattern: RegExp,
 ) {
   const normalized = normalizeOptionalString(value);
   if (normalized === undefined || normalized === null) {
@@ -328,7 +334,7 @@ function hasOwnValue<T extends object>(source: T, key: keyof T) {
 function applyValue<T extends object, K extends keyof T>(
   target: T,
   key: K,
-  value: T[K] | undefined
+  value: T[K] | undefined,
 ) {
   if (value !== undefined) {
     target[key] = value;
@@ -347,7 +353,7 @@ function revalidateAdminBusinessProfileSurfaces(slug: string) {
 }
 
 export async function updateAdminBusinessProfileAction(
-  input: UpdateAdminBusinessProfileActionInput
+  input: UpdateAdminBusinessProfileActionInput,
 ): Promise<UpdateAdminBusinessProfileActionResult> {
   const traceId = buildTraceId();
   const startedAt = Date.now();
@@ -401,11 +407,16 @@ export async function updateAdminBusinessProfileAction(
 
       return {
         ok: false,
-        error: "El identificador del negocio y el slug esperado son obligatorios.",
+        error:
+          "El identificador del negocio y el slug esperado son obligatorios.",
       };
     }
 
-    if (!input?.data || typeof input.data !== "object" || Array.isArray(input.data)) {
+    if (
+      !input?.data ||
+      typeof input.data !== "object" ||
+      Array.isArray(input.data)
+    ) {
       console.warn(`${LOG_PREFIX}[${traceId}] Payload inválido`, {
         actorUserId: session.user.id,
         businessId,
@@ -424,6 +435,8 @@ export async function updateAdminBusinessProfileAction(
       expectedSlug,
     });
 
+    await requireSuperAdmin();
+
     const existingBusiness = await prisma.negocio.findUnique({
       where: {
         id: businessId,
@@ -432,6 +445,8 @@ export async function updateAdminBusinessProfileAction(
         id: true,
         slug: true,
         usuarioId: true,
+        estado: true,
+        usuario: { select: { placeholderProvisioningKeyHash: true } },
         latitud: true,
         longitud: true,
       },
@@ -467,7 +482,7 @@ export async function updateAdminBusinessProfileAction(
 
     const data = input.data;
     const requestedSlug = normalizeOptionalString(
-      pickFirstDefined(data.slug, data.slugNegocio)
+      pickFirstDefined(data.slug, data.slugNegocio),
     );
 
     if (requestedSlug && requestedSlug !== expectedSlug) {
@@ -481,7 +496,7 @@ export async function updateAdminBusinessProfileAction(
 
     const nombre = normalizeRequiredString(
       pickFirstDefined(data.nombre, data.nombreNegocio),
-      "El nombre del negocio"
+      "El nombre del negocio",
     );
 
     if (!nombre.ok) {
@@ -499,24 +514,24 @@ export async function updateAdminBusinessProfileAction(
     }
 
     const ciudad = normalizeOptionalString(
-      pickFirstDefined(data.ciudad, data.ciudadNegocio)
+      pickFirstDefined(data.ciudad, data.ciudadNegocio),
     );
     if (ciudad === null) {
       return controlledError("La ciudad del negocio es obligatoria.", "ciudad");
     }
 
     const departamento = normalizeOptionalString(
-      pickFirstDefined(data.departamento, data.departamentoNegocio)
+      pickFirstDefined(data.departamento, data.departamentoNegocio),
     );
     if (departamento === null) {
       return controlledError(
         "El departamento del negocio es obligatorio.",
-        "departamento"
+        "departamento",
       );
     }
 
     const telefono = normalizeColombianPhone(
-      pickFirstDefined(data.telefonoContacto, data.telefonoNegocio)
+      pickFirstDefined(data.telefonoContacto, data.telefonoNegocio),
     );
     if (!telefono.ok) return controlledError(telefono.error, "telefono");
 
@@ -524,7 +539,7 @@ export async function updateAdminBusinessProfileAction(
       pickFirstDefined(data.latitud, data.latitudNegocio),
       "La latitud",
       -90,
-      90
+      90,
     );
     if (!latitud.ok) return controlledError(latitud.error, "latitud");
 
@@ -532,7 +547,7 @@ export async function updateAdminBusinessProfileAction(
       pickFirstDefined(data.longitud, data.longitudNegocio),
       "La longitud",
       -180,
-      180
+      180,
     );
     if (!longitud.ok) return controlledError(longitud.error, "longitud");
 
@@ -546,7 +561,7 @@ export async function updateAdminBusinessProfileAction(
 
     const fotoPerfil = normalizeImageUrl(
       pickFirstDefined(data.fotoPerfil, data.imagenPerfil),
-      "La foto de perfil"
+      "La foto de perfil",
     );
     if (typeof fotoPerfil === "object" && fotoPerfil && !fotoPerfil.ok) {
       return controlledError(fotoPerfil.error, "fotoPerfil");
@@ -554,22 +569,26 @@ export async function updateAdminBusinessProfileAction(
 
     const fotoPortada = normalizeImageUrl(
       pickFirstDefined(data.fotoPortada, data.imagenPortada),
-      "La foto de portada"
+      "La foto de portada",
     );
     if (typeof fotoPortada === "object" && fotoPortada && !fotoPortada.ok) {
       return controlledError(fotoPortada.error, "fotoPortada");
     }
 
     const estado = normalizeOptionalString(
-      pickFirstDefined(data.estado, data.estadoNegocio)
+      pickFirstDefined(data.estado, data.estadoNegocio),
     );
-    if (estado !== undefined && estado !== null && !ALLOWED_ESTADOS.has(estado)) {
+    if (
+      estado !== undefined &&
+      estado !== null &&
+      !ALLOWED_ESTADOS.has(estado)
+    ) {
       return controlledError("El estado del negocio no es válido.", "estado");
     }
 
     const categoriaIds = normalizeStringArray(
       pickFirstDefined(data.categorias, data.categoriaIds),
-      "Las categorías"
+      "Las categorías",
     );
     if (!categoriaIds.ok) {
       return controlledError(categoriaIds.error, "categorias");
@@ -577,7 +596,7 @@ export async function updateAdminBusinessProfileAction(
 
     const seccionIds = normalizeStringArray(
       pickFirstDefined(data.secciones, data.seccionesIds),
-      "Las secciones"
+      "Las secciones",
     );
     if (!seccionIds.ok) return controlledError(seccionIds.error, "secciones");
 
@@ -644,39 +663,58 @@ export async function updateAdminBusinessProfileAction(
       negocioData,
       "descripcion",
       normalizeOptionalString(
-        pickFirstDefined(data.descripcion, data.descripcionNegocio)
-      )
+        pickFirstDefined(data.descripcion, data.descripcionNegocio),
+      ),
     );
     applyValue(negocioData, "ciudad", ciudad ?? undefined);
     applyValue(negocioData, "departamento", departamento ?? undefined);
     applyValue(
       negocioData,
       "direccion",
-      normalizeOptionalString(pickFirstDefined(data.direccion, data.direccionNegocio))
+      normalizeOptionalString(
+        pickFirstDefined(data.direccion, data.direccionNegocio),
+      ),
     );
     applyValue(negocioData, "telefonoContacto", telefono.value);
     applyValue(
       negocioData,
       "fotoPerfil",
-      fotoPerfil && typeof fotoPerfil === "object" ? fotoPerfil.value : fotoPerfil
+      fotoPerfil && typeof fotoPerfil === "object"
+        ? fotoPerfil.value
+        : fotoPerfil,
     );
     applyValue(
       negocioData,
       "fotoPortada",
-      fotoPortada && typeof fotoPortada === "object" ? fotoPortada.value : fotoPortada
+      fotoPortada && typeof fotoPortada === "object"
+        ? fotoPortada.value
+        : fotoPortada,
     );
     applyValue(negocioData, "sitioWeb", sitioWeb.value);
     applyValue(negocioData, "latitud", latitud.value);
     applyValue(negocioData, "longitud", longitud.value);
 
     if (estado !== undefined && estado !== null) {
+      if (
+        estado === "activo" &&
+        existingBusiness.estado !== "activo" &&
+        existingBusiness.usuario.placeholderProvisioningKeyHash
+      ) {
+        return controlledError(
+          "Aprueba la publicación desde Incorporación asistida.",
+          "estado",
+        );
+      }
       negocioData.estado = estado as EstadoNegocio;
     }
 
     if (urlGoogleMaps.value !== undefined) {
       negocioData.urlGoogleMaps = urlGoogleMaps.value;
     } else if (latitud.value !== undefined || longitud.value !== undefined) {
-      negocioData.urlGoogleMaps = buildGoogleMapsUrl(finalLatitud, finalLongitud);
+      negocioData.urlGoogleMaps = buildGoogleMapsUrl(
+        finalLatitud,
+        finalLongitud,
+      );
     }
 
     if (categoriaIds.value) {
@@ -704,35 +742,35 @@ export async function updateAdminBusinessProfileAction(
     const facebook = normalizeSocialUrl(
       pickFirstDefined(data.facebook, redesSociales.facebook),
       "Facebook",
-      /^https:\/\/(www\.)?facebook\.com\/.+/
+      /^https:\/\/(www\.)?facebook\.com\/.+/,
     );
     if (!facebook.ok) return controlledError(facebook.error, "facebook");
 
     const instagram = normalizeSocialUrl(
       pickFirstDefined(data.instagram, redesSociales.instagram),
       "Instagram",
-      /^https:\/\/(www\.)?instagram\.com\/.+/
+      /^https:\/\/(www\.)?instagram\.com\/.+/,
     );
     if (!instagram.ok) return controlledError(instagram.error, "instagram");
 
     const twitter = normalizeSocialUrl(
       pickFirstDefined(data.twitter, redesSociales.twitter),
       "Twitter",
-      /^https:\/\/(www\.)?twitter\.com\/.+/
+      /^https:\/\/(www\.)?twitter\.com\/.+/,
     );
     if (!twitter.ok) return controlledError(twitter.error, "twitter");
 
     const tiktok = normalizeSocialUrl(
       pickFirstDefined(data.tiktok, redesSociales.tiktok),
       "TikTok",
-      /^https:\/\/(www\.)?tiktok\.com\/.+/
+      /^https:\/\/(www\.)?tiktok\.com\/.+/,
     );
     if (!tiktok.ok) return controlledError(tiktok.error, "tiktok");
 
     const youtube = normalizeSocialUrl(
       pickFirstDefined(data.youtube, redesSociales.youtube),
       "YouTube",
-      /^https:\/\/(www\.)?youtube\.com\/.+/
+      /^https:\/\/(www\.)?youtube\.com\/.+/,
     );
     if (!youtube.ok) return controlledError(youtube.error, "youtube");
 
@@ -763,6 +801,27 @@ export async function updateAdminBusinessProfileAction(
     });
 
     const updatedBusiness = await prisma.$transaction(async (tx) => {
+      await tx.$queryRaw`SELECT "id" FROM "Negocio" WHERE "id" = ${businessId} FOR UPDATE`;
+      const current = await tx.negocio.findUnique({
+        where: { id: businessId },
+        select: {
+          estado: true,
+          archivedAt: true,
+          usuario: { select: { placeholderProvisioningKeyHash: true } },
+        },
+      });
+      if (!current) throw new Error("El negocio ya no está disponible.");
+      if (
+        current.usuario.placeholderProvisioningKeyHash &&
+        (current.archivedAt ||
+          current.estado === "eliminado" ||
+          (negocioData.estado === "activo" && current.estado !== "activo"))
+      ) {
+        throw new Error(
+          "Revisa la incorporación y el estado actual antes de guardar.",
+        );
+      }
+
       const negocioActualizado = await tx.negocio.update({
         where: {
           id: businessId,

@@ -1,0 +1,26 @@
+{
+  "checkedAt": "2026-11-16T01:33:27.963Z",
+  "changed": [
+    "src/ui/components/productos/ProductCard.tsx",
+    "src/ui/components/productos/feedProductCard.module.css",
+    "src/publicaciones/componentes/FeedRederer.tsx"
+  ],
+  "added": [
+    "src/publicaciones/componentes/feedProductModules.module.css"
+  ],
+  "removed": [],
+  "unchangedSourceFiles": 616,
+  "commerceHooksAndHandlersIdentical": true,
+  "filterAndCadenceVariablesIdentical": [
+    "cadenceSections",
+    "filteredItems",
+    "itemsPorTab"
+  ],
+  "productionSources": {
+    "src/ui/components/productos/ProductCard.tsx": "558376acdfbbd687412884bd498a9f7bee86ffc5c3f67813d1bb7aaf7a69d206",
+    "src/ui/components/productos/feedProductCard.module.css": "4608f9b8b0540872844fdf68c752b52826ed44df9f3ab5a1d06d1f9124c15dd8",
+    "src/publicaciones/componentes/FeedRederer.tsx": "d415070d263c0c664f496396b3d89418fbbff8beebada52ca15835c16aad7ad5",
+    "src/publicaciones/componentes/feedProductModules.module.css": "fce44aa295d99fcef00093d02e65edfa781d8410cce1446ebdb993eb9da3586b"
+  },
+  "evidence": "Next.js development runtime; production modules imported directly; no prototype replacements"
+}

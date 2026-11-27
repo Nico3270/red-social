@@ -1,0 +1,462 @@
+[
+  {
+    "id": "p3",
+    "commercial": {
+      "id": "p3",
+      "isC2": false,
+      "price": "$ 180.000",
+      "from": false,
+      "width": 422,
+      "height": 322,
+      "priceSize": "18px",
+      "priceWeight": "600",
+      "priceColor": "rgb(168, 60, 75)",
+      "priceLineHeight": "22px",
+      "tracking": "-0.18px",
+      "textShadow": "none",
+      "font": "inter, \"inter Fallback\"",
+      "titleSize": "15px",
+      "titleWeight": "600",
+      "titleHeight": 20,
+      "titleMinHeight": "0px",
+      "commercialGap": 4,
+      "contentDirection": "column",
+      "contentGap": "4px",
+      "contentPadding": "8px 10px",
+      "contentJustify": "flex-start",
+      "contentHeight": "62px",
+      "priceMarginTop": "0px",
+      "border": "1px solid rgb(232, 205, 211)",
+      "shadow": "rgba(44, 47, 51, 0.09) 0px 3px 12px 0px",
+      "radius": "16px",
+      "cardInlineHeight": ""
+    },
+    "metrics": {
+      "product": true,
+      "label": "Bolso artesanal",
+      "width": 422,
+      "height": 322,
+      "top": 620,
+      "left": 4,
+      "viewportPercent": 38.15,
+      "usablePercent": 48.64,
+      "mediaWidth": 420,
+      "mediaHeight": 214,
+      "imageShare": 66.46,
+      "retainedSourceArea": 100,
+      "imageFit": "contain",
+      "source": [
+        403,
+        604
+      ],
+      "overlayAreaPercent": 4.41,
+      "full": true,
+      "visible": 322,
+      "identifiable": true,
+      "titleHeight": 20,
+      "priceFits": true,
+      "controls": [
+        {
+          "label": "Seguir",
+          "width": 44,
+          "height": 44,
+          "inside": true,
+          "hit": true,
+          "nestedInteractive": false
+        },
+        {
+          "label": "Guardar Bolso artesanal en favoritos",
+          "width": 44,
+          "height": 44,
+          "inside": true,
+          "hit": true,
+          "nestedInteractive": false
+        },
+        {
+          "label": "Contactar por WhatsApp sobre Bolso artesanal",
+          "width": 44,
+          "height": 44,
+          "inside": true,
+          "hit": true,
+          "nestedInteractive": false
+        },
+        {
+          "label": "Agregar Bolso artesanal al carrito",
+          "width": 44,
+          "height": 44,
+          "inside": true,
+          "hit": true,
+          "nestedInteractive": false
+        }
+      ]
+    }
+  },
+  {
+    "id": "p4",
+    "commercial": {
+      "id": "p4",
+      "isC2": true,
+      "price": "$ 145.000",
+      "from": true,
+      "width": 206,
+      "height": 314,
+      "priceSize": "16px",
+      "priceWeight": "600",
+      "priceColor": "rgb(168, 60, 75)",
+      "priceLineHeight": "22px",
+      "tracking": "-0.16px",
+      "textShadow": "none",
+      "font": "inter, \"inter Fallback\"",
+      "titleSize": "14px",
+      "titleWeight": "600",
+      "titleHeight": 20,
+      "titleMinHeight": "0px",
+      "commercialGap": 4,
+      "contentDirection": "column",
+      "contentGap": "4px",
+      "contentPadding": "8px",
+      "contentJustify": "flex-start",
+      "contentHeight": "78px",
+      "priceMarginTop": "0px",
+      "border": "1px solid rgb(232, 205, 211)",
+      "shadow": "rgba(44, 47, 51, 0.09) 0px 3px 12px 0px",
+      "radius": "16px",
+      "cardInlineHeight": ""
+    },
+    "metrics": {
+      "product": true,
+      "label": "Tenis con talla a elección",
+      "width": 206,
+      "height": 314,
+      "top": 1466.5,
+      "left": 4,
+      "viewportPercent": 37.2,
+      "usablePercent": 47.43,
+      "mediaWidth": 204,
+      "mediaHeight": 190,
+      "imageShare": 60.51,
+      "retainedSourceArea": 71.69,
+      "imageFit": "cover",
+      "source": [
+        671,
+        448
+      ],
+      "overlayAreaPercent": 10.22,
+      "full": true,
+      "visible": 314,
+      "identifiable": true,
+      "titleHeight": 20,
+      "priceFits": true,
+      "controls": [
+        {
+          "label": "Seguir",
+          "width": 44,
+          "height": 44,
+          "inside": true,
+          "hit": true,
+          "nestedInteractive": false
+        },
+        {
+          "label": "Guardar Tenis con talla a elección en favoritos",
+          "width": 44,
+          "height": 44,
+          "inside": true,
+          "hit": true,
+          "nestedInteractive": false
+        },
+        {
+          "label": "Contactar por WhatsApp sobre Tenis con talla a elección",
+          "width": 44,
+          "height": 44,
+          "inside": true,
+          "hit": true,
+          "nestedInteractive": false
+        },
+        {
+          "label": "Elegir opciones de Tenis con talla a elección",
+          "width": 44,
+          "height": 44,
+          "inside": true,
+          "hit": true,
+          "nestedInteractive": false
+        }
+      ]
+    }
+  },
+  {
+    "id": "p5",
+    "commercial": {
+      "id": "p5",
+      "isC2": true,
+      "price": "$ 180.000",
+      "from": false,
+      "width": 206,
+      "height": 298,
+      "priceSize": "16px",
+      "priceWeight": "600",
+      "priceColor": "rgb(168, 60, 75)",
+      "priceLineHeight": "22px",
+      "tracking": "-0.16px",
+      "textShadow": "none",
+      "font": "inter, \"inter Fallback\"",
+      "titleSize": "14px",
+      "titleWeight": "600",
+      "titleHeight": 20,
+      "titleMinHeight": "0px",
+      "commercialGap": 4,
+      "contentDirection": "column",
+      "contentGap": "4px",
+      "contentPadding": "8px",
+      "contentJustify": "flex-start",
+      "contentHeight": "62px",
+      "priceMarginTop": "0px",
+      "border": "1px solid rgb(232, 205, 211)",
+      "shadow": "rgba(44, 47, 51, 0.09) 0px 3px 12px 0px",
+      "radius": "16px",
+      "cardInlineHeight": ""
+    },
+    "metrics": {
+      "product": true,
+      "label": "Bolso agotado",
+      "width": 206,
+      "height": 298,
+      "top": 1466.5,
+      "left": 220,
+      "viewportPercent": 35.31,
+      "usablePercent": 45.02,
+      "mediaWidth": 204,
+      "mediaHeight": 190,
+      "imageShare": 63.76,
+      "retainedSourceArea": 71.69,
+      "imageFit": "cover",
+      "source": [
+        671,
+        448
+      ],
+      "overlayAreaPercent": 10.22,
+      "full": true,
+      "visible": 298,
+      "identifiable": true,
+      "titleHeight": 20,
+      "priceFits": true,
+      "controls": [
+        {
+          "label": "Seguir",
+          "width": 44,
+          "height": 44,
+          "inside": true,
+          "hit": true,
+          "nestedInteractive": false
+        },
+        {
+          "label": "Guardar Bolso agotado en favoritos",
+          "width": 44,
+          "height": 44,
+          "inside": true,
+          "hit": true,
+          "nestedInteractive": false
+        },
+        {
+          "label": "Contactar por WhatsApp sobre Bolso agotado",
+          "width": 44,
+          "height": 44,
+          "inside": true,
+          "hit": true,
+          "nestedInteractive": false
+        },
+        {
+          "label": "Bolso agotado agotado",
+          "width": 44,
+          "height": 44,
+          "inside": true,
+          "hit": true,
+          "nestedInteractive": false
+        }
+      ]
+    }
+  },
+  {
+    "id": "p6",
+    "commercial": {
+      "id": "p6",
+      "isC2": true,
+      "price": "$ 145.000",
+      "from": false,
+      "width": 206,
+      "height": 298,
+      "priceSize": "16px",
+      "priceWeight": "600",
+      "priceColor": "rgb(168, 60, 75)",
+      "priceLineHeight": "22px",
+      "tracking": "-0.16px",
+      "textShadow": "none",
+      "font": "inter, \"inter Fallback\"",
+      "titleSize": "14px",
+      "titleWeight": "600",
+      "titleHeight": 20,
+      "titleMinHeight": "0px",
+      "commercialGap": 4,
+      "contentDirection": "column",
+      "contentGap": "4px",
+      "contentPadding": "8px",
+      "contentJustify": "flex-start",
+      "contentHeight": "62px",
+      "priceMarginTop": "0px",
+      "border": "1px solid rgb(232, 205, 211)",
+      "shadow": "rgba(44, 47, 51, 0.09) 0px 3px 12px 0px",
+      "radius": "16px",
+      "cardInlineHeight": ""
+    },
+    "metrics": {
+      "product": true,
+      "label": "Producto sin fotografía",
+      "width": 206,
+      "height": 298,
+      "top": 2241.5,
+      "left": 4,
+      "viewportPercent": 35.31,
+      "usablePercent": 45.02,
+      "mediaWidth": 204,
+      "mediaHeight": 190,
+      "imageShare": 63.76,
+      "retainedSourceArea": 60.18,
+      "imageFit": "cover",
+      "source": [
+        430,
+        241
+      ],
+      "overlayAreaPercent": 10.22,
+      "full": true,
+      "visible": 298,
+      "identifiable": true,
+      "titleHeight": 20,
+      "priceFits": true,
+      "controls": [
+        {
+          "label": "Seguir",
+          "width": 44,
+          "height": 44,
+          "inside": true,
+          "hit": true,
+          "nestedInteractive": false
+        },
+        {
+          "label": "Guardar Producto sin fotografía en favoritos",
+          "width": 44,
+          "height": 44,
+          "inside": true,
+          "hit": true,
+          "nestedInteractive": false
+        },
+        {
+          "label": "Contactar por WhatsApp sobre Producto sin fotografía",
+          "width": 44,
+          "height": 44,
+          "inside": true,
+          "hit": true,
+          "nestedInteractive": false
+        },
+        {
+          "label": "Agregar Producto sin fotografía al carrito",
+          "width": 44,
+          "height": 44,
+          "inside": true,
+          "hit": true,
+          "nestedInteractive": false
+        }
+      ]
+    }
+  },
+  {
+    "id": "p7",
+    "commercial": {
+      "id": "p7",
+      "isC2": true,
+      "price": "$ 123.456.789",
+      "from": false,
+      "width": 206,
+      "height": 318,
+      "priceSize": "16px",
+      "priceWeight": "600",
+      "priceColor": "rgb(168, 60, 75)",
+      "priceLineHeight": "22px",
+      "tracking": "-0.16px",
+      "textShadow": "none",
+      "font": "inter, \"inter Fallback\"",
+      "titleSize": "14px",
+      "titleWeight": "600",
+      "titleHeight": 40,
+      "titleMinHeight": "0px",
+      "commercialGap": 4,
+      "contentDirection": "column",
+      "contentGap": "4px",
+      "contentPadding": "8px",
+      "contentJustify": "flex-start",
+      "contentHeight": "82px",
+      "priceMarginTop": "0px",
+      "border": "1px solid rgb(232, 205, 211)",
+      "shadow": "rgba(44, 47, 51, 0.09) 0px 3px 12px 0px",
+      "radius": "16px",
+      "cardInlineHeight": ""
+    },
+    "metrics": {
+      "product": true,
+      "label": "Edición artesanal colombiana con acabados hechos a mano y nombre de producto especialmente largo",
+      "width": 206,
+      "height": 318,
+      "top": 2241.5,
+      "left": 220,
+      "viewportPercent": 37.68,
+      "usablePercent": 48.04,
+      "mediaWidth": 204,
+      "mediaHeight": 190,
+      "imageShare": 59.75,
+      "retainedSourceArea": 71.69,
+      "imageFit": "cover",
+      "source": [
+        671,
+        448
+      ],
+      "overlayAreaPercent": 10.22,
+      "full": true,
+      "visible": 318,
+      "identifiable": true,
+      "titleHeight": 40,
+      "priceFits": true,
+      "controls": [
+        {
+          "label": "Seguir",
+          "width": 44,
+          "height": 44,
+          "inside": true,
+          "hit": true,
+          "nestedInteractive": false
+        },
+        {
+          "label": "Guardar Edición artesanal colombiana con acabados hechos a mano y nombre de producto especialmente largo en favoritos",
+          "width": 44,
+          "height": 44,
+          "inside": true,
+          "hit": true,
+          "nestedInteractive": false
+        },
+        {
+          "label": "Contactar por WhatsApp sobre Edición artesanal colombiana con acabados hechos a mano y nombre de producto especialmente largo",
+          "width": 44,
+          "height": 44,
+          "inside": true,
+          "hit": true,
+          "nestedInteractive": false
+        },
+        {
+          "label": "Agregar Edición artesanal colombiana con acabados hechos a mano y nombre de producto especialmente largo al carrito",
+          "width": 44,
+          "height": 44,
+          "inside": true,
+          "hit": true,
+          "nestedInteractive": false
+        }
+      ]
+    }
+  }
+]

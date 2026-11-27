@@ -1,0 +1,12 @@
+PASS src/lib/business/business-visibility-policy.test.ts
+PASS src/feed/actions/publicGeography.audit.test.ts
+PASS src/lib/business/publicBusinessVisibility.test.ts
+PASS src/feed/actions/getFeedDataByCategory.test.ts
+PASS src/lib/contact/phone.test.ts
+PASS src/feed/actions/getFeedData.test.ts
+
+Test Suites: 6 passed, 6 total
+Tests:       84 passed, 84 total
+Snapshots:   0 total
+Time:        1.389 s, estimated 2 s
+Ran all test suites matching src/lib/contact/phone.test.ts|src/feed/actions/publicGeography.audit.test.ts|src/feed/actions/getFeedData.test.ts|src/feed/actions/getFeedDataByCategory.test.ts|src/lib/business/business-visibility-policy.test.ts|src/lib/business/publicBusinessVisibility.test.ts.

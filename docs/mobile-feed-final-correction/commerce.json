@@ -1,0 +1,58 @@
+{
+  "actions": [
+    "getFeedDataByType:publications",
+    "getFeedDataByType:products",
+    "getFeedDataByType:services",
+    "getFeedDataByType:businesses",
+    "getFollowedBusinesses",
+    "getFeedDataByType:publications",
+    "getFeedDataByType:products",
+    "getFeedDataByType:services",
+    "getFeedDataByType:businesses",
+    "getFollowedBusinesses",
+    "checkIsFollowing",
+    "toggleFollow",
+    "checkIsFollowing"
+  ],
+  "localCart": {
+    "casa-origen": [
+      {
+        "cartItemId": "p1-base-1794803713945",
+        "id": "p1",
+        "slug": "cafe-origen",
+        "nombre": "Tenis urbanos",
+        "precio": 145000,
+        "cantidad": 2,
+        "imagen": "/__feed-final-correction/shoes.jpg",
+        "seccionIds": [],
+        "descripcionCorta": "Café colombiano con notas de chocolate y panela. Tostado fresco para cada mañana.",
+        "negocioFotoPerfil": "/imgs/admin-avatar.webp",
+        "usaVariantes": false,
+        "productVariantId": null,
+        "variantLabel": null,
+        "stock": 10,
+        "stockIlimitado": false
+      },
+      {
+        "cartItemId": "p4-v1-1794803716858",
+        "id": "p4",
+        "slug": "cafe-origen",
+        "nombre": "Tenis con talla a elección",
+        "precio": 145000,
+        "cantidad": 3,
+        "imagen": "/__feed-final-correction/shoes.jpg",
+        "seccionIds": [],
+        "descripcionCorta": "Café colombiano con notas de chocolate y panela. Tostado fresco para cada mañana.",
+        "negocioFotoPerfil": "/imgs/admin-avatar.webp",
+        "usaVariantes": true,
+        "productVariantId": "v1",
+        "variantLabel": "38",
+        "stock": 3,
+        "stockIlimitado": false
+      }
+    ]
+  },
+  "favoritePersisted": true,
+  "whatsappPopupOpened": true,
+  "exhaustedVariantDisabled": true
+}

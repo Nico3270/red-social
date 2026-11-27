@@ -1,0 +1,21 @@
+{
+  "before": {
+    "scroll": 400,
+    "overflow": "unset",
+    "anchor": 163
+  },
+  "after": {
+    "scroll": 400,
+    "overflow": "unset"
+  },
+  "requests": [
+    "/api/search?query=lento&limit=10",
+    "/api/search?query=tenis&limit=10",
+    "/api/search?query=vacio&limit=10",
+    "/api/search?query=error&limit=10",
+    "/api/search?query=tenis&limit=10"
+  ],
+  "focusRestored": true,
+  "focusTrapped": true,
+  "staleResponseIgnored": true
+}

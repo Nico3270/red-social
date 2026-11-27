@@ -1,0 +1,3426 @@
+{
+  "browserName": "chromium",
+  "records": [
+    {
+      "case": "states",
+      "actions": "split",
+      "width": 320,
+      "g": {
+        "viewport": {
+          "width": 320,
+          "height": 568
+        },
+        "header": 113,
+        "bottomNavigation": 69,
+        "usableHeight": 386,
+        "overflow": false,
+        "fullProducts": 1,
+        "partialProducts": 2,
+        "identifiableProducts": 1,
+        "firstPublicationTop": null,
+        "cards": [
+          {
+            "product": true,
+            "label": "Café de origen · 250 g",
+            "width": 296,
+            "height": 256.91,
+            "top": 230,
+            "left": 12,
+            "viewportPercent": 45.23,
+            "usablePercent": 66.56,
+            "mediaWidth": 294,
+            "mediaHeight": 158.91,
+            "imageShare": 61.85,
+            "retainedSourceArea": 71.43,
+            "imageFit": "contain",
+            "source": [
+              640,
+              640
+            ],
+            "overlayAreaPercent": 4.14,
+            "full": false,
+            "visible": 0,
+            "identifiable": false,
+            "titleHeight": 22,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Guardar Café de origen · 250 g en favoritos",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Agregar Café de origen · 250 g al carrito",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café de origen · 250 g",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          },
+          {
+            "product": true,
+            "label": "Café artesanal colombiano de origen con molienda personalizada para prensa francesa y filtro de papel",
+            "width": 296,
+            "height": 280.91,
+            "top": 526.91,
+            "left": 12,
+            "viewportPercent": 49.46,
+            "usablePercent": 72.77,
+            "mediaWidth": 294,
+            "mediaHeight": 158.91,
+            "imageShare": 56.57,
+            "retainedSourceArea": 71.43,
+            "imageFit": "contain",
+            "source": [
+              640,
+              640
+            ],
+            "overlayAreaPercent": 4.14,
+            "full": false,
+            "visible": 0,
+            "identifiable": false,
+            "titleHeight": 22,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Guardar Café artesanal colombiano de origen con molienda personalizada para prensa francesa y filtro de papel en favoritos",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Agregar Café artesanal colombiano de origen con molienda personalizada para prensa francesa y filtro de papel al carrito",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café artesanal colombiano de origen con molienda personalizada para prensa francesa y filtro de papel",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          },
+          {
+            "product": true,
+            "label": "Café de origen · 250 g",
+            "width": 296,
+            "height": 256.91,
+            "top": 847.81,
+            "left": 12,
+            "viewportPercent": 45.23,
+            "usablePercent": 66.56,
+            "mediaWidth": 294,
+            "mediaHeight": 158.91,
+            "imageShare": 61.85,
+            "retainedSourceArea": 71.43,
+            "imageFit": "contain",
+            "source": [
+              640,
+              640
+            ],
+            "overlayAreaPercent": 4.14,
+            "full": false,
+            "visible": 0,
+            "identifiable": false,
+            "titleHeight": 22,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Guardar Café de origen · 250 g en favoritos",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Elegir opciones de Café de origen · 250 g",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café de origen · 250 g",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          },
+          {
+            "product": true,
+            "label": "Café de origen · 250 g",
+            "width": 296,
+            "height": 274.91,
+            "top": 1144.72,
+            "left": 12,
+            "viewportPercent": 48.4,
+            "usablePercent": 71.22,
+            "mediaWidth": 294,
+            "mediaHeight": 158.91,
+            "imageShare": 57.8,
+            "retainedSourceArea": 71.43,
+            "imageFit": "contain",
+            "source": [
+              640,
+              640
+            ],
+            "overlayAreaPercent": 4.14,
+            "full": false,
+            "visible": 2.63,
+            "identifiable": false,
+            "titleHeight": 22,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Guardar Café de origen · 250 g en favoritos",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Agregar Café de origen · 250 g al carrito",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café de origen · 250 g",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          },
+          {
+            "product": true,
+            "label": "Café de origen · 250 g",
+            "width": 296,
+            "height": 256.91,
+            "top": 1459.63,
+            "left": 12,
+            "viewportPercent": 45.23,
+            "usablePercent": 66.56,
+            "mediaWidth": 294,
+            "mediaHeight": 158.91,
+            "imageShare": 61.85,
+            "retainedSourceArea": 71.43,
+            "imageFit": "contain",
+            "source": [
+              640,
+              640
+            ],
+            "overlayAreaPercent": 4.14,
+            "full": true,
+            "visible": 256.91,
+            "identifiable": true,
+            "titleHeight": 22,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Guardar Café de origen · 250 g en favoritos",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Café de origen · 250 g agotado",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café de origen · 250 g",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          },
+          {
+            "product": true,
+            "label": "Café de origen · 250 g",
+            "width": 296,
+            "height": 256.91,
+            "top": 1756.53,
+            "left": 12,
+            "viewportPercent": 45.23,
+            "usablePercent": 66.56,
+            "mediaWidth": 294,
+            "mediaHeight": 158.91,
+            "imageShare": 61.85,
+            "retainedSourceArea": 71.43,
+            "imageFit": "contain",
+            "source": [
+              640,
+              640
+            ],
+            "overlayAreaPercent": 4.14,
+            "full": false,
+            "visible": 46.47,
+            "identifiable": false,
+            "titleHeight": 22,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Guardar Café de origen · 250 g en favoritos",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Café de origen · 250 g agotado",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café de origen · 250 g",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          },
+          {
+            "product": true,
+            "label": "Café de origen · 250 g",
+            "width": 296,
+            "height": 256.91,
+            "top": 2053.44,
+            "left": 12,
+            "viewportPercent": 45.23,
+            "usablePercent": 66.56,
+            "mediaWidth": 294,
+            "mediaHeight": 158.91,
+            "imageShare": 61.85,
+            "retainedSourceArea": 96.63,
+            "imageFit": "cover",
+            "source": [
+              320,
+              179
+            ],
+            "overlayAreaPercent": 4.14,
+            "full": false,
+            "visible": 0,
+            "identifiable": false,
+            "titleHeight": 22,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Guardar Café de origen · 250 g en favoritos",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Agregar Café de origen · 250 g al carrito",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café de origen · 250 g",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          },
+          {
+            "product": true,
+            "label": "Café de origen · 250 g",
+            "width": 296,
+            "height": 256.91,
+            "top": 2350.34,
+            "left": 12,
+            "viewportPercent": 45.23,
+            "usablePercent": 66.56,
+            "mediaWidth": 294,
+            "mediaHeight": 158.91,
+            "imageShare": 61.85,
+            "retainedSourceArea": 96.63,
+            "imageFit": "cover",
+            "source": [
+              320,
+              179
+            ],
+            "overlayAreaPercent": 4.14,
+            "full": false,
+            "visible": 0,
+            "identifiable": false,
+            "titleHeight": 22,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Guardar Café de origen · 250 g en favoritos",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Agregar Café de origen · 250 g al carrito",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café de origen · 250 g",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "case": "states",
+      "actions": "split",
+      "width": 390,
+      "g": {
+        "viewport": {
+          "width": 390,
+          "height": 568
+        },
+        "header": 113,
+        "bottomNavigation": 69,
+        "usableHeight": 386,
+        "overflow": false,
+        "fullProducts": 1,
+        "partialProducts": 1,
+        "identifiableProducts": 1,
+        "firstPublicationTop": null,
+        "cards": [
+          {
+            "product": true,
+            "label": "Café de origen · 250 g",
+            "width": 186,
+            "height": 310,
+            "top": 230,
+            "left": 12,
+            "viewportPercent": 54.58,
+            "usablePercent": 80.31,
+            "mediaWidth": 184,
+            "mediaHeight": 184,
+            "imageShare": 59.35,
+            "retainedSourceArea": 100,
+            "imageFit": "contain",
+            "source": [
+              640,
+              640
+            ],
+            "overlayAreaPercent": 5.72,
+            "full": false,
+            "visible": 0,
+            "identifiable": false,
+            "titleHeight": 18,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Guardar Café de origen · 250 g en favoritos",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Agregar Café de origen · 250 g al carrito",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café de origen · 250 g",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          },
+          {
+            "product": true,
+            "label": "Café artesanal colombiano de origen con molienda personalizada para prensa francesa y filtro de papel",
+            "width": 186,
+            "height": 358,
+            "top": 580,
+            "left": 12,
+            "viewportPercent": 63.03,
+            "usablePercent": 92.75,
+            "mediaWidth": 184,
+            "mediaHeight": 184,
+            "imageShare": 51.4,
+            "retainedSourceArea": 100,
+            "imageFit": "contain",
+            "source": [
+              640,
+              640
+            ],
+            "overlayAreaPercent": 5.72,
+            "full": false,
+            "visible": 0,
+            "identifiable": false,
+            "titleHeight": 36,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Guardar Café artesanal colombiano de origen con molienda personalizada para prensa francesa y filtro de papel en favoritos",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Agregar Café artesanal colombiano de origen con molienda personalizada para prensa francesa y filtro de papel al carrito",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café artesanal colombiano de origen con molienda personalizada para prensa francesa y filtro de papel",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          },
+          {
+            "product": true,
+            "label": "Café de origen · 250 g",
+            "width": 186,
+            "height": 310,
+            "top": 978,
+            "left": 12,
+            "viewportPercent": 54.58,
+            "usablePercent": 80.31,
+            "mediaWidth": 184,
+            "mediaHeight": 184,
+            "imageShare": 59.35,
+            "retainedSourceArea": 100,
+            "imageFit": "contain",
+            "source": [
+              640,
+              640
+            ],
+            "overlayAreaPercent": 5.72,
+            "full": false,
+            "visible": 0,
+            "identifiable": false,
+            "titleHeight": 18,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Guardar Café de origen · 250 g en favoritos",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Elegir opciones de Café de origen · 250 g",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café de origen · 250 g",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          },
+          {
+            "product": true,
+            "label": "Café de origen · 250 g",
+            "width": 186,
+            "height": 328,
+            "top": 1328,
+            "left": 12,
+            "viewportPercent": 57.75,
+            "usablePercent": 84.97,
+            "mediaWidth": 184,
+            "mediaHeight": 184,
+            "imageShare": 56.1,
+            "retainedSourceArea": 100,
+            "imageFit": "contain",
+            "source": [
+              640,
+              640
+            ],
+            "overlayAreaPercent": 5.72,
+            "full": false,
+            "visible": 0,
+            "identifiable": false,
+            "titleHeight": 18,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Guardar Café de origen · 250 g en favoritos",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Agregar Café de origen · 250 g al carrito",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café de origen · 250 g",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          },
+          {
+            "product": true,
+            "label": "Café de origen · 250 g",
+            "width": 186,
+            "height": 310,
+            "top": 1696,
+            "left": 12,
+            "viewportPercent": 54.58,
+            "usablePercent": 80.31,
+            "mediaWidth": 184,
+            "mediaHeight": 184,
+            "imageShare": 59.35,
+            "retainedSourceArea": 100,
+            "imageFit": "contain",
+            "source": [
+              640,
+              640
+            ],
+            "overlayAreaPercent": 5.72,
+            "full": true,
+            "visible": 310,
+            "identifiable": true,
+            "titleHeight": 18,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Guardar Café de origen · 250 g en favoritos",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Café de origen · 250 g agotado",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café de origen · 250 g",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          },
+          {
+            "product": true,
+            "label": "Café de origen · 250 g",
+            "width": 186,
+            "height": 310,
+            "top": 2046,
+            "left": 12,
+            "viewportPercent": 54.58,
+            "usablePercent": 80.31,
+            "mediaWidth": 184,
+            "mediaHeight": 184,
+            "imageShare": 59.35,
+            "retainedSourceArea": 100,
+            "imageFit": "contain",
+            "source": [
+              640,
+              640
+            ],
+            "overlayAreaPercent": 5.72,
+            "full": false,
+            "visible": 20,
+            "identifiable": false,
+            "titleHeight": 18,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Guardar Café de origen · 250 g en favoritos",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Café de origen · 250 g agotado",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café de origen · 250 g",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          },
+          {
+            "product": true,
+            "label": "Café de origen · 250 g",
+            "width": 186,
+            "height": 310,
+            "top": 2396,
+            "left": 12,
+            "viewportPercent": 54.58,
+            "usablePercent": 80.31,
+            "mediaWidth": 184,
+            "mediaHeight": 184,
+            "imageShare": 59.35,
+            "retainedSourceArea": 55.9,
+            "imageFit": "cover",
+            "source": [
+              390,
+              218
+            ],
+            "overlayAreaPercent": 5.72,
+            "full": false,
+            "visible": 0,
+            "identifiable": false,
+            "titleHeight": 18,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Guardar Café de origen · 250 g en favoritos",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Agregar Café de origen · 250 g al carrito",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café de origen · 250 g",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          },
+          {
+            "product": true,
+            "label": "Café de origen · 250 g",
+            "width": 186,
+            "height": 310,
+            "top": 2746,
+            "left": 12,
+            "viewportPercent": 54.58,
+            "usablePercent": 80.31,
+            "mediaWidth": 184,
+            "mediaHeight": 184,
+            "imageShare": 59.35,
+            "retainedSourceArea": 55.9,
+            "imageFit": "cover",
+            "source": [
+              390,
+              218
+            ],
+            "overlayAreaPercent": 5.72,
+            "full": false,
+            "visible": 0,
+            "identifiable": false,
+            "titleHeight": 18,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Guardar Café de origen · 250 g en favoritos",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Agregar Café de origen · 250 g al carrito",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café de origen · 250 g",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "case": "states",
+      "actions": "split",
+      "width": 430,
+      "g": {
+        "viewport": {
+          "width": 430,
+          "height": 568
+        },
+        "header": 113,
+        "bottomNavigation": 69,
+        "usableHeight": 386,
+        "overflow": false,
+        "fullProducts": 1,
+        "partialProducts": 1,
+        "identifiableProducts": 1,
+        "firstPublicationTop": null,
+        "cards": [
+          {
+            "product": true,
+            "label": "Café de origen · 250 g",
+            "width": 186,
+            "height": 310,
+            "top": 230,
+            "left": 12,
+            "viewportPercent": 54.58,
+            "usablePercent": 80.31,
+            "mediaWidth": 184,
+            "mediaHeight": 184,
+            "imageShare": 59.35,
+            "retainedSourceArea": 100,
+            "imageFit": "contain",
+            "source": [
+              640,
+              640
+            ],
+            "overlayAreaPercent": 5.72,
+            "full": false,
+            "visible": 0,
+            "identifiable": false,
+            "titleHeight": 18,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Guardar Café de origen · 250 g en favoritos",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Agregar Café de origen · 250 g al carrito",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café de origen · 250 g",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          },
+          {
+            "product": true,
+            "label": "Café artesanal colombiano de origen con molienda personalizada para prensa francesa y filtro de papel",
+            "width": 186,
+            "height": 358,
+            "top": 580,
+            "left": 12,
+            "viewportPercent": 63.03,
+            "usablePercent": 92.75,
+            "mediaWidth": 184,
+            "mediaHeight": 184,
+            "imageShare": 51.4,
+            "retainedSourceArea": 100,
+            "imageFit": "contain",
+            "source": [
+              640,
+              640
+            ],
+            "overlayAreaPercent": 5.72,
+            "full": false,
+            "visible": 0,
+            "identifiable": false,
+            "titleHeight": 36,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Guardar Café artesanal colombiano de origen con molienda personalizada para prensa francesa y filtro de papel en favoritos",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Agregar Café artesanal colombiano de origen con molienda personalizada para prensa francesa y filtro de papel al carrito",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café artesanal colombiano de origen con molienda personalizada para prensa francesa y filtro de papel",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          },
+          {
+            "product": true,
+            "label": "Café de origen · 250 g",
+            "width": 186,
+            "height": 310,
+            "top": 978,
+            "left": 12,
+            "viewportPercent": 54.58,
+            "usablePercent": 80.31,
+            "mediaWidth": 184,
+            "mediaHeight": 184,
+            "imageShare": 59.35,
+            "retainedSourceArea": 100,
+            "imageFit": "contain",
+            "source": [
+              640,
+              640
+            ],
+            "overlayAreaPercent": 5.72,
+            "full": false,
+            "visible": 0,
+            "identifiable": false,
+            "titleHeight": 18,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Guardar Café de origen · 250 g en favoritos",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Elegir opciones de Café de origen · 250 g",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café de origen · 250 g",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          },
+          {
+            "product": true,
+            "label": "Café de origen · 250 g",
+            "width": 186,
+            "height": 328,
+            "top": 1328,
+            "left": 12,
+            "viewportPercent": 57.75,
+            "usablePercent": 84.97,
+            "mediaWidth": 184,
+            "mediaHeight": 184,
+            "imageShare": 56.1,
+            "retainedSourceArea": 100,
+            "imageFit": "contain",
+            "source": [
+              640,
+              640
+            ],
+            "overlayAreaPercent": 5.72,
+            "full": false,
+            "visible": 0,
+            "identifiable": false,
+            "titleHeight": 18,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Guardar Café de origen · 250 g en favoritos",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Agregar Café de origen · 250 g al carrito",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café de origen · 250 g",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          },
+          {
+            "product": true,
+            "label": "Café de origen · 250 g",
+            "width": 186,
+            "height": 310,
+            "top": 1696,
+            "left": 12,
+            "viewportPercent": 54.58,
+            "usablePercent": 80.31,
+            "mediaWidth": 184,
+            "mediaHeight": 184,
+            "imageShare": 59.35,
+            "retainedSourceArea": 100,
+            "imageFit": "contain",
+            "source": [
+              640,
+              640
+            ],
+            "overlayAreaPercent": 5.72,
+            "full": true,
+            "visible": 310,
+            "identifiable": true,
+            "titleHeight": 18,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Guardar Café de origen · 250 g en favoritos",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Café de origen · 250 g agotado",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café de origen · 250 g",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          },
+          {
+            "product": true,
+            "label": "Café de origen · 250 g",
+            "width": 186,
+            "height": 310,
+            "top": 2046,
+            "left": 12,
+            "viewportPercent": 54.58,
+            "usablePercent": 80.31,
+            "mediaWidth": 184,
+            "mediaHeight": 184,
+            "imageShare": 59.35,
+            "retainedSourceArea": 100,
+            "imageFit": "contain",
+            "source": [
+              640,
+              640
+            ],
+            "overlayAreaPercent": 5.72,
+            "full": false,
+            "visible": 20,
+            "identifiable": false,
+            "titleHeight": 18,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Guardar Café de origen · 250 g en favoritos",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Café de origen · 250 g agotado",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café de origen · 250 g",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          },
+          {
+            "product": true,
+            "label": "Café de origen · 250 g",
+            "width": 186,
+            "height": 310,
+            "top": 2396,
+            "left": 12,
+            "viewportPercent": 54.58,
+            "usablePercent": 80.31,
+            "mediaWidth": 184,
+            "mediaHeight": 184,
+            "imageShare": 59.35,
+            "retainedSourceArea": 56.05,
+            "imageFit": "cover",
+            "source": [
+              430,
+              241
+            ],
+            "overlayAreaPercent": 5.72,
+            "full": false,
+            "visible": 0,
+            "identifiable": false,
+            "titleHeight": 18,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Guardar Café de origen · 250 g en favoritos",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Agregar Café de origen · 250 g al carrito",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café de origen · 250 g",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          },
+          {
+            "product": true,
+            "label": "Café de origen · 250 g",
+            "width": 186,
+            "height": 310,
+            "top": 2746,
+            "left": 12,
+            "viewportPercent": 54.58,
+            "usablePercent": 80.31,
+            "mediaWidth": 184,
+            "mediaHeight": 184,
+            "imageShare": 59.35,
+            "retainedSourceArea": 56.05,
+            "imageFit": "cover",
+            "source": [
+              430,
+              241
+            ],
+            "overlayAreaPercent": 5.72,
+            "full": false,
+            "visible": 0,
+            "identifiable": false,
+            "titleHeight": 18,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Guardar Café de origen · 250 g en favoritos",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Agregar Café de origen · 250 g al carrito",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café de origen · 250 g",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "case": "states",
+      "actions": "split",
+      "width": 768,
+      "g": {
+        "viewport": {
+          "width": 768,
+          "height": 568
+        },
+        "header": 113,
+        "bottomNavigation": 69,
+        "usableHeight": 386,
+        "overflow": false,
+        "fullProducts": 1,
+        "partialProducts": 1,
+        "identifiableProducts": 1,
+        "firstPublicationTop": null,
+        "cards": [
+          {
+            "product": true,
+            "label": "Café de origen · 250 g",
+            "width": 186,
+            "height": 310,
+            "top": 254,
+            "left": 12,
+            "viewportPercent": 54.58,
+            "usablePercent": 80.31,
+            "mediaWidth": 184,
+            "mediaHeight": 184,
+            "imageShare": 59.35,
+            "retainedSourceArea": 100,
+            "imageFit": "contain",
+            "source": [
+              640,
+              640
+            ],
+            "overlayAreaPercent": 5.72,
+            "full": false,
+            "visible": 0,
+            "identifiable": false,
+            "titleHeight": 18,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Guardar Café de origen · 250 g en favoritos",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Agregar Café de origen · 250 g al carrito",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café de origen · 250 g",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          },
+          {
+            "product": true,
+            "label": "Café artesanal colombiano de origen con molienda personalizada para prensa francesa y filtro de papel",
+            "width": 186,
+            "height": 358,
+            "top": 604,
+            "left": 12,
+            "viewportPercent": 63.03,
+            "usablePercent": 92.75,
+            "mediaWidth": 184,
+            "mediaHeight": 184,
+            "imageShare": 51.4,
+            "retainedSourceArea": 100,
+            "imageFit": "contain",
+            "source": [
+              640,
+              640
+            ],
+            "overlayAreaPercent": 5.72,
+            "full": false,
+            "visible": 0,
+            "identifiable": false,
+            "titleHeight": 36,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Guardar Café artesanal colombiano de origen con molienda personalizada para prensa francesa y filtro de papel en favoritos",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Agregar Café artesanal colombiano de origen con molienda personalizada para prensa francesa y filtro de papel al carrito",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café artesanal colombiano de origen con molienda personalizada para prensa francesa y filtro de papel",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          },
+          {
+            "product": true,
+            "label": "Café de origen · 250 g",
+            "width": 186,
+            "height": 310,
+            "top": 1002,
+            "left": 12,
+            "viewportPercent": 54.58,
+            "usablePercent": 80.31,
+            "mediaWidth": 184,
+            "mediaHeight": 184,
+            "imageShare": 59.35,
+            "retainedSourceArea": 100,
+            "imageFit": "contain",
+            "source": [
+              640,
+              640
+            ],
+            "overlayAreaPercent": 5.72,
+            "full": false,
+            "visible": 0,
+            "identifiable": false,
+            "titleHeight": 18,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Guardar Café de origen · 250 g en favoritos",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Elegir opciones de Café de origen · 250 g",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café de origen · 250 g",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          },
+          {
+            "product": true,
+            "label": "Café de origen · 250 g",
+            "width": 186,
+            "height": 328,
+            "top": 1352,
+            "left": 12,
+            "viewportPercent": 57.75,
+            "usablePercent": 84.97,
+            "mediaWidth": 184,
+            "mediaHeight": 184,
+            "imageShare": 56.1,
+            "retainedSourceArea": 100,
+            "imageFit": "contain",
+            "source": [
+              640,
+              640
+            ],
+            "overlayAreaPercent": 5.72,
+            "full": false,
+            "visible": 0,
+            "identifiable": false,
+            "titleHeight": 18,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Guardar Café de origen · 250 g en favoritos",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Agregar Café de origen · 250 g al carrito",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café de origen · 250 g",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          },
+          {
+            "product": true,
+            "label": "Café de origen · 250 g",
+            "width": 186,
+            "height": 310,
+            "top": 1720,
+            "left": 12,
+            "viewportPercent": 54.58,
+            "usablePercent": 80.31,
+            "mediaWidth": 184,
+            "mediaHeight": 184,
+            "imageShare": 59.35,
+            "retainedSourceArea": 100,
+            "imageFit": "contain",
+            "source": [
+              640,
+              640
+            ],
+            "overlayAreaPercent": 5.72,
+            "full": true,
+            "visible": 310,
+            "identifiable": true,
+            "titleHeight": 18,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Guardar Café de origen · 250 g en favoritos",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Café de origen · 250 g agotado",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café de origen · 250 g",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          },
+          {
+            "product": true,
+            "label": "Café de origen · 250 g",
+            "width": 186,
+            "height": 310,
+            "top": 2070,
+            "left": 12,
+            "viewportPercent": 54.58,
+            "usablePercent": 80.31,
+            "mediaWidth": 184,
+            "mediaHeight": 184,
+            "imageShare": 59.35,
+            "retainedSourceArea": 100,
+            "imageFit": "contain",
+            "source": [
+              640,
+              640
+            ],
+            "overlayAreaPercent": 5.72,
+            "full": false,
+            "visible": 20,
+            "identifiable": false,
+            "titleHeight": 18,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Guardar Café de origen · 250 g en favoritos",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Café de origen · 250 g agotado",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café de origen · 250 g",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          },
+          {
+            "product": true,
+            "label": "Café de origen · 250 g",
+            "width": 186,
+            "height": 310,
+            "top": 2420,
+            "left": 12,
+            "viewportPercent": 54.58,
+            "usablePercent": 80.31,
+            "mediaWidth": 184,
+            "mediaHeight": 184,
+            "imageShare": 59.35,
+            "retainedSourceArea": 56,
+            "imageFit": "cover",
+            "source": [
+              675,
+              378
+            ],
+            "overlayAreaPercent": 5.72,
+            "full": false,
+            "visible": 0,
+            "identifiable": false,
+            "titleHeight": 18,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Guardar Café de origen · 250 g en favoritos",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Agregar Café de origen · 250 g al carrito",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café de origen · 250 g",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          },
+          {
+            "product": true,
+            "label": "Café de origen · 250 g",
+            "width": 186,
+            "height": 310,
+            "top": 2770,
+            "left": 12,
+            "viewportPercent": 54.58,
+            "usablePercent": 80.31,
+            "mediaWidth": 184,
+            "mediaHeight": 184,
+            "imageShare": 59.35,
+            "retainedSourceArea": 56,
+            "imageFit": "cover",
+            "source": [
+              675,
+              378
+            ],
+            "overlayAreaPercent": 5.72,
+            "full": false,
+            "visible": 0,
+            "identifiable": false,
+            "titleHeight": 18,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Guardar Café de origen · 250 g en favoritos",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Agregar Café de origen · 250 g al carrito",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café de origen · 250 g",
+                "width": 44,
+                "height": 44,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "case": "zoom",
+      "width": 320,
+      "actions": "split",
+      "g": {
+        "viewport": {
+          "width": 320,
+          "height": 844
+        },
+        "header": 226,
+        "bottomNavigation": 146,
+        "usableHeight": 472,
+        "overflow": false,
+        "fullProducts": 0,
+        "partialProducts": 1,
+        "identifiableProducts": 0,
+        "firstPublicationTop": 2500,
+        "cards": [
+          {
+            "product": true,
+            "label": "Café de origen · 250 g",
+            "width": 304,
+            "height": 588,
+            "top": 680,
+            "left": 8,
+            "viewportPercent": 69.67,
+            "usablePercent": 124.58,
+            "mediaWidth": 300,
+            "mediaHeight": 300,
+            "imageShare": 51.02,
+            "retainedSourceArea": 100,
+            "imageFit": "contain",
+            "source": [
+              640,
+              640
+            ],
+            "overlayAreaPercent": 8.6,
+            "full": false,
+            "visible": 18,
+            "identifiable": false,
+            "titleHeight": 72,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Guardar Café de origen · 250 g en favoritos",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Agregar Café de origen · 250 g al carrito",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café de origen · 250 g",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          },
+          {
+            "product": true,
+            "label": "Bolso tejido artesanal",
+            "width": 304,
+            "height": 552,
+            "top": 1292,
+            "left": 8,
+            "viewportPercent": 65.4,
+            "usablePercent": 116.95,
+            "mediaWidth": 300,
+            "mediaHeight": 300,
+            "imageShare": 54.35,
+            "retainedSourceArea": 100,
+            "imageFit": "contain",
+            "source": [
+              640,
+              640
+            ],
+            "overlayAreaPercent": 8.6,
+            "full": false,
+            "visible": 0,
+            "identifiable": false,
+            "titleHeight": 36,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Guardar Bolso tejido artesanal en favoritos",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Agregar Bolso tejido artesanal al carrito",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Bolso tejido artesanal",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          },
+          {
+            "product": true,
+            "label": "Planta con matera",
+            "width": 304,
+            "height": 552,
+            "top": 1868,
+            "left": 8,
+            "viewportPercent": 65.4,
+            "usablePercent": 116.95,
+            "mediaWidth": 300,
+            "mediaHeight": 300,
+            "imageShare": 54.35,
+            "retainedSourceArea": 100,
+            "imageFit": "contain",
+            "source": [
+              640,
+              640
+            ],
+            "overlayAreaPercent": 8.6,
+            "full": false,
+            "visible": 0,
+            "identifiable": false,
+            "titleHeight": 36,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Guardar Planta con matera en favoritos",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Agregar Planta con matera al carrito",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Planta con matera",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          },
+          {
+            "product": false,
+            "label": "Así empieza una buena mañana",
+            "width": 304,
+            "height": 855.5,
+            "top": 2500,
+            "left": 8,
+            "viewportPercent": 101.36,
+            "usablePercent": 181.25,
+            "mediaWidth": 0,
+            "mediaHeight": 0,
+            "imageShare": 0,
+            "retainedSourceArea": 0,
+            "source": [],
+            "overlayAreaPercent": 0,
+            "full": false,
+            "visible": 0,
+            "identifiable": false,
+            "titleHeight": 88,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Abrir publicación",
+                "width": 300,
+                "height": 187.5,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": null,
+                "width": 252,
+                "height": 116,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          },
+          {
+            "product": true,
+            "label": "Café de origen · 500 g",
+            "width": 304,
+            "height": 588,
+            "top": 3387.5,
+            "left": 8,
+            "viewportPercent": 69.67,
+            "usablePercent": 124.58,
+            "mediaWidth": 300,
+            "mediaHeight": 300,
+            "imageShare": 51.02,
+            "retainedSourceArea": 100,
+            "imageFit": "contain",
+            "source": [
+              640,
+              640
+            ],
+            "overlayAreaPercent": 8.6,
+            "full": false,
+            "visible": 0,
+            "identifiable": false,
+            "titleHeight": 72,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Guardar Café de origen · 500 g en favoritos",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Agregar Café de origen · 500 g al carrito",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café de origen · 500 g",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          },
+          {
+            "product": true,
+            "label": "Bolso de fibras naturales",
+            "width": 304,
+            "height": 648,
+            "top": 3999.5,
+            "left": 8,
+            "viewportPercent": 76.78,
+            "usablePercent": 137.29,
+            "mediaWidth": 300,
+            "mediaHeight": 300,
+            "imageShare": 46.3,
+            "retainedSourceArea": 100,
+            "imageFit": "contain",
+            "source": [
+              640,
+              640
+            ],
+            "overlayAreaPercent": 8.6,
+            "full": false,
+            "visible": 0,
+            "identifiable": false,
+            "titleHeight": 72,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Guardar Bolso de fibras naturales en favoritos",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Agregar Bolso de fibras naturales al carrito",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Bolso de fibras naturales",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          },
+          {
+            "product": false,
+            "width": 304,
+            "height": 1104.25,
+            "top": 4727.5,
+            "left": 8,
+            "viewportPercent": 130.84,
+            "usablePercent": 233.95,
+            "mediaWidth": 0,
+            "mediaHeight": 0,
+            "imageShare": 0,
+            "retainedSourceArea": 0,
+            "source": [],
+            "overlayAreaPercent": 0,
+            "full": false,
+            "visible": 0,
+            "identifiable": false,
+            "titleHeight": 0,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Contactar a Casa Origen por WhatsApp",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          },
+          {
+            "product": true,
+            "label": "Planta para tu escritorio",
+            "width": 304,
+            "height": 588,
+            "top": 5863.75,
+            "left": 8,
+            "viewportPercent": 69.67,
+            "usablePercent": 124.58,
+            "mediaWidth": 300,
+            "mediaHeight": 300,
+            "imageShare": 51.02,
+            "retainedSourceArea": null,
+            "imageFit": "cover",
+            "source": [
+              0,
+              0
+            ],
+            "overlayAreaPercent": 8.6,
+            "full": false,
+            "visible": 0,
+            "identifiable": false,
+            "titleHeight": 72,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Guardar Planta para tu escritorio en favoritos",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Agregar Planta para tu escritorio al carrito",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Planta para tu escritorio",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          },
+          {
+            "product": false,
+            "label": "Taller de café en casa",
+            "width": 304,
+            "height": 740,
+            "top": 6531.75,
+            "left": 8,
+            "viewportPercent": 87.68,
+            "usablePercent": 156.78,
+            "mediaWidth": 0,
+            "mediaHeight": 0,
+            "imageShare": 0,
+            "retainedSourceArea": 0,
+            "source": [],
+            "overlayAreaPercent": 0,
+            "full": false,
+            "visible": 0,
+            "identifiable": false,
+            "titleHeight": 88,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Consultar Taller de café en casa por WhatsApp",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "case": "zoom",
+      "width": 768,
+      "actions": "split",
+      "g": {
+        "viewport": {
+          "width": 768,
+          "height": 844
+        },
+        "header": 226,
+        "bottomNavigation": 138,
+        "usableHeight": 480,
+        "overflow": false,
+        "fullProducts": 0,
+        "partialProducts": 1,
+        "identifiableProducts": 0,
+        "firstPublicationTop": 2551.015625,
+        "cards": [
+          {
+            "product": true,
+            "label": "Café de origen · 250 g",
+            "width": 736,
+            "height": 591.67,
+            "top": 648,
+            "left": 16,
+            "viewportPercent": 70.1,
+            "usablePercent": 123.26,
+            "mediaWidth": 732,
+            "mediaHeight": 395.67,
+            "imageShare": 66.87,
+            "retainedSourceArea": 71.43,
+            "imageFit": "contain",
+            "source": [
+              640,
+              640
+            ],
+            "overlayAreaPercent": 2.67,
+            "full": false,
+            "visible": 58,
+            "identifiable": false,
+            "titleHeight": 44,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Guardar Café de origen · 250 g en favoritos",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Agregar Café de origen · 250 g al carrito",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café de origen · 250 g",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          },
+          {
+            "product": true,
+            "label": "Bolso tejido artesanal",
+            "width": 736,
+            "height": 591.67,
+            "top": 1263.67,
+            "left": 16,
+            "viewportPercent": 70.1,
+            "usablePercent": 123.26,
+            "mediaWidth": 732,
+            "mediaHeight": 395.67,
+            "imageShare": 66.87,
+            "retainedSourceArea": 71.43,
+            "imageFit": "contain",
+            "source": [
+              640,
+              640
+            ],
+            "overlayAreaPercent": 2.67,
+            "full": false,
+            "visible": 0,
+            "identifiable": false,
+            "titleHeight": 44,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Guardar Bolso tejido artesanal en favoritos",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Agregar Bolso tejido artesanal al carrito",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Bolso tejido artesanal",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          },
+          {
+            "product": true,
+            "label": "Planta con matera",
+            "width": 736,
+            "height": 591.67,
+            "top": 1879.34,
+            "left": 16,
+            "viewportPercent": 70.1,
+            "usablePercent": 123.26,
+            "mediaWidth": 732,
+            "mediaHeight": 395.67,
+            "imageShare": 66.87,
+            "retainedSourceArea": 71.43,
+            "imageFit": "contain",
+            "source": [
+              640,
+              640
+            ],
+            "overlayAreaPercent": 2.67,
+            "full": false,
+            "visible": 0,
+            "identifiable": false,
+            "titleHeight": 44,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Guardar Planta con matera en favoritos",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Agregar Planta con matera al carrito",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Planta con matera",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          },
+          {
+            "product": false,
+            "label": "Así empieza una buena mañana",
+            "width": 736,
+            "height": 823.75,
+            "top": 2551.02,
+            "left": 16,
+            "viewportPercent": 97.6,
+            "usablePercent": 171.61,
+            "mediaWidth": 0,
+            "mediaHeight": 0,
+            "imageShare": 0,
+            "retainedSourceArea": 0,
+            "source": [],
+            "overlayAreaPercent": 0,
+            "full": false,
+            "visible": 0,
+            "identifiable": false,
+            "titleHeight": 44,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Abrir publicación",
+                "width": 732,
+                "height": 411.75,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": null,
+                "width": 262.72,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          },
+          {
+            "product": true,
+            "label": "Café de origen · 500 g",
+            "width": 736,
+            "height": 591.67,
+            "top": 3406.77,
+            "left": 16,
+            "viewportPercent": 70.1,
+            "usablePercent": 123.26,
+            "mediaWidth": 732,
+            "mediaHeight": 395.67,
+            "imageShare": 66.87,
+            "retainedSourceArea": 71.43,
+            "imageFit": "contain",
+            "source": [
+              640,
+              640
+            ],
+            "overlayAreaPercent": 2.67,
+            "full": false,
+            "visible": 0,
+            "identifiable": false,
+            "titleHeight": 44,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Guardar Café de origen · 500 g en favoritos",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Agregar Café de origen · 500 g al carrito",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café de origen · 500 g",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          },
+          {
+            "product": true,
+            "label": "Bolso de fibras naturales",
+            "width": 736,
+            "height": 591.67,
+            "top": 4022.44,
+            "left": 16,
+            "viewportPercent": 70.1,
+            "usablePercent": 123.26,
+            "mediaWidth": 732,
+            "mediaHeight": 395.67,
+            "imageShare": 66.87,
+            "retainedSourceArea": 71.43,
+            "imageFit": "contain",
+            "source": [
+              640,
+              640
+            ],
+            "overlayAreaPercent": 2.67,
+            "full": false,
+            "visible": 0,
+            "identifiable": false,
+            "titleHeight": 44,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Guardar Bolso de fibras naturales en favoritos",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Agregar Bolso de fibras naturales al carrito",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Bolso de fibras naturales",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          },
+          {
+            "product": false,
+            "width": 736,
+            "height": 749.25,
+            "top": 4694.11,
+            "left": 16,
+            "viewportPercent": 88.77,
+            "usablePercent": 156.09,
+            "mediaWidth": 0,
+            "mediaHeight": 0,
+            "imageShare": 0,
+            "retainedSourceArea": 0,
+            "source": [],
+            "overlayAreaPercent": 0,
+            "full": false,
+            "visible": 0,
+            "identifiable": false,
+            "titleHeight": 0,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Contactar a Casa Origen por WhatsApp",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          },
+          {
+            "product": true,
+            "label": "Planta para tu escritorio",
+            "width": 736,
+            "height": 591.67,
+            "top": 5475.36,
+            "left": 16,
+            "viewportPercent": 70.1,
+            "usablePercent": 123.26,
+            "mediaWidth": 732,
+            "mediaHeight": 395.67,
+            "imageShare": 66.87,
+            "retainedSourceArea": null,
+            "imageFit": "cover",
+            "source": [
+              0,
+              0
+            ],
+            "overlayAreaPercent": 2.67,
+            "full": false,
+            "visible": 0,
+            "identifiable": false,
+            "titleHeight": 44,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Guardar Planta para tu escritorio en favoritos",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Agregar Planta para tu escritorio al carrito",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Planta para tu escritorio",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          },
+          {
+            "product": false,
+            "label": "Taller de café en casa",
+            "width": 736,
+            "height": 432,
+            "top": 6147.03,
+            "left": 16,
+            "viewportPercent": 51.18,
+            "usablePercent": 90,
+            "mediaWidth": 0,
+            "mediaHeight": 0,
+            "imageShare": 0,
+            "retainedSourceArea": 0,
+            "source": [],
+            "overlayAreaPercent": 0,
+            "full": false,
+            "visible": 0,
+            "identifiable": false,
+            "titleHeight": 44,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Consultar Taller de café en casa por WhatsApp",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "case": "zoom",
+      "width": 1024,
+      "actions": "split",
+      "g": {
+        "viewport": {
+          "width": 1024,
+          "height": 844
+        },
+        "header": 342,
+        "bottomNavigation": 0,
+        "usableHeight": 502,
+        "overflow": false,
+        "fullProducts": 0,
+        "partialProducts": 2,
+        "identifiableProducts": 0,
+        "firstPublicationTop": 1970.375,
+        "cards": [
+          {
+            "product": true,
+            "label": "Café de origen · 250 g",
+            "width": 452,
+            "height": 656.19,
+            "top": 554,
+            "left": 48,
+            "viewportPercent": 77.75,
+            "usablePercent": 130.71,
+            "mediaWidth": 416,
+            "mediaHeight": 234,
+            "imageShare": 35.66,
+            "retainedSourceArea": 100,
+            "imageFit": "contain",
+            "source": [
+              640,
+              640
+            ],
+            "overlayAreaPercent": 0,
+            "full": false,
+            "visible": 290,
+            "identifiable": false,
+            "titleHeight": 43.19,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Guardar Café de origen · 250 g en favoritos",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café de origen · 250 g",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Agregar Café de origen · 250 g al carrito",
+                "width": 209.23,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          },
+          {
+            "product": true,
+            "label": "Bolso tejido artesanal",
+            "width": 452,
+            "height": 656.19,
+            "top": 554,
+            "left": 524,
+            "viewportPercent": 77.75,
+            "usablePercent": 130.71,
+            "mediaWidth": 416,
+            "mediaHeight": 234,
+            "imageShare": 35.66,
+            "retainedSourceArea": 100,
+            "imageFit": "contain",
+            "source": [
+              640,
+              640
+            ],
+            "overlayAreaPercent": 0,
+            "full": false,
+            "visible": 290,
+            "identifiable": false,
+            "titleHeight": 43.19,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Guardar Bolso tejido artesanal en favoritos",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Bolso tejido artesanal",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Agregar Bolso tejido artesanal al carrito",
+                "width": 209.23,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          },
+          {
+            "product": true,
+            "label": "Planta con matera",
+            "width": 452,
+            "height": 656.19,
+            "top": 1234.19,
+            "left": 48,
+            "viewportPercent": 77.75,
+            "usablePercent": 130.71,
+            "mediaWidth": 416,
+            "mediaHeight": 234,
+            "imageShare": 35.66,
+            "retainedSourceArea": 100,
+            "imageFit": "contain",
+            "source": [
+              640,
+              640
+            ],
+            "overlayAreaPercent": 0,
+            "full": false,
+            "visible": 0,
+            "identifiable": false,
+            "titleHeight": 43.19,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Guardar Planta con matera en favoritos",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Planta con matera",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Agregar Planta con matera al carrito",
+                "width": 209.23,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          },
+          {
+            "product": false,
+            "label": "Así empieza una buena mañana",
+            "width": 928,
+            "height": 931.75,
+            "top": 1970.38,
+            "left": 48,
+            "viewportPercent": 110.4,
+            "usablePercent": 185.61,
+            "mediaWidth": 0,
+            "mediaHeight": 0,
+            "imageShare": 0,
+            "retainedSourceArea": 0,
+            "source": [],
+            "overlayAreaPercent": 0,
+            "full": false,
+            "visible": 0,
+            "identifiable": false,
+            "titleHeight": 44,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Abrir publicación",
+                "width": 924,
+                "height": 519.75,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": null,
+                "width": 262.72,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          },
+          {
+            "product": true,
+            "label": "Café de origen · 500 g",
+            "width": 452,
+            "height": 656.19,
+            "top": 2934.13,
+            "left": 48,
+            "viewportPercent": 77.75,
+            "usablePercent": 130.71,
+            "mediaWidth": 416,
+            "mediaHeight": 234,
+            "imageShare": 35.66,
+            "retainedSourceArea": 100,
+            "imageFit": "contain",
+            "source": [
+              640,
+              640
+            ],
+            "overlayAreaPercent": 0,
+            "full": false,
+            "visible": 0,
+            "identifiable": false,
+            "titleHeight": 43.19,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Guardar Café de origen · 500 g en favoritos",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café de origen · 500 g",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Agregar Café de origen · 500 g al carrito",
+                "width": 209.23,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          },
+          {
+            "product": true,
+            "label": "Bolso de fibras naturales",
+            "width": 452,
+            "height": 656.19,
+            "top": 2934.13,
+            "left": 524,
+            "viewportPercent": 77.75,
+            "usablePercent": 130.71,
+            "mediaWidth": 416,
+            "mediaHeight": 234,
+            "imageShare": 35.66,
+            "retainedSourceArea": 100,
+            "imageFit": "contain",
+            "source": [
+              640,
+              640
+            ],
+            "overlayAreaPercent": 0,
+            "full": false,
+            "visible": 0,
+            "identifiable": false,
+            "titleHeight": 43.19,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Guardar Bolso de fibras naturales en favoritos",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Bolso de fibras naturales",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Agregar Bolso de fibras naturales al carrito",
+                "width": 209.23,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          },
+          {
+            "product": false,
+            "width": 928,
+            "height": 857.25,
+            "top": 3670.31,
+            "left": 48,
+            "viewportPercent": 101.57,
+            "usablePercent": 170.77,
+            "mediaWidth": 0,
+            "mediaHeight": 0,
+            "imageShare": 0,
+            "retainedSourceArea": 0,
+            "source": [],
+            "overlayAreaPercent": 0,
+            "full": false,
+            "visible": 0,
+            "identifiable": false,
+            "titleHeight": 0,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Contactar a Casa Origen por WhatsApp",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          },
+          {
+            "product": true,
+            "label": "Planta para tu escritorio",
+            "width": 928,
+            "height": 852.94,
+            "top": 4559.56,
+            "left": 48,
+            "viewportPercent": 101.06,
+            "usablePercent": 169.91,
+            "mediaWidth": 892,
+            "mediaHeight": 501.75,
+            "imageShare": 58.83,
+            "retainedSourceArea": null,
+            "imageFit": "contain",
+            "source": [
+              0,
+              0
+            ],
+            "overlayAreaPercent": 0,
+            "full": false,
+            "visible": 0,
+            "identifiable": false,
+            "titleHeight": 43.19,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Guardar Planta para tu escritorio en favoritos",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Planta para tu escritorio",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              },
+              {
+                "label": "Agregar Planta para tu escritorio al carrito",
+                "width": 209.23,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          },
+          {
+            "product": false,
+            "label": "Taller de café en casa",
+            "width": 928,
+            "height": 432,
+            "top": 5492.5,
+            "left": 48,
+            "viewportPercent": 51.18,
+            "usablePercent": 86.06,
+            "mediaWidth": 0,
+            "mediaHeight": 0,
+            "imageShare": 0,
+            "retainedSourceArea": 0,
+            "source": [],
+            "overlayAreaPercent": 0,
+            "full": false,
+            "visible": 0,
+            "identifiable": false,
+            "titleHeight": 44,
+            "priceFits": true,
+            "controls": [
+              {
+                "label": "Consultar Taller de café en casa por WhatsApp",
+                "width": 88,
+                "height": 88,
+                "inside": true,
+                "hit": true,
+                "nestedInteractive": false
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

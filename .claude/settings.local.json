@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//mnt/c/**)",
+      "Read(//c/Claude Code/**)",
+      "Bash(echo \"exit:$?\")"
+    ]
+  }
+}

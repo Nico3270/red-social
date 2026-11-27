@@ -1,0 +1,142 @@
+   ▲ Next.js 15.5.9
+   - Environments: .env
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 42s
+   Collecting page data ...
+   Finalizing page optimization ...
+   Collecting build traces ...
+   Build ran with "compile" mode, to finalize the build run either "generate" or "generate-env" mode as well
+
+Route (app)                                          Size  First Load JS
+┌ ƒ /
+├ ƒ /_not-found
+├ ƒ /[categoria]
+├ ƒ /[categoria]/[seccion]/[slug]
+├ ƒ /activar
+├ ƒ /address
+├ ƒ /address/[slug]
+├ ƒ /admin/eventos
+├ ƒ /api/account-activation/bootstrap
+├ ƒ /api/asistente
+├ ƒ /api/auth/[...nextauth]
+├ ƒ /api/auth/forgot-password
+├ ƒ /api/auth/refresh-session
+├ ƒ /api/auth/register
+├ ƒ /api/auth/updateScores/[id]
+├ ƒ /api/brevo/sync
+├ ƒ /api/business/description/[phone]
+├ ƒ /api/business/direccion/[phone]
+├ ƒ /api/business/facebook/[phone]
+├ ƒ /api/business/fotoperfil/[phone]
+├ ƒ /api/business/fotoportada/[phone]
+├ ƒ /api/business/instagram/[phone]
+├ ƒ /api/business/nombre/[phone]
+├ ƒ /api/business/sitioweb/[phone]
+├ ƒ /api/business/tiktok/[phone]
+├ ƒ /api/business/twitter/[phone]
+├ ƒ /api/business/ubicacion/[phone]
+├ ƒ /api/business/youtube/[phone]
+├ ƒ /api/cloudinary/delete
+├ ƒ /api/cloudinary/upload-authorization
+├ ƒ /api/comentarios/[publicacionId]
+├ ƒ /api/deleteOrder/[id]
+├ ƒ /api/editarOrder/[id]
+├ ƒ /api/eliminarServicio
+├ ƒ /api/eliminarTransaccion/[id]
+├ ƒ /api/getServiciosBySlug
+├ ƒ /api/getServiciosNegocio
+├ ƒ /api/internal/onboarding/claim
+├ ƒ /api/internal/onboarding/provision
+├ ƒ /api/negocio
+├ ƒ /api/negocios/[slug]
+├ ƒ /api/order/[id]
+├ ƒ /api/orders
+├ ƒ /api/placeholder
+├ ƒ /api/productos/[slug]
+├ ƒ /api/productosNegocio
+├ ƒ /api/productosTransacciones
+├ ƒ /api/products/create
+├ ƒ /api/products/list/[phone]
+├ ƒ /api/products/update/[id]
+├ ƒ /api/publicaciones/[slug]
+├ ƒ /api/resenas/[id]
+├ ƒ /api/resenasPrueba/[id]
+├ ƒ /api/reservasConfig
+├ ƒ /api/reservasConfigUser
+├ ƒ /api/resumenTransaccion/[id]
+├ ƒ /api/search
+├ ƒ /api/summary/[publicacionId]
+├ ƒ /api/transacciones
+├ ƒ /api/transaccionesExcel
+├ ƒ /api/usuario/email/[phone]
+├ ƒ /api/usuario/fecha-nacimiento/[phone]
+├ ƒ /api/usuario/fotoperfil/[phone]
+├ ƒ /api/usuario/genero/[phone]
+├ ƒ /api/usuario/nombre/[phone]
+├ ƒ /auth/forgot-password
+├ ƒ /auth/login
+├ ƒ /auth/new-account
+├ ƒ /auth/reset-password/[token]
+├ ƒ /carro
+├ ƒ /carrusel
+├ ƒ /category/[slug]
+├ ƒ /checkout
+├ ƒ /checkout/[slug]
+├ ƒ /config/completePerfil
+├ ƒ /crear_negocio/[id]
+├ ƒ /dashboard
+├ ƒ /dashboard/carrusel
+├ ƒ /dashboard/crear-publicacion
+├ ƒ /dashboard/editar-perfil
+├ ƒ /dashboard/editar-usuario
+├ ƒ /dashboard/encuestas
+├ ƒ /dashboard/encuestas/crear
+├ ƒ /dashboard/orders
+├ ƒ /dashboard/orders/address
+├ ƒ /dashboard/orders/checkout
+├ ƒ /dashboard/orders/crear
+├ ƒ /dashboard/organizacion-catalogo
+├ ƒ /dashboard/perfil
+├ ƒ /dashboard/productos
+├ ƒ /dashboard/productos/modificar_producto/[id]
+├ ƒ /dashboard/productos/nuevo_producto
+├ ƒ /dashboard/qr
+├ ƒ /dashboard/reservas
+├ ƒ /dashboard/reservas/crear
+├ ƒ /dashboard/servicios
+├ ƒ /dashboard/servicios/crear
+├ ƒ /dashboard/transacciones
+├ ƒ /dashboard/transaccioneslista
+├ ƒ /empty
+├ ƒ /encuestas/[slug]
+├ ƒ /favoritos
+├ ƒ /inicio
+├ ƒ /myckeoAdmin
+├ ƒ /myckeoAdmin/crearProductos
+├ ƒ /myckeoAdmin/editar/[slug]
+├ ƒ /myckeoAdmin/negocios
+├ ƒ /myckeoAdmin/organizar/[slug]
+├ ƒ /myckeoAdmin/productos/[slug]
+├ ƒ /not_authorized
+├ ƒ /perfil
+├ ƒ /perfil/[slug]
+├ ƒ /pitch
+├ ƒ /politica-cookies
+├ ƒ /politica-privacidad
+├ ƒ /politica-publicidad
+├ ƒ /producto/[slug]
+├ ƒ /reservas/[slug]
+├ ƒ /reservas/eliminar/[id]
+├ ƒ /reservas/gestionar
+├ ƒ /reservas/gestionar/[token]
+├ ƒ /seccion/[slug]
+└ ƒ /terminos-servicio
++ First Load JS shared by all                      103 kB
+  ├ chunks/8789-9a13f80d71520259.js               45.8 kB
+  ├ chunks/c492a97a-296e9d03155ad214.js           54.2 kB
+  └ other shared chunks (total)                   3.28 kB
+
+
+ƒ  (Dynamic)  server-rendered on demand
+

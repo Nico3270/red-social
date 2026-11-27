@@ -1,7 +1,12 @@
 "use server";
 
+import {
+  lockWritableBusiness,
+  requireSuperAdmin,
+} from "@/lib/business/productAccess";
 import { auth } from "@/auth.config";
 import prisma from "@/lib/prisma";
+import { assertCanPublishProduct } from "@/lib/products/productAuthorization";
 import { ProductStatus } from "@prisma/client";
 import { revalidatePath, revalidateTag } from "next/cache";
 
@@ -81,6 +86,8 @@ export async function updateAdminProductStatusAction(
       };
     }
 
+    await requireSuperAdmin();
+
     const businessId = normalizeRequiredString(rawInput?.businessId);
     const expectedSlug = normalizeRequiredString(rawInput?.expectedSlug);
     const productId = normalizeRequiredString(rawInput?.productId);
@@ -94,7 +101,8 @@ export async function updateAdminProductStatusAction(
 
       return {
         ok: false,
-        error: "Payload inválido. Debes enviar businessId, expectedSlug, productId y status válidos.",
+        error:
+          "Payload inválido. Debes enviar businessId, expectedSlug, productId y status válidos.",
       };
     }
 
@@ -201,6 +209,9 @@ export async function updateAdminProductStatusAction(
       };
     }
 
+    if (nextStatus === ProductStatus.disponible)
+      await assertCanPublishProduct(businessId);
+
     if (nextStatus === ProductStatus.disponible) {
       const hasImage = existingProduct.imagenes.length > 0;
       const hasValidPrice = existingProduct.precio > 0;
@@ -226,23 +237,14 @@ export async function updateAdminProductStatusAction(
       }
     }
 
-    const updatedProduct =
-      existingProduct.status === nextStatus
-        ? existingProduct
-        : await prisma.product.update({
-            where: {
-              id: existingProduct.id,
-            },
-            data: {
-              status: nextStatus,
-            },
-            select: {
-              id: true,
-              nombre: true,
-              slug: true,
-              status: true,
-            },
-          });
+    const updatedProduct = await prisma.$transaction(async (tx) => {
+      await lockWritableBusiness(tx, businessId, nextStatus);
+      return tx.product.update({
+        where: { id: productId },
+        data: { status: nextStatus },
+        select: { id: true, nombre: true, slug: true, status: true },
+      });
+    });
 
     revalidatePath(`/myckeoAdmin/productos/${expectedSlug}`);
     revalidatePath(`/myckeoAdmin/organizar/${expectedSlug}`);
@@ -283,7 +285,8 @@ export async function updateAdminProductStatusAction(
 
     return {
       ok: false,
-      error: "Ocurrió un error inesperado al actualizar el estado del producto.",
+      error:
+        "Ocurrió un error inesperado al actualizar el estado del producto.",
     };
   }
 }

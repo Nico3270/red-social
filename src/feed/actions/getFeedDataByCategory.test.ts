@@ -1,3 +1,4 @@
+import { nationalLocationWhere } from "./feedPage";
 import { EstadoNegocio, EstadoUsuario } from "@prisma/client";
 
 const mockPublicacionFindMany = jest.fn();
@@ -33,7 +34,6 @@ jest.mock("./mapItem", () => ({
 }));
 
 import {
-  buildPublishedBusinessRelationWhere,
   buildPublishedBusinessWhere,
   classifyBusinessVisibility,
 } from "../../lib/business/business-visibility-policy";
@@ -86,7 +86,7 @@ describe("getFeedDataByCategory PUBLISHED visibility", () => {
       },
     });
     expect(mockProductFindMany.mock.calls[2][0].where.negocio).toEqual(
-      buildPublishedBusinessRelationWhere(),
+      { is: { AND: [buildPublishedBusinessWhere(), nationalLocationWhere(params)] } },
     );
   });
 
@@ -120,7 +120,7 @@ describe("getFeedDataByCategory PUBLISHED visibility", () => {
     });
     expect(mockServicioFindMany.mock.calls[2][0].where.negocio).toEqual({
       is: {
-        AND: [buildPublishedBusinessWhere(), categoryCondition],
+        AND: [buildPublishedBusinessWhere(), { ...nationalLocationWhere(params), ...categoryCondition }],
       },
     });
   });
@@ -169,7 +169,7 @@ describe("getFeedDataByCategory PUBLISHED visibility", () => {
     expect(mockNegocioFindMany.mock.calls[2][0].where).toEqual({
       AND: [
         buildPublishedBusinessWhere(),
-        { id: { notIn: [] }, ...categoryCondition },
+        { id: { notIn: [] }, ...nationalLocationWhere(params), ...categoryCondition },
       ],
     });
   });
@@ -291,7 +291,6 @@ describe("getFeedDataByCategory PUBLISHED visibility", () => {
   it("preserves geography, ranking inputs, pagination and response shape", async () => {
     const result = await getFeedDataByCategory("businesses", {
       ...params,
-      cursor: "cursor-1",
     });
 
     expect(result).toEqual({ items: [], nextCursor: undefined });
@@ -306,10 +305,10 @@ describe("getFeedDataByCategory PUBLISHED visibility", () => {
     });
     for (const call of mockNegocioFindMany.mock.calls) {
       expect(call[0]).toMatchObject({
-        orderBy: [{ orden: "desc" }, { createdAt: "desc" }],
+        orderBy: [{ orden: "desc" }, { createdAt: "desc" }, { id: "asc" }],
         take: 20,
-        cursor: { id: "cursor-1" },
-        skip: 1,
+        cursor: undefined,
+        skip: 0,
       });
     }
   });

@@ -1,0 +1,25 @@
+{
+  "checkedAt": "2026-11-16T03:01:19.915Z",
+  "changed": [
+    "src/ui/components/productos/ProductCard.tsx",
+    "src/ui/components/productos/feedProductCard.module.css",
+    "src/publicaciones/componentes/feedProductModules.module.css",
+    "src/publicaciones/componentes/FeedRederer.tsx"
+  ],
+  "addedNonFixture": [],
+  "selectionUnchanged": true,
+  "commercialHooksAndHandlersUnchanged": true,
+  "productionSources": {
+    "src/ui/components/productos/ProductCard.tsx": "d7bf94e1cc7e0f2eea598e45b1f2736b0bf49c5488b6a6f5f26306a954a9d8f9",
+    "src/ui/components/productos/feedProductCard.module.css": "3d022520fd98e86f03429d6da69bb8f735f857781f6302279402d325b3e2c978",
+    "src/publicaciones/componentes/FeedRederer.tsx": "975bb785cebb23522e2c5deae832bfdee2ea43e7a57ee6a735610ad703abb15f",
+    "src/publicaciones/componentes/feedProductModules.module.css": "cc3614db48d842ef661cc4fd818519fbdcb77541129b3e67dbd6774310153acd"
+  },
+  "desktopReference": "docs/mobile-feed-b3-c2/b2-sources",
+  "testOnlySupportChanges": [
+    "e2e/mobile-feed-implementation/dev-server.cjs: ensure dev compiler exits with its suite"
+  ],
+  "unchangedSourceFiles": 616,
+  "fixtureRouteRemoved": true,
+  "fixtureAssetsRemoved": true
+}

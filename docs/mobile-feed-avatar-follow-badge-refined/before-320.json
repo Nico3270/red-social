@@ -1,0 +1,1534 @@
+{
+  "width": 320,
+  "cards": [
+    {
+      "id": "p1",
+      "root": {
+        "x": 4,
+        "y": 141,
+        "width": 312,
+        "height": 297.56,
+        "right": 316,
+        "bottom": 438.56
+      },
+      "header": {
+        "x": 5,
+        "y": 142,
+        "width": 310,
+        "height": 44,
+        "right": 315,
+        "bottom": 186
+      },
+      "photo": {
+        "x": 5,
+        "y": 186,
+        "width": 310,
+        "height": 167.56,
+        "right": 315,
+        "bottom": 353.56
+      },
+      "name": {
+        "text": "Casa Origen",
+        "width": 222,
+        "labelHeight": 18,
+        "font": "13px"
+      },
+      "avatar": null,
+      "controls": [
+        {
+          "label": "Casa Origen",
+          "follow": false,
+          "avatar": false,
+          "name": true,
+          "box": {
+            "x": 49,
+            "y": 142,
+            "width": 222,
+            "height": 44,
+            "right": 271,
+            "bottom": 186
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(28, 40, 60)",
+          "paint": {
+            "width": "auto",
+            "height": "auto",
+            "background": "rgba(0, 0, 0, 0)"
+          },
+          "disabled": false
+        },
+        {
+          "label": "Seguir a Casa Origen",
+          "follow": true,
+          "avatar": false,
+          "name": false,
+          "box": {
+            "x": 5,
+            "y": 142,
+            "width": 44,
+            "height": 44,
+            "right": 49,
+            "bottom": 186
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(255, 255, 255)",
+          "paint": {
+            "width": "20px",
+            "height": "20px",
+            "background": "rgb(201, 53, 69)"
+          },
+          "disabled": false
+        },
+        {
+          "label": "Guardar Reloj minimalista en favoritos",
+          "follow": false,
+          "avatar": false,
+          "name": false,
+          "box": {
+            "x": 271,
+            "y": 142,
+            "width": 44,
+            "height": 44,
+            "right": 315,
+            "bottom": 186
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(107, 114, 128)",
+          "paint": {
+            "width": "28px",
+            "height": "28px",
+            "background": "rgb(250, 243, 245)"
+          },
+          "disabled": false
+        },
+        {
+          "label": "Contactar por WhatsApp sobre Reloj minimalista",
+          "follow": false,
+          "avatar": false,
+          "name": false,
+          "box": {
+            "x": 217,
+            "y": 385.56,
+            "width": 44,
+            "height": 44,
+            "right": 261,
+            "bottom": 429.56
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(255, 255, 255)",
+          "paint": {
+            "width": "32px",
+            "height": "32px",
+            "background": "rgb(37, 128, 84)"
+          },
+          "disabled": false
+        },
+        {
+          "label": "Agregar Reloj minimalista al carrito",
+          "follow": false,
+          "avatar": false,
+          "name": false,
+          "box": {
+            "x": 261,
+            "y": 385.56,
+            "width": 44,
+            "height": 44,
+            "right": 305,
+            "bottom": 429.56
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(255, 255, 255)",
+          "paint": {
+            "width": "32px",
+            "height": "32px",
+            "background": "rgb(201, 53, 69)"
+          },
+          "disabled": false
+        }
+      ],
+      "collisions": [],
+      "price": {
+        "text": "$ 145.000",
+        "box": {
+          "x": 15,
+          "y": 396.56,
+          "width": 202,
+          "height": 22,
+          "right": 217,
+          "bottom": 418.56
+        },
+        "font": "18px"
+      },
+      "title": "Reloj minimalista",
+      "border": "1px solid rgb(226, 184, 194)",
+      "shadow": "rgba(44, 47, 51, 0.12) 0px 4px 14px 0px",
+      "overlay": {
+        "avatar": {
+          "x": 11,
+          "y": 152,
+          "width": 24,
+          "height": 24
+        },
+        "badge": {
+          "x": 20,
+          "y": 147,
+          "width": 20,
+          "height": 20
+        },
+        "overlapFraction": 0.535277977333457,
+        "photoHit": true,
+        "badgeHit": true,
+        "avatarIsInsideButton": true,
+        "profileLinks": 1
+      }
+    },
+    {
+      "id": "p2",
+      "root": {
+        "x": 4,
+        "y": 450.56,
+        "width": 312,
+        "height": 297.56,
+        "right": 316,
+        "bottom": 748.13
+      },
+      "header": {
+        "x": 5,
+        "y": 451.56,
+        "width": 310,
+        "height": 44,
+        "right": 315,
+        "bottom": 495.56
+      },
+      "photo": {
+        "x": 5,
+        "y": 495.56,
+        "width": 310,
+        "height": 167.56,
+        "right": 315,
+        "bottom": 663.13
+      },
+      "name": {
+        "text": "Mercado del Barrio",
+        "width": 222,
+        "labelHeight": 18,
+        "font": "13px"
+      },
+      "avatar": null,
+      "controls": [
+        {
+          "label": "Mercado del Barrio",
+          "follow": false,
+          "avatar": false,
+          "name": true,
+          "box": {
+            "x": 49,
+            "y": 451.56,
+            "width": 222,
+            "height": 44,
+            "right": 271,
+            "bottom": 495.56
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(28, 40, 60)",
+          "paint": {
+            "width": "auto",
+            "height": "auto",
+            "background": "rgba(0, 0, 0, 0)"
+          },
+          "disabled": false
+        },
+        {
+          "label": "Seguir a Mercado del Barrio",
+          "follow": true,
+          "avatar": false,
+          "name": false,
+          "box": {
+            "x": 5,
+            "y": 451.56,
+            "width": 44,
+            "height": 44,
+            "right": 49,
+            "bottom": 495.56
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(255, 255, 255)",
+          "paint": {
+            "width": "20px",
+            "height": "20px",
+            "background": "rgb(201, 53, 69)"
+          },
+          "disabled": false
+        },
+        {
+          "label": "Guardar Bolso de cuero con correa ajustable en favoritos",
+          "follow": false,
+          "avatar": false,
+          "name": false,
+          "box": {
+            "x": 271,
+            "y": 451.56,
+            "width": 44,
+            "height": 44,
+            "right": 315,
+            "bottom": 495.56
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(107, 114, 128)",
+          "paint": {
+            "width": "28px",
+            "height": "28px",
+            "background": "rgb(250, 243, 245)"
+          },
+          "disabled": false
+        },
+        {
+          "label": "Contactar por WhatsApp sobre Bolso de cuero con correa ajustable",
+          "follow": false,
+          "avatar": false,
+          "name": false,
+          "box": {
+            "x": 217,
+            "y": 695.13,
+            "width": 44,
+            "height": 44,
+            "right": 261,
+            "bottom": 739.13
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(255, 255, 255)",
+          "paint": {
+            "width": "32px",
+            "height": "32px",
+            "background": "rgb(37, 128, 84)"
+          },
+          "disabled": false
+        },
+        {
+          "label": "Agregar Bolso de cuero con correa ajustable al carrito",
+          "follow": false,
+          "avatar": false,
+          "name": false,
+          "box": {
+            "x": 261,
+            "y": 695.13,
+            "width": 44,
+            "height": 44,
+            "right": 305,
+            "bottom": 739.13
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(255, 255, 255)",
+          "paint": {
+            "width": "32px",
+            "height": "32px",
+            "background": "rgb(201, 53, 69)"
+          },
+          "disabled": false
+        }
+      ],
+      "collisions": [],
+      "price": {
+        "text": "$ 180.000",
+        "box": {
+          "x": 15,
+          "y": 706.13,
+          "width": 202,
+          "height": 22,
+          "right": 217,
+          "bottom": 728.13
+        },
+        "font": "18px"
+      },
+      "title": "Bolso de cuero con correa ajustable",
+      "border": "1px solid rgb(226, 184, 194)",
+      "shadow": "rgba(44, 47, 51, 0.12) 0px 4px 14px 0px",
+      "overlay": {
+        "avatar": {
+          "x": 11,
+          "y": 461.5625,
+          "width": 24,
+          "height": 24
+        },
+        "badge": {
+          "x": 20,
+          "y": 456.5625,
+          "width": 20,
+          "height": 20
+        },
+        "overlapFraction": 0.535277977333457,
+        "photoHit": true,
+        "badgeHit": true,
+        "avatarIsInsideButton": true,
+        "profileLinks": 1
+      }
+    },
+    {
+      "id": "p3",
+      "root": {
+        "x": 4,
+        "y": 760.13,
+        "width": 312,
+        "height": 297.56,
+        "right": 316,
+        "bottom": 1057.69
+      },
+      "header": {
+        "x": 5,
+        "y": 761.13,
+        "width": 310,
+        "height": 44,
+        "right": 315,
+        "bottom": 805.13
+      },
+      "photo": {
+        "x": 5,
+        "y": 805.13,
+        "width": 310,
+        "height": 167.56,
+        "right": 315,
+        "bottom": 972.69
+      },
+      "name": {
+        "text": "Taller Artesanal de Bogotá",
+        "width": 222,
+        "labelHeight": 18,
+        "font": "13px"
+      },
+      "avatar": null,
+      "controls": [
+        {
+          "label": "Taller Artesanal de Bogotá",
+          "follow": false,
+          "avatar": false,
+          "name": true,
+          "box": {
+            "x": 49,
+            "y": 761.13,
+            "width": 222,
+            "height": 44,
+            "right": 271,
+            "bottom": 805.13
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(28, 40, 60)",
+          "paint": {
+            "width": "auto",
+            "height": "auto",
+            "background": "rgba(0, 0, 0, 0)"
+          },
+          "disabled": false
+        },
+        {
+          "label": "Seguir a Taller Artesanal de Bogotá",
+          "follow": true,
+          "avatar": false,
+          "name": false,
+          "box": {
+            "x": 5,
+            "y": 761.13,
+            "width": 44,
+            "height": 44,
+            "right": 49,
+            "bottom": 805.13
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(255, 255, 255)",
+          "paint": {
+            "width": "20px",
+            "height": "20px",
+            "background": "rgb(201, 53, 69)"
+          },
+          "disabled": false
+        },
+        {
+          "label": "Guardar Bolso artesanal en favoritos",
+          "follow": false,
+          "avatar": false,
+          "name": false,
+          "box": {
+            "x": 271,
+            "y": 761.13,
+            "width": 44,
+            "height": 44,
+            "right": 315,
+            "bottom": 805.13
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(107, 114, 128)",
+          "paint": {
+            "width": "28px",
+            "height": "28px",
+            "background": "rgb(250, 243, 245)"
+          },
+          "disabled": false
+        },
+        {
+          "label": "Contactar por WhatsApp sobre Bolso artesanal",
+          "follow": false,
+          "avatar": false,
+          "name": false,
+          "box": {
+            "x": 217,
+            "y": 1004.69,
+            "width": 44,
+            "height": 44,
+            "right": 261,
+            "bottom": 1048.69
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(255, 255, 255)",
+          "paint": {
+            "width": "32px",
+            "height": "32px",
+            "background": "rgb(37, 128, 84)"
+          },
+          "disabled": false
+        },
+        {
+          "label": "Agregar Bolso artesanal al carrito",
+          "follow": false,
+          "avatar": false,
+          "name": false,
+          "box": {
+            "x": 261,
+            "y": 1004.69,
+            "width": 44,
+            "height": 44,
+            "right": 305,
+            "bottom": 1048.69
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(255, 255, 255)",
+          "paint": {
+            "width": "32px",
+            "height": "32px",
+            "background": "rgb(201, 53, 69)"
+          },
+          "disabled": false
+        }
+      ],
+      "collisions": [],
+      "price": {
+        "text": "$ 180.000",
+        "box": {
+          "x": 15,
+          "y": 1015.69,
+          "width": 202,
+          "height": 22,
+          "right": 217,
+          "bottom": 1037.69
+        },
+        "font": "18px"
+      },
+      "title": "Bolso artesanal",
+      "border": "1px solid rgb(226, 184, 194)",
+      "shadow": "rgba(44, 47, 51, 0.12) 0px 4px 14px 0px",
+      "overlay": {
+        "avatar": {
+          "x": 11,
+          "y": 771.125,
+          "width": 24,
+          "height": 24
+        },
+        "badge": {
+          "x": 20,
+          "y": 766.125,
+          "width": 20,
+          "height": 20
+        },
+        "overlapFraction": 0.535277977333457,
+        "photoHit": true,
+        "badgeHit": true,
+        "avatarIsInsideButton": true,
+        "profileLinks": 1
+      }
+    },
+    {
+      "id": "p5",
+      "root": {
+        "x": 4,
+        "y": 1513.44,
+        "width": 312,
+        "height": 297.56,
+        "right": 316,
+        "bottom": 1811
+      },
+      "header": {
+        "x": 5,
+        "y": 1514.44,
+        "width": 310,
+        "height": 44,
+        "right": 315,
+        "bottom": 1558.44
+      },
+      "photo": {
+        "x": 5,
+        "y": 1558.44,
+        "width": 310,
+        "height": 167.56,
+        "right": 315,
+        "bottom": 1726
+      },
+      "name": {
+        "text": "Mercado del Barrio",
+        "width": 222,
+        "labelHeight": 18,
+        "font": "13px"
+      },
+      "avatar": null,
+      "controls": [
+        {
+          "label": "Mercado del Barrio",
+          "follow": false,
+          "avatar": false,
+          "name": true,
+          "box": {
+            "x": 49,
+            "y": 1514.44,
+            "width": 222,
+            "height": 44,
+            "right": 271,
+            "bottom": 1558.44
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(28, 40, 60)",
+          "paint": {
+            "width": "auto",
+            "height": "auto",
+            "background": "rgba(0, 0, 0, 0)"
+          },
+          "disabled": false
+        },
+        {
+          "label": "Seguir a Mercado del Barrio",
+          "follow": true,
+          "avatar": false,
+          "name": false,
+          "box": {
+            "x": 5,
+            "y": 1514.44,
+            "width": 44,
+            "height": 44,
+            "right": 49,
+            "bottom": 1558.44
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(255, 255, 255)",
+          "paint": {
+            "width": "20px",
+            "height": "20px",
+            "background": "rgb(201, 53, 69)"
+          },
+          "disabled": false
+        },
+        {
+          "label": "Guardar Bolso agotado en favoritos",
+          "follow": false,
+          "avatar": false,
+          "name": false,
+          "box": {
+            "x": 271,
+            "y": 1514.44,
+            "width": 44,
+            "height": 44,
+            "right": 315,
+            "bottom": 1558.44
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(107, 114, 128)",
+          "paint": {
+            "width": "28px",
+            "height": "28px",
+            "background": "rgb(250, 243, 245)"
+          },
+          "disabled": false
+        },
+        {
+          "label": "Contactar por WhatsApp sobre Bolso agotado",
+          "follow": false,
+          "avatar": false,
+          "name": false,
+          "box": {
+            "x": 217,
+            "y": 1758,
+            "width": 44,
+            "height": 44,
+            "right": 261,
+            "bottom": 1802
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(255, 255, 255)",
+          "paint": {
+            "width": "32px",
+            "height": "32px",
+            "background": "rgb(37, 128, 84)"
+          },
+          "disabled": false
+        },
+        {
+          "label": "Bolso agotado agotado",
+          "follow": false,
+          "avatar": false,
+          "name": false,
+          "box": {
+            "x": 261,
+            "y": 1758,
+            "width": 44,
+            "height": 44,
+            "right": 305,
+            "bottom": 1802
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(100, 116, 139)",
+          "paint": {
+            "width": "32px",
+            "height": "32px",
+            "background": "rgb(226, 232, 240)"
+          },
+          "disabled": true
+        }
+      ],
+      "collisions": [],
+      "price": {
+        "text": "$ 180.000",
+        "box": {
+          "x": 15,
+          "y": 1769,
+          "width": 202,
+          "height": 22,
+          "right": 217,
+          "bottom": 1791
+        },
+        "font": "18px"
+      },
+      "title": "Bolso agotado",
+      "border": "1px solid rgb(226, 184, 194)",
+      "shadow": "rgba(44, 47, 51, 0.12) 0px 4px 14px 0px",
+      "overlay": {
+        "avatar": {
+          "x": 11,
+          "y": 1524.4375,
+          "width": 24,
+          "height": 24
+        },
+        "badge": {
+          "x": 20,
+          "y": 1519.4375,
+          "width": 20,
+          "height": 20
+        },
+        "overlapFraction": 0.535277977333457,
+        "photoHit": true,
+        "badgeHit": true,
+        "avatarIsInsideButton": true,
+        "profileLinks": 1
+      }
+    },
+    {
+      "id": "p6",
+      "root": {
+        "x": 4,
+        "y": 1823,
+        "width": 312,
+        "height": 297.56,
+        "right": 316,
+        "bottom": 2120.56
+      },
+      "header": {
+        "x": 5,
+        "y": 1824,
+        "width": 310,
+        "height": 44,
+        "right": 315,
+        "bottom": 1868
+      },
+      "photo": {
+        "x": 5,
+        "y": 1868,
+        "width": 310,
+        "height": 167.56,
+        "right": 315,
+        "bottom": 2035.56
+      },
+      "name": {
+        "text": "Cooperativa Artesanal del Norte",
+        "width": 222,
+        "labelHeight": 18,
+        "font": "13px"
+      },
+      "avatar": null,
+      "controls": [
+        {
+          "label": "Cooperativa Artesanal del Norte",
+          "follow": false,
+          "avatar": false,
+          "name": true,
+          "box": {
+            "x": 49,
+            "y": 1824,
+            "width": 222,
+            "height": 44,
+            "right": 271,
+            "bottom": 1868
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(28, 40, 60)",
+          "paint": {
+            "width": "auto",
+            "height": "auto",
+            "background": "rgba(0, 0, 0, 0)"
+          },
+          "disabled": false
+        },
+        {
+          "label": "Seguir a Cooperativa Artesanal del Norte",
+          "follow": true,
+          "avatar": false,
+          "name": false,
+          "box": {
+            "x": 5,
+            "y": 1824,
+            "width": 44,
+            "height": 44,
+            "right": 49,
+            "bottom": 1868
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(255, 255, 255)",
+          "paint": {
+            "width": "20px",
+            "height": "20px",
+            "background": "rgb(201, 53, 69)"
+          },
+          "disabled": false
+        },
+        {
+          "label": "Guardar Producto sin fotografía en favoritos",
+          "follow": false,
+          "avatar": false,
+          "name": false,
+          "box": {
+            "x": 271,
+            "y": 1824,
+            "width": 44,
+            "height": 44,
+            "right": 315,
+            "bottom": 1868
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(107, 114, 128)",
+          "paint": {
+            "width": "28px",
+            "height": "28px",
+            "background": "rgb(250, 243, 245)"
+          },
+          "disabled": false
+        },
+        {
+          "label": "Contactar por WhatsApp sobre Producto sin fotografía",
+          "follow": false,
+          "avatar": false,
+          "name": false,
+          "box": {
+            "x": 217,
+            "y": 2067.56,
+            "width": 44,
+            "height": 44,
+            "right": 261,
+            "bottom": 2111.56
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(255, 255, 255)",
+          "paint": {
+            "width": "32px",
+            "height": "32px",
+            "background": "rgb(37, 128, 84)"
+          },
+          "disabled": false
+        },
+        {
+          "label": "Agregar Producto sin fotografía al carrito",
+          "follow": false,
+          "avatar": false,
+          "name": false,
+          "box": {
+            "x": 261,
+            "y": 2067.56,
+            "width": 44,
+            "height": 44,
+            "right": 305,
+            "bottom": 2111.56
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(255, 255, 255)",
+          "paint": {
+            "width": "32px",
+            "height": "32px",
+            "background": "rgb(201, 53, 69)"
+          },
+          "disabled": false
+        }
+      ],
+      "collisions": [],
+      "price": {
+        "text": "$ 145.000",
+        "box": {
+          "x": 15,
+          "y": 2078.56,
+          "width": 202,
+          "height": 22,
+          "right": 217,
+          "bottom": 2100.56
+        },
+        "font": "18px"
+      },
+      "title": "Producto sin fotografía",
+      "border": "1px solid rgb(226, 184, 194)",
+      "shadow": "rgba(44, 47, 51, 0.12) 0px 4px 14px 0px",
+      "overlay": {
+        "avatar": {
+          "x": 11,
+          "y": 1834,
+          "width": 24,
+          "height": 24
+        },
+        "badge": {
+          "x": 20,
+          "y": 1829,
+          "width": 20,
+          "height": 20
+        },
+        "overlapFraction": 0.535277977333457,
+        "photoHit": true,
+        "badgeHit": true,
+        "avatarIsInsideButton": true,
+        "profileLinks": 1
+      }
+    },
+    {
+      "id": "p4",
+      "root": {
+        "x": 4,
+        "y": 2519.69,
+        "width": 312,
+        "height": 297.56,
+        "right": 316,
+        "bottom": 2817.25
+      },
+      "header": {
+        "x": 5,
+        "y": 2520.69,
+        "width": 310,
+        "height": 44,
+        "right": 315,
+        "bottom": 2564.69
+      },
+      "photo": {
+        "x": 5,
+        "y": 2564.69,
+        "width": 310,
+        "height": 167.56,
+        "right": 315,
+        "bottom": 2732.25
+      },
+      "name": {
+        "text": "Casa Origen",
+        "width": 222,
+        "labelHeight": 18,
+        "font": "13px"
+      },
+      "avatar": null,
+      "controls": [
+        {
+          "label": "Casa Origen",
+          "follow": false,
+          "avatar": false,
+          "name": true,
+          "box": {
+            "x": 49,
+            "y": 2520.69,
+            "width": 222,
+            "height": 44,
+            "right": 271,
+            "bottom": 2564.69
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(28, 40, 60)",
+          "paint": {
+            "width": "auto",
+            "height": "auto",
+            "background": "rgba(0, 0, 0, 0)"
+          },
+          "disabled": false
+        },
+        {
+          "label": "Seguir a Casa Origen",
+          "follow": true,
+          "avatar": false,
+          "name": false,
+          "box": {
+            "x": 5,
+            "y": 2520.69,
+            "width": 44,
+            "height": 44,
+            "right": 49,
+            "bottom": 2564.69
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(255, 255, 255)",
+          "paint": {
+            "width": "20px",
+            "height": "20px",
+            "background": "rgb(201, 53, 69)"
+          },
+          "disabled": false
+        },
+        {
+          "label": "Guardar Tenis con talla a elección en favoritos",
+          "follow": false,
+          "avatar": false,
+          "name": false,
+          "box": {
+            "x": 271,
+            "y": 2520.69,
+            "width": 44,
+            "height": 44,
+            "right": 315,
+            "bottom": 2564.69
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(107, 114, 128)",
+          "paint": {
+            "width": "28px",
+            "height": "28px",
+            "background": "rgb(250, 243, 245)"
+          },
+          "disabled": false
+        },
+        {
+          "label": "Contactar por WhatsApp sobre Tenis con talla a elección",
+          "follow": false,
+          "avatar": false,
+          "name": false,
+          "box": {
+            "x": 217,
+            "y": 2764.25,
+            "width": 44,
+            "height": 44,
+            "right": 261,
+            "bottom": 2808.25
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(255, 255, 255)",
+          "paint": {
+            "width": "32px",
+            "height": "32px",
+            "background": "rgb(37, 128, 84)"
+          },
+          "disabled": false
+        },
+        {
+          "label": "Elegir opciones de Tenis con talla a elección",
+          "follow": false,
+          "avatar": false,
+          "name": false,
+          "box": {
+            "x": 261,
+            "y": 2764.25,
+            "width": 44,
+            "height": 44,
+            "right": 305,
+            "bottom": 2808.25
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(255, 255, 255)",
+          "paint": {
+            "width": "32px",
+            "height": "32px",
+            "background": "rgb(201, 53, 69)"
+          },
+          "disabled": false
+        }
+      ],
+      "collisions": [],
+      "price": {
+        "text": "$ 145.000",
+        "box": {
+          "x": 15,
+          "y": 2783.25,
+          "width": 202,
+          "height": 22,
+          "right": 217,
+          "bottom": 2805.25
+        },
+        "font": "18px"
+      },
+      "title": "Tenis con talla a elección",
+      "border": "1px solid rgb(226, 184, 194)",
+      "shadow": "rgba(44, 47, 51, 0.12) 0px 4px 14px 0px",
+      "overlay": {
+        "avatar": {
+          "x": 11,
+          "y": 2530.6875,
+          "width": 24,
+          "height": 24
+        },
+        "badge": {
+          "x": 20,
+          "y": 2525.6875,
+          "width": 20,
+          "height": 20
+        },
+        "overlapFraction": 0.535277977333457,
+        "photoHit": true,
+        "badgeHit": true,
+        "avatarIsInsideButton": true,
+        "profileLinks": 1
+      }
+    },
+    {
+      "id": "p7",
+      "root": {
+        "x": 4,
+        "y": 2829.25,
+        "width": 312,
+        "height": 317.56,
+        "right": 316,
+        "bottom": 3146.81
+      },
+      "header": {
+        "x": 5,
+        "y": 2830.25,
+        "width": 310,
+        "height": 44,
+        "right": 315,
+        "bottom": 2874.25
+      },
+      "photo": {
+        "x": 5,
+        "y": 2874.25,
+        "width": 310,
+        "height": 167.56,
+        "right": 315,
+        "bottom": 3041.81
+      },
+      "name": {
+        "text": "Cooperativa de Productores Artesanales de Bogotá",
+        "width": 222,
+        "labelHeight": 36,
+        "font": "13px"
+      },
+      "avatar": null,
+      "controls": [
+        {
+          "label": "Cooperativa de Productores Artesanales de Bogotá",
+          "follow": false,
+          "avatar": false,
+          "name": true,
+          "box": {
+            "x": 49,
+            "y": 2830.25,
+            "width": 222,
+            "height": 44,
+            "right": 271,
+            "bottom": 2874.25
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(28, 40, 60)",
+          "paint": {
+            "width": "auto",
+            "height": "auto",
+            "background": "rgba(0, 0, 0, 0)"
+          },
+          "disabled": false
+        },
+        {
+          "label": "Seguir a Cooperativa de Productores Artesanales de Bogotá",
+          "follow": true,
+          "avatar": false,
+          "name": false,
+          "box": {
+            "x": 5,
+            "y": 2830.25,
+            "width": 44,
+            "height": 44,
+            "right": 49,
+            "bottom": 2874.25
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(255, 255, 255)",
+          "paint": {
+            "width": "20px",
+            "height": "20px",
+            "background": "rgb(201, 53, 69)"
+          },
+          "disabled": false
+        },
+        {
+          "label": "Guardar Edición artesanal colombiana con acabados hechos a mano y nombre de producto especialmente largo en favoritos",
+          "follow": false,
+          "avatar": false,
+          "name": false,
+          "box": {
+            "x": 271,
+            "y": 2830.25,
+            "width": 44,
+            "height": 44,
+            "right": 315,
+            "bottom": 2874.25
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(107, 114, 128)",
+          "paint": {
+            "width": "28px",
+            "height": "28px",
+            "background": "rgb(250, 243, 245)"
+          },
+          "disabled": false
+        },
+        {
+          "label": "Contactar por WhatsApp sobre Edición artesanal colombiana con acabados hechos a mano y nombre de producto especialmente largo",
+          "follow": false,
+          "avatar": false,
+          "name": false,
+          "box": {
+            "x": 217,
+            "y": 3093.81,
+            "width": 44,
+            "height": 44,
+            "right": 261,
+            "bottom": 3137.81
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(255, 255, 255)",
+          "paint": {
+            "width": "32px",
+            "height": "32px",
+            "background": "rgb(37, 128, 84)"
+          },
+          "disabled": false
+        },
+        {
+          "label": "Agregar Edición artesanal colombiana con acabados hechos a mano y nombre de producto especialmente largo al carrito",
+          "follow": false,
+          "avatar": false,
+          "name": false,
+          "box": {
+            "x": 261,
+            "y": 3093.81,
+            "width": 44,
+            "height": 44,
+            "right": 305,
+            "bottom": 3137.81
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(255, 255, 255)",
+          "paint": {
+            "width": "32px",
+            "height": "32px",
+            "background": "rgb(201, 53, 69)"
+          },
+          "disabled": false
+        }
+      ],
+      "collisions": [],
+      "price": {
+        "text": "$ 123.456.789",
+        "box": {
+          "x": 15,
+          "y": 3104.81,
+          "width": 202,
+          "height": 22,
+          "right": 217,
+          "bottom": 3126.81
+        },
+        "font": "18px"
+      },
+      "title": "Edición artesanal colombiana con acabados hechos a mano y nombre de producto especialmente largo",
+      "border": "1px solid rgb(226, 184, 194)",
+      "shadow": "rgba(44, 47, 51, 0.12) 0px 4px 14px 0px",
+      "overlay": {
+        "avatar": {
+          "x": 11,
+          "y": 2840.25,
+          "width": 24,
+          "height": 24
+        },
+        "badge": {
+          "x": 20,
+          "y": 2835.25,
+          "width": 20,
+          "height": 20
+        },
+        "overlapFraction": 0.535277977333457,
+        "photoHit": true,
+        "badgeHit": true,
+        "avatarIsInsideButton": true,
+        "profileLinks": 1
+      }
+    },
+    {
+      "id": "p8",
+      "root": {
+        "x": 4,
+        "y": 3418.81,
+        "width": 312,
+        "height": 311.56,
+        "right": 316,
+        "bottom": 3730.38
+      },
+      "header": {
+        "x": 5,
+        "y": 3419.81,
+        "width": 310,
+        "height": 44,
+        "right": 315,
+        "bottom": 3463.81
+      },
+      "photo": {
+        "x": 5,
+        "y": 3463.81,
+        "width": 310,
+        "height": 167.56,
+        "right": 315,
+        "bottom": 3631.38
+      },
+      "name": {
+        "text": "Comercio Local",
+        "width": 222,
+        "labelHeight": 18,
+        "font": "13px"
+      },
+      "avatar": null,
+      "controls": [
+        {
+          "label": "Comercio Local",
+          "follow": false,
+          "avatar": false,
+          "name": true,
+          "box": {
+            "x": 49,
+            "y": 3419.81,
+            "width": 222,
+            "height": 44,
+            "right": 271,
+            "bottom": 3463.81
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(28, 40, 60)",
+          "paint": {
+            "width": "auto",
+            "height": "auto",
+            "background": "rgba(0, 0, 0, 0)"
+          },
+          "disabled": false
+        },
+        {
+          "label": "Seguir a Comercio Local",
+          "follow": true,
+          "avatar": false,
+          "name": false,
+          "box": {
+            "x": 5,
+            "y": 3419.81,
+            "width": 44,
+            "height": 44,
+            "right": 49,
+            "bottom": 3463.81
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(255, 255, 255)",
+          "paint": {
+            "width": "20px",
+            "height": "20px",
+            "background": "rgb(201, 53, 69)"
+          },
+          "disabled": false
+        },
+        {
+          "label": "Guardar Selección especial en favoritos",
+          "follow": false,
+          "avatar": false,
+          "name": false,
+          "box": {
+            "x": 271,
+            "y": 3419.81,
+            "width": 44,
+            "height": 44,
+            "right": 315,
+            "bottom": 3463.81
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(107, 114, 128)",
+          "paint": {
+            "width": "28px",
+            "height": "28px",
+            "background": "rgb(250, 243, 245)"
+          },
+          "disabled": false
+        },
+        {
+          "label": "Contactar por WhatsApp sobre Selección especial",
+          "follow": false,
+          "avatar": false,
+          "name": false,
+          "box": {
+            "x": 217,
+            "y": 3670.38,
+            "width": 44,
+            "height": 44,
+            "right": 261,
+            "bottom": 3714.38
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(255, 255, 255)",
+          "paint": {
+            "width": "32px",
+            "height": "32px",
+            "background": "rgb(37, 128, 84)"
+          },
+          "disabled": false
+        },
+        {
+          "label": "Selección especial agotado",
+          "follow": false,
+          "avatar": false,
+          "name": false,
+          "box": {
+            "x": 261,
+            "y": 3670.38,
+            "width": 44,
+            "height": 44,
+            "right": 305,
+            "bottom": 3714.38
+          },
+          "hit": true,
+          "nested": false,
+          "photoOverlap": 0,
+          "color": "rgb(100, 116, 139)",
+          "paint": {
+            "width": "32px",
+            "height": "32px",
+            "background": "rgb(226, 232, 240)"
+          },
+          "disabled": true
+        }
+      ],
+      "collisions": [],
+      "price": {
+        "text": "$ 180.000",
+        "box": {
+          "x": 15,
+          "y": 3679.38,
+          "width": 202,
+          "height": 22,
+          "right": 217,
+          "bottom": 3701.38
+        },
+        "font": "18px"
+      },
+      "title": "Selección especial",
+      "border": "1px solid rgb(226, 184, 194)",
+      "shadow": "rgba(44, 47, 51, 0.12) 0px 4px 14px 0px",
+      "overlay": {
+        "avatar": {
+          "x": 11,
+          "y": 3429.8125,
+          "width": 24,
+          "height": 24
+        },
+        "badge": {
+          "x": 20,
+          "y": 3424.8125,
+          "width": 20,
+          "height": 20
+        },
+        "overlapFraction": 0.535277977333457,
+        "photoHit": true,
+        "badgeHit": true,
+        "avatarIsInsideButton": true,
+        "profileLinks": 1
+      }
+    }
+  ],
+  "desktopPixels": null
+}

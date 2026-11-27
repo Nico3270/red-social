@@ -1,5 +1,6 @@
 "use server";
 
+import { requireSuperAdmin } from "@/lib/business/productAccess";
 import { auth } from "@/auth.config";
 import prisma from "@/lib/prisma";
 import OpenAI from "openai";
@@ -7,7 +8,7 @@ import { ProductEtiquetaEspecial } from "@prisma/client";
 import { z } from "zod";
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: process.env.OPENAI_API_KEY || "not-configured",
 });
 
 const openaiBatchDraftModel =
@@ -460,6 +461,8 @@ export async function generateAdminProductBatchDraftAction(
         error: "No tienes permisos para generar productos administrativos.",
       };
     }
+
+    await requireSuperAdmin();
 
     const parsedInput = batchInputSchema.safeParse(rawInput);
 

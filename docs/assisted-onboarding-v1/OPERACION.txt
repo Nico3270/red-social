@@ -1,0 +1,117 @@
+MYCKEO — INCORPORACIÓN ASISTIDA V1
+
+Operación
+
+1. Inicia sesión con una cuenta activa super_admin y abre
+   /myckeoAdmin/incorporacion desde el panel de Myckeo Admin.
+2. Selecciona nombre comercial, departamento, ciudad, categoría y sección.
+   WhatsApp comercial y descripción son opcionales. No se solicitan datos
+   personales ni una contraseña del propietario en esta preparación.
+3. Revisa las coincidencias de nombre/ciudad o teléfono. Continúa con el perfil
+   existente o confirma expresamente que se trata de negocios distintos.
+   El navegador conserva la referencia de operación para recuperar un fallo.
+   Usa «Preparar otro negocio» para comenzar una operación diferente.
+4. El usuario se aprovisiona con el servicio existente; el negocio nace
+   suspendido en la primera inserción y el usuario sigue siendo placeholder.
+   Un reintento no sobrescribe ni reactiva un negocio existente.
+5. Abre «Editar perfil» para completar exclusivamente la información comercial
+   autorizada. Deja los datos personales del usuario para /activar.
+6. Abre «Agregar productos». El negocio queda preseleccionado desde el servidor.
+   Completa nombre, precio y descripción base; usa «Preparar sin IA» para trabajar
+   sin OpenAI, revisa el formulario existente y pulsa «Guardar producto».
+   El producto se guarda oculto. Sube las fotografías autorizadas y pulsa
+   «Guardar imágenes»; espera a que uploader y base de datos estén sincronizados.
+   «Guardar y crear otro producto» conserva el negocio y limpia el producto.
+   «Editar borrador» abre este mismo editor y conserva la galería.
+7. Vuelve a incorporación, abre «Demo y activación», selecciona los productos
+   revisados y confirma autorización del contenido. «Generar demo privada»
+   crea un enlace de siete días con una copia de esa selección. Regenerarlo
+   revoca los anteriores. Una edición posterior exige regenerar la demo.
+8. Entrega la demo únicamente cuando tengas autorización para mostrarla.
+   «Revocar demos» invalida los enlaces del negocio. La vista es de solo lectura;
+   no activa cuentas ni publica contenido ni concede permisos administrativos.
+9. Verifica manualmente la identidad del responsable y su representación del
+   negocio por un canal comercial confirmado. Si ya tiene cuenta Myckeo,
+   detén la activación y revisa ese caso; no se transfieren ni fusionan cuentas.
+   Marca la comprobación de identidad y genera el enlace de activación.
+   Entrégalo directamente a ese responsable, sin contraseñas compartidas.
+10. El responsable abre /activar, completa sus datos y elige su propia contraseña.
+    Se reutilizan AccountClaim, su emisor existente, consumo único y vencimiento
+    de una hora. Un correo/username ocupado no fusiona identidades ni consume
+    definitivamente el Claim. Regenerar la activación revoca el enlace anterior.
+11. «Actualizar estado» permite comprobar la activación. Se conservan usuario,
+    negocio, productos e imágenes. El negocio sigue suspendido.
+12. Tras recibir la aprobación comercial, selecciona TODOS los productos que
+    deban estar públicos y pulsa «Aprobar y publicar selección». La selección
+    es definitiva, no aditiva: los disponibles no seleccionados pasan a oculto.
+    El negocio y los productos aprobados cambian dentro de la misma transacción.
+13. «Suspender negocio» retira su visibilidad y oculta sus productos disponibles.
+    Las nuevas solicitudes de perfil, búsqueda, catálogo y sitemap reflejan el
+    estado. Las copias que un receptor ya haya descargado no pueden retirarse.
+
+Configuración y entrega técnica
+
+- Es necesario aplicar en la entrega autorizada la migración limitada:
+  prisma/migrations/20261118090000_business_demo_links/migration.sql
+  Solo añade BusinessDemoLink: hash de token, vencimiento, revocación, creador,
+  autorización y snapshot de la selección. AccountClaim no es apropiado para
+  una demo reutilizable y no comparte tokens ni persistencia con ella.
+  Esta implementación no aplica migraciones ni despliegues en producción.
+- SITE_URL debe representar el origen canónico, con HTTPS en producción.
+- Reutiliza MYCKEO_ADMIN_KEY y ACCOUNT_PROVISIONING_HMAC_SECRET en el servidor.
+  Nunca se envían claves internas al navegador ni se solicitan al operador.
+- Se mantienen NextAuth y ACCOUNT_ACTIVATION_SESSION_SECRET, junto con la
+  configuración existente de activación y Upstash Redis.
+- La sesión de demo usa BUSINESS_DEMO_SESSION_SECRET o AUTH_SECRET; mínimo
+  32 bytes. Rotar ese secreto invalida las cookies existentes.
+- Cloudinary conserva su configuración de servidor actual. El modo manual
+  no requiere OpenAI. No hay importación PDF ni mensajería automática nueva.
+- Las operaciones administrativas afectadas comprueban el estado y rol
+  actuales del actor en base de datos. La publicación exige negocio publicable;
+  suspendidos, archivados o eliminados no pueden publicarse por rutas alternativas.
+- El editor genérico y la restauración de archivo no activan silenciosamente un
+  negocio aprovisionado. La aprobación inicial corresponde a incorporación.
+
+Límites conocidos
+
+- La identidad, representación comercial y derechos sobre fotografías se
+  comprueban manualmente. Una casilla no constituye verificación automática.
+- Un enlace puede reenviarse. Revocarlo no elimina capturas, copias descargadas
+  ni convierte las imágenes de Cloudinary en archivos privados.
+- La demo falla cerrada si no está disponible el servicio de límites Redis.
+  Límite aplicado: 60 solicitudes por diez minutos y origen/IP opaco.
+- Se muestran los últimos 100 negocios aprovisionados; no es un CRM.
+- Los productos nuevos se preparan ocultos. Las nuevas variantes de este
+  editor usan stock ilimitado; el inventario limitado se gestiona con el editor
+  de inventario existente. Editar variantes ya existentes conserva su stock,
+  estado, imagen e identidad cuando se mantiene la variante.
+- Provision conserva su comportamiento seguro original: solicitudes internas
+  simultáneas pueden recibir INTERNAL_ERROR por colisiones de email/username.
+  Reintentar la MISMA referencia recupera al ganador por el hash de provisión.
+  La capa del módulo serializa referencias, nombres/ciudad y teléfonos; no
+  recupera identidades por email ni modifica el contrato de Provision.
+- Los archivos de Cloudinary y la analítica externos se sustituyen en las
+  pruebas; no se validaron cargas reales, envíos comerciales ni producción.
+
+Validación reproducible, solo datos ficticios
+
+Requisitos locales: pnpm, Docker, Chromium de Playwright y puertos libres
+5487, 15446, 16446 y 16447.
+
+  node e2e/assisted-onboarding/run-isolated.cjs
+
+El runner copia código/configuración sin archivos .env, usa PostgreSQL 16 y
+Redis locales desechables, aplica el esquema solo en su propia base, ejecuta
+Playwright y elimina exclusivamente sus procesos y contenedores. Conserva los
+logs y el informe JSON en un directorio temporal que indica al finalizar.
+La prueba de migración ejecuta el SQL real en un esquema aislado y revierte
+la transacción, comprobando JSONB, array, FK e índice único.
+
+Pruebas unitarias y comprobaciones:
+
+  pnpm exec jest --runInBand --coverage=false
+  pnpm typecheck --incremental false
+  git diff --check
+
+La captura móvil ficticia se encuentra en demo-mobile.png. El inventario y
+los resultados finales se encuentran en RESULTADOS.json.

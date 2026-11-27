@@ -1,0 +1,1913 @@
+[
+  {
+    "width": 320,
+    "desktopPixels": null,
+    "otherControlsIdentical": true,
+    "photoPixels": [
+      {
+        "id": "p1",
+        "differentPixels": 0
+      },
+      {
+        "id": "p2",
+        "differentPixels": 0
+      }
+    ],
+    "cards": [
+      {
+        "id": "p1",
+        "beforeNameWidth": 198,
+        "afterNameWidth": 222,
+        "recovered": 24,
+        "fontBefore": "13px",
+        "fontAfter": "13px",
+        "headerHeight": 44,
+        "collisions": [],
+        "follow": {
+          "x": 5,
+          "y": 142,
+          "width": 44,
+          "height": 44,
+          "right": 49,
+          "bottom": 186
+        },
+        "overlay": {
+          "avatar": {
+            "x": 11,
+            "y": 152,
+            "width": 24,
+            "height": 24
+          },
+          "badge": {
+            "x": 20,
+            "y": 147,
+            "width": 20,
+            "height": 20
+          },
+          "overlapFraction": 0.535277977333457,
+          "photoHit": true,
+          "badgeHit": true,
+          "avatarIsInsideButton": true,
+          "profileLinks": 1
+        }
+      },
+      {
+        "id": "p2",
+        "beforeNameWidth": 198,
+        "afterNameWidth": 222,
+        "recovered": 24,
+        "fontBefore": "13px",
+        "fontAfter": "13px",
+        "headerHeight": 44,
+        "collisions": [],
+        "follow": {
+          "x": 5,
+          "y": 451.56,
+          "width": 44,
+          "height": 44,
+          "right": 49,
+          "bottom": 495.56
+        },
+        "overlay": {
+          "avatar": {
+            "x": 11,
+            "y": 461.5625,
+            "width": 24,
+            "height": 24
+          },
+          "badge": {
+            "x": 20,
+            "y": 456.5625,
+            "width": 20,
+            "height": 20
+          },
+          "overlapFraction": 0.535277977333457,
+          "photoHit": true,
+          "badgeHit": true,
+          "avatarIsInsideButton": true,
+          "profileLinks": 1
+        }
+      },
+      {
+        "id": "p3",
+        "beforeNameWidth": 198,
+        "afterNameWidth": 222,
+        "recovered": 24,
+        "fontBefore": "13px",
+        "fontAfter": "13px",
+        "headerHeight": 44,
+        "collisions": [],
+        "follow": {
+          "x": 5,
+          "y": 761.13,
+          "width": 44,
+          "height": 44,
+          "right": 49,
+          "bottom": 805.13
+        },
+        "overlay": {
+          "avatar": {
+            "x": 11,
+            "y": 771.125,
+            "width": 24,
+            "height": 24
+          },
+          "badge": {
+            "x": 20,
+            "y": 766.125,
+            "width": 20,
+            "height": 20
+          },
+          "overlapFraction": 0.535277977333457,
+          "photoHit": true,
+          "badgeHit": true,
+          "avatarIsInsideButton": true,
+          "profileLinks": 1
+        }
+      },
+      {
+        "id": "p5",
+        "beforeNameWidth": 198,
+        "afterNameWidth": 222,
+        "recovered": 24,
+        "fontBefore": "13px",
+        "fontAfter": "13px",
+        "headerHeight": 44,
+        "collisions": [],
+        "follow": {
+          "x": 5,
+          "y": 1514.44,
+          "width": 44,
+          "height": 44,
+          "right": 49,
+          "bottom": 1558.44
+        },
+        "overlay": {
+          "avatar": {
+            "x": 11,
+            "y": 1524.4375,
+            "width": 24,
+            "height": 24
+          },
+          "badge": {
+            "x": 20,
+            "y": 1519.4375,
+            "width": 20,
+            "height": 20
+          },
+          "overlapFraction": 0.535277977333457,
+          "photoHit": true,
+          "badgeHit": true,
+          "avatarIsInsideButton": true,
+          "profileLinks": 1
+        }
+      },
+      {
+        "id": "p6",
+        "beforeNameWidth": 198,
+        "afterNameWidth": 222,
+        "recovered": 24,
+        "fontBefore": "13px",
+        "fontAfter": "13px",
+        "headerHeight": 44,
+        "collisions": [],
+        "follow": {
+          "x": 5,
+          "y": 1824,
+          "width": 44,
+          "height": 44,
+          "right": 49,
+          "bottom": 1868
+        },
+        "overlay": {
+          "avatar": {
+            "x": 11,
+            "y": 1834,
+            "width": 24,
+            "height": 24
+          },
+          "badge": {
+            "x": 20,
+            "y": 1829,
+            "width": 20,
+            "height": 20
+          },
+          "overlapFraction": 0.535277977333457,
+          "photoHit": true,
+          "badgeHit": true,
+          "avatarIsInsideButton": true,
+          "profileLinks": 1
+        }
+      },
+      {
+        "id": "p4",
+        "beforeNameWidth": 198,
+        "afterNameWidth": 222,
+        "recovered": 24,
+        "fontBefore": "13px",
+        "fontAfter": "13px",
+        "headerHeight": 44,
+        "collisions": [],
+        "follow": {
+          "x": 5,
+          "y": 2520.69,
+          "width": 44,
+          "height": 44,
+          "right": 49,
+          "bottom": 2564.69
+        },
+        "overlay": {
+          "avatar": {
+            "x": 11,
+            "y": 2530.6875,
+            "width": 24,
+            "height": 24
+          },
+          "badge": {
+            "x": 20,
+            "y": 2525.6875,
+            "width": 20,
+            "height": 20
+          },
+          "overlapFraction": 0.535277977333457,
+          "photoHit": true,
+          "badgeHit": true,
+          "avatarIsInsideButton": true,
+          "profileLinks": 1
+        }
+      },
+      {
+        "id": "p7",
+        "beforeNameWidth": 198,
+        "afterNameWidth": 222,
+        "recovered": 24,
+        "fontBefore": "13px",
+        "fontAfter": "13px",
+        "headerHeight": 44,
+        "collisions": [],
+        "follow": {
+          "x": 5,
+          "y": 2830.25,
+          "width": 44,
+          "height": 44,
+          "right": 49,
+          "bottom": 2874.25
+        },
+        "overlay": {
+          "avatar": {
+            "x": 11,
+            "y": 2840.25,
+            "width": 24,
+            "height": 24
+          },
+          "badge": {
+            "x": 20,
+            "y": 2835.25,
+            "width": 20,
+            "height": 20
+          },
+          "overlapFraction": 0.535277977333457,
+          "photoHit": true,
+          "badgeHit": true,
+          "avatarIsInsideButton": true,
+          "profileLinks": 1
+        }
+      },
+      {
+        "id": "p8",
+        "beforeNameWidth": 198,
+        "afterNameWidth": 222,
+        "recovered": 24,
+        "fontBefore": "13px",
+        "fontAfter": "13px",
+        "headerHeight": 44,
+        "collisions": [],
+        "follow": {
+          "x": 5,
+          "y": 3419.81,
+          "width": 44,
+          "height": 44,
+          "right": 49,
+          "bottom": 3463.81
+        },
+        "overlay": {
+          "avatar": {
+            "x": 11,
+            "y": 3429.8125,
+            "width": 24,
+            "height": 24
+          },
+          "badge": {
+            "x": 20,
+            "y": 3424.8125,
+            "width": 20,
+            "height": 20
+          },
+          "overlapFraction": 0.535277977333457,
+          "photoHit": true,
+          "badgeHit": true,
+          "avatarIsInsideButton": true,
+          "profileLinks": 1
+        }
+      }
+    ]
+  },
+  {
+    "width": 360,
+    "desktopPixels": null,
+    "otherControlsIdentical": true,
+    "photoPixels": [
+      {
+        "id": "p1",
+        "differentPixels": 0
+      },
+      {
+        "id": "p2",
+        "differentPixels": 0
+      }
+    ],
+    "cards": [
+      {
+        "id": "p1",
+        "beforeNameWidth": 238,
+        "afterNameWidth": 262,
+        "recovered": 24,
+        "fontBefore": "13px",
+        "fontAfter": "13px",
+        "headerHeight": 44,
+        "collisions": [],
+        "follow": {
+          "x": 5,
+          "y": 142,
+          "width": 44,
+          "height": 44,
+          "right": 49,
+          "bottom": 186
+        },
+        "overlay": {
+          "avatar": {
+            "x": 11,
+            "y": 152,
+            "width": 24,
+            "height": 24
+          },
+          "badge": {
+            "x": 20,
+            "y": 147,
+            "width": 20,
+            "height": 20
+          },
+          "overlapFraction": 0.535277977333457,
+          "photoHit": true,
+          "badgeHit": true,
+          "avatarIsInsideButton": true,
+          "profileLinks": 1
+        }
+      },
+      {
+        "id": "p2",
+        "beforeNameWidth": 238,
+        "afterNameWidth": 262,
+        "recovered": 24,
+        "fontBefore": "13px",
+        "fontAfter": "13px",
+        "headerHeight": 44,
+        "collisions": [],
+        "follow": {
+          "x": 5,
+          "y": 473.19,
+          "width": 44,
+          "height": 44,
+          "right": 49,
+          "bottom": 517.19
+        },
+        "overlay": {
+          "avatar": {
+            "x": 11,
+            "y": 483.1875,
+            "width": 24,
+            "height": 24
+          },
+          "badge": {
+            "x": 20,
+            "y": 478.1875,
+            "width": 20,
+            "height": 20
+          },
+          "overlapFraction": 0.535277977333457,
+          "photoHit": true,
+          "badgeHit": true,
+          "avatarIsInsideButton": true,
+          "profileLinks": 1
+        }
+      },
+      {
+        "id": "p3",
+        "beforeNameWidth": 238,
+        "afterNameWidth": 262,
+        "recovered": 24,
+        "fontBefore": "13px",
+        "fontAfter": "13px",
+        "headerHeight": 44,
+        "collisions": [],
+        "follow": {
+          "x": 5,
+          "y": 804.38,
+          "width": 44,
+          "height": 44,
+          "right": 49,
+          "bottom": 848.38
+        },
+        "overlay": {
+          "avatar": {
+            "x": 11,
+            "y": 814.375,
+            "width": 24,
+            "height": 24
+          },
+          "badge": {
+            "x": 20,
+            "y": 809.375,
+            "width": 20,
+            "height": 20
+          },
+          "overlapFraction": 0.535277977333457,
+          "photoHit": true,
+          "badgeHit": true,
+          "avatarIsInsideButton": true,
+          "profileLinks": 1
+        }
+      },
+      {
+        "id": "p5",
+        "beforeNameWidth": 238,
+        "afterNameWidth": 262,
+        "recovered": 24,
+        "fontBefore": "13px",
+        "fontAfter": "13px",
+        "headerHeight": 44,
+        "collisions": [],
+        "follow": {
+          "x": 5,
+          "y": 1604.31,
+          "width": 44,
+          "height": 44,
+          "right": 49,
+          "bottom": 1648.31
+        },
+        "overlay": {
+          "avatar": {
+            "x": 11,
+            "y": 1614.3125,
+            "width": 24,
+            "height": 24
+          },
+          "badge": {
+            "x": 20,
+            "y": 1609.3125,
+            "width": 20,
+            "height": 20
+          },
+          "overlapFraction": 0.535277977333457,
+          "photoHit": true,
+          "badgeHit": true,
+          "avatarIsInsideButton": true,
+          "profileLinks": 1
+        }
+      },
+      {
+        "id": "p6",
+        "beforeNameWidth": 238,
+        "afterNameWidth": 262,
+        "recovered": 24,
+        "fontBefore": "13px",
+        "fontAfter": "13px",
+        "headerHeight": 44,
+        "collisions": [],
+        "follow": {
+          "x": 5,
+          "y": 1935.5,
+          "width": 44,
+          "height": 44,
+          "right": 49,
+          "bottom": 1979.5
+        },
+        "overlay": {
+          "avatar": {
+            "x": 11,
+            "y": 1945.5,
+            "width": 24,
+            "height": 24
+          },
+          "badge": {
+            "x": 20,
+            "y": 1940.5,
+            "width": 20,
+            "height": 20
+          },
+          "overlapFraction": 0.535277977333457,
+          "photoHit": true,
+          "badgeHit": true,
+          "avatarIsInsideButton": true,
+          "profileLinks": 1
+        }
+      },
+      {
+        "id": "p4",
+        "beforeNameWidth": 238,
+        "afterNameWidth": 262,
+        "recovered": 24,
+        "fontBefore": "13px",
+        "fontAfter": "13px",
+        "headerHeight": 44,
+        "collisions": [],
+        "follow": {
+          "x": 5,
+          "y": 2676.31,
+          "width": 44,
+          "height": 44,
+          "right": 49,
+          "bottom": 2720.31
+        },
+        "overlay": {
+          "avatar": {
+            "x": 11,
+            "y": 2686.3125,
+            "width": 24,
+            "height": 24
+          },
+          "badge": {
+            "x": 20,
+            "y": 2681.3125,
+            "width": 20,
+            "height": 20
+          },
+          "overlapFraction": 0.535277977333457,
+          "photoHit": true,
+          "badgeHit": true,
+          "avatarIsInsideButton": true,
+          "profileLinks": 1
+        }
+      },
+      {
+        "id": "p7",
+        "beforeNameWidth": 238,
+        "afterNameWidth": 262,
+        "recovered": 24,
+        "fontBefore": "13px",
+        "fontAfter": "13px",
+        "headerHeight": 44,
+        "collisions": [],
+        "follow": {
+          "x": 5,
+          "y": 3007.5,
+          "width": 44,
+          "height": 44,
+          "right": 49,
+          "bottom": 3051.5
+        },
+        "overlay": {
+          "avatar": {
+            "x": 11,
+            "y": 3017.5,
+            "width": 24,
+            "height": 24
+          },
+          "badge": {
+            "x": 20,
+            "y": 3012.5,
+            "width": 20,
+            "height": 20
+          },
+          "overlapFraction": 0.535277977333457,
+          "photoHit": true,
+          "badgeHit": true,
+          "avatarIsInsideButton": true,
+          "profileLinks": 1
+        }
+      },
+      {
+        "id": "p8",
+        "beforeNameWidth": 238,
+        "afterNameWidth": 262,
+        "recovered": 24,
+        "fontBefore": "13px",
+        "fontAfter": "13px",
+        "headerHeight": 44,
+        "collisions": [],
+        "follow": {
+          "x": 5,
+          "y": 3618.69,
+          "width": 44,
+          "height": 44,
+          "right": 49,
+          "bottom": 3662.69
+        },
+        "overlay": {
+          "avatar": {
+            "x": 11,
+            "y": 3628.6875,
+            "width": 24,
+            "height": 24
+          },
+          "badge": {
+            "x": 20,
+            "y": 3623.6875,
+            "width": 20,
+            "height": 20
+          },
+          "overlapFraction": 0.535277977333457,
+          "photoHit": true,
+          "badgeHit": true,
+          "avatarIsInsideButton": true,
+          "profileLinks": 1
+        }
+      }
+    ]
+  },
+  {
+    "width": 390,
+    "desktopPixels": null,
+    "otherControlsIdentical": true,
+    "photoPixels": [
+      {
+        "id": "p1",
+        "differentPixels": 0
+      },
+      {
+        "id": "p2",
+        "differentPixels": 0
+      },
+      {
+        "id": "p3",
+        "differentPixels": 0
+      }
+    ],
+    "cards": [
+      {
+        "id": "p1",
+        "beforeNameWidth": 72,
+        "afterNameWidth": 96,
+        "recovered": 24,
+        "fontBefore": "12px",
+        "fontAfter": "12px",
+        "headerHeight": 44,
+        "collisions": [],
+        "follow": {
+          "x": 5,
+          "y": 142,
+          "width": 44,
+          "height": 44,
+          "right": 49,
+          "bottom": 186
+        },
+        "overlay": {
+          "avatar": {
+            "x": 11,
+            "y": 152,
+            "width": 24,
+            "height": 24
+          },
+          "badge": {
+            "x": 20,
+            "y": 147,
+            "width": 20,
+            "height": 20
+          },
+          "overlapFraction": 0.535277977333457,
+          "photoHit": true,
+          "badgeHit": true,
+          "avatarIsInsideButton": true,
+          "profileLinks": 1
+        }
+      },
+      {
+        "id": "p2",
+        "beforeNameWidth": 72,
+        "afterNameWidth": 96,
+        "recovered": 24,
+        "fontBefore": "12px",
+        "fontAfter": "12px",
+        "headerHeight": 44,
+        "collisions": [],
+        "follow": {
+          "x": 201,
+          "y": 142,
+          "width": 44,
+          "height": 44,
+          "right": 245,
+          "bottom": 186
+        },
+        "overlay": {
+          "avatar": {
+            "x": 207,
+            "y": 152,
+            "width": 24,
+            "height": 24
+          },
+          "badge": {
+            "x": 216,
+            "y": 147,
+            "width": 20,
+            "height": 20
+          },
+          "overlapFraction": 0.535277977333457,
+          "photoHit": true,
+          "badgeHit": true,
+          "avatarIsInsideButton": true,
+          "profileLinks": 1
+        }
+      },
+      {
+        "id": "p3",
+        "beforeNameWidth": 268,
+        "afterNameWidth": 292,
+        "recovered": 24,
+        "fontBefore": "13px",
+        "fontAfter": "13px",
+        "headerHeight": 44,
+        "collisions": [],
+        "follow": {
+          "x": 5,
+          "y": 486,
+          "width": 44,
+          "height": 44,
+          "right": 49,
+          "bottom": 530
+        },
+        "overlay": {
+          "avatar": {
+            "x": 11,
+            "y": 496,
+            "width": 24,
+            "height": 24
+          },
+          "badge": {
+            "x": 20,
+            "y": 491,
+            "width": 20,
+            "height": 20
+          },
+          "overlapFraction": 0.535277977333457,
+          "photoHit": true,
+          "badgeHit": true,
+          "avatarIsInsideButton": true,
+          "profileLinks": 1
+        }
+      },
+      {
+        "id": "p5",
+        "beforeNameWidth": 72,
+        "afterNameWidth": 96,
+        "recovered": 24,
+        "fontBefore": "12px",
+        "fontAfter": "12px",
+        "headerHeight": 44,
+        "collisions": [],
+        "follow": {
+          "x": 5,
+          "y": 1320.89,
+          "width": 44,
+          "height": 44,
+          "right": 49,
+          "bottom": 1364.89
+        },
+        "overlay": {
+          "avatar": {
+            "x": 11,
+            "y": 1330.890625,
+            "width": 24,
+            "height": 24
+          },
+          "badge": {
+            "x": 20,
+            "y": 1325.890625,
+            "width": 20,
+            "height": 20
+          },
+          "overlapFraction": 0.535277977333457,
+          "photoHit": true,
+          "badgeHit": true,
+          "avatarIsInsideButton": true,
+          "profileLinks": 1
+        }
+      },
+      {
+        "id": "p6",
+        "beforeNameWidth": 72,
+        "afterNameWidth": 96,
+        "recovered": 24,
+        "fontBefore": "12px",
+        "fontAfter": "12px",
+        "headerHeight": 44,
+        "collisions": [],
+        "follow": {
+          "x": 201,
+          "y": 1320.89,
+          "width": 44,
+          "height": 44,
+          "right": 245,
+          "bottom": 1364.89
+        },
+        "overlay": {
+          "avatar": {
+            "x": 207,
+            "y": 1330.890625,
+            "width": 24,
+            "height": 24
+          },
+          "badge": {
+            "x": 216,
+            "y": 1325.890625,
+            "width": 20,
+            "height": 20
+          },
+          "overlapFraction": 0.535277977333457,
+          "photoHit": true,
+          "badgeHit": true,
+          "avatarIsInsideButton": true,
+          "profileLinks": 1
+        }
+      },
+      {
+        "id": "p4",
+        "beforeNameWidth": 72,
+        "afterNameWidth": 96,
+        "recovered": 24,
+        "fontBefore": "12px",
+        "fontAfter": "12px",
+        "headerHeight": 44,
+        "collisions": [],
+        "follow": {
+          "x": 5,
+          "y": 2073.39,
+          "width": 44,
+          "height": 44,
+          "right": 49,
+          "bottom": 2117.39
+        },
+        "overlay": {
+          "avatar": {
+            "x": 11,
+            "y": 2083.390625,
+            "width": 24,
+            "height": 24
+          },
+          "badge": {
+            "x": 20,
+            "y": 2078.390625,
+            "width": 20,
+            "height": 20
+          },
+          "overlapFraction": 0.535277977333457,
+          "photoHit": true,
+          "badgeHit": true,
+          "avatarIsInsideButton": true,
+          "profileLinks": 1
+        }
+      },
+      {
+        "id": "p7",
+        "beforeNameWidth": 72,
+        "afterNameWidth": 96,
+        "recovered": 24,
+        "fontBefore": "12px",
+        "fontAfter": "12px",
+        "headerHeight": 44,
+        "collisions": [],
+        "follow": {
+          "x": 201,
+          "y": 2073.39,
+          "width": 44,
+          "height": 44,
+          "right": 245,
+          "bottom": 2117.39
+        },
+        "overlay": {
+          "avatar": {
+            "x": 207,
+            "y": 2083.390625,
+            "width": 24,
+            "height": 24
+          },
+          "badge": {
+            "x": 216,
+            "y": 2078.390625,
+            "width": 20,
+            "height": 20
+          },
+          "overlapFraction": 0.535277977333457,
+          "photoHit": true,
+          "badgeHit": true,
+          "avatarIsInsideButton": true,
+          "profileLinks": 1
+        }
+      },
+      {
+        "id": "p8",
+        "beforeNameWidth": 268,
+        "afterNameWidth": 292,
+        "recovered": 24,
+        "fontBefore": "13px",
+        "fontAfter": "13px",
+        "headerHeight": 44,
+        "collisions": [],
+        "follow": {
+          "x": 5,
+          "y": 2701.39,
+          "width": 44,
+          "height": 44,
+          "right": 49,
+          "bottom": 2745.39
+        },
+        "overlay": {
+          "avatar": {
+            "x": 11,
+            "y": 2711.390625,
+            "width": 24,
+            "height": 24
+          },
+          "badge": {
+            "x": 20,
+            "y": 2706.390625,
+            "width": 20,
+            "height": 20
+          },
+          "overlapFraction": 0.535277977333457,
+          "photoHit": true,
+          "badgeHit": true,
+          "avatarIsInsideButton": true,
+          "profileLinks": 1
+        }
+      }
+    ]
+  },
+  {
+    "width": 430,
+    "desktopPixels": null,
+    "otherControlsIdentical": true,
+    "photoPixels": [
+      {
+        "id": "p1",
+        "differentPixels": 0
+      },
+      {
+        "id": "p2",
+        "differentPixels": 0
+      },
+      {
+        "id": "p3",
+        "differentPixels": 0
+      }
+    ],
+    "cards": [
+      {
+        "id": "p1",
+        "beforeNameWidth": 92,
+        "afterNameWidth": 116,
+        "recovered": 24,
+        "fontBefore": "12px",
+        "fontAfter": "12px",
+        "headerHeight": 44,
+        "collisions": [],
+        "follow": {
+          "x": 5,
+          "y": 142,
+          "width": 44,
+          "height": 44,
+          "right": 49,
+          "bottom": 186
+        },
+        "overlay": {
+          "avatar": {
+            "x": 11,
+            "y": 152,
+            "width": 24,
+            "height": 24
+          },
+          "badge": {
+            "x": 20,
+            "y": 147,
+            "width": 20,
+            "height": 20
+          },
+          "overlapFraction": 0.535277977333457,
+          "photoHit": true,
+          "badgeHit": true,
+          "avatarIsInsideButton": true,
+          "profileLinks": 1
+        }
+      },
+      {
+        "id": "p2",
+        "beforeNameWidth": 92,
+        "afterNameWidth": 116,
+        "recovered": 24,
+        "fontBefore": "12px",
+        "fontAfter": "12px",
+        "headerHeight": 44,
+        "collisions": [],
+        "follow": {
+          "x": 221,
+          "y": 142,
+          "width": 44,
+          "height": 44,
+          "right": 265,
+          "bottom": 186
+        },
+        "overlay": {
+          "avatar": {
+            "x": 227,
+            "y": 152,
+            "width": 24,
+            "height": 24
+          },
+          "badge": {
+            "x": 236,
+            "y": 147,
+            "width": 20,
+            "height": 20
+          },
+          "overlapFraction": 0.535277977333457,
+          "photoHit": true,
+          "badgeHit": true,
+          "avatarIsInsideButton": true,
+          "profileLinks": 1
+        }
+      },
+      {
+        "id": "p3",
+        "beforeNameWidth": 308,
+        "afterNameWidth": 332,
+        "recovered": 24,
+        "fontBefore": "13px",
+        "fontAfter": "13px",
+        "headerHeight": 44,
+        "collisions": [],
+        "follow": {
+          "x": 5,
+          "y": 492,
+          "width": 44,
+          "height": 44,
+          "right": 49,
+          "bottom": 536
+        },
+        "overlay": {
+          "avatar": {
+            "x": 11,
+            "y": 502,
+            "width": 24,
+            "height": 24
+          },
+          "badge": {
+            "x": 20,
+            "y": 497,
+            "width": 20,
+            "height": 20
+          },
+          "overlapFraction": 0.535277977333457,
+          "photoHit": true,
+          "badgeHit": true,
+          "avatarIsInsideButton": true,
+          "profileLinks": 1
+        }
+      },
+      {
+        "id": "p5",
+        "beforeNameWidth": 92,
+        "afterNameWidth": 116,
+        "recovered": 24,
+        "fontBefore": "12px",
+        "fontAfter": "12px",
+        "headerHeight": 44,
+        "collisions": [],
+        "follow": {
+          "x": 5,
+          "y": 1360.5,
+          "width": 44,
+          "height": 44,
+          "right": 49,
+          "bottom": 1404.5
+        },
+        "overlay": {
+          "avatar": {
+            "x": 11,
+            "y": 1370.5,
+            "width": 24,
+            "height": 24
+          },
+          "badge": {
+            "x": 20,
+            "y": 1365.5,
+            "width": 20,
+            "height": 20
+          },
+          "overlapFraction": 0.535277977333457,
+          "photoHit": true,
+          "badgeHit": true,
+          "avatarIsInsideButton": true,
+          "profileLinks": 1
+        }
+      },
+      {
+        "id": "p6",
+        "beforeNameWidth": 92,
+        "afterNameWidth": 116,
+        "recovered": 24,
+        "fontBefore": "12px",
+        "fontAfter": "12px",
+        "headerHeight": 44,
+        "collisions": [],
+        "follow": {
+          "x": 221,
+          "y": 1360.5,
+          "width": 44,
+          "height": 44,
+          "right": 265,
+          "bottom": 1404.5
+        },
+        "overlay": {
+          "avatar": {
+            "x": 227,
+            "y": 1370.5,
+            "width": 24,
+            "height": 24
+          },
+          "badge": {
+            "x": 236,
+            "y": 1365.5,
+            "width": 20,
+            "height": 20
+          },
+          "overlapFraction": 0.535277977333457,
+          "photoHit": true,
+          "badgeHit": true,
+          "avatarIsInsideButton": true,
+          "profileLinks": 1
+        }
+      },
+      {
+        "id": "p4",
+        "beforeNameWidth": 92,
+        "afterNameWidth": 116,
+        "recovered": 24,
+        "fontBefore": "12px",
+        "fontAfter": "12px",
+        "headerHeight": 44,
+        "collisions": [],
+        "follow": {
+          "x": 5,
+          "y": 2141.5,
+          "width": 44,
+          "height": 44,
+          "right": 49,
+          "bottom": 2185.5
+        },
+        "overlay": {
+          "avatar": {
+            "x": 11,
+            "y": 2151.5,
+            "width": 24,
+            "height": 24
+          },
+          "badge": {
+            "x": 20,
+            "y": 2146.5,
+            "width": 20,
+            "height": 20
+          },
+          "overlapFraction": 0.535277977333457,
+          "photoHit": true,
+          "badgeHit": true,
+          "avatarIsInsideButton": true,
+          "profileLinks": 1
+        }
+      },
+      {
+        "id": "p7",
+        "beforeNameWidth": 92,
+        "afterNameWidth": 116,
+        "recovered": 24,
+        "fontBefore": "12px",
+        "fontAfter": "12px",
+        "headerHeight": 44,
+        "collisions": [],
+        "follow": {
+          "x": 221,
+          "y": 2141.5,
+          "width": 44,
+          "height": 44,
+          "right": 265,
+          "bottom": 2185.5
+        },
+        "overlay": {
+          "avatar": {
+            "x": 227,
+            "y": 2151.5,
+            "width": 24,
+            "height": 24
+          },
+          "badge": {
+            "x": 236,
+            "y": 2146.5,
+            "width": 20,
+            "height": 20
+          },
+          "overlapFraction": 0.535277977333457,
+          "photoHit": true,
+          "badgeHit": true,
+          "avatarIsInsideButton": true,
+          "profileLinks": 1
+        }
+      },
+      {
+        "id": "p8",
+        "beforeNameWidth": 308,
+        "afterNameWidth": 332,
+        "recovered": 24,
+        "fontBefore": "13px",
+        "fontAfter": "13px",
+        "headerHeight": 44,
+        "collisions": [],
+        "follow": {
+          "x": 5,
+          "y": 2775.5,
+          "width": 44,
+          "height": 44,
+          "right": 49,
+          "bottom": 2819.5
+        },
+        "overlay": {
+          "avatar": {
+            "x": 11,
+            "y": 2785.5,
+            "width": 24,
+            "height": 24
+          },
+          "badge": {
+            "x": 20,
+            "y": 2780.5,
+            "width": 20,
+            "height": 20
+          },
+          "overlapFraction": 0.535277977333457,
+          "photoHit": true,
+          "badgeHit": true,
+          "avatarIsInsideButton": true,
+          "profileLinks": 1
+        }
+      }
+    ]
+  },
+  {
+    "width": 768,
+    "desktopPixels": null,
+    "otherControlsIdentical": true,
+    "photoPixels": [
+      {
+        "id": "p1",
+        "differentPixels": 0
+      },
+      {
+        "id": "p2",
+        "differentPixels": 0
+      }
+    ],
+    "cards": [
+      {
+        "id": "p1",
+        "beforeNameWidth": 257,
+        "afterNameWidth": 281,
+        "recovered": 24,
+        "fontBefore": "13px",
+        "fontAfter": "13px",
+        "headerHeight": 44,
+        "collisions": [],
+        "follow": {
+          "x": 9,
+          "y": 174,
+          "width": 44,
+          "height": 44,
+          "right": 53,
+          "bottom": 218
+        },
+        "overlay": {
+          "avatar": {
+            "x": 15,
+            "y": 184,
+            "width": 24,
+            "height": 24
+          },
+          "badge": {
+            "x": 24,
+            "y": 179,
+            "width": 20,
+            "height": 20
+          },
+          "overlapFraction": 0.535277977333457,
+          "photoHit": true,
+          "badgeHit": true,
+          "avatarIsInsideButton": true,
+          "profileLinks": 1
+        }
+      },
+      {
+        "id": "p2",
+        "beforeNameWidth": 257,
+        "afterNameWidth": 281,
+        "recovered": 24,
+        "fontBefore": "13px",
+        "fontAfter": "13px",
+        "headerHeight": 44,
+        "collisions": [],
+        "follow": {
+          "x": 390,
+          "y": 174,
+          "width": 44,
+          "height": 44,
+          "right": 434,
+          "bottom": 218
+        },
+        "overlay": {
+          "avatar": {
+            "x": 396,
+            "y": 184,
+            "width": 24,
+            "height": 24
+          },
+          "badge": {
+            "x": 405,
+            "y": 179,
+            "width": 20,
+            "height": 20
+          },
+          "overlapFraction": 0.535277977333457,
+          "photoHit": true,
+          "badgeHit": true,
+          "avatarIsInsideButton": true,
+          "profileLinks": 1
+        }
+      },
+      {
+        "id": "p3",
+        "beforeNameWidth": 366,
+        "afterNameWidth": 390,
+        "recovered": 24,
+        "fontBefore": "13px",
+        "fontAfter": "13px",
+        "headerHeight": 44,
+        "collisions": [],
+        "follow": {
+          "x": 145,
+          "y": 513.45,
+          "width": 44,
+          "height": 44,
+          "right": 189,
+          "bottom": 557.45
+        },
+        "overlay": {
+          "avatar": {
+            "x": 151,
+            "y": 523.453125,
+            "width": 24,
+            "height": 24
+          },
+          "badge": {
+            "x": 160,
+            "y": 518.453125,
+            "width": 20,
+            "height": 20
+          },
+          "overlapFraction": 0.535277977333457,
+          "photoHit": true,
+          "badgeHit": true,
+          "avatarIsInsideButton": true,
+          "profileLinks": 1
+        }
+      },
+      {
+        "id": "p5",
+        "beforeNameWidth": 257,
+        "afterNameWidth": 281,
+        "recovered": 24,
+        "fontBefore": "13px",
+        "fontAfter": "13px",
+        "headerHeight": 44,
+        "collisions": [],
+        "follow": {
+          "x": 9,
+          "y": 1541.33,
+          "width": 44,
+          "height": 44,
+          "right": 53,
+          "bottom": 1585.33
+        },
+        "overlay": {
+          "avatar": {
+            "x": 15,
+            "y": 1551.328125,
+            "width": 24,
+            "height": 24
+          },
+          "badge": {
+            "x": 24,
+            "y": 1546.328125,
+            "width": 20,
+            "height": 20
+          },
+          "overlapFraction": 0.535277977333457,
+          "photoHit": true,
+          "badgeHit": true,
+          "avatarIsInsideButton": true,
+          "profileLinks": 1
+        }
+      },
+      {
+        "id": "p6",
+        "beforeNameWidth": 257,
+        "afterNameWidth": 281,
+        "recovered": 24,
+        "fontBefore": "13px",
+        "fontAfter": "13px",
+        "headerHeight": 44,
+        "collisions": [],
+        "follow": {
+          "x": 390,
+          "y": 1541.33,
+          "width": 44,
+          "height": 44,
+          "right": 434,
+          "bottom": 1585.33
+        },
+        "overlay": {
+          "avatar": {
+            "x": 396,
+            "y": 1551.328125,
+            "width": 24,
+            "height": 24
+          },
+          "badge": {
+            "x": 405,
+            "y": 1546.328125,
+            "width": 20,
+            "height": 20
+          },
+          "overlapFraction": 0.535277977333457,
+          "photoHit": true,
+          "badgeHit": true,
+          "avatarIsInsideButton": true,
+          "profileLinks": 1
+        }
+      },
+      {
+        "id": "p4",
+        "beforeNameWidth": 257,
+        "afterNameWidth": 281,
+        "recovered": 24,
+        "fontBefore": "13px",
+        "fontAfter": "13px",
+        "headerHeight": 44,
+        "collisions": [],
+        "follow": {
+          "x": 9,
+          "y": 2517.41,
+          "width": 44,
+          "height": 44,
+          "right": 53,
+          "bottom": 2561.41
+        },
+        "overlay": {
+          "avatar": {
+            "x": 15,
+            "y": 2527.40625,
+            "width": 24,
+            "height": 24
+          },
+          "badge": {
+            "x": 24,
+            "y": 2522.40625,
+            "width": 20,
+            "height": 20
+          },
+          "overlapFraction": 0.535277977333457,
+          "photoHit": true,
+          "badgeHit": true,
+          "avatarIsInsideButton": true,
+          "profileLinks": 1
+        }
+      },
+      {
+        "id": "p7",
+        "beforeNameWidth": 257,
+        "afterNameWidth": 281,
+        "recovered": 24,
+        "fontBefore": "13px",
+        "fontAfter": "13px",
+        "headerHeight": 44,
+        "collisions": [],
+        "follow": {
+          "x": 390,
+          "y": 2517.41,
+          "width": 44,
+          "height": 44,
+          "right": 434,
+          "bottom": 2561.41
+        },
+        "overlay": {
+          "avatar": {
+            "x": 396,
+            "y": 2527.40625,
+            "width": 24,
+            "height": 24
+          },
+          "badge": {
+            "x": 405,
+            "y": 2522.40625,
+            "width": 20,
+            "height": 20
+          },
+          "overlapFraction": 0.535277977333457,
+          "photoHit": true,
+          "badgeHit": true,
+          "avatarIsInsideButton": true,
+          "profileLinks": 1
+        }
+      },
+      {
+        "id": "p8",
+        "beforeNameWidth": 366,
+        "afterNameWidth": 390,
+        "recovered": 24,
+        "fontBefore": "13px",
+        "fontAfter": "13px",
+        "headerHeight": 44,
+        "collisions": [],
+        "follow": {
+          "x": 145,
+          "y": 3138.86,
+          "width": 44,
+          "height": 44,
+          "right": 189,
+          "bottom": 3182.86
+        },
+        "overlay": {
+          "avatar": {
+            "x": 151,
+            "y": 3148.859375,
+            "width": 24,
+            "height": 24
+          },
+          "badge": {
+            "x": 160,
+            "y": 3143.859375,
+            "width": 20,
+            "height": 20
+          },
+          "overlapFraction": 0.535277977333457,
+          "photoHit": true,
+          "badgeHit": true,
+          "avatarIsInsideButton": true,
+          "profileLinks": 1
+        }
+      }
+    ]
+  },
+  {
+    "width": 769,
+    "desktopPixels": 0,
+    "otherControlsIdentical": true,
+    "photoPixels": [
+      {
+        "id": "p1",
+        "differentPixels": 0
+      },
+      {
+        "id": "p2",
+        "differentPixels": 0
+      }
+    ],
+    "cards": [
+      {
+        "id": "p1",
+        "beforeNameWidth": 83.28,
+        "afterNameWidth": 83.28,
+        "recovered": 0,
+        "fontBefore": "14px",
+        "fontAfter": "14px",
+        "headerHeight": 44,
+        "collisions": [],
+        "follow": {
+          "x": 277.5,
+          "y": 186,
+          "width": 44,
+          "height": 44,
+          "right": 321.5,
+          "bottom": 230
+        },
+        "overlay": null
+      },
+      {
+        "id": "p2",
+        "beforeNameWidth": 128.58,
+        "afterNameWidth": 128.58,
+        "recovered": 0,
+        "fontBefore": "14px",
+        "fontAfter": "14px",
+        "headerHeight": 44,
+        "collisions": [],
+        "follow": {
+          "x": 660,
+          "y": 186,
+          "width": 44,
+          "height": 44,
+          "right": 704,
+          "bottom": 230
+        },
+        "overlay": null
+      },
+      {
+        "id": "p3",
+        "beforeNameWidth": 178.19,
+        "afterNameWidth": 178.19,
+        "recovered": 0,
+        "fontBefore": "14px",
+        "fontAfter": "14px",
+        "headerHeight": 44,
+        "collisions": [],
+        "follow": {
+          "x": 277.5,
+          "y": 571.88,
+          "width": 44,
+          "height": 44,
+          "right": 321.5,
+          "bottom": 615.88
+        },
+        "overlay": null
+      },
+      {
+        "id": "p5",
+        "beforeNameWidth": 128.58,
+        "afterNameWidth": 128.58,
+        "recovered": 0,
+        "fontBefore": "14px",
+        "fontAfter": "14px",
+        "headerHeight": 44,
+        "collisions": [],
+        "follow": {
+          "x": 277.5,
+          "y": 1630.19,
+          "width": 44,
+          "height": 44,
+          "right": 321.5,
+          "bottom": 1674.19
+        },
+        "overlay": null
+      },
+      {
+        "id": "p6",
+        "beforeNameWidth": 212.5,
+        "afterNameWidth": 212.5,
+        "recovered": 0,
+        "fontBefore": "14px",
+        "fontAfter": "14px",
+        "headerHeight": 44,
+        "collisions": [],
+        "follow": {
+          "x": 660,
+          "y": 1630.19,
+          "width": 44,
+          "height": 44,
+          "right": 704,
+          "bottom": 1674.19
+        },
+        "overlay": null
+      },
+      {
+        "id": "p4",
+        "beforeNameWidth": 83.28,
+        "afterNameWidth": 83.28,
+        "recovered": 0,
+        "fontBefore": "14px",
+        "fontAfter": "14px",
+        "headerHeight": 44,
+        "collisions": [],
+        "follow": {
+          "x": 277.5,
+          "y": 2651.25,
+          "width": 44,
+          "height": 44,
+          "right": 321.5,
+          "bottom": 2695.25
+        },
+        "overlay": null
+      },
+      {
+        "id": "p7",
+        "beforeNameWidth": 212.5,
+        "afterNameWidth": 212.5,
+        "recovered": 0,
+        "fontBefore": "14px",
+        "fontAfter": "14px",
+        "headerHeight": 44,
+        "collisions": [],
+        "follow": {
+          "x": 660,
+          "y": 2651.25,
+          "width": 44,
+          "height": 44,
+          "right": 704,
+          "bottom": 2695.25
+        },
+        "overlay": null
+      },
+      {
+        "id": "p8",
+        "beforeNameWidth": 105.3,
+        "afterNameWidth": 105.3,
+        "recovered": 0,
+        "fontBefore": "14px",
+        "fontAfter": "14px",
+        "headerHeight": 44,
+        "collisions": [],
+        "follow": {
+          "x": 619.5,
+          "y": 3318.72,
+          "width": 44,
+          "height": 44,
+          "right": 663.5,
+          "bottom": 3362.72
+        },
+        "overlay": null
+      }
+    ]
+  },
+  {
+    "width": 1024,
+    "desktopPixels": 0,
+    "otherControlsIdentical": true,
+    "photoPixels": [
+      {
+        "id": "p1",
+        "differentPixels": 0
+      },
+      {
+        "id": "p2",
+        "differentPixels": 0
+      }
+    ],
+    "cards": [
+      {
+        "id": "p1",
+        "beforeNameWidth": 83.28,
+        "afterNameWidth": 83.28,
+        "recovered": 0,
+        "fontBefore": "14px",
+        "fontAfter": "14px",
+        "headerHeight": 44,
+        "collisions": [],
+        "follow": {
+          "x": 405,
+          "y": 186,
+          "width": 44,
+          "height": 44,
+          "right": 449,
+          "bottom": 230
+        },
+        "overlay": null
+      },
+      {
+        "id": "p2",
+        "beforeNameWidth": 128.58,
+        "afterNameWidth": 128.58,
+        "recovered": 0,
+        "fontBefore": "14px",
+        "fontAfter": "14px",
+        "headerHeight": 44,
+        "collisions": [],
+        "follow": {
+          "x": 899,
+          "y": 186,
+          "width": 44,
+          "height": 44,
+          "right": 943,
+          "bottom": 230
+        },
+        "overlay": null
+      },
+      {
+        "id": "p3",
+        "beforeNameWidth": 178.19,
+        "afterNameWidth": 178.19,
+        "recovered": 0,
+        "fontBefore": "14px",
+        "fontAfter": "14px",
+        "headerHeight": 44,
+        "collisions": [],
+        "follow": {
+          "x": 405,
+          "y": 634.59,
+          "width": 44,
+          "height": 44,
+          "right": 449,
+          "bottom": 678.59
+        },
+        "overlay": null
+      },
+      {
+        "id": "p5",
+        "beforeNameWidth": 128.58,
+        "afterNameWidth": 128.58,
+        "recovered": 0,
+        "fontBefore": "14px",
+        "fontAfter": "14px",
+        "headerHeight": 44,
+        "collisions": [],
+        "follow": {
+          "x": 405,
+          "y": 1764.06,
+          "width": 44,
+          "height": 44,
+          "right": 449,
+          "bottom": 1808.06
+        },
+        "overlay": null
+      },
+      {
+        "id": "p6",
+        "beforeNameWidth": 216.98,
+        "afterNameWidth": 216.98,
+        "recovered": 0,
+        "fontBefore": "14px",
+        "fontAfter": "14px",
+        "headerHeight": 44,
+        "collisions": [],
+        "follow": {
+          "x": 899,
+          "y": 1764.06,
+          "width": 44,
+          "height": 44,
+          "right": 943,
+          "bottom": 1808.06
+        },
+        "overlay": null
+      },
+      {
+        "id": "p4",
+        "beforeNameWidth": 83.28,
+        "afterNameWidth": 83.28,
+        "recovered": 0,
+        "fontBefore": "14px",
+        "fontAfter": "14px",
+        "headerHeight": 44,
+        "collisions": [],
+        "follow": {
+          "x": 405,
+          "y": 2856.28,
+          "width": 44,
+          "height": 44,
+          "right": 449,
+          "bottom": 2900.28
+        },
+        "overlay": null
+      },
+      {
+        "id": "p7",
+        "beforeNameWidth": 324,
+        "afterNameWidth": 324,
+        "recovered": 0,
+        "fontBefore": "14px",
+        "fontAfter": "14px",
+        "headerHeight": 44,
+        "collisions": [],
+        "follow": {
+          "x": 899,
+          "y": 2856.28,
+          "width": 44,
+          "height": 44,
+          "right": 943,
+          "bottom": 2900.28
+        },
+        "overlay": null
+      },
+      {
+        "id": "p8",
+        "beforeNameWidth": 105.3,
+        "afterNameWidth": 105.3,
+        "recovered": 0,
+        "fontBefore": "14px",
+        "fontAfter": "14px",
+        "headerHeight": 44,
+        "collisions": [],
+        "follow": {
+          "x": 747,
+          "y": 3586.47,
+          "width": 44,
+          "height": 44,
+          "right": 791,
+          "bottom": 3630.47
+        },
+        "overlay": null
+      }
+    ]
+  }
+]

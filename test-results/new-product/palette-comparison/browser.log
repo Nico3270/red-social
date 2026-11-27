@@ -1,0 +1,27 @@
+
+Running 16 tests using 1 worker
+
+
+Rebuilding...
+
+Done in 598ms.
+(node:335767) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 e2e/new-product/new-product.spec.ts:923:9 › refinement-ruby responsive 320 (4.6s)
+  ✓   2 e2e/new-product/new-product.spec.ts:923:9 › refinement-ruby responsive 360 (4.3s)
+  ✓   3 e2e/new-product/new-product.spec.ts:923:9 › refinement-ruby responsive 390 (5.0s)
+  ✓   4 e2e/new-product/new-product.spec.ts:923:9 › refinement-ruby responsive 430 (4.3s)
+  ✓   5 e2e/new-product/new-product.spec.ts:923:9 › refinement-ruby responsive 768 (4.2s)
+  ✓   6 e2e/new-product/new-product.spec.ts:923:9 › refinement-ruby responsive 1024 (4.7s)
+  ✓   7 e2e/new-product/new-product.spec.ts:923:9 › refinement-ruby responsive 1440 (4.5s)
+  ✓   8 e2e/new-product/new-product.spec.ts:1030:7 › refinement-ruby components persist independently, survive AI errors and remain explicit on apply (3.3s)
+  ✓   9 e2e/new-product/new-product.spec.ts:923:9 › refinement-ocean responsive 320 (4.5s)
+  ✓  10 e2e/new-product/new-product.spec.ts:923:9 › refinement-ocean responsive 360 (4.1s)
+  ✓  11 e2e/new-product/new-product.spec.ts:923:9 › refinement-ocean responsive 390 (4.9s)
+  ✓  12 e2e/new-product/new-product.spec.ts:923:9 › refinement-ocean responsive 430 (4.0s)
+  ✓  13 e2e/new-product/new-product.spec.ts:923:9 › refinement-ocean responsive 768 (4.2s)
+  ✓  14 e2e/new-product/new-product.spec.ts:923:9 › refinement-ocean responsive 1024 (4.5s)
+  ✓  15 e2e/new-product/new-product.spec.ts:923:9 › refinement-ocean responsive 1440 (4.5s)
+  ✓  16 e2e/new-product/new-product.spec.ts:1030:7 › refinement-ocean components persist independently, survive AI errors and remain explicit on apply (3.8s)
+
+  16 passed (1.2m)

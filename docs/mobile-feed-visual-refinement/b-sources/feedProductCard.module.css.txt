@@ -1,0 +1,200 @@
+.feed {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  height: auto;
+  margin-inline: auto;
+  padding: 8px;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: white;
+  color: #172033;
+  box-shadow: 0 2px 6px #17203308;
+}
+.header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  margin-bottom: 8px;
+}
+.business {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.business > div {
+  flex-shrink: 0;
+}
+.businessName {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 600;
+}
+.headerActions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 4px;
+}
+.headerActions > button,
+.favorite button {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+}
+.favorite {
+  position: relative;
+}
+.media {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: 280px;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #f3f4f6;
+}
+.image {
+  object-fit: contain;
+}
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  margin-top: 8px;
+}
+.title {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow-wrap: anywhere;
+  font-size: 16px;
+  line-height: 1.35;
+  font-weight: 650;
+}
+.description {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  overflow-wrap: anywhere;
+  margin-top: 4px;
+  font-size: 14px;
+  line-height: 20px;
+  color: #596579;
+}
+.footer {
+  min-width: 0;
+}
+.purchaseRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+}
+.priceBlock {
+  flex: 1 1 max-content;
+  min-width: 0;
+}
+.price {
+  display: block;
+  overflow-wrap: anywhere;
+  font-size: 22px;
+  line-height: 1.25;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.variantLabel {
+  margin-top: 4px;
+  overflow-wrap: anywhere;
+  font-size: 12px;
+  line-height: 16px;
+  color: #596579;
+}
+.purchaseActions {
+  display: flex;
+  flex: 0 1 auto;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.whatsapp,
+.cart {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  min-width: 44px;
+  border-radius: 10px;
+}
+.whatsapp {
+  color: #15803d;
+}
+.cart {
+  gap: 6px;
+  padding: 8px 12px;
+  background: #172033;
+  color: white;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 600;
+}
+.cart:disabled {
+  background: #e2e8f0;
+  color: #64748b;
+  cursor: not-allowed;
+}
+.actionIcon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+}
+.feed a:focus-visible,
+.feed button:focus-visible {
+  outline: 2px solid #c93545;
+  outline-offset: 2px;
+}
+.modalScope > [role="dialog"] {
+  align-items: flex-start;
+  overflow-y: auto;
+  padding-block: 16px;
+}
+.modalScope > [role="dialog"] > div {
+  flex-shrink: 0;
+  min-width: 0;
+  margin-block: auto;
+}
+.modalScope p {
+  overflow-wrap: anywhere;
+}
+.modalScope :global(.justify-between) {
+  flex-wrap: wrap;
+}
+.modalScope button {
+  min-height: 44px;
+}
+@media (hover: hover) {
+  .cart:not(:disabled):hover {
+    background: #334155;
+  }
+  .whatsapp:hover {
+    background: #f0fdf4;
+  }
+  .businessName:hover,
+  .title:hover {
+    color: #274494;
+  }
+}

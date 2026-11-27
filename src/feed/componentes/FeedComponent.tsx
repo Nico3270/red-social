@@ -16,6 +16,7 @@ import { CircularProgress } from "@mui/material";
 import { useUserLocation } from "@/hooks/useUserLocation"; // ← NUEVO: Hook de ubicación
 import { buildSeenFeedId, extractSeenRawIds } from "../feed-ids";
 import { buildDiscoveryFeed, dedupeFeedItems } from "../feedForYou";
+import { availableDiscoveryTier, getFeedItemTier, groupFeedByLocation } from "../geography";
 
 // EXTENSIÓN: Agrega categoriaSlug a params (para temático futuro)
 interface ExtendedFeedQueryParams extends FeedQueryParams {
@@ -129,7 +130,7 @@ export default function FeedComponent({
 
   // Helpers (sin cambios)
   const getQueryKey = useCallback((type: string) => ([
-    "feed-" + type,
+    "feed-v2-" + type,
     categoriaSlug || "global",
     ciudad || "sin-ciudad",
     departamento || "sin-departamento",
@@ -250,10 +251,11 @@ export default function FeedComponent({
       ])
         .map((entry) => ({
           ...entry,
+          nextTier: entry.query.data?.pages.at(-1)?.nextTier ?? 0,
           itemCount: entry.query.data?.pages.flatMap((page) => page.items).length ?? 0,
         }))
         .filter((entry) => entry.query.hasNextPage && !entry.query.isFetchingNextPage)
-        .sort((a, b) => a.itemCount - b.itemCount);
+        .sort((a, b) => a.nextTier - b.nextTier || a.itemCount - b.itemCount);
 
       if (nextCandidates.length > 0) {
         void nextCandidates[0].query.fetchNextPage();
@@ -339,11 +341,17 @@ export default function FeedComponent({
         ...getItemsForQuery("Negocios"),
       ];
 
-      return buildDiscoveryFeed(allItems, resolvedDiscoveryContext);
+      const tier = availableDiscoveryTier([
+        publicationsQuery, productsQuery, servicesQuery, businessesQuery,
+      ]);
+      return groupFeedByLocation(
+        allItems.filter(item => getFeedItemTier(item, { ciudad, departamento }) <= tier),
+        { ciudad, departamento },
+      ).flatMap(group => buildDiscoveryFeed(group, resolvedDiscoveryContext));
     }
 
     return getItemsForQuery(tab);
-  }, [getItemsForQuery, resolvedDiscoveryContext]);
+  }, [getItemsForQuery, resolvedDiscoveryContext, publicationsQuery, productsQuery, servicesQuery, businessesQuery, ciudad, departamento]);
 
   const markAsSeen = useCallback(() => {
     const currentItems = getItemsForTab(activeTab);
@@ -491,6 +499,7 @@ export default function FeedComponent({
         categoriaNombre={categoriaNombre}
         categoriaIconName={categoriaIconName}
         ciudad={ciudad}
+        departamento={departamento}
       />
     </div>
   );

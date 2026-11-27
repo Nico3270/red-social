@@ -1,0 +1,16 @@
+{
+  "compared": 621,
+  "changed": [
+    "src/ui/components/productos/ProductCard.tsx",
+    "src/ui/components/productos/feedProductCard.module.css",
+    "src/feed/componentes/FollowButton.tsx",
+    "src/feed/componentes/followButton.module.css"
+  ],
+  "missing": [],
+  "added": [],
+  "checks": {
+    "followLogicVerbatim": true,
+    "productLogicAndRootVerbatim": true,
+    "productPhotoAndCommerceAndModalVerbatim": true
+  }
+}

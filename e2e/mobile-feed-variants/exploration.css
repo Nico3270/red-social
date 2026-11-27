@@ -1,0 +1,25 @@
+/* Only loaded by the isolated preview. The production cadence remains unchanged. */
+.test-cases > .prototype-product-cluster {
+  min-width: 0;
+}
+@media (max-width: 768px) {
+  [data-discovery-design]:where(:not([data-discovery-design="b2"]))
+    .prototype-product-cluster {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+}
+@media (min-width: 390px) and (max-width: 768px) {
+  [data-discovery-design="c1"] .prototype-product-cluster,
+  [data-discovery-design="c2"] .prototype-product-cluster {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    align-items: start;
+  }
+  [data-discovery-design="c2"]
+    .prototype-product-cluster
+    > :last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+}

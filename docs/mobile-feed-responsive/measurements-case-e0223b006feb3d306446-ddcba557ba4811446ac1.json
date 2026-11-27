@@ -1,0 +1,49 @@
+{
+  "browserName": "chromium",
+  "records": [
+    {
+      "case": "pagination",
+      "before": {
+        "x": 4,
+        "y": 200.390625,
+        "width": 382,
+        "height": 443.5
+      },
+      "after": {
+        "x": 4,
+        "y": 200.390625,
+        "width": 382,
+        "height": 443.5
+      },
+      "ids": [
+        "p1",
+        "p2",
+        "p3",
+        "p4",
+        "p5",
+        "p6",
+        "p7",
+        "p8",
+        "p9"
+      ],
+      "requests": [
+        {
+          "type": "publications"
+        },
+        {
+          "type": "products"
+        },
+        {
+          "type": "services"
+        },
+        {
+          "type": "businesses"
+        },
+        {
+          "type": "products",
+          "cursor": "synthetic-page-2"
+        }
+      ]
+    }
+  ]
+}

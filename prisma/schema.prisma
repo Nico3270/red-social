@@ -610,6 +610,23 @@ model AccountClaim {
   @@index([expiresAt])
 }
 
+// Independent bearer capability: this token never authorizes account activation.
+model BusinessDemoLink {
+  id           String   @id @default(uuid())
+  negocioId    String
+  tokenHash    String   @unique
+  productIds   String[]
+  snapshot     Json
+  createdById  String
+  authorizedAt DateTime
+  expiresAt    DateTime
+  revokedAt    DateTime?
+  createdAt    DateTime @default(now())
+  negocio      Negocio @relation(fields: [negocioId], references: [id], onDelete: Cascade)
+
+  @@index([negocioId, expiresAt])
+}
+
 enum Role {
   admin
   super_admin
@@ -633,6 +650,7 @@ model PasswordResetToken {
 }
 
 model Negocio {
+  demoLinks             BusinessDemoLink[]
   id                    String                 @id @default(uuid())
   usuarioId             String                 @unique
   nombre                String

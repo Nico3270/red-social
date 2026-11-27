@@ -1,0 +1,19 @@
+{
+  "compared": 620,
+  "changed": [
+    "src/ui/components/productos/ProductCard.tsx",
+    "src/ui/components/productos/feedProductCard.module.css",
+    "src/feed/componentes/FollowButton.tsx"
+  ],
+  "added": [
+    "src/feed/componentes/followButton.module.css"
+  ],
+  "missing": [],
+  "unchangedFollowLogic": {
+    "mutation": true,
+    "handleClick": true,
+    "handleTouchStart": true,
+    "handleTouchEnd": true,
+    "queryAndMutationAndHandlersVerbatim": true
+  }
+}

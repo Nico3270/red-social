@@ -1,13 +1,15 @@
 "use server";
 
+import { requireSuperAdmin } from "@/lib/business/productAccess";
 import { auth } from "@/auth.config";
 import prisma from "@/lib/prisma";
 import OpenAI from "openai";
 import { ProductEtiquetaEspecial } from "@prisma/client";
 import { z } from "zod";
+import { parseCopPrice } from "@/lib/products/copPrice";
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: process.env.OPENAI_API_KEY || "not-configured",
 });
 
 const openaiDraftModel =
@@ -21,6 +23,7 @@ const MAX_CONTEXT_OPTIONS = 28;
 
 const productBriefingInputSchema = z.object({
   businessId: z.string().trim().min(1, "El negocio es obligatorio."),
+  manual: z.boolean().optional(),
   productName: z
     .string()
     .trim()
@@ -29,13 +32,16 @@ const productBriefingInputSchema = z.object({
   price: z
     .union([z.string(), z.number()])
     .transform((value) =>
-      typeof value === "number" ? String(value) : value.trim()
+      typeof value === "number" ? String(value) : value.trim(),
     )
     .refine((value) => value.length > 0, "El precio es obligatorio.")
     .refine((value) => {
-      const normalized = value.replace(/[^\d.,-]/g, "").replace(",", ".");
-      const parsed = Number(normalized);
-      return Number.isFinite(parsed) && parsed >= 0;
+      try {
+        parseCopPrice(value);
+        return true;
+      } catch {
+        return false;
+      }
     }, "El precio debe ser un número válido."),
   baseDescription: z
     .string()
@@ -79,7 +85,7 @@ const generatedProductDraftSchema = z.object({
     .max(140)
     .regex(
       /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
-      "El slug sugerido debe estar en kebab-case sin acentos."
+      "El slug sugerido debe estar en kebab-case sin acentos.",
     ),
   descripcionCorta: z.string().trim().min(8).max(180),
   descripcion: z.string().trim().min(30).max(2400),
@@ -88,7 +94,9 @@ const generatedProductDraftSchema = z.object({
   categoriaSugerida: suggestedOptionSchema,
   seccionSugerida: suggestedOptionSchema,
   catalogGroupsSugeridos: z.array(suggestedOptionSchema).max(5).default([]),
-  etiquetaEspecialSugerida: z.nativeEnum(ProductEtiquetaEspecial).default("ninguna"),
+  etiquetaEspecialSugerida: z
+    .nativeEnum(ProductEtiquetaEspecial)
+    .default("ninguna"),
   usaVariantesSugerido: z.boolean(),
   variantesSugeridas: z.array(variantSchema).max(8).default([]),
   promptsImagen: z.object({
@@ -211,7 +219,8 @@ function uniqueStrings(values: Array<string | null | undefined>, limit = 12) {
 }
 
 function formatPrice(value: number | null | undefined) {
-  if (value === null || value === undefined || !Number.isFinite(value)) return null;
+  if (value === null || value === undefined || !Number.isFinite(value))
+    return null;
   return Math.round(value);
 }
 
@@ -221,7 +230,7 @@ function sortCatalogGroupRecords(groups: CatalogGroupContextRecord[]) {
       left.order - right.order ||
       left.nombre.localeCompare(right.nombre, "es", {
         sensitivity: "base",
-      })
+      }),
   );
 }
 
@@ -261,7 +270,7 @@ function orderCatalogGroupRecordsForTree(groups: CatalogGroupContextRecord[]) {
 }
 
 function toAdminCatalogGroupOptions(
-  groups: CatalogGroupContextRecord[]
+  groups: CatalogGroupContextRecord[],
 ): AdminCatalogGroupOption[] {
   return groups.map((group) => ({
     id: group.id,
@@ -340,7 +349,9 @@ function buildUserPrompt(input: {
         descripcionCorta: "string maximo 180 caracteres",
         descripcion: "string descriptivo, comercial y concreto",
         tags: ["3 a 12 strings"],
-        componentes: ["strings con componentes, ingredientes o atributos relevantes"],
+        componentes: [
+          "strings con componentes, ingredientes o atributos relevantes",
+        ],
         categoriaSugerida: {
           id: "id si coincide con una categoria disponible, si no null",
           nombre: "nombre de categoria",
@@ -384,7 +395,7 @@ function buildUserPrompt(input: {
         "Usa nombres de categorias, secciones y catalogGroups disponibles cuando haya coincidencia natural. Si no hay coincidencia, sugiere nombre razonable con id null. No uses claims medicos o promesas imposibles. No agregues campos extra.",
     },
     null,
-    2
+    2,
   );
 }
 
@@ -430,93 +441,99 @@ async function buildBusinessContext(businessId: string) {
 
   if (!business) return null;
 
-  const [recentProducts, productPriceStats, activeCatalogGroups, activeCategories] =
-    await Promise.all([
-      prisma.product.findMany({
-        where: { negocioId: business.id },
-        orderBy: [{ updatedAt: "desc" }, { createdAt: "desc" }],
-        take: MAX_CONTEXT_PRODUCTS,
-        select: {
-          nombre: true,
-          precio: true,
-          descripcionCorta: true,
-          tags: true,
-          componentes: true,
-          etiquetaEspecial: true,
-          usaVariantes: true,
-          category: {
-            select: {
-              nombre: true,
-              slug: true,
-            },
+  const [
+    recentProducts,
+    productPriceStats,
+    activeCatalogGroups,
+    activeCategories,
+  ] = await Promise.all([
+    prisma.product.findMany({
+      where: { negocioId: business.id },
+      orderBy: [{ updatedAt: "desc" }, { createdAt: "desc" }],
+      take: MAX_CONTEXT_PRODUCTS,
+      select: {
+        nombre: true,
+        precio: true,
+        descripcionCorta: true,
+        tags: true,
+        componentes: true,
+        etiquetaEspecial: true,
+        usaVariantes: true,
+        category: {
+          select: {
+            nombre: true,
+            slug: true,
           },
-          secciones: {
-            select: {
-              section: {
-                select: {
-                  nombre: true,
-                  slug: true,
-                },
+        },
+        secciones: {
+          select: {
+            section: {
+              select: {
+                nombre: true,
+                slug: true,
               },
             },
           },
         },
-      }),
-      prisma.product.aggregate({
-        where: { negocioId: business.id },
-        _min: { precio: true },
-        _max: { precio: true },
-        _avg: { precio: true },
-      }),
-      prisma.catalogGroup.findMany({
-        where: {
-          negocioId: business.id,
-          isActive: true,
-        },
-        orderBy: [{ order: "asc" }, { nombre: "asc" }],
-        select: {
-          id: true,
-          nombre: true,
-          slug: true,
-          parentId: true,
-          order: true,
-          isActive: true,
-          description: true,
-          _count: {
-            select: {
-              productos: true,
-            },
+      },
+    }),
+    prisma.product.aggregate({
+      where: { negocioId: business.id },
+      _min: { precio: true },
+      _max: { precio: true },
+      _avg: { precio: true },
+    }),
+    prisma.catalogGroup.findMany({
+      where: {
+        negocioId: business.id,
+        isActive: true,
+      },
+      orderBy: [{ order: "asc" }, { nombre: "asc" }],
+      select: {
+        id: true,
+        nombre: true,
+        slug: true,
+        parentId: true,
+        order: true,
+        isActive: true,
+        description: true,
+        _count: {
+          select: {
+            productos: true,
           },
         },
-      }),
-      prisma.category.findMany({
-        where: { isActive: true },
-        orderBy: { nombre: "asc" },
-        take: MAX_CONTEXT_OPTIONS,
-        select: {
-          id: true,
-          nombre: true,
-          slug: true,
-        },
-      }),
-    ]);
+      },
+    }),
+    prisma.category.findMany({
+      where: { isActive: true },
+      orderBy: { nombre: "asc" },
+      take: MAX_CONTEXT_OPTIONS,
+      select: {
+        id: true,
+        nombre: true,
+        slug: true,
+      },
+    }),
+  ]);
 
-  const compactProducts: CompactProductContext[] = recentProducts.map((product) => ({
-    nombre: product.nombre,
-    precio: product.precio,
-    descripcionCorta: compactText(product.descripcionCorta, 180) || null,
-    tags: product.tags.slice(0, 8),
-    componentes: product.componentes.slice(0, 8),
-    categoria: product.category
-      ? `${product.category.nombre} (${product.category.slug})`
-      : null,
-    secciones: product.secciones
-      .map((item) => item.section?.nombre)
-      .filter((value): value is string => Boolean(value))
-      .slice(0, 6),
-    etiquetaEspecial: product.etiquetaEspecial,
-    usaVariantes: product.usaVariantes,
-  }));
+  const compactProducts: CompactProductContext[] = recentProducts.map(
+    (product) => ({
+      nombre: product.nombre,
+      precio: product.precio,
+      descripcionCorta: compactText(product.descripcionCorta, 180) || null,
+      tags: product.tags.slice(0, 8),
+      componentes: product.componentes.slice(0, 8),
+      categoria: product.category
+        ? `${product.category.nombre} (${product.category.slug})`
+        : null,
+      secciones: product.secciones
+        .map((item) => item.section?.nombre)
+        .filter((value): value is string => Boolean(value))
+        .slice(0, 6),
+      etiquetaEspecial: product.etiquetaEspecial,
+      usaVariantes: product.usaVariantes,
+    }),
+  );
 
   const businessCategories = business.categorias.map((item) => item.category);
   const categoryOptions =
@@ -526,7 +543,8 @@ async function buildBusinessContext(businessId: string) {
     .map((item) => item.section)
     .slice(0, MAX_CONTEXT_OPTIONS);
 
-  const orderedCatalogGroups = orderCatalogGroupRecordsForTree(activeCatalogGroups);
+  const orderedCatalogGroups =
+    orderCatalogGroupRecordsForTree(activeCatalogGroups);
   const catalogGroupsForAi = orderedCatalogGroups.slice(0, MAX_CONTEXT_GROUPS);
   const catalogGroups = catalogGroupsForAi.map((group) => ({
     id: group.id,
@@ -562,20 +580,20 @@ async function buildBusinessContext(businessId: string) {
         ...businessCategories.map((category) => category.nombre),
         ...recentProducts.map((product) => product.category?.nombre),
       ],
-      10
+      10,
     ),
     sectionSignals: uniqueStrings(
       [
         ...business.secciones.map((item) => item.section.nombre),
         ...recentProducts.flatMap((product) =>
-          product.secciones.map((item) => item.section?.nombre)
+          product.secciones.map((item) => item.section?.nombre),
         ),
       ],
-      12
+      12,
     ),
     catalogGroupSignals: uniqueStrings(
       catalogGroups.map((group) => group.nombre),
-      12
+      12,
     ),
   };
 
@@ -596,7 +614,7 @@ async function buildBusinessContext(businessId: string) {
 }
 
 export async function generateAdminProductDraftAction(
-  rawInput: GenerateAdminProductDraftActionInput
+  rawInput: GenerateAdminProductDraftActionInput,
 ): Promise<GenerateAdminProductDraftActionResult> {
   const traceId = buildTraceId();
   const startedAt = Date.now();
@@ -613,10 +631,13 @@ export async function generateAdminProductDraftAction(
     }
 
     if (session.user.role !== "super_admin") {
-      console.warn(`[generateAdminProductDraftAction][${traceId}] Acceso denegado`, {
-        userId: session.user.id,
-        role: session.user.role,
-      });
+      console.warn(
+        `[generateAdminProductDraftAction][${traceId}] Acceso denegado`,
+        {
+          userId: session.user.id,
+          role: session.user.role,
+        },
+      );
 
       return {
         ok: false,
@@ -625,6 +646,8 @@ export async function generateAdminProductDraftAction(
       };
     }
 
+    await requireSuperAdmin();
+
     const parsedInput = productBriefingInputSchema.safeParse(rawInput);
 
     if (!parsedInput.success) {
@@ -632,16 +655,9 @@ export async function generateAdminProductDraftAction(
         ok: false,
         data: null,
         error: "Revisa los datos del briefing antes de generar.",
-        validationErrors: parsedInput.error.issues.map((issue) => issue.message),
-      };
-    }
-
-    if (!process.env.OPENAI_API_KEY) {
-      return {
-        ok: false,
-        data: null,
-        error:
-          "No se encontró OPENAI_API_KEY en el entorno. Configura la clave antes de generar borradores.",
+        validationErrors: parsedInput.error.issues.map(
+          (issue) => issue.message,
+        ),
       };
     }
 
@@ -652,6 +668,78 @@ export async function generateAdminProductDraftAction(
         ok: false,
         data: null,
         error: "El negocio seleccionado no existe o ya no está disponible.",
+      };
+    }
+
+    if (
+      context.summary.business.archivedAt ||
+      !["activo", "suspendido"].includes(context.summary.business.estado)
+    )
+      return {
+        ok: false,
+        data: null,
+        error: "El negocio no admite preparación de productos.",
+      };
+
+    if (parsedInput.data.manual) {
+      const business = await prisma.negocio.findUnique({
+        where: { id: parsedInput.data.businessId },
+        select: {
+          categorias: { include: { category: true } },
+          secciones: { include: { section: true } },
+        },
+      });
+      const category = business?.categorias[0]?.category;
+      const section = business?.secciones[0]?.section;
+      const name = parsedInput.data.productName;
+      const description = parsedInput.data.baseDescription;
+      return {
+        ok: true,
+        data: {
+          draft: {
+            nombre: name,
+            slugSugerido: name
+              .toLowerCase()
+              .normalize("NFD")
+              .replace(/[\u0300-\u036f]/g, "")
+              .replace(/[^a-z0-9]+/g, "-")
+              .replace(/^-|-$/g, ""),
+            descripcionCorta: description.slice(0, 180),
+            descripcion: description,
+            tags: [],
+            componentes: [],
+            categoriaSugerida: {
+              id: category?.id,
+              nombre: category?.nombre || "Seleccionar categoría",
+              slug: category?.slug,
+              razon: "Categoría del negocio",
+            },
+            seccionSugerida: {
+              id: section?.id,
+              nombre: section?.nombre || "Seleccionar sección",
+              slug: section?.slug,
+              razon: "Sección del negocio",
+            },
+            catalogGroupsSugeridos: [],
+            etiquetaEspecialSugerida: "ninguna",
+            usaVariantesSugerido: false,
+            variantesSugeridas: [],
+            promptsImagen: { promptCatalogo: "", promptPublicitario: "" },
+          },
+          contextSummary: context.summary,
+          model: "manual",
+          catalogGroupOptions: context.catalogGroupOptions,
+        },
+        error: null,
+      };
+    }
+
+    if (!process.env.OPENAI_API_KEY) {
+      return {
+        ok: false,
+        data: null,
+        error:
+          "No se encontró OPENAI_API_KEY en el entorno. Configura la clave antes de generar borradores.",
       };
     }
 
@@ -695,7 +783,7 @@ export async function generateAdminProductDraftAction(
         {
           error,
           elapsedMs: Date.now() - startedAt,
-        }
+        },
       );
 
       return {
@@ -713,7 +801,7 @@ export async function generateAdminProductDraftAction(
         {
           issues: parsedDraft.error.issues,
           elapsedMs: Date.now() - startedAt,
-        }
+        },
       );
 
       return {
@@ -721,18 +809,21 @@ export async function generateAdminProductDraftAction(
         data: null,
         error: "El borrador generado no cumple el contrato esperado.",
         validationErrors: parsedDraft.error.issues.map(
-          (issue) => `${issue.path.join(".") || "draft"}: ${issue.message}`
+          (issue) => `${issue.path.join(".") || "draft"}: ${issue.message}`,
         ),
       };
     }
 
-    console.info(`[generateAdminProductDraftAction][${traceId}] Draft generado`, {
-      actorUserId: session.user.id,
-      businessId: context.summary.business.id,
-      model: openaiDraftModel,
-      productsAnalyzed: context.summary.productsAnalyzed,
-      elapsedMs: Date.now() - startedAt,
-    });
+    console.info(
+      `[generateAdminProductDraftAction][${traceId}] Draft generado`,
+      {
+        actorUserId: session.user.id,
+        businessId: context.summary.business.id,
+        model: openaiDraftModel,
+        productsAnalyzed: context.summary.productsAnalyzed,
+        elapsedMs: Date.now() - startedAt,
+      },
+    );
 
     return {
       ok: true,
@@ -751,12 +842,18 @@ export async function generateAdminProductDraftAction(
       message?: string;
     };
 
-    console.error(`[generateAdminProductDraftAction][${traceId}] Error inesperado`, {
-      error,
-      elapsedMs: Date.now() - startedAt,
-    });
+    console.error(
+      `[generateAdminProductDraftAction][${traceId}] Error inesperado`,
+      {
+        error,
+        elapsedMs: Date.now() - startedAt,
+      },
+    );
 
-    if (openAIError?.status === 429 && openAIError?.code === "insufficient_quota") {
+    if (
+      openAIError?.status === 429 &&
+      openAIError?.code === "insufficient_quota"
+    ) {
       return {
         ok: false,
         data: null,

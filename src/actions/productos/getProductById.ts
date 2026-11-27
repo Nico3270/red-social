@@ -3,8 +3,10 @@
 
 import { ProductRedSocial } from "@/interfaces/productRedSocial.interface";
 import prisma from "@/lib/prisma";
-
-
+import {
+  productActor,
+  privateProductScope,
+} from "@/lib/business/productAccess";
 
 interface GetProductById {
   ok: boolean;
@@ -18,12 +20,17 @@ export async function getProductById(id: string): Promise<GetProductById> {
   try {
     // console.log("Validando ID del producto...");
     if (!id) {
-      return { ok: false, message: "El ID del producto es obligatorio.", userId:"Error" };
+      return {
+        ok: false,
+        message: "El ID del producto es obligatorio.",
+        userId: "Error",
+      };
     }
 
     // console.log("Consultando producto...");
-    const product = await prisma.product.findUnique({
-      where: { id },
+    const actor = await productActor();
+    const product = await prisma.product.findFirst({
+      where: { id, ...privateProductScope(actor) },
       select: {
         id: true,
         nombre: true,
@@ -54,7 +61,6 @@ export async function getProductById(id: string): Promise<GetProductById> {
           select: {
             section: {
               select: {
-
                 slug: true,
                 id: true,
               },
@@ -104,7 +110,7 @@ export async function getProductById(id: string): Promise<GetProductById> {
 
     if (!product) {
       // console.log("Producto no encontrado para id:", id);
-      return { ok: false, message: "Producto no encontrado.", userId:"Error" };
+      return { ok: false, message: "Producto no encontrado.", userId: "Error" };
     }
 
     // console.log("Producto encontrado:", product.id);
@@ -115,14 +121,14 @@ export async function getProductById(id: string): Promise<GetProductById> {
       nombre: product.nombre,
       precio: product.precio,
       descripcion: product.descripcion,
-      descripcionCorta: product.descripcionCorta   || "",
+      descripcionCorta: product.descripcionCorta || "",
       slug: product.slug,
       prioridad: product.prioridad || 1,
       status: product.status,
       tags: product.tags,
       categoriaId: product.categoryId,
       componentes: product.componentes,
-      imagenes: product.imagenes.map((img)=>img.url),
+      imagenes: product.imagenes.map((img) => img.url),
       sections: product.secciones.map((s) => s.section.id),
       negocioId: product.negocioId,
       negocioFotoPerfil: product.negocio.fotoPerfil || "", // Este campo no está en la consulta original
@@ -157,6 +163,10 @@ export async function getProductById(id: string): Promise<GetProductById> {
     return { ok: true, product: formattedProduct, userId: product.negocioId };
   } catch (error) {
     console.error("Error al obtener el producto:", error);
-    return { ok: false, message: "Error al obtener el producto.", userId: "Error" };
+    return {
+      ok: false,
+      message: "Error al obtener el producto.",
+      userId: "Error",
+    };
   }
 }

@@ -12,9 +12,22 @@ export async function getCloudinaryActor() {
   return user?.id === id && user.estado === "activo" ? { id: user.id } : null;
 }
 export function isSameOriginCloudinaryRequest(req: Request) {
-  const origin = req.headers.get("origin");
-  return (
-    req.headers.get("sec-fetch-site") !== "cross-site" &&
-    (!origin || origin === new URL(req.url).origin)
-  );
+  try {
+    // Next may normalize the internal Request URL to localhost behind a proxy.
+    // The configured application origin is authoritative, never client headers.
+    const configured = new URL(process.env.SITE_URL || req.url);
+    if (
+      !["http:", "https:"].includes(configured.protocol) ||
+      configured.username ||
+      configured.password
+    )
+      return false;
+    const origin = req.headers.get("origin");
+    return (
+      req.headers.get("sec-fetch-site") !== "cross-site" &&
+      (!origin || origin === configured.origin)
+    );
+  } catch {
+    return false;
+  }
 }

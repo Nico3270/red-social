@@ -1,0 +1,206 @@
+{
+  "loaded": true,
+  "geometry": {
+    "id": "p1",
+    "root": {
+      "x": 4,
+      "y": 77,
+      "width": 186,
+      "height": 314,
+      "right": 190,
+      "bottom": 391
+    },
+    "header": {
+      "x": 5,
+      "y": 78,
+      "width": 184,
+      "height": 44,
+      "right": 189,
+      "bottom": 122
+    },
+    "photo": {
+      "x": 5,
+      "y": 122,
+      "width": 184,
+      "height": 184,
+      "right": 189,
+      "bottom": 306
+    },
+    "name": {
+      "text": "Negocio sin avatar",
+      "width": 72,
+      "labelHeight": 32,
+      "font": "12px"
+    },
+    "avatar": {
+      "x": 5,
+      "y": 88,
+      "width": 24,
+      "height": 24,
+      "right": 29,
+      "bottom": 112
+    },
+    "controls": [
+      {
+        "label": "Abrir perfil de Negocio sin avatar",
+        "follow": false,
+        "avatar": true,
+        "name": false,
+        "box": {
+          "x": 5,
+          "y": 88,
+          "width": 24,
+          "height": 24,
+          "right": 29,
+          "bottom": 112
+        },
+        "hit": true,
+        "nested": false,
+        "photoOverlap": 0,
+        "color": "rgb(28, 40, 60)",
+        "paint": {
+          "width": "auto",
+          "height": "auto",
+          "background": "rgba(0, 0, 0, 0)"
+        },
+        "disabled": false
+      },
+      {
+        "label": "Negocio sin avatar",
+        "follow": false,
+        "avatar": false,
+        "name": true,
+        "box": {
+          "x": 73,
+          "y": 78,
+          "width": 72,
+          "height": 44,
+          "right": 145,
+          "bottom": 122
+        },
+        "hit": true,
+        "nested": false,
+        "photoOverlap": 0,
+        "color": "rgb(28, 40, 60)",
+        "paint": {
+          "width": "auto",
+          "height": "auto",
+          "background": "rgba(0, 0, 0, 0)"
+        },
+        "disabled": false
+      },
+      {
+        "label": "Seguir a Negocio sin avatar",
+        "follow": true,
+        "avatar": false,
+        "name": false,
+        "box": {
+          "x": 29,
+          "y": 78,
+          "width": 44,
+          "height": 44,
+          "right": 73,
+          "bottom": 122
+        },
+        "hit": true,
+        "nested": false,
+        "photoOverlap": 0,
+        "color": "rgb(255, 255, 255)",
+        "paint": {
+          "width": "20px",
+          "height": "20px",
+          "background": "rgb(201, 53, 69)"
+        },
+        "disabled": false
+      },
+      {
+        "label": "Guardar Tenis urbanos en favoritos",
+        "follow": false,
+        "avatar": false,
+        "name": false,
+        "box": {
+          "x": 145,
+          "y": 78,
+          "width": 44,
+          "height": 44,
+          "right": 189,
+          "bottom": 122
+        },
+        "hit": true,
+        "nested": false,
+        "photoOverlap": 0,
+        "color": "rgb(107, 114, 128)",
+        "paint": {
+          "width": "28px",
+          "height": "28px",
+          "background": "rgb(250, 243, 245)"
+        },
+        "disabled": false
+      },
+      {
+        "label": "Contactar por WhatsApp sobre Tenis urbanos",
+        "follow": false,
+        "avatar": false,
+        "name": false,
+        "box": {
+          "x": 93,
+          "y": 338,
+          "width": 44,
+          "height": 44,
+          "right": 137,
+          "bottom": 382
+        },
+        "hit": true,
+        "nested": false,
+        "photoOverlap": 0,
+        "color": "rgb(255, 255, 255)",
+        "paint": {
+          "width": "32px",
+          "height": "32px",
+          "background": "rgb(37, 128, 84)"
+        },
+        "disabled": false
+      },
+      {
+        "label": "Agregar Tenis urbanos al carrito",
+        "follow": false,
+        "avatar": false,
+        "name": false,
+        "box": {
+          "x": 137,
+          "y": 338,
+          "width": 44,
+          "height": 44,
+          "right": 181,
+          "bottom": 382
+        },
+        "hit": true,
+        "nested": false,
+        "photoOverlap": 0,
+        "color": "rgb(255, 255, 255)",
+        "paint": {
+          "width": "32px",
+          "height": "32px",
+          "background": "rgb(201, 53, 69)"
+        },
+        "disabled": false
+      }
+    ],
+    "collisions": [],
+    "price": {
+      "text": "$ 145.000",
+      "box": {
+        "x": 13,
+        "y": 349,
+        "width": 80,
+        "height": 22,
+        "right": 93,
+        "bottom": 371
+      },
+      "font": "16px"
+    },
+    "title": "Tenis urbanos",
+    "border": "1px solid rgb(226, 184, 194)",
+    "shadow": "rgba(44, 47, 51, 0.12) 0px 4px 14px 0px"
+  }
+}

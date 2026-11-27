@@ -1,8 +1,13 @@
 "use server";
 
+import {
+  lockWritableBusiness,
+  requireSuperAdmin,
+} from "@/lib/business/productAccess";
 import { auth } from "@/auth.config";
 import { logProductImageDiagnostics } from "@/lib/media/productImageDiagnostics";
 import prisma from "@/lib/prisma";
+import { assertCanPublishProduct } from "@/lib/products/productAuthorization";
 import { EstadoNegocio, Prisma, ProductStatus } from "@prisma/client";
 import { z } from "zod";
 import { revalidateAdminProductSurfaces } from "./revalidateAdminProductSurfaces";
@@ -49,6 +54,8 @@ export async function publishAdminProductAction(
         error: "No tienes permisos para publicar productos administrativos.",
       };
     }
+
+    await requireSuperAdmin();
 
     const parsedInput = publishAdminProductInputSchema.safeParse(rawInput);
 
@@ -98,6 +105,8 @@ export async function publishAdminProductAction(
       };
     }
 
+    await assertCanPublishProduct(product.negocioId);
+
     const validationErrors: string[] = [];
 
     if (
@@ -134,19 +143,22 @@ export async function publishAdminProductAction(
       };
     }
 
-    const updatedProduct = await prisma.product.update({
-      where: { id: product.id },
-      data: { status: ProductStatus.disponible },
-      select: {
-        id: true,
-        nombre: true,
-        slug: true,
-        status: true,
-        negocioId: true,
-        _count: {
-          select: { imagenes: true },
+    const updatedProduct = await prisma.$transaction(async (tx) => {
+      await lockWritableBusiness(tx, businessId, "disponible");
+      return tx.product.update({
+        where: { id: product.id },
+        data: { status: ProductStatus.disponible },
+        select: {
+          id: true,
+          nombre: true,
+          slug: true,
+          status: true,
+          negocioId: true,
+          _count: {
+            select: { imagenes: true },
+          },
         },
-      },
+      });
     });
 
     logProductImageDiagnostics({

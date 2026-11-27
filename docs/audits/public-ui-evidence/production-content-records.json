@@ -1,0 +1,23 @@
+[
+  {
+    "type": "publication",
+    "id": "cmd8abuph000443wfzt9txx2e",
+    "description": "Vamos a probar un carrusel con imagenes y videos",
+    "businessSlug": "parrilla-internacional-tunja-tunja-r3jq"
+  },
+  {
+    "type": "service",
+    "id": "484de355-eaf5-4698-b491-5e982787347e",
+    "title": "Entregas express ",
+    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut ut aliquet purus. Ut vitae ornare odio.  Ut sit amet suscipit lorem, a hendrerit odio. Mauris et condimentum nibh. Donec luctus tincidunt velit, quis aliquet odio auctor a.  Quisque dignissim, leo a tempor bibendum, enim diam viverra sem, id egestas nibh nibh eu dolor. Nunc ac leo metus.",
+    "businessSlug": "parrilla-internacional-tunja-tunja-r3jq"
+  },
+  {
+    "type": "business",
+    "id": "5506619e-3b3a-4e87-adb4-325396a98c26",
+    "title": "Pariila Internacional Tunja",
+    "description": "Restaurante tradicional ubicado en la ciudad de Tunja, ofrecemos productos tipicos de la regiÃ³n, platos a la carta, trucha, mojarra, carne de res, cerdo",
+    "businessSlug": "parrilla-internacional-tunja-tunja-r3jq",
+    "phone": "+573182293083"
+  }
+]

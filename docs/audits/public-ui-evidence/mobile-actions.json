@@ -1,0 +1,66 @@
+[
+  {
+    "width": 360,
+    "wa": {
+      "top": 516.9290771484375,
+      "height": 44
+    },
+    "cart": {
+      "top": 516.9290771484375,
+      "height": 44
+    },
+    "price": {
+      "top": 527.9290771484375,
+      "bottom": 549.9290771484375
+    },
+    "badgeOverAvatar": true
+  },
+  {
+    "width": 390,
+    "wa": {
+      "top": 511.86700439453125,
+      "height": 44
+    },
+    "cart": {
+      "top": 511.86700439453125,
+      "height": 44
+    },
+    "price": {
+      "top": 522.8670043945312,
+      "bottom": 544.8670043945312
+    },
+    "badgeOverAvatar": true
+  },
+  {
+    "width": 430,
+    "wa": {
+      "top": 511.19549560546875,
+      "height": 44
+    },
+    "cart": {
+      "top": 511.19549560546875,
+      "height": 44
+    },
+    "price": {
+      "top": 522.1954956054688,
+      "bottom": 544.1954956054688
+    },
+    "badgeOverAvatar": true
+  },
+  {
+    "width": 1440,
+    "wa": {
+      "top": 641.254150390625,
+      "height": 44
+    },
+    "cart": {
+      "top": 641.254150390625,
+      "height": 44
+    },
+    "price": {
+      "top": 649.504150390625,
+      "bottom": 677.004150390625
+    },
+    "badgeOverAvatar": false
+  }
+]

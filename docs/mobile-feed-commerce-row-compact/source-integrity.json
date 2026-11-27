@@ -1,0 +1,59 @@
+{
+  "compared": 677,
+  "changed": [
+    "src/ui/components/productos/feedProductCard.module.css"
+  ],
+  "missing": [],
+  "added": [],
+  "unchangedPixels": [
+    {
+      "width": 390,
+      "id": "p1",
+      "field": "header",
+      "pixels": 55
+    },
+    {
+      "width": 390,
+      "id": "p1",
+      "field": "photo",
+      "pixels": 0
+    },
+    {
+      "width": 390,
+      "id": "p2",
+      "field": "header",
+      "pixels": 47
+    },
+    {
+      "width": 390,
+      "id": "p2",
+      "field": "photo",
+      "pixels": 0
+    },
+    {
+      "width": 430,
+      "id": "p1",
+      "field": "header",
+      "pixels": 0
+    },
+    {
+      "width": 430,
+      "id": "p1",
+      "field": "photo",
+      "pixels": 0
+    },
+    {
+      "width": 430,
+      "id": "p2",
+      "field": "header",
+      "pixels": 0
+    },
+    {
+      "width": 430,
+      "id": "p2",
+      "field": "photo",
+      "pixels": 0
+    }
+  ],
+  "allTsxAndPrismaIdentical": true
+}

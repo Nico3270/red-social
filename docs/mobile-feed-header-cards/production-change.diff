@@ -1,0 +1,318 @@
+--- src/busqueda/componentes/SearchBar.tsx (before)
++++ src/busqueda/componentes/SearchBar.tsx (after)
+@@ -27,9 +27,10 @@
+ }
+ interface SearchBarProps {
+   compact?: boolean;
++  iconOnly?: boolean;
+ }
+ 
+-export default function SearchBar({ compact = false }: SearchBarProps) {
++export default function SearchBar({ compact = false, iconOnly = false }: SearchBarProps) {
+   const router = useRouter();
+   const needsLayer = useMediaQuery("(max-width:1199px)");
+   const reducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
+@@ -40,10 +41,24 @@
+   const [focused, setFocused] = useState(false);
+   const [layerOpen, setLayerOpen] = useState(false);
+   const [activeIndex, setActiveIndex] = useState(-1);
++  const [layerViewport, setLayerViewport] = useState<{ height: number; top: number } | null>(null);
+   const rootRef = useRef<HTMLDivElement>(null);
+   const inputRef = useRef<HTMLInputElement>(null);
+   const id = useId();
+   const showResults = focused && Boolean(searchTerm.trim());
++
++  useEffect(() => {
++    if (!iconOnly || !layerOpen || !window.visualViewport) return;
++    const viewport = window.visualViewport;
++    const update = () => setLayerViewport({ height: viewport.height, top: viewport.offsetTop });
++    update();
++    viewport.addEventListener("resize", update);
++    viewport.addEventListener("scroll", update);
++    return () => {
++      viewport.removeEventListener("resize", update);
++      viewport.removeEventListener("scroll", update);
++    };
++  }, [iconOnly, layerOpen]);
+ 
+   useEffect(() => {
+     const controller = new AbortController();
+@@ -94,6 +109,7 @@
+   const closeLayer = () => {
+     setLayerOpen(false);
+     setFocused(false);
++    setLayerViewport(null);
+   };
+   const navigate = (result: SearchResult) => {
+     let url = "";
+@@ -142,14 +158,16 @@
+ 
+   const field = (
+     <div
+-      className={`${styles.root} ${compact && !layerOpen ? styles.compact : ""}`}
++      className={`${styles.root} ${compact && !layerOpen ? styles.compact : ""} ${iconOnly && layerOpen ? styles.mobileLayer : ""}`}
+     >
++      <div className={iconOnly && layerOpen ? styles.mobileFieldRow : styles.fieldSlot}>
+       <div className={styles.field}>
+         <FaSearch aria-hidden="true" />
+         <input
+           ref={inputRef}
+           autoFocus={layerOpen}
+           type="search"
++          enterKeyHint={iconOnly ? "search" : undefined}
+           role="combobox"
+           aria-label="Buscar productos, negocios o categorías"
+           aria-autocomplete="list"
+@@ -175,6 +193,10 @@
+           onKeyDown={onKeyDown}
+         />
+       </div>
++      </div>
++      {iconOnly && layerOpen && !searchTerm.trim() && (
++        <p className={styles.feedback}>Escribe para buscar en Myckeo.</p>
++      )}
+       {showResults && (
+         <div
+           className={`${styles.results} ${layerOpen ? styles.inDialog : ""}`}
+@@ -235,13 +257,15 @@
+   );
+ 
+   return (
+-    <div ref={rootRef} className={styles.root}>
+-      {needsLayer || layerOpen ? (
++    <div ref={rootRef} className={`${styles.root} ${iconOnly ? styles.iconRoot : ""}`}>
++      {iconOnly || needsLayer || layerOpen ? (
+         <button
+           type="button"
+-          className={styles.trigger}
++          className={`${styles.trigger} ${iconOnly ? styles.iconTrigger : ""}`}
+           aria-label="Abrir búsqueda"
+           aria-haspopup="dialog"
++          aria-expanded={layerOpen}
++          aria-controls={layerOpen ? `${id}-dialog` : undefined}
+           onClick={() => {
+             setLayerOpen(true);
+             setFocused(true);
+@@ -257,13 +281,19 @@
+         open={layerOpen}
+         onClose={closeLayer}
+         fullWidth
++        fullScreen={iconOnly}
+         maxWidth="sm"
+         transitionDuration={reducedMotion ? 0 : 180}
+         slotProps={{
+           transition: {
++            onEntered: () => {
++              // The dialog's focus trap mounts after the input. Focus once it
++              // is active, without moving the feed behind the mobile layer.
++              if (iconOnly) inputRef.current?.focus({ preventScroll: true });
++            },
+             onExited: () => {
+               // If resizing removed the launcher, restore focus to the inline field.
+-              if (!needsLayer) {
++              if (!needsLayer && !iconOnly) {
+                 inputRef.current?.focus();
+                 setFocused(false);
+               }
+@@ -271,8 +301,12 @@
+           },
+         }}
+         aria-labelledby={`${id}-title`}
+-        sx={{ zIndex: 10010 }}
++        sx={{
++          zIndex: 10010,
++          ...(iconOnly ? { top: layerViewport?.top ?? 0, height: layerViewport?.height ?? "100dvh", bottom: "auto" } : {}),
++        }}
+         PaperProps={{
++          id: `${id}-dialog`,
+           sx: {
+             m: 1.5,
+             width: "calc(100% - 24px)",
+@@ -280,12 +314,13 @@
+             borderRadius: 3,
+             overflow: "visible",
+             fontFamily: inter.style.fontFamily,
++            ...(iconOnly ? { m: 0, width: "100%", maxWidth: "100%", height: "100%", maxHeight: "100%", borderRadius: 0, overflow: "hidden" } : {}),
+           },
+         }}
+       >
+         <DialogTitle
+           id={`${id}-title`}
+-          sx={{ pr: 8, fontFamily: "inherit", fontSize: 20 }}
++          sx={{ pr: 8, fontFamily: "inherit", fontSize: 20, ...(iconOnly ? { fontSize: 18, fontWeight: 600, borderBottom: "1px solid #f3e4e8" } : {}) }}
+         >
+           Buscar en Myckeo
+         </DialogTitle>
+@@ -296,7 +331,7 @@
+         >
+           <X size={20} />
+         </IconButton>
+-        <DialogContent sx={{ p: 2, pt: 1, minHeight: 0, overflowY: "auto" }}>
++        <DialogContent sx={{ p: 2, pt: 1, minHeight: 0, overflowY: "auto", ...(iconOnly ? { pt: 0, overscrollBehavior: "contain" } : {}) }}>
+           {field}
+         </DialogContent>
+       </Dialog>
+
+--- src/busqueda/componentes/searchBar.module.css (before)
++++ src/busqueda/componentes/searchBar.module.css (after)
+@@ -51,6 +51,39 @@
+ .trigger:hover {
+   border-color: #9ca3af;
+   background: #f9fafb;
++}
++.iconRoot {
++  width: 44px;
++}
++.iconTrigger {
++  justify-content: center;
++  width: 44px;
++  height: 44px;
++  padding: 0;
++  border-color: transparent;
++  border-radius: 50%;
++  background: #faf3f5;
++  color: #a83c4b;
++}
++.iconTrigger > span {
++  display: none;
++}
++.fieldSlot {
++  display: contents;
++}
++.mobileFieldRow {
++  position: sticky;
++  top: 0;
++  z-index: 1;
++  padding-block: 8px;
++  background: white;
++}
++.mobileLayer .inDialog {
++  max-height: none;
++  overflow: visible;
++  border: 0;
++  padding: 0;
++  margin-top: 4px;
+ }
+ .compact input {
+   font-size: 14px;
+
+--- src/ui/components/productos/feedProductCard.module.css (before)
++++ src/ui/components/productos/feedProductCard.module.css (after)
+@@ -224,11 +224,11 @@
+     height: auto;
+     margin-inline: auto;
+     padding: 0;
+-    border: 1px solid #e8cdd3;
++    border: 1px solid #e2b8c2;
+     border-radius: 16px;
+     background: white;
+     color: #1c283c;
+-    box-shadow: 0 3px 12px rgba(44, 47, 51, 0.09);
++    box-shadow: 0 4px 14px rgba(44, 47, 51, 0.12);
+   }
+   .header {
+     display: flex;
+
+--- src/ui/components/topMenu/publicNavigation.module.css (before)
++++ src/ui/components/topMenu/publicNavigation.module.css (after)
+@@ -76,17 +76,64 @@
+ }
+ .mobileRow {
+   display: grid;
+-  grid-template-columns: minmax(0, 1fr) auto;
++  grid-template-columns: auto 44px minmax(44px, 1fr);
+   align-items: center;
+   gap: 8px;
+   padding: 8px 12px;
+ }
+ .mobileRow .location {
+-  max-width: min(150px, 38vw);
++  justify-self: end;
++  max-width: min(150px, 100%);
++}
++.mobileRow .brand {
++  min-height: 44px;
+ }
+ .mobileSearch {
+-  grid-column: 1/-1;
+-  min-width: 0;
++  width: 44px;
++  min-width: 44px;
++}
++.mobileOffset {
++  margin-top: 61px;
++}
++.mobileProfileOffset {
++  height: 61px;
++}
++/* At high browser zoom, reflow the location instead of crowding touch targets. */
++@media (max-width: 279px) {
++  .mobileRow {
++    grid-template-columns: minmax(0, 1fr) 44px;
++  }
++  .mobileRow .brand {
++    min-width: 0;
++  }
++  .mobileRow .brand > img {
++    width: 28px;
++    height: 28px;
++  }
++  .mobileRow .brand > span {
++    font-size: 20px;
++  }
++  .mobileRow .location {
++    grid-column: 1 / -1;
++  }
++  .mobileOffset {
++    margin-top: 113px;
++  }
++  .mobileProfileOffset {
++    height: 113px;
++  }
++}
++@media (max-width: 199px) {
++  .mobileRow {
++    padding-inline: 4px;
++  }
++  .mobileRow .brand > img {
++    width: 24px;
++    height: 24px;
++  }
++  .mobileRow .brand > span {
++    font-size: 16px;
++  }
+ }
+ .mobileActions > div {
+   display: flex;
+
+--- src/ui/components/topMenuMobile/TopMenuMobile.tsx (before)
++++ src/ui/components/topMenuMobile/TopMenuMobile.tsx (after)
+@@ -284,6 +284,9 @@
+               Myckeo
+             </span>
+           </Link>
++          <div className={styles.mobileSearch}>
++            <SearchBar compact={isDiscoveryPage} iconOnly />
++          </div>
+           <button
+             onClick={() => setIsLocationModalOpen(true)}
+             className={styles.location}
+@@ -296,16 +299,13 @@
+             <span className={styles.city}>{ciudad || "Ciudad"}</span>
+             {showGpsIcon && <span className="text-xs text-green-600">GPS</span>}
+           </button>
+-          <div className={styles.mobileSearch}>
+-            <SearchBar compact={isDiscoveryPage} />
+-          </div>
+         </div>
+       </header>
+ 
+       {isBusinessProfilePage ? (
+-        <div className="h-28" />
++        <div className={styles.mobileProfileOffset} />
+       ) : (
+-        <div className="mt-28">
++        <div className={styles.mobileOffset}>
+           <MenuSectionsBar compact={isDiscoveryPage} />
+         </div>
+       )}

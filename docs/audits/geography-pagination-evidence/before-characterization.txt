@@ -1,0 +1,13 @@
+PASS src/feed/actions/publicGeography.audit.test.ts
+  ✓ sufficient local supply does not need other cities (7 ms)
+  ✓ scarce local supply expands and deduplicates overlapping national candidates (1 ms)
+  ✓ absent local supply still shows other cities
+  ✓ AUDIT GEO-01: a highly ranked other-city business can precede the local result
+  ✓ AUDIT GEO-02: cursor points to an unreturned buffer candidate (1 ms)
+  ✓ category expansion keeps the category predicate in all three geographic queries (1 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       6 passed, 6 total
+Snapshots:   0 total
+Time:        0.312 s, estimated 1 s
+Ran all test suites matching src/feed/actions/publicGeography.audit.test.ts.

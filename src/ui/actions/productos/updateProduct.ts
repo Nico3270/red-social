@@ -1,7 +1,11 @@
 // /ui/actions/productos/updateProduct.ts
 "use server";
 
+import { lockWritableBusiness } from "@/lib/business/productAccess";
+import { parseCopPrice } from "@/lib/products/copPrice";
 import prisma from "@/lib/prisma";
+import { assertCanPublishProduct } from "@/lib/products/productAuthorization";
+import { replaceGallery, lockProduct } from "@/lib/products/imageGallery";
 import { Prisma, ProductStatus } from "@prisma/client";
 import { auth } from "@/auth.config";
 
@@ -41,7 +45,10 @@ const normalizeString = (value: FormDataEntryValue | null): string => {
   return typeof value === "string" ? value.trim() : "";
 };
 
-const parseBoolean = (value: FormDataEntryValue | null, defaultValue = false): boolean => {
+const parseBoolean = (
+  value: FormDataEntryValue | null,
+  defaultValue = false,
+): boolean => {
   if (typeof value !== "string") return defaultValue;
   const normalized = value.trim().toLowerCase();
   if (normalized === "true") return true;
@@ -49,7 +56,9 @@ const parseBoolean = (value: FormDataEntryValue | null, defaultValue = false): b
   return defaultValue;
 };
 
-const parseOptionalNumber = (value: FormDataEntryValue | null): number | null => {
+const parseOptionalNumber = (
+  value: FormDataEntryValue | null,
+): number | null => {
   if (typeof value !== "string") return null;
   const trimmed = value.trim();
   if (!trimmed) return null;
@@ -70,7 +79,7 @@ const safeJsonParse = <T>(value: FormDataEntryValue | null, fallback: T): T => {
 
 export async function updateProduct(
   productId: string,
-  formData: FormData
+  formData: FormData,
 ): Promise<UpdateProductResult> {
   const session = await auth();
 
@@ -85,9 +94,11 @@ export async function updateProduct(
     const userSessionId = session.user.id;
 
     const nombre = normalizeString(formData.get("nombre"));
-    const precio = parseOptionalNumber(formData.get("precio"));
+    const precio = parseCopPrice(formData.get("precio"));
     const descripcion = normalizeString(formData.get("descripcion"));
-    const descripcionCortaRaw = normalizeString(formData.get("descripcionCorta"));
+    const descripcionCortaRaw = normalizeString(
+      formData.get("descripcionCorta"),
+    );
     const descripcionCorta = descripcionCortaRaw || null;
     const slug = normalizeString(formData.get("slug"));
     const prioridad = parseOptionalNumber(formData.get("prioridad"));
@@ -117,29 +128,38 @@ export async function updateProduct(
     const stockIlimitado = parseBoolean(formData.get("stockIlimitado"), true);
     const usaVariantes = parseBoolean(formData.get("usaVariantes"), false);
 
-    const atributos = safeJsonParse<AttributeInput[]>(formData.get("atributos"), [])
+    const atributos = safeJsonParse<AttributeInput[]>(
+      formData.get("atributos"),
+      [],
+    )
       .map((item) => ({
         nombre: item?.nombre?.trim?.() || "",
         valor: item?.valor?.trim?.() || "",
       }))
       .filter((item) => item.nombre && item.valor);
 
-    const variantes = safeJsonParse<VariantInput[]>(formData.get("variantes"), [])
+    const variantes = safeJsonParse<VariantInput[]>(
+      formData.get("variantes"),
+      [],
+    )
       .map((variant) => ({
         nombre: variant?.nombre?.trim?.() || null,
         sku: variant?.sku?.trim?.() || null,
         precio:
-          typeof variant?.precio === "number" && Number.isFinite(variant.precio)
-            ? variant.precio
-            : null,
+          variant?.precio === null || variant?.precio === undefined
+            ? null
+            : parseCopPrice(variant.precio),
         stock:
           typeof variant?.stock === "number" && Number.isFinite(variant.stock)
             ? variant.stock
             : null,
         stockIlimitado:
-          typeof variant?.stockIlimitado === "boolean" ? variant.stockIlimitado : true,
+          typeof variant?.stockIlimitado === "boolean"
+            ? variant.stockIlimitado
+            : true,
         imagenUrl: variant?.imagenUrl?.trim?.() || null,
-        isActive: typeof variant?.isActive === "boolean" ? variant.isActive : true,
+        isActive:
+          typeof variant?.isActive === "boolean" ? variant.isActive : true,
         options: Array.isArray(variant?.options)
           ? variant.options
               .map((option) => ({
@@ -179,7 +199,7 @@ export async function updateProduct(
       };
     }
 
-    if (imageUrls.length === 0) {
+    if (formData.has("imageUrls") && imageUrls.length === 0) {
       return {
         ok: false,
         message: "Debes mantener al menos una imagen para el producto.",
@@ -241,6 +261,8 @@ export async function updateProduct(
       };
     }
 
+    if (statusRaw === "disponible") await assertCanPublishProduct(negocio.id);
+
     const categoryExists = await prisma.category.findUnique({
       where: { id: categoryId },
       select: { id: true },
@@ -301,7 +323,10 @@ export async function updateProduct(
       }
 
       for (const variant of variantes) {
-        if (!variant.stockIlimitado && (variant.stock === null || variant.stock < 0)) {
+        if (
+          !variant.stockIlimitado &&
+          (variant.stock === null || variant.stock < 0)
+        ) {
           return {
             ok: false,
             message:
@@ -309,16 +334,22 @@ export async function updateProduct(
           };
         }
 
-        if (variant.imagenUrl && !cloudinaryUrlPattern.test(variant.imagenUrl)) {
+        if (
+          variant.imagenUrl &&
+          !cloudinaryUrlPattern.test(variant.imagenUrl)
+        ) {
           return {
             ok: false,
-            message: "Una o más imágenes de variantes no tienen una URL válida.",
+            message:
+              "Una o más imágenes de variantes no tienen una URL válida.",
           };
         }
       }
     }
 
     const updatedProduct = await prisma.$transaction(async (tx) => {
+      await lockWritableBusiness(tx, negocio.id, statusRaw);
+      await lockProduct(tx, productId);
       const product = await tx.product.update({
         where: { id: productId },
         data: {
@@ -339,16 +370,18 @@ export async function updateProduct(
         },
       });
 
-      await tx.image.deleteMany({
-        where: { productId },
-      });
-
-      await tx.image.createMany({
-        data: imageUrls.map((url) => ({
-          url,
-          productId,
-        })),
-      });
+      if (formData.has("imageUrls")) {
+        const expectedRaw = formData.get("expectedImageUrls");
+        if (typeof expectedRaw !== "string")
+          throw new Error("Recarga el formulario antes de guardar imágenes.");
+        const expected = JSON.parse(expectedRaw);
+        if (
+          !Array.isArray(expected) ||
+          !expected.every((url) => typeof url === "string")
+        )
+          throw new Error("Galería inválida.");
+        await replaceGallery(tx, productId, imageUrls, expected);
+      }
 
       await tx.productSection.deleteMany({
         where: { productId },
@@ -383,7 +416,11 @@ export async function updateProduct(
       });
 
       if (usaVariantes && variantes.length > 0) {
-        for (let variantIndex = 0; variantIndex < variantes.length; variantIndex++) {
+        for (
+          let variantIndex = 0;
+          variantIndex < variantes.length;
+          variantIndex++
+        ) {
           const variant = variantes[variantIndex];
 
           const createdVariant = await tx.productVariant.create({
@@ -444,7 +481,9 @@ export async function updateProduct(
     }
 
     const errorMessage =
-      error instanceof Error ? error.message : "Error desconocido en el servidor";
+      error instanceof Error
+        ? error.message
+        : "Error desconocido en el servidor";
 
     return {
       ok: false,

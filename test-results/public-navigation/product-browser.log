@@ -1,0 +1,18 @@
+
+Running 7 tests using 1 worker
+
+
+Rebuilding...
+
+Done in 1176ms.
+(node:447118) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 e2e/new-product/new-product.spec.ts:1152:7 › independent-responsive 320: visible components with AI closed (4.9s)
+  ✓  2 e2e/new-product/new-product.spec.ts:1152:7 › independent-responsive 390: visible components with AI closed (4.0s)
+  ✓  3 e2e/new-product/new-product.spec.ts:1152:7 › independent-responsive 768: visible components with AI closed (4.1s)
+  ✓  4 e2e/new-product/new-product.spec.ts:1152:7 › independent-responsive 1440: visible components with AI closed (2.8s)
+  ✓  5 e2e/new-product/new-product.spec.ts:1233:5 › independent-components add/remove, keep duplicates and blanks policy, persist without ever opening AI (5.4s)
+  ✓  6 e2e/new-product/new-product.spec.ts:1304:5 › independent-AI context and failures preserve components and manual description (5.1s)
+  ✓  7 e2e/new-product/new-product.spec.ts:1378:5 › independent-create without any components or AI (4.4s)
+
+  7 passed (36.8s)

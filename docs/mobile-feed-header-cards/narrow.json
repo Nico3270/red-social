@@ -1,0 +1,86 @@
+[
+  {
+    "width": 195,
+    "header": {
+      "height": 113,
+      "firstProductTop": 341,
+      "firstProductViewportTop": 341,
+      "scrollY": 0,
+      "boxes": [
+        {
+          "label": "Myckeo",
+          "x": 4,
+          "y": 8,
+          "width": 135,
+          "height": 44,
+          "right": 139,
+          "bottom": 52
+        },
+        {
+          "label": "Abrir búsqueda",
+          "x": 147,
+          "y": 8,
+          "width": 44,
+          "height": 44,
+          "right": 191,
+          "bottom": 52
+        },
+        {
+          "label": "Cambiar ubicación: Bogotá",
+          "x": 103.84,
+          "y": 60,
+          "width": 87.16,
+          "height": 44,
+          "right": 191,
+          "bottom": 104
+        }
+      ],
+      "collisions": [],
+      "brandContentFits": true,
+      "overflow": false,
+      "searchLocationGap": -87.16
+    }
+  },
+  {
+    "width": 160,
+    "header": {
+      "height": 113,
+      "firstProductTop": 341,
+      "firstProductViewportTop": 341,
+      "scrollY": 0,
+      "boxes": [
+        {
+          "label": "Myckeo",
+          "x": 4,
+          "y": 8,
+          "width": 100,
+          "height": 44,
+          "right": 104,
+          "bottom": 52
+        },
+        {
+          "label": "Abrir búsqueda",
+          "x": 112,
+          "y": 8,
+          "width": 44,
+          "height": 44,
+          "right": 156,
+          "bottom": 52
+        },
+        {
+          "label": "Cambiar ubicación: Bogotá",
+          "x": 68.84,
+          "y": 60,
+          "width": 87.16,
+          "height": 44,
+          "right": 156,
+          "bottom": 104
+        }
+      ],
+      "collisions": [],
+      "brandContentFits": true,
+      "overflow": false,
+      "searchLocationGap": -87.16
+    }
+  }
+]

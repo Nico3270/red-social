@@ -18,6 +18,7 @@ type PublicOpeningHours = {
 
 export type CreateNegocioCoreInput = {
   usuarioId: string;
+  prepararOculto?: boolean;
   nombre: string;
   descripcion: string;
   ciudad: string;
@@ -63,10 +64,15 @@ function success(
   return {
     ok: true,
     status,
-    negocio: { id: negocio.id, slug: negocio.slug, usuarioId: negocio.usuarioId },
-    message: status === "CREATED"
-      ? "Negocio creado exitosamente."
-      : "El usuario ya tiene un negocio asociado.",
+    negocio: {
+      id: negocio.id,
+      slug: negocio.slug,
+      usuarioId: negocio.usuarioId,
+    },
+    message:
+      status === "CREATED"
+        ? "Negocio creado exitosamente."
+        : "El usuario ya tiene un negocio asociado.",
     negocioId: negocio.id,
     slugNegocio: negocio.slug,
   };
@@ -162,7 +168,17 @@ export async function createNegocioCore(
       where: { usuarioId },
     });
 
+    if (input.prepararOculto && !usuarioExistente.isPlaceholder)
+      return failure("Requiere usuario provisional.");
+
     if (negocioExistente) {
+      if (
+        input.prepararOculto &&
+        negocioExistente.estado !== EstadoNegocio.suspendido
+      )
+        return failure(
+          "El negocio existente requiere revisión administrativa.",
+        );
       return success("ALREADY_CREATED", negocioExistente);
     }
 
@@ -182,11 +198,31 @@ export async function createNegocioCore(
       return failure("Una o más secciones no existen.");
     }
 
+    if (
+      input.prepararOculto &&
+      (categoriasExistentes.some((c) => !c.isActive) ||
+        seccionesExistentes.some(
+          (s) =>
+            !s.isActive ||
+            (s.categoryId && !categoriaIds.includes(s.categoryId)),
+        ))
+    ) {
+      return failure("Selecciona categorías y secciones activas compatibles.");
+    }
     const slug = await generateSlug(nombre, ciudad);
 
     let nuevoNegocio: NegocioIdentity;
     try {
       nuevoNegocio = await prisma.$transaction(async (tx) => {
+        if (input.prepararOculto) {
+          await tx.$queryRaw`SELECT "id" FROM "Usuario" WHERE "id" = ${usuarioId} FOR UPDATE`;
+          const current = await tx.usuario.findUnique({
+            where: { id: usuarioId },
+            select: { isPlaceholder: true, estado: true },
+          });
+          if (!current?.isPlaceholder || current.estado !== "activo")
+            throw new Error("El usuario provisional cambió.");
+        }
         const negocio = await tx.negocio.create({
           data: {
             nombre,
@@ -198,7 +234,9 @@ export async function createNegocioCore(
             horarios: horarios === null ? Prisma.DbNull : horarios,
             direccion,
             telefonoContacto: telefonoContacto || undefined,
-            estado: EstadoNegocio.activo,
+            estado: input.prepararOculto
+              ? EstadoNegocio.suspendido
+              : EstadoNegocio.activo,
             usuarioId,
             imagenes: [],
           },
@@ -226,13 +264,18 @@ export async function createNegocioCore(
 
         return negocio;
       });
-
     } catch (error) {
       if (!isUsuarioIdUniqueConflict(error)) throw error;
 
       // La transacción fallida ya terminó: recuperar al ganador fuera de ella.
-      const existente = await prisma.negocio.findUnique({ where: { usuarioId } });
+      const existente = await prisma.negocio.findUnique({
+        where: { usuarioId },
+      });
       if (!existente || existente.usuarioId !== usuarioId) throw error;
+      if (input.prepararOculto && existente.estado !== EstadoNegocio.suspendido)
+        return failure(
+          "El negocio existente requiere revisión administrativa.",
+        );
       return success("ALREADY_CREATED", existente);
     }
 

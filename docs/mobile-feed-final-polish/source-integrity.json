@@ -1,0 +1,12 @@
+{
+  "beforeCount": 620,
+  "afterCount": 620,
+  "modified": [
+    "src/ui/components/productos/feedProductCard.module.css"
+  ],
+  "added": [],
+  "removed": [],
+  "unchanged": 619,
+  "cssBeforeSha256": "3d022520fd98e86f03429d6da69bb8f735f857781f6302279402d325b3e2c978",
+  "cssAfterSha256": "1b6cb7e63d0da22477d4fa6d73288ff4a79b30c2250658ab2752809220ac4088"
+}

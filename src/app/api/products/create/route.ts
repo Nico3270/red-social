@@ -1,7 +1,11 @@
 //src/app/api/products/create/route.ts
 
+import { lockWritableBusiness } from "@/lib/business/productAccess";
 import { NextResponse } from "next/server";
+import { parseCopPrice } from "@/lib/products/copPrice";
 import prisma from "@/lib/prisma";
+import { assertCanPublishProduct } from "@/lib/products/productAuthorization";
+import { replaceGallery, lockProduct } from "@/lib/products/imageGallery";
 import { ProductStatus, Currency } from "@prisma/client";
 import {
   buildSlugBase,
@@ -19,7 +23,7 @@ interface CreateProductBody {
   nombre: string;
   descripcion: string;
   descripcionCorta?: string | null;
-  precio: number;
+  precio: number | string;
   currency?: Currency;
   prioridad?: number | null;
   status?: ProductStatus;
@@ -58,7 +62,9 @@ async function buildUniqueProductSlug(nombre: string) {
   const baseSlug = buildSlugBase(nombre, nombre);
 
   if (!baseSlug) {
-    throw new Error("No fue posible construir un slug válido para el producto.");
+    throw new Error(
+      "No fue posible construir un slug válido para el producto.",
+    );
   }
 
   const baseWithoutExistingSuffix = hasShortSlugSuffix(baseSlug)
@@ -90,16 +96,18 @@ export async function POST(req: Request) {
     if (!validateApiKey(req)) {
       return NextResponse.json(
         { error: "Unauthorized: invalid API key." },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
-    const body = (await req.json().catch(() => null)) as CreateProductBody | null;
+    const body = (await req
+      .json()
+      .catch(() => null)) as CreateProductBody | null;
 
     if (!body) {
       return NextResponse.json(
         { error: "Debe enviar un JSON válido en el body." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -108,7 +116,7 @@ export async function POST(req: Request) {
       nombre,
       descripcion,
       descripcionCorta = null,
-      precio,
+      precio: rawPrice,
       currency = "COP",
       prioridad = null,
       status = "disponible",
@@ -119,6 +127,15 @@ export async function POST(req: Request) {
       seccionIds = [],
     } = body;
 
+    let precio: number;
+    try {
+      precio = parseCopPrice(rawPrice);
+    } catch {
+      return NextResponse.json(
+        { error: "Precio COP inválido." },
+        { status: 400 },
+      );
+    }
     /* ============================================================
        Validar campos obligatorios
        ============================================================ */
@@ -128,35 +145,38 @@ export async function POST(req: Request) {
           error:
             "Faltan datos obligatorios: negocioPhone, nombre, descripcion, precio o categoryId.",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (typeof precio !== "number" || isNaN(precio)) {
       return NextResponse.json(
         { error: "El campo 'precio' debe ser un número válido." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    if (prioridad !== null && (typeof prioridad !== "number" || isNaN(prioridad))) {
+    if (
+      prioridad !== null &&
+      (typeof prioridad !== "number" || isNaN(prioridad))
+    ) {
       return NextResponse.json(
         { error: "La prioridad debe ser un número o null." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (!Array.isArray(imagenes) || imagenes.length === 0) {
       return NextResponse.json(
         { error: "El producto debe tener al menos una imagen." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (!imagenes.every(isCloudinaryUrl)) {
       return NextResponse.json(
         { error: "Una o más imágenes no tienen formato Cloudinary válido." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -173,7 +193,7 @@ export async function POST(req: Request) {
     if (!negocio) {
       return NextResponse.json(
         { error: "No existe un negocio asociado a este número de teléfono." },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -188,7 +208,7 @@ export async function POST(req: Request) {
     if (!categoryExists) {
       return NextResponse.json(
         { error: `La categoría con id '${categoryId}' no existe.` },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -204,17 +224,19 @@ export async function POST(req: Request) {
       if (sectionsExist.length !== seccionIds.length) {
         return NextResponse.json(
           { error: "Una o más secciones enviadas no existen." },
-          { status: 400 }
+          { status: 400 },
         );
       }
     }
 
+    if (status === "disponible") await assertCanPublishProduct(negocio.id);
     const slug = await buildUniqueProductSlug(nombre);
 
     /* ============================================================
        Transacción completa
        ============================================================ */
     const createdProduct = await prisma.$transaction(async (tx) => {
+      await lockWritableBusiness(tx, negocio.id, status);
       // 1. Crear producto
       const product = await tx.product.create({
         data: {
@@ -262,7 +284,7 @@ export async function POST(req: Request) {
         message: "Producto creado correctamente.",
         product: createdProduct,
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     console.error("❌ Error en POST /api/products/create:", error);
@@ -272,13 +294,13 @@ export async function POST(req: Request) {
     if (err.code === "P2002") {
       return NextResponse.json(
         { error: "El slug ya está en uso. Intenta otro nombre." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     return NextResponse.json(
       { error: "Error interno al crear el producto." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

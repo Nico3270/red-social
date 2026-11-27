@@ -1,0 +1,98 @@
+[
+  {
+    "state": "idle",
+    "target": {
+      "width": 44,
+      "height": 44
+    },
+    "avatar": {
+      "width": 24,
+      "height": 24,
+      "x": 6,
+      "y": 10
+    },
+    "badge": {
+      "width": 14,
+      "height": 14,
+      "left": 19,
+      "top": 7,
+      "border": "1px",
+      "background": "rgb(201, 53, 69)",
+      "shadow": "none"
+    },
+    "glyph": {
+      "width": 9,
+      "height": 9,
+      "left": 21.5,
+      "top": 9.5,
+      "svgWidth": 9,
+      "svgHeight": 9
+    },
+    "avatarHit": true,
+    "badgeHit": true
+  },
+  {
+    "state": "pending",
+    "target": {
+      "width": 44,
+      "height": 44
+    },
+    "avatar": {
+      "width": 24,
+      "height": 24,
+      "x": 6,
+      "y": 10
+    },
+    "badge": {
+      "width": 14,
+      "height": 14,
+      "left": 19,
+      "top": 7,
+      "border": "1px",
+      "background": "rgb(226, 232, 240)",
+      "shadow": "none"
+    },
+    "glyph": {
+      "width": 9,
+      "height": 9,
+      "left": 21.5,
+      "top": 9.5,
+      "svgWidth": 9,
+      "svgHeight": 9
+    },
+    "avatarHit": true,
+    "badgeHit": true
+  },
+  {
+    "state": "following",
+    "target": {
+      "width": 44,
+      "height": 44
+    },
+    "avatar": {
+      "width": 24,
+      "height": 24,
+      "x": 6,
+      "y": 10
+    },
+    "badge": {
+      "width": 14,
+      "height": 14,
+      "left": 19,
+      "top": 7,
+      "border": "1px",
+      "background": "rgb(55, 124, 133)",
+      "shadow": "none"
+    },
+    "glyph": {
+      "width": 9,
+      "height": 9,
+      "left": 21.5,
+      "top": 9.5,
+      "svgWidth": 9,
+      "svgHeight": 9
+    },
+    "avatarHit": true,
+    "badgeHit": true
+  }
+]

@@ -1,13 +1,42 @@
 import { getBusinessesForProductCreationAction } from "@/actions/myckeoAdmin/getBusinessesForProductCreationAction";
 import BusinessesErrorState from "../_componentes/BusinessesErrorState";
 import MyckeoAdminSectionHeader from "../_componentes/MyckeoAdminSectionHeader";
+import { z } from "zod";
+import prisma from "@/lib/prisma";
+import { getProductById } from "@/actions/productos/getProductById";
 import AssistedProductCreationClient from "./_componentes/AssistedProductCreationClient";
 
 export const dynamic = "force-dynamic";
 
-export default async function MyckeoAdminCrearProductosPage() {
+export default async function MyckeoAdminCrearProductosPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ businessId?: string; productId?: string }>;
+}) {
+  const query = await searchParams;
+  const selectedId = z.string().uuid().safeParse(query.businessId).success
+    ? query.businessId
+    : undefined;
+  const initial = query.productId
+    ? await getProductById(query.productId)
+    : null;
+  const initialProduct =
+    initial?.ok &&
+    initial.product?.negocioId === selectedId &&
+    initial.product?.status === "oculto"
+      ? initial.product
+      : undefined;
+  const initialCatalogGroupIds = initialProduct
+    ? (
+        await prisma.catalogGroupProduct.findMany({
+          where: { productId: initialProduct.id },
+          select: { catalogGroupId: true },
+        })
+      ).map((g) => g.catalogGroupId)
+    : [];
   const result = await getBusinessesForProductCreationAction({
     limit: 300,
+    selectedId,
   });
 
   if (!result.ok || !result.data) {
@@ -45,7 +74,8 @@ export default async function MyckeoAdminCrearProductosPage() {
   const footer = (
     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
       <p className="text-sm text-slate-600">
-        Selecciona negocio, genera draft IA, guarda como oculto, adjunta imágenes y publica con revalidación del catálogo.
+        Selecciona negocio, genera draft IA, guarda como oculto, adjunta
+        imágenes y publica con revalidación del catálogo.
       </p>
       <span className="inline-flex w-fit items-center rounded-full border border-sky-200 bg-sky-50 px-3 py-1.5 text-xs font-medium text-sky-700">
         Flujo admin completo
@@ -63,7 +93,14 @@ export default async function MyckeoAdminCrearProductosPage() {
           footer={footer}
         />
 
-        <AssistedProductCreationClient businesses={items} truncated={truncated} />
+        <AssistedProductCreationClient
+          businesses={items}
+          truncated={truncated}
+          initialBusinessId={selectedId}
+          initialProduct={initialProduct}
+          initialCatalogGroupIds={initialCatalogGroupIds}
+          key={`${selectedId ?? ""}:${initialProduct?.id ?? ""}`}
+        />
       </section>
     </main>
   );

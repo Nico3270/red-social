@@ -1,0 +1,41 @@
+--- approved-mobile
++++ final-polish
+@@ -224,11 +224,11 @@
+     height: auto;
+     margin-inline: auto;
+     padding: 0;
+-    border: 1px solid #ecdde1;
++    border: 1px solid #e6d7dc;
+     border-radius: 16px;
+     background: white;
+     color: #1c283c;
+-    box-shadow: 0 2px 8px #1c283c0a;
++    box-shadow: 0 3px 10px #392e330d;
+   }
+   .header {
+     display: flex;
+@@ -375,11 +375,11 @@
+   .price {
+     display: block;
+     overflow-wrap: anywhere;
+-    color: #c93545;
+-    font-size: 21px;
++    color: #a83c4b;
++    font-size: 19px;
+     line-height: 26px;
+-    font-weight: 700;
+-    letter-spacing: -0.04em;
++    font-weight: 600;
++    letter-spacing: -0.01em;
+   }
+   .variantLabel {
+     margin-top: 4px;
+@@ -531,7 +531,7 @@
+       text-align: left;
+     }
+     .price {
+-      font-size: 20px;
++      font-size: 18px;
+       line-height: 26px;
+     }
+     .actionsDock {

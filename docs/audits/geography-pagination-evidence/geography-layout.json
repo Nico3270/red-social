@@ -1,0 +1,38 @@
+[
+  {
+    "width": 360,
+    "localBottom": 2270.6875,
+    "externalTop": 2282.766357421875,
+    "sameRow": true,
+    "waHeight": 44,
+    "cartHeight": 44,
+    "badgeOverAvatar": true
+  },
+  {
+    "width": 390,
+    "localBottom": 2411.765625,
+    "externalTop": 2421.18798828125,
+    "sameRow": true,
+    "waHeight": 44,
+    "cartHeight": 44,
+    "badgeOverAvatar": true
+  },
+  {
+    "width": 430,
+    "localBottom": 2455,
+    "externalTop": 2458.649658203125,
+    "sameRow": true,
+    "waHeight": 44,
+    "cartHeight": 44,
+    "badgeOverAvatar": true
+  },
+  {
+    "width": 1440,
+    "localBottom": 1452.15625,
+    "externalTop": 1468.15625,
+    "sameRow": true,
+    "waHeight": 44,
+    "cartHeight": 44,
+    "badgeOverAvatar": false
+  }
+]

@@ -1,0 +1,47 @@
+--- src/ui/components/productos/feedProductCard.module.css (antes)
++++ src/ui/components/productos/feedProductCard.module.css (después)
+@@ -850,3 +850,44 @@
+     }
+   }
+ }
++
++/* Commercial row only: keep the title gutter and let the transparent action
++   targets use the right gutter. Their painted circles remain inset. */
++@media (max-width: 768px) {
++  .feed[data-feed-action-layout] .purchaseRow {
++    width: calc(100% + 10px);
++    margin-right: -10px;
++    column-gap: 2px;
++    row-gap: 0;
++  }
++  .feed .price {
++    white-space: nowrap;
++    overflow-wrap: normal;
++  }
++  /* Secondary variant text must not set the price block's intrinsic width.
++     Keep its full text in the DOM and cap the card preview at two lines. */
++  .feed .variantLabel {
++    contain: inline-size;
++    display: -webkit-box;
++    -webkit-box-orient: vertical;
++    -webkit-line-clamp: 2;
++    overflow: hidden;
++  }
++  .feed .desktopActions {
++    align-self: flex-start;
++  }
++  .feed .whatsapp::before,
++  .feed .cart::before {
++    inset: 7px;
++  }
++  @container feed-product-card (max-width: 250px) {
++    .feed[data-feed-action-layout] .purchaseRow {
++      /* Six-pixel price gutter; both 44px targets remain inside the card.
++         Their seven-pixel paint inset supplies the visible separation. */
++      width: calc(100% + 10px);
++      margin-left: -2px;
++      margin-right: -8px;
++      column-gap: 0;
++    }
++  }
++}

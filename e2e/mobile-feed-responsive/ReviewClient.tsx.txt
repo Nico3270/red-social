@@ -1,0 +1,30 @@
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import FeedRenderer from "@/publicaciones/componentes/FeedRederer";
+import FeedComponent from "@/feed/componentes/FeedComponent";
+import { ProductCard } from "@/ui/components/productos/ProductCard";
+import { usePreferencesStore } from "@/store/preferences/preferences-store";
+import { useCartCatalogoStore } from "@/store/carro/carro-store";
+import { useFavoritesCatalogoStore } from "@/store/favoritos/favoritos-store";
+import { makeFixtures } from "./fixtures";
+
+export default function ReviewClient() {
+  const query = useSearchParams();
+  const data = useMemo(()=>makeFixtures(new URLSearchParams(query.toString())),[query]);
+  const [tab,setTab] = useState<any>("Para ti");
+  const [count,setCount] = useState(6);
+  useEffect(()=>{
+    usePreferencesStore.getState().setUbicacion("Bogotá","Bogotá D.C.");
+    (window as any).__feedReview = {cart:useCartCatalogoStore,favorites:useFavoritesCatalogoStore,data};
+  },[data]);
+  const container = query.get("container");
+  return <div className="mb-20 w-full" style={container?{maxWidth:Number(container),marginInline:"auto"}:undefined}>
+    <div id="modal-root" />
+    {query.get("view")==="live" ? <FeedComponent discoveryContext="home"/> : query.get("view")==="cases" ? <main style={{display:"grid",gap:16,padding:12,minWidth:0}}>{data.cases.map(([name,p])=><section data-case={name} key={name as string} style={{minWidth:0,maxWidth:query.has("cardWidth")?Number(query.get("cardWidth")):undefined}}><h2>{name as string}</h2><ProductCard product={p as any} variant={(query.get("variant") || "feed") as any} feedActionLayout={query.get("actions")==="split"?"split":"separate"}/></section>)}</main> : <>
+      <FeedRenderer items={(query.has("empty")?[]:[...data.products.slice(0,query.has("one")?1:query.has("odd")?5:count).map(p=>data.item("product",p)),data.item("publication",data.publication),data.item("service",data.service),data.item("business",data.business)]) as any} hasMore={false} isLoadingNext={false} sentinelRef={()=>{}} activeTab={tab} onTabChange={setTab} discoveryContext={query.has("category")?"category":"home"} ciudad="Bogotá" categoriaIconName="home.png" productActionLayout={query.get("actions")==="split"?"split":"separate"}/>
+      <button data-review-append onClick={()=>setCount(6)}>Carga sintética de fixture</button>
+    </>}
+  </div>;
+}

@@ -1,0 +1,31 @@
+{
+  "actions": [
+    "getFeedDataByType:publications",
+    "getFeedDataByType:products",
+    "getFeedDataByType:services",
+    "getFeedDataByType:businesses",
+    "getFollowedBusinesses",
+    "getFeedDataByType:publications",
+    "getFeedDataByType:products",
+    "getFeedDataByType:services",
+    "getFeedDataByType:businesses",
+    "getFollowedBusinesses",
+    "checkIsFollowing",
+    "checkIsFollowing",
+    "checkIsFollowing",
+    "checkIsFollowing",
+    "checkIsFollowing",
+    "checkIsFollowing",
+    "toggleFollow",
+    "checkIsFollowing",
+    "toggleFollow",
+    "checkIsFollowing"
+  ],
+  "followAndUnfollow": true,
+  "favoriteAddAndRemove": true,
+  "keyboardEnterAndSpace": true,
+  "whatsappOpened": true,
+  "quantity": 2,
+  "variantStockClamp": 3,
+  "exhaustedDisabled": true
+}

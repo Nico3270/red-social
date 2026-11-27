@@ -1,0 +1,205 @@
+--- src/ui/components/productos/ProductCard.tsx (previous B)
++++ src/ui/components/productos/ProductCard.tsx (final actions)
+@@ -685,13 +685,13 @@
+                 href={`/perfil/${product.slugNegocio}`}
+                 className={isFeedVariant ? styles.businessName : `truncate text-md font-semibold text-gray-800 transition-colors duration-200 hover:text-blue-700 sm:text-sm ${tituloCard.className}`}
+               >
+-                {product.nombreNegocio}
++                {isFeedVariant ? <span className={styles.businessLabel}>{product.nombreNegocio}</span> : product.nombreNegocio}
+               </Link>
+             ) : (
+               <span
+                 className={isFeedVariant ? styles.businessName : `truncate text-md font-semibold text-gray-800 sm:text-sm ${tituloCard.className}`}
+               >
+-                {product.nombreNegocio ?? "Negocio"}
++                {isFeedVariant ? <span className={styles.businessLabel}>{product.nombreNegocio ?? "Negocio"}</span> : product.nombreNegocio ?? "Negocio"}
+               </span>
+             )}
+           </div>
+@@ -800,15 +800,6 @@
+           </div>
+         </Link>
+ 
+-        {isFeedVariant && (
+-          <div data-product-overlay className={styles.actionsDock}>
+-            <div className={styles.purchaseActions}>
+-              {feedActionLayout === "separate" && whatsAppAction}
+-              {cartAction}
+-            </div>
+-          </div>
+-        )}
+-
+         {isBusinessProfileVariant && (
+           <div className="absolute right-2.5 top-2.5 z-20">
+             <AddFavorites
+@@ -907,9 +898,6 @@
+               )}
+             </div>
+ 
+-            {isFeedVariant && feedActionLayout === "split" && (
+-              <div className={styles.secondaryContact}>{whatsAppAction}</div>
+-            )}
+             {purchaseActions}
+           </div>
+         </div>
+
+--- src/ui/components/productos/feedProductCard.module.css (previous B)
++++ src/ui/components/productos/feedProductCard.module.css (final actions)
+@@ -660,78 +660,112 @@
+   }
+ }
+ 
+-/* Social actions B: follow shares the avatar area; favorite stays on the image. */
++/* The label adds no desktop box; mobile can use two lines within the 44px header. */
++.businessLabel {
++  display: contents;
++}
++
++/* Final mobile actions: follow in the header, favorite on the top border,
++   and the original commercial actions beside the price. */
+ @media (max-width: 768px) {
+-  .business > div {
+-    width: 24px;
+-    height: 24px;
+-    margin-right: 20px;
++  .feed {
++    /* The grid's smallest row gap is 10px. Together these reserve a full 44px
++       target above the card, without covering the preceding row or the header. */
++    margin-top: 34px;
++  }
++  .businessName {
++    display: flex;
++    flex: 1;
++    align-items: center;
++    white-space: normal;
++    line-height: normal;
++  }
++  .businessLabel {
++    display: -webkit-box;
++    -webkit-box-orient: vertical;
++    -webkit-line-clamp: 2;
++    width: 100%;
++    min-width: 0;
++    overflow: hidden;
++    overflow-wrap: anywhere;
++    line-height: 18px;
+   }
+   .headerActions {
+-    display: contents;
++    flex: 0 0 44px;
+   }
+   .headerActions > button {
+-    position: absolute;
+-    z-index: 3;
+-    left: 10px;
+-    top: 0;
+-  }
+-  .headerActions > button::before {
+-    inset: auto 4px 4px auto;
+-    width: 20px;
+-    height: 20px;
+-    background: rgba(255, 255, 255, 0.96);
+-    box-shadow: 0 1px 3px #1c283c1a;
+-  }
+-  .headerActions > button > span {
+-    position: absolute;
+-    right: 8px;
+-    bottom: 8px;
+-    width: 12px;
+-    height: 12px;
+-  }
+-  .headerActions > button > span svg {
+-    width: 12px;
+-    height: 12px;
++    flex-shrink: 0;
+   }
+   .favorite {
+     position: absolute;
+     z-index: 3;
+-    top: 50px;
+-    right: 6px;
++    top: -44px;
++    right: 15px;
+     width: 44px;
+     height: 44px;
+   }
+   .favorite button {
+-    display: inline-flex;
+-    align-items: center;
+-    justify-content: center;
+     position: relative;
+     isolation: isolate;
+-    padding: 0;
++    display: inline-flex;
++    align-items: flex-end;
++    justify-content: center;
++    padding: 0 0 4px;
+   }
+   .favorite button::before {
+     position: absolute;
+     z-index: -1;
+-    inset: 6px;
+-    border-radius: 50%;
+-    background: rgba(255, 255, 255, 0.96);
+-    box-shadow: 0 1px 3px #1c283c1a;
++    inset: auto 0 0;
++    height: 28px;
++    border: 1px solid #e2b8c2;
++    border-bottom: 0;
++    border-radius: 12px 12px 0 0;
++    background: white;
++    box-shadow: 0 -1px 3px #2c2f3308;
+     content: "";
++  }
++  .feed .favorite button:focus-visible {
++    outline-offset: -2px;
+   }
+   .feed .socialBadges {
+     top: 8px;
+     left: 8px;
+-    right: 56px;
+-    max-width: calc(100% - 64px);
++    right: 8px;
++    max-width: calc(100% - 16px);
+     gap: 4px;
+   }
+   .socialBadges > span {
+     padding-block: 2px;
+   }
++  .feed[data-feed-action-layout] .content {
++    padding-block: 8px;
++  }
++  .feed[data-feed-action-layout] .purchaseRow {
++    display: flex;
++    flex-wrap: wrap;
++    align-items: center;
++    gap: 0;
++    width: 100%;
++    min-width: 0;
++  }
++  .feed .priceBlock {
++    flex: 1 1 max-content;
++    max-width: 100%;
++    min-width: 0;
++  }
++  .feed .desktopActions {
++    display: flex;
++    flex: 0 0 auto;
++    gap: 0;
++    margin-left: auto;
++  }
++  .feed .whatsapp::before {
++    background: transparent;
++    box-shadow: none;
++  }
+   @container feed-product-card (max-width: 250px) {
+-    .headerActions > button {
+-      left: 6px;
+-    }
+-  }
+-}
++    .businessLabel {
++      line-height: 16px;
++    }
++  }
++}

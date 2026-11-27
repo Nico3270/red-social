@@ -1,0 +1,22 @@
+{
+  "beforeCount": 620,
+  "afterCount": 620,
+  "modified": [
+    "src/ui/components/productos/ProductCard.tsx",
+    "src/ui/components/productos/feedProductCard.module.css"
+  ],
+  "unchanged": 618,
+  "added": [],
+  "removed": [],
+  "productCardOnlyBadgeClassChanged": true,
+  "originalCssPreservedAsPrefix": true,
+  "followButtonAndFavoriteComponentIdentical": true,
+  "selectedLayout": "B",
+  "runtimeSelectorAdded": false,
+  "afterSha256": {
+    "src/ui/components/productos/ProductCard.tsx": "21e964a75512ed1581ccbee0b507b19845849966630d8977f21515923c351812",
+    "src/ui/components/productos/feedProductCard.module.css": "292c1ec5f2cc211999dbd54f8dac97c3cb0b530ac0f07104228799f4eb1dc970"
+  },
+  "serverPid": 647629,
+  "serverCwd": "/home/nico/red-social"
+}

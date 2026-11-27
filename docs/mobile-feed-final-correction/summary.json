@@ -1,0 +1,606 @@
+[
+  {
+    "width": 320,
+    "scrollY": 171,
+    "cards": [
+      {
+        "id": "p1",
+        "beforeHeight": 255.5625,
+        "afterHeight": 275.5625,
+        "priceSize": "18px",
+        "commercialGap": 4,
+        "titleHeight": 20
+      },
+      {
+        "id": "p2",
+        "beforeHeight": 255.5625,
+        "afterHeight": 275.5625,
+        "priceSize": "18px",
+        "commercialGap": 4,
+        "titleHeight": 20
+      },
+      {
+        "id": "p3",
+        "beforeHeight": 255.5625,
+        "afterHeight": 275.5625,
+        "priceSize": "18px",
+        "commercialGap": 4,
+        "titleHeight": 20
+      },
+      {
+        "id": "p4",
+        "beforeHeight": 271.5625,
+        "afterHeight": 291.5625,
+        "priceSize": "18px",
+        "commercialGap": 4,
+        "titleHeight": 20
+      },
+      {
+        "id": "p5",
+        "beforeHeight": 255.5625,
+        "afterHeight": 275.5625,
+        "priceSize": "18px",
+        "commercialGap": 4,
+        "titleHeight": 20
+      },
+      {
+        "id": "p6",
+        "beforeHeight": 255.5625,
+        "afterHeight": 275.5625,
+        "priceSize": "18px",
+        "commercialGap": 4,
+        "titleHeight": 20
+      },
+      {
+        "id": "p7",
+        "beforeHeight": 255.5625,
+        "afterHeight": 295.5625,
+        "priceSize": "18px",
+        "commercialGap": 4,
+        "titleHeight": 40
+      },
+      {
+        "id": "p8",
+        "beforeHeight": 255.5625,
+        "afterHeight": 275.5625,
+        "priceSize": "18px",
+        "commercialGap": 4,
+        "titleHeight": 20
+      }
+    ],
+    "fullProductsBefore": 2,
+    "fullProductsAfter": 2,
+    "photoDifferentPixels": [
+      0,
+      0
+    ],
+    "desktopDifferentPixels": null
+  },
+  {
+    "width": 390,
+    "scrollY": 171,
+    "cards": [
+      {
+        "id": "p1",
+        "beforeHeight": 310,
+        "afterHeight": 292,
+        "priceSize": "16px",
+        "commercialGap": 4,
+        "titleHeight": 20
+      },
+      {
+        "id": "p2",
+        "beforeHeight": 310,
+        "afterHeight": 312,
+        "priceSize": "16px",
+        "commercialGap": 4,
+        "titleHeight": 40
+      },
+      {
+        "id": "p3",
+        "beforeHeight": 293.390625,
+        "afterHeight": 313.390625,
+        "priceSize": "18px",
+        "commercialGap": 4,
+        "titleHeight": 20
+      },
+      {
+        "id": "p4",
+        "beforeHeight": 326,
+        "afterHeight": 308,
+        "priceSize": "16px",
+        "commercialGap": 4,
+        "titleHeight": 20
+      },
+      {
+        "id": "p5",
+        "beforeHeight": 310,
+        "afterHeight": 292,
+        "priceSize": "16px",
+        "commercialGap": 4,
+        "titleHeight": 20
+      },
+      {
+        "id": "p6",
+        "beforeHeight": 310,
+        "afterHeight": 292,
+        "priceSize": "16px",
+        "commercialGap": 4,
+        "titleHeight": 20
+      },
+      {
+        "id": "p7",
+        "beforeHeight": 310,
+        "afterHeight": 312,
+        "priceSize": "16px",
+        "commercialGap": 4,
+        "titleHeight": 40
+      },
+      {
+        "id": "p8",
+        "beforeHeight": 293.390625,
+        "afterHeight": 313.390625,
+        "priceSize": "18px",
+        "commercialGap": 4,
+        "titleHeight": 20
+      }
+    ],
+    "fullProductsBefore": 3,
+    "fullProductsAfter": 3,
+    "photoDifferentPixels": [
+      0,
+      0
+    ],
+    "desktopDifferentPixels": null
+  },
+  {
+    "width": 430,
+    "scrollY": 171,
+    "cards": [
+      {
+        "id": "p1",
+        "beforeHeight": 316,
+        "afterHeight": 298,
+        "priceSize": "16px",
+        "commercialGap": 4,
+        "titleHeight": 20
+      },
+      {
+        "id": "p2",
+        "beforeHeight": 316,
+        "afterHeight": 318,
+        "priceSize": "16px",
+        "commercialGap": 4,
+        "titleHeight": 40
+      },
+      {
+        "id": "p3",
+        "beforeHeight": 302,
+        "afterHeight": 322,
+        "priceSize": "18px",
+        "commercialGap": 4,
+        "titleHeight": 20
+      },
+      {
+        "id": "p4",
+        "beforeHeight": 332,
+        "afterHeight": 314,
+        "priceSize": "16px",
+        "commercialGap": 4,
+        "titleHeight": 20
+      },
+      {
+        "id": "p5",
+        "beforeHeight": 316,
+        "afterHeight": 298,
+        "priceSize": "16px",
+        "commercialGap": 4,
+        "titleHeight": 20
+      },
+      {
+        "id": "p6",
+        "beforeHeight": 316,
+        "afterHeight": 298,
+        "priceSize": "16px",
+        "commercialGap": 4,
+        "titleHeight": 20
+      },
+      {
+        "id": "p7",
+        "beforeHeight": 316,
+        "afterHeight": 318,
+        "priceSize": "16px",
+        "commercialGap": 4,
+        "titleHeight": 40
+      },
+      {
+        "id": "p8",
+        "beforeHeight": 302,
+        "afterHeight": 322,
+        "priceSize": "18px",
+        "commercialGap": 4,
+        "titleHeight": 20
+      }
+    ],
+    "fullProductsBefore": 3,
+    "fullProductsAfter": 3,
+    "photoDifferentPixels": [
+      71,
+      110
+    ],
+    "desktopDifferentPixels": null
+  },
+  {
+    "width": 768,
+    "scrollY": 203,
+    "cards": [
+      {
+        "id": "p1",
+        "beforeHeight": 287.453125,
+        "afterHeight": 307.453125,
+        "priceSize": "16px",
+        "commercialGap": 4,
+        "titleHeight": 20
+      },
+      {
+        "id": "p2",
+        "beforeHeight": 287.453125,
+        "afterHeight": 307.453125,
+        "priceSize": "16px",
+        "commercialGap": 4,
+        "titleHeight": 20
+      },
+      {
+        "id": "p3",
+        "beforeHeight": 302,
+        "afterHeight": 322,
+        "priceSize": "18px",
+        "commercialGap": 4,
+        "titleHeight": 20
+      },
+      {
+        "id": "p4",
+        "beforeHeight": 303.453125,
+        "afterHeight": 323.453125,
+        "priceSize": "16px",
+        "commercialGap": 4,
+        "titleHeight": 20
+      },
+      {
+        "id": "p5",
+        "beforeHeight": 287.453125,
+        "afterHeight": 307.453125,
+        "priceSize": "16px",
+        "commercialGap": 4,
+        "titleHeight": 20
+      },
+      {
+        "id": "p6",
+        "beforeHeight": 287.453125,
+        "afterHeight": 307.453125,
+        "priceSize": "16px",
+        "commercialGap": 4,
+        "titleHeight": 20
+      },
+      {
+        "id": "p7",
+        "beforeHeight": 287.453125,
+        "afterHeight": 327.453125,
+        "priceSize": "16px",
+        "commercialGap": 4,
+        "titleHeight": 40
+      },
+      {
+        "id": "p8",
+        "beforeHeight": 302,
+        "afterHeight": 322,
+        "priceSize": "18px",
+        "commercialGap": 4,
+        "titleHeight": 20
+      }
+    ],
+    "fullProductsBefore": 3,
+    "fullProductsAfter": 3,
+    "photoDifferentPixels": [
+      0,
+      0
+    ],
+    "desktopDifferentPixels": null
+  },
+  {
+    "width": 1024,
+    "scrollY": 98,
+    "cards": [
+      {
+        "id": "p1",
+        "beforeHeight": 436.59375,
+        "afterHeight": 436.59375,
+        "priceSize": "22px",
+        "commercialGap": 40.25,
+        "titleHeight": 21.59375
+      },
+      {
+        "id": "p2",
+        "beforeHeight": 436.59375,
+        "afterHeight": 436.59375,
+        "priceSize": "22px",
+        "commercialGap": 40.25,
+        "titleHeight": 21.59375
+      },
+      {
+        "id": "p3",
+        "beforeHeight": 436.59375,
+        "afterHeight": 436.59375,
+        "priceSize": "22px",
+        "commercialGap": 40.25,
+        "titleHeight": 21.59375
+      },
+      {
+        "id": "p4",
+        "beforeHeight": 436.59375,
+        "afterHeight": 436.59375,
+        "priceSize": "22px",
+        "commercialGap": 32.25,
+        "titleHeight": 21.59375
+      },
+      {
+        "id": "p5",
+        "beforeHeight": 436.59375,
+        "afterHeight": 436.59375,
+        "priceSize": "22px",
+        "commercialGap": 40.25,
+        "titleHeight": 21.59375
+      },
+      {
+        "id": "p6",
+        "beforeHeight": 436.59375,
+        "afterHeight": 436.59375,
+        "priceSize": "22px",
+        "commercialGap": 40.25,
+        "titleHeight": 21.59375
+      },
+      {
+        "id": "p7",
+        "beforeHeight": 458.1875,
+        "afterHeight": 458.1875,
+        "priceSize": "22px",
+        "commercialGap": 40.25,
+        "titleHeight": 43.1875
+      },
+      {
+        "id": "p8",
+        "beforeHeight": 455.59375,
+        "afterHeight": 455.59375,
+        "priceSize": "22px",
+        "commercialGap": 40.25,
+        "titleHeight": 21.59375
+      }
+    ],
+    "fullProductsBefore": 2,
+    "fullProductsAfter": 2,
+    "photoDifferentPixels": [],
+    "desktopDifferentPixels": 0
+  },
+  {
+    "width": 1280,
+    "scrollY": 98,
+    "cards": [
+      {
+        "id": "p1",
+        "beforeHeight": 382.953125,
+        "afterHeight": 382.953125,
+        "priceSize": "22px",
+        "commercialGap": 40.25,
+        "titleHeight": 21.59375
+      },
+      {
+        "id": "p2",
+        "beforeHeight": 382.96875,
+        "afterHeight": 382.96875,
+        "priceSize": "22px",
+        "commercialGap": 40.25,
+        "titleHeight": 21.59375
+      },
+      {
+        "id": "p3",
+        "beforeHeight": 382.953125,
+        "afterHeight": 382.953125,
+        "priceSize": "22px",
+        "commercialGap": 40.25,
+        "titleHeight": 21.59375
+      },
+      {
+        "id": "p4",
+        "beforeHeight": 450.09375,
+        "afterHeight": 450.09375,
+        "priceSize": "22px",
+        "commercialGap": 32.25,
+        "titleHeight": 21.59375
+      },
+      {
+        "id": "p5",
+        "beforeHeight": 450.09375,
+        "afterHeight": 450.09375,
+        "priceSize": "22px",
+        "commercialGap": 40.25,
+        "titleHeight": 21.59375
+      },
+      {
+        "id": "p6",
+        "beforeHeight": 450.09375,
+        "afterHeight": 450.09375,
+        "priceSize": "22px",
+        "commercialGap": 40.25,
+        "titleHeight": 21.59375
+      },
+      {
+        "id": "p7",
+        "beforeHeight": 471.6875,
+        "afterHeight": 471.6875,
+        "priceSize": "22px",
+        "commercialGap": 40.25,
+        "titleHeight": 43.1875
+      },
+      {
+        "id": "p8",
+        "beforeHeight": 455.59375,
+        "afterHeight": 455.59375,
+        "priceSize": "22px",
+        "commercialGap": 40.25,
+        "titleHeight": 21.59375
+      }
+    ],
+    "fullProductsBefore": 3,
+    "fullProductsAfter": 3,
+    "photoDifferentPixels": [],
+    "desktopDifferentPixels": 0
+  },
+  {
+    "width": 1440,
+    "scrollY": 98,
+    "cards": [
+      {
+        "id": "p1",
+        "beforeHeight": 412.96875,
+        "afterHeight": 412.96875,
+        "priceSize": "22px",
+        "commercialGap": 40.25,
+        "titleHeight": 21.59375
+      },
+      {
+        "id": "p2",
+        "beforeHeight": 412.96875,
+        "afterHeight": 412.96875,
+        "priceSize": "22px",
+        "commercialGap": 40.25,
+        "titleHeight": 21.59375
+      },
+      {
+        "id": "p3",
+        "beforeHeight": 412.96875,
+        "afterHeight": 412.96875,
+        "priceSize": "22px",
+        "commercialGap": 40.25,
+        "titleHeight": 21.59375
+      },
+      {
+        "id": "p4",
+        "beforeHeight": 450.09375,
+        "afterHeight": 450.09375,
+        "priceSize": "22px",
+        "commercialGap": 32.25,
+        "titleHeight": 21.59375
+      },
+      {
+        "id": "p5",
+        "beforeHeight": 450.09375,
+        "afterHeight": 450.09375,
+        "priceSize": "22px",
+        "commercialGap": 40.25,
+        "titleHeight": 21.59375
+      },
+      {
+        "id": "p6",
+        "beforeHeight": 450.09375,
+        "afterHeight": 450.09375,
+        "priceSize": "22px",
+        "commercialGap": 40.25,
+        "titleHeight": 21.59375
+      },
+      {
+        "id": "p7",
+        "beforeHeight": 471.6875,
+        "afterHeight": 471.6875,
+        "priceSize": "22px",
+        "commercialGap": 40.25,
+        "titleHeight": 43.1875
+      },
+      {
+        "id": "p8",
+        "beforeHeight": 455.59375,
+        "afterHeight": 455.59375,
+        "priceSize": "22px",
+        "commercialGap": 40.25,
+        "titleHeight": 21.59375
+      }
+    ],
+    "fullProductsBefore": 3,
+    "fullProductsAfter": 3,
+    "photoDifferentPixels": [],
+    "desktopDifferentPixels": 0
+  },
+  {
+    "width": 1920,
+    "scrollY": 98,
+    "cards": [
+      {
+        "id": "p1",
+        "beforeHeight": 455.59375,
+        "afterHeight": 455.59375,
+        "priceSize": "22px",
+        "commercialGap": 40.25,
+        "titleHeight": 21.59375
+      },
+      {
+        "id": "p2",
+        "beforeHeight": 455.59375,
+        "afterHeight": 455.59375,
+        "priceSize": "22px",
+        "commercialGap": 40.25,
+        "titleHeight": 21.59375
+      },
+      {
+        "id": "p3",
+        "beforeHeight": 455.59375,
+        "afterHeight": 455.59375,
+        "priceSize": "22px",
+        "commercialGap": 40.25,
+        "titleHeight": 21.59375
+      },
+      {
+        "id": "p4",
+        "beforeHeight": 450.09375,
+        "afterHeight": 450.09375,
+        "priceSize": "22px",
+        "commercialGap": 32.25,
+        "titleHeight": 21.59375
+      },
+      {
+        "id": "p5",
+        "beforeHeight": 450.09375,
+        "afterHeight": 450.09375,
+        "priceSize": "22px",
+        "commercialGap": 40.25,
+        "titleHeight": 21.59375
+      },
+      {
+        "id": "p6",
+        "beforeHeight": 450.09375,
+        "afterHeight": 450.09375,
+        "priceSize": "22px",
+        "commercialGap": 40.25,
+        "titleHeight": 21.59375
+      },
+      {
+        "id": "p7",
+        "beforeHeight": 471.6875,
+        "afterHeight": 471.6875,
+        "priceSize": "22px",
+        "commercialGap": 40.25,
+        "titleHeight": 43.1875
+      },
+      {
+        "id": "p8",
+        "beforeHeight": 455.59375,
+        "afterHeight": 455.59375,
+        "priceSize": "22px",
+        "commercialGap": 40.25,
+        "titleHeight": 21.59375
+      }
+    ],
+    "fullProductsBefore": 3,
+    "fullProductsAfter": 3,
+    "photoDifferentPixels": [],
+    "desktopDifferentPixels": 0
+  }
+]

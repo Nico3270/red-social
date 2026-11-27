@@ -1,6 +1,8 @@
 "use server";
 
+import { requireSuperAdmin } from "@/lib/business/productAccess";
 import { auth } from "@/auth.config";
+import { z } from "zod";
 import prisma from "@/lib/prisma";
 
 export interface AdminProductCreationBusiness {
@@ -15,6 +17,7 @@ export interface AdminProductCreationBusiness {
 
 export interface GetBusinessesForProductCreationActionInput {
   limit?: number;
+  selectedId?: string;
 }
 
 export interface GetBusinessesForProductCreationActionResult {
@@ -43,7 +46,7 @@ function buildTraceId() {
 }
 
 export async function getBusinessesForProductCreationAction(
-  input: GetBusinessesForProductCreationActionInput = {}
+  input: GetBusinessesForProductCreationActionInput = {},
 ): Promise<GetBusinessesForProductCreationActionResult> {
   const traceId = buildTraceId();
   const startedAt = Date.now();
@@ -53,7 +56,7 @@ export async function getBusinessesForProductCreationAction(
 
     if (!session?.user?.id) {
       console.warn(
-        `[getBusinessesForProductCreationAction][${traceId}] Sesión no válida`
+        `[getBusinessesForProductCreationAction][${traceId}] Sesión no válida`,
       );
 
       return {
@@ -69,7 +72,7 @@ export async function getBusinessesForProductCreationAction(
         {
           userId: session.user.id,
           role: session.user.role,
-        }
+        },
       );
 
       return {
@@ -79,6 +82,17 @@ export async function getBusinessesForProductCreationAction(
       };
     }
 
+    await requireSuperAdmin();
+
+    if (
+      input.selectedId !== undefined &&
+      !z.string().uuid().safeParse(input.selectedId).success
+    )
+      return {
+        ok: false,
+        data: null,
+        error: "Identificador de negocio inválido.",
+      };
     const limit = normalizeLimit(input.limit);
 
     const items = await prisma.negocio.findMany({
@@ -95,12 +109,27 @@ export async function getBusinessesForProductCreationAction(
       },
     });
 
+    if (input.selectedId && !items.some((b) => b.id === input.selectedId)) {
+      const selected = await prisma.negocio.findUnique({
+        where: { id: input.selectedId },
+        select: {
+          id: true,
+          nombre: true,
+          slug: true,
+          descripcion: true,
+          estado: true,
+          isTestData: true,
+          archivedAt: true,
+        },
+      });
+      if (selected) items.unshift(selected);
+    }
     const truncated = items.length > limit;
     const returnedItems = (truncated ? items.slice(0, limit) : items).map(
       (business) => ({
         ...business,
         archivedAt: business.archivedAt?.toISOString() ?? null,
-      })
+      }),
     );
 
     console.info(
@@ -110,7 +139,7 @@ export async function getBusinessesForProductCreationAction(
         returnedItems: returnedItems.length,
         truncated,
         elapsedMs: Date.now() - startedAt,
-      }
+      },
     );
 
     return {
@@ -129,7 +158,7 @@ export async function getBusinessesForProductCreationAction(
       {
         error,
         elapsedMs: Date.now() - startedAt,
-      }
+      },
     );
 
     return {

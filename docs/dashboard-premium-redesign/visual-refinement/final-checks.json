@@ -1,0 +1,27 @@
+{
+  "brokenReportLinks": [],
+  "sourceChangesAfterValidation": [],
+  "changedProductFiles": [
+    "src/dashboard/componentes/DashboardSections.tsx",
+    "src/dashboard/componentes/dashboardMenu.module.css"
+  ],
+  "preservedFiles": 795,
+  "viewports": [
+    320,
+    360,
+    390,
+    430,
+    768,
+    1024,
+    1440
+  ],
+  "businessDestinations": 11,
+  "adminDestinations": 2,
+  "helpChecks": 13,
+  "dialogSubtreeIdentical": true,
+  "errors": [],
+  "comparisons": 2,
+  "capturesBefore": 10,
+  "capturesAfter": 10,
+  "readyMarker": true
+}

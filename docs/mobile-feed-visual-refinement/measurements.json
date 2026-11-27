@@ -1,0 +1,4531 @@
+{
+  "capturedAt": "2026-11-15T21:36:45.219Z",
+  "measurements": [
+    {
+      "case": "comparison",
+      "width": 320,
+      "compared": [
+        {
+          "version": "original",
+          "initial": {
+            "viewport": {
+              "width": 320,
+              "height": 844
+            },
+            "header": 113,
+            "bottomNavigation": 69,
+            "usableHeight": 662,
+            "overflow": false,
+            "cards": [
+              {
+                "kind": "product",
+                "height": 480,
+                "width": 312,
+                "top": 622,
+                "mediaHeight": 256,
+                "headerHeight": 36,
+                "visible": 153,
+                "full": false,
+                "controlProblems": [
+                  {
+                    "label": "Seguir",
+                    "problem": "small-target"
+                  },
+                  {
+                    "label": "",
+                    "problem": "small-target"
+                  }
+                ]
+              },
+              {
+                "kind": "product",
+                "height": 480,
+                "width": 312,
+                "top": 1114,
+                "mediaHeight": 256,
+                "headerHeight": 36,
+                "visible": 0,
+                "full": false,
+                "controlProblems": [
+                  {
+                    "label": "Seguir",
+                    "problem": "small-target"
+                  },
+                  {
+                    "label": "",
+                    "problem": "small-target"
+                  }
+                ]
+              },
+              {
+                "kind": "product",
+                "height": 480,
+                "width": 312,
+                "top": 1606,
+                "mediaHeight": 256,
+                "headerHeight": 36,
+                "visible": 0,
+                "full": false,
+                "controlProblems": [
+                  {
+                    "label": "Seguir",
+                    "problem": "small-target"
+                  },
+                  {
+                    "label": "",
+                    "problem": "small-target"
+                  }
+                ]
+              },
+              {
+                "kind": "publication",
+                "height": 516,
+                "width": 286,
+                "top": 2299.5,
+                "mediaHeight": 177.5,
+                "headerHeight": 96.5,
+                "visible": 0,
+                "full": false,
+                "controlProblems": [
+                  {
+                    "label": "Ver publicación",
+                    "problem": "small-target"
+                  }
+                ]
+              },
+              {
+                "kind": "business",
+                "height": 461,
+                "width": 286,
+                "top": 3014,
+                "mediaHeight": 162.5,
+                "headerHeight": 76.5,
+                "visible": 0,
+                "full": false,
+                "controlProblems": [
+                  {
+                    "label": "Seguir",
+                    "problem": "small-target"
+                  },
+                  {
+                    "label": "WhatsApp",
+                    "problem": "small-target"
+                  }
+                ]
+              },
+              {
+                "kind": "service",
+                "height": 497.8,
+                "width": 286,
+                "top": 3697.5,
+                "mediaHeight": 161.3,
+                "headerHeight": 114.5,
+                "visible": 0,
+                "full": false,
+                "controlProblems": [
+                  {
+                    "label": "WhatsApp",
+                    "problem": "small-target"
+                  }
+                ]
+              }
+            ]
+          },
+          "aligned": {
+            "viewport": {
+              "width": 320,
+              "height": 844
+            },
+            "header": 113,
+            "bottomNavigation": 69,
+            "usableHeight": 662,
+            "overflow": false,
+            "cards": [
+              {
+                "kind": "product",
+                "height": 480,
+                "width": 312,
+                "top": 622,
+                "mediaHeight": 256,
+                "headerHeight": 36,
+                "visible": 480,
+                "full": true,
+                "controlProblems": [
+                  {
+                    "label": "Seguir",
+                    "problem": "small-target"
+                  },
+                  {
+                    "label": "",
+                    "problem": "small-target"
+                  }
+                ]
+              },
+              {
+                "kind": "product",
+                "height": 480,
+                "width": 312,
+                "top": 1114,
+                "mediaHeight": 256,
+                "headerHeight": 36,
+                "visible": 162,
+                "full": false,
+                "controlProblems": [
+                  {
+                    "label": "Seguir",
+                    "problem": "small-target"
+                  },
+                  {
+                    "label": "",
+                    "problem": "small-target"
+                  }
+                ]
+              },
+              {
+                "kind": "product",
+                "height": 480,
+                "width": 312,
+                "top": 1606,
+                "mediaHeight": 256,
+                "headerHeight": 36,
+                "visible": 0,
+                "full": false,
+                "controlProblems": [
+                  {
+                    "label": "Seguir",
+                    "problem": "small-target"
+                  },
+                  {
+                    "label": "",
+                    "problem": "small-target"
+                  }
+                ]
+              },
+              {
+                "kind": "publication",
+                "height": 516,
+                "width": 286,
+                "top": 2299.5,
+                "mediaHeight": 177.5,
+                "headerHeight": 96.5,
+                "visible": 0,
+                "full": false,
+                "controlProblems": [
+                  {
+                    "label": "Ver publicación",
+                    "problem": "small-target"
+                  }
+                ]
+              },
+              {
+                "kind": "business",
+                "height": 461,
+                "width": 286,
+                "top": 3014,
+                "mediaHeight": 162.5,
+                "headerHeight": 76.5,
+                "visible": 0,
+                "full": false,
+                "controlProblems": [
+                  {
+                    "label": "Seguir",
+                    "problem": "small-target"
+                  },
+                  {
+                    "label": "WhatsApp",
+                    "problem": "small-target"
+                  }
+                ]
+              },
+              {
+                "kind": "service",
+                "height": 497.8,
+                "width": 286,
+                "top": 3697.5,
+                "mediaHeight": 161.3,
+                "headerHeight": 114.5,
+                "visible": 0,
+                "full": false,
+                "controlProblems": [
+                  {
+                    "label": "WhatsApp",
+                    "problem": "small-target"
+                  }
+                ]
+              }
+            ]
+          },
+          "product": {
+            "height": 480,
+            "imageHeight": 256,
+            "imageWidth": 294,
+            "viewportPercent": 56.872037914691944,
+            "shape": null,
+            "objectFit": "cover",
+            "scale": 1,
+            "sourceDimensions": [
+              640,
+              640
+            ],
+            "retainedSourceArea": 0.8707482993197279,
+            "renderedWidth": 294,
+            "renderedHeight": 294,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 32,
+                "height": 32,
+                "inside": true
+              },
+              {
+                "label": null,
+                "width": 36,
+                "height": 36,
+                "inside": true
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café de origen · 250 g",
+                "width": 48,
+                "height": 48,
+                "inside": true
+              },
+              {
+                "label": "Agregar Café de origen · 250 g al carrito",
+                "width": 48,
+                "height": 48,
+                "inside": true
+              }
+            ],
+            "prices": [
+              {
+                "text": "$ 28.000",
+                "inside": true
+              }
+            ]
+          }
+        },
+        {
+          "version": "b",
+          "initial": {
+            "viewport": {
+              "width": 320,
+              "height": 844
+            },
+            "header": 113,
+            "bottomNavigation": 69,
+            "usableHeight": 662,
+            "overflow": false,
+            "cards": [
+              {
+                "kind": "product",
+                "height": 341,
+                "width": 312,
+                "top": 292,
+                "mediaHeight": 165.4,
+                "headerHeight": 44,
+                "visible": 341,
+                "full": true,
+                "controlProblems": []
+              },
+              {
+                "kind": "product",
+                "height": 341,
+                "width": 312,
+                "top": 645,
+                "mediaHeight": 165.4,
+                "headerHeight": 44,
+                "visible": 130,
+                "full": false,
+                "controlProblems": []
+              },
+              {
+                "kind": "product",
+                "height": 341,
+                "width": 312,
+                "top": 997.9,
+                "mediaHeight": 165.4,
+                "headerHeight": 44,
+                "visible": 0,
+                "full": false,
+                "controlProblems": []
+              },
+              {
+                "kind": "publication",
+                "height": 399.8,
+                "width": 312,
+                "top": 1378.9,
+                "mediaHeight": 193.8,
+                "headerHeight": 66,
+                "visible": 0,
+                "full": false,
+                "controlProblems": []
+              },
+              {
+                "kind": "business",
+                "height": 343.1,
+                "width": 312,
+                "top": 1818.7,
+                "mediaHeight": 163.1,
+                "headerHeight": 58,
+                "visible": 0,
+                "full": false,
+                "controlProblems": []
+              },
+              {
+                "kind": "service",
+                "height": 216,
+                "width": 312,
+                "top": 2201.8,
+                "mediaHeight": 88,
+                "headerHeight": 94,
+                "visible": 0,
+                "full": false,
+                "controlProblems": []
+              }
+            ]
+          },
+          "aligned": {
+            "viewport": {
+              "width": 320,
+              "height": 844
+            },
+            "header": 113,
+            "bottomNavigation": 69,
+            "usableHeight": 662,
+            "overflow": false,
+            "cards": [
+              {
+                "kind": "product",
+                "height": 341,
+                "width": 312,
+                "top": 292,
+                "mediaHeight": 165.4,
+                "headerHeight": 44,
+                "visible": 341,
+                "full": true,
+                "controlProblems": []
+              },
+              {
+                "kind": "product",
+                "height": 341,
+                "width": 312,
+                "top": 645,
+                "mediaHeight": 165.4,
+                "headerHeight": 44,
+                "visible": 301,
+                "full": false,
+                "controlProblems": []
+              },
+              {
+                "kind": "product",
+                "height": 341,
+                "width": 312,
+                "top": 997.9,
+                "mediaHeight": 165.4,
+                "headerHeight": 44,
+                "visible": 0,
+                "full": false,
+                "controlProblems": []
+              },
+              {
+                "kind": "publication",
+                "height": 399.8,
+                "width": 312,
+                "top": 1378.9,
+                "mediaHeight": 193.8,
+                "headerHeight": 66,
+                "visible": 0,
+                "full": false,
+                "controlProblems": []
+              },
+              {
+                "kind": "business",
+                "height": 343.1,
+                "width": 312,
+                "top": 1818.7,
+                "mediaHeight": 163.1,
+                "headerHeight": 58,
+                "visible": 0,
+                "full": false,
+                "controlProblems": []
+              },
+              {
+                "kind": "service",
+                "height": 216,
+                "width": 312,
+                "top": 2201.8,
+                "mediaHeight": 88,
+                "headerHeight": 94,
+                "visible": 0,
+                "full": false,
+                "controlProblems": []
+              }
+            ]
+          },
+          "product": {
+            "height": 340.96875,
+            "imageHeight": 165.375,
+            "imageWidth": 294,
+            "viewportPercent": 40.399140995260666,
+            "shape": null,
+            "objectFit": "contain",
+            "scale": 1,
+            "sourceDimensions": [
+              640,
+              640
+            ],
+            "retainedSourceArea": 1,
+            "renderedWidth": 165.375,
+            "renderedHeight": 165.375,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              },
+              {
+                "label": "Guardar Café de origen · 250 g en favoritos",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café de origen · 250 g",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              },
+              {
+                "label": "Agregar Café de origen · 250 g al carrito",
+                "width": 104.625,
+                "height": 44,
+                "inside": true
+              }
+            ],
+            "prices": [
+              {
+                "text": "$ 28.000",
+                "inside": true
+              }
+            ]
+          }
+        },
+        {
+          "version": "b2",
+          "initial": {
+            "viewport": {
+              "width": 320,
+              "height": 844
+            },
+            "header": 113,
+            "bottomNavigation": 69,
+            "usableHeight": 662,
+            "overflow": false,
+            "cards": [
+              {
+                "kind": "product",
+                "height": 273.6,
+                "width": 312,
+                "top": 292,
+                "mediaHeight": 167.6,
+                "headerHeight": 44,
+                "visible": 273.6,
+                "full": true,
+                "controlProblems": []
+              },
+              {
+                "kind": "product",
+                "height": 273.6,
+                "width": 312,
+                "top": 577.6,
+                "mediaHeight": 167.6,
+                "headerHeight": 44,
+                "visible": 197.4,
+                "full": false,
+                "controlProblems": []
+              },
+              {
+                "kind": "product",
+                "height": 273.6,
+                "width": 312,
+                "top": 863.1,
+                "mediaHeight": 167.6,
+                "headerHeight": 44,
+                "visible": 0,
+                "full": false,
+                "controlProblems": []
+              },
+              {
+                "kind": "publication",
+                "height": 399.8,
+                "width": 312,
+                "top": 1176.7,
+                "mediaHeight": 193.8,
+                "headerHeight": 66,
+                "visible": 0,
+                "full": false,
+                "controlProblems": []
+              },
+              {
+                "kind": "business",
+                "height": 343.1,
+                "width": 312,
+                "top": 1616.4,
+                "mediaHeight": 163.1,
+                "headerHeight": 58,
+                "visible": 0,
+                "full": false,
+                "controlProblems": []
+              },
+              {
+                "kind": "service",
+                "height": 216,
+                "width": 312,
+                "top": 1999.6,
+                "mediaHeight": 88,
+                "headerHeight": 94,
+                "visible": 0,
+                "full": false,
+                "controlProblems": []
+              }
+            ]
+          },
+          "aligned": {
+            "viewport": {
+              "width": 320,
+              "height": 844
+            },
+            "header": 113,
+            "bottomNavigation": 69,
+            "usableHeight": 662,
+            "overflow": false,
+            "cards": [
+              {
+                "kind": "product",
+                "height": 273.6,
+                "width": 312,
+                "top": 292,
+                "mediaHeight": 167.6,
+                "headerHeight": 44,
+                "visible": 273.6,
+                "full": true,
+                "controlProblems": []
+              },
+              {
+                "kind": "product",
+                "height": 273.6,
+                "width": 312,
+                "top": 577.6,
+                "mediaHeight": 167.6,
+                "headerHeight": 44,
+                "visible": 273.6,
+                "full": true,
+                "controlProblems": []
+              },
+              {
+                "kind": "product",
+                "height": 273.6,
+                "width": 312,
+                "top": 863.1,
+                "mediaHeight": 167.6,
+                "headerHeight": 44,
+                "visible": 82.9,
+                "full": false,
+                "controlProblems": []
+              },
+              {
+                "kind": "publication",
+                "height": 399.8,
+                "width": 312,
+                "top": 1176.7,
+                "mediaHeight": 193.8,
+                "headerHeight": 66,
+                "visible": 0,
+                "full": false,
+                "controlProblems": []
+              },
+              {
+                "kind": "business",
+                "height": 343.1,
+                "width": 312,
+                "top": 1616.4,
+                "mediaHeight": 163.1,
+                "headerHeight": 58,
+                "visible": 0,
+                "full": false,
+                "controlProblems": []
+              },
+              {
+                "kind": "service",
+                "height": 216,
+                "width": 312,
+                "top": 1999.6,
+                "mediaHeight": 88,
+                "headerHeight": 94,
+                "visible": 0,
+                "full": false,
+                "controlProblems": []
+              }
+            ]
+          },
+          "product": {
+            "height": 273.5625,
+            "imageHeight": 167.5625,
+            "imageWidth": 310,
+            "viewportPercent": 32.41261848341232,
+            "shape": "square",
+            "objectFit": "contain",
+            "scale": 1.4,
+            "sourceDimensions": [
+              640,
+              640
+            ],
+            "retainedSourceArea": 0.7142857142857143,
+            "renderedWidth": 234.58749999999998,
+            "renderedHeight": 234.58749999999998,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              },
+              {
+                "label": "Guardar Café de origen · 250 g en favoritos",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café de origen · 250 g",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              },
+              {
+                "label": "Agregar Café de origen · 250 g al carrito",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              }
+            ],
+            "prices": [
+              {
+                "text": "$ 28.000",
+                "inside": true
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "case": "orientation",
+      "shape": "portrait",
+      "width": 320,
+      "compared": [
+        {
+          "version": "b",
+          "details": {
+            "height": 340.96875,
+            "imageHeight": 165.375,
+            "imageWidth": 294,
+            "viewportPercent": 40.399140995260666,
+            "shape": null,
+            "objectFit": "contain",
+            "scale": 1,
+            "sourceDimensions": [
+              480,
+              600
+            ],
+            "retainedSourceArea": 1,
+            "renderedWidth": 132.3,
+            "renderedHeight": 165.375,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              },
+              {
+                "label": "Guardar Café de origen · 250 g en favoritos",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café de origen · 250 g",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              },
+              {
+                "label": "Agregar Café de origen · 250 g al carrito",
+                "width": 104.625,
+                "height": 44,
+                "inside": true
+              }
+            ],
+            "prices": [
+              {
+                "text": "$ 28.000",
+                "inside": true
+              }
+            ]
+          }
+        },
+        {
+          "version": "b2",
+          "details": {
+            "height": 273.5625,
+            "imageHeight": 167.5625,
+            "imageWidth": 310,
+            "viewportPercent": 32.41261848341232,
+            "shape": "portrait",
+            "objectFit": "contain",
+            "scale": 1,
+            "sourceDimensions": [
+              480,
+              600
+            ],
+            "retainedSourceArea": 1,
+            "renderedWidth": 134.05,
+            "renderedHeight": 167.5625,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              },
+              {
+                "label": "Guardar Café de origen · 250 g en favoritos",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café de origen · 250 g",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              },
+              {
+                "label": "Agregar Café de origen · 250 g al carrito",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              }
+            ],
+            "prices": [
+              {
+                "text": "$ 28.000",
+                "inside": true
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "case": "orientation",
+      "shape": "landscape",
+      "width": 320,
+      "compared": [
+        {
+          "version": "b",
+          "details": {
+            "height": 340.96875,
+            "imageHeight": 165.375,
+            "imageWidth": 294,
+            "viewportPercent": 40.399140995260666,
+            "shape": null,
+            "objectFit": "contain",
+            "scale": 1,
+            "sourceDimensions": [
+              960,
+              600
+            ],
+            "retainedSourceArea": 1,
+            "renderedWidth": 264.6,
+            "renderedHeight": 165.375,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              },
+              {
+                "label": "Guardar Café de origen · 250 g en favoritos",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café de origen · 250 g",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              },
+              {
+                "label": "Agregar Café de origen · 250 g al carrito",
+                "width": 104.625,
+                "height": 44,
+                "inside": true
+              }
+            ],
+            "prices": [
+              {
+                "text": "$ 28.000",
+                "inside": true
+              }
+            ]
+          }
+        },
+        {
+          "version": "b2",
+          "details": {
+            "height": 273.5625,
+            "imageHeight": 167.5625,
+            "imageWidth": 310,
+            "viewportPercent": 32.41261848341232,
+            "shape": "landscape",
+            "objectFit": "cover",
+            "scale": 1,
+            "sourceDimensions": [
+              960,
+              600
+            ],
+            "retainedSourceArea": 0.8648387096774194,
+            "renderedWidth": 310,
+            "renderedHeight": 193.75,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              },
+              {
+                "label": "Guardar Café de origen · 250 g en favoritos",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café de origen · 250 g",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              },
+              {
+                "label": "Agregar Café de origen · 250 g al carrito",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              }
+            ],
+            "prices": [
+              {
+                "text": "$ 28.000",
+                "inside": true
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "case": "long-and-states",
+      "width": 320,
+      "result": {
+        "viewport": {
+          "width": 320,
+          "height": 568
+        },
+        "header": 0,
+        "bottomNavigation": 0,
+        "usableHeight": 568,
+        "overflow": false,
+        "cards": [
+          {
+            "kind": "product",
+            "height": 264.9,
+            "width": 296,
+            "top": 33,
+            "mediaHeight": 158.9,
+            "headerHeight": 44,
+            "visible": 264.9,
+            "full": true,
+            "controlProblems": []
+          },
+          {
+            "kind": "product",
+            "height": 284.9,
+            "width": 296,
+            "top": 334.9,
+            "mediaHeight": 158.9,
+            "headerHeight": 44,
+            "visible": 233.1,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "product",
+            "height": 280.9,
+            "width": 296,
+            "top": 656.8,
+            "mediaHeight": 158.9,
+            "headerHeight": 44,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "product",
+            "height": 300.9,
+            "width": 296,
+            "top": 974.7,
+            "mediaHeight": 158.9,
+            "headerHeight": 44,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "product",
+            "height": 264.9,
+            "width": 296,
+            "top": 1312.6,
+            "mediaHeight": 158.9,
+            "headerHeight": 44,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "product",
+            "height": 280.9,
+            "width": 296,
+            "top": 1614.5,
+            "mediaHeight": 158.9,
+            "headerHeight": 44,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "product",
+            "height": 264.9,
+            "width": 296,
+            "top": 1932.4,
+            "mediaHeight": 158.9,
+            "headerHeight": 44,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "product",
+            "height": 264.9,
+            "width": 296,
+            "top": 2234.3,
+            "mediaHeight": 158.9,
+            "headerHeight": 44,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "publication",
+            "height": 389.8,
+            "width": 296,
+            "top": 2515.3,
+            "mediaHeight": 183.8,
+            "headerHeight": 66,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "publication",
+            "height": 448.8,
+            "width": 296,
+            "top": 2921,
+            "mediaHeight": 183.8,
+            "headerHeight": 97,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "business",
+            "height": 393.1,
+            "width": 296,
+            "top": 3385.8,
+            "mediaHeight": 154.1,
+            "headerHeight": 117,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "service",
+            "height": 250,
+            "width": 296,
+            "top": 3794.9,
+            "mediaHeight": 88,
+            "headerHeight": 94,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "service",
+            "height": 216,
+            "width": 296,
+            "top": 4060.9,
+            "mediaHeight": 0,
+            "headerHeight": 94,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "service",
+            "height": 272,
+            "width": 296,
+            "top": 4292.9,
+            "mediaHeight": 88,
+            "headerHeight": 116,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "service",
+            "height": 250,
+            "width": 296,
+            "top": 4580.9,
+            "mediaHeight": 0,
+            "headerHeight": 94,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          }
+        ]
+      }
+    },
+    {
+      "case": "comparison",
+      "width": 390,
+      "compared": [
+        {
+          "version": "original",
+          "initial": {
+            "viewport": {
+              "width": 390,
+              "height": 844
+            },
+            "header": 113,
+            "bottomNavigation": 69,
+            "usableHeight": 662,
+            "overflow": false,
+            "cards": [
+              {
+                "kind": "product",
+                "height": 480,
+                "width": 382,
+                "top": 578,
+                "mediaHeight": 256,
+                "headerHeight": 36,
+                "visible": 197,
+                "full": false,
+                "controlProblems": [
+                  {
+                    "label": "Seguir",
+                    "problem": "small-target"
+                  },
+                  {
+                    "label": "",
+                    "problem": "small-target"
+                  }
+                ]
+              },
+              {
+                "kind": "product",
+                "height": 480,
+                "width": 382,
+                "top": 1070,
+                "mediaHeight": 256,
+                "headerHeight": 36,
+                "visible": 0,
+                "full": false,
+                "controlProblems": [
+                  {
+                    "label": "Seguir",
+                    "problem": "small-target"
+                  },
+                  {
+                    "label": "",
+                    "problem": "small-target"
+                  }
+                ]
+              },
+              {
+                "kind": "product",
+                "height": 480,
+                "width": 382,
+                "top": 1562,
+                "mediaHeight": 256,
+                "headerHeight": 36,
+                "visible": 0,
+                "full": false,
+                "controlProblems": [
+                  {
+                    "label": "Seguir",
+                    "problem": "small-target"
+                  },
+                  {
+                    "label": "",
+                    "problem": "small-target"
+                  }
+                ]
+              },
+              {
+                "kind": "publication",
+                "height": 473.3,
+                "width": 356,
+                "top": 2231.5,
+                "mediaHeight": 221.3,
+                "headerHeight": 70,
+                "visible": 0,
+                "full": false,
+                "controlProblems": [
+                  {
+                    "label": "Ver publicación",
+                    "problem": "small-target"
+                  }
+                ]
+              },
+              {
+                "kind": "business",
+                "height": 478.3,
+                "width": 356,
+                "top": 2903.3,
+                "mediaHeight": 206.3,
+                "headerHeight": 50,
+                "visible": 0,
+                "full": false,
+                "controlProblems": [
+                  {
+                    "label": "Seguir",
+                    "problem": "small-target"
+                  },
+                  {
+                    "label": "WhatsApp",
+                    "problem": "small-target"
+                  }
+                ]
+              },
+              {
+                "kind": "service",
+                "height": 473.5,
+                "width": 356,
+                "top": 3580,
+                "mediaHeight": 205,
+                "headerHeight": 90.5,
+                "visible": 0,
+                "full": false,
+                "controlProblems": [
+                  {
+                    "label": "WhatsApp",
+                    "problem": "small-target"
+                  }
+                ]
+              }
+            ]
+          },
+          "aligned": {
+            "viewport": {
+              "width": 390,
+              "height": 844
+            },
+            "header": 113,
+            "bottomNavigation": 69,
+            "usableHeight": 662,
+            "overflow": false,
+            "cards": [
+              {
+                "kind": "product",
+                "height": 480,
+                "width": 382,
+                "top": 578,
+                "mediaHeight": 256,
+                "headerHeight": 36,
+                "visible": 480,
+                "full": true,
+                "controlProblems": [
+                  {
+                    "label": "Seguir",
+                    "problem": "small-target"
+                  },
+                  {
+                    "label": "",
+                    "problem": "small-target"
+                  }
+                ]
+              },
+              {
+                "kind": "product",
+                "height": 480,
+                "width": 382,
+                "top": 1070,
+                "mediaHeight": 256,
+                "headerHeight": 36,
+                "visible": 162,
+                "full": false,
+                "controlProblems": [
+                  {
+                    "label": "Seguir",
+                    "problem": "small-target"
+                  },
+                  {
+                    "label": "",
+                    "problem": "small-target"
+                  }
+                ]
+              },
+              {
+                "kind": "product",
+                "height": 480,
+                "width": 382,
+                "top": 1562,
+                "mediaHeight": 256,
+                "headerHeight": 36,
+                "visible": 0,
+                "full": false,
+                "controlProblems": [
+                  {
+                    "label": "Seguir",
+                    "problem": "small-target"
+                  },
+                  {
+                    "label": "",
+                    "problem": "small-target"
+                  }
+                ]
+              },
+              {
+                "kind": "publication",
+                "height": 473.3,
+                "width": 356,
+                "top": 2231.5,
+                "mediaHeight": 221.3,
+                "headerHeight": 70,
+                "visible": 0,
+                "full": false,
+                "controlProblems": [
+                  {
+                    "label": "Ver publicación",
+                    "problem": "small-target"
+                  }
+                ]
+              },
+              {
+                "kind": "business",
+                "height": 478.3,
+                "width": 356,
+                "top": 2903.3,
+                "mediaHeight": 206.3,
+                "headerHeight": 50,
+                "visible": 0,
+                "full": false,
+                "controlProblems": [
+                  {
+                    "label": "Seguir",
+                    "problem": "small-target"
+                  },
+                  {
+                    "label": "WhatsApp",
+                    "problem": "small-target"
+                  }
+                ]
+              },
+              {
+                "kind": "service",
+                "height": 473.5,
+                "width": 356,
+                "top": 3580,
+                "mediaHeight": 205,
+                "headerHeight": 90.5,
+                "visible": 0,
+                "full": false,
+                "controlProblems": [
+                  {
+                    "label": "WhatsApp",
+                    "problem": "small-target"
+                  }
+                ]
+              }
+            ]
+          },
+          "product": {
+            "height": 480,
+            "imageHeight": 256,
+            "imageWidth": 364,
+            "viewportPercent": 56.872037914691944,
+            "shape": null,
+            "objectFit": "cover",
+            "scale": 1,
+            "sourceDimensions": [
+              640,
+              640
+            ],
+            "retainedSourceArea": 0.7032967032967034,
+            "renderedWidth": 364,
+            "renderedHeight": 364,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 32,
+                "height": 32,
+                "inside": true
+              },
+              {
+                "label": null,
+                "width": 36,
+                "height": 36,
+                "inside": true
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café de origen · 250 g",
+                "width": 48,
+                "height": 48,
+                "inside": true
+              },
+              {
+                "label": "Agregar Café de origen · 250 g al carrito",
+                "width": 48,
+                "height": 48,
+                "inside": true
+              }
+            ],
+            "prices": [
+              {
+                "text": "$ 28.000",
+                "inside": true
+              }
+            ]
+          }
+        },
+        {
+          "version": "b",
+          "initial": {
+            "viewport": {
+              "width": 390,
+              "height": 844
+            },
+            "header": 113,
+            "bottomNavigation": 69,
+            "usableHeight": 662,
+            "overflow": false,
+            "cards": [
+              {
+                "kind": "product",
+                "height": 380.3,
+                "width": 382,
+                "top": 292,
+                "mediaHeight": 204.8,
+                "headerHeight": 44,
+                "visible": 380.3,
+                "full": true,
+                "controlProblems": []
+              },
+              {
+                "kind": "product",
+                "height": 380.3,
+                "width": 382,
+                "top": 684.3,
+                "mediaHeight": 204.8,
+                "headerHeight": 44,
+                "visible": 90.7,
+                "full": false,
+                "controlProblems": []
+              },
+              {
+                "kind": "product",
+                "height": 380.3,
+                "width": 382,
+                "top": 1076.7,
+                "mediaHeight": 204.8,
+                "headerHeight": 44,
+                "visible": 0,
+                "full": false,
+                "controlProblems": []
+              },
+              {
+                "kind": "publication",
+                "height": 443.5,
+                "width": 382,
+                "top": 1497,
+                "mediaHeight": 237.5,
+                "headerHeight": 66,
+                "visible": 0,
+                "full": false,
+                "controlProblems": []
+              },
+              {
+                "kind": "business",
+                "height": 382.5,
+                "width": 382,
+                "top": 1980.5,
+                "mediaHeight": 202.5,
+                "headerHeight": 58,
+                "visible": 0,
+                "full": false,
+                "controlProblems": []
+              },
+              {
+                "kind": "service",
+                "height": 216,
+                "width": 382,
+                "top": 2403,
+                "mediaHeight": 88,
+                "headerHeight": 94,
+                "visible": 0,
+                "full": false,
+                "controlProblems": []
+              }
+            ]
+          },
+          "aligned": {
+            "viewport": {
+              "width": 390,
+              "height": 844
+            },
+            "header": 113,
+            "bottomNavigation": 69,
+            "usableHeight": 662,
+            "overflow": false,
+            "cards": [
+              {
+                "kind": "product",
+                "height": 380.3,
+                "width": 382,
+                "top": 292,
+                "mediaHeight": 204.8,
+                "headerHeight": 44,
+                "visible": 380.3,
+                "full": true,
+                "controlProblems": []
+              },
+              {
+                "kind": "product",
+                "height": 380.3,
+                "width": 382,
+                "top": 684.3,
+                "mediaHeight": 204.8,
+                "headerHeight": 44,
+                "visible": 261.7,
+                "full": false,
+                "controlProblems": []
+              },
+              {
+                "kind": "product",
+                "height": 380.3,
+                "width": 382,
+                "top": 1076.7,
+                "mediaHeight": 204.8,
+                "headerHeight": 44,
+                "visible": 0,
+                "full": false,
+                "controlProblems": []
+              },
+              {
+                "kind": "publication",
+                "height": 443.5,
+                "width": 382,
+                "top": 1497,
+                "mediaHeight": 237.5,
+                "headerHeight": 66,
+                "visible": 0,
+                "full": false,
+                "controlProblems": []
+              },
+              {
+                "kind": "business",
+                "height": 382.5,
+                "width": 382,
+                "top": 1980.5,
+                "mediaHeight": 202.5,
+                "headerHeight": 58,
+                "visible": 0,
+                "full": false,
+                "controlProblems": []
+              },
+              {
+                "kind": "service",
+                "height": 216,
+                "width": 382,
+                "top": 2403,
+                "mediaHeight": 88,
+                "headerHeight": 94,
+                "visible": 0,
+                "full": false,
+                "controlProblems": []
+              }
+            ]
+          },
+          "product": {
+            "height": 380.34375,
+            "imageHeight": 204.75,
+            "imageWidth": 364,
+            "viewportPercent": 45.06442535545024,
+            "shape": null,
+            "objectFit": "contain",
+            "scale": 1,
+            "sourceDimensions": [
+              640,
+              640
+            ],
+            "retainedSourceArea": 1,
+            "renderedWidth": 204.75,
+            "renderedHeight": 204.75,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              },
+              {
+                "label": "Guardar Café de origen · 250 g en favoritos",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café de origen · 250 g",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              },
+              {
+                "label": "Agregar Café de origen · 250 g al carrito",
+                "width": 104.625,
+                "height": 44,
+                "inside": true
+              }
+            ],
+            "prices": [
+              {
+                "text": "$ 28.000",
+                "inside": true
+              }
+            ]
+          }
+        },
+        {
+          "version": "b2",
+          "initial": {
+            "viewport": {
+              "width": 390,
+              "height": 844
+            },
+            "header": 113,
+            "bottomNavigation": 69,
+            "usableHeight": 662,
+            "overflow": false,
+            "cards": [
+              {
+                "kind": "product",
+                "height": 311.4,
+                "width": 382,
+                "top": 292,
+                "mediaHeight": 205.4,
+                "headerHeight": 44,
+                "visible": 311.4,
+                "full": true,
+                "controlProblems": []
+              },
+              {
+                "kind": "product",
+                "height": 311.4,
+                "width": 382,
+                "top": 615.4,
+                "mediaHeight": 205.4,
+                "headerHeight": 44,
+                "visible": 159.6,
+                "full": false,
+                "controlProblems": []
+              },
+              {
+                "kind": "product",
+                "height": 311.4,
+                "width": 382,
+                "top": 938.8,
+                "mediaHeight": 205.4,
+                "headerHeight": 44,
+                "visible": 0,
+                "full": false,
+                "controlProblems": []
+              },
+              {
+                "kind": "publication",
+                "height": 443.5,
+                "width": 382,
+                "top": 1290.2,
+                "mediaHeight": 237.5,
+                "headerHeight": 66,
+                "visible": 0,
+                "full": false,
+                "controlProblems": []
+              },
+              {
+                "kind": "business",
+                "height": 382.5,
+                "width": 382,
+                "top": 1773.7,
+                "mediaHeight": 202.5,
+                "headerHeight": 58,
+                "visible": 0,
+                "full": false,
+                "controlProblems": []
+              },
+              {
+                "kind": "service",
+                "height": 216,
+                "width": 382,
+                "top": 2196.2,
+                "mediaHeight": 88,
+                "headerHeight": 94,
+                "visible": 0,
+                "full": false,
+                "controlProblems": []
+              }
+            ]
+          },
+          "aligned": {
+            "viewport": {
+              "width": 390,
+              "height": 844
+            },
+            "header": 113,
+            "bottomNavigation": 69,
+            "usableHeight": 662,
+            "overflow": false,
+            "cards": [
+              {
+                "kind": "product",
+                "height": 311.4,
+                "width": 382,
+                "top": 292,
+                "mediaHeight": 205.4,
+                "headerHeight": 44,
+                "visible": 311.4,
+                "full": true,
+                "controlProblems": []
+              },
+              {
+                "kind": "product",
+                "height": 311.4,
+                "width": 382,
+                "top": 615.4,
+                "mediaHeight": 205.4,
+                "headerHeight": 44,
+                "visible": 311.4,
+                "full": true,
+                "controlProblems": []
+              },
+              {
+                "kind": "product",
+                "height": 311.4,
+                "width": 382,
+                "top": 938.8,
+                "mediaHeight": 205.4,
+                "headerHeight": 44,
+                "visible": 7.2,
+                "full": false,
+                "controlProblems": []
+              },
+              {
+                "kind": "publication",
+                "height": 443.5,
+                "width": 382,
+                "top": 1290.2,
+                "mediaHeight": 237.5,
+                "headerHeight": 66,
+                "visible": 0,
+                "full": false,
+                "controlProblems": []
+              },
+              {
+                "kind": "business",
+                "height": 382.5,
+                "width": 382,
+                "top": 1773.7,
+                "mediaHeight": 202.5,
+                "headerHeight": 58,
+                "visible": 0,
+                "full": false,
+                "controlProblems": []
+              },
+              {
+                "kind": "service",
+                "height": 216,
+                "width": 382,
+                "top": 2196.2,
+                "mediaHeight": 88,
+                "headerHeight": 94,
+                "visible": 0,
+                "full": false,
+                "controlProblems": []
+              }
+            ]
+          },
+          "product": {
+            "height": 311.390625,
+            "imageHeight": 205.390625,
+            "imageWidth": 380,
+            "viewportPercent": 36.89462381516588,
+            "shape": "square",
+            "objectFit": "contain",
+            "scale": 1.4,
+            "sourceDimensions": [
+              640,
+              640
+            ],
+            "retainedSourceArea": 0.7142857142857143,
+            "renderedWidth": 287.546875,
+            "renderedHeight": 287.546875,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              },
+              {
+                "label": "Guardar Café de origen · 250 g en favoritos",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café de origen · 250 g",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              },
+              {
+                "label": "Agregar Café de origen · 250 g al carrito",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              }
+            ],
+            "prices": [
+              {
+                "text": "$ 28.000",
+                "inside": true
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "case": "orientation",
+      "shape": "portrait",
+      "width": 390,
+      "compared": [
+        {
+          "version": "b",
+          "details": {
+            "height": 380.34375,
+            "imageHeight": 204.75,
+            "imageWidth": 364,
+            "viewportPercent": 45.06442535545024,
+            "shape": null,
+            "objectFit": "contain",
+            "scale": 1,
+            "sourceDimensions": [
+              480,
+              600
+            ],
+            "retainedSourceArea": 1,
+            "renderedWidth": 163.8,
+            "renderedHeight": 204.75,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              },
+              {
+                "label": "Guardar Café de origen · 250 g en favoritos",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café de origen · 250 g",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              },
+              {
+                "label": "Agregar Café de origen · 250 g al carrito",
+                "width": 104.625,
+                "height": 44,
+                "inside": true
+              }
+            ],
+            "prices": [
+              {
+                "text": "$ 28.000",
+                "inside": true
+              }
+            ]
+          }
+        },
+        {
+          "version": "b2",
+          "details": {
+            "height": 311.390625,
+            "imageHeight": 205.390625,
+            "imageWidth": 380,
+            "viewportPercent": 36.89462381516588,
+            "shape": "portrait",
+            "objectFit": "contain",
+            "scale": 1,
+            "sourceDimensions": [
+              480,
+              600
+            ],
+            "retainedSourceArea": 0.9999999999999999,
+            "renderedWidth": 164.3125,
+            "renderedHeight": 205.39062500000003,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              },
+              {
+                "label": "Guardar Café de origen · 250 g en favoritos",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café de origen · 250 g",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              },
+              {
+                "label": "Agregar Café de origen · 250 g al carrito",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              }
+            ],
+            "prices": [
+              {
+                "text": "$ 28.000",
+                "inside": true
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "case": "orientation",
+      "shape": "landscape",
+      "width": 390,
+      "compared": [
+        {
+          "version": "b",
+          "details": {
+            "height": 380.34375,
+            "imageHeight": 204.75,
+            "imageWidth": 364,
+            "viewportPercent": 45.06442535545024,
+            "shape": null,
+            "objectFit": "contain",
+            "scale": 1,
+            "sourceDimensions": [
+              960,
+              600
+            ],
+            "retainedSourceArea": 1,
+            "renderedWidth": 327.6,
+            "renderedHeight": 204.75,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              },
+              {
+                "label": "Guardar Café de origen · 250 g en favoritos",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café de origen · 250 g",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              },
+              {
+                "label": "Agregar Café de origen · 250 g al carrito",
+                "width": 104.625,
+                "height": 44,
+                "inside": true
+              }
+            ],
+            "prices": [
+              {
+                "text": "$ 28.000",
+                "inside": true
+              }
+            ]
+          }
+        },
+        {
+          "version": "b2",
+          "details": {
+            "height": 311.390625,
+            "imageHeight": 205.390625,
+            "imageWidth": 380,
+            "viewportPercent": 36.89462381516588,
+            "shape": "landscape",
+            "objectFit": "cover",
+            "scale": 1,
+            "sourceDimensions": [
+              960,
+              600
+            ],
+            "retainedSourceArea": 0.8648026315789473,
+            "renderedWidth": 380,
+            "renderedHeight": 237.5,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              },
+              {
+                "label": "Guardar Café de origen · 250 g en favoritos",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café de origen · 250 g",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              },
+              {
+                "label": "Agregar Café de origen · 250 g al carrito",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              }
+            ],
+            "prices": [
+              {
+                "text": "$ 28.000",
+                "inside": true
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "case": "long-and-states",
+      "width": 390,
+      "result": {
+        "viewport": {
+          "width": 390,
+          "height": 568
+        },
+        "header": 0,
+        "bottomNavigation": 0,
+        "usableHeight": 568,
+        "overflow": false,
+        "cards": [
+          {
+            "kind": "product",
+            "height": 302.8,
+            "width": 366,
+            "top": 33,
+            "mediaHeight": 196.8,
+            "headerHeight": 44,
+            "visible": 302.8,
+            "full": true,
+            "controlProblems": []
+          },
+          {
+            "kind": "product",
+            "height": 322.8,
+            "width": 366,
+            "top": 372.8,
+            "mediaHeight": 196.8,
+            "headerHeight": 44,
+            "visible": 195.3,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "product",
+            "height": 318.8,
+            "width": 366,
+            "top": 732.5,
+            "mediaHeight": 196.8,
+            "headerHeight": 44,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "product",
+            "height": 338.8,
+            "width": 366,
+            "top": 1088.3,
+            "mediaHeight": 196.8,
+            "headerHeight": 44,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "product",
+            "height": 302.8,
+            "width": 366,
+            "top": 1464,
+            "mediaHeight": 196.8,
+            "headerHeight": 44,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "product",
+            "height": 318.8,
+            "width": 366,
+            "top": 1803.8,
+            "mediaHeight": 196.8,
+            "headerHeight": 44,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "product",
+            "height": 302.8,
+            "width": 366,
+            "top": 2159.5,
+            "mediaHeight": 196.8,
+            "headerHeight": 44,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "product",
+            "height": 302.8,
+            "width": 366,
+            "top": 2499.3,
+            "mediaHeight": 196.8,
+            "headerHeight": 44,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "publication",
+            "height": 433.5,
+            "width": 366,
+            "top": 2818,
+            "mediaHeight": 227.5,
+            "headerHeight": 66,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "publication",
+            "height": 492.5,
+            "width": 366,
+            "top": 3267.5,
+            "mediaHeight": 227.5,
+            "headerHeight": 97,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "business",
+            "height": 416,
+            "width": 366,
+            "top": 3776,
+            "mediaHeight": 193.5,
+            "headerHeight": 100.5,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "service",
+            "height": 216,
+            "width": 366,
+            "top": 4208,
+            "mediaHeight": 88,
+            "headerHeight": 94,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "service",
+            "height": 216,
+            "width": 366,
+            "top": 4440,
+            "mediaHeight": 0,
+            "headerHeight": 94,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "service",
+            "height": 238,
+            "width": 366,
+            "top": 4672,
+            "mediaHeight": 88,
+            "headerHeight": 116,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "service",
+            "height": 216,
+            "width": 366,
+            "top": 4926,
+            "mediaHeight": 0,
+            "headerHeight": 94,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          }
+        ]
+      }
+    },
+    {
+      "case": "comparison",
+      "width": 430,
+      "compared": [
+        {
+          "version": "original",
+          "initial": {
+            "viewport": {
+              "width": 430,
+              "height": 844
+            },
+            "header": 113,
+            "bottomNavigation": 69,
+            "usableHeight": 662,
+            "overflow": false,
+            "cards": [
+              {
+                "kind": "product",
+                "height": 480,
+                "width": 422,
+                "top": 578,
+                "mediaHeight": 256,
+                "headerHeight": 36,
+                "visible": 197,
+                "full": false,
+                "controlProblems": [
+                  {
+                    "label": "Seguir",
+                    "problem": "small-target"
+                  },
+                  {
+                    "label": "",
+                    "problem": "small-target"
+                  }
+                ]
+              },
+              {
+                "kind": "product",
+                "height": 480,
+                "width": 422,
+                "top": 1070,
+                "mediaHeight": 256,
+                "headerHeight": 36,
+                "visible": 0,
+                "full": false,
+                "controlProblems": [
+                  {
+                    "label": "Seguir",
+                    "problem": "small-target"
+                  },
+                  {
+                    "label": "",
+                    "problem": "small-target"
+                  }
+                ]
+              },
+              {
+                "kind": "product",
+                "height": 480,
+                "width": 422,
+                "top": 1562,
+                "mediaHeight": 256,
+                "headerHeight": 36,
+                "visible": 0,
+                "full": false,
+                "controlProblems": [
+                  {
+                    "label": "Seguir",
+                    "problem": "small-target"
+                  },
+                  {
+                    "label": "",
+                    "problem": "small-target"
+                  }
+                ]
+              },
+              {
+                "kind": "publication",
+                "height": 498.3,
+                "width": 396,
+                "top": 2231.5,
+                "mediaHeight": 246.3,
+                "headerHeight": 70,
+                "visible": 0,
+                "full": false,
+                "controlProblems": [
+                  {
+                    "label": "Ver publicación",
+                    "problem": "small-target"
+                  }
+                ]
+              },
+              {
+                "kind": "business",
+                "height": 457.3,
+                "width": 396,
+                "top": 2904.3,
+                "mediaHeight": 231.3,
+                "headerHeight": 50,
+                "visible": 0,
+                "full": false,
+                "controlProblems": [
+                  {
+                    "label": "Seguir",
+                    "problem": "small-target"
+                  },
+                  {
+                    "label": "WhatsApp",
+                    "problem": "small-target"
+                  }
+                ]
+              },
+              {
+                "kind": "service",
+                "height": 498.5,
+                "width": 396,
+                "top": 3560,
+                "mediaHeight": 230,
+                "headerHeight": 90.5,
+                "visible": 0,
+                "full": false,
+                "controlProblems": [
+                  {
+                    "label": "WhatsApp",
+                    "problem": "small-target"
+                  }
+                ]
+              }
+            ]
+          },
+          "aligned": {
+            "viewport": {
+              "width": 430,
+              "height": 844
+            },
+            "header": 113,
+            "bottomNavigation": 69,
+            "usableHeight": 662,
+            "overflow": false,
+            "cards": [
+              {
+                "kind": "product",
+                "height": 480,
+                "width": 422,
+                "top": 578,
+                "mediaHeight": 256,
+                "headerHeight": 36,
+                "visible": 480,
+                "full": true,
+                "controlProblems": [
+                  {
+                    "label": "Seguir",
+                    "problem": "small-target"
+                  },
+                  {
+                    "label": "",
+                    "problem": "small-target"
+                  }
+                ]
+              },
+              {
+                "kind": "product",
+                "height": 480,
+                "width": 422,
+                "top": 1070,
+                "mediaHeight": 256,
+                "headerHeight": 36,
+                "visible": 162,
+                "full": false,
+                "controlProblems": [
+                  {
+                    "label": "Seguir",
+                    "problem": "small-target"
+                  },
+                  {
+                    "label": "",
+                    "problem": "small-target"
+                  }
+                ]
+              },
+              {
+                "kind": "product",
+                "height": 480,
+                "width": 422,
+                "top": 1562,
+                "mediaHeight": 256,
+                "headerHeight": 36,
+                "visible": 0,
+                "full": false,
+                "controlProblems": [
+                  {
+                    "label": "Seguir",
+                    "problem": "small-target"
+                  },
+                  {
+                    "label": "",
+                    "problem": "small-target"
+                  }
+                ]
+              },
+              {
+                "kind": "publication",
+                "height": 498.3,
+                "width": 396,
+                "top": 2231.5,
+                "mediaHeight": 246.3,
+                "headerHeight": 70,
+                "visible": 0,
+                "full": false,
+                "controlProblems": [
+                  {
+                    "label": "Ver publicación",
+                    "problem": "small-target"
+                  }
+                ]
+              },
+              {
+                "kind": "business",
+                "height": 457.3,
+                "width": 396,
+                "top": 2904.3,
+                "mediaHeight": 231.3,
+                "headerHeight": 50,
+                "visible": 0,
+                "full": false,
+                "controlProblems": [
+                  {
+                    "label": "Seguir",
+                    "problem": "small-target"
+                  },
+                  {
+                    "label": "WhatsApp",
+                    "problem": "small-target"
+                  }
+                ]
+              },
+              {
+                "kind": "service",
+                "height": 498.5,
+                "width": 396,
+                "top": 3560,
+                "mediaHeight": 230,
+                "headerHeight": 90.5,
+                "visible": 0,
+                "full": false,
+                "controlProblems": [
+                  {
+                    "label": "WhatsApp",
+                    "problem": "small-target"
+                  }
+                ]
+              }
+            ]
+          },
+          "product": {
+            "height": 480,
+            "imageHeight": 256,
+            "imageWidth": 404,
+            "viewportPercent": 56.872037914691944,
+            "shape": null,
+            "objectFit": "cover",
+            "scale": 1,
+            "sourceDimensions": [
+              640,
+              640
+            ],
+            "retainedSourceArea": 0.6336633663366337,
+            "renderedWidth": 404,
+            "renderedHeight": 404,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 32,
+                "height": 32,
+                "inside": true
+              },
+              {
+                "label": null,
+                "width": 36,
+                "height": 36,
+                "inside": true
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café de origen · 250 g",
+                "width": 48,
+                "height": 48,
+                "inside": true
+              },
+              {
+                "label": "Agregar Café de origen · 250 g al carrito",
+                "width": 48,
+                "height": 48,
+                "inside": true
+              }
+            ],
+            "prices": [
+              {
+                "text": "$ 28.000",
+                "inside": true
+              }
+            ]
+          }
+        },
+        {
+          "version": "b",
+          "initial": {
+            "viewport": {
+              "width": 430,
+              "height": 844
+            },
+            "header": 113,
+            "bottomNavigation": 69,
+            "usableHeight": 662,
+            "overflow": false,
+            "cards": [
+              {
+                "kind": "product",
+                "height": 402.8,
+                "width": 422,
+                "top": 292,
+                "mediaHeight": 227.3,
+                "headerHeight": 44,
+                "visible": 402.8,
+                "full": true,
+                "controlProblems": []
+              },
+              {
+                "kind": "product",
+                "height": 402.8,
+                "width": 422,
+                "top": 706.8,
+                "mediaHeight": 227.3,
+                "headerHeight": 44,
+                "visible": 68.2,
+                "full": false,
+                "controlProblems": []
+              },
+              {
+                "kind": "product",
+                "height": 402.8,
+                "width": 422,
+                "top": 1121.7,
+                "mediaHeight": 227.3,
+                "headerHeight": 44,
+                "visible": 0,
+                "full": false,
+                "controlProblems": []
+              },
+              {
+                "kind": "publication",
+                "height": 468.5,
+                "width": 422,
+                "top": 1564.5,
+                "mediaHeight": 262.5,
+                "headerHeight": 66,
+                "visible": 0,
+                "full": false,
+                "controlProblems": []
+              },
+              {
+                "kind": "business",
+                "height": 405,
+                "width": 422,
+                "top": 2073,
+                "mediaHeight": 225,
+                "headerHeight": 58,
+                "visible": 0,
+                "full": false,
+                "controlProblems": []
+              },
+              {
+                "kind": "service",
+                "height": 216,
+                "width": 422,
+                "top": 2518,
+                "mediaHeight": 88,
+                "headerHeight": 94,
+                "visible": 0,
+                "full": false,
+                "controlProblems": []
+              }
+            ]
+          },
+          "aligned": {
+            "viewport": {
+              "width": 430,
+              "height": 844
+            },
+            "header": 113,
+            "bottomNavigation": 69,
+            "usableHeight": 662,
+            "overflow": false,
+            "cards": [
+              {
+                "kind": "product",
+                "height": 402.8,
+                "width": 422,
+                "top": 292,
+                "mediaHeight": 227.3,
+                "headerHeight": 44,
+                "visible": 402.8,
+                "full": true,
+                "controlProblems": []
+              },
+              {
+                "kind": "product",
+                "height": 402.8,
+                "width": 422,
+                "top": 706.8,
+                "mediaHeight": 227.3,
+                "headerHeight": 44,
+                "visible": 239.2,
+                "full": false,
+                "controlProblems": []
+              },
+              {
+                "kind": "product",
+                "height": 402.8,
+                "width": 422,
+                "top": 1121.7,
+                "mediaHeight": 227.3,
+                "headerHeight": 44,
+                "visible": 0,
+                "full": false,
+                "controlProblems": []
+              },
+              {
+                "kind": "publication",
+                "height": 468.5,
+                "width": 422,
+                "top": 1564.5,
+                "mediaHeight": 262.5,
+                "headerHeight": 66,
+                "visible": 0,
+                "full": false,
+                "controlProblems": []
+              },
+              {
+                "kind": "business",
+                "height": 405,
+                "width": 422,
+                "top": 2073,
+                "mediaHeight": 225,
+                "headerHeight": 58,
+                "visible": 0,
+                "full": false,
+                "controlProblems": []
+              },
+              {
+                "kind": "service",
+                "height": 216,
+                "width": 422,
+                "top": 2518,
+                "mediaHeight": 88,
+                "headerHeight": 94,
+                "visible": 0,
+                "full": false,
+                "controlProblems": []
+              }
+            ]
+          },
+          "product": {
+            "height": 402.84375,
+            "imageHeight": 227.25,
+            "imageWidth": 404,
+            "viewportPercent": 47.730302132701425,
+            "shape": null,
+            "objectFit": "contain",
+            "scale": 1,
+            "sourceDimensions": [
+              640,
+              640
+            ],
+            "retainedSourceArea": 1,
+            "renderedWidth": 227.25,
+            "renderedHeight": 227.25,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              },
+              {
+                "label": "Guardar Café de origen · 250 g en favoritos",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café de origen · 250 g",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              },
+              {
+                "label": "Agregar Café de origen · 250 g al carrito",
+                "width": 104.625,
+                "height": 44,
+                "inside": true
+              }
+            ],
+            "prices": [
+              {
+                "text": "$ 28.000",
+                "inside": true
+              }
+            ]
+          }
+        },
+        {
+          "version": "b2",
+          "initial": {
+            "viewport": {
+              "width": 430,
+              "height": 844
+            },
+            "header": 113,
+            "bottomNavigation": 69,
+            "usableHeight": 662,
+            "overflow": false,
+            "cards": [
+              {
+                "kind": "product",
+                "height": 320,
+                "width": 422,
+                "top": 292,
+                "mediaHeight": 214,
+                "headerHeight": 44,
+                "visible": 320,
+                "full": true,
+                "controlProblems": []
+              },
+              {
+                "kind": "product",
+                "height": 320,
+                "width": 422,
+                "top": 624,
+                "mediaHeight": 214,
+                "headerHeight": 44,
+                "visible": 151,
+                "full": false,
+                "controlProblems": []
+              },
+              {
+                "kind": "product",
+                "height": 320,
+                "width": 422,
+                "top": 956,
+                "mediaHeight": 214,
+                "headerHeight": 44,
+                "visible": 0,
+                "full": false,
+                "controlProblems": []
+              },
+              {
+                "kind": "publication",
+                "height": 468.5,
+                "width": 422,
+                "top": 1316,
+                "mediaHeight": 262.5,
+                "headerHeight": 66,
+                "visible": 0,
+                "full": false,
+                "controlProblems": []
+              },
+              {
+                "kind": "business",
+                "height": 405,
+                "width": 422,
+                "top": 1824.5,
+                "mediaHeight": 225,
+                "headerHeight": 58,
+                "visible": 0,
+                "full": false,
+                "controlProblems": []
+              },
+              {
+                "kind": "service",
+                "height": 216,
+                "width": 422,
+                "top": 2269.5,
+                "mediaHeight": 88,
+                "headerHeight": 94,
+                "visible": 0,
+                "full": false,
+                "controlProblems": []
+              }
+            ]
+          },
+          "aligned": {
+            "viewport": {
+              "width": 430,
+              "height": 844
+            },
+            "header": 113,
+            "bottomNavigation": 69,
+            "usableHeight": 662,
+            "overflow": false,
+            "cards": [
+              {
+                "kind": "product",
+                "height": 320,
+                "width": 422,
+                "top": 292,
+                "mediaHeight": 214,
+                "headerHeight": 44,
+                "visible": 320,
+                "full": true,
+                "controlProblems": []
+              },
+              {
+                "kind": "product",
+                "height": 320,
+                "width": 422,
+                "top": 624,
+                "mediaHeight": 214,
+                "headerHeight": 44,
+                "visible": 320,
+                "full": true,
+                "controlProblems": []
+              },
+              {
+                "kind": "product",
+                "height": 320,
+                "width": 422,
+                "top": 956,
+                "mediaHeight": 214,
+                "headerHeight": 44,
+                "visible": 0,
+                "full": false,
+                "controlProblems": []
+              },
+              {
+                "kind": "publication",
+                "height": 468.5,
+                "width": 422,
+                "top": 1316,
+                "mediaHeight": 262.5,
+                "headerHeight": 66,
+                "visible": 0,
+                "full": false,
+                "controlProblems": []
+              },
+              {
+                "kind": "business",
+                "height": 405,
+                "width": 422,
+                "top": 1824.5,
+                "mediaHeight": 225,
+                "headerHeight": 58,
+                "visible": 0,
+                "full": false,
+                "controlProblems": []
+              },
+              {
+                "kind": "service",
+                "height": 216,
+                "width": 422,
+                "top": 2269.5,
+                "mediaHeight": 88,
+                "headerHeight": 94,
+                "visible": 0,
+                "full": false,
+                "controlProblems": []
+              }
+            ]
+          },
+          "product": {
+            "height": 320,
+            "imageHeight": 214,
+            "imageWidth": 420,
+            "viewportPercent": 37.91469194312796,
+            "shape": "square",
+            "objectFit": "contain",
+            "scale": 1.4,
+            "sourceDimensions": [
+              640,
+              640
+            ],
+            "retainedSourceArea": 0.7142857142857144,
+            "renderedWidth": 299.59999999999997,
+            "renderedHeight": 299.59999999999997,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              },
+              {
+                "label": "Guardar Café de origen · 250 g en favoritos",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café de origen · 250 g",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              },
+              {
+                "label": "Agregar Café de origen · 250 g al carrito",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              }
+            ],
+            "prices": [
+              {
+                "text": "$ 28.000",
+                "inside": true
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "case": "orientation",
+      "shape": "portrait",
+      "width": 430,
+      "compared": [
+        {
+          "version": "b",
+          "details": {
+            "height": 402.84375,
+            "imageHeight": 227.25,
+            "imageWidth": 404,
+            "viewportPercent": 47.730302132701425,
+            "shape": null,
+            "objectFit": "contain",
+            "scale": 1,
+            "sourceDimensions": [
+              480,
+              600
+            ],
+            "retainedSourceArea": 1,
+            "renderedWidth": 181.79999999999998,
+            "renderedHeight": 227.24999999999997,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              },
+              {
+                "label": "Guardar Café de origen · 250 g en favoritos",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café de origen · 250 g",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              },
+              {
+                "label": "Agregar Café de origen · 250 g al carrito",
+                "width": 104.625,
+                "height": 44,
+                "inside": true
+              }
+            ],
+            "prices": [
+              {
+                "text": "$ 28.000",
+                "inside": true
+              }
+            ]
+          }
+        },
+        {
+          "version": "b2",
+          "details": {
+            "height": 320,
+            "imageHeight": 214,
+            "imageWidth": 420,
+            "viewportPercent": 37.91469194312796,
+            "shape": "portrait",
+            "objectFit": "contain",
+            "scale": 1,
+            "sourceDimensions": [
+              480,
+              600
+            ],
+            "retainedSourceArea": 1,
+            "renderedWidth": 171.20000000000002,
+            "renderedHeight": 214,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              },
+              {
+                "label": "Guardar Café de origen · 250 g en favoritos",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café de origen · 250 g",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              },
+              {
+                "label": "Agregar Café de origen · 250 g al carrito",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              }
+            ],
+            "prices": [
+              {
+                "text": "$ 28.000",
+                "inside": true
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "case": "orientation",
+      "shape": "landscape",
+      "width": 430,
+      "compared": [
+        {
+          "version": "b",
+          "details": {
+            "height": 402.84375,
+            "imageHeight": 227.25,
+            "imageWidth": 404,
+            "viewportPercent": 47.730302132701425,
+            "shape": null,
+            "objectFit": "contain",
+            "scale": 1,
+            "sourceDimensions": [
+              960,
+              600
+            ],
+            "retainedSourceArea": 1,
+            "renderedWidth": 363.59999999999997,
+            "renderedHeight": 227.24999999999997,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              },
+              {
+                "label": "Guardar Café de origen · 250 g en favoritos",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café de origen · 250 g",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              },
+              {
+                "label": "Agregar Café de origen · 250 g al carrito",
+                "width": 104.625,
+                "height": 44,
+                "inside": true
+              }
+            ],
+            "prices": [
+              {
+                "text": "$ 28.000",
+                "inside": true
+              }
+            ]
+          }
+        },
+        {
+          "version": "b2",
+          "details": {
+            "height": 320,
+            "imageHeight": 214,
+            "imageWidth": 420,
+            "viewportPercent": 37.91469194312796,
+            "shape": "landscape",
+            "objectFit": "cover",
+            "scale": 1,
+            "sourceDimensions": [
+              960,
+              600
+            ],
+            "retainedSourceArea": 0.8152380952380952,
+            "renderedWidth": 420,
+            "renderedHeight": 262.5,
+            "controls": [
+              {
+                "label": "Seguir",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              },
+              {
+                "label": "Guardar Café de origen · 250 g en favoritos",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              },
+              {
+                "label": "Contactar por WhatsApp sobre Café de origen · 250 g",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              },
+              {
+                "label": "Agregar Café de origen · 250 g al carrito",
+                "width": 44,
+                "height": 44,
+                "inside": true
+              }
+            ],
+            "prices": [
+              {
+                "text": "$ 28.000",
+                "inside": true
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "case": "long-and-states",
+      "width": 430,
+      "result": {
+        "viewport": {
+          "width": 430,
+          "height": 568
+        },
+        "header": 0,
+        "bottomNavigation": 0,
+        "usableHeight": 568,
+        "overflow": false,
+        "cards": [
+          {
+            "kind": "product",
+            "height": 320,
+            "width": 406,
+            "top": 33,
+            "mediaHeight": 214,
+            "headerHeight": 44,
+            "visible": 320,
+            "full": true,
+            "controlProblems": []
+          },
+          {
+            "kind": "product",
+            "height": 340,
+            "width": 406,
+            "top": 390,
+            "mediaHeight": 214,
+            "headerHeight": 44,
+            "visible": 178,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "product",
+            "height": 336,
+            "width": 406,
+            "top": 767,
+            "mediaHeight": 214,
+            "headerHeight": 44,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "product",
+            "height": 356,
+            "width": 406,
+            "top": 1140,
+            "mediaHeight": 214,
+            "headerHeight": 44,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "product",
+            "height": 320,
+            "width": 406,
+            "top": 1533,
+            "mediaHeight": 214,
+            "headerHeight": 44,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "product",
+            "height": 336,
+            "width": 406,
+            "top": 1890,
+            "mediaHeight": 214,
+            "headerHeight": 44,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "product",
+            "height": 320,
+            "width": 406,
+            "top": 2263,
+            "mediaHeight": 214,
+            "headerHeight": 44,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "product",
+            "height": 320,
+            "width": 406,
+            "top": 2620,
+            "mediaHeight": 214,
+            "headerHeight": 44,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "publication",
+            "height": 458.5,
+            "width": 406,
+            "top": 2956,
+            "mediaHeight": 252.5,
+            "headerHeight": 66,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "publication",
+            "height": 486.5,
+            "width": 406,
+            "top": 3430.5,
+            "mediaHeight": 252.5,
+            "headerHeight": 66,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "business",
+            "height": 438.5,
+            "width": 406,
+            "top": 3933,
+            "mediaHeight": 216,
+            "headerHeight": 100.5,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "service",
+            "height": 216,
+            "width": 406,
+            "top": 4387.5,
+            "mediaHeight": 88,
+            "headerHeight": 94,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "service",
+            "height": 216,
+            "width": 406,
+            "top": 4619.5,
+            "mediaHeight": 0,
+            "headerHeight": 94,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "service",
+            "height": 238,
+            "width": 406,
+            "top": 4851.5,
+            "mediaHeight": 88,
+            "headerHeight": 116,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "service",
+            "height": 216,
+            "width": 406,
+            "top": 5105.5,
+            "mediaHeight": 0,
+            "headerHeight": 94,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          }
+        ]
+      }
+    },
+    {
+      "case": "breakpoint",
+      "width": 767,
+      "compared": [
+        {
+          "viewport": {
+            "width": 767,
+            "height": 844
+          },
+          "header": 113,
+          "bottomNavigation": 69,
+          "usableHeight": 662,
+          "overflow": false,
+          "cards": [
+            {
+              "kind": "product",
+              "height": 455.6,
+              "width": 751,
+              "top": 300,
+              "mediaHeight": 280,
+              "headerHeight": 44,
+              "visible": 455.6,
+              "full": true,
+              "controlProblems": []
+            },
+            {
+              "kind": "product",
+              "height": 455.6,
+              "width": 751,
+              "top": 767.6,
+              "mediaHeight": 280,
+              "headerHeight": 44,
+              "visible": 7.4,
+              "full": false,
+              "controlProblems": []
+            },
+            {
+              "kind": "product",
+              "height": 455.6,
+              "width": 751,
+              "top": 1235.2,
+              "mediaHeight": 280,
+              "headerHeight": 44,
+              "visible": 0,
+              "full": false,
+              "controlProblems": []
+            },
+            {
+              "kind": "publication",
+              "height": 627.3,
+              "width": 751,
+              "top": 1730.8,
+              "mediaHeight": 421.3,
+              "headerHeight": 66,
+              "visible": 0,
+              "full": false,
+              "controlProblems": []
+            },
+            {
+              "kind": "business",
+              "height": 590.1,
+              "width": 751,
+              "top": 2398.1,
+              "mediaHeight": 410.1,
+              "headerHeight": 58,
+              "visible": 0,
+              "full": false,
+              "controlProblems": []
+            },
+            {
+              "kind": "service",
+              "height": 216,
+              "width": 751,
+              "top": 3028.2,
+              "mediaHeight": 88,
+              "headerHeight": 94,
+              "visible": 0,
+              "full": false,
+              "controlProblems": []
+            }
+          ]
+        },
+        {
+          "viewport": {
+            "width": 767,
+            "height": 844
+          },
+          "header": 113,
+          "bottomNavigation": 69,
+          "usableHeight": 662,
+          "overflow": false,
+          "cards": [
+            {
+              "kind": "product",
+              "height": 320,
+              "width": 751,
+              "top": 300,
+              "mediaHeight": 214,
+              "headerHeight": 44,
+              "visible": 320,
+              "full": true,
+              "controlProblems": []
+            },
+            {
+              "kind": "product",
+              "height": 320,
+              "width": 751,
+              "top": 632,
+              "mediaHeight": 214,
+              "headerHeight": 44,
+              "visible": 143,
+              "full": false,
+              "controlProblems": []
+            },
+            {
+              "kind": "product",
+              "height": 320,
+              "width": 751,
+              "top": 964,
+              "mediaHeight": 214,
+              "headerHeight": 44,
+              "visible": 0,
+              "full": false,
+              "controlProblems": []
+            },
+            {
+              "kind": "publication",
+              "height": 627.3,
+              "width": 751,
+              "top": 1324,
+              "mediaHeight": 421.3,
+              "headerHeight": 66,
+              "visible": 0,
+              "full": false,
+              "controlProblems": []
+            },
+            {
+              "kind": "business",
+              "height": 590.1,
+              "width": 751,
+              "top": 1991.3,
+              "mediaHeight": 410.1,
+              "headerHeight": 58,
+              "visible": 0,
+              "full": false,
+              "controlProblems": []
+            },
+            {
+              "kind": "service",
+              "height": 216,
+              "width": 751,
+              "top": 2621.4,
+              "mediaHeight": 88,
+              "headerHeight": 94,
+              "visible": 0,
+              "full": false,
+              "controlProblems": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case": "breakpoint",
+      "width": 768,
+      "compared": [
+        {
+          "viewport": {
+            "width": 768,
+            "height": 844
+          },
+          "header": 113,
+          "bottomNavigation": 69,
+          "usableHeight": 662,
+          "overflow": false,
+          "cards": [
+            {
+              "kind": "product",
+              "height": 373.6,
+              "width": 370,
+              "top": 324,
+              "mediaHeight": 198,
+              "headerHeight": 44,
+              "visible": 373.6,
+              "full": true,
+              "controlProblems": []
+            },
+            {
+              "kind": "product",
+              "height": 373.6,
+              "width": 370,
+              "top": 324,
+              "mediaHeight": 198,
+              "headerHeight": 44,
+              "visible": 373.6,
+              "full": true,
+              "controlProblems": []
+            },
+            {
+              "kind": "product",
+              "height": 373.6,
+              "width": 370,
+              "top": 709.6,
+              "mediaHeight": 198,
+              "headerHeight": 44,
+              "visible": 65.4,
+              "full": false,
+              "controlProblems": []
+            },
+            {
+              "kind": "publication",
+              "height": 627.9,
+              "width": 752,
+              "top": 1123.2,
+              "mediaHeight": 421.9,
+              "headerHeight": 66,
+              "visible": 0,
+              "full": false,
+              "controlProblems": []
+            },
+            {
+              "kind": "business",
+              "height": 590.6,
+              "width": 752,
+              "top": 1791.1,
+              "mediaHeight": 410.6,
+              "headerHeight": 58,
+              "visible": 0,
+              "full": false,
+              "controlProblems": []
+            },
+            {
+              "kind": "service",
+              "height": 216,
+              "width": 752,
+              "top": 2421.7,
+              "mediaHeight": 88,
+              "headerHeight": 94,
+              "visible": 0,
+              "full": false,
+              "controlProblems": []
+            }
+          ]
+        },
+        {
+          "viewport": {
+            "width": 768,
+            "height": 844
+          },
+          "header": 113,
+          "bottomNavigation": 69,
+          "usableHeight": 662,
+          "overflow": false,
+          "cards": [
+            {
+              "kind": "product",
+              "height": 304.9,
+              "width": 370,
+              "top": 324,
+              "mediaHeight": 198.9,
+              "headerHeight": 44,
+              "visible": 304.9,
+              "full": true,
+              "controlProblems": []
+            },
+            {
+              "kind": "product",
+              "height": 304.9,
+              "width": 370,
+              "top": 324,
+              "mediaHeight": 198.9,
+              "headerHeight": 44,
+              "visible": 304.9,
+              "full": true,
+              "controlProblems": []
+            },
+            {
+              "kind": "product",
+              "height": 304.9,
+              "width": 370,
+              "top": 640.9,
+              "mediaHeight": 198.9,
+              "headerHeight": 44,
+              "visible": 134.1,
+              "full": false,
+              "controlProblems": []
+            },
+            {
+              "kind": "publication",
+              "height": 627.9,
+              "width": 752,
+              "top": 985.8,
+              "mediaHeight": 421.9,
+              "headerHeight": 66,
+              "visible": 0,
+              "full": false,
+              "controlProblems": []
+            },
+            {
+              "kind": "business",
+              "height": 590.6,
+              "width": 752,
+              "top": 1653.7,
+              "mediaHeight": 410.6,
+              "headerHeight": 58,
+              "visible": 0,
+              "full": false,
+              "controlProblems": []
+            },
+            {
+              "kind": "service",
+              "height": 216,
+              "width": 752,
+              "top": 2284.3,
+              "mediaHeight": 88,
+              "headerHeight": 94,
+              "visible": 0,
+              "full": false,
+              "controlProblems": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case": "breakpoint",
+      "width": 769,
+      "compared": [
+        {
+          "viewport": {
+            "width": 769,
+            "height": 844
+          },
+          "header": 171,
+          "bottomNavigation": 0,
+          "usableHeight": 673,
+          "overflow": false,
+          "cards": [
+            {
+              "kind": "product",
+              "height": 373.9,
+              "width": 370.5,
+              "top": 277,
+              "mediaHeight": 198.3,
+              "headerHeight": 44,
+              "visible": 373.9,
+              "full": true,
+              "controlProblems": []
+            },
+            {
+              "kind": "product",
+              "height": 373.9,
+              "width": 370.5,
+              "top": 277,
+              "mediaHeight": 198.3,
+              "headerHeight": 44,
+              "visible": 373.9,
+              "full": true,
+              "controlProblems": []
+            },
+            {
+              "kind": "product",
+              "height": 373.9,
+              "width": 370.5,
+              "top": 662.9,
+              "mediaHeight": 198.3,
+              "headerHeight": 44,
+              "visible": 181.1,
+              "full": false,
+              "controlProblems": []
+            },
+            {
+              "kind": "publication",
+              "height": 628.4,
+              "width": 753,
+              "top": 1076.8,
+              "mediaHeight": 422.4,
+              "headerHeight": 66,
+              "visible": 0,
+              "full": false,
+              "controlProblems": []
+            },
+            {
+              "kind": "business",
+              "height": 591.2,
+              "width": 753,
+              "top": 1745.2,
+              "mediaHeight": 411.2,
+              "headerHeight": 58,
+              "visible": 0,
+              "full": false,
+              "controlProblems": []
+            },
+            {
+              "kind": "service",
+              "height": 216,
+              "width": 753,
+              "top": 2376.4,
+              "mediaHeight": 88,
+              "headerHeight": 94,
+              "visible": 0,
+              "full": false,
+              "controlProblems": []
+            }
+          ]
+        },
+        {
+          "viewport": {
+            "width": 769,
+            "height": 844
+          },
+          "header": 171,
+          "bottomNavigation": 0,
+          "usableHeight": 673,
+          "overflow": false,
+          "cards": [
+            {
+              "kind": "product",
+              "height": 373.9,
+              "width": 370.5,
+              "top": 277,
+              "mediaHeight": 198.3,
+              "headerHeight": 44,
+              "visible": 373.9,
+              "full": true,
+              "controlProblems": []
+            },
+            {
+              "kind": "product",
+              "height": 373.9,
+              "width": 370.5,
+              "top": 277,
+              "mediaHeight": 198.3,
+              "headerHeight": 44,
+              "visible": 373.9,
+              "full": true,
+              "controlProblems": []
+            },
+            {
+              "kind": "product",
+              "height": 373.9,
+              "width": 370.5,
+              "top": 662.9,
+              "mediaHeight": 198.3,
+              "headerHeight": 44,
+              "visible": 181.1,
+              "full": false,
+              "controlProblems": []
+            },
+            {
+              "kind": "publication",
+              "height": 628.4,
+              "width": 753,
+              "top": 1076.8,
+              "mediaHeight": 422.4,
+              "headerHeight": 66,
+              "visible": 0,
+              "full": false,
+              "controlProblems": []
+            },
+            {
+              "kind": "business",
+              "height": 591.2,
+              "width": 753,
+              "top": 1745.2,
+              "mediaHeight": 411.2,
+              "headerHeight": 58,
+              "visible": 0,
+              "full": false,
+              "controlProblems": []
+            },
+            {
+              "kind": "service",
+              "height": 216,
+              "width": 753,
+              "top": 2376.4,
+              "mediaHeight": 88,
+              "headerHeight": 94,
+              "visible": 0,
+              "full": false,
+              "controlProblems": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case": "breakpoint",
+      "width": 1024,
+      "compared": [
+        {
+          "viewport": {
+            "width": 1024,
+            "height": 844
+          },
+          "header": 171,
+          "bottomNavigation": 0,
+          "usableHeight": 673,
+          "overflow": false,
+          "cards": [
+            {
+              "kind": "product",
+              "height": 436.6,
+              "width": 482,
+              "top": 277,
+              "mediaHeight": 261,
+              "headerHeight": 44,
+              "visible": 436.6,
+              "full": true,
+              "controlProblems": []
+            },
+            {
+              "kind": "product",
+              "height": 436.6,
+              "width": 482,
+              "top": 277,
+              "mediaHeight": 261,
+              "headerHeight": 44,
+              "visible": 436.6,
+              "full": true,
+              "controlProblems": []
+            },
+            {
+              "kind": "product",
+              "height": 436.6,
+              "width": 482,
+              "top": 725.6,
+              "mediaHeight": 261,
+              "headerHeight": 44,
+              "visible": 118.4,
+              "full": false,
+              "controlProblems": []
+            },
+            {
+              "kind": "publication",
+              "height": 636.9,
+              "width": 768,
+              "top": 1202.2,
+              "mediaHeight": 430.9,
+              "headerHeight": 66,
+              "visible": 0,
+              "full": false,
+              "controlProblems": []
+            },
+            {
+              "kind": "business",
+              "height": 599.6,
+              "width": 768,
+              "top": 1879.1,
+              "mediaHeight": 419.6,
+              "headerHeight": 58,
+              "visible": 0,
+              "full": false,
+              "controlProblems": []
+            },
+            {
+              "kind": "service",
+              "height": 216,
+              "width": 768,
+              "top": 2518.7,
+              "mediaHeight": 88,
+              "headerHeight": 94,
+              "visible": 0,
+              "full": false,
+              "controlProblems": []
+            }
+          ]
+        },
+        {
+          "viewport": {
+            "width": 1024,
+            "height": 844
+          },
+          "header": 171,
+          "bottomNavigation": 0,
+          "usableHeight": 673,
+          "overflow": false,
+          "cards": [
+            {
+              "kind": "product",
+              "height": 436.6,
+              "width": 482,
+              "top": 277,
+              "mediaHeight": 261,
+              "headerHeight": 44,
+              "visible": 436.6,
+              "full": true,
+              "controlProblems": []
+            },
+            {
+              "kind": "product",
+              "height": 436.6,
+              "width": 482,
+              "top": 277,
+              "mediaHeight": 261,
+              "headerHeight": 44,
+              "visible": 436.6,
+              "full": true,
+              "controlProblems": []
+            },
+            {
+              "kind": "product",
+              "height": 436.6,
+              "width": 482,
+              "top": 725.6,
+              "mediaHeight": 261,
+              "headerHeight": 44,
+              "visible": 118.4,
+              "full": false,
+              "controlProblems": []
+            },
+            {
+              "kind": "publication",
+              "height": 636.9,
+              "width": 768,
+              "top": 1202.2,
+              "mediaHeight": 430.9,
+              "headerHeight": 66,
+              "visible": 0,
+              "full": false,
+              "controlProblems": []
+            },
+            {
+              "kind": "business",
+              "height": 599.6,
+              "width": 768,
+              "top": 1879.1,
+              "mediaHeight": 419.6,
+              "headerHeight": 58,
+              "visible": 0,
+              "full": false,
+              "controlProblems": []
+            },
+            {
+              "kind": "service",
+              "height": 216,
+              "width": 768,
+              "top": 2518.7,
+              "mediaHeight": 88,
+              "headerHeight": 94,
+              "visible": 0,
+              "full": false,
+              "controlProblems": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case": "breakpoint",
+      "width": 1440,
+      "compared": [
+        {
+          "viewport": {
+            "width": 1440,
+            "height": 844
+          },
+          "header": 171,
+          "bottomNavigation": 0,
+          "usableHeight": 673,
+          "overflow": false,
+          "cards": [
+            {
+              "kind": "product",
+              "height": 413,
+              "width": 440,
+              "top": 277,
+              "mediaHeight": 237.4,
+              "headerHeight": 44,
+              "visible": 413,
+              "full": true,
+              "controlProblems": []
+            },
+            {
+              "kind": "product",
+              "height": 413,
+              "width": 440,
+              "top": 277,
+              "mediaHeight": 237.4,
+              "headerHeight": 44,
+              "visible": 413,
+              "full": true,
+              "controlProblems": []
+            },
+            {
+              "kind": "product",
+              "height": 413,
+              "width": 440,
+              "top": 277,
+              "mediaHeight": 237.4,
+              "headerHeight": 44,
+              "visible": 413,
+              "full": true,
+              "controlProblems": []
+            },
+            {
+              "kind": "publication",
+              "height": 524.4,
+              "width": 568,
+              "top": 730,
+              "mediaHeight": 318.4,
+              "headerHeight": 66,
+              "visible": 114,
+              "full": false,
+              "controlProblems": []
+            },
+            {
+              "kind": "business",
+              "height": 487.1,
+              "width": 568,
+              "top": 730,
+              "mediaHeight": 307.1,
+              "headerHeight": 58,
+              "visible": 114,
+              "full": false,
+              "controlProblems": []
+            },
+            {
+              "kind": "service",
+              "height": 216,
+              "width": 568,
+              "top": 1257.1,
+              "mediaHeight": 88,
+              "headerHeight": 94,
+              "visible": 0,
+              "full": false,
+              "controlProblems": []
+            }
+          ]
+        },
+        {
+          "viewport": {
+            "width": 1440,
+            "height": 844
+          },
+          "header": 171,
+          "bottomNavigation": 0,
+          "usableHeight": 673,
+          "overflow": false,
+          "cards": [
+            {
+              "kind": "product",
+              "height": 413,
+              "width": 440,
+              "top": 277,
+              "mediaHeight": 237.4,
+              "headerHeight": 44,
+              "visible": 413,
+              "full": true,
+              "controlProblems": []
+            },
+            {
+              "kind": "product",
+              "height": 413,
+              "width": 440,
+              "top": 277,
+              "mediaHeight": 237.4,
+              "headerHeight": 44,
+              "visible": 413,
+              "full": true,
+              "controlProblems": []
+            },
+            {
+              "kind": "product",
+              "height": 413,
+              "width": 440,
+              "top": 277,
+              "mediaHeight": 237.4,
+              "headerHeight": 44,
+              "visible": 413,
+              "full": true,
+              "controlProblems": []
+            },
+            {
+              "kind": "publication",
+              "height": 524.4,
+              "width": 568,
+              "top": 730,
+              "mediaHeight": 318.4,
+              "headerHeight": 66,
+              "visible": 114,
+              "full": false,
+              "controlProblems": []
+            },
+            {
+              "kind": "business",
+              "height": 487.1,
+              "width": 568,
+              "top": 730,
+              "mediaHeight": 307.1,
+              "headerHeight": 58,
+              "visible": 114,
+              "full": false,
+              "controlProblems": []
+            },
+            {
+              "kind": "service",
+              "height": 216,
+              "width": 568,
+              "top": 1257.1,
+              "mediaHeight": 88,
+              "headerHeight": 94,
+              "visible": 0,
+              "full": false,
+              "controlProblems": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case": "zoom",
+      "width": 320,
+      "result": {
+        "viewport": {
+          "width": 320,
+          "height": 844
+        },
+        "header": 0,
+        "bottomNavigation": 0,
+        "usableHeight": 844,
+        "overflow": false,
+        "cards": [
+          {
+            "kind": "product",
+            "height": 488.9,
+            "width": 272,
+            "top": 66,
+            "mediaHeight": 144.9,
+            "headerHeight": 88,
+            "visible": 488.9,
+            "full": true,
+            "controlProblems": []
+          },
+          {
+            "kind": "product",
+            "height": 536.9,
+            "width": 272,
+            "top": 628.9,
+            "mediaHeight": 144.9,
+            "headerHeight": 88,
+            "visible": 215.1,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "product",
+            "height": 520.9,
+            "width": 272,
+            "top": 1239.7,
+            "mediaHeight": 144.9,
+            "headerHeight": 88,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "product",
+            "height": 560.9,
+            "width": 272,
+            "top": 1834.6,
+            "mediaHeight": 144.9,
+            "headerHeight": 88,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "product",
+            "height": 488.9,
+            "width": 272,
+            "top": 2469.4,
+            "mediaHeight": 144.9,
+            "headerHeight": 88,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "product",
+            "height": 520.9,
+            "width": 272,
+            "top": 3032.3,
+            "mediaHeight": 144.9,
+            "headerHeight": 88,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "product",
+            "height": 488.9,
+            "width": 272,
+            "top": 3627.2,
+            "mediaHeight": 144.9,
+            "headerHeight": 88,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "product",
+            "height": 488.9,
+            "width": 272,
+            "top": 4190,
+            "mediaHeight": 144.9,
+            "headerHeight": 88,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "publication",
+            "height": 868.5,
+            "width": 272,
+            "top": 4710.9,
+            "mediaHeight": 167.5,
+            "headerHeight": 291,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "publication",
+            "height": 1055.5,
+            "width": 272,
+            "top": 5611.4,
+            "mediaHeight": 167.5,
+            "headerHeight": 422,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "business",
+            "height": 1905.3,
+            "width": 272,
+            "top": 6698.9,
+            "mediaHeight": 128.3,
+            "headerHeight": 1437,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "service",
+            "height": 1020,
+            "width": 272,
+            "top": 8636.1,
+            "mediaHeight": 176,
+            "headerHeight": 584,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "service",
+            "height": 600,
+            "width": 272,
+            "top": 9688.1,
+            "mediaHeight": 0,
+            "headerHeight": 232,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "service",
+            "height": 1072,
+            "width": 272,
+            "top": 10320.1,
+            "mediaHeight": 176,
+            "headerHeight": 584,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "service",
+            "height": 1020,
+            "width": 272,
+            "top": 11424.1,
+            "mediaHeight": 0,
+            "headerHeight": 584,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          }
+        ]
+      }
+    },
+    {
+      "case": "zoom",
+      "width": 640,
+      "result": {
+        "viewport": {
+          "width": 640,
+          "height": 844
+        },
+        "header": 0,
+        "bottomNavigation": 0,
+        "usableHeight": 844,
+        "overflow": false,
+        "cards": [
+          {
+            "kind": "product",
+            "height": 529.8,
+            "width": 592,
+            "top": 66,
+            "mediaHeight": 317.8,
+            "headerHeight": 88,
+            "visible": 529.8,
+            "full": true,
+            "controlProblems": []
+          },
+          {
+            "kind": "product",
+            "height": 569.8,
+            "width": 592,
+            "top": 669.8,
+            "mediaHeight": 317.8,
+            "headerHeight": 88,
+            "visible": 174.2,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "product",
+            "height": 561.8,
+            "width": 592,
+            "top": 1313.7,
+            "mediaHeight": 317.8,
+            "headerHeight": 88,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "product",
+            "height": 601.8,
+            "width": 592,
+            "top": 1949.5,
+            "mediaHeight": 317.8,
+            "headerHeight": 88,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "product",
+            "height": 529.8,
+            "width": 592,
+            "top": 2625.3,
+            "mediaHeight": 317.8,
+            "headerHeight": 88,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "product",
+            "height": 561.8,
+            "width": 592,
+            "top": 3229.1,
+            "mediaHeight": 317.8,
+            "headerHeight": 88,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "product",
+            "height": 529.8,
+            "width": 592,
+            "top": 3865,
+            "mediaHeight": 317.8,
+            "headerHeight": 88,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "product",
+            "height": 529.8,
+            "width": 592,
+            "top": 4468.8,
+            "mediaHeight": 317.8,
+            "headerHeight": 88,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "publication",
+            "height": 742.8,
+            "width": 592,
+            "top": 5030.6,
+            "mediaHeight": 330.8,
+            "headerHeight": 132,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "publication",
+            "height": 860.8,
+            "width": 592,
+            "top": 5805.4,
+            "mediaHeight": 330.8,
+            "headerHeight": 194,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "business",
+            "height": 786.3,
+            "width": 592,
+            "top": 6698.1,
+            "mediaHeight": 308.3,
+            "headerHeight": 234,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "service",
+            "height": 500,
+            "width": 592,
+            "top": 7516.4,
+            "mediaHeight": 176,
+            "headerHeight": 188,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "service",
+            "height": 432,
+            "width": 592,
+            "top": 8048.4,
+            "mediaHeight": 0,
+            "headerHeight": 188,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "service",
+            "height": 544,
+            "width": 592,
+            "top": 8512.4,
+            "mediaHeight": 176,
+            "headerHeight": 232,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          },
+          {
+            "kind": "service",
+            "height": 500,
+            "width": 592,
+            "top": 9088.4,
+            "mediaHeight": 0,
+            "headerHeight": 188,
+            "visible": 0,
+            "full": false,
+            "controlProblems": []
+          }
+        ]
+      }
+    }
+  ]
+}

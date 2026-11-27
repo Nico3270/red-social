@@ -1,0 +1,1280 @@
+[
+  {
+    "value": 8000,
+    "id": "p1",
+    "c2": true,
+    "root": {
+      "x": 4,
+      "y": 241,
+      "width": 186,
+      "height": 314,
+      "right": 190,
+      "bottom": 555
+    },
+    "header": {
+      "x": 5,
+      "y": 242,
+      "width": 184,
+      "height": 44,
+      "right": 189,
+      "bottom": 286
+    },
+    "photo": {
+      "x": 5,
+      "y": 286,
+      "width": 184,
+      "height": 184,
+      "right": 189,
+      "bottom": 470
+    },
+    "content": {
+      "x": 5,
+      "y": 470,
+      "width": 184,
+      "height": 84,
+      "right": 189,
+      "bottom": 554
+    },
+    "contentPadding": "8px",
+    "row": {
+      "x": 13,
+      "y": 502,
+      "width": 168,
+      "height": 44,
+      "right": 181,
+      "bottom": 546
+    },
+    "priceBlock": {
+      "x": 13,
+      "y": 513,
+      "width": 80,
+      "height": 22,
+      "right": 93,
+      "bottom": 535
+    },
+    "amount": "$ 8.000",
+    "price": {
+      "x": 13,
+      "y": 513,
+      "width": 80,
+      "height": 22,
+      "right": 93,
+      "bottom": 535
+    },
+    "glyphWidth": 59.546875,
+    "glyphLines": 1,
+    "priceFullyVisible": true,
+    "priceSize": "16px",
+    "priceWeight": "600",
+    "priceColor": "rgb(168, 60, 75)",
+    "priceFont": "inter, \"inter Fallback\"",
+    "actions": {
+      "x": 93,
+      "y": 502,
+      "width": 88,
+      "height": 44,
+      "right": 181,
+      "bottom": 546
+    },
+    "wa": {
+      "x": 93,
+      "y": 502,
+      "width": 44,
+      "height": 44,
+      "right": 137,
+      "bottom": 546
+    },
+    "cart": {
+      "x": 137,
+      "y": 502,
+      "width": 44,
+      "height": 44,
+      "right": 181,
+      "bottom": 546
+    },
+    "paintWa": {
+      "width": "32px",
+      "height": "32px",
+      "radius": "50%",
+      "iconWidth": 18,
+      "iconHeight": 18
+    },
+    "paintCart": {
+      "width": "32px",
+      "height": "32px",
+      "radius": "50%",
+      "iconWidth": 18,
+      "iconHeight": 18
+    },
+    "cartDisabled": false,
+    "wrapped": false,
+    "priceCapacity": 80,
+    "controls": [
+      {
+        "label": "Casa Origen",
+        "box": {
+          "x": 49,
+          "y": 242,
+          "width": 96,
+          "height": 44,
+          "right": 145,
+          "bottom": 286
+        },
+        "interactive": false,
+        "hit": true,
+        "nested": false
+      },
+      {
+        "label": "Seguir a Casa Origen",
+        "box": {
+          "x": 5,
+          "y": 242,
+          "width": 44,
+          "height": 44,
+          "right": 49,
+          "bottom": 286
+        },
+        "interactive": true,
+        "hit": true,
+        "nested": false
+      },
+      {
+        "label": "Guardar Tenis urbanos en favoritos",
+        "box": {
+          "x": 145,
+          "y": 242,
+          "width": 44,
+          "height": 44,
+          "right": 189,
+          "bottom": 286
+        },
+        "interactive": true,
+        "hit": true,
+        "nested": false
+      },
+      {
+        "label": "",
+        "box": {
+          "x": 5,
+          "y": 286,
+          "width": 184,
+          "height": 184,
+          "right": 189,
+          "bottom": 470
+        },
+        "interactive": false,
+        "hit": true,
+        "nested": false
+      },
+      {
+        "label": "Tenis urbanos",
+        "box": {
+          "x": 13,
+          "y": 478,
+          "width": 168,
+          "height": 20,
+          "right": 181,
+          "bottom": 498
+        },
+        "interactive": false,
+        "hit": true,
+        "nested": false
+      },
+      {
+        "label": "Contactar por WhatsApp sobre Tenis urbanos",
+        "box": {
+          "x": 93,
+          "y": 502,
+          "width": 44,
+          "height": 44,
+          "right": 137,
+          "bottom": 546
+        },
+        "interactive": true,
+        "hit": true,
+        "nested": false
+      },
+      {
+        "label": "Agregar Tenis urbanos al carrito",
+        "box": {
+          "x": 137,
+          "y": 502,
+          "width": 44,
+          "height": 44,
+          "right": 181,
+          "bottom": 546
+        },
+        "interactive": true,
+        "hit": true,
+        "nested": false
+      }
+    ],
+    "collisions": [],
+    "completeInViewport": true
+  },
+  {
+    "value": 45000,
+    "id": "p1",
+    "c2": true,
+    "root": {
+      "x": 4,
+      "y": 241,
+      "width": 186,
+      "height": 314,
+      "right": 190,
+      "bottom": 555
+    },
+    "header": {
+      "x": 5,
+      "y": 242,
+      "width": 184,
+      "height": 44,
+      "right": 189,
+      "bottom": 286
+    },
+    "photo": {
+      "x": 5,
+      "y": 286,
+      "width": 184,
+      "height": 184,
+      "right": 189,
+      "bottom": 470
+    },
+    "content": {
+      "x": 5,
+      "y": 470,
+      "width": 184,
+      "height": 84,
+      "right": 189,
+      "bottom": 554
+    },
+    "contentPadding": "8px",
+    "row": {
+      "x": 13,
+      "y": 502,
+      "width": 168,
+      "height": 44,
+      "right": 181,
+      "bottom": 546
+    },
+    "priceBlock": {
+      "x": 13,
+      "y": 513,
+      "width": 80,
+      "height": 22,
+      "right": 93,
+      "bottom": 535
+    },
+    "amount": "$ 45.000",
+    "price": {
+      "x": 13,
+      "y": 513,
+      "width": 80,
+      "height": 22,
+      "right": 93,
+      "bottom": 535
+    },
+    "glyphWidth": 69.546875,
+    "glyphLines": 1,
+    "priceFullyVisible": true,
+    "priceSize": "16px",
+    "priceWeight": "600",
+    "priceColor": "rgb(168, 60, 75)",
+    "priceFont": "inter, \"inter Fallback\"",
+    "actions": {
+      "x": 93,
+      "y": 502,
+      "width": 88,
+      "height": 44,
+      "right": 181,
+      "bottom": 546
+    },
+    "wa": {
+      "x": 93,
+      "y": 502,
+      "width": 44,
+      "height": 44,
+      "right": 137,
+      "bottom": 546
+    },
+    "cart": {
+      "x": 137,
+      "y": 502,
+      "width": 44,
+      "height": 44,
+      "right": 181,
+      "bottom": 546
+    },
+    "paintWa": {
+      "width": "32px",
+      "height": "32px",
+      "radius": "50%",
+      "iconWidth": 18,
+      "iconHeight": 18
+    },
+    "paintCart": {
+      "width": "32px",
+      "height": "32px",
+      "radius": "50%",
+      "iconWidth": 18,
+      "iconHeight": 18
+    },
+    "cartDisabled": false,
+    "wrapped": false,
+    "priceCapacity": 80,
+    "controls": [
+      {
+        "label": "Casa Origen",
+        "box": {
+          "x": 49,
+          "y": 242,
+          "width": 96,
+          "height": 44,
+          "right": 145,
+          "bottom": 286
+        },
+        "interactive": false,
+        "hit": true,
+        "nested": false
+      },
+      {
+        "label": "Seguir a Casa Origen",
+        "box": {
+          "x": 5,
+          "y": 242,
+          "width": 44,
+          "height": 44,
+          "right": 49,
+          "bottom": 286
+        },
+        "interactive": true,
+        "hit": true,
+        "nested": false
+      },
+      {
+        "label": "Guardar Tenis urbanos en favoritos",
+        "box": {
+          "x": 145,
+          "y": 242,
+          "width": 44,
+          "height": 44,
+          "right": 189,
+          "bottom": 286
+        },
+        "interactive": true,
+        "hit": true,
+        "nested": false
+      },
+      {
+        "label": "",
+        "box": {
+          "x": 5,
+          "y": 286,
+          "width": 184,
+          "height": 184,
+          "right": 189,
+          "bottom": 470
+        },
+        "interactive": false,
+        "hit": true,
+        "nested": false
+      },
+      {
+        "label": "Tenis urbanos",
+        "box": {
+          "x": 13,
+          "y": 478,
+          "width": 168,
+          "height": 20,
+          "right": 181,
+          "bottom": 498
+        },
+        "interactive": false,
+        "hit": true,
+        "nested": false
+      },
+      {
+        "label": "Contactar por WhatsApp sobre Tenis urbanos",
+        "box": {
+          "x": 93,
+          "y": 502,
+          "width": 44,
+          "height": 44,
+          "right": 137,
+          "bottom": 546
+        },
+        "interactive": true,
+        "hit": true,
+        "nested": false
+      },
+      {
+        "label": "Agregar Tenis urbanos al carrito",
+        "box": {
+          "x": 137,
+          "y": 502,
+          "width": 44,
+          "height": 44,
+          "right": 181,
+          "bottom": 546
+        },
+        "interactive": true,
+        "hit": true,
+        "nested": false
+      }
+    ],
+    "collisions": [],
+    "completeInViewport": true
+  },
+  {
+    "value": 180000,
+    "id": "p1",
+    "c2": true,
+    "root": {
+      "x": 4,
+      "y": 241,
+      "width": 186,
+      "height": 314,
+      "right": 190,
+      "bottom": 555
+    },
+    "header": {
+      "x": 5,
+      "y": 242,
+      "width": 184,
+      "height": 44,
+      "right": 189,
+      "bottom": 286
+    },
+    "photo": {
+      "x": 5,
+      "y": 286,
+      "width": 184,
+      "height": 184,
+      "right": 189,
+      "bottom": 470
+    },
+    "content": {
+      "x": 5,
+      "y": 470,
+      "width": 184,
+      "height": 84,
+      "right": 189,
+      "bottom": 554
+    },
+    "contentPadding": "8px",
+    "row": {
+      "x": 13,
+      "y": 502,
+      "width": 168,
+      "height": 44,
+      "right": 181,
+      "bottom": 546
+    },
+    "priceBlock": {
+      "x": 13,
+      "y": 513,
+      "width": 80,
+      "height": 22,
+      "right": 93,
+      "bottom": 535
+    },
+    "amount": "$ 180.000",
+    "price": {
+      "x": 13,
+      "y": 513,
+      "width": 80,
+      "height": 22,
+      "right": 93,
+      "bottom": 535
+    },
+    "glyphWidth": 76.4375,
+    "glyphLines": 1,
+    "priceFullyVisible": true,
+    "priceSize": "16px",
+    "priceWeight": "600",
+    "priceColor": "rgb(168, 60, 75)",
+    "priceFont": "inter, \"inter Fallback\"",
+    "actions": {
+      "x": 93,
+      "y": 502,
+      "width": 88,
+      "height": 44,
+      "right": 181,
+      "bottom": 546
+    },
+    "wa": {
+      "x": 93,
+      "y": 502,
+      "width": 44,
+      "height": 44,
+      "right": 137,
+      "bottom": 546
+    },
+    "cart": {
+      "x": 137,
+      "y": 502,
+      "width": 44,
+      "height": 44,
+      "right": 181,
+      "bottom": 546
+    },
+    "paintWa": {
+      "width": "32px",
+      "height": "32px",
+      "radius": "50%",
+      "iconWidth": 18,
+      "iconHeight": 18
+    },
+    "paintCart": {
+      "width": "32px",
+      "height": "32px",
+      "radius": "50%",
+      "iconWidth": 18,
+      "iconHeight": 18
+    },
+    "cartDisabled": false,
+    "wrapped": false,
+    "priceCapacity": 80,
+    "controls": [
+      {
+        "label": "Casa Origen",
+        "box": {
+          "x": 49,
+          "y": 242,
+          "width": 96,
+          "height": 44,
+          "right": 145,
+          "bottom": 286
+        },
+        "interactive": false,
+        "hit": true,
+        "nested": false
+      },
+      {
+        "label": "Seguir a Casa Origen",
+        "box": {
+          "x": 5,
+          "y": 242,
+          "width": 44,
+          "height": 44,
+          "right": 49,
+          "bottom": 286
+        },
+        "interactive": true,
+        "hit": true,
+        "nested": false
+      },
+      {
+        "label": "Guardar Tenis urbanos en favoritos",
+        "box": {
+          "x": 145,
+          "y": 242,
+          "width": 44,
+          "height": 44,
+          "right": 189,
+          "bottom": 286
+        },
+        "interactive": true,
+        "hit": true,
+        "nested": false
+      },
+      {
+        "label": "",
+        "box": {
+          "x": 5,
+          "y": 286,
+          "width": 184,
+          "height": 184,
+          "right": 189,
+          "bottom": 470
+        },
+        "interactive": false,
+        "hit": true,
+        "nested": false
+      },
+      {
+        "label": "Tenis urbanos",
+        "box": {
+          "x": 13,
+          "y": 478,
+          "width": 168,
+          "height": 20,
+          "right": 181,
+          "bottom": 498
+        },
+        "interactive": false,
+        "hit": true,
+        "nested": false
+      },
+      {
+        "label": "Contactar por WhatsApp sobre Tenis urbanos",
+        "box": {
+          "x": 93,
+          "y": 502,
+          "width": 44,
+          "height": 44,
+          "right": 137,
+          "bottom": 546
+        },
+        "interactive": true,
+        "hit": true,
+        "nested": false
+      },
+      {
+        "label": "Agregar Tenis urbanos al carrito",
+        "box": {
+          "x": 137,
+          "y": 502,
+          "width": 44,
+          "height": 44,
+          "right": 181,
+          "bottom": 546
+        },
+        "interactive": true,
+        "hit": true,
+        "nested": false
+      }
+    ],
+    "collisions": [],
+    "completeInViewport": true
+  },
+  {
+    "value": 8000000,
+    "id": "p1",
+    "c2": true,
+    "root": {
+      "x": 4,
+      "y": 241,
+      "width": 186,
+      "height": 336,
+      "right": 190,
+      "bottom": 577
+    },
+    "header": {
+      "x": 5,
+      "y": 242,
+      "width": 184,
+      "height": 44,
+      "right": 189,
+      "bottom": 286
+    },
+    "photo": {
+      "x": 5,
+      "y": 286,
+      "width": 184,
+      "height": 184,
+      "right": 189,
+      "bottom": 470
+    },
+    "content": {
+      "x": 5,
+      "y": 470,
+      "width": 184,
+      "height": 106,
+      "right": 189,
+      "bottom": 576
+    },
+    "contentPadding": "8px",
+    "row": {
+      "x": 13,
+      "y": 502,
+      "width": 168,
+      "height": 66,
+      "right": 181,
+      "bottom": 568
+    },
+    "priceBlock": {
+      "x": 13,
+      "y": 502,
+      "width": 168,
+      "height": 22,
+      "right": 181,
+      "bottom": 524
+    },
+    "amount": "$ 8.000.000",
+    "price": {
+      "x": 13,
+      "y": 502,
+      "width": 168,
+      "height": 22,
+      "right": 181,
+      "bottom": 524
+    },
+    "glyphWidth": 94.78125,
+    "glyphLines": 1,
+    "priceFullyVisible": true,
+    "priceSize": "16px",
+    "priceWeight": "600",
+    "priceColor": "rgb(168, 60, 75)",
+    "priceFont": "inter, \"inter Fallback\"",
+    "actions": {
+      "x": 93,
+      "y": 524,
+      "width": 88,
+      "height": 44,
+      "right": 181,
+      "bottom": 568
+    },
+    "wa": {
+      "x": 93,
+      "y": 524,
+      "width": 44,
+      "height": 44,
+      "right": 137,
+      "bottom": 568
+    },
+    "cart": {
+      "x": 137,
+      "y": 524,
+      "width": 44,
+      "height": 44,
+      "right": 181,
+      "bottom": 568
+    },
+    "paintWa": {
+      "width": "32px",
+      "height": "32px",
+      "radius": "50%",
+      "iconWidth": 18,
+      "iconHeight": 18
+    },
+    "paintCart": {
+      "width": "32px",
+      "height": "32px",
+      "radius": "50%",
+      "iconWidth": 18,
+      "iconHeight": 18
+    },
+    "cartDisabled": false,
+    "wrapped": true,
+    "priceCapacity": 80,
+    "controls": [
+      {
+        "label": "Casa Origen",
+        "box": {
+          "x": 49,
+          "y": 242,
+          "width": 96,
+          "height": 44,
+          "right": 145,
+          "bottom": 286
+        },
+        "interactive": false,
+        "hit": true,
+        "nested": false
+      },
+      {
+        "label": "Seguir a Casa Origen",
+        "box": {
+          "x": 5,
+          "y": 242,
+          "width": 44,
+          "height": 44,
+          "right": 49,
+          "bottom": 286
+        },
+        "interactive": true,
+        "hit": true,
+        "nested": false
+      },
+      {
+        "label": "Guardar Tenis urbanos en favoritos",
+        "box": {
+          "x": 145,
+          "y": 242,
+          "width": 44,
+          "height": 44,
+          "right": 189,
+          "bottom": 286
+        },
+        "interactive": true,
+        "hit": true,
+        "nested": false
+      },
+      {
+        "label": "",
+        "box": {
+          "x": 5,
+          "y": 286,
+          "width": 184,
+          "height": 184,
+          "right": 189,
+          "bottom": 470
+        },
+        "interactive": false,
+        "hit": true,
+        "nested": false
+      },
+      {
+        "label": "Tenis urbanos",
+        "box": {
+          "x": 13,
+          "y": 478,
+          "width": 168,
+          "height": 20,
+          "right": 181,
+          "bottom": 498
+        },
+        "interactive": false,
+        "hit": true,
+        "nested": false
+      },
+      {
+        "label": "Contactar por WhatsApp sobre Tenis urbanos",
+        "box": {
+          "x": 93,
+          "y": 524,
+          "width": 44,
+          "height": 44,
+          "right": 137,
+          "bottom": 568
+        },
+        "interactive": true,
+        "hit": true,
+        "nested": false
+      },
+      {
+        "label": "Agregar Tenis urbanos al carrito",
+        "box": {
+          "x": 137,
+          "y": 524,
+          "width": 44,
+          "height": 44,
+          "right": 181,
+          "bottom": 568
+        },
+        "interactive": true,
+        "hit": true,
+        "nested": false
+      }
+    ],
+    "collisions": [],
+    "completeInViewport": true
+  },
+  {
+    "value": 31200000,
+    "id": "p1",
+    "c2": true,
+    "root": {
+      "x": 4,
+      "y": 241,
+      "width": 186,
+      "height": 336,
+      "right": 190,
+      "bottom": 577
+    },
+    "header": {
+      "x": 5,
+      "y": 242,
+      "width": 184,
+      "height": 44,
+      "right": 189,
+      "bottom": 286
+    },
+    "photo": {
+      "x": 5,
+      "y": 286,
+      "width": 184,
+      "height": 184,
+      "right": 189,
+      "bottom": 470
+    },
+    "content": {
+      "x": 5,
+      "y": 470,
+      "width": 184,
+      "height": 106,
+      "right": 189,
+      "bottom": 576
+    },
+    "contentPadding": "8px",
+    "row": {
+      "x": 13,
+      "y": 502,
+      "width": 168,
+      "height": 66,
+      "right": 181,
+      "bottom": 568
+    },
+    "priceBlock": {
+      "x": 13,
+      "y": 502,
+      "width": 168,
+      "height": 22,
+      "right": 181,
+      "bottom": 524
+    },
+    "amount": "$ 31.200.000",
+    "price": {
+      "x": 13,
+      "y": 502,
+      "width": 168,
+      "height": 22,
+      "right": 181,
+      "bottom": 524
+    },
+    "glyphWidth": 101.53125,
+    "glyphLines": 1,
+    "priceFullyVisible": true,
+    "priceSize": "16px",
+    "priceWeight": "600",
+    "priceColor": "rgb(168, 60, 75)",
+    "priceFont": "inter, \"inter Fallback\"",
+    "actions": {
+      "x": 93,
+      "y": 524,
+      "width": 88,
+      "height": 44,
+      "right": 181,
+      "bottom": 568
+    },
+    "wa": {
+      "x": 93,
+      "y": 524,
+      "width": 44,
+      "height": 44,
+      "right": 137,
+      "bottom": 568
+    },
+    "cart": {
+      "x": 137,
+      "y": 524,
+      "width": 44,
+      "height": 44,
+      "right": 181,
+      "bottom": 568
+    },
+    "paintWa": {
+      "width": "32px",
+      "height": "32px",
+      "radius": "50%",
+      "iconWidth": 18,
+      "iconHeight": 18
+    },
+    "paintCart": {
+      "width": "32px",
+      "height": "32px",
+      "radius": "50%",
+      "iconWidth": 18,
+      "iconHeight": 18
+    },
+    "cartDisabled": false,
+    "wrapped": true,
+    "priceCapacity": 80,
+    "controls": [
+      {
+        "label": "Casa Origen",
+        "box": {
+          "x": 49,
+          "y": 242,
+          "width": 96,
+          "height": 44,
+          "right": 145,
+          "bottom": 286
+        },
+        "interactive": false,
+        "hit": true,
+        "nested": false
+      },
+      {
+        "label": "Seguir a Casa Origen",
+        "box": {
+          "x": 5,
+          "y": 242,
+          "width": 44,
+          "height": 44,
+          "right": 49,
+          "bottom": 286
+        },
+        "interactive": true,
+        "hit": true,
+        "nested": false
+      },
+      {
+        "label": "Guardar Tenis urbanos en favoritos",
+        "box": {
+          "x": 145,
+          "y": 242,
+          "width": 44,
+          "height": 44,
+          "right": 189,
+          "bottom": 286
+        },
+        "interactive": true,
+        "hit": true,
+        "nested": false
+      },
+      {
+        "label": "",
+        "box": {
+          "x": 5,
+          "y": 286,
+          "width": 184,
+          "height": 184,
+          "right": 189,
+          "bottom": 470
+        },
+        "interactive": false,
+        "hit": true,
+        "nested": false
+      },
+      {
+        "label": "Tenis urbanos",
+        "box": {
+          "x": 13,
+          "y": 478,
+          "width": 168,
+          "height": 20,
+          "right": 181,
+          "bottom": 498
+        },
+        "interactive": false,
+        "hit": true,
+        "nested": false
+      },
+      {
+        "label": "Contactar por WhatsApp sobre Tenis urbanos",
+        "box": {
+          "x": 93,
+          "y": 524,
+          "width": 44,
+          "height": 44,
+          "right": 137,
+          "bottom": 568
+        },
+        "interactive": true,
+        "hit": true,
+        "nested": false
+      },
+      {
+        "label": "Agregar Tenis urbanos al carrito",
+        "box": {
+          "x": 137,
+          "y": 524,
+          "width": 44,
+          "height": 44,
+          "right": 181,
+          "bottom": 568
+        },
+        "interactive": true,
+        "hit": true,
+        "nested": false
+      }
+    ],
+    "collisions": [],
+    "completeInViewport": true
+  },
+  {
+    "value": 123456789,
+    "id": "p1",
+    "c2": true,
+    "root": {
+      "x": 4,
+      "y": 241,
+      "width": 186,
+      "height": 336,
+      "right": 190,
+      "bottom": 577
+    },
+    "header": {
+      "x": 5,
+      "y": 242,
+      "width": 184,
+      "height": 44,
+      "right": 189,
+      "bottom": 286
+    },
+    "photo": {
+      "x": 5,
+      "y": 286,
+      "width": 184,
+      "height": 184,
+      "right": 189,
+      "bottom": 470
+    },
+    "content": {
+      "x": 5,
+      "y": 470,
+      "width": 184,
+      "height": 106,
+      "right": 189,
+      "bottom": 576
+    },
+    "contentPadding": "8px",
+    "row": {
+      "x": 13,
+      "y": 502,
+      "width": 168,
+      "height": 66,
+      "right": 181,
+      "bottom": 568
+    },
+    "priceBlock": {
+      "x": 13,
+      "y": 502,
+      "width": 168,
+      "height": 22,
+      "right": 181,
+      "bottom": 524
+    },
+    "amount": "$ 123.456.789",
+    "price": {
+      "x": 13,
+      "y": 502,
+      "width": 168,
+      "height": 22,
+      "right": 181,
+      "bottom": 524
+    },
+    "glyphWidth": 108.453125,
+    "glyphLines": 1,
+    "priceFullyVisible": true,
+    "priceSize": "16px",
+    "priceWeight": "600",
+    "priceColor": "rgb(168, 60, 75)",
+    "priceFont": "inter, \"inter Fallback\"",
+    "actions": {
+      "x": 93,
+      "y": 524,
+      "width": 88,
+      "height": 44,
+      "right": 181,
+      "bottom": 568
+    },
+    "wa": {
+      "x": 93,
+      "y": 524,
+      "width": 44,
+      "height": 44,
+      "right": 137,
+      "bottom": 568
+    },
+    "cart": {
+      "x": 137,
+      "y": 524,
+      "width": 44,
+      "height": 44,
+      "right": 181,
+      "bottom": 568
+    },
+    "paintWa": {
+      "width": "32px",
+      "height": "32px",
+      "radius": "50%",
+      "iconWidth": 18,
+      "iconHeight": 18
+    },
+    "paintCart": {
+      "width": "32px",
+      "height": "32px",
+      "radius": "50%",
+      "iconWidth": 18,
+      "iconHeight": 18
+    },
+    "cartDisabled": false,
+    "wrapped": true,
+    "priceCapacity": 80,
+    "controls": [
+      {
+        "label": "Casa Origen",
+        "box": {
+          "x": 49,
+          "y": 242,
+          "width": 96,
+          "height": 44,
+          "right": 145,
+          "bottom": 286
+        },
+        "interactive": false,
+        "hit": true,
+        "nested": false
+      },
+      {
+        "label": "Seguir a Casa Origen",
+        "box": {
+          "x": 5,
+          "y": 242,
+          "width": 44,
+          "height": 44,
+          "right": 49,
+          "bottom": 286
+        },
+        "interactive": true,
+        "hit": true,
+        "nested": false
+      },
+      {
+        "label": "Guardar Tenis urbanos en favoritos",
+        "box": {
+          "x": 145,
+          "y": 242,
+          "width": 44,
+          "height": 44,
+          "right": 189,
+          "bottom": 286
+        },
+        "interactive": true,
+        "hit": true,
+        "nested": false
+      },
+      {
+        "label": "",
+        "box": {
+          "x": 5,
+          "y": 286,
+          "width": 184,
+          "height": 184,
+          "right": 189,
+          "bottom": 470
+        },
+        "interactive": false,
+        "hit": true,
+        "nested": false
+      },
+      {
+        "label": "Tenis urbanos",
+        "box": {
+          "x": 13,
+          "y": 478,
+          "width": 168,
+          "height": 20,
+          "right": 181,
+          "bottom": 498
+        },
+        "interactive": false,
+        "hit": true,
+        "nested": false
+      },
+      {
+        "label": "Contactar por WhatsApp sobre Tenis urbanos",
+        "box": {
+          "x": 93,
+          "y": 524,
+          "width": 44,
+          "height": 44,
+          "right": 137,
+          "bottom": 568
+        },
+        "interactive": true,
+        "hit": true,
+        "nested": false
+      },
+      {
+        "label": "Agregar Tenis urbanos al carrito",
+        "box": {
+          "x": 137,
+          "y": 524,
+          "width": 44,
+          "height": 44,
+          "right": 181,
+          "bottom": 568
+        },
+        "interactive": true,
+        "hit": true,
+        "nested": false
+      }
+    ],
+    "collisions": [],
+    "completeInViewport": true
+  }
+]

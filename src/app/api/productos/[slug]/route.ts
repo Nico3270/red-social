@@ -4,11 +4,12 @@ import { buildPublicBusinessBySlugWhere } from "@/lib/business/publicBusinessVis
 import prisma from "@/lib/prisma";
 import { ProductStatus } from "@prisma/client";
 
-
+// Publication and suspension must be reflected on the next request.
+export const dynamic = "force-dynamic";
 
 export async function GET(
   req: NextRequest,
-  context: { params: Promise<{ slug: string }> } // Ajuste en el tipo de params
+  context: { params: Promise<{ slug: string }> }, // Ajuste en el tipo de params
 ) {
   // Espera la resolución de params
   const params = await context.params;
@@ -22,7 +23,7 @@ export async function GET(
     if (!slug) {
       return NextResponse.json(
         { ok: false, message: "El slug del negocio es obligatorio." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -118,7 +119,7 @@ export async function GET(
     if (!products || products.length === 0) {
       return NextResponse.json(
         { ok: true, products: [], message: "No hay más productos." },
-        { status: 200 }
+        { status: 200 },
       );
     }
 
@@ -165,14 +166,18 @@ export async function GET(
     }));
 
     return NextResponse.json(
-      { ok: true, products: formattedProducts, message: "productos obtenidos exitosamente" },
-      { status: 200, headers: { "Cache-Control": "s-maxage=3600, stale-while-revalidate" } }
+      {
+        ok: true,
+        products: formattedProducts,
+        message: "productos obtenidos exitosamente",
+      },
+      { status: 200, headers: { "Cache-Control": "no-store, max-age=0" } },
     );
   } catch (error) {
     console.error("Error en getNegocioProductsBySlug:", error);
     return NextResponse.json(
       { ok: false, message: "Error al obtener los productos del negocio." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

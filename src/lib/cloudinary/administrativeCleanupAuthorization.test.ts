@@ -1,3 +1,4 @@
+jest.mock("server-only", () => ({}), { virtual: true });
 const mockAuth = jest.fn();
 const mockDestroy = jest.fn();
 const mockTransaction = jest.fn();
@@ -58,7 +59,7 @@ it.each([
     expect(purge.ok).toBe(false);
     expect(purge.error).toMatch(/No autorizado|permisos/);
     expect(generation.ok).toBe(false);
-  if (generation.ok) throw new Error("Expected authorization rejection");
+    if (generation.ok) throw new Error("Expected authorization rejection");
     expect(generation.code).toBe(session ? "FORBIDDEN" : "UNAUTHORIZED");
     for (const effect of [
       mockDestroy,

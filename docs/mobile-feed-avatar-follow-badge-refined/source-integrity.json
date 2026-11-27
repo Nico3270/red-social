@@ -1,0 +1,10 @@
+{
+  "compared": 621,
+  "changed": [
+    "src/ui/components/productos/feedProductCard.module.css",
+    "src/feed/componentes/followButton.module.css"
+  ],
+  "missing": [],
+  "added": [],
+  "allTsxAndFollowLogicIdentical": true
+}

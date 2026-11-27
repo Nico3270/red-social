@@ -20,6 +20,8 @@ import {
   type AdminGeneratedProductDraft,
   type AdminProductDraftContextSummary,
 } from "@/actions/myckeoAdmin/generateAdminProductDraftAction";
+import type { ProductRedSocial } from "@/interfaces/productRedSocial.interface";
+import { parseCopPrice } from "@/lib/products/copPrice";
 import { initialData } from "@/seed/seed";
 import AutoUploadMedia from "@/ui/components/autoUpload/AutoUploadMedia";
 import { useRouter } from "next/navigation";
@@ -36,6 +38,9 @@ import AdminProductBatchCreationPanel from "./AdminProductBatchCreationPanel";
 type AssistedProductCreationClientProps = {
   businesses: AdminProductCreationBusiness[];
   truncated: boolean;
+  initialBusinessId?: string;
+  initialProduct?: ProductRedSocial;
+  initialCatalogGroupIds?: string[];
 };
 
 type BriefingState = {
@@ -79,6 +84,7 @@ type VariantOptionForm = {
 };
 
 type VariantForm = {
+  existingVariantId?: string;
   nombre: string;
   skuSugerido: string;
   precioSugerido: string;
@@ -194,7 +200,9 @@ function normalizeOptionMatchValue(value: string | null | undefined) {
 }
 
 function hasSuggestedOptionValue(option: SuggestedOptionForm) {
-  return Boolean(option.id.trim() || option.slug.trim() || option.nombre.trim());
+  return Boolean(
+    option.id.trim() || option.slug.trim() || option.nombre.trim(),
+  );
 }
 
 function buildSuggestedOptionLabel(option: SuggestedOptionForm) {
@@ -273,7 +281,8 @@ function getSectionsForCategory(categorySlug: string) {
 
   return activeSectionOptions.filter(
     (section) =>
-      normalizeOptionMatchValue(section.categorySlug) === normalizedCategorySlug,
+      normalizeOptionMatchValue(section.categorySlug) ===
+      normalizedCategorySlug,
   );
 }
 
@@ -309,7 +318,9 @@ function orderCatalogGroupOptions(
         sensitivity: "base",
       }),
   );
-  const optionsById = new Map(sortedOptions.map((option) => [option.id, option]));
+  const optionsById = new Map(
+    sortedOptions.map((option) => [option.id, option]),
+  );
   const childrenByParentId = new Map<string, RealCatalogGroupOption[]>();
 
   for (const option of sortedOptions) {
@@ -349,7 +360,9 @@ function buildInitialCatalogGroupSelectionState(
   const selectedCatalogGroupIds: string[] = [];
   const seen = new Set<string>();
 
-  for (const suggestedGroup of draft.catalogGroupsSugeridos.map(mapSuggestedOption)) {
+  for (const suggestedGroup of draft.catalogGroupsSugeridos.map(
+    mapSuggestedOption,
+  )) {
     const matchedGroup = findMatchingCatalogGroup(
       suggestedGroup,
       catalogGroupOptions,
@@ -488,11 +501,11 @@ function toEditableDraftForm(
 }
 
 function parseClientPrice(value: string) {
-  const normalized = value
-    .trim()
-    .replace(/[^\d.,-]/g, "")
-    .replace(",", ".");
-  return Number(normalized);
+  try {
+    return parseCopPrice(value);
+  } catch {
+    return NaN;
+  }
 }
 
 function formatVariantOptions(options: VariantOptionForm[]) {
@@ -552,7 +565,9 @@ function validateEditableDraftForm(form: EditableDraftFormState) {
   if (selectedSections.length === 0) {
     errors.push("Selecciona al menos una sección real antes de guardar.");
   } else if (selectedSections.length !== form.seccionesSeleccionadas.length) {
-    errors.push("Todas las secciones seleccionadas deben existir en el catálogo.");
+    errors.push(
+      "Todas las secciones seleccionadas deben existir en el catálogo.",
+    );
   }
 
   if (
@@ -606,7 +621,9 @@ function validateEditableDraftForm(form: EditableDraftFormState) {
   return errors;
 }
 
-function mergeUniqueImageUrls(...sources: Array<string[] | string | undefined>) {
+function mergeUniqueImageUrls(
+  ...sources: Array<string[] | string | undefined>
+) {
   const seen = new Set<string>();
   const result: string[] = [];
 
@@ -914,7 +931,8 @@ function CatalogGroupsEditor({
             Sugerencias IA para CatalogGroups
           </p>
           <p className="mt-1 text-sm text-slate-600">
-            Este bloque conserva las sugerencias editables de IA. La selección real de arriba es la que se usa al guardar.
+            Este bloque conserva las sugerencias editables de IA. La selección
+            real de arriba es la que se usa al guardar.
           </p>
         </div>
         <button
@@ -1072,7 +1090,9 @@ function VariantsEditor({
                       type="button"
                       onClick={() =>
                         onChange(
-                          variants.filter((_, itemIndex) => itemIndex !== index),
+                          variants.filter(
+                            (_, itemIndex) => itemIndex !== index,
+                          ),
                         )
                       }
                       className="text-xs font-semibold text-rose-600 transition hover:text-rose-800"
@@ -1092,7 +1112,9 @@ function VariantsEditor({
                     <input
                       value={variant.skuSugerido}
                       onChange={(event) =>
-                        updateVariant(index, { skuSugerido: event.target.value })
+                        updateVariant(index, {
+                          skuSugerido: event.target.value,
+                        })
                       }
                       placeholder="SKU sugerido"
                       className={compactInputClasses}
@@ -1344,7 +1366,8 @@ function ProductImagesAndPublishSection({
                   Generar imagen con IA
                 </p>
                 <p className="mt-1 text-sm leading-6 text-slate-600">
-                  Crea una imagen opcional y la agrega al producto sin reemplazar las existentes.
+                  Crea una imagen opcional y la agrega al producto sin
+                  reemplazar las existentes.
                 </p>
               </div>
               <span className="rounded-full border border-sky-200 bg-white/90 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-sky-700">
@@ -1387,7 +1410,8 @@ function ProductImagesAndPublishSection({
                 rows={8}
               />
               <p className="mt-2 text-xs leading-5 text-slate-500">
-                El prompt se puede editar antes de generar. La imagen queda disponible de inmediato en este flujo.
+                El prompt se puede editar antes de generar. La imagen queda
+                disponible de inmediato en este flujo.
               </p>
             </div>
 
@@ -1467,9 +1491,9 @@ function ProductImagesAndPublishSection({
               ? "Publicando..."
               : isRedirectingToPublishedProduct
                 ? "Abriendo vista pública..."
-              : publishedProduct
-                ? "Producto publicado"
-                : "Publicar producto"}
+                : publishedProduct
+                  ? "Producto publicado"
+                  : "Publicar producto"}
           </button>
         </div>
 
@@ -1525,7 +1549,8 @@ function ProductImagesAndPublishSection({
             {!publicProductUrl ? (
               <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center">
                 <p className="text-sm text-emerald-800/80">
-                  No pudimos construir la URL pública para redirigir automáticamente.
+                  No pudimos construir la URL pública para redirigir
+                  automáticamente.
                 </p>
                 <button
                   type="button"
@@ -1647,7 +1672,9 @@ function EditableProductDraftForm({
   onCreateAnotherProduct: () => void;
 }) {
   const [catalogGroupSearch, setCatalogGroupSearch] = useState("");
-  const selectedCategory = findMatchingCategory(editableDraft.categoriaSeleccionada);
+  const selectedCategory = findMatchingCategory(
+    editableDraft.categoriaSeleccionada,
+  );
   const compatibleSections = selectedCategory
     ? getSectionsForCategory(selectedCategory.slug)
     : [];
@@ -1656,7 +1683,9 @@ function EditableProductDraftForm({
   );
   const catalogGroupMap = useMemo(
     () =>
-      new Map(orderedCatalogGroupOptions.map((group) => [group.id, group] as const)),
+      new Map(
+        orderedCatalogGroupOptions.map((group) => [group.id, group] as const),
+      ),
     [orderedCatalogGroupOptions],
   );
   const selectedCatalogGroupIdSet = new Set(
@@ -1672,7 +1701,7 @@ function EditableProductDraftForm({
 
     return orderedCatalogGroupOptions.filter((group) => {
       const parentName = group.parentId
-        ? catalogGroupMap.get(group.parentId)?.nombre ?? ""
+        ? (catalogGroupMap.get(group.parentId)?.nombre ?? "")
         : "";
       const searchableText = [
         group.nombre,
@@ -1751,7 +1780,9 @@ function EditableProductDraftForm({
       return {
         ...current,
         seccionesSeleccionadas: alreadySelected
-          ? current.seccionesSeleccionadas.filter((item) => item.id !== section.id)
+          ? current.seccionesSeleccionadas.filter(
+              (item) => item.id !== section.id,
+            )
           : [...current.seccionesSeleccionadas, toSuggestedOptionForm(section)],
       };
     });
@@ -1775,7 +1806,8 @@ function EditableProductDraftForm({
   )
     ? {
         status: "empty" as const,
-        message: "La IA no entregó una categoría usable. Selecciónala manualmente.",
+        message:
+          "La IA no entregó una categoría usable. Selecciónala manualmente.",
       }
     : matchedSuggestedCategory
       ? {
@@ -1793,10 +1825,12 @@ function EditableProductDraftForm({
   )
     ? {
         status: "empty" as const,
-        message: "La IA no entregó una sección usable. Elige una o varias manualmente.",
+        message:
+          "La IA no entregó una sección usable. Elige una o varias manualmente.",
       }
     : matchedSuggestedSection
-      ? selectedCategory && matchedSuggestedSection.categorySlug !== selectedCategory.slug
+      ? selectedCategory &&
+        matchedSuggestedSection.categorySlug !== selectedCategory.slug
         ? {
             status: "warning" as const,
             message: `Coincide con una sección real, pero pertenece a "${suggestedSectionCategory?.nombre ?? matchedSuggestedSection.categorySlug}". No se toma como válida mientras la categoría elegida sea otra.`,
@@ -2055,7 +2089,8 @@ function EditableProductDraftForm({
 
             {!selectedCategory ? (
               <div className="mt-4 rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-4 text-sm text-slate-500">
-                Elige primero una categoría real para habilitar las secciones compatibles.
+                Elige primero una categoría real para habilitar las secciones
+                compatibles.
               </div>
             ) : compatibleSections.length === 0 ? (
               <div className="mt-4 rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-4 text-sm text-slate-500">
@@ -2140,35 +2175,37 @@ function EditableProductDraftForm({
 
             <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
               {catalogGroupSuggestionEntries.length > 0 ? (
-                catalogGroupSuggestionEntries.map(({ group, matchedGroup }, index) => {
-                  const isSelected = matchedGroup
-                    ? selectedCatalogGroupIdSet.has(matchedGroup.id)
-                    : false;
+                catalogGroupSuggestionEntries.map(
+                  ({ group, matchedGroup }, index) => {
+                    const isSelected = matchedGroup
+                      ? selectedCatalogGroupIdSet.has(matchedGroup.id)
+                      : false;
 
-                  return (
-                    <SuggestionStatusCard
-                      key={`${group.id || group.slug || group.nombre}-${index}`}
-                      title={`Grupo sugerido ${index + 1}`}
-                      option={group}
-                      status={
-                        !hasSuggestedOptionValue(group)
-                          ? "empty"
-                          : matchedGroup
-                            ? "resolved"
-                            : "warning"
-                      }
-                      message={
-                        !hasSuggestedOptionValue(group)
-                          ? "La IA dejó esta sugerencia vacía. Puedes ignorarla o ajustarla manualmente."
-                          : matchedGroup
-                            ? isSelected
-                              ? `Coincide con "${matchedGroup.nombre}" y ya quedó seleccionado.`
-                              : `Coincide con "${matchedGroup.nombre}". Puedes activarlo abajo.`
-                            : "No coincide con un CatalogGroup activo del negocio. Se conserva solo como ayuda contextual."
-                      }
-                    />
-                  );
-                })
+                    return (
+                      <SuggestionStatusCard
+                        key={`${group.id || group.slug || group.nombre}-${index}`}
+                        title={`Grupo sugerido ${index + 1}`}
+                        option={group}
+                        status={
+                          !hasSuggestedOptionValue(group)
+                            ? "empty"
+                            : matchedGroup
+                              ? "resolved"
+                              : "warning"
+                        }
+                        message={
+                          !hasSuggestedOptionValue(group)
+                            ? "La IA dejó esta sugerencia vacía. Puedes ignorarla o ajustarla manualmente."
+                            : matchedGroup
+                              ? isSelected
+                                ? `Coincide con "${matchedGroup.nombre}" y ya quedó seleccionado.`
+                                : `Coincide con "${matchedGroup.nombre}". Puedes activarlo abajo.`
+                              : "No coincide con un CatalogGroup activo del negocio. Se conserva solo como ayuda contextual."
+                        }
+                      />
+                    );
+                  },
+                )
               ) : (
                 <SuggestionStatusCard
                   title="Grupos sugeridos por IA"
@@ -2187,7 +2224,8 @@ function EditableProductDraftForm({
                   Todos los grupos disponibles
                 </p>
                 <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-600">
-                  {filteredCatalogGroupOptions.length} visible{filteredCatalogGroupOptions.length === 1 ? "" : "s"}
+                  {filteredCatalogGroupOptions.length} visible
+                  {filteredCatalogGroupOptions.length === 1 ? "" : "s"}
                 </span>
                 <span className="rounded-full border border-violet-200 bg-violet-50 px-3 py-1 text-xs font-semibold text-violet-700">
                   {selectedCatalogGroups.length === 0
@@ -2199,7 +2237,9 @@ function EditableProductDraftForm({
               <div className="w-full lg:max-w-sm">
                 <input
                   value={catalogGroupSearch}
-                  onChange={(event) => setCatalogGroupSearch(event.target.value)}
+                  onChange={(event) =>
+                    setCatalogGroupSearch(event.target.value)
+                  }
                   placeholder="Buscar grupo por nombre, slug o padre"
                   className={compactInputClasses}
                 />
@@ -2234,7 +2274,7 @@ function EditableProductDraftForm({
                 {filteredCatalogGroupOptions.map((group) => {
                   const isSelected = selectedCatalogGroupIdSet.has(group.id);
                   const parentName = group.parentId
-                    ? catalogGroupMap.get(group.parentId)?.nombre ?? null
+                    ? (catalogGroupMap.get(group.parentId)?.nombre ?? null)
                     : null;
 
                   return (
@@ -2400,7 +2440,9 @@ function EditableProductDraftForm({
           <button
             type="button"
             disabled={
-              !isEditableDraftReady || isSavingProduct || Boolean(savedProduct)
+              !isEditableDraftReady ||
+              isSavingProduct ||
+              Boolean(savedProduct && !isDraftDirty)
             }
             onClick={onSaveProduct}
             className="inline-flex w-full items-center justify-center rounded-2xl border border-emerald-900 bg-emerald-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-800 disabled:cursor-not-allowed disabled:border-slate-300 disabled:bg-slate-300 sm:w-auto"
@@ -2408,7 +2450,9 @@ function EditableProductDraftForm({
             {isSavingProduct
               ? "Guardando producto..."
               : savedProduct
-                ? "Producto guardado"
+                ? isDraftDirty
+                  ? "Guardar cambios"
+                  : "Producto guardado"
                 : "Guardar producto"}
           </button>
           <p className="text-xs leading-5 text-slate-600">
@@ -2479,7 +2523,9 @@ function EditableProductDraftForm({
           adminImagePurpose={adminImagePurpose}
           adminImagePrompt={adminImagePrompt}
           adminImageGenerationError={adminImageGenerationError}
-          adminImageGenerationValidationErrors={adminImageGenerationValidationErrors}
+          adminImageGenerationValidationErrors={
+            adminImageGenerationValidationErrors
+          }
           adminImageGenerationSuccess={adminImageGenerationSuccess}
           isGeneratingAdminImage={isGeneratingAdminImage}
           onAdminImagePurposeChange={onAdminImagePurposeChange}
@@ -2529,14 +2575,33 @@ function EditableProductDraftForm({
 export default function AssistedProductCreationClient({
   businesses,
   truncated,
+  initialBusinessId,
+  initialProduct,
+  initialCatalogGroupIds = [],
 }: AssistedProductCreationClientProps) {
   const router = useRouter();
   const [search, setSearch] = useState("");
-  const [selectedBusinessId, setSelectedBusinessId] = useState<string>("");
+  const [selectedBusinessId, setSelectedBusinessId] = useState<string>(
+    initialBusinessId && businesses.some((b) => b.id === initialBusinessId)
+      ? initialBusinessId
+      : "",
+  );
   const [creationMode, setCreationMode] = useState<"single" | "batch">(
     "single",
   );
-  const [briefing, setBriefing] = useState<BriefingState>(initialBriefing);
+  const [editingProductId, setEditingProductId] = useState(
+    initialProduct?.id ?? "",
+  );
+  const [briefing, setBriefing] = useState<BriefingState>(
+    initialProduct
+      ? {
+          productName: initialProduct.nombre,
+          price: String(initialProduct.precio),
+          baseDescription: initialProduct.descripcion,
+          additionalContext: "",
+        }
+      : initialBriefing,
+  );
   const [generatedDraft, setGeneratedDraft] =
     useState<GeneratedDraftState | null>(null);
   const [editableDraft, setEditableDraft] =
@@ -2590,8 +2655,10 @@ export default function AssistedProductCreationClient({
   const [adminImageGenerationError, setAdminImageGenerationError] = useState<
     string | null
   >(null);
-  const [adminImageGenerationValidationErrors, setAdminImageGenerationValidationErrors] =
-    useState<string[]>([]);
+  const [
+    adminImageGenerationValidationErrors,
+    setAdminImageGenerationValidationErrors,
+  ] = useState<string[]>([]);
   const [adminImageGenerationSuccess, setAdminImageGenerationSuccess] =
     useState<string | null>(null);
   const [isGeneratingAdminImage, setIsGeneratingAdminImage] = useState(false);
@@ -2848,7 +2915,7 @@ export default function AssistedProductCreationClient({
     clearAdminImageGenerationFeedback();
   };
 
-  const handleGenerateDraft = async () => {
+  const handleGenerateDraft = async (manual = false) => {
     if (!selectedBusiness || !canPrepareAiDraft) return;
 
     if (
@@ -2868,6 +2935,7 @@ export default function AssistedProductCreationClient({
 
     try {
       const result = await generateAdminProductDraftAction({
+        manual,
         businessId: selectedBusiness.id,
         productName: briefing.productName,
         price: briefing.price,
@@ -2883,19 +2951,64 @@ export default function AssistedProductCreationClient({
         return;
       }
 
+      if (initialProduct && editingProductId === initialProduct.id) {
+        result.data.draft = {
+          ...result.data.draft,
+          nombre: initialProduct.nombre,
+          descripcion: initialProduct.descripcion,
+          descripcionCorta:
+            initialProduct.descripcionCorta ||
+            initialProduct.descripcion.slice(0, 180),
+          categoriaSugerida: {
+            ...result.data.draft.categoriaSugerida,
+            id: initialProduct.categoriaId,
+          },
+          seccionSugerida: {
+            ...result.data.draft.seccionSugerida,
+            id: initialProduct.sections[0],
+          },
+          tags: initialProduct.tags,
+          componentes: initialProduct.componentes,
+          usaVariantesSugerido: initialProduct.usaVariantes ?? false,
+          variantesSugeridas: (initialProduct.variantes ?? []).map((v) => ({
+            nombre: v.nombre || "Variante",
+            skuSugerido: v.sku || "",
+            precioSugerido: v.precio,
+            stockIlimitadoSugerido: v.stockIlimitado ?? true,
+            opciones: v.options.map((o) => ({
+              nombre: o.nombre,
+              valor: o.valor,
+            })),
+          })),
+        };
+      }
       const sourceBriefing = { ...briefing };
       setGeneratedDraft({
         ...result.data,
         businessId: selectedBusiness.id,
         sourceBriefing,
       });
-      setEditableDraft(
-        toEditableDraftForm(
-          result.data.draft,
-          sourceBriefing,
-          result.data.catalogGroupOptions,
-        ),
+      const editable = toEditableDraftForm(
+        result.data.draft,
+        sourceBriefing,
+        result.data.catalogGroupOptions,
       );
+      if (initialProduct && editingProductId === initialProduct.id) {
+        editable.seccionesSeleccionadas = initialProduct.sections.map((id) => ({
+          id,
+          nombre: id,
+          slug: "",
+          razon: "Sección actual",
+        }));
+        editable.selectedCatalogGroupIds = initialCatalogGroupIds;
+        editable.variantesSugeridas = editable.variantesSugeridas.map(
+          (v, i) => ({
+            ...v,
+            existingVariantId: initialProduct.variantes?.[i]?.id,
+          }),
+        );
+      }
+      setEditableDraft(editable);
       setIsDraftDirty(false);
     } catch (error) {
       setGenerationError(
@@ -2911,7 +3024,11 @@ export default function AssistedProductCreationClient({
   const handleSaveProduct = async () => {
     if (!selectedBusiness || !editableDraft) return;
 
-    if (savedProduct) return;
+    if (savedProduct && !isDraftDirty) return true;
+    if (savedProduct && imagesDirty) {
+      setSaveError("Guarda primero las imágenes pendientes.");
+      return;
+    }
 
     if (draftFormErrors.length > 0) {
       setSaveError("Corrige las validaciones del formulario antes de guardar.");
@@ -2926,27 +3043,31 @@ export default function AssistedProductCreationClient({
     setSavedProduct(null);
 
     try {
-      const primarySelectedSection = editableDraft.seccionesSeleccionadas[0] ?? {
+      const primarySelectedSection = editableDraft
+        .seccionesSeleccionadas[0] ?? {
         ...EMPTY_SUGGESTED_OPTION,
       };
       const selectedCategoryId = editableDraft.categoriaSeleccionada.id.trim();
       const selectedSectionIds = editableDraft.seccionesSeleccionadas
         .map((section) => section.id.trim())
         .filter(Boolean);
-      const {
-        selectedCatalogGroupIds,
-        ...draftForSave
-      } = editableDraft;
+      const { selectedCatalogGroupIds, ...draftForSave } = editableDraft;
 
+      const storageKey = `myckeo-admin-product-operation:${selectedBusiness.id}`;
+      let operationId = sessionStorage.getItem(storageKey);
+      if (!operationId) {
+        operationId = crypto.randomUUID();
+        sessionStorage.setItem(storageKey, operationId);
+      }
       const result = await createAdminProductForBusinessAction({
+        operationId,
+        ...(savedProduct?.product.id || editingProductId
+          ? { productId: savedProduct?.product.id || editingProductId }
+          : {}),
         businessId: selectedBusiness.id,
         ...(selectedCategoryId ? { categoryId: selectedCategoryId } : {}),
-        ...(selectedSectionIds.length > 0
-          ? { sectionIds: selectedSectionIds }
-          : {}),
-        ...(selectedCatalogGroupIds.length > 0
-          ? { catalogGroupIds: selectedCatalogGroupIds }
-          : {}),
+        sectionIds: selectedSectionIds,
+        catalogGroupIds: selectedCatalogGroupIds,
         draft: {
           ...draftForSave,
           categoriaSugerida: editableDraft.categoriaSeleccionada,
@@ -2962,7 +3083,16 @@ export default function AssistedProductCreationClient({
 
       setSavedProduct(result.data);
       clearMediaPublicationState();
+      setEditingProductId(result.data.product.id);
+      setProductImageUrls(result.data.imageUrls);
+      setAttachedImages({
+        productId: result.data.product.id,
+        negocioId: result.data.product.negocioId,
+        imageUrls: result.data.imageUrls,
+        imageCount: result.data.imageUrls.length,
+      });
       setIsDraftDirty(false);
+      return true;
     } catch (error) {
       setSaveError(
         error instanceof Error
@@ -2989,6 +3119,7 @@ export default function AssistedProductCreationClient({
         businessId: selectedBusiness.id,
         productId: savedProduct.product.id,
         imageUrls: productImageUrls,
+        expectedImageUrls: attachedImageUrls,
       });
 
       if (!result.ok || !result.data) {
@@ -3361,6 +3492,32 @@ export default function AssistedProductCreationClient({
         </div>
       </section>
 
+      {savedProduct ? (
+        <div className="flex flex-wrap gap-3 rounded-xl border bg-emerald-50 p-4">
+          <span>Producto guardado como oculto.</span>
+          <button
+            type="button"
+            className="rounded-lg bg-slate-900 p-3 text-white disabled:opacity-50"
+            disabled={isUploadingImages || imagesDirty || isAttachingImages}
+            onClick={async () => {
+              if (isDraftDirty && !(await handleSaveProduct())) return;
+              if (selectedBusiness)
+                sessionStorage.removeItem(
+                  `myckeo-admin-product-operation:${selectedBusiness.id}`,
+                );
+              clearDraftState();
+              setEditingProductId("");
+              setBriefing(initialBriefing);
+              document.getElementById("product-name")?.focus();
+            }}
+          >
+            Guardar y crear otro producto
+          </button>
+          <a className="p-3 underline" href="/myckeoAdmin/incorporacion">
+            Volver a incorporación
+          </a>
+        </div>
+      ) : null}
       {creationMode === "batch" ? (
         <AdminProductBatchCreationPanel
           key={selectedBusiness?.id ?? "no-business"}
@@ -3395,13 +3552,21 @@ export default function AssistedProductCreationClient({
                 <button
                   type="button"
                   disabled={!canPrepareAiDraft || isGenerating}
-                  onClick={handleGenerateDraft}
+                  onClick={() => handleGenerateDraft(false)}
                   className="mt-4 inline-flex w-full items-center justify-center rounded-2xl border border-slate-200 bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-300"
                   title="Genera un borrador con OpenAI sin guardar en base de datos."
                 >
                   {isGenerating
                     ? "Generando borrador..."
                     : "Generar producto con IA"}
+                </button>
+                <button
+                  type="button"
+                  className="mt-3 w-full rounded-xl border border-slate-300 bg-white p-3 font-semibold"
+                  disabled={!canPrepareAiDraft || isGenerating}
+                  onClick={() => handleGenerateDraft(true)}
+                >
+                  Preparar sin IA
                 </button>
               </div>
 
@@ -3510,12 +3675,16 @@ export default function AssistedProductCreationClient({
                   isUploadingImages={isUploadingImages}
                   isAttachingImages={isAttachingImages}
                   isPublishingProduct={isPublishingProduct}
-                  isRedirectingToPublishedProduct={isRedirectingToPublishedProduct}
+                  isRedirectingToPublishedProduct={
+                    isRedirectingToPublishedProduct
+                  }
                   mediaUploaderVersion={mediaUploaderVersion}
                   adminImagePurpose={adminImagePurpose}
                   adminImagePrompt={adminImagePrompt}
                   adminImageGenerationError={adminImageGenerationError}
-                  adminImageGenerationValidationErrors={adminImageGenerationValidationErrors}
+                  adminImageGenerationValidationErrors={
+                    adminImageGenerationValidationErrors
+                  }
                   adminImageGenerationSuccess={adminImageGenerationSuccess}
                   isGeneratingAdminImage={isGeneratingAdminImage}
                   onAdminImagePurposeChange={handleAdminImagePurposeChange}

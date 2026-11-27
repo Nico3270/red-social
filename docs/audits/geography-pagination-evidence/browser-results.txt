@@ -1,0 +1,25 @@
+Tres escenarios verificados. El arranque en frío no hidrató la primera navegación en una ejecución; se repitió con el servidor listo. No se interpreta como bloqueo permanente de producción.
+
+Categoría completa:
+  ✓  2 e2e/geography-pagination/geography.spec.ts:276:5 › category filter: all local pages then expansion, exclusions and final page (11.8s)
+
+Cambio de ciudad / respuesta real retrasada (repetición con servidor listo):
+
+Running 1 test using 1 worker
+
+geo: four initial pages loaded
+(node:928244) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+geo: actual continuation held
+geo: city changed through existing selector
+  ✓  1 e2e/geography-pagination/geography.spec.ts:212:5 › real actions: multiple pages, global priority, new city and delayed old response (12.2s)
+
+  1 passed (12.9s)
+
+Matriz final con imágenes visibles cargadas:
+
+Running 1 test using 1 worker
+
+  ✓  1 e2e/geography-pagination/geography.spec.ts:319:5 › geographic masonry groups preserve mobile commerce and visual order at four widths (27.1s)
+
+  1 passed (28.0s)

@@ -1,0 +1,7 @@
+{
+  "localFavoritesUnchangedBehavior": true,
+  "followRequestsLogin": true,
+  "cancelWorks": true,
+  "loginUrl": "http://127.0.0.1:3000/auth/login?callbackUrl=%2F",
+  "followMutationSent": false
+}
